@@ -32,14 +32,14 @@ implements Serializable {
 
 	private Airlock airlock;
 
-	public static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-    public static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
-    public static AmountResource foodAR = AmountResource.foodAR;//findAmountResource(LifeSupportType.FOOD);
+	//public static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+    //public static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
+    //public static AmountResource foodAR = AmountResource.foodAR;//findAmountResource(LifeSupportType.FOOD);
 
-	public static AmountResource methaneAR = AmountResource.methaneAR;//findAmountResource("methane");
-	public static AmountResource regolithAR = AmountResource.regolithAR;//findAmountResource("regolith");
-    public static AmountResource iceAR = AmountResource.iceAR;//findAmountResource("ice");
-    public static AmountResource rockSamplesAR = AmountResource.rockSamplesAR;//findAmountResource("rock samples");
+	//public static AmountResource methaneAR = AmountResource.methaneAR;//findAmountResource("methane");
+	//public static AmountResource regolithAR = AmountResource.regolithAR;//findAmountResource("regolith");
+    //public static AmountResource iceAR = AmountResource.iceAR;//findAmountResource("ice");
+   // public static AmountResource rockSamplesAR = AmountResource.rockSamplesAR;//findAmountResource("rock samples");
 
 	/**
 	 * Constructor

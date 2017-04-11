@@ -25,19 +25,14 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
 
-import org.mars_sim.msp.MarsProject;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.javafx.MarsProjectUtility.AppLaunch;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
-import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 
-import com.sun.javafx.runtime.VersionInfo;
 
 /**--------------------------------------------------------------
  * Case A : with '-headless' and '-new' switch, it will load the following :
@@ -621,6 +616,10 @@ public class MarsProjectFX extends Application  {
             if (loadFile.exists() && loadFile.canRead()) {
 
                 sim.loadSimulation(loadFile);
+
+        		//2017-04-07 Add newInstance()
+        		//AmountResource.newInstance();
+
 			    // Start the simulation.
 			    startSimulation(true);
 

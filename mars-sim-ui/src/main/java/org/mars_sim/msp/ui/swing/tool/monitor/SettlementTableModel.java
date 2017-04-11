@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.07 2015-02-27
+ * @version 3.1.0 2017-04-10
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
@@ -27,6 +29,8 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -102,16 +106,7 @@ extends UnitTableModel {
 		columnTypes[ICE] = Integer.class;
 	};
 
-	private AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-	private AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-	private AmountResource methaneAR = AmountResource.findAmountResource("methane");
-	private AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
-	private AmountResource iceAR = AmountResource.findAmountResource("ice");
-	private AmountResource greyWaterAR = AmountResource.findAmountResource("grey water");
-	private AmountResource blackWaterAR = AmountResource.findAmountResource("black water");
-	private AmountResource hydrogenAR = AmountResource.findAmountResource("hydrogen");
-	private AmountResource carbonDioxideAR = AmountResource.findAmountResource("carbon dioxide");;
+
 	// Data members
 	private UnitManagerListener unitManagerListener;
 	private Map<Unit, Map<AmountResource, Integer>> resourceCache;
@@ -157,20 +152,20 @@ extends UnitTableModel {
 				} break;
 
 				case WATER : {
-					result = resourceMap.get(waterAR);
+					result = resourceMap.get(ResourceUtil.waterAR);
 				} break;
 
 
 				case OXYGEN : {
-					result = resourceMap.get(oxygenAR);
+					result = resourceMap.get(ResourceUtil.oxygenAR);
 				} break;
 
 				case METHANE : {
-					result = resourceMap.get(methaneAR);
+					result = resourceMap.get(ResourceUtil.methaneAR);
 				} break;
 
 				case ROCK_SAMPLES : {
-					result = resourceMap.get(rockSamplesAR);
+					result = resourceMap.get(ResourceUtil.rockSamplesAR);
 				} break;
 
 				case MALFUNCTION: {
@@ -201,23 +196,23 @@ extends UnitTableModel {
 				} break;
 
 				case HYDROGEN : {
-					result = resourceMap.get(hydrogenAR);
+					result = resourceMap.get(ResourceUtil.hydrogenAR);
 				} break;
 
 				case GREY_WATER : {
-					result = resourceMap.get(greyWaterAR);
+					result = resourceMap.get(ResourceUtil.greyWaterAR);
 				} break;
 
 				case BLACK_WATER : {
-					result = resourceMap.get(blackWaterAR);
+					result = resourceMap.get(ResourceUtil.blackWaterAR);
 				} break;
 
 				case CO2 : {
-					result = resourceMap.get(carbonDioxideAR);
+					result = resourceMap.get(ResourceUtil.carbonDioxideAR);
 				} break;
 
 				case ICE : {
-					result = resourceMap.get(iceAR);
+					result = resourceMap.get(ResourceUtil.iceAR);
 				} break;
 				}
 			}
@@ -250,27 +245,28 @@ extends UnitTableModel {
 			try {
 				int tempColumnNum = -1;
 
-				if (target.equals(oxygenAR))
+				if (target.equals(ResourceUtil.oxygenAR))
 					tempColumnNum = OXYGEN;
-				else if (target.equals(hydrogenAR))
+				else if (target.equals(ResourceUtil.hydrogenAR))
 					tempColumnNum = HYDROGEN;
-				else if (target.equals(carbonDioxideAR))
+				else if (target.equals(ResourceUtil.carbonDioxideAR))
 					tempColumnNum = CO2;
-				else if (target.equals(methaneAR))
+				else if (target.equals(ResourceUtil.methaneAR))
 					tempColumnNum = METHANE;
-				else if (target.equals(waterAR))
+				else if (target.equals(ResourceUtil.waterAR))
 					tempColumnNum = WATER;
-				else if (target.equals(greyWaterAR))
+				else if (target.equals(ResourceUtil.greyWaterAR))
 					tempColumnNum = GREY_WATER;
-				else if (target.equals(blackWaterAR))
+				else if (target.equals(ResourceUtil.blackWaterAR))
 					tempColumnNum = BLACK_WATER;
-				else if (target.equals(rockSamplesAR))
+				else if (target.equals(ResourceUtil.rockSamplesAR))
 					tempColumnNum = ROCK_SAMPLES;
-				else if (target.equals(iceAR))
+				else if (target.equals(ResourceUtil.iceAR))
 					tempColumnNum = ICE;
 
 				if (tempColumnNum > -1) {
 					// Only update cell if value as int has changed.
+					//TODO: should we convert it to 2 decimal places ?
 					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
 					int newValue = getResourceStored(unit, (AmountResource) target);
 					if (currentValue != newValue) {
@@ -303,23 +299,23 @@ extends UnitTableModel {
 			try {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
 				//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-				resourceMap.put(oxygenAR, getResourceStored(newUnit, oxygenAR));
+				resourceMap.put(ResourceUtil.oxygenAR, getResourceStored(newUnit, ResourceUtil.oxygenAR));
 				//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-				resourceMap.put(waterAR, getResourceStored(newUnit, waterAR));
+				resourceMap.put(ResourceUtil.waterAR, getResourceStored(newUnit, ResourceUtil.waterAR));
 				//AmountResource hydrogen = AmountResource.findAmountResource("hydrogen");
-				resourceMap.put(hydrogenAR, getResourceStored(newUnit, hydrogenAR));
+				resourceMap.put(ResourceUtil.hydrogenAR, getResourceStored(newUnit, ResourceUtil.hydrogenAR));
 				//AmountResource methane = AmountResource.findAmountResource("methane");
-				resourceMap.put(methaneAR, getResourceStored(newUnit, methaneAR));
+				resourceMap.put(ResourceUtil.methaneAR, getResourceStored(newUnit, ResourceUtil.methaneAR));
 				//AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-				resourceMap.put(rockSamplesAR, getResourceStored(newUnit, rockSamplesAR));
+				resourceMap.put(ResourceUtil.rockSamplesAR, getResourceStored(newUnit, ResourceUtil.rockSamplesAR));
 				//AmountResource greyWater = AmountResource.findAmountResource("grey water");
-				resourceMap.put(greyWaterAR, getResourceStored(newUnit, greyWaterAR));
+				resourceMap.put(ResourceUtil.greyWaterAR, getResourceStored(newUnit, ResourceUtil.greyWaterAR));
 				//AmountResource blackWater = AmountResource.findAmountResource("black water");
-				resourceMap.put(blackWaterAR, getResourceStored(newUnit, blackWaterAR));
+				resourceMap.put(ResourceUtil.blackWaterAR, getResourceStored(newUnit, ResourceUtil.blackWaterAR));
 				//AmountResource ice = AmountResource.findAmountResource("ice");
-				resourceMap.put(iceAR, getResourceStored(newUnit, iceAR));
+				resourceMap.put(ResourceUtil.iceAR, getResourceStored(newUnit, ResourceUtil.iceAR));
 				//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-				resourceMap.put(carbonDioxideAR, getResourceStored(newUnit, carbonDioxideAR));
+				resourceMap.put(ResourceUtil.carbonDioxideAR, getResourceStored(newUnit, ResourceUtil.carbonDioxideAR));
 				resourceCache.put(newUnit, resourceMap);
 			}
 			catch (Exception e) {}
@@ -345,10 +341,25 @@ extends UnitTableModel {
 	 * @return integer amount of resource.
 	 */
 	private Integer getResourceStored(Unit unit, AmountResource resource) {
-		Integer result = null;
+/*
+		Integer result = 0;
 		Inventory inv = unit.getInventory();
-		result = (int) inv.getAmountResourceStored(resource, true);
+
+		// 2017-04-10 This is a slow way of obtaining the amount for each AR
+		List<AmountResource> keys = new ArrayList<AmountResource>();
+        keys.addAll(inv.getAllAmountResourcesStored(false));
+        Iterator<AmountResource> i = keys.iterator();
+        while (i.hasNext()) {
+            AmountResource ar = (AmountResource) i.next();
+            if (ar.getName().equals(resource.getName()))
+            	return (int) inv.getAmountResourceStored(ar, true);
+        }
+
+		//result = (int) inv.getAmountResourceStored(resource, true);
 		return result;
+*/
+		// This is the quickest way but it may or may not work if the object reference of ARs have changed during (de)serialization.
+		return (int) unit.getInventory().getAmountResourceStored(resource, true);
 	}
 
 	/**
@@ -361,9 +372,9 @@ extends UnitTableModel {
 		unitManager.removeUnitManagerListener(unitManagerListener);
 		unitManagerListener = null;
 
-		if (resourceCache != null) {
-			resourceCache.clear();
-		}
+		//if (resourceCache != null) {
+		//	resourceCache.clear();
+		//}
 		resourceCache = null;
 	}
 

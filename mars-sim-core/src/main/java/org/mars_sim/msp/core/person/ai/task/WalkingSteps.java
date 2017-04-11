@@ -137,8 +137,10 @@ implements Serializable {
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(),
                     person.getYLocation(), building)) {
-                throw new IllegalStateException(person.getName() + " has invalid walk start location. (" +
-                    person.getXLocation() + ", " + person.getYLocation() + ") is not within building " + building);
+            	logger.severe(person.getName() + " has invalid walk start location. (" +
+                        person.getXLocation() + ", " + person.getYLocation() + ") is not within building " + building);
+                //throw new IllegalStateException(person.getName() + " has invalid walk start location. (" +
+                //    person.getXLocation() + ", " + person.getYLocation() + ") is not within building " + building);
             }
         }
         else if (LocationSituation.IN_VEHICLE == locationSituation) {
@@ -152,8 +154,10 @@ implements Serializable {
                 if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(),
                         person.getYLocation(), vehicle)) {
                 	// 2016-12-12 java.lang.IllegalStateException: Ralph Radske has invalid walk start location. (-52.43904870061289, 53.26900723773019) is not within vehicle Spirit II
-                    throw new IllegalStateException(person.getName() + " has invalid walk start location. (" +
+                	logger.severe(person.getName() + " has invalid walk start location. (" +
                         person.getXLocation() + ", " + person.getYLocation() + ") is not within vehicle " + vehicle);
+                    //throw new IllegalStateException(person.getName() + " has invalid walk start location. (" +
+                    //       person.getXLocation() + ", " + person.getYLocation() + ") is not within vehicle " + vehicle);
                 }
             }
             else {
@@ -166,9 +170,10 @@ implements Serializable {
         }
         else {
 
-            throw new IllegalStateException(person.getName() +
-                    " is in an invalid location situation for walking task: " +
-                    locationSituation);
+        	logger.severe(person.getName() +
+                    " is in an invalid location situation for walking task: " + locationSituation);
+            //throw new IllegalStateException(person.getName() +
+            //        " is in an invalid location situation for walking task: " + locationSituation);
         }
 
         // Set person X and Y location.
@@ -199,8 +204,10 @@ implements Serializable {
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(robot.getXLocation(),
                     robot.getYLocation(), building)) {
-                throw new IllegalStateException(robot.getName() + " has invalid walk start location. (" +
-                    robot.getXLocation() + ", " + robot.getYLocation() + ") is not within building " + building);
+            	logger.severe(robot.getName() + " has invalid walk start location. (" +
+                        robot.getXLocation() + ", " + robot.getYLocation() + ") is not within building " + building);
+                //throw new IllegalStateException(robot.getName() + " has invalid walk start location. (" +
+                //    robot.getXLocation() + ", " + robot.getYLocation() + ") is not within building " + building);
             }
         }
 /*
@@ -228,10 +235,10 @@ implements Serializable {
         }
 */
         else {
-
-            throw new IllegalStateException(robot.getName() +
-                    " is in an invalid location situation for walking task: " +
-                    locationSituation);
+        	logger.severe(robot.getName() +
+                    " is in an invalid location situation for walking task: " + locationSituation);
+            //throw new IllegalStateException(robot.getName() +
+            //        " is in an invalid location situation for walking task: " + locationSituation);
         }
 
         // Set robot X and Y location.
@@ -261,9 +268,10 @@ implements Serializable {
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
               	System.out.println("WalkingSteps : determineDestinationWalkState() : building is " + building);
-
-                throw new IllegalStateException("Invalid walk destination location. (" +
-                    xLoc + ", " + yLoc + ") is not within building " + building);
+              	logger.severe("Invalid walk destination location. (" +
+                        xLoc + ", " + yLoc + ") is not within building " + building);
+                //throw new IllegalStateException("Invalid walk destination location. (" +
+                //    xLoc + ", " + yLoc + ") is not within building " + building);
             }
         }
         else if (interiorObject instanceof Rover) {
@@ -272,8 +280,10 @@ implements Serializable {
             result.rover = rover;
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, rover)) {
-                throw new IllegalStateException("Invalid walk destination location. (" +
-                    xLoc + ", " + yLoc + ") is not within rover " + rover);
+            	logger.severe("Invalid walk destination location. (" +
+                        xLoc + ", " + yLoc + ") is not within rover " + rover);
+                //throw new IllegalStateException("Invalid walk destination location. (" +
+                //    xLoc + ", " + yLoc + ") is not within rover " + rover);
             }
         }
         else {

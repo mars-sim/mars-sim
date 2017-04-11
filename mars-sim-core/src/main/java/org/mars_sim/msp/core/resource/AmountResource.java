@@ -68,101 +68,9 @@ implements Serializable {
 
 	private Phase phase;
 
-	private static Set<AmountResource> set;
-/*
-	private AmountResource[] ARs = new AmountResource[2];
-	private int[] ARs_int = new int[14];
-*/
-	private static AmountResourceConfig amountResourceConfig;
-
-	public static AmountResource foodAR;
-	public static AmountResource oxygenAR;
-	public static AmountResource waterAR;
-	public static AmountResource carbonDioxideAR;
-
-    public static AmountResource tableSaltAR;
-    public static AmountResource NaClOAR;
-    public static AmountResource greyWaterAR;
-    public static AmountResource foodWasteAR;
-    public static AmountResource solidWasteAR;
-    public static AmountResource napkinAR;
-
-	public static AmountResource methaneAR;
-	public static AmountResource regolithAR;
-    public static AmountResource iceAR;
-    public static AmountResource rockSamplesAR;
-/*
-    static {
-		foodAR = findAmountResource(LifeSupportType.FOOD);			// 1
-		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
-		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
-		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);	// 4
-
-        foodWasteAR = findAmountResource("food waste");			// 16
-        solidWasteAR = findAmountResource("solid waste");		// 17
-        greyWaterAR = findAmountResource("grey water");			// 19
-        tableSaltAR = findAmountResource("table salt"); 		// 23
-        NaClOAR = findAmountResource("sodium hypochlorite");	// 145
-        napkinAR = findAmountResource("napkin");				// 150
-
-    	methaneAR = findAmountResource("methane");			// 8
-        iceAR = findAmountResource("ice");					// 12
-    	regolithAR = findAmountResource("regolith");		// 142
-        rockSamplesAR = findAmountResource("rock samples");	// 143
-    }
-*/
+	private static AmountResourceConfig amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
 
 	public AmountResource() {
-		//System.out.print("0");
-		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
-
-		foodAR = findAmountResource(LifeSupportType.FOOD);			// 1
-		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
-		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
-		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);	// 4
-
-        foodWasteAR = findAmountResource("food waste");			// 16
-        solidWasteAR = findAmountResource("solid waste");		// 17
-        greyWaterAR = findAmountResource("grey water");			// 19
-        tableSaltAR = findAmountResource("table salt"); 		// 23
-        NaClOAR = findAmountResource("sodium hypochlorite");	// 145
-        napkinAR = findAmountResource("napkin");				// 150
-
-    	methaneAR = findAmountResource("methane");			// 8
-        iceAR = findAmountResource("ice");					// 12
-    	regolithAR = findAmountResource("regolith");		// 142
-        rockSamplesAR = findAmountResource("rock samples");	// 143
-		//System.out.print("0");
-
-/*
-        ARs = new AmountResource[] {
-        		foodAR,
-        		oxygenAR,
-				waterAR,
-				carbonDioxideAR,
-		        tableSaltAR,
-		        napkinAR,
-		        solidWasteAR,
-		        foodWasteAR,
-		        greyWaterAR,
-		        NaClOAR,
-		    	methaneAR,
-		    	regolithAR,
-		        iceAR,
-		        rockSamplesAR
-        	};
-
-        for (int i=0; i< 14; i++) {
-        //for (AmountResource ar : ARs) {
-        	int n = findIDbyAmountResourceName(ARs[i].getName());
-        	ARs_int[i] = n;
-        }
-
-        for (int i=0; i< 14; i++) {
-        //for (int n : ar_int) {
-        	System.out.println(ARs[i] + " : " + ARs_int[i]);
-		}
-*/
 	}
 
 	/**
@@ -190,6 +98,11 @@ implements Serializable {
 		this.edible = edible;
 		this.hashcode = getName().toLowerCase().hashCode() * phase.hashCode();
 	}
+
+	//2017-04-07 Add newInstance()
+    public static AmountResource newInstance() {
+    	return new AmountResource();
+    }
 
 	/**
 	 * Gets the resource's id.
@@ -254,210 +167,14 @@ implements Serializable {
 	}
 
 	/**
-	 * Finds an amount resource by name.
-	 * @param name the name of the resource.
-	 * @return resource
-	 * @throws ResourceException if resource could not be found.
-
-	public static AmountResource findAmountResource(String name) {
-		count++;
-		if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
-		//AmountResource result = null;
-		Iterator<AmountResource> i = getAmountResources().iterator();
-		while (i.hasNext()) {
-			AmountResource resource = i.next();
-			if (resource.getName().equals(name.toLowerCase())) //result = resource;
-				return resource;
-		}
-		return null;
-		//if (result != null) return result;
-		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
-	}
-*/
-
-	/**
-	 * Finds an amount resource by id.
-	 * @param id the resource's id.
-	 * @return resource
-	 * @throws ResourceException if resource could not be found.
-	 */
-	public static AmountResource findAmountResource(int id) {
-		//count++;
-		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
-		//AmountResource result = null;
-		//Map<Integer, AmountResource> map = getAmountResourcesIDMap();
-		//result = getAmountResourcesIDMap().get(id);
-		//if (result != null) return result;
-		//else throw new IllegalStateException("Resource: " + id + " could not be found.");
-		return getAmountResourcesIDMap().get(id);
-	}
-
-
-	/**
-	 * Finds an amount resource by name.
-	 * @param name the name of the resource.
-	 * @return resource
-	 * @throws ResourceException if resource could not be found.
- */
-	public static AmountResource findAmountResource(String name) {
-		//count++;
-		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
-/*
-		AmountResource result = null;
-		Iterator<AmountResource> i = getAmountResources().iterator();
-		while (i.hasNext()) {
-			AmountResource resource = i.next();
-			if (resource.getName().equals(name.toLowerCase())) result = resource;
-		}
-		if (result != null) return result;
-		else throw new IllegalStateException("Resource: " + name + " could not be found.");
-
-		//getAmountResources().forEach(r -> {
-		//	if (r.getName().equals(name.toLowerCase()))
-		//		return r;
-		//});
-*/
-		// 2016-12-08 Using Java 8 stream
-		return getAmountResources()
-				.stream()
-				//.parallelStream()
-				.filter(item -> item.getName().equals(name.toLowerCase()))
-				.findFirst().orElse(null);//.get();
-
-		//return amountResourceConfig.getAmountResourcesMap().get(name.toLowerCase());
-	}
-
-
-	/**
-	 * Finds an amount resource by name.
-	 * @param name the name of the resource.
-	 * @return resource
-	 * @throws ResourceException if resource could not be found.
-	 */
-	public static int findIDbyAmountResourceName(String name) {
-		//count++;
-		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
-		//Map<Integer, String> map = getIDNameMap();
-		//Object result = null;
-		//result = getKeyByValue(getIDNameMap(), name.toLowerCase());
-		//if (result != null) return (int) result;
-		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
-		return (int)(getKeyByValue(getIDNameMap(), name.toLowerCase()));
-	}
-
-
-	/**
-	 * Returns the first matched key from a given value in a map for one-to-one relationship
-	 * @param map
-	 * @param value
-	 * @return key
-	 */
-	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
-	    for (Entry<T, E> entry : map.entrySet()) {
-	        if (Objects.equals(value, entry.getValue())) {
-	            return entry.getKey();
-	        }
-	    }
-	    return null;
-	}
-
-	/**
-	 * Returns a set of keys from a given value in a map using Java 8 stream
-	 * @param map
-	 * @param value
-	 * @return a set of key
-	 */
-	public static <T, E> Set<T> getKeySetByValue(Map<T, E> map, E value) {
-	    return map.entrySet()
-	              .stream()
-	              .filter(entry -> Objects.equals(entry.getValue(), value))
-	              .map(Map.Entry::getKey)
-	              .collect(Collectors.toSet());
-	}
-
-	/**
-	 * Gets an immutable set of all the amount resources.
-	 * @return set of amount resources.
-	 */
-	public static Set<AmountResource> getAmountResources() {
-		if (set == null)
-			set = Collections.unmodifiableSet(amountResourceConfig.getAmountResources());
-		return set;
-	}
-
-/* An example method
-private Set<T> intersection(Collection<T> first, Collection<T> second) {
-	// intersection with an empty collection is empty
-	if (isNullOrEmpty(first) || isNullOrEmpty(second))
-		return new HashSet<>();
-
-	return first.stream()
-			.filter(second::contains)
-			.collect(Collectors.toSet());
-}
-*/
-
-	/**
-	 * gets a sorted map of all amount resource names by calling
-	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-	 * @return {@link Map}<{@link Integer}, {@link String}>
-	 */
-	public static Map<Integer, String> getIDNameMap() {
-		return amountResourceConfig.getIDNameMap();
-	}
-
-	/**
-	 * gets a sorted map of all amount resources by calling
-	 * {@link AmountResourceConfig#getAmountResourcesIDMap()}.
-	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
-	 */
-	public static Map<Integer, AmountResource> getAmountResourcesIDMap() {
-		return amountResourceConfig.getAmountResourcesIDMap();
-	}
-
-	/**
-	 * gets a sorted map of all amount resources by calling
-	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-	 * @return {@link Map}<{@link String},{@link AmountResource}>
-	 */
-	public static Map<String,AmountResource> getAmountResourcesMap() {
-		return amountResourceConfig.getAmountResourcesMap();
-	}
-
-	/**
-	 * convenience method that calls {@link #getAmountResources()} and
-	 * turns the result into an alphabetically ordered list of strings.
-	 * @return {@link List}<{@link String}>
-	 */
-	public static List<String> getAmountResourcesSortedList() {
-		List<String> resourceNames = new ArrayList<String>();
-		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
-		while (i.hasNext()) {
-			resourceNames.add(i.next().getName().toLowerCase());
-		}
-		Collections.sort(resourceNames);
-		return resourceNames;
-	}
-
-	/**
-	 * Checks if an object is equal to this object.
-	 * @return true if equal
-	 */
-	@Override
-	public boolean equals(Object object) {
-		if (object instanceof AmountResource) {
-			AmountResource otherObject = (AmountResource) object;
-			if ((getName().toLowerCase().equals(otherObject.getName().toLowerCase())) && (phase.equals(otherObject.phase)))
-				return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
 		return hashcode;
+	}
+
+	public static AmountResource findAmountResource(String resourceName) {
+		return ResourceUtil.findAmountResource(resourceName);
 	}
 
 	public void destroy() {

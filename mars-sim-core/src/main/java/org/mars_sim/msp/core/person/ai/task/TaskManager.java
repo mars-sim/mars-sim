@@ -203,8 +203,10 @@ implements Serializable {
 	 * Sets the current task to null.
 	 */
 	public void clearTask() {
-		currentTask.endTask();
-		currentTask = null;
+		if (currentTask != null) {
+			currentTask.endTask();
+			currentTask = null;
+		}
 
 		person.fireUnitUpdate(UnitEventType.TASK_EVENT);
 

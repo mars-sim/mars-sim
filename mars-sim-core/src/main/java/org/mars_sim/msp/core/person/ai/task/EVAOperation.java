@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -69,9 +70,9 @@ implements Serializable {
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
-	// 2017-03-22 WARNING: cannot use oxygenAR and waterAR in AmountResource or resulting in null.
-	private static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	private static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+	// 2017-04-10 WARNING: cannot use static or result in null
+	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(LifeSupportType.WATER);
 
 	/**
 	 * Constructor.
@@ -360,7 +361,7 @@ implements Serializable {
      * @param person the person.
      * @return true if an EVA problem.
      */
-    public static boolean checkEVAProblem(Person person) {
+    public boolean checkEVAProblem(Person person) {
 
         boolean result = false;
 
@@ -381,7 +382,7 @@ implements Serializable {
 
         try {
             // Check if EVA suit is at 15% of its oxygen capacity.
-            //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+            //AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
             double oxygenCap = suitInv.getAmountResourceCapacity(oxygenAR, false);
             double oxygen = suitInv.getAmountResourceStored(oxygenAR, false);
             if (oxygen <= (oxygenCap * .15D)) {
@@ -390,7 +391,7 @@ implements Serializable {
             }
 
             // Check if EVA suit is at 15% of its water capacity.
-            //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+            //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
             double waterCap = suitInv.getAmountResourceCapacity(waterAR, false);
             double water = suitInv.getAmountResourceStored(waterAR, false);
             if (water <= (waterCap * .15D)) {
@@ -424,7 +425,7 @@ implements Serializable {
     }
 
     public static boolean checkEVAProblem(Robot robot) {
-
+/*
         boolean result = false;
 
         // Check if it is night time.
@@ -441,6 +442,8 @@ implements Serializable {
         }
 
         return result;
+*/
+    	return true;
     }
 
     /**

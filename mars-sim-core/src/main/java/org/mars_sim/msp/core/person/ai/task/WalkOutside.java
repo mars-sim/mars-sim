@@ -20,11 +20,15 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -32,6 +36,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
@@ -80,6 +86,10 @@ implements Serializable {
     private int walkingPathIndex;
     private double[] obstacleSearchLimits;
     private boolean ignoreEndEVA;
+
+	// 2017-03-22 WARNING: cannot use oxygenAR and waterAR in AmountResource or resulting in null.
+	private AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
 
     /**
      * Constructor.
@@ -686,17 +696,17 @@ implements Serializable {
 		    // 2015-05-29 Check for radiation exposure during the EVA operation.
 	        checkForRadiation(time);
 	        // If there are any EVA problems, end walking outside task.
-	        if (!ignoreEndEVA && EVAOperation.checkEVAProblem(person)) {
+	        if (!ignoreEndEVA && checkEVAProblem(person)) {
 	            endTask();
 	            return time;
 	        }
 		}
 		else if (robot != null) {
 	        // If there are any EVA problems, end walking outside task.
-	        if (!ignoreEndEVA && EVAOperation.checkEVAProblem(robot)) {
+	        //if (!ignoreEndEVA && EVAOperation.checkEVAProblem(robot)) {
 	            endTask();
 	            return time;
-	        }
+	        //}
 		}
 
 
@@ -789,6 +799,76 @@ implements Serializable {
         }
 
         return timeLeft;
+    }
+
+
+    /**
+     * Checks if there is an EVA problem for a person.
+     * @param person the person.
+     * @return true if an EVA problem.
+     */
+    // 2017-04-08 Add checkEVAProblem()-- a replica of the one in EVAOperation
+    public boolean checkEVAProblem(Person person) {
+
+        boolean result = false;
+
+        // Check if it is night time.
+        Mars mars = Simulation.instance().getMars();
+        if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+            logger.fine(person.getName() + " should end EVA: night time.");
+            if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+                result = true;
+        }
+
+        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+        if (suit == null) {
+            logger.fine(person.getName() + " should end EVA: No EVA suit found.");
+            return true;
+        }
+        Inventory suitInv = suit.getInventory();
+
+        try {
+            // Check if EVA suit is at 15% of its oxygen capacity.
+            //AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+            double oxygenCap = suitInv.getAmountResourceCapacity(oxygenAR, false);
+            double oxygen = suitInv.getAmountResourceStored(oxygenAR, false);
+            if (oxygen <= (oxygenCap * .15D)) {
+                logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
+                result = true;
+            }
+
+            // Check if EVA suit is at 15% of its water capacity.
+            //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+            double waterCap = suitInv.getAmountResourceCapacity(waterAR, false);
+            double water = suitInv.getAmountResourceStored(waterAR, false);
+            if (water <= (waterCap * .15D)) {
+                logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
+                result = true;
+            }
+
+            // Check if life support system in suit is working properly.
+            if (!suit.lifeSupportCheck()) {
+                logger.fine(person.getName() + " should end EVA: EVA suit failed life support check.");
+                result = true;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+
+        // Check if suit has any malfunctions.
+        if (suit.getMalfunctionManager().hasMalfunction()) {
+            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");
+            result = true;
+        }
+
+        // Check if person's medical condition is sufficient to continue phase.
+        if (person.getPerformanceRating() == 0D) {
+            logger.fine(person.getName() + " should end EVA: medical problems.");
+            result = true;
+        }
+
+        return result;
     }
 
 
@@ -1009,7 +1089,7 @@ implements Serializable {
         	rManager = robot.getRoboticAttributeManager();
             experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
         }
- 
+
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

@@ -1,3 +1,8 @@
+.jfx-popup-container{
+	-fx-background-color: WHITE;
+	-fx-background-radius: 10px;
+	-fx-padding: 3;
+}
 
 .jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label  {
     -fx-text-fill: #654b00;

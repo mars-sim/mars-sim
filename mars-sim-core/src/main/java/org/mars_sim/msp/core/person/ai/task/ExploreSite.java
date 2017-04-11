@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -232,11 +233,11 @@ implements Serializable {
                 double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
                 //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(
-                        AmountResource.rockSamplesAR, true, false);
+                		ResourceUtil.rockSamplesAR, true, false);
                 if (rockSampleMass < rockSampleCapacity)
-                    inv.storeAmountResource(AmountResource.rockSamplesAR, rockSampleMass, true);
+                    inv.storeAmountResource(ResourceUtil.rockSamplesAR, rockSampleMass, true);
    			 		// 2015-01-15 Add addSupplyAmount()
-                	inv.addAmountSupplyAmount(AmountResource.rockSamplesAR, rockSampleMass);
+                	inv.addAmountSupplyAmount(ResourceUtil.rockSamplesAR, rockSampleMass);
             }
         }
     }
@@ -308,7 +309,7 @@ implements Serializable {
             try {
                 //AmountResource rockSamples = ("rock samples");
                 double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(
-                        AmountResource.rockSamplesAR, false, false);
+                		ResourceUtil.rockSamplesAR, false, false);
 
                 if (remainingCapacity > mostCapacity) {
                     result = container;

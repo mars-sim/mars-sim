@@ -256,7 +256,7 @@ public class LocalAreaUtil {
     				Vehicle v = (Vehicle) vehicle;
     				v.determinedSettlementParkedLocationAndFacing();
                   	logger.info("checkVehicleBoundedOjectIntersected(): Colliding with vehicle " + v + ". Moving it to another location");
-                      				//  Call again recursively to clear any vehicles
+                    //  Call again recursively to clear any vehicles
     				result = checkVehicleBoundedOjectIntersected(object, coordinates, needToMove);
     			}
     		}

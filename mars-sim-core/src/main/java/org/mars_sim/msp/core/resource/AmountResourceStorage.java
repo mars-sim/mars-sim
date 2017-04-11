@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 3.07 2014-12-06
-
- * @author Scott Davis 
+ * @version 3.1.0 2017-04-10
+ * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.resource;
@@ -51,14 +50,14 @@ public class AmountResourceStorage implements Serializable {
 
         typeStorage.addAmountResourceTypeCapacity(resource, capacity);
     }
-    
+
     /**
      * Removes capacity for a resource type.
      * @param resource the resource
      * @param capacity capacity the capacity amount (kg).
      */
     public void removeAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-        
+
         if (typeStorage == null) {
             typeStorage = new AmountResourceTypeStorage();
         }
@@ -75,7 +74,7 @@ public class AmountResourceStorage implements Serializable {
         Map<AmountResource, Double> typeCapacities = new HashMap<AmountResource, Double>();
 
         if (typeStorage != null) {
-            Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+            Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
             while (i.hasNext()) {
                 AmountResource resource = i.next();
                 double capacity = typeStorage.getAmountResourceTypeCapacity(resource);
@@ -156,7 +155,7 @@ public class AmountResourceStorage implements Serializable {
         }
         if ((phaseStorage != null) && phaseStorage.hasAmountResourcePhaseCapacity(resource.getPhase())) {
             if (
-            	(phaseStorage.getAmountResourcePhaseType(resource.getPhase()) == null) || 
+            	(phaseStorage.getAmountResourcePhaseType(resource.getPhase()) == null) ||
                 phaseStorage.getAmountResourcePhaseType(resource.getPhase()).equals(resource)
             ) {
                 result += phaseStorage.getAmountResourcePhaseCapacity(resource.getPhase());
@@ -180,7 +179,7 @@ public class AmountResourceStorage implements Serializable {
         }
 
         if ((phaseStorage != null) && resource.equals(phaseStorage.getAmountResourcePhaseType(
-                resource.getPhase()))) { 
+                resource.getPhase()))) {
             result += phaseStorage.getAmountResourcePhaseStored(resource.getPhase());
         }
 
@@ -338,15 +337,15 @@ public class AmountResourceStorage implements Serializable {
                         totalResourcesStoredDirty = true;
                     }
                     else {
-                        logger.severe("Amount resource " + resource + " of amount: " + amount + 
-                                " to store.  Amount remaining capacity: " + 
-                                getAmountResourceRemainingCapacity(resource) + " remaining: " + 
+                        logger.severe("Amount resource " + resource + " of amount: " + amount +
+                                " to store.  Amount remaining capacity: " +
+                                getAmountResourceRemainingCapacity(resource) + " remaining: " +
                                 remainingAmount);
                     }
                 }
             }
 
-            if (!storable) throw new IllegalStateException("Amount resource: " + resource + " of amount: " + 
+            if (!storable) throw new IllegalStateException("Amount resource: " + resource + " of amount: " +
                     amount + " could not be stored in inventory.");
         }
     }
@@ -371,7 +370,7 @@ public class AmountResourceStorage implements Serializable {
             // Set caches to dirty because values are changing.
             allStoredResourcesCacheDirty = true;
             totalResourcesStoredDirty = true;
-            
+
             double remainingAmount = amount;
 
             // Retrieve resource from phase storage.
@@ -402,18 +401,18 @@ public class AmountResourceStorage implements Serializable {
                 retrievable = true;
             }
             else {
-                logger.severe("Amount resource " + resource + " of amount: " + amount + 
-                        " needed to retrieve.  Amount stored: " + amountStored + " remaining: " + 
+                logger.severe("Amount resource " + resource + " of amount: " + amount +
+                        " needed to retrieve.  Amount stored: " + amountStored + " remaining: " +
                         remainingAmount);
             }
         }
         else {
-            logger.severe("Amount resource " + resource + " of amount: " + amount + 
+            logger.severe("Amount resource " + resource + " of amount: " + amount +
                     " needed to retrieve.  Amount stored: " + amountStored);
         }
 
         if (!retrievable) {
-            throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount + 
+            throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount +
                     " could not be retrieved from inventory.");
         }
     }
@@ -429,7 +428,7 @@ public class AmountResourceStorage implements Serializable {
         if (allStoredResourcesCache != null) allStoredResourcesCache.clear();
         allStoredResourcesCache = null;
     }
-    
+
     /**
      * Implementing readObject method for serialization.
      * @param in the input stream.
@@ -437,7 +436,7 @@ public class AmountResourceStorage implements Serializable {
      * @throws ClassNotFoundException if error creating class.
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        
+
         in.defaultReadObject();
 
         // Initialize transient variables that need it.

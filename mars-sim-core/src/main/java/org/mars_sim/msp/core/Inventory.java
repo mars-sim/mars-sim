@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceStorage;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
  * The Inventory class represents what a unit
@@ -468,7 +469,7 @@ implements Serializable {
      * @param allowDirty will allow dirty (possibly out of date) results.
      * @return stored amount (kg).
      */
-    public double getAmountResourceStored(AmountResource resource,boolean allowDirty) {
+    public double getAmountResourceStored(AmountResource resource, boolean allowDirty) {
         return getAmountResourceStoredCacheValue(resource, allowDirty);
     }
 
@@ -1204,7 +1205,7 @@ implements Serializable {
      */
     private synchronized void initializeAmountResourceCapacityCache() {
 
-        Collection<AmountResource> resources = AmountResource.getAmountResources();
+        Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
         amountResourceCapacityCache = new HashMap<AmountResource, Double>();
         amountResourceCapacityCacheDirty = new HashMap<AmountResource, Boolean>();
         amountResourceContainersCapacityCache = new HashMap<AmountResource, Double>();
@@ -1262,7 +1263,7 @@ implements Serializable {
             initializeAmountResourceCapacityCache();
         }
 
-        for (AmountResource amountResource : AmountResource.getAmountResources()) {
+        for (AmountResource amountResource : ResourceUtil.getInstance().getAmountResources()) {
             setAmountResourceCapacityCacheDirty(amountResource);
 
             if (containersDirty) {
@@ -1395,7 +1396,7 @@ implements Serializable {
      * Initializes the amount resource stored cache.
      */
     private synchronized void initializeAmountResourceStoredCache() {
-        Collection<AmountResource> resources = AmountResource.getAmountResources();
+        Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
         amountResourceStoredCache = new HashMap<AmountResource, Double>();
         amountResourceStoredCacheDirty = new HashMap<AmountResource, Boolean>();
         amountResourceContainersStoredCache = new HashMap<AmountResource, Double>();
@@ -1452,7 +1453,7 @@ implements Serializable {
             initializeAmountResourceStoredCache();
         }
 
-        for (AmountResource amountResource : AmountResource.getAmountResources()) {
+        for (AmountResource amountResource : ResourceUtil.getInstance().getAmountResources()) {
             setAmountResourceStoredCacheDirty(amountResource);
 
             if (containersDirty) {

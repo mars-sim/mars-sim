@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
@@ -77,8 +78,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
 
-	protected static AmountResource oxygenAR = AmountResource.oxygenAR;
-	protected static AmountResource waterAR = AmountResource.waterAR;
+	private AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
 
     //private Person person = null;
     //private Robot robot = null;
@@ -849,16 +850,16 @@ implements Serializable {
 
         // Check if enough oxygen.
         //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
-        double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
+        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, true, false);
+        double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
         // Make sure there is enough extra oxygen for everyone else.
         availableOxygen -= (neededOxygen * otherPeopleNum);
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
         //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
-        double availableWater = entityInv.getAmountResourceStored(waterAR, false);
+        double neededWater = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.waterAR, true, false);
+        double availableWater = entityInv.getAmountResourceStored(ResourceUtil.waterAR, false);
         // Make sure there is enough extra water for everyone else.
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);

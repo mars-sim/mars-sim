@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
@@ -151,7 +152,7 @@ public class GoodsUtil {
 	 * Populates the goods list with all amount resources.
 	 */
 	private static void populateAmountResources() {
-		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+		Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
 		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}
 
@@ -203,9 +204,9 @@ public class GoodsUtil {
 		double result = 0D;
 
 		if (GoodType.AMOUNT_RESOURCE == good.getCategory()) result = 1D;
-		else if (GoodType.ITEM_RESOURCE == good.getCategory()) 
+		else if (GoodType.ITEM_RESOURCE == good.getCategory())
 			result = ((ItemResource) good.getObject()).getMassPerItem();
-		else if (GoodType.EQUIPMENT == good.getCategory()) 
+		else if (GoodType.EQUIPMENT == good.getCategory())
 			result = EquipmentFactory.getEquipmentMass(good.getName());
 		else if (GoodType.VEHICLE == good.getCategory()) {
 			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();

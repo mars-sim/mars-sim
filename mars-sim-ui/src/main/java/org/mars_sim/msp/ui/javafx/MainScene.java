@@ -318,23 +318,20 @@ public class MainScene {
 	private Label lastSaveLabel,  TPSLabel, upTimeLabel, noteLabel; //monthLabel, yearLabel, LSLabel
 	private Text LSText, monthText, yearText, northText, southText;
 	private Blend blend;
+	private VBox mapLabelBox, speedVBox, soundVBox;
+	private Tab mainTab;
 
 	private JFXComboBox<Settlement> sBox;
 	private JFXBadge badgeIcon;
 	private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, calendarButton, minimapToggle, mapToggle;
-	private JFXSlider zoomSlider, timeSlider;
-
-	private static JFXSlider soundSlider;
+	private static JFXSlider zoomSlider, timeSlider, soundSlider;
 	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn; // miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
-	private VBox mapLabelBox;
-	private ChatBox chatBox;
+
 	//private DndTabPane dndTabPane;
 	private ESCHandler esc = null;
-
-	private Tab mainTab;
 
 	private Timeline timeline;
 	private NotificationPane notificationPane;
@@ -342,6 +339,7 @@ public class MainScene {
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 
+	private ChatBox chatBox;
 	private MainDesktopPane desktop;
 	private MainSceneMenu menuBar;
 
@@ -1019,6 +1017,7 @@ public class MainScene {
 		});
 
 		speedPane = new StackPane();
+		//speedPane.setEffect(blend);
 		speedPane.getStyleClass().add("jfx-popup-container");
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
@@ -1028,9 +1027,10 @@ public class MainScene {
 
 		// Set up a settlement view zoom bar
 		timeSlider = new JFXSlider();
+		//timeSlider.setEffect(blend);
 		timeSlider.getStyleClass().add("jfx-slider");
 		timeSlider.setPrefHeight(25);
-		timeSlider.setPadding(new Insets(5, 5, 5, 5));
+		timeSlider.setPadding(new Insets(2, 2, 2, 2));
 
 		initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
 
@@ -1048,7 +1048,7 @@ public class MainScene {
 		timeSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 
         VBox timeSliderBox = new VBox();
-        timeSliderBox.setPadding(new Insets(5, 5, 5, 5));
+        timeSliderBox.setPadding(new Insets(2, 2, 2, 2));
         timeSliderBox.getChildren().add(timeSlider);
 
 		setQuickToolTip(timeSlider, "Adjust Time Ratio"); //$NON-NLS-1$
@@ -1076,7 +1076,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-		time_ratio_label.setPadding(new Insets(1, 1, 1, 10));
+		time_ratio_label.setPadding(new Insets(1, 1, 1, 5));
 		s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
 		time_ratio_label.setText(s0.toString());
 
@@ -1097,7 +1097,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: italic;");
-        real_time_label.setPadding(new Insets(1, 1, 1, 10));
+        real_time_label.setPadding(new Insets(1, 1, 1, 5));
 
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
@@ -1155,7 +1155,7 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        TPSLabel.setPadding(new Insets(1, 1, 1, 10));
+        TPSLabel.setPadding(new Insets(1, 1, 1, 5));
 		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()));
 
         Label upTimeLabel0 = new Label(UPTIME);
@@ -1174,13 +1174,14 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        upTimeLabel.setPadding(new Insets(1, 1, 1, 10));
+        upTimeLabel.setPadding(new Insets(1, 1, 1, 5));
         if (uptimer != null)
         	upTimeLabel.setText (uptimer.getUptime());
 
         GridPane gridPane = new GridPane();
+		gridPane.getStyleClass().add("jfx-popup-container");
 		gridPane.setAlignment(Pos.CENTER);
-		gridPane.setPadding(new Insets(1, 5, 1, 1));
+		gridPane.setPadding(new Insets(1, 1, 1, 1));
 		gridPane.setHgap(1.0);
 		gridPane.setVgap(1.0);
 
@@ -1212,11 +1213,12 @@ public class MainScene {
 		gridPane.getColumnConstraints().addAll(left, right);
 		gridPane.getChildren().addAll(time_ratio_label0, time_ratio_label, real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel);
 
-        VBox vBox = new VBox();
-		vBox.setPadding(new Insets(5, 5, 5, 5));
-		vBox.setAlignment(Pos.CENTER);
-        vBox.getChildren().addAll(header_label, timeSliderBox, gridPane);
-        speedPane.getChildren().addAll(vBox);
+        speedVBox = new VBox();
+		speedVBox.getStyleClass().add("jfx-popup-container");
+		speedVBox.setPadding(new Insets(2, 2, 2, 2));
+		speedVBox.setAlignment(Pos.CENTER);
+        speedVBox.getChildren().addAll(header_label, timeSliderBox, gridPane);
+        speedPane.getChildren().addAll(speedVBox);
 
 	}
 /*
@@ -1272,10 +1274,10 @@ public class MainScene {
             else {
             	soundPopup.show(soundBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
             }
-
 		});
 
 		soundPane = new StackPane();
+		//soundPane.setEffect(blend);
 		soundPane.getStyleClass().add("jfx-popup-container");
 		soundPane.setAlignment(Pos.CENTER);
 		soundPane.setPrefHeight(75);
@@ -1285,6 +1287,7 @@ public class MainScene {
 
 		// Set up a settlement view zoom bar
 		soundSlider = new JFXSlider();
+		//soundSlider.setEffect(blend);
 		soundSlider.getStyleClass().add("jfx-slider");
 		soundSlider.setPrefHeight(220);
 		soundSlider.setPrefHeight(20);
@@ -1329,11 +1332,12 @@ public class MainScene {
             }
         });
 
-        VBox vBox = new VBox();
-		vBox.setPadding(new Insets(5, 5, 5, 5));
-		vBox.setAlignment(Pos.CENTER);
-        vBox.getChildren().addAll(header_label, volumelabel, soundSlider);
-        soundPane.getChildren().addAll(vBox);
+        soundVBox = new VBox();
+		soundVBox.getStyleClass().add("jfx-popup-container");
+		soundVBox.setPadding(new Insets(5, 5, 5, 5));
+		soundVBox.setAlignment(Pos.CENTER);
+        soundVBox.getChildren().addAll(header_label, volumelabel, soundSlider);
+        soundPane.getChildren().addAll(soundVBox);
 
 	}
 
@@ -2342,8 +2346,10 @@ public class MainScene {
 		setStylesheet(mapLabelBox, cssFile);
 
 		setStylesheet(speedPane, cssFile);
+		setStylesheet(speedVBox, cssFile);
 		setStylesheet(calendarPane, cssFile);
 		setStylesheet(soundPane, cssFile);
+		setStylesheet(soundVBox, cssFile);
 
 		setStylesheet(timeSlider, cssFile);
 		//setStylesheet(zoomSlider, cssFile);

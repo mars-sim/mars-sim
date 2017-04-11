@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
@@ -317,8 +318,8 @@ implements Serializable {
                         int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
-                            double water = roverInv.getAmountResourceStored(AmountResource.waterAR, false);
-                            double oxygen = roverInv.getAmountResourceStored(AmountResource.oxygenAR, false);
+                            double water = roverInv.getAmountResourceStored(ResourceUtil.waterAR, false);
+                            double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
                             if ((numSuits == 0) || (water < 40D) || (oxygen < 10D)) {
                                 result.add(rover);
                             }

@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -278,7 +279,7 @@ implements Serializable {
         }
 
         // Modify collection rate by polar region if ice collecting.
-        if (resourceType.equals(AmountResource.iceAR)) {
+        if (resourceType.equals(ResourceUtil.iceAR)) {
             if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates())) {
                 samplesCollected *= 3D;
             }
@@ -367,9 +368,9 @@ implements Serializable {
             if (suit != null) {
                 carryMass += suit.getMass();
                 //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(AmountResource.oxygenAR, false, false);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, false, false);
                 //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(AmountResource.waterAR, false, false);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.waterAR, false, false);
             }
             double carryCapacity = person.getInventory().getGeneralCapacity();
             boolean canCarryEquipment = (carryCapacity >= carryMass);

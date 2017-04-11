@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -76,11 +77,10 @@ public class SimulationConfig implements Serializable {
 	public static final String MEAL_FILE = "meals";
 	public static final String ROBOT_FILE = "robots";
 	public static final String QUOTATION_FILE = "quotations";
-	private static final String TIME_CONFIGURATION = "time-configuration";
 	public static final String VALUE = "value";
 
 	// Simulation element names.
-
+	private static final String TIME_CONFIGURATION = "time-configuration";
 	private static final String TIME_RATIO = "time-ratio";
 	private static final String TIME_BETWEEN_UPDATES = "time-between-updates";
 	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
@@ -128,6 +128,8 @@ public class SimulationConfig implements Serializable {
 	private RobotConfig robotConfig;
 	// 2016-06-08 Added quotationConfig
 	private QuotationConfig quotationConfig;
+	// 2016-04-08 Add resourceUtil
+	private ResourceUtil resourceUtil;
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
@@ -162,11 +164,11 @@ public class SimulationConfig implements Serializable {
     /**
      * Prevents the singleton pattern from being destroyed
      * at the time of serialization
-     * @return Simulation instance
+     * @return SimulationConfig instance
      */
-    //protected Object readResolve() throws ObjectStreamException {
-    //	return instance();
-    //}
+    protected Object readResolve() throws ObjectStreamException {
+    	return instance();
+    }
 
 
 	/* ---------------------------------------------------------------------------------------------------- *
@@ -211,6 +213,7 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public static void loadConfig() {
+	   	//logger.info("loadConfig() is on " + Thread.currentThread().getName());
 		if (instance.simulationDoc != null) {
 			instance.destroyOldConfiguration();
 		}
@@ -248,8 +251,8 @@ public class SimulationConfig implements Serializable {
 			         d = Double.valueOf(str.trim()).doubleValue();
 			         //System.out.println("double d = " + d);
 
-			         if (d < 16D && d > 4096D)
-			 			throw new IllegalStateException("time_ratio must be between 16.0 and 4096.0");
+			         if (d < 64 && d > 1024)
+			 			throw new IllegalStateException("time_ratio must be between 64.0 and 1024.0");
 
 			      } catch (NumberFormatException nfe) {
 			         System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());
@@ -289,8 +292,8 @@ public class SimulationConfig implements Serializable {
 			         d = Double.valueOf(str.trim()).doubleValue();
 			         //System.out.println("double d = " + d);
 
-			         if (d > 640 || d < 40)
-			 			throw new IllegalStateException("time-between-updates must be between 1 and 1,000");
+			         if (d > 250 || d < 40)
+			 			throw new IllegalStateException("time-between-updates must be between 40 and 250");
 
 
 			      } catch (NumberFormatException nfe) {
@@ -672,7 +675,6 @@ public class SimulationConfig implements Serializable {
 		return quotationConfig;
 	}
 
-
 	/**
 	 * Parses an XML file into a DOM document.
 	 * @param filename the path of the file.
@@ -698,12 +700,9 @@ public class SimulationConfig implements Serializable {
 
 	private void loadDefaultConfiguration() {
 		try {
-
 			//System.out.println("Setting SimulationConfig.build to Build " + build);
-
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
-
 			// Load subset configuration classes.
 			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
@@ -728,9 +727,7 @@ public class SimulationConfig implements Serializable {
 			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 			// 2016-06-08 Added quotationConfig
 			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-
 			//logger.info("Done loading all xml files");
-
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error reading config file(s) below : " + e.getMessage());
 			e.printStackTrace();

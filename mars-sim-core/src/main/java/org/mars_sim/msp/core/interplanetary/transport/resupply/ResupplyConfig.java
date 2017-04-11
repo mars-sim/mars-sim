@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 
 
@@ -59,8 +60,9 @@ public class ResupplyConfig implements Serializable {
     public ResupplyConfig(Document resupplyDoc,
             PartPackageConfig partPackageConfig) {
 
-    	// 2016-12-03 Call to just initialize amountResourceConfig in this constructor
-    	new AmountResource();
+    	// 2016-12-03 initialize amountResourceConfig in this constructor
+    	//AmountResource.newInstance();
+    	ResourceUtil.getInstance().initializeNewSim();
 
         resupplyTemplates = new ArrayList<ResupplyTemplate>();
         loadResupplyTemplates(resupplyDoc, partPackageConfig);
@@ -155,8 +157,7 @@ public class ResupplyConfig implements Serializable {
             for (Element resourceElement : resourceNodes) {
                 String resourceName = resourceElement.getAttributeValue(NAME);
                 //System.out.println("resourceName is " + resourceName);
-                AmountResource resource = AmountResource
-                        .findAmountResource(resourceName);
+                AmountResource resource = AmountResource.findAmountResource(resourceName);
                 double resourceAmount = Double.parseDouble(resourceElement
                         .getAttributeValue(AMOUNT));
                 if (template.resources.containsKey(resource))

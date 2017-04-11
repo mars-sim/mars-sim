@@ -85,7 +85,7 @@ public class MarsProject {
 
 	        if (useGUI) {
 	    		//System.setProperty("sun.java2d.opengl", "true"); // not compatible with SplashWindow and SimulationConfigEditor
-	    		System.setProperty("sun.java2d.ddforcevram", "true");
+	    		System.setProperty("sun.java2d.ddforcevram", "true"); // question: is this compatible with opengl in linux and macos ?
 
 	        	// Enable capability of loading of svg image using regular method
 	    		SvgImageLoaderFactory.install();
@@ -135,9 +135,9 @@ public class MarsProject {
             try {
 				// Initialize the simulation.
                 SimulationConfig.loadConfig();
-	        	Simulation.createNewSimulation();         	
+	        	Simulation.createNewSimulation();
                 handleLoadSimulation(argList);
-                
+
                 //FIXME : make it work
             } catch (Exception e) {
                 showError("Could not load the desired simulation, trying to create a new Simulation...", e);
@@ -149,7 +149,7 @@ public class MarsProject {
             try {
 				// Initialize the simulation.
                 SimulationConfig.loadConfig();
-	        	Simulation.createNewSimulation(); 	     	
+	        	Simulation.createNewSimulation();
                 handleLoadDefaultSimulation();
             } catch (Exception e) {
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
@@ -199,17 +199,17 @@ public class MarsProject {
     	try {
             // Load the default simulation
             Simulation.instance().loadSimulation(null);
-            
+
         } catch (Exception e) {
             //logger.log(Level.WARNING, "Could not load default simulation", e);
             //throw e;
             exitWithError("Problem loading the default simulation.", e);
         }
-    	
+
         if (useGUI) {
             // Create the main desktop window.
             new MainWindow(false);
-            
+
          // Start simulation.
             startSimulation(true);
         }
@@ -244,13 +244,13 @@ public class MarsProject {
             //logger.log(Level.SEVERE, "Problem loading existing simulation", e);
             exitWithError("Problem loading the default simulation.", e);
         }
-    	
+
         // Create the main desktop window.
         new MainWindow(false);
 
         // Start simulation.
         startSimulation(false);
-    	
+
     }
 
     /**
@@ -334,7 +334,7 @@ public class MarsProject {
         //mp.start(com.jme3.system.JmeContext.Type.Headless);
 
 
-/*    
+/*
 	@Override
 	public void simpleInitApp() {
 		// TODO Auto-generated method stub

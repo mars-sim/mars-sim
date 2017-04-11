@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -62,8 +63,6 @@ implements Serializable {
 	/** Bag for collecting ice. */
 	private Bag bag;
 	private Settlement settlement;
-
-    private static AmountResource iceAR = AmountResource.iceAR;
 
 	/**
 	 * Constructor.
@@ -241,16 +240,16 @@ implements Serializable {
         // Unload bag to rover's inventory.
         if (bag != null) {
             //AmountResource iceResource = AmountResource.findAmountResource("ice");
-            double collectedAmount = bag.getInventory().getAmountResourceStored(iceAR, false);
+            double collectedAmount = bag.getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
-                    iceAR, false, false);
+            		ResourceUtil.iceAR, false, false);
 
             // Try to store ice in settlement.
             if (collectedAmount < settlementCap) {
-                bag.getInventory().retrieveAmountResource(iceAR, collectedAmount);
-                settlement.getInventory().storeAmountResource(iceAR, collectedAmount, false);
+                bag.getInventory().retrieveAmountResource(ResourceUtil.iceAR, collectedAmount);
+                settlement.getInventory().storeAmountResource(ResourceUtil.iceAR, collectedAmount, false);
            		// 2015-01-15 Add addSupplyAmount()
-                settlement.getInventory().addAmountSupplyAmount(iceAR, collectedAmount);
+                settlement.getInventory().addAmountSupplyAmount(ResourceUtil.iceAR, collectedAmount);
             }
 
             // Store bag.
@@ -259,7 +258,7 @@ implements Serializable {
 
             // Recalculate settlement good value for output item.
             GoodsManager goodsManager = settlement.getGoodsManager();
-            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceAR), false);
+            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(ResourceUtil.iceAR), false);
         }
 
         super.endTask();
@@ -287,7 +286,7 @@ implements Serializable {
 
         //AmountResource ice = AmountResource.findAmountResource("ice");
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-                iceAR, true, false);
+        		ResourceUtil.iceAR, true, false);
 
         double iceCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;
@@ -296,7 +295,7 @@ implements Serializable {
             finishedCollecting = true;
         }
 
-        person.getInventory().storeAmountResource(iceAR, iceCollected, true);
+        person.getInventory().storeAmountResource(ResourceUtil.iceAR, iceCollected, true);
 		// 2015-01-15 Add addSupplyAmount()
         // Not calling person.getSettlementInventory().addSupplyAmount(ice, iceCollected);
 

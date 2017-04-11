@@ -61,6 +61,7 @@ import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -176,18 +177,7 @@ public class GoodsManager implements Serializable {
     private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
     private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
-    private static AmountResource oxygenAR = AmountResource.oxygenAR; //findAmountResource(LifeSupportType.OXYGEN);
-    private static AmountResource waterAR = AmountResource.waterAR; //.findAmountResource(LifeSupportType.WATER);
-    private static AmountResource foodAR = AmountResource.foodAR; //.findAmountResource(LifeSupportType.FOOD);
-    private static AmountResource carbonDioxideAR = AmountResource.carbonDioxideAR; //findAmountResource("carbon dioxide");
 
-    private static AmountResource iceAR;// = AmountResource.findAmountResource("ice");
-    private static AmountResource regolithAR;// = AmountResource.findAmountResource("regolith");
-    private static AmountResource toiletTissueAR;// = AmountResource.findAmountResource("toilet tissue");
-    private static AmountResource methaneAR;// = AmountResource.findAmountResource("methane");
-    private static AmountResource soilAR;// = AmountResource.findAmountResource("soil");
-    private static AmountResource fertilizerAR;// = AmountResource.findAmountResource("fertilizer");
-    private static AmountResource greyWaterAR;// = AmountResource.findAmountResource("grey water");
     /**
      * Constructor.
      * @param settlement the settlement this manager is for.
@@ -203,19 +193,6 @@ public class GoodsManager implements Serializable {
     		marsClock = sim.getMasterClock().getMarsClock();
         //marsClock = sim.getMasterClock().getMarsClock();
     	missionManager = sim.getMissionManager();
-
-        //oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        //waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-        //foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-    	//carbonDioxideAR = AmountResource.findAmountResource("carbon dioxide");
-
-        iceAR = AmountResource.findAmountResource("ice");
-        regolithAR = AmountResource.findAmountResource("regolith");
-        toiletTissueAR = AmountResource.findAmountResource("toilet tissue");
-        methaneAR = AmountResource.findAmountResource("methane");
-        soilAR = AmountResource.findAmountResource("soil");
-        fertilizerAR = AmountResource.findAmountResource("fertilizer");
-        greyWaterAR = AmountResource.findAmountResource("grey water");
 
         populateGoodsValues();
     }
@@ -560,13 +537,13 @@ public class GoodsManager implements Serializable {
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            if (resource.equals(oxygenAR))
+            if (resource.equals(ResourceUtil.oxygenAR))
                 amountNeededSol = personConfig.getNominalO2ConsumptionRate();
             //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-            if (resource.equals(waterAR))
+            if (resource.equals(ResourceUtil.waterAR))
                 amountNeededSol = personConfig.getWaterConsumptionRate();
             //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-            if (resource.equals(foodAR)) {
+            if (resource.equals(ResourceUtil.foodAR)) {
                 amountNeededSol = personConfig.getFoodConsumptionRate();
             }
 
@@ -584,7 +561,7 @@ public class GoodsManager implements Serializable {
      */
     private double getPotableWaterUsageDemand(AmountResource resource) {
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        if (resource.equals(waterAR)) {
+        if (resource.equals(ResourceUtil.waterAR)) {
             //double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
         	double amountNeededSol = personConfig.getWaterUsageRate();
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
@@ -601,7 +578,7 @@ public class GoodsManager implements Serializable {
      */
     private double getToiletryUsageDemand(AmountResource resource) {
         //AmountResource toiletTissue = AmountResource.findAmountResource("toilet tissue");
-        if (resource.equals(toiletTissueAR)) {
+        if (resource.equals(ResourceUtil.toiletTissueAR)) {
             double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getCurrentPopulationNum();
@@ -618,7 +595,7 @@ public class GoodsManager implements Serializable {
     private double getVehicleDemand(AmountResource resource) {
         double demand = 0D;
         //AmountResource methane = AmountResource.findAmountResource("methane");
-        if (resource.isLifeSupport() || resource.equals(methaneAR)) {
+        if (resource.isLifeSupport() || resource.equals(ResourceUtil.methaneAR)) {
             Iterator<Vehicle> i = getAssociatedVehicles().iterator();
             while (i.hasNext()) {
                 double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
@@ -745,29 +722,29 @@ public class GoodsManager implements Serializable {
         double totalCropArea = farm.getGrowingArea();
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
-        if (resource.equals(waterAR)) {
+        if (resource.equals(ResourceUtil.waterAR)) {
             // Average water consumption rate of crops per orbit using total growing area.
             demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
         }
-        else if (resource.equals(carbonDioxideAR)) {
+        else if (resource.equals(ResourceUtil.carbonDioxideAR)) {
             // Average co2 consumption rate of crops per orbit using total growing area.
             demand = cropConfig.getCarbonDioxideConsumptionRate() * totalCropArea * solsInOrbit;
         }
-        else if (resource.equals(oxygenAR)) {
+        else if (resource.equals(ResourceUtil.oxygenAR)) {
             // Average oxygen consumption rate of crops per orbit using total growing area.
             demand = cropConfig.getOxygenConsumptionRate() * totalCropArea * solsInOrbit;
         }
-        else if (resource.equals(soilAR)) {
+        else if (resource.equals(ResourceUtil.soilAR)) {
             // Estimate soil needed for average number of crop plantings for total growing area.
             demand = Crop.NEW_SOIL_NEEDED_PER_SQM * totalCropArea * averageGrowingCyclesPerOrbit;
         }
-        else if (resource.equals(fertilizerAR)) {
+        else if (resource.equals(ResourceUtil.fertilizerAR)) {
             // Estimate fertilizer needed for average number of crop plantings for total growing area.
             demand = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * totalCropArea * averageGrowingCyclesPerOrbit;
             // Estimate fertilizer needed when grey water not available.
             demand += Crop.FERTILIZER_NEEDED_WATERING * totalCropArea * 1000D * solsInOrbit;
         }
-        else if (resource.equals(greyWaterAR)) {
+        else if (resource.equals(ResourceUtil.greyWaterAR)) {
             // Average grey water consumption rate of crops per orbit using total growing area.
             demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
         }
@@ -2046,7 +2023,7 @@ public class GoodsManager implements Serializable {
                     extends Container>) equipmentClass);
 
             double totalPhaseOverfill = 0D;
-            Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+            Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
             while (i.hasNext()) {
                 AmountResource resource = i.next();
                 if (resource.getPhase() == containerPhase) {
@@ -2072,9 +2049,9 @@ public class GoodsManager implements Serializable {
         // Determine number of bags that are needed.
         if (Bag.class.equals(equipmentClass)) {
             //AmountResource iceAR = AmountResource.findAmountResource("ice");
-            double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(iceAR));
+            double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
             //AmountResource regolithAR = AmountResource.findAmountResource("regolith");
-            double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(regolithAR));
+            double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
             numDemand += CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
             numDemand += CollectRegolith.REQUIRED_BAGS * areologistNum * regolithValue;
         }
@@ -2416,7 +2393,7 @@ public class GoodsManager implements Serializable {
         }
         else if (COLLECT_ICE_MISSION.equals(missionType)) {
             //AmountResource ice = AmountResource.findAmountResource("ice");
-            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(iceAR));
+            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
             if (demand > 10D) demand = 10D;
         }
         else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
@@ -2427,7 +2404,7 @@ public class GoodsManager implements Serializable {
         }
         else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
             //AmountResource regolith = AmountResource.findAmountResource("regolith");
-            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(regolithAR));
+            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
             if (demand > 10D) demand = 10D;
         }
         else if (MINING_MISSION.equals(missionType)) {

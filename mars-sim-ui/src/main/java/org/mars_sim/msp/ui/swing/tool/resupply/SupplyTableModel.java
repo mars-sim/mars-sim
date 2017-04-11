@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
@@ -309,7 +310,7 @@ extends AbstractTableModel {
 			 categoryTypeMap.put(EQUIPMENT, sortedEquipmentTypes);
 
 			 // Create resource type list.
-			 categoryTypeMap.put(RESOURCE, AmountResource.getAmountResourcesSortedList());
+			 categoryTypeMap.put(RESOURCE, ResourceUtil.getInstance().getAmountResourcesSortedList());
 
 			 // Create part type list.
 			 List<String> partNames = new ArrayList<String>();

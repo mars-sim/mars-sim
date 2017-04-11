@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
  * The EVASuit class represents an EVA suit which provides life support
@@ -61,9 +62,11 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	protected MalfunctionManager malfunctionManager;
 	private Weather weather ;
 
-	private AmountResource oxygenAR;// = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR;// = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
-	private AmountResource carbonDioxideAR;
+	// 2017-04-10 WARNING: cannot use static or result in null
+	public AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(WATER);		// 2
+	public AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(OXYGEN);		// 3
+	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
+
 
 	/**
 	 * Constructor.
@@ -83,9 +86,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
 
-		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
+		//oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		//waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+		//carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
 
 		// Set the resource capacities of the EVA suit.
 		getInventory().addAmountResourceTypeCapacity(oxygenAR, OXYGEN_CAPACITY);

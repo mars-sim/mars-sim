@@ -31,47 +31,14 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
     /* default logger.*/
 	private static Logger logger = Logger.getLogger(Storage.class.getName());
 
 	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
-
-	public static final String FERTILIZER = "fertilizer";
-	public static final String GREY_WATER = "grey water";
-    public static final String SOIL = "soil";
-    public static final String CROP_WASTE = "crop waste";
-
-	public static final String OXYGEN = "oxygen";
-	public static final String WATER = "water";
-	public static final String FOOD = "food";
-	public static final String CO2 = "carbon dioxide";
-
-	private double stockCapacity = 0;
 	//private static int count = 0;
+	private double stockCapacity = 0;
 
 	private Map<AmountResource, Double> storageCapacity;
-
-	public static AmountResource foodAR;
-	public static AmountResource oxygenAR;
-	public static AmountResource waterAR;
-	public static AmountResource carbonDioxideAR;
-
-    public static AmountResource tableSaltAR;
-    public static AmountResource NaClOAR;
-    public static AmountResource greyWaterAR;
-    public static AmountResource foodWasteAR;
-    public static AmountResource solidWasteAR;
-    public static AmountResource napkinAR;
-
-	public static AmountResource methaneAR;
-	public static AmountResource regolithAR;
-    public static AmountResource iceAR;
-    public static AmountResource rockSamplesAR;
-
-    public static AmountResource cropWasteAR;
-    public static AmountResource fertilizerAR;
-	public static AmountResource soilAR;
 
 	/**
 	 * Constructor.
@@ -81,14 +48,12 @@ implements Serializable {
 	public Storage(Building building) {
 		// Use Function constructor.
 		super(FUNCTION, building);
-
     	//count++;
 		//System.out.println("Storage.java : for " + count + " times for " + building );
-
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-
 		//Inventory inventory = building.getSettlementInventory();
 		Settlement s = building.getBuildingManager().getSettlement();
+
 		Inventory inv = s.getInventory();
 		// 2015-03-07 Added stockCapacity
 	    //stockCapacity = config.getStockCapacity(building.getBuildingType());
@@ -98,7 +63,6 @@ implements Serializable {
 
 		// Get initial resources in building.
 		//Inventory inv = building.getBuildingManager().getSettlement().getSettlementInventory();
-
 		Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
 		while (i1.hasNext()) {
 			AmountResource resource = i1.next();
@@ -115,8 +79,6 @@ implements Serializable {
 			//System.out.println("\t\t\t\t\t\t\t\t" + s.getName() + "'s resource-storage " + " - " + resource.getName() + " : increasing cap from " + currentCapacity + " to " + newRCapacity);
 
 		}
-
-		//System.out.println();
 
 		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getBuildingType());
 		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
@@ -138,28 +100,7 @@ implements Serializable {
 			//System.out.println(building.getNickName() + "'s resource-initial " + " -\t" + resource.getName() + "\t\t: " + stored + " / " + newCapacity);
 		}
 
-		//System.out.println();
 
-		foodAR = AmountResource.findAmountResource(FOOD);			// 1
-		waterAR = AmountResource.findAmountResource(WATER);		// 2
-		oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
-		carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
-
-        foodWasteAR = AmountResource.findAmountResource("food waste");			// 16
-        solidWasteAR = AmountResource.findAmountResource("solid waste");		// 17
-        greyWaterAR = AmountResource.findAmountResource("grey water");			// 19
-        tableSaltAR = AmountResource.findAmountResource("table salt"); 		// 23
-        NaClOAR = AmountResource.findAmountResource("sodium hypochlorite");	// 145
-        napkinAR = AmountResource.findAmountResource("napkin");				// 150
-
-    	methaneAR = AmountResource.findAmountResource("methane");			// 8
-        iceAR = AmountResource.findAmountResource("ice");					// 12
-    	regolithAR = AmountResource.findAmountResource("regolith");		// 142
-        rockSamplesAR = AmountResource.findAmountResource("rock samples");	// 143
-
-        cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
-        fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
-        soilAR = AmountResource.findAmountResource(SOIL);
 	}
 
 	/**

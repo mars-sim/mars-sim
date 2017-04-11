@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -89,7 +90,7 @@ implements Serializable {
 
 	private static ItemResource LED_Item;
 	private static ItemResource HPS_Item;
-
+/*
 	private static AmountResource cropWasteAR;
 	private static AmountResource soilAR;
 
@@ -100,7 +101,7 @@ implements Serializable {
 	private static AmountResource o2AR;
 	private static AmountResource co2AR;
 	private static AmountResource foodAR;
-
+*/
 
 	private int numLEDInUse;
 	private int cacheNumLED;
@@ -148,7 +149,7 @@ implements Serializable {
 
 		LED_Item = ItemResource.findItemResource(LED_KIT);
 		HPS_Item = ItemResource.findItemResource(HPS_LAMP);
-
+/*
 		foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
 	    soilAR = AmountResource.findAmountResource(SOIL);
@@ -157,7 +158,7 @@ implements Serializable {
 		fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
 		o2AR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		co2AR = AmountResource.findAmountResource(LifeSupportType.CO2);
-
+*/
         this.building = building;
         this.settlement = building.getBuildingManager().getSettlement();
 		this.b_inv = building.getBuildingInventory();
@@ -401,10 +402,10 @@ implements Serializable {
     	double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea *rand;
 
     	// TODO: adjust how much old soil should be turned to crop waste
-    	Storage.storeAnResource(amount, cropWasteAR, s_inv);
+    	Storage.storeAnResource(amount, ResourceUtil.cropWasteAR, s_inv);
 
     	// TODO: adjust how much new soil is needed to replenish the soil bed
-    	Storage.retrieveAnResource(amount, soilAR, s_inv, true );
+    	Storage.retrieveAnResource(amount, ResourceUtil.soilAR, s_inv, true );
 
     }
 
@@ -419,7 +420,7 @@ implements Serializable {
     public void provideFertilizer(double cropArea) {
     	double rand = RandomUtil.getRandomDouble(2);
     	double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
-    	Storage.retrieveAnResource(amount, fertilizerAR, s_inv, true);
+    	Storage.retrieveAnResource(amount, ResourceUtil.fertilizerAR, s_inv, true);
 		//System.out.println("fertilizer used in planting a new crop : " + amount);
     }
 
@@ -575,7 +576,7 @@ implements Serializable {
         }
 
         // Modify result by value (VP) of food at the settlement.
-        Good foodGood = GoodsUtil.getResourceGood(AmountResource.foodAR);
+        Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodAR);
         double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 
         result = (demand / (supply + 1D)) * foodValue;
@@ -827,7 +828,7 @@ implements Serializable {
 		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		Storage.storeAnResource(amountCropWaste, cropWasteAR, s_inv);
+		Storage.storeAnResource(amountCropWaste, ResourceUtil.cropWasteAR, s_inv);
 	}
 
 /*
@@ -1049,13 +1050,7 @@ implements Serializable {
 
         LED_Item = null;
     	HPS_Item = null;
-    	cropWasteAR = null;
-    	soilAR = null;
-    	o2AR = null;
-    	co2AR = null;
-		waterAR = null;
-		greyWaterAR = null;
-		fertilizerAR = null;
+
         marsClock = null;
         s_inv = null;
 		b_inv = null;

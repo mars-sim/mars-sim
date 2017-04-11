@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -88,24 +89,26 @@ implements Serializable, LifeSupportType, Objective {
 	/** Normal temperature (celsius) */
 	private static final double NORMAL_TEMP = 22.5D;
 	// maximum & minimal acceptable temperature for living space (arbitrary)
-	// TODO: where are these two values from people.xml saved into by
-	// PersonConfig.java?
 	private static final double MIN_TEMP = 0.0D;
+
 	private static final double MAX_TEMP = 48.0D;
 
 	public static final int SOL_PER_REFRESH = 5;
+
 	private static final int SAMPLING_FREQ = 250; // in millisols
+
 	public static final int NUM_CRITICAL_RESOURCES = 9;
+
 	private static final int RESOURCE_STAT_SOLS = 12;
+
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
 	public static double water_consumption;
+
 	public static double minimum_air_pressure;
 
-	/*
-	 * Amount of time (millisols) required for periodic maintenance. private
-	 * static final double MAINTENANCE_TIME = 1000D;
-	 */
+	/** Amount of time (millisols) required for periodic maintenance. */
+	//private static final double MAINTENANCE_TIME = 1000D;
 
 	/** The initial population of the settlement. */
 	private int initialPopulation;
@@ -125,13 +128,13 @@ implements Serializable, LifeSupportType, Objective {
 
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
-	private double currentPressure = NORMAL_AIR_PRESSURE;
 
-	/**
-	 * Amount of time (millisols) that the settlement has had zero population.
-	 */
+	private double currentPressure = NORMAL_AIR_PRESSURE;
+	/** Amount of time (millisols) that the settlement has had zero population.  */
 	private double zeroPopulationTime;
+
 	public double mealsReplenishmentRate = 0.6;
+
 	public double dessertsReplenishmentRate = 0.7;
 
 	// 2014-11-23 Added foodProductionOverride
@@ -147,6 +150,7 @@ implements Serializable, LifeSupportType, Objective {
 	private boolean constructionOverride = false;
 	/* Flag showing if the instance of Settlement has just been deserialized */
 	public transient boolean justReloadedPeople = true;
+
 	public transient boolean justReloadedRobots = true;
 
 	private boolean[] exposed = {false, false, false};
@@ -154,9 +158,11 @@ implements Serializable, LifeSupportType, Objective {
 	private ObjectiveType objectiveType;
 
 	private String sponsor;
+
 	private String objectiveName;
 	/** The settlement template name. */
 	private String template;
+
 	private String name;
 	//private ObservableList<String> objectivesOList;
 	private final String[] objectiveArray = new String[]{
@@ -188,32 +194,33 @@ implements Serializable, LifeSupportType, Objective {
 	protected ThermalSystem thermalSystem;
 	//private Inventory inv = getInventory();
 	private ChainOfCommand chainOfCommand;
+
 	private CompositionOfAir compositionOfAir;
 
 	private static Simulation sim = Simulation.instance();
+
 	private static UnitManager unitManager = sim.getUnitManager();
+
 	private static MissionManager missionManager = sim.getMissionManager();
 
-	// NOTE: cannot use 'static' for AmountResource or NullPointerException
-	public AmountResource foodAR;// = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
-	public AmountResource oxygenAR;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
-	public AmountResource waterAR;// = AmountResource.findAmountResource(LifeSupportType.WATER); //waterAR;//
-	public AmountResource carbonDioxideAR;// = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
-
-
 	private Weather weather;// = sim.getMars().getWeather();
-	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 
+	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
-
 	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
 	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
-
 	// 2016-12-21 Added allAssociatedPeople
 	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
 	// 2016-12-22 Added allAssociatedRobots
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
+
+	// 2017-04-10 WARNING: cannot use static or result in null
+	public AmountResource foodAR = ResourceUtil.foodAR;//findAmountResource(FOOD);			// 1
+	public AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(WATER);		// 2
+	public AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(OXYGEN);		// 3
+	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
+
 
 	// constructor 0 for ConstructionStageTest
 	public Settlement() {
@@ -328,12 +335,12 @@ implements Serializable, LifeSupportType, Objective {
 			setObjective(ObjectiveType.CROP_FARM);
 
 		logger.info("Since " + this + " is based on template '" + template + "', set its development objective to " + objectiveType.toString());
-
+/*
 		foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
 		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
 		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER); //waterAR;//
 		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
-
+*/
 	}
 
 	/**
@@ -562,14 +569,14 @@ implements Serializable, LifeSupportType, Objective {
 				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 			//	oxygenAR = LifeSupportType.oxygenAR;
 			//if (oxygenAR == null) System.out.println("o2");
-			if (getInventory().getAmountResourceStored(oxygenAR, true) <= 0D)
+			if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D)
 				return false;
 
 			//if (AmountResource.waterAR == null)
 				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 			//	waterAR = LifeSupportType.waterAR;
 			//if (waterAR == null) System.out.println("h2o");
-			if (getInventory().getAmountResourceStored(waterAR, true) <= 0D)
+			if (getInventory().getAmountResourceStored(waterAR, false) <= 0D)
 				return false;
 
 

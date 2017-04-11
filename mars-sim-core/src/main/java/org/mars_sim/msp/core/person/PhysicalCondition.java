@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.medical.MedicalEvent;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -156,11 +157,6 @@ implements Serializable {
 
 	private MarsClock marsClock;
 
-	private static AmountResource foodAR;// needed by Farming
-	//private static AmountResource oxygenAR;
-	//private static AmountResource waterAR;
-	//private static AmountResource carbonDioxideAR;
-
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
 
@@ -179,7 +175,7 @@ implements Serializable {
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		foodAR = AmountResource.findAmountResource(FOOD);			// 1
+		//foodAR = AmountResource.findAmountResource(FOOD);			// 1
 		//waterAR = AmountResource.findAmountResource(WATER);		// 2
 		//oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
 		//carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
@@ -490,10 +486,10 @@ implements Serializable {
 
     	//AmountResource foodAR = AmountResource.findAmountResource(foodType);
         double foodEaten = amount;
-        double foodAvailable = inv.getAmountResourceStored(foodAR, false);
+        double foodAvailable = inv.getAmountResourceStored(ResourceUtil.foodAR, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(foodAR);
+        inv.addAmountDemandTotalRequest(ResourceUtil.foodAR);
 
         if (foodAvailable < 0.01D) {
            throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");
@@ -506,10 +502,10 @@ implements Serializable {
 
             foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
             // subtract food from container
-            inv.retrieveAmountResource(foodAR, foodEaten);
+            inv.retrieveAmountResource(ResourceUtil.foodAR, foodEaten);
 
     		// 2015-01-09 addDemandRealUsage()
-    		inv.addAmountDemand(foodAR, foodEaten);
+    		inv.addAmountDemand(ResourceUtil.foodAR, foodEaten);
         }
     }
 

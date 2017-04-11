@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -181,7 +182,8 @@ implements ClockListener, Serializable {
     private ScientificStudyManager scientificStudyManager;
     /** Manages transportation of settlements and resupplies from Earth. */
     private TransportManager transportManager;
-
+    /** Manages resources. */
+    //private static ResourceUtil resourceUtil;// = ResourceUtil.getInstance();
     //private SimulationConfig simulationConfig;// = SimulationConfig.instance();
 	//public JConsole jc;
 
@@ -329,6 +331,9 @@ implements ClockListener, Serializable {
 		transportManager = new TransportManager();
 		//eventManager = new HistoricalEventManager();
 
+		//System.out.println("running Simulation's initializeIntransientData()");
+        //ResourceUtil.getInstance().initializeNewSim();
+		//ResourceUtil.printID();
 	}
 
 
@@ -485,7 +490,7 @@ implements ClockListener, Serializable {
         ObjectInputStream ois = null;
         FileInputStream in = null;
 
-        boolean no_go = false;
+        //boolean no_go = false;
 
         try {
         	//System.out.println("Simulation : inside try. starting decompressing");
@@ -511,8 +516,7 @@ implements ClockListener, Serializable {
 
             // Load intransient objects.
             SimulationConfig.setInstance((SimulationConfig) ois.readObject());
-           	//System.out.println("Simulation : inside try. starting loading objects");
-
+            ResourceUtil.setInstance((ResourceUtil) ois.readObject());
             malfunctionFactory = (MalfunctionFactory) ois.readObject();
             mars = (Mars) ois.readObject();
             mars.initializeTransientData();
@@ -573,23 +577,24 @@ implements ClockListener, Serializable {
             System.exit(1);
 
 	    } catch (NullPointerException e) {
-	    	logger.log(Level.SEVERE, "Quitting mars-sim. Uull pointer error when loading " + file + " : " + e.getMessage());
+	    	logger.log(Level.SEVERE, "Quitting mars-sim. Null pointer error when loading " + file + " : " + e.getMessage());
 	        Platform.exit();
 	        System.exit(1);
 
 	    } catch (Exception e) {
-	    	no_go = true;
 	    	logger.log(Level.SEVERE, "Quitting mars-sim with errors when loading " + file + " : " + e.getMessage());
 	        Platform.exit();
 	        System.exit(1);
 	    }
 
-        if (!no_go) {
+        //if (!no_go) {
 	        // Initialize transient data.
 	        instance().initializeTransientData();
 	        instance().initialSimulationCreated = true;
 	        isUpdating = false;
-        }
+        //}
+
+        ResourceUtil.getInstance().initializeSavedSim();
 	}
 
 
@@ -680,6 +685,7 @@ implements ClockListener, Serializable {
 
             // Store the in-transient objects.
             oos.writeObject(SimulationConfig.instance());
+    		oos.writeObject(ResourceUtil.getInstance());
             //oos.writeObject(eventManager);
             oos.writeObject(malfunctionFactory);
             oos.writeObject(mars);

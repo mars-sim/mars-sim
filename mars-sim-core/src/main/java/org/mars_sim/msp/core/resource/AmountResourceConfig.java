@@ -24,7 +24,7 @@ import org.jdom.Element;
 public class AmountResourceConfig implements Serializable {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 123L;
+	private static final long serialVersionUID = 1L;
 
 	// Element names
 	private static final String TISSUE_CULTURE = "tissue culture";
@@ -43,11 +43,7 @@ public class AmountResourceConfig implements Serializable {
 	private static int id;
 
 	// Data members.
-	private Set<AmountResource> resources = new TreeSet<AmountResource>();
-	private Map<String, AmountResource> amountResourceMap;
-	private Map<Integer, AmountResource> amountResourceIDMap;
-	private Map<Integer, String> IDNameMap;
-
+	Set<AmountResource> arSet;
 
 	/**
 	 * Constructor
@@ -55,27 +51,10 @@ public class AmountResourceConfig implements Serializable {
 	 * @throws Exception if error reading XML document
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
+		//System.out.println("AmountResourceConfig's constructor");
 		id = 0;
 
 		loadAmountResources(amountResourceDoc);
-
-		amountResourceMap = new HashMap<String,AmountResource>();
-		for (AmountResource resource : resources) {
-			amountResourceMap.put(resource.getName(), resource);
-		}
-
-		amountResourceIDMap = new HashMap<Integer, AmountResource>();
-		for (AmountResource resource : resources) {
-			amountResourceIDMap.put(resource.getID(), resource);
-		}
-
-		IDNameMap = new HashMap<Integer, String>();
-		for (AmountResource resource : resources) {
-			IDNameMap.put(resource.getID(), resource.getName());
-		}
-
-    	// 2016-12-03 Call to just initialize amountResourceConfig in this constructor
-    	//new AmountResource();
 	}
 
 	/**
@@ -85,6 +64,10 @@ public class AmountResourceConfig implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	private void loadAmountResources(Document amountResourceDoc) {
+		//System.out.println("arSet :\t" + arSet.hashCode());
+		arSet = new TreeSet<AmountResource>();
+		//System.out.println("arSet :\t" + arSet.hashCode());
+
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
 		for (Element resourceElement : resourceNodes) {
@@ -104,12 +87,12 @@ public class AmountResourceConfig implements Serializable {
 			// 2014-11-25 Added edible
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 			// 2014-11-25 Added edible
-			resources.add(new AmountResource(id, name, type, description, phase, lifeSupport, edible));
+			arSet.add(new AmountResource(id, name, type, description, phase, lifeSupport, edible));
 
 			if (type != null && type.toLowerCase().equals(CROP)) {
 				id++;
 				// Create new tissue culture for each crop.
-				resources.add(new AmountResource(id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
+				arSet.add(new AmountResource(id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
 				// TODO: may set edible to true
 			}
 
@@ -121,73 +104,13 @@ public class AmountResourceConfig implements Serializable {
 	 * @return set of resources.
 	 */
 	public Set<AmountResource> getAmountResources() {
-		return resources;
+		//System.out.println("arSet :\t" + arSet.hashCode());
+		return arSet;
 	}
 
-	/**
-	 * an alphabetically ordered map of all amount resources by name.
-	 * @return {@link Map}<{@link String},{@link AmountResource}>
-	 */
-	public Map<String, AmountResource> getAmountResourcesMap() {
-//		if (!amountResourceMap.isEmpty())
-			return amountResourceMap;
-/*
-		else {
-			Map<String, AmountResource> map = new HashMap<String,AmountResource>();
-			for (AmountResource resource : resources) {
-				map.put(resource.getName(), resource);
-			}
-			amountResourceMap = map;
-			//System.out.println("amountResourcesMap constructed");
-			return map;
-		}
-*/
-	}
 
-	/**
-	 * an alphabetically ordered map of all amount resources by id.
-	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
-	 */
-	public Map<Integer, AmountResource> getAmountResourcesIDMap() {
-//		if (!amountResourceIDMap.isEmpty())
-			return amountResourceIDMap;
-/*
-		else {
-			Map<Integer, AmountResource> map = new HashMap<Integer, AmountResource>();
-			for (AmountResource resource : resources) {
-				map.put(resource.getID(), resource);
-			}
-			amountResourceIDMap = map;
-			//System.out.println("amountResourcesIDMap constructed");
-			return map;
-		}
-*/
-	}
-
-	/**
-	 * an alphabetically ordered map of all resource names by id.
-	 * @return {@link Map}<{@link Integer},{@link String}>
-	 */
-	public Map<Integer, String> getIDNameMap() {
-//		if (!IDNameMap.isEmpty())
-			return IDNameMap;
-/*
-		else {
-			Map<Integer, String> map = new HashMap<Integer, String>();
-			for (AmountResource resource : resources) {
-				map.put(resource.getID(), resource.getName());
-			}
-			IDNameMap = map;
-			//System.out.println("IDNameMap constructed");
-			return map;
-		}
-*/
-	}
 
 	public void destroy() {
-		resources = null;
-		amountResourceMap = null;
-		amountResourceIDMap = null;
-		IDNameMap = null;
+		arSet = null;
 	}
 }

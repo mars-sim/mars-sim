@@ -587,7 +587,7 @@ implements Serializable {
                 //farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
                 List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
 
-                if (farmBuildings != null) {
+                if (!farmBuildings.isEmpty() && farmBuildings != null) {
 	                if (farmBuildings.size() > 0) {
 	                    Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
 	                            person, farmBuildings);
@@ -596,6 +596,7 @@ implements Serializable {
                 }
             }
         }
+
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
             LocationSituation location = robot.getLocationSituation();
@@ -609,18 +610,20 @@ implements Serializable {
                 List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
 
                 // 2016-12-01 Choose the building the robot is at.
-                for (Building b : farmBuildings) {
-                	if (b == robot.getBuildingLocation())
-                		return b;
-                	// TODO: choose the farmBuilding closest to the robot
-                	// TODO: check if other robots are already in this farmBuilding, i.e. checking for the crowdliness of this farmBuilding
-                }
+                if (!farmBuildings.isEmpty() && farmBuildings != null) {
+	                for (Building b : farmBuildings) {
+	                	if (b == robot.getBuildingLocation())
+	                		return b;
+	                	// TODO: choose the farmBuilding closest to the robot
+	                	// TODO: check if other robots are already in this farmBuilding, i.e. checking for the crowdliness of this farmBuilding
+	                }
 
-                if (farmBuildings != null) {
+
                 	if (farmBuildings.size() > 0) {
                 		result = farmBuildings.get(RandomUtil.getRandomInt(0, farmBuildings.size() - 1));
                 	}
                 }
+
  /*
                 // TODO: add person's good/bad feeling toward robots
                 int size = farmBuildings.size();
