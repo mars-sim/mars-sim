@@ -963,16 +963,16 @@ public class MasterClock implements Serializable { // Runnable,
         }
 */
         if (hours > 0) {
-            b.append(String.format("%02d", hours)).append("h ");
+            b.append(String.format("%02d", hours)).append("h.");
         }
         //} else {
         //    b.append("00h ");
         //}
 
         if (minutes > 0) {
-            b.append(String.format("%02d", minutes)).append("m ");
+            b.append(String.format("%02d", minutes)).append("m.");
         } else {
-            b.append("00m ");
+            b.append("00m.");
         }
 
         //b.append(String.format("%5.3f", secs));

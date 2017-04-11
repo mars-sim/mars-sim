@@ -151,7 +151,8 @@ public class ChatBox extends BorderPane {
         //textArea.setPrefWidth(560);
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
+        //textArea.setTooltip(new Tooltip ("Conversations on MarsNet"));
+		mainScene.setQuickToolTip(textArea, "Conversations on MarsNet");
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
 
   		// 2016-01-01 Replaced textField with autoFillTextBox
@@ -174,13 +175,15 @@ public class ChatBox extends BorderPane {
         autoFillTextBox.getTextbox().setMinWidth(565);
         autoFillTextBox.getTextbox().setPrefWidth(565);
         //autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
-  		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll history."));
+  		//autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll history"));
+		mainScene.setQuickToolTip(autoFillTextBox, "Use UP/DOWN arrows to scroll history");
   		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel");
 
   		broadcastButton = new JFXButton(" Broadcast ".toUpperCase());
   		broadcastButton.getStyleClass().clear();
 		broadcastButton.getStyleClass().add("button-broadcast");
-        broadcastButton.setTooltip(new Tooltip ("Click or hit enter to broadcast"));
+        //broadcastButton.setTooltip(new Tooltip ("Click or press Enter to send msg"));
+		mainScene.setQuickToolTip(broadcastButton, "Click or press Enter to send msg");
         broadcastButton.setOnAction(e -> {
           	String text = autoFillTextBox.getTextbox().getText();
             if (text != "" && text != null && !text.trim().isEmpty()) {

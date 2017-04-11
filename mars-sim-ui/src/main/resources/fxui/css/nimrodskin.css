@@ -274,19 +274,20 @@
 {
     -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
     -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: white;
+    -fx-text-fill: #894c02;
     -fx-background-radius: 5, 5, 5, 5;
     -fx-background-insets: 0 0 0 0, 0, 0, 0;
-    -fx-padding: 0;
+    -fx-padding: 2 2 2 2;
+    -fx-border-radius: 2px;
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
 .jfx-combo-box .list-cell
 {
 	-fx-font-size: 15.0;
-	-fx-background: white;
-    -fx-background-color: transparent;
-    -fx-text-fill: yellow;
+	-fx-background: #ffeaaa; /*transparent;*/
+    -fx-background-color: #ffeaaa; /*transparent;*/
+    -fx-text-fill: #894c02;
     -fx-padding: 2 2 2 2;
     -fx-cell-size: 1.66667em;
 }

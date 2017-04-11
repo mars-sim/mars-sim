@@ -217,9 +217,9 @@
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
-  	-fx-toggle-color: #03a9f4;
+  	-fx-toggle-color: #065185;/*#03a9f4;*/
     -fx-background-color: transparent;
-    -fx-text-fill: #03a9f4;
+    -fx-text-fill: #065185;/*#03a9f4;*/
     -fx-font-weight: bold;
 }
 
@@ -229,7 +229,7 @@
 }
 
 .jfx-button {
-	-fx-toggle-color: #03a9f4;
+	-fx-toggle-color: #065185; /* #03a9f4;*/
 }
 
 .jfx-slider {
@@ -281,27 +281,28 @@
 {
     -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
     -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: white;
+    -fx-text-fill: #065185;
     -fx-background-radius: 5, 5, 5, 5;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-padding: 0;
+    -fx-padding: 2 2 2 2;
+    -fx-border-radius: 2px;
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
 .jfx-combo-box .list-cell
 {
 	-fx-font-size: 15.0;
-	-fx-background: white;
-    -fx-background-color: transparent;
-    -fx-text-fill: #03a9f4;
-    -fx-padding: 2 2 2 2;
+	-fx-background: #c9ddea; /*transparent;*/
+    -fx-background-color: #c9ddea; /*transparent;*/
+    -fx-text-fill: #065185;/*#03a9f4;*/
+    -fx-padding: 1 1 1 1;
     -fx-cell-size: 1.66667em;
 }
 
 .check-box {
     -fx-font-size: 12;
     -fx-font-weight: italic;
-    -fx-text-fill: #03a9f4;
+    -fx-text-fill: #065185;/*#03a9f4;*/
 }
 
 .ttip{

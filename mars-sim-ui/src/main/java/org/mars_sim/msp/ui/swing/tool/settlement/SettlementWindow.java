@@ -318,10 +318,14 @@ extends ToolWindow {
 	    xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
 	    //yLabel.setText(", " + yCoor + ")" + " ");
 
-		solLabel.setTooltip(new Tooltip ("Mission Day"));
-		popLabel.setTooltip(new Tooltip ("Population of this Settlement"));
-		capLabel.setTooltip(new Tooltip ("Max Number of Beds/Quarters in this Settlement"));
-		xyLabel.setTooltip(new Tooltip ("x and y meters from center of a Building (Updated when Right-Click inside)"));
+		//solLabel.setTooltip(new Tooltip ("Mission Day"));
+		mainScene.setQuickToolTip(solLabel, "# of days since the start of mission");
+		//popLabel.setTooltip(new Tooltip ("Population of this Settlement"));
+		mainScene.setQuickToolTip(popLabel, "the current population of this settlement");
+		//capLabel.setTooltip(new Tooltip ("Max Number of Beds/Quarters in this Settlement"));
+		mainScene.setQuickToolTip(capLabel, "the max # of beds/quarters for this Settlement");
+		//xyLabel.setTooltip(new Tooltip ("x and y meters from center of a Building (Updated when Right-Click inside)"));
+		mainScene.setQuickToolTip(xyLabel, "x and y meters from the center of a building (Note: right-click inside to update)");
 
 		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 		statusBar.getLeftItems().add(solLabel);

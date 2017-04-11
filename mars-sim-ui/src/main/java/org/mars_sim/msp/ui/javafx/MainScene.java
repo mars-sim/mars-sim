@@ -256,11 +256,15 @@ public class MainScene {
 	private static final String MARS_DATE_TIME = "MARS  :  ";
 	private static final String UMST = " (UMST)";
 	private static final String ONE_SPACE = " ";
+	private static final String MONTH = "    Month : ";
+	private static final String ORBIT = "Orbit : ";
+	private static final String ADIR = "Adir";
 
 	private static final String UPTIME = "UpTime :";
 	private static final String TPS = "Ticks/s :";
 	private static final String SEC = "1 real sec :";
 	private static final String TR = "Time Ratio :";
+	private static final String HZ = " Hz";
 
 	private static final String SOLAR_LONGITUDE = "Solar Longitude : ";
 	private static final String NOTE_MARS = " Note : Mars's now at ";
@@ -1006,7 +1010,7 @@ public class MainScene {
 
 		speedBtn.setMaxSize(20, 20);
 		speedBtn.setGraphic(speedIcon);
-		setQuickToolTip(speedBtn, "Open Speed Panel");
+		setQuickToolTip(speedBtn, "Click to open Speed Panel");
 		speedBtn.setOnAction(e -> {
             if (simSpeedPopup.isShowing()) {
             	simSpeedPopup.hide();//close();
@@ -1051,7 +1055,7 @@ public class MainScene {
         timeSliderBox.setPadding(new Insets(2, 2, 2, 2));
         timeSliderBox.getChildren().add(timeSlider);
 
-		setQuickToolTip(timeSlider, "Adjust Time Ratio"); //$NON-NLS-1$
+		setQuickToolTip(timeSlider, "adjust the time ratio (how fast the simulation runs)"); //$NON-NLS-1$
 
 		//Label header_label = createHeader("SPEED PANEL");
 		Text header_label = createTextHeader("SPEED PANEL");
@@ -1069,6 +1073,7 @@ public class MainScene {
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
 		time_ratio_label0.setPadding(new Insets(1, 1, 1, 5));
+		setQuickToolTip(time_ratio_label0, "the ratio of the simulation time to the real time"); //$NON-NLS-1$
 
         Label time_ratio_label = new Label();
         //time_ratio_label.setEffect(blend);
@@ -1079,6 +1084,7 @@ public class MainScene {
 		time_ratio_label.setPadding(new Insets(1, 1, 1, 5));
 		s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
 		time_ratio_label.setText(s0.toString());
+		setQuickToolTip(time_ratio_label, "e.g. if 128, then 1 real second equals 128 sim seconds"); //$NON-NLS-1$
 
 
         Label real_time_label0 = new Label(SEC);
@@ -1089,6 +1095,7 @@ public class MainScene {
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: italic;");
         real_time_label0.setPadding(new Insets(1, 1, 1, 5));
+		setQuickToolTip(real_time_label0, "the amount of simulation time per real second"); //$NON-NLS-1$
 
 
         Label real_time_label = new Label();
@@ -1098,6 +1105,8 @@ public class MainScene {
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: italic;");
         real_time_label.setPadding(new Insets(1, 1, 1, 5));
+		setQuickToolTip(real_time_label, "e.g. 02m.08s means that 1 real second equals 2 real minutes & 8 real seconds"); //$NON-NLS-1$
+
 
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
@@ -1148,6 +1157,7 @@ public class MainScene {
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
         TPSLabel0.setPadding(new Insets(1, 1, 1, 5));
+		setQuickToolTip(TPSLabel0, "how often the simulation updates the changes, aka Frame Per Second (FPS)"); //$NON-NLS-1$
 
         TPSLabel = new Label();
         //TPSLabel.setEffect(blend);
@@ -1156,7 +1166,9 @@ public class MainScene {
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
         TPSLabel.setPadding(new Insets(1, 1, 1, 5));
-		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()));
+		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
+		setQuickToolTip(TPSLabel, "e.g. 6.22 Hz means that for each second, the simulation is updated 6.22 times"); //$NON-NLS-1$
+
 
         Label upTimeLabel0 = new Label(UPTIME);
         //upTimeLabel0.setEffect(blend);
@@ -1167,6 +1179,7 @@ public class MainScene {
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
         upTimeLabel0.setPadding(new Insets(1, 1, 1, 5));
+		setQuickToolTip(upTimeLabel0, "how long the simulation has been up running"); //$NON-NLS-1$
 
         upTimeLabel = new Label();
         //upTimeLabel.setEffect(blend);
@@ -1177,6 +1190,7 @@ public class MainScene {
         upTimeLabel.setPadding(new Insets(1, 1, 1, 5));
         if (uptimer != null)
         	upTimeLabel.setText (uptimer.getUptime());
+		setQuickToolTip(upTimeLabel, "e.g. 03m 05s means it has been running for 3 minutes & 5 seconds"); //$NON-NLS-1$
 
         GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container");
@@ -1265,7 +1279,7 @@ public class MainScene {
 
 		soundBtn.setMaxSize(20, 20);
 		soundBtn.setGraphic(soundIcon);
-		setQuickToolTip(soundBtn, "Open Sound Panel");
+		setQuickToolTip(soundBtn, "Click to open Sound Panel");
 
 		soundBtn.setOnAction(e -> {
             if (soundPopup.isShowing()) {
@@ -1305,7 +1319,7 @@ public class MainScene {
 		soundSlider.setOrientation(Orientation.HORIZONTAL);
 		soundSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 
-		setQuickToolTip(soundSlider, "Adjust Sound Volume"); //$NON-NLS-1$
+		setQuickToolTip(soundSlider, "adjust the sound volume"); //$NON-NLS-1$
 
 		Text header_label = createTextHeader("SOUND PANEL");
 
@@ -1377,8 +1391,11 @@ public class MainScene {
 		//Label header_label = createHeader("MARS CALENDAR");
 		Text header_label = createTextHeader("MARS CALENDAR PANEL");
 
-		monthText = createBlendText("    Month : " + marsClock.getMonthName());
-		yearText = createBlendText("Year : " + marsClock.getOrbitString());
+		monthText = createBlendText(MONTH + marsClock.getMonthName());
+		yearText = createBlendText(ORBIT + marsClock.getOrbitString());
+
+		setQuickToolTip(monthText, "the current Martian month. Each orbit has 24 months with either 27 or 28 Sols");
+		setQuickToolTip(yearText, "the current Martian orbit (or year). Note : Martian Orbit 0015 coincides with Earth year 2043 CE"); // The Martian year is referred to as an "orbit". Each orbit has 668.59 Martian sols. It is 668.5921 Martian days ("Sols") long.
 
 		HBox hBox = new HBox();
 		hBox.setPadding(new Insets(5, 15, 5, 15));
@@ -1388,9 +1405,12 @@ public class MainScene {
 		orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();
 		LSText = createBlendText(SOLAR_LONGITUDE + Math.round(L_s*100D)/100D + Msg.getString("direction.degreeSign"));	 //$NON-NLS-1$
+		setQuickToolTip(LSText, "Martian Solar Longitude L_s [degrees]");
 
 		northText = createBlendText(NORTH + marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
 		southText = createBlendText(SOUTH + marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
+		setQuickToolTip(northText, "the current season in the Northern hemisphere");
+		setQuickToolTip(southText, "the current season in the Southern hemisphere");
 
 		noteLabel = new Label();
 		//noteText = new Text();
@@ -2456,7 +2476,7 @@ public class MainScene {
 
         //marsNetButton.setId("marsNetButton");
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
-		setQuickToolTip(marsNetBtn, "Open MarsNet Chat Box");
+		setQuickToolTip(marsNetBtn, "Click to open MarsNet Chat Box");
 
 		marsNetBox = new JFXPopup(createChatBox());
 		//rootAnchorPane.getChildren().add(marsNetBox);
@@ -2672,7 +2692,7 @@ public class MainScene {
 
 		calendarDisplay.update();
 
-		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()));
+		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
 
 		upTimeLabel.setText(uptimer.getUptime());
 
@@ -2682,9 +2702,9 @@ public class MainScene {
 			if (solElapsed == 1) {
 				String mn = marsClock.getMonthName();
 				if (mn != null) {
-					monthText.setText("    Month : " + mn);
-					if (mn.equals("Adir")) {
-						yearText.setText("Year : " + marsClock.getOrbitString());
+					monthText.setText(MONTH + mn);
+					if (mn.equals(ADIR)) {
+						yearText.setText(ORBIT + marsClock.getOrbitString());
 					}
 				}
 			}
