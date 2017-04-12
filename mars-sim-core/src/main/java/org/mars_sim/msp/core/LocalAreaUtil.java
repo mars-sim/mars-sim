@@ -460,7 +460,7 @@ public class LocalAreaUtil {
                 (object.getWidth() / 2D), object.getYLocation() -
                 (object.getLength() / 2D), object.getWidth(), object.getLength());
         Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
-        Area area = new Area(path);
+        Area area = new Area(path); // Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
         if (area.contains(xLoc, yLoc)) {
             result = true;
         }

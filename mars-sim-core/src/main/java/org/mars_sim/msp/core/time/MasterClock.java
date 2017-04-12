@@ -57,6 +57,11 @@ public class MasterClock implements Serializable { // Runnable,
 	//private static final int NO_DELAYS_PER_YIELD = 16;
 	//private static final int MAX_FRAME_SKIPS = 10;
 
+	private static final String	HOURS = "h ";
+	private static final String	MINUTES = "m ";
+	private static final String	ZERO_MINUTES = "00m ";
+	private static final String	SECONDS = "s";
+
 	// Data members
 	/** Runnable flag. */
 	private transient volatile boolean keepRunning;
@@ -158,32 +163,37 @@ public class MasterClock implements Serializable { // Runnable,
         else if (Simulation.NUM_THREADS == 2) {
         	defaultTimeRatio = ratio/8D;
         	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*12D);
+            setTimeBetweenUpdates(ms*14D);
         }
         else if (Simulation.NUM_THREADS <= 3) {
         	defaultTimeRatio = ratio/4D;
         	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*8D);
+            setTimeBetweenUpdates(ms*12D);
         }
         else if (Simulation.NUM_THREADS <= 4) {
            	defaultTimeRatio = ratio/4D;
         	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*4D);
+            setTimeBetweenUpdates(ms*10D);
         }
         else if (Simulation.NUM_THREADS <= 6) {
         	defaultTimeRatio = ratio/2D;
         	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*2D);
+            setTimeBetweenUpdates(ms*8D);
         }
         else if (Simulation.NUM_THREADS <= 8) {
         	defaultTimeRatio = ratio/2D;
         	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms);
+            setTimeBetweenUpdates(ms*6);
         }
         else if (Simulation.NUM_THREADS <= 12) {
         	defaultTimeRatio = ratio;
         	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms);
+            setTimeBetweenUpdates(ms*4);
+        }
+        else if (Simulation.NUM_THREADS <= 16) {
+        	defaultTimeRatio = ratio;
+        	setTimeRatio(defaultTimeRatio);
+            setTimeBetweenUpdates(ms*2);
         }
         else {
         	defaultTimeRatio = ratio;
@@ -919,20 +929,20 @@ public class MasterClock implements Serializable { // Runnable,
         }
 */
         if (hours > 0) {
-            b.append(String.format("%02d", hours)).append("h ");
+            b.append(String.format("%02d", hours)).append(HOURS);
         }
         //} else {
         //    b.append("00h ");
         //}
 
         if (minutes > 0) {
-            b.append(String.format("%02d", minutes)).append("m ");
+            b.append(String.format("%02d", minutes)).append(MINUTES);
         } else {
-            b.append("00m ");
+            b.append(ZERO_MINUTES);
         }
 
         //b.append(String.format("%5.3f", secs));
-        b.append(String.format("%05.2f", secs) + "s");
+        b.append(String.format("%05.2f", secs) + SECONDS);
 
         return b.toString();
     }
@@ -963,20 +973,20 @@ public class MasterClock implements Serializable { // Runnable,
         }
 */
         if (hours > 0) {
-            b.append(String.format("%02d", hours)).append("h.");
+            b.append(String.format("%02d", hours)).append(HOURS);
         }
         //} else {
         //    b.append("00h ");
         //}
 
         if (minutes > 0) {
-            b.append(String.format("%02d", minutes)).append("m.");
+            b.append(String.format("%02d", minutes)).append(MINUTES);
         } else {
-            b.append("00m.");
+            b.append(ZERO_MINUTES);
         }
 
         //b.append(String.format("%5.3f", secs));
-        b.append(String.format("%02.0f", secs) + "s");
+        b.append(String.format("%02.0f", secs) + SECONDS);
 
         return b.toString();
     }

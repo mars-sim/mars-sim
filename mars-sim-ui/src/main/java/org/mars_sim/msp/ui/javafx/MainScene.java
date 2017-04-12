@@ -302,11 +302,11 @@ public class MainScene {
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
-	private Pane root;
+	private Pane root; ;
 	private StackPane mainAnchorPane, //monPane,
 					mapStackPane, minimapStackPane,
 					speedPane, soundPane, calendarPane,
-					settlementBox, chatBoxPane;
+					settlementBox, chatBoxPane, pausePane;
 
 	private FlowPane flowPane;
 	private AnchorPane rootAnchorPane, mapAnchorPane ;
@@ -847,6 +847,13 @@ public class MainScene {
 
 		rootAnchorPane = new AnchorPane();
 
+		pausePane = new StackPane();
+		//pausePane.setLayoutX(root.getWidth()/2D);
+		//pausePane.setLayoutY(root.getHeight()/2D);
+		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
+		pausePane.getChildren().add(createPausePaneContent());
+
+
 		if (OS.contains("mac")) {
 			((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
 		}
@@ -897,9 +904,13 @@ public class MainScene {
         		lastSaveLabel,
         		earthTimeButton, marsTimeButton, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
 
+
 		root.getChildren().addAll(rootAnchorPane);
 
     	scene = new Scene(root, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
+
+		pausePane.prefWidthProperty().bind(scene.widthProperty());
+		pausePane.prefHeightProperty().bind(scene.heightProperty());
 
 		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(35));//73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
@@ -1040,7 +1051,7 @@ public class MainScene {
 
 		//timeSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
 		timeSlider.setMin(0); // need to be zero
-		timeSlider.setMax(12);//initial_time_ratio*32D);//8D);
+		timeSlider.setMax(13);//initial_time_ratio*32D);//8D);
 		timeSlider.setValue(7);//initial_time_ratio);
 		timeSlider.setMajorTickUnit(1);//initial_time_ratio*4);
 		timeSlider.setMinorTickCount(1);
@@ -2953,18 +2964,48 @@ public class MainScene {
 		//System.out.println("calling startPausePopup(): messagePopup.numPopups() is " + messagePopup.numPopups());
 		//if (messagePopup.numPopups() < 1) {
             // Note: (NOT WORKING) popups.size() is always zero no matter what.
-		//	Platform.runLater(() ->
+		Platform.runLater(() ->
 		//		messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
-		//	);
-		//}
+			root.getChildren().add(pausePane)
+		);
+
 	}
 
 	public void stopPausePopup() {
-		//Platform.runLater(() ->
+		Platform.runLater(() ->
 		//	messagePopup.stop()
-		//);
+			root.getChildren().remove(pausePane)
+		);
 
 	}
+
+    /**
+     * Creates the pause box to be displayed on the root pane.
+     * @return VBox
+     */
+	// 2017-04-12 Add pause pane
+    private VBox createPausePaneContent() {
+    	VBox vbox = new VBox();
+
+        Label label = new Label("| |");
+        label.setAlignment(Pos.CENTER);
+        label.setPadding(new Insets(10));
+        label.setStyle("-fx-font-size: bold 48px; -fx-text-fill: cyan;");
+        //label.setMaxWidth(250);
+        label.setWrapText(true);
+
+        Label label1 = new Label("ESC to resume");
+        label1.setAlignment(Pos.CENTER);
+        label1.setPadding(new Insets(10));
+        label1.setStyle(" -fx-font: bold 12pt 'Corbel'; -fx-text-fill: cyan;");
+        //label.setMaxWidth(250);
+        label1.setWrapText(true);
+
+        vbox.getChildren().addAll(label, label1);
+        vbox.setAlignment(Pos.CENTER);
+
+        return vbox;
+    }
 
 	/**
 	 * Pauses the marquee timer and pauses the simulation.

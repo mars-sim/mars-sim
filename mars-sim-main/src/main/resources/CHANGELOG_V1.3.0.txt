@@ -12,7 +12,7 @@ https://mars-sim.github.io/
 
 2. 500 MB to 1.5 GB free RAM dedicated for running mars-sim
 
-3. 64-bit Oracle Java 8 (JRE or JDK 8u71 and higher) OR OpenJDK 8u71 with OpenJFX
+3. 64-bit Oracle Java 8 (JRE or JDK 8u77 and higher) OR OpenJDK 8u77 with OpenJFX
 
 
 ### KNOWN LIMITATIONS :
@@ -27,33 +27,40 @@ https://mars-sim.github.io/
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add new crops and meals.
+1. Add new crops (taro, corn, white mustard) and meals.
 
-2. Exclude sending Gardenbots to Trading Outpost & Mining Outpost at the start of sim.
+2. Add arbitrary genetic factor and gender correlated curves for computing weight and height of the settlers.
 
-3.
+3. Rework the minimum and maximum value of time ratio.
 
 
 ### UI IMPROVEMENT :
 
-1. Center slider in Speed Panel to the default time ratio.
+1. Set the initial position of the time ratio slider to near the middle in Speed Panel.
 
-1. Add season (for Northern/Southern Hemisphere) and solar logitude to Calendar Panel.
+1. Add showing the season (for Northern/Southern Hemisphere) and solar longitude (in degrees) to Mars Calendar Panel.
 
 2. Refine death related info display.
+
+3. Add fast tooltips for Mars Calendar Panel and Speed panel.
+
+4. Accept the use of comma (in addition to the default case of using dot) as the decimal mark when inputting lat/lon in the Config Editor.
+
+5. Switch to using an unobtrusive, transparent pause screen when sim is paused.
 
 
 ### FIXES :
 
-1. Accept the use of comma in lat/lon input in Config Editor.
+1. Fix the suffocation bug loading a saved sim.
 
-2. Fix NullPointerException when staring a Mining/Trading Outpost.
+2. Fix NullPointerException when starting a sim with a Mining/Trading Outpost.
 
-3. Correct ParseException due to non-US system locale.
+3. Correct ParseException due to non-US system locale when loading simulation.xml and generating settlers' date of birth
 
-4. Further remove calling Repairbots to go outside to fix vehicles.
+4. Further remove calling Repairbots to go outside to fix vehicles. Exclude sending Gardenbots to Trading Outpost & Mining Outpost at the start of sim.
 
 5. Remove external fonts to stop startup crash in linux.
+
 
 -----------------------------------------------------------------------------------------
 
