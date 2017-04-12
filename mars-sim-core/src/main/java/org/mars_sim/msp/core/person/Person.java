@@ -151,6 +151,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static EarthClock earthClock;
 	private static MasterClock masterClock;
 
+	/**
+	 * Constructor 1 : used by PersonBuilderImpl
+	 * Creates a Person object at a given settlement.
+	 *
+	 * @param name
+	 *            the person's name
+	 * @param settlement
+	 *            {@link Settlement} the settlement the person is at
+	 * @throws Exception
+	 *             if no inhabitable building available at settlement.
+	 */
 	public Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
@@ -164,16 +175,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Constructs a Person object at a given settlement.
+	 * Constructor 2
+	 * Creates a Person object at a given settlement.
 	 *
 	 * @param name
 	 *            the person's name
 	 * @param gender
 	 *            {@link PersonGender} the person's gender
-	 * @param birthplace
-	 *            the location of the person's birth
+	 * @param country
+	 *            the person's country of origin
 	 * @param settlement
 	 *            {@link Settlement} the settlement the person is at
+	 * @param sponsor
+	 *            the person's sponsoring agency
 	 * @throws Exception
 	 *             if no inhabitable building available at settlement.
 	 */
@@ -197,6 +211,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.associatedSettlement = settlement;
 		this.sponsor = sponsor;
 
+		initialize();
 	}
 
 	public void initialize() {
@@ -211,41 +226,34 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			birthTimeStamp = new EarthClock(createBirthTimeString());
 		}
 
+		isBuried = false;
+
 		config = SimulationConfig.instance().getPersonConfiguration();
 
 		attributes = new NaturalAttributeManager(this);
-
 		// 2015-02-27 Added JobHistory
 		jobHistory = new JobHistory(this);
-		mind = new Mind(this);
-		isBuried = false;
-		health = new PhysicalCondition(this);
-		scientificAchievement = new HashMap<ScienceType, Double>(0);
 
+		mind = new Mind(this);
+
+		health = new PhysicalCondition(this);
+
+		scientificAchievement = new HashMap<ScienceType, Double>(0);
 		// 2015-02-27 Added Favorite class
 		favorite = new Favorite(this);
-
 		// 2015-04-28 Added Role class
 		role = new Role(this);
-
 		// 2015-03-19 Added TaskSchedule class
 		taskSchedule = new TaskSchedule(this);
-
 		// 2015-06-07 Added Preference
 		preference = new Preference(this);
 		// preference.initializePreference();
-
 		assignReportingAuthority();
-
 		// 2016-01-13 Set up chromosomes
-		paternal_chromosome = new HashMap<>();
-		maternal_chromosome = new HashMap<>();
 		setupChromosomeMap();
-
 		// Put person in proper building.
 		associatedSettlement.getInventory().storeUnit(this);
-		// setAssociatedSettlement(settlement); // will cause suffocation when
-		// reloading a saved sim
+		// Note: setAssociatedSettlement(settlement)  will cause suffocation when reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
 																// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 		support = getLifeSupportType();
@@ -253,18 +261,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	// 2016-01-13 Added setupChromosomeMap()
 	public void setupChromosomeMap() {
+		paternal_chromosome = new HashMap<>();
+		maternal_chromosome = new HashMap<>();
 
 		if (bornOnMars) {
-
+			// TODO: figure out how to account for growing characteristics such as height and weight
+			// and define various traits get passed on from parents
 		} else {
-
 			// Biochemistry: id 0 - 19
 			setupBloodType();
-
 			// Physical Characteristics: id 20 - 39
 			setupHeight();
 			setupWeight();
-
 			// Personality traits: id 40 - 59
 			setupTrait();
 		}
@@ -358,12 +366,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// female : height : 162.6	weight : 57.2
 
 		// TODO: factor in country of origin.
-
-		// 2017-04-11 Attempt to compute height with gaussian
 		// TODO: look for a gender-correlated curve
+
+		// 2017-04-11 Attempt to compute height with gaussian curve
 		double dad_height = 176.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(22);
 		double mom_height = 162.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15);
-
 
 		Gene dad_height_G = new Gene(this, ID, HEIGHT, true, dominant, null, dad_height);
 		paternal_chromosome.put(ID, dad_height_G);
@@ -371,7 +378,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		Gene mom_height_G = new Gene(this, ID, HEIGHT, false, dominant, null, mom_height);
 		maternal_chromosome.put(ID, mom_height_G);
 
-		height = Math.round((dad_height + mom_height)*100D)/200D;
+		double genetic_factor = .65;
+		double average = (176.5 + 162.6)/2D;
+		double sex_factor = (176.5 - average)/average; // for male
+		// 2017-04-11 Add Add arbitrary (US-based) sex and genetic factor
+		if (gender == PersonGender.MALE)
+			height = Math.round((genetic_factor * dad_height + (1-genetic_factor) * mom_height)*100D)/200D * (1 + sex_factor);
+		else
+			height = Math.round(((1-genetic_factor) * dad_height + genetic_factor * mom_height)*100D)/200D * (1 - sex_factor);
 
 
 	}
@@ -386,9 +400,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// female : height : 162.6	weight : 57.2
 
 		// TODO: factor in country of origin.
-
-		// 2017-04-11 Attempt to compute height with gaussian
 		// TODO: look for a gender-correlated curve
+
+		// 2017-04-11 Attempt to compute height with gaussian curve
 		double dad_weight = 68.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(10);
 		double mom_weight = 57.2 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15) ;
 
@@ -398,7 +412,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		Gene mom_weight_G = new Gene(this, ID, WEIGHT, false, dominant, null, mom_weight);
 		maternal_chromosome.put(ID, mom_weight_G);
 
-		weight = Math.round((dad_weight + mom_weight)*100D)/200D;
+		double genetic_factor = .65;
+		double average = (68.5 + 57.2)/2D;
+		double sex_factor = (68.5 - average)/average; // for male
+		// 2017-04-11 Add arbitrary (US-based) sex and genetic factor
+		if (gender == PersonGender.MALE)
+			weight = Math.round((genetic_factor * dad_weight + (1-genetic_factor) * mom_weight)*100D)/200D * (1 + sex_factor);
+		else
+			weight = Math.round(((1-genetic_factor) * dad_weight + genetic_factor * mom_weight)*100D)/200D * (1 - sex_factor);
+
 		setBaseMass(weight);
 
 	}
@@ -409,66 +431,42 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	// 2016-08-12 Revised assignReportingAuthority()
 	public void assignReportingAuthority() {
-		// System.out.println(name + "'s RA is " +
-		// ReportingAuthorityType.fromString(sponsor));
 		if (ra == null) {
-
-			// ReportingAuthorityType type =
-			// ReportingAuthorityType.fromString(sponsor);
-
-			if (sponsor.contains("CNSA")) {// type ==
-											// ReportingAuthorityType.CNSA) {
+			if (sponsor.contains("CNSA")) {
 				ra = new CNSAMissionControl();
 				ra.setMissionAgenda(new FindingMineral());
 
-			} else if (sponsor.contains("CSA")) {// if (type ==
-													// ReportingAuthorityType.CSA)
-													// {
+			} else if (sponsor.contains("CSA")) {
 				ra = new CSAMissionControl();
 				ra.setMissionAgenda(new AdvancingSpaceKnowledge());
 
-			} else if (sponsor.contains("ESA")) {// if (type ==
-													// ReportingAuthorityType.ESA)
-													// {
+			} else if (sponsor.contains("ESA")) {
 				ra = new ESAMissionControl();
 				ra.setMissionAgenda(new DevelopingSpaceActivity());
 
-			} else if (sponsor.contains("ISRO")) { // if (type ==
-													// ReportingAuthorityType.ISRO)
-													// {
+			} else if (sponsor.contains("ISRO")) {
 				ra = new ISROMissionControl();
 				ra.setMissionAgenda(new DevelopingAdvancedTechnology());
 
-			} else if (sponsor.contains("JAXA")) { // if (type ==
-													// ReportingAuthorityType.JAXA)
-													// {
+			} else if (sponsor.contains("JAXA")) {
 				ra = new JAXAMissionControl();
 				ra.setMissionAgenda(new ResearchingSpaceApplication());
 
-			} else if (sponsor.contains("NASA")) {// if (type ==
-													// ReportingAuthorityType.NASA)
-													// {
-				// if he's an NASA astronaut, set mission agenda to FindingLife
-				// as follows:
+			} else if (sponsor.contains("NASA")) {
 				ra = new NASAMissionControl();
 				ra.setMissionAgenda(new FindingLife());
 
-			} else if (sponsor.contains("MS")) {// if (type ==
-												// ReportingAuthorityType.MARS_SOCIETY)
-												// {
+			} else if (sponsor.contains("MS")) {
 				ra = new MarsSocietyMissionControl();
 				ra.setMissionAgenda(new DeterminingHabitability());// SettlingMars());
 
-			} else if (sponsor.contains("RKA")) {// if (type ==
-													// ReportingAuthorityType.RKA)
-													// {
+			} else if (sponsor.contains("RKA")) {
 				ra = new RKAMissionControl();
 				ra.setMissionAgenda(new ResearchingHealthHazard());
-			}
 
-			else {
+			} else {
 				logger.warning(name + " has no reporting authority!");
-				ra = null;
+				//ra = null;
 			}
 		}
 	}

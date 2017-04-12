@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * LoadVehicleTest.java
+ * @version 3.1.0 2017-04-11
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
@@ -60,11 +67,9 @@ extends TestCase {
 		// Create test person.
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// 2017-04-11 Use Builder Pattern for creating an instance of Person
-		Person person = new PersonBuilderImpl()
-								.setName("test person")
+		Person person = new PersonBuilderImpl("test person", settlement)
 								.setGender(PersonGender.MALE)
 								.setCountry(null)
-								.setAssociatedSettlement(settlement)
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initialize();
