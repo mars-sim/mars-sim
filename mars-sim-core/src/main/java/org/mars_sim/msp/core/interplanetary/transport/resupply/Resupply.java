@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -301,13 +302,13 @@ implements Serializable, Transportable {
      * @param building
      * @param buildingManager
      * @param count The number of times remaining checking collision
-     * @return int The remaining count or if zero, there is no collision. 
+     * @return int The remaining count or if zero, there is no collision.
      */
     // 2015-12-07 Added checkCollisionImmovable()
     public int checkCollisionImmovable(BuildingTemplate t, int count) {
 
 		count--;
-		
+
     	double xLoc = t.getXLoc();
     	double yLoc = t.getYLoc();
     	double w = t.getWidth();
@@ -318,12 +319,12 @@ implements Serializable, Transportable {
 
 		boolean noCollison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, settlement.getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
-		
+
 		if (noCollison)
 			return 0;
 		else
 			return count;
-		
+
     }
 
 
@@ -495,7 +496,14 @@ implements Serializable, Transportable {
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String sponsor = settlement.getSponsor();
             String country = Simulation.instance().getUnitManager().getCountry(sponsor);
-            Person immigrant = new Person(immigrantName, gender, country, settlement, sponsor); //TODO: read from file
+            //Person immigrant = new Person(immigrantName, gender, country, settlement, sponsor); //TODO: read from file
+			// 2017-04-11 Use Builder Pattern for creating an instance of Person
+			Person immigrant = new PersonBuilderImpl(immigrantName, settlement)
+									.setGender(gender)
+									.setCountry(country)
+									.setSponsor(sponsor)
+									.build();
+			immigrant.initialize();
 
             // Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();
@@ -558,7 +566,7 @@ implements Serializable, Transportable {
 
     }
 
-  
+
 
     /**
      * Orders the new buildings with non-connector buildings first and connector buildings last.
@@ -1225,7 +1233,7 @@ implements Serializable, Transportable {
 
         return result;
     }
-    
+
 	/**
 	 * Maps a number to an alphabet
 	 * @param a number
@@ -1237,7 +1245,7 @@ implements Serializable, Transportable {
 	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 	}
 
-    
+
 	@Override
 	public String getName() {
 		return getSettlement().getName();
@@ -1261,7 +1269,7 @@ implements Serializable, Transportable {
 		startDeliveryEvent();
 	}
 
-    
+
 	@Override
 	public MarsClock getLaunchDate() {
 	    return (MarsClock) launchDate.clone();

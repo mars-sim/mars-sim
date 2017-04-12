@@ -71,9 +71,9 @@ extends JComponent {
 			int theme = MainScene.getTheme();
 
 			if (theme != themeCache) {
-				
+
 				theme = themeCache;
-							
+
 				if (theme == 1) {
 					// green theme
 					baseColor = Color.orange;
@@ -92,7 +92,7 @@ extends JComponent {
 					midColor = new Color(210, 117, 101); // orange pink
 					darkColor = new Color(140, 94, 74); // greyish brown pink
 				}
-	
+
 				else if (theme == 4) {
 					// grey theme
 					baseColor = Color.gray;
@@ -117,7 +117,7 @@ extends JComponent {
 					midColor = new Color(152, 149, 92);
 					darkColor = new Color(138, 141, 74);
 				}
-				
+
 				repaint();
 			}
 		}

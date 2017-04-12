@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
@@ -759,7 +760,14 @@ public class UnitManager implements Serializable {
 			//String country = getCountry(sponsor);
 
 			// Create person and add to the unit manager.
-			Person person = new Person(name, gender, country, settlement, sponsor);
+			//Person person = new Person(name, gender, country, settlement, sponsor);
+			// 2017-04-11 Use Builder Pattern for creating an instance of Person
+			Person person = new PersonBuilderImpl(name, settlement)
+									.setGender(gender)
+									.setCountry(country)
+									.setSponsor(sponsor)
+									.build();
+			person.initialize();
 
 			// TODO: read from file
 			addUnit(person);
@@ -774,7 +782,7 @@ public class UnitManager implements Serializable {
 				Job job = JobManager.getJob(jobName);
 				if (job != null) {
 					// 2016-04-16 Designate a specific job to a person
-					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED ,JobManager.MISSION_CONTROL);
+					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED, JobManager.MISSION_CONTROL);
 					// Assign a job to a person based on settlement's need
 					//person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
 				}
@@ -990,7 +998,14 @@ public class UnitManager implements Serializable {
 
 					}
 
-					person = new Person(fullname, gender, country, settlement, sponsor); // TODO: read from file
+					//person = new Person(fullname, gender, country, settlement, sponsor); // TODO: read from file
+					// 2017-04-11 Use Builder Pattern for creating an instance of Person
+					person = new PersonBuilderImpl(fullname, settlement)
+											.setGender(gender)
+											.setCountry(country)
+											.setSponsor(sponsor)
+											.build();
+					person.initialize();
 
 					Mind m = person.getMind();
 					// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models

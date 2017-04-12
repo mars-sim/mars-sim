@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -349,7 +350,14 @@ implements Transportable, Serializable {
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String sponsor = newSettlement.getSponsor();
 			String country = unitManager.getCountry(sponsor);
-			Person immigrant = new Person(immigrantName, gender, country, newSettlement, sponsor);
+			//Person immigrant = new Person(immigrantName, gender, country, newSettlement, sponsor);
+			// 2017-04-11 Use Builder Pattern for creating an instance of Person
+			Person immigrant = new PersonBuilderImpl(immigrantName, newSettlement)
+									.setGender(gender)
+									.setCountry(country)
+									.setSponsor(sponsor)
+									.build();
+			immigrant.initialize();
 
 			// Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();

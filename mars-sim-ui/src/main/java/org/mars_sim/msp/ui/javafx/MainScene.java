@@ -1388,6 +1388,18 @@ public class MainScene {
 		SwingNode calNode = new SwingNode();
 		calNode.setContent(calendarDisplay);
 
+		StackPane calPane = new StackPane(calNode);
+		calPane.getStyleClass().add("jfx-popup-container");
+		calPane.setAlignment(Pos.CENTER);
+		calPane.setPrefHeight(100);
+		calPane.setPrefWidth(140);
+
+		VBox calBox = new VBox();
+		calBox.setPadding(new Insets(0, 3, 3, 3));
+		calBox.setAlignment(Pos.BOTTOM_CENTER);
+		calBox.getChildren().addAll(calPane);
+		setQuickToolTip(calBox, "Martian Calendar showing all 4 weeks for current month");
+
 		//Label header_label = createHeader("MARS CALENDAR");
 		Text header_label = createTextHeader("MARS CALENDAR PANEL");
 
@@ -1398,19 +1410,39 @@ public class MainScene {
 		setQuickToolTip(yearText, "the current Martian orbit (or year). Note : Martian Orbit 0015 coincides with Earth year 2043 CE"); // The Martian year is referred to as an "orbit". Each orbit has 668.59 Martian sols. It is 668.5921 Martian days ("Sols") long.
 
 		HBox hBox = new HBox();
-		hBox.setPadding(new Insets(5, 15, 5, 15));
-		hBox.setAlignment(Pos.CENTER);
+		hBox.setPadding(new Insets(2, 15, 2, 15));
+		hBox.setAlignment(Pos.BOTTOM_CENTER);
 		hBox.getChildren().addAll(yearText, monthText);
+
+		Label LsLabel = new Label(SOLAR_LONGITUDE);
+		setQuickToolTip(LsLabel, "Solar Longitude (L_s) is the Mars-Sun angle for determining the Martian season");
 
 		orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();
-		LSText = createBlendText(SOLAR_LONGITUDE + Math.round(L_s*100D)/100D + Msg.getString("direction.degreeSign"));	 //$NON-NLS-1$
-		setQuickToolTip(LSText, "Martian Solar Longitude L_s [degrees]");
+		LSText = createBlendText(Math.round(L_s*100D)/100D + Msg.getString("direction.degreeSign"));	 //$NON-NLS-1$
+		setQuickToolTip(LSText, "L_s [in degrees] e.g. For Northern hemisphere, Spring equinox at L_s=0; Winter solstice at L_s=270.");// Summer solstice at L_s = 90. Autumn equinox at L_s = 180.");
 
-		northText = createBlendText(NORTH + marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
-		southText = createBlendText(SOUTH + marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
+		HBox LsBox = new HBox();
+		LsBox.setPadding(new Insets(2, 2, 2, 2));
+		LsBox.setAlignment(Pos.BOTTOM_CENTER);
+		LsBox.getChildren().addAll(LsLabel, LSText);
+
+		Label northLabel = new Label(NORTH);
+		Label southLabel = new Label(SOUTH);
+		northText = createBlendText( marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
+		southText = createBlendText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
 		setQuickToolTip(northText, "the current season in the Northern hemisphere");
 		setQuickToolTip(southText, "the current season in the Southern hemisphere");
+
+		HBox northBox = new HBox();
+		northBox.setPadding(new Insets(2, 2, 2, 2));
+		northBox.setAlignment(Pos.BOTTOM_CENTER);
+		northBox.getChildren().addAll(northLabel, northText);
+
+		HBox southBox = new HBox();
+		southBox.setPadding(new Insets(2, 2, 2, 2));
+		southBox.setAlignment(Pos.BOTTOM_CENTER);
+		southBox.getChildren().addAll(southLabel, southText);
 
 		noteLabel = new Label();
 		//noteText = new Text();
@@ -1420,10 +1452,11 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
 				+ "-fx-text-fill: #654b00;");
 
+
 		VBox vBox = new VBox();
-		vBox.setPadding(new Insets(5, 5, 5, 5));
+		vBox.setPadding(new Insets(1, 5, 1, 5));
 		vBox.setAlignment(Pos.CENTER);
-		vBox.getChildren().addAll(header_label, hBox, calNode, LSText, northText, southText, noteLabel);
+		vBox.getChildren().addAll(header_label, hBox, calBox, LsBox, northBox, southBox, noteLabel);
 
 		calendarPane = new StackPane(vBox);
 		calendarPane.getStyleClass().add("jfx-popup-container");
@@ -2713,7 +2746,7 @@ public class MainScene {
 		}
 
 		double L_s = orbitInfo.getL_s();
-		LSText.setText(SOLAR_LONGITUDE + Math.round(L_s*100D)/100D + Msg.getString("direction.degreeSign"));
+		LSText.setText(Math.round(L_s*100D)/100D + Msg.getString("direction.degreeSign"));
 
 		if (L_s > 68 && L_s < 72) {
 			noteLabel.setText(NOTE_MARS + APHELION);
@@ -2726,8 +2759,8 @@ public class MainScene {
 		else
 			noteLabel.setEffect(null);
 
-		northText.setText(NORTH + marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
-		southText.setText(SOUTH + marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
+		northText.setText(marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
+		southText.setText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
 
 		StringBuilder m = new StringBuilder();
         m.append(MARS_DATE_TIME).append(marsClock.getDateString())//.append(ONE_SPACE)

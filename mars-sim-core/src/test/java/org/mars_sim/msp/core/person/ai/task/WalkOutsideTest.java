@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -52,18 +53,28 @@ extends TestCase {
 		building.setYLocation(0D);
 		building.setFacing(0D);
 		settlement.getBuildingManager().addBuilding(building, false);
-		
+
 		BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building.addFunction(new EVA(building, airlock0));
 
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		Person person = new PersonBuilderImpl()
+								.setName("test person")
+								.setGender(PersonGender.MALE)
+								.setCountry(null)
+								.setAssociatedSettlement(settlement)
+								.setSponsor("Mars Society (MS)")
+								.build();
+		person.initialize();
+
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
 
 		// Create walking task.
-		WalkOutside walkTask = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), -20D, 0D, true);
 
 		Point2D startLoc = new Point2D.Double(10D, 0D);
@@ -119,7 +130,7 @@ extends TestCase {
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
 		settlement.getBuildingManager().addBuilding(building1, false);
-		
+
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
 
@@ -130,7 +141,7 @@ extends TestCase {
 		person.setYLocation(0D);
 
 		// Create walking task.
-		WalkOutside walkTask1 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask1 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), -20D, 0D, true);
 
 		// Determine an obstacle avoidance path around building.
@@ -144,7 +155,7 @@ extends TestCase {
 
 		// Create walking task.
 		person.setYLocation(1D);
-		WalkOutside walkTask2 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask2 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), -20D, 0D, true);
 
 		// Determine an obstacle avoidance path around building.
@@ -168,7 +179,7 @@ extends TestCase {
 		// Clear obstacle cache.
 		LocalAreaUtil.clearObstacleCache();
 
-		WalkOutside walkTask3 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask3 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), -20D, 0D, true);
 
 		// Determine an obstacle avoidance path around both buildings.
@@ -180,7 +191,7 @@ extends TestCase {
 		assertEquals(new Point2D.Double(-11D, -6D), path3.get(2));
 		assertEquals(new Point2D.Double(-20D, 0D), path3.get(3));
 
-		WalkOutside walkTask4 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask4 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), 0D, 0D, true);
 
 		// Determine a failed obstacle avoidance path.
@@ -222,7 +233,7 @@ extends TestCase {
 
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
-		
+
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		settlement.getInventory().retrieveUnit(person);
@@ -230,7 +241,7 @@ extends TestCase {
 		person.setYLocation(0D);
 
 		// Create walking task.
-		WalkOutside walkTask1 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask1 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), 20D, 0D, true);
 
 		// Determine a walking path.
@@ -242,7 +253,7 @@ extends TestCase {
 		assertFalse(walkTask1.areObstaclesInPath());
 
 		// Create walking task.
-		WalkOutside walkTask2 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask2 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), -20D, 0D, true);
 
 		// Determine walking path around building.
@@ -256,7 +267,7 @@ extends TestCase {
 		assertFalse(walkTask2.areObstaclesInPath());
 
 		// Create walking task.
-		WalkOutside walkTask3 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask3 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), 0D, 0D, true);
 
 		// Determine a walking path through building.
@@ -302,7 +313,7 @@ extends TestCase {
 
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
-		
+
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		settlement.getInventory().retrieveUnit(person);
@@ -310,7 +321,7 @@ extends TestCase {
 		person.setYLocation(0D);
 
 		// Create walking task.
-		WalkOutside walkTask1 = new WalkOutside(person, person.getXLocation(), 
+		WalkOutside walkTask1 = new WalkOutside(person, person.getXLocation(),
 				person.getYLocation(), -20D, 0D, true);
 
 		double[] bounds1 = walkTask1.getLocalObstacleSearchLimits(person.getCoordinates());
@@ -331,7 +342,7 @@ extends TestCase {
 		assertNotNull(bounds2);
 		assertEquals(4, bounds2.length);
 
-		double value2 = (Math.sqrt(Math.pow(building1.getWidth(), 2D) + Math.pow(building1.getLength(), 
+		double value2 = (Math.sqrt(Math.pow(building1.getWidth(), 2D) + Math.pow(building1.getLength(),
 				2D)) / 2D) + 7D;
 
 		assertEquals(17D, bounds2[0]);

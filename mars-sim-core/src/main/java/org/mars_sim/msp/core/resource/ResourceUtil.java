@@ -150,6 +150,7 @@ public class ResourceUtil implements Serializable {
 
 	public void createResourceSet() {
  		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
+ 		//System.out.println("amountResourceConfig : " + System.identityHashCode(amountResourceConfig));
 		resources = amountResourceConfig.getAmountResources();
 	}
 
@@ -199,29 +200,6 @@ public class ResourceUtil implements Serializable {
         napkinAR = findAmountResource(NAPKIN);				// 161
         toiletTissueAR = findAmountResource(TOILET_TISSUE);	// 162
 
-/*
-    	foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);			// 1
-		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);		// 2
-		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);		// 3
-		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2);	// 4
-
-        foodWasteAR = AmountResource.findAmountResource(FOOD_WASTE);			// 16
-        solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);		// 17
-        greyWaterAR = AmountResource.findAmountResource(GREY_WATER);			// 19
-        tableSaltAR = AmountResource.findAmountResource(TABLE_SALT); 		// 23
-        NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);	// 145
-        napkinAR = AmountResource.findAmountResource(NAPKIN);				// 150
-
-    	methaneAR = AmountResource.findAmountResource(METHANE);			// 8
-        iceAR = AmountResource.findAmountResource(ICE);					// 12
-    	regolithAR = AmountResource.findAmountResource(REGOLITH);		// 142
-        rockSamplesAR = AmountResource.findAmountResource(ROCK_SAMLE);	// 143
-
-        fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
-        soilAR = AmountResource.findAmountResource(SOIL);
-        cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
-        toiletTissueAR = AmountResource.findAmountResource(TOILET_TISSUE);
-*/
     }
 
     public static void printID() {

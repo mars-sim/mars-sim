@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -80,6 +81,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static transient Logger logger = Logger.getLogger(Person.class.getName());
 	/** The base carrying capacity (kg) of a person. */
 	private final static double BASE_CAPACITY = 60D;
+
+	private final static String HEIGHT = "Height";
+
+	private final static String WEIGHT = "Weight";
 	// Data members
 	private boolean bornOnMars;
 	/** True if person is declared dead and buried. */
@@ -146,6 +151,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static EarthClock earthClock;
 	private static MasterClock masterClock;
 
+	public Person(String name, Settlement settlement) {
+		super(name, settlement.getCoordinates());
+		super.setDescription(settlement.getName());
+
+		// Initialize data members
+		this.name = name;
+		this.xLoc = 0D;
+		this.yLoc = 0D;
+		this.associatedSettlement = settlement;
+
+	}
+
 	/**
 	 * Constructs a Person object at a given settlement.
 	 *
@@ -170,16 +187,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Initialize data members
 		this.name = name;
 		this.country = country;
+		if (country != null)
+			birthplace = "Earth";
+		else
+			birthplace = "Mars";
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.gender = gender;
 		this.associatedSettlement = settlement;
 		this.sponsor = sponsor;
 
-		if (country != null)
-			birthplace = "Earth";
-		else
-			birthplace = "Mars";
+	}
+
+	public void initialize() {
 
 		sim = Simulation.instance();
 		masterClock = sim.getMasterClock();
@@ -223,12 +243,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setupChromosomeMap();
 
 		// Put person in proper building.
-		settlement.getInventory().storeUnit(this);
+		associatedSettlement.getInventory().storeUnit(this);
 		// setAssociatedSettlement(settlement); // will cause suffocation when
 		// reloading a saved sim
-		BuildingManager.addToRandomBuilding(this, settlement); // why failed ?
+		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
 																// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
-
 		support = getLifeSupportType();
 	}
 
@@ -333,44 +352,59 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setupHeight() {
 		int ID = 20;
 		boolean dominant = false;
-		// Set height of person as gender-correlated curve
-		double dad_height = (this.gender == PersonGender.MALE
-				? 156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22))
-				: 146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15)));
 
-		double mom_height = (this.gender == PersonGender.MALE
-				? 156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22))
-				: 146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15)));
+		// For a 20-year-old in the US:
+		// male :   height : 176.5	weight : 68.5
+		// female : height : 162.6	weight : 57.2
 
-		Gene dad_height_G = new Gene(this, ID, "Height", true, dominant, null, dad_height);
+		// TODO: factor in country of origin.
+
+		// 2017-04-11 Attempt to compute height with gaussian
+		// TODO: look for a gender-correlated curve
+		double dad_height = 176.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(22);
+		double mom_height = 162.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15);
+
+
+		Gene dad_height_G = new Gene(this, ID, HEIGHT, true, dominant, null, dad_height);
 		paternal_chromosome.put(ID, dad_height_G);
 
-		Gene mom_height_G = new Gene(this, ID, "Height", false, dominant, null, mom_height);
+		Gene mom_height_G = new Gene(this, ID, HEIGHT, false, dominant, null, mom_height);
 		maternal_chromosome.put(ID, mom_height_G);
 
-		height = (dad_height + mom_height) / 2D;
+		height = Math.round((dad_height + mom_height)*100D)/200D;
+
 
 	}
 
 	// 2016-01-12 Added setupWeight()
 	public void setupWeight() {
 		int ID = 21;
-
 		boolean dominant = false;
 
-		double dad_weight = 56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100)) / 10D;
-		double mom_weight = 56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100)) / 10D;
+		// For a 20-year-old in the US:
+		// male :   height : 176.5	weight : 68.5
+		// female : height : 162.6	weight : 57.2
 
-		Gene dad_weight_G = new Gene(this, ID, "Weight", true, dominant, null, dad_weight);
+		// TODO: factor in country of origin.
+
+		// 2017-04-11 Attempt to compute height with gaussian
+		// TODO: look for a gender-correlated curve
+		double dad_weight = 68.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(10);
+		double mom_weight = 57.2 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15) ;
+
+		Gene dad_weight_G = new Gene(this, ID, WEIGHT, true, dominant, null, dad_weight);
 		paternal_chromosome.put(ID, dad_weight_G);
 
-		Gene mom_weight_G = new Gene(this, ID, "Weight", false, dominant, null, mom_weight);
+		Gene mom_weight_G = new Gene(this, ID, WEIGHT, false, dominant, null, mom_weight);
 		maternal_chromosome.put(ID, mom_weight_G);
 
-		// Set base mass of person from 58 to 76, peaking at 67 kg.
-		weight = (dad_weight + mom_weight) / 2D;
+		weight = Math.round((dad_weight + mom_weight)*100D)/200D;
 		setBaseMass(weight);
 
+	}
+
+	public void setSponsor(String sponsor) {
+		this.sponsor = sponsor;
 	}
 
 	// 2016-08-12 Revised assignReportingAuthority()
@@ -1000,6 +1034,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return gender;
 	}
 
+	public void setGender(PersonGender g) {
+		gender = g;
+	}
+
 	/**
 	 * Gets the birthplace of the person
 	 *
@@ -1266,6 +1304,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	public String getCountry() {
 		return country;
+	}
+
+	public void setCountry(String c) {
+		this.country = c;
+		if (c != null)
+			birthplace = "Earth";
+		else
+			birthplace = "Mars";
 	}
 
 	public boolean isDead() {

@@ -6,29 +6,22 @@
  */
 package org.mars_sim.msp.core;
 
-import java.awt.Color;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.nio.file.Files;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -44,20 +37,14 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
-//import org.reactfx.EventStreams;
-//import org.reactfx.util.FxTimer;
-//import org.reactfx.util.Timer;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
-
-import com.sun.javafx.runtime.VersionInfo;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.util.Duration;
-
 
 
 //import mikera.gui.Frames;
@@ -488,12 +475,13 @@ implements ClockListener, Serializable {
     	//logger.info("Simulation : running readFromFile()");
         byte[] buf = new byte[8192];
         ObjectInputStream ois = null;
+        //FileInputStream in = null;
         FileInputStream in = null;
-
         //boolean no_go = false;
 
         try {
         	//System.out.println("Simulation : inside try. starting decompressing");
+            //in = new FileInputStream(file);
             in = new FileInputStream(file);
 
             // Since XZInputStream does some buffering internally
@@ -506,6 +494,7 @@ implements ClockListener, Serializable {
             // define a temporary uncompressed file
             File uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
             // Decompress a xz compressed file
+            //FileOutputStream fos = new FileOutputStream(uncompressed);
             FileOutputStream fos = new FileOutputStream(uncompressed);
 
             int size;
