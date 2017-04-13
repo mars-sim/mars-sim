@@ -621,7 +621,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
 			if (mainScene != null && !masterClock.isSavingSimulation())
-				mainScene.showWaitStage(MainScene.PAUSED);
+				//mainScene.showWaitStage(MainScene.PAUSED);
+				mainScene.startPausePopup();
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 
@@ -629,7 +630,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 			if (mainScene != null)
-				mainScene.hideWaitStage(MainScene.PAUSED);
+				//mainScene.hideWaitStage(MainScene.PAUSED);
+				mainScene.stopPausePopup();
 
 		}
 	}

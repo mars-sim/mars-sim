@@ -473,13 +473,11 @@ public class MainScene {
 		// normally on pool-4-thread-3 Thread
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
-		boolean previous = startPause();
-
 		Platform.runLater(() -> {
+			boolean previous = startPause();
 			transportWizard.deliverBuildings(buildingManager);
+			endPause(previous);
 		});
-
-		endPause(previous);
 	}
 
 
@@ -496,13 +494,11 @@ public class MainScene {
 		//logger.info("MainScene's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
-		boolean previous = startPause();
-
 		Platform.runLater(() -> {
-				constructionWizard.selectSite(mission);
-			});
-
-		endPause(previous);
+			boolean previous = startPause();
+			constructionWizard.selectSite(mission);
+			endPause(previous);
+		});
 	}
 
 	// 2015-12-16 Added getConstructionWizard()
@@ -848,8 +844,6 @@ public class MainScene {
 		rootAnchorPane = new AnchorPane();
 
 		pausePane = new StackPane();
-		//pausePane.setLayoutX(root.getWidth()/2D);
-		//pausePane.setLayoutY(root.getHeight()/2D);
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
 		pausePane.getChildren().add(createPausePaneContent());
 
@@ -907,10 +901,11 @@ public class MainScene {
 
 		root.getChildren().addAll(rootAnchorPane);
 
+
     	scene = new Scene(root, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
 
-		pausePane.prefWidthProperty().bind(scene.widthProperty());
-		pausePane.prefHeightProperty().bind(scene.heightProperty());
+		//pausePane.prefWidthProperty().bind(scene.widthProperty());
+		//pausePane.prefHeightProperty().bind(scene.heightProperty());
 
 		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(35));//73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
@@ -2863,28 +2858,29 @@ public class MainScene {
 	 */
 	public void saveSimulation(int type) {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
-		boolean previous = startPause();
+		//boolean previous = startPause();
+		if (!masterClock.isPaused()) {
+			//hideWaitStage(PAUSED);
+			showWaitStage(SAVING);
 
-		hideWaitStage(PAUSED);
-		showWaitStage(SAVING);
+	        Task<Void> task = new Task<Void>() {
+	            @Override
+	            protected Void call() throws Exception {
+	                saveSimulationProcess(type);
+	        		while (masterClock.isSavingSimulation())
+	        			TimeUnit.MILLISECONDS.sleep(200L);
+	                return null;
+	            }
+	            @Override
+	            protected void succeeded(){
+	                super.succeeded();
+	                hideWaitStage(SAVING);
+	            }
+	        };
+	        new Thread(task).start();
 
-        Task task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                saveSimulationProcess(type);
-        		while (masterClock.isSavingSimulation())
-        			TimeUnit.MILLISECONDS.sleep(200L);
-                return null;
-            }
-            @Override
-            protected void succeeded(){
-                super.succeeded();
-                hideWaitStage(SAVING);
-            }
-        };
-        new Thread(task).start();
-
-		endPause(previous);
+		}
+		//endPause(previous);
 
 	}
 
@@ -2898,7 +2894,7 @@ public class MainScene {
 		dir = null;
 		title = null;
 
-		hideWaitStage(PAUSED);
+		//hideWaitStage(PAUSED);
 
 		// 2015-01-25 Added autosave
 		if (type == Simulation.AUTOSAVE) {
@@ -2929,10 +2925,10 @@ public class MainScene {
 				else
 					return;
 
-				hideWaitStage(PAUSED);
+				//hideWaitStage(PAUSED);
 				showWaitStage(SAVING);
 
-		        Task task = new Task<Void>() {
+		        Task<Void> task = new Task<Void>() {
 		            @Override
 		            protected Void call() throws Exception {
 		        		try {
@@ -2961,21 +2957,39 @@ public class MainScene {
 
 
 	public void startPausePopup() {
-		//System.out.println("calling startPausePopup(): messagePopup.numPopups() is " + messagePopup.numPopups());
 		//if (messagePopup.numPopups() < 1) {
             // Note: (NOT WORKING) popups.size() is always zero no matter what.
-		Platform.runLater(() ->
+		Platform.runLater(() -> {
 		//		messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
-			root.getChildren().add(pausePane)
-		);
+			boolean hasIt = false;
+		    for (Node node : root.getChildrenUnmodifiable()) {
+		    	if (node == pausePane) {
+		    		hasIt = true;
+		    		break;
+		    	}
+		    }
+		    if (!hasIt) {
+		    	pausePane.setLayoutX(scene.getWidth()/2D);
+				pausePane.setLayoutY(scene.getHeight()/2D);
+		    	root.getChildren().add(pausePane);
+		    }
+		});
 
 	}
 
 	public void stopPausePopup() {
-		Platform.runLater(() ->
+		Platform.runLater(() -> {
 		//	messagePopup.stop()
-			root.getChildren().remove(pausePane)
-		);
+			boolean hasIt = false;
+		    for (Node node : root.getChildrenUnmodifiable()) {
+		    	if (node == pausePane) {
+		    		hasIt = true;
+		    		break;
+		    	}
+		    }
+		    if (hasIt)
+		    	root.getChildren().remove(pausePane);
+		});
 
 	}
 
@@ -2986,11 +3000,12 @@ public class MainScene {
 	// 2017-04-12 Add pause pane
     private VBox createPausePaneContent() {
     	VBox vbox = new VBox();
+    	vbox.setPrefSize(150, 150);
 
-        Label label = new Label("| |");
+        Label label = new Label("||");
         label.setAlignment(Pos.CENTER);
         label.setPadding(new Insets(10));
-        label.setStyle("-fx-font-size: bold 48px; -fx-text-fill: cyan;");
+        label.setStyle("-fx-font-size: 48px; -fx-text-fill: cyan;");
         //label.setMaxWidth(250);
         label.setWrapText(true);
 
@@ -3033,7 +3048,8 @@ public class MainScene {
 		if (!previous) {
 			pauseSimulation();
 		}
-		desktop.getTimeWindow().enablePauseButton(false);
+		//desktop.getTimeWindow().enablePauseButton(false);
+		masterClock.setPaused(true);
 		return previous;
 	}
 

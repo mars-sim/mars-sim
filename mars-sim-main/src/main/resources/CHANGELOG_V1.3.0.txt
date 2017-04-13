@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 39__) - 2017-__-__
+## v3.1.0-Preview 7 (build 3935) - 2017-04-13
 
 ### MINIMUM REQUIREMENTS :
 
@@ -17,8 +17,9 @@ https://mars-sim.github.io/
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, the Tab bar does NOT work and will freeze mars-sim if clicking on it.
-   (Recommend using MacOS's style top menu to gain access to each Tool).
+1. In MacOS, the Tab bar does NOT work and will freeze up when clicking it--
+   recommend using MacOS's style top menu to gain access to each Tool. Known JavaFX
+   WebEngine bug in displaying certain fonts in Help Browser.
 
 2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact.
 
@@ -29,7 +30,8 @@ https://mars-sim.github.io/
 
 1. Add new crops (taro, corn, white mustard) and meals.
 
-2. Add arbitrary genetic factor and gender correlated curves for computing weight and height of the settlers.
+2. Add arbitrary genetic factor and gender correlated curves for computing weight and
+   height of the settlers.
 
 3. Rework the minimum and maximum value of time ratio.
 
@@ -38,13 +40,15 @@ https://mars-sim.github.io/
 
 1. Set the initial position of the time ratio slider to near the middle in Speed Panel.
 
-1. Add showing the season (for Northern/Southern Hemisphere) and solar longitude (in degrees) to Mars Calendar Panel.
+1. Add showing the season (for Northern/Southern Hemisphere) and solar longitude
+   (in degrees) to Mars Calendar Panel.
 
 2. Refine death related info display.
 
 3. Add fast tooltips for Mars Calendar Panel and Speed panel.
 
-4. Accept the use of comma (in addition to the default case of using dot) as the decimal mark when inputting lat/lon in the Config Editor.
+4. Accept the use of comma (in addition to the default case of using dot) as the decimal
+   mark when inputting lat/lon in the Config Editor.
 
 5. Switch to using an unobtrusive, transparent pause screen when sim is paused.
 
@@ -61,6 +65,7 @@ https://mars-sim.github.io/
 
 5. Remove external fonts to stop startup crash in linux.
 
+6. Fix errors when creating brand new Resupply Missions.
 
 -----------------------------------------------------------------------------------------
 

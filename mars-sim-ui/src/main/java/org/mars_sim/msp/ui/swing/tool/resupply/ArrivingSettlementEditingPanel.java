@@ -102,8 +102,10 @@ extends TransportItemEditingPanel {
 
 	/**
 	 * Constructor.
-	 * @param settlement the arriving settlement to modify
-	 * or null if creating a new one.
+	 * @param settlement the arriving settlement to modify or null if creating a new one.
+	 * @param resupplywindow
+	 * @param modifyTransportItemDialog
+	 * @param newTransportItemDialog
 	 */
 	public ArrivingSettlementEditingPanel(ArrivingSettlement settlement, ResupplyWindow resupplyWindow,
 			ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {

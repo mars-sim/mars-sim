@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import javafx.application.Platform;
@@ -54,13 +55,13 @@ implements ListSelectionListener {
 	public static final String NAME = "Resupply Tool";
 
 	// Data members
-	private boolean isRunning = false;
+	//private boolean isRunning = false;
 	private IncomingListPanel incomingListPane;
 	private ArrivedListPanel arrivedListPane;
 	private TransportDetailPanel detailPane;
 	private JButton modifyButton;
 	private JButton cancelButton;
-	
+
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
 
@@ -73,9 +74,9 @@ implements ListSelectionListener {
 		super(NAME, desktop);
 
 		this.desktop = desktop;
-		//MainWindow mw = desktop.getMainWindow();	
+		//MainWindow mw = desktop.getMainWindow();
 		mainScene = desktop.getMainScene();
-		
+
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
@@ -145,106 +146,73 @@ implements ListSelectionListener {
 
 		setResizable(false);
 		setMaximizable(true);
-		
+
 		if (desktop.getMainScene() != null) {
 			//setClosable(false);
 			setMinimumSize(new Dimension(640, 640));
-			setSize(new Dimension(768, 640));	
+			setSize(new Dimension(768, 640));
 		}
 		else
 			setMinimumSize(new Dimension(640, 640));
-		
-		setVisible(true);	
+
+		setVisible(true);
 		//pack();
-		
+
 		Dimension desktopSize = desktop.getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
 
-		
+
 	}
 
 	/**
 	 * Opens a create dialog.
 	 */
-	private void createNewTransportItem() {		
-		
-		// 2015-12-16 Track the current pause state
-		boolean previous2 = Simulation.instance().getMasterClock().isPaused();
-		
-		// Pause simulation.
-		if (mainScene != null) {
-			if (!previous2) {
-				mainScene.pauseSimulation();
-				//System.out.println("previous2 is false. Paused sim");
-			}	
-			desktop.getTimeWindow().enablePauseButton(false);
-		}	
+	private void createNewTransportItem() {
 
-		new NewTransportItemDialog(desktop, this);	
-		
-		isRunning = true;
-		
-		// Unpause simulation.
-		if (mainScene != null) {
-			boolean now2 = Simulation.instance().getMasterClock().isPaused();
-    		if (!previous2) {
-    			if (now2) {
-    				mainScene.unpauseSimulation();
-    	    		//System.out.println("previous2 is false. now2 is true. Unpaused sim");
-    			}
-    		} else {
-    			if (!now2) {
-    				mainScene.unpauseSimulation();
-    	    		//System.out.println("previous2 is true. now2 is false. Unpaused sim");
-    			}				
-    		}    
-			desktop.getTimeWindow().enablePauseButton(true);
-		}	
+
+		if (mainScene != null )  {
+			// 2015-12-16 Track the current pause state
+			boolean previous = mainScene.startPause();
+
+			new NewTransportItemDialog(desktop, this);
+
+			mainScene.endPause(previous);
+
+		} else {
+
+			new NewTransportItemDialog(desktop, this);
+		}
+
 	}
 
 	/**
 	 * Determines if swing or javaFX is in used when loading the modify dialog
 	 */
 	private void modifyTransportItem() {
-		// 2015-12-16 Track the current pause state
-		boolean previous3 = Simulation.instance().getMasterClock().isPaused();
 
-		if (mainScene != null) {
-			if (!previous3) {
-				mainScene.pauseSimulation();
-				//System.out.println("previous3 is false. Paused sim");
-			}	
-			desktop.getTimeWindow().enablePauseButton(false);
+		if (mainScene != null )  {
+			// 2015-12-16 Track the current pause state
+			boolean previous = mainScene.startPause();
+
+			modifyTransport();
+
+			mainScene.endPause(previous);
+
+		} else {
+
+			modifyTransport();
 		}
-		
-		modifyTransport();
-			
-		if (mainScene != null) {
-    		boolean now3 = Simulation.instance().getMasterClock().isPaused();
-    		if (!previous3) {
-    			if (now3) {
-    				mainScene.unpauseSimulation();
-    	    		//System.out.println("previous3 is false. now3 is true. Unpaused sim");
-    			}
-    		} else {
-    			if (!now3) {
-    				mainScene.unpauseSimulation();
-    	    		//System.out.println("previous3 is true. now3 is false. Unpaused sim");
-    			}				
-    		}            
-			desktop.getTimeWindow().enablePauseButton(true);
-		}
-			
+
 	}
 
 	/**
 	 * Loads modify dialog for the currently selected transport item.
 	 */
 	// 2015-03-23 Added modifyTransport()
-	private void modifyTransport() {	
+	private void modifyTransport() {
 		// Get currently selected incoming transport item.
 		Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
 
@@ -255,7 +223,7 @@ implements ListSelectionListener {
 				String title = "Modify Resupply Mission";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, resupply);
 				new ModifyTransportItemDialog(desktop, this, title, resupply);
-				
+
 				//isRunning = true;
 			}
 			else if (transportItem instanceof ArrivingSettlement) {
@@ -264,23 +232,23 @@ implements ListSelectionListener {
 				String title = "Modify Arriving Settlement";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, settlement);
 				new ModifyTransportItemDialog(desktop, this, title, settlement);
-	
+
 				//isRunning = true;
 			}
 		}
 	}
-	
+
 	/**
 	 * Cancels the currently selected transport item.
 	 */
-	private void cancelTransportItem() {     
+	private void cancelTransportItem() {
 		String msg = "Are you sure you want to discard the highlighted mission?";
-		
+
 		if (mainScene != null) {
 			// 2015-12-16 Added askFX()
 			Platform.runLater(() -> {
 				askFX(msg);
-			}); 
+			});
 		}
 		else {
 			// 2014-10-04 Added a dialog box asking the user to confirm "discarding" the mission
@@ -290,7 +258,7 @@ implements ListSelectionListener {
 			if (response == JOptionPane.NO_OPTION) {
 				// "No" button click, do nothing
 			} else if (response == JOptionPane.YES_OPTION) {
-				// "Yes" button clicked and go ahead with discarding this mission 
+				// "Yes" button clicked and go ahead with discarding this mission
 				Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
 				if (transportItem != null) {
 					// call cancelTransportItem() in TransportManager Class to cancel the selected transport item.
@@ -298,7 +266,7 @@ implements ListSelectionListener {
 				}
 			} else if (response == JOptionPane.CLOSED_OPTION) {
 				// Close the dialogbox, do nothing
-			}	  
+			}
 		}
 	}
 
@@ -312,9 +280,9 @@ implements ListSelectionListener {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Resupply Tool");
     	alert.initOwner(mainScene.getStage());
-		alert.initModality(Modality.NONE); 
+		alert.initModality(Modality.NONE);
 		//alert.initModality(Modality.APPLICATION_MODAL);  f
-		//alert.initModality(Modality.WINDOW_MODAL); 
+		//alert.initModality(Modality.WINDOW_MODAL);
 		alert.setHeaderText("Confirmation for discarding this transport/ressuply mission");
 		alert.setContentText(msg);
 
@@ -340,7 +308,7 @@ implements ListSelectionListener {
 			JList<?> incomingList = (JList<?>) evt.getSource();
 			Object selected = incomingList.getSelectedValue();
 			if (selected != null) {
-				// Incoming transport item is selected, 
+				// Incoming transport item is selected,
 				// so enable modify and cancel buttons.
 				modifyButton.setEnabled(true);
 				cancelButton.setEnabled(true);
@@ -357,11 +325,11 @@ implements ListSelectionListener {
 	public IncomingListPanel getIncomingListPane() {
 		return incomingListPane;
 	}
-	
+
 	public void setModifyButton(boolean value) {
 		modifyButton.setEnabled(value);
 	}
-	
+
 	//public boolean isRunning() {
 	//	return isRunning;
 	//}
@@ -369,7 +337,7 @@ implements ListSelectionListener {
 	//public void setRunning(boolean value){
 	//	isRunning = value;
 	//}
-	
+
 	/**
 	 * Prepare this window for deletion.
 	 */

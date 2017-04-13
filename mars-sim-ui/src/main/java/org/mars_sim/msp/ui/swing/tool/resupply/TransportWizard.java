@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportWizard.java
- * @version 3.08 2016-03-07
+ * @version 3.1.0 2017-04-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -130,18 +130,18 @@ public class TransportWizard {
 	   private int incrX;
 	   private int incrY;
 	   private int facingChange;
-	
+
 	   private KeyboardDirection(int incrX, int incrY, int facingChange) {
 	      this.incrX = incrX;
 	      this.incrY = incrY;
-	      this.facingChange = facingChange;	      
-	   }	
+	      this.facingChange = facingChange;
+	   }
 	   public int getIncrX() {
 	      return incrX;
-	   }	
+	   }
 	   public int getIncrY() {
 	      return incrY;
-	   }   
+	   }
 	   public int getFacing() {
 		   return facingChange;
 	   }
@@ -196,12 +196,12 @@ public class TransportWizard {
     public synchronized void deliverBuildings(BuildingManager mgr) {
     	logger.info("deliverBuildings() is on " + Thread.currentThread().getName()); // normally on JavaFX Application Thread
 	    resupply = mgr.getResupply();
-	    
+
     	if (settlementWindow == null)
     		settlementWindow = desktop.getSettlementWindow();
     	if (mapPanel == null)
     		mapPanel = settlementWindow.getMapPanel();
-		
+
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
     	// how to make each building ask for a position ?
 
@@ -214,42 +214,16 @@ public class TransportWizard {
 			desktop.openToolWindow(SettlementWindow.NAME);
 			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(mgr.getSettlement());
 		}
-		
-        if (mainScene != null) {
 
+        if (mainScene != null) {
         	//try {
 				//FXUtilities.runAndWait(() -> {
-				//Platform.runLater(() -> {					
-					// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
-					// 2015-12-16 Track the current pause state
-					boolean previous0 = Simulation.instance().getMasterClock().isPaused();
+			boolean previous = mainScene.startPause();
 
-					// Pause simulation.
-					if (mainScene != null) {
-						if (!previous0) {
-							mainScene.pauseSimulation();
-							//System.out.println("previous0 is false. Paused sim");
-						}
-						desktop.getTimeWindow().enablePauseButton(false);
-					}
+			determineEachBuildingPosition(mgr);
 
-				    //List<BuildingTemplate> templates = resupply.orderNewBuildings();
-				    //BuildingTemplate aTemplate = templates.get(0);
-					//String missionName = aTemplate.getMissionName();
+			mainScene.endPause(previous);
 
-				   	//askDefaultPosition(mgr, missionName, previous0);
-					determineEachBuildingPosition(mgr);
-
-					if (mainScene != null) {
-						unpause(previous0);
-					}
-
-
-				//});
-			//} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
-			//	e.printStackTrace();
-			//}
 		}
         else {
         	// non-javaFX mode
@@ -268,7 +242,7 @@ public class TransportWizard {
 	class DeliverTask implements Runnable {
 
 		private BuildingManager mgr;
-		
+
 		DeliverTask(BuildingManager mgr) {
 			this.mgr = mgr;
 		}
@@ -280,7 +254,7 @@ public class TransportWizard {
            	mgr.getSettlement().fireUnitUpdate(UnitEventType.END_TRANSPORT_WIZARD_EVENT);
 		}
     }
-    
+
     /**
      * Asks user if all arrival buildings use the default template positions
 
@@ -346,26 +320,6 @@ public class TransportWizard {
     }
 */
 
-    /**
-     * Checks for the previous state before unpausing the sim.
-     * @param previous state
-     */
-    public void unpause(boolean previous0) {
-    	boolean now0 = Simulation.instance().getMasterClock().isPaused();
-		if (!previous0) {
-			if (now0) {
-				mainScene.unpauseSimulation();
-	    		//System.out.println("previous0 is false. now0 is true. Unpaused sim");
-			}
-		} else {
-			if (!now0) {
-				mainScene.unpauseSimulation();
-	    		//System.out.println("previous0 is true. now0 is false. Unpaused sim");
-			}
-		}
-		desktop.getTimeWindow().enablePauseButton(true);
-    }
-
 	/**
 	 * Determines the placement of each building manually, instead of using the template positions
 	 */
@@ -376,10 +330,6 @@ public class TransportWizard {
         List<BuildingTemplate> orderedBuildings = resupply.orderNewBuildings();
         //System.out.println("orderedBuildings.size() : " + orderedBuildings.size());
         //if (orderedBuildings.size() > 0) {
-
-        	// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
-    		//if (mainScene != null)
-    		//	mainScene.pauseSimulation();
 
 	        // 2015-12-19 Added the use of ComparatorOfBuildingID()
 	        Collections.sort(orderedBuildings, new ComparatorOfBuildingID());
@@ -400,10 +350,6 @@ public class TransportWizard {
 
 	        Building building = mgr.getACopyOfBuildings().get(0);
 	        mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
-
-			//if (mainScene != null)
-			//	mainScene.unpauseSimulation();
-        //} else {}
 
         //resupply.deliverOthers();
         //2016-01-12 Needed to get back to the original thread in Resupply.java that started the instance
@@ -499,35 +445,31 @@ public class TransportWizard {
     public synchronized void pauseAndCheck(BuildingManager mgr, BuildingTemplate correctedTemplate) {
     	//System.out.println("inside checkTemplateAddBuilding()");
 
-    	boolean previous0 = Simulation.instance().getMasterClock().isPaused();
+    	boolean previous = true; //0 = Simulation.instance().getMasterClock().isPaused();
 
 		// Pause simulation.
-		if (mainScene != null) {
-			if (!previous0) {
-				mainScene.pauseSimulation();
-				//System.out.println("previous0 is false. Paused sim");
-			}
-			desktop.getTimeWindow().enablePauseButton(false);
-		}
+		if (mainScene != null)
+			previous = mainScene.startPause();
 
     	// Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
     	boolean checking = checkBuildingTemplatePosition(mgr, correctedTemplate);
     	//System.out.println("checking is " + checking);
 		if (checking) {
-			createDialog(mgr, correctedTemplate, true, false);
+			createDialog(mgr, correctedTemplate, true, false); // true, false);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, true)");
 
 		} else {
 			// The building's original template position has been occupied. Get another location for the building
-			BuildingTemplate newT = clearCollision(correctedTemplate, mgr, 10);
+			BuildingTemplate newT = clearCollision(correctedTemplate, mgr, 50);
 			//System.out.println("inside checkTemplateAddBuilding(), just got newT");
 			createDialog(mgr, newT, false, true);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, false)");
 		}
 
-		if (mainScene != null) {
-			unpause(previous0);
-		}
+		if (mainScene != null)
+			mainScene.endPause(previous);
+
+
 
     }
 
@@ -575,7 +517,7 @@ public class TransportWizard {
     public BuildingTemplate clearCollision(BuildingTemplate t, BuildingManager mgr, int count) {
 		logger.info("calling clearCollision()");
 		count--;
-		
+
     	boolean noVehicle = true;
     	// check if a vehicle is the obstacle and move it
     	noVehicle = checkCollisionMoveVehicle(t, mgr);
@@ -617,7 +559,7 @@ public class TransportWizard {
 
 		// true if no collision
         boolean noCollison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
-        
+
         return noCollison;
 
     }
@@ -627,13 +569,13 @@ public class TransportWizard {
      * @param building
      * @param buildingManager
      * @param count The number of times remaining checking collision
-     * @return int The remaining count or if zero, there is no collision. 
+     * @return int The remaining count or if zero, there is no collision.
      */
     // 2015-12-07 Added checkCollisionImmovable()
     public int checkCollisionImmovable(BuildingTemplate t, BuildingManager mgr, int count) {
 		logger.info(count + " : calling checkCollisionImmovable(t, mgr) for " + t.getNickName());
 		if (count > 0)
-			count--;	
+			count--;
     	double xLoc = t.getXLoc();
     	double yLoc = t.getYLoc();
     	double w = t.getWidth();
@@ -641,7 +583,7 @@ public class TransportWizard {
 		double f = t.getFacing();
 
 		BoundedObject boundedObject = null;
-		
+
 		if (t.getBuildingType().equalsIgnoreCase("hallway")
 				&& t.getBuildingType().equalsIgnoreCase("tunnel"))
 				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
@@ -656,7 +598,7 @@ public class TransportWizard {
 			return 0;
 		else
 			return count;
-		
+
     }
 
     /**
@@ -690,14 +632,14 @@ public class TransportWizard {
      * @param building
      * @param buildingManager
      * @param count The number of times remaining checking collision
-     * @return int The remaining count or if zero, there is no collision. 
+     * @return int The remaining count or if zero, there is no collision.
      */
     // 2015-12-07 Added checkCollisionImmovable()
     public int checkCollisionImmovable(Building b, BuildingManager mgr, int count) {
 		logger.info(count + " : calling checkCollisionImmovable(b, mgr) for " + b.getNickName());
 		if (count > 0)
 			count--;
-		
+
     	double xLoc = b.getXLocation();
     	double yLoc = b.getYLocation();
     	double w = b.getWidth();
@@ -705,25 +647,25 @@ public class TransportWizard {
 		double f = b.getFacing();
 
 		BoundedObject boundedObject = null;
-		
+
 		if (b.getBuildingType().equalsIgnoreCase("hallway")
 			&& b.getBuildingType().equalsIgnoreCase("tunnel"))
 			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 		else
 			boundedObject = new BoundedObject(xLoc, yLoc, w+1, l+1, f);
-			
+
 		// true if no collision
 		boolean noCollison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
-        
+
 		if (noCollison)
 			return 0;
 		else
 			return count;
-		
+
     }
-	
-	    
+
+
 	/**
 	 * Maps a number to an alphabet
 	 * @param a number
@@ -762,7 +704,7 @@ public class TransportWizard {
 			if (mainScene != null) {
 				mainScene.setSettlement(mgr.getSettlement());
 			}
-			else 
+			else
 				settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(mgr.getSettlement());
 		}
   		// set up the Settlement Map Tool to display the suggested location of the building
@@ -814,6 +756,7 @@ public class TransportWizard {
 			}
 			else {
 				mgr.removeBuilding(newBuilding);
+				// recursive calling of createDialog()
 				createDialog(mgr, template, false, true);
 			}
 
@@ -903,7 +846,7 @@ public class TransportWizard {
 			    	//System.out.println("obtain new repositionedTemplate");
 			    	// 2015-12-16 Added setMissionName()
 					repositionedTemplate.setMissionName(template.getMissionName());
-					//System.out.println("just called setMissionName()");\
+					//System.out.println("just called setMissionName()");
 					pauseAndCheck(mgr, repositionedTemplate);
 					//checkTemplatePosition(mgr, repositionedTemplate, false);
 					//System.out.println("done calling checkTemplatePosition()");
@@ -934,7 +877,7 @@ public class TransportWizard {
 	// 2015-12-25 Added mouseDialog()
 	@SuppressWarnings("restriction")
 	public void placementDialog(String title, String header, Building newBuilding, BuildingManager mgr) {
-    	
+
 		//SwingUtilities.invokeLater(() -> {
 			mapPanel.setFocusable(true);
 			mapPanel.requestFocusInWindow();
@@ -977,14 +920,14 @@ public class TransportWizard {
 
 			mainScene.getStage().requestFocus();
 
-			
+
 			//final KeyboardDetection kb = new KeyboardDetection(newBuilding, mgr);
-			
+
 			// 2016-03-08 Added keyboard mapping and key bindings
 			for (KeyboardDirection dir : KeyboardDirection.values()) {
 				enumMap.put(dir, Boolean.FALSE);
 			}
-			
+
 			keyboardMap.put(java.awt.event.KeyEvent.VK_UP, KeyboardDirection.UP);
 			keyboardMap.put(java.awt.event.KeyEvent.VK_DOWN, KeyboardDirection.DOWN);
 			keyboardMap.put(java.awt.event.KeyEvent.VK_LEFT, KeyboardDirection.LEFT);
@@ -997,11 +940,11 @@ public class TransportWizard {
 			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_RIGHT, KeyboardDirection.RIGHT);
 			keyboardMap.put(java.awt.event.KeyEvent.VK_F, KeyboardDirection.TURN);
 
-			setKeyBindings();			
+			setKeyBindings();
 			animationTimer = new javax.swing.Timer(ANIMATION_DELAY, new AnimationListener(newBuilding, mgr));
 			animationTimer.start();
 
-			
+
 			final MouseDetection md = new MouseDetection(newBuilding, mgr);
 
 			SwingUtilities.invokeLater(() -> {
@@ -1047,14 +990,14 @@ public class TransportWizard {
 						if (evt.getButton() == MouseEvent.BUTTON1) {
 							//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 							mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-							
+
 					    	boolean withinRadius = checkRadius(newBuilding, mgr);
-					    	
+
 					    	if (withinRadius)
 					    		moveNewBuildingTo(newBuilding, evt.getX(), evt.getY());
-						    
+
 						}
-						
+
 						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				    	evt.consume();
 					}
@@ -1077,7 +1020,7 @@ public class TransportWizard {
 	/**
 	 * Check if the new building is within the prescribed maximum radius
 	 * @param the new building
-	 * @param building manager 
+	 * @param building manager
 	 * @return true if it's within the radius of an existing inhabitable building
 	 */
 	public boolean checkRadius(Building newBuilding, BuildingManager mgr) {
@@ -1095,14 +1038,14 @@ public class TransportWizard {
     		maxDistance = Resupply.MAX_NONINHABITABLE_BUILDING_DISTANCE;
     		leastDistance = Resupply.MIN_NONINHABITABLE_BUILDING_DISTANCE;
     	}
-    	
+
     	List<Building> list = mgr.getBuildings(BuildingFunction.LIFE_SUPPORT);
         Collections.shuffle(list);
 
         Iterator<Building> i = list.iterator();
         while (i.hasNext()) {
             Building startingBuilding = i.next();
-                
+
             double distance = Point2D.distance(startingBuilding.getXLocation(),
                 startingBuilding.getYLocation(), newBuilding.getXLocation(),
                 newBuilding.getYLocation());
@@ -1111,18 +1054,18 @@ public class TransportWizard {
             	break;
             }
         }
-    
-	    
+
+
 	    return withinRadius;
 	}
-	
+
 	// 2016-03-08 Added setKeyBindings()
 	private void setKeyBindings() {
 	      int condition = javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 	      final javax.swing.InputMap inputMap = mapPanel.getInputMap(condition);
 	      final javax.swing.ActionMap actionMap = mapPanel.getActionMap();
 	      boolean[] keyPressed = { true, false };
-		  
+
 	      //boolean[] keys = new boolean[KeyEvent.KEY_TYPED];
 		  //keys[evt.getKeyCode()] = true;
 
@@ -1144,7 +1087,7 @@ public class TransportWizard {
 	      final javax.swing.InputMap inputMap = mapPanel.getInputMap(condition);
 	      final javax.swing.ActionMap actionMap = mapPanel.getActionMap();
 	      boolean[] keyPressed = { true, false };
-		  
+
 	      //boolean[] keys = new boolean[KeyEvent.KEY_TYPED];
 		  //keys[evt.getKeyCode()] = true;
 
@@ -1159,7 +1102,7 @@ public class TransportWizard {
 	         }
 	      }
 	   }
-	
+
 	// 2016-03-08 KeyBindingsAction class
 	   private class KeyBindingsAction extends AbstractAction {
 	      private KeyboardDirection dir;
@@ -1179,7 +1122,7 @@ public class TransportWizard {
 	   private class AnimationListener implements ActionListener {
 		   private Building b;
 		   private BuildingManager mgr;
-		   
+
 		   AnimationListener(Building b, BuildingManager mgr) {
 			   this.b = b;
 			   this.mgr = mgr;
@@ -1191,66 +1134,66 @@ public class TransportWizard {
 	    	  int xLoc = (int) b.getXLocation();
 	    	  int yLoc = (int) b.getYLocation();
 	    	  int facing = (int) b.getFacing();
-	    	  	    	  
-      
+
+
 				  for (KeyboardDirection dir : KeyboardDirection.values()) {
-	    		  					    
+
     				  if (enumMap.get(dir)) {
-    					  //System.out.println("dir.getIncrX() : " + dir.getIncrX());	
+    					  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
     					  //boolean ok1 = checkCollisionMoveVehicle(b, mgr);
     					  int ok2 = checkCollisionImmovable(b, mgr, 10);
-    					  
+
     					  if (ok2 == 0 && checkRadius(b, mgr)) {
-    					    	    					   
+
     						  //System.out.println("ok2 : "+ ok2);
 			    			  xLoc += dir.getIncrX();
 			    			  yLoc += dir.getIncrY();
-			    			  
+
 			    			  b.setXLocation(xLoc);
 			    			  b.setYLocation(yLoc);
-			    			  
+
 			    			  facing += dir.getFacing();
 			    			  if (facing >= 360)
 			    			    facing = facing - 360;
 			    			  b.setFacing(facing);
-			    			  
+
 			    			  repaint = true;
-			    			  
+
     					  } else {
-	    				  
+
 		    				  xLoc = xLoc - dir.getIncrX() * 2;
 			    			  yLoc = yLoc - dir.getIncrY() * 2;
-			    			  
+
 			    			  b.setXLocation(xLoc);
 			    			  b.setYLocation(yLoc);
-			    			  
+
 			    			  facing -= dir.getFacing();
 			    			  if (facing < 0)
-			    				  facing = facing + 360;		    			  
+			    				  facing = facing + 360;
 			    			  b.setFacing(facing);
-			    			  
-			    			  repaint = true;	    				  
+
+			    			  repaint = true;
 
 			    			  return;
 		    				  //break;
 			    			  //continue;
 		    			  }
 	    			  }
-	    			  else {	    	
+	    			  else {
 	    				  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
-	    				  //System.out.println("dir.getIncrY() : " + dir.getIncrY());  
+	    				  //System.out.println("dir.getIncrY() : " + dir.getIncrY());
 
 	    			  }
 				  }
 
-			  
+
 			  if (repaint) {
 				  mapPanel.repaint();
 			  }
 
 	      }
 	}
-		   
+
 	// 2015-12-25 Added MouseDetection
 	class MouseDetection implements MouseMotionListener{
 		private Building newBuilding;
@@ -1275,22 +1218,22 @@ public class TransportWizard {
 			    // Check for collision here
 			    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
 			    int ok2 = checkCollisionImmovable(newBuilding, mgr, 10);
-			    
-			    if (ok1 && ok2 == 0) {			    
+
+			    if (ok1 && ok2 == 0) {
 			    	boolean withinRadius = checkRadius(newBuilding, mgr);
-			    	
+
 			    	if (withinRadius)
 			    		moveNewBuildingTo(newBuilding, evt.getX(), evt.getY());
-			    }			    
+			    }
 			}
 		}
 	}
 
 	// 2015-12-25 Added KeyboardDetection
-	class KeyboardDetection implements KeyListener{		
+	class KeyboardDetection implements KeyListener{
 		private Building newBuilding;
 		private BuildingManager mgr;
-		
+
 		KeyboardDetection(Building newBuilding, BuildingManager mgr) {
 			this.newBuilding = newBuilding;
 			this.mgr = mgr;
@@ -1303,13 +1246,13 @@ public class TransportWizard {
 		    // Check for collision here
 		    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
 		    int ok2 = checkCollisionImmovable(newBuilding, mgr, 10);
-		    
-		    if (ok1 && ok2 == 0) {			    
+
+		    if (ok1 && ok2 == 0) {
 		    	boolean withinRadius = checkRadius(newBuilding, mgr);
-		    	
-		    	if (withinRadius)		    	
+
+		    	if (withinRadius)
 		    		handleKeyboardInput(newBuilding, c);
-		    }			    
+		    }
 
 		    mapPanel.repaint();
 			e.consume();
@@ -1327,14 +1270,14 @@ public class TransportWizard {
 		    // Check for collision here
 		    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
 		    int ok2 = checkCollisionImmovable(newBuilding, mgr, 10);
-		    	
-		    if (ok1 && ok2 == 0) {						    
+
+		    if (ok1 && ok2 == 0) {
 		    	boolean withinRadius = checkRadius(newBuilding, mgr);
-		    	
+
 		    	if (withinRadius)
 		    		handleKeyboardInput(newBuilding, c);
-		    }	
-		    
+		    }
+
 		    mapPanel.repaint();
 			e.consume();
 		}
@@ -1438,7 +1381,7 @@ public class TransportWizard {
 			b.setYLocation(y + 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
 	    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
-	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN	    	
+	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN
 	    	|| c == java.awt.event.KeyEvent.VK_S
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
 	    	//System.out.println("x : " + x + "  y : " + y);

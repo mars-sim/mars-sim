@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocalAreaUtil.java
- * @version 3.07 2015-12-07
+ * @version 3.1.0 2017-04-13
  * @author Scott Davis
  */
 

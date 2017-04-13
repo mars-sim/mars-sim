@@ -151,14 +151,14 @@ extends ToolWindow {
 		setSize(new Dimension(640, 640));
 		setMaximizable(true);
 		setResizable(false);
-		
+
 		if (desktop.getMainScene() != null) {
 			//setClosable(false);
 		}
 
-		setVisible(true);	
+		setVisible(true);
 		//pack();
-		
+
 		Dimension desktopSize = desktop.getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
@@ -181,30 +181,13 @@ extends ToolWindow {
 	 */
 	private void createNewMission() {
 
-		if (ms != null )  {
+		if (ms != null)  {
 			// 2015-12-16 Track the current pause state
-			boolean previous = Simulation.instance().getMasterClock().isPaused();
-			if (!previous) {
-				ms.pauseSimulation();
-		    	//System.out.println("previous is false. Paused sim");
-			}
-			desktop.getTimeWindow().enablePauseButton(false);
+			boolean previous = ms.startPause();
 
 			createMissionWizard = new CreateMissionWizard(desktop, this);
 
-			boolean now = Simulation.instance().getMasterClock().isPaused();
-			if (!previous) {
-				if (now) {
-					ms.unpauseSimulation();
-	   	    		//System.out.println("previous is false. now is true. Unpaused sim");
-				}
-			} else {
-				if (!now) {
-					ms.unpauseSimulation();
-	   	    		//System.out.println("previous is true. now is false. Unpaused sim");
-				}
-			}
-			desktop.getTimeWindow().enablePauseButton(true);
+			ms.endPause(previous);
 
 		} else
 
@@ -219,30 +202,13 @@ extends ToolWindow {
 	 */
 	private void editMission(Mission mission) {
 
-		if (ms != null )  {
+		if (ms != null)  {
 			// 2015-12-16 Track the current pause state
-			boolean previous = Simulation.instance().getMasterClock().isPaused();
-			if (!previous) {
-				ms.pauseSimulation();
-		    	//System.out.println("previous is false. Paused sim");
-			}
-			desktop.getTimeWindow().enablePauseButton(false);
+			boolean previous = ms.startPause();
 
 			editMissionDialog = new EditMissionDialog(desktop, mission, this);
 
-			boolean now = Simulation.instance().getMasterClock().isPaused();
-			if (!previous) {
-				if (now) {
-					ms.unpauseSimulation();
-	   	    		//System.out.println("previous is false. now is true. Unpaused sim");
-				}
-			} else {
-				if (!now) {
-					ms.unpauseSimulation();
-	   	    		//System.out.println("previous is true. now is false. Unpaused sim");
-				}
-			}
-			desktop.getTimeWindow().enablePauseButton(true);
+			ms.endPause(previous);
 
 		} else
 

@@ -98,11 +98,11 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		mainEditingPanel.add(emptyPanel, DEFAULT_MESSAGE);
 
 		// Create resupply mission editing panel.
-		resupplyMissionPanel = new ResupplyMissionEditingPanel(null, resupplyWindow, null, this);
+		resupplyMissionPanel = new ResupplyMissionEditingPanel(null, resupplyWindow, null, this); // resupply cannot be null !
 		mainEditingPanel.add(resupplyMissionPanel, RESUPPLY_MISSION);
 
 		// Create arriving settlement editing panel.
-		arrivingSettlementPanel = new ArrivingSettlementEditingPanel(null, resupplyWindow, null, this);
+		arrivingSettlementPanel = new ArrivingSettlementEditingPanel(null, resupplyWindow, null, this); // resupply cannot be null !
 		mainEditingPanel.add(arrivingSettlementPanel, ARRIVING_SETTLEMENT);
 
 		// Create the button pane.

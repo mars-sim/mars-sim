@@ -115,6 +115,7 @@ extends TransportItemEditingPanel {
 	private ResupplyWindow resupplyWindow;
 
 	private MarsClock marsCurrentTime;
+	private Settlement settlement;
 
 	/** constructor. */
 	public ResupplyMissionEditingPanel(Resupply resupply, ResupplyWindow resupplyWindow,
@@ -151,6 +152,9 @@ extends TransportItemEditingPanel {
 		if (resupply != null) {
 			destinationCB.setSelectedItem(resupply.getSettlement());
 		}
+		else {
+			this.settlement = (Settlement) destinationCB.getSelectedItem();
+		}
 		destinationPane.add(destinationCB);
 
 		// Create arrival date pane.
@@ -186,6 +190,9 @@ extends TransportItemEditingPanel {
 		MarsClock resupplyTime = Simulation.instance().getMasterClock().getMarsClock();
 		if (resupply != null) {
 			resupplyTime = resupply.getArrivalDate();
+		}
+		else {
+			//resupply = new Resupply(resupplyTime, settlement);
 		}
 
 		// Create orbit label.
@@ -421,10 +428,15 @@ extends TransportItemEditingPanel {
 		//solsFromCB.setEnabled(enable);
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		MarsClock resupplyTime = null;
+		int solsDiff = 0;
 		if (resupply != null) {
 			resupplyTime = resupply.getArrivalDate();
+			solsDiff = (int) Math.round((MarsClock.getTimeDiff(resupplyTime, currentTime) / 1000D));
 		}
-		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(resupplyTime, currentTime) / 1000D));
+		else {
+			// 2017-04-13 Call getArrivalDate()
+			getArrivalDate();
+		}
 		solsFromCB.setSelectedItem(solsDiff);
 		solInfoLabel.setEnabled(enable);
 	}
@@ -947,7 +959,6 @@ extends TransportItemEditingPanel {
 		//marsCurrentTime = (MarsClock) currentTime.clone();
 
 		if (arrivalDateRB.isSelected()) {
-
 			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			marsCurrentTime = (MarsClock) currentTime.clone();
 
@@ -965,6 +976,7 @@ extends TransportItemEditingPanel {
 					millisols = currentTime.getMillisol();
 				}
 				//validation_result = true;
+
 				marsCurrentTime = new MarsClock(orbit, month, sol, millisols);
 			}
 			catch (NumberFormatException e) {
@@ -1184,6 +1196,7 @@ extends TransportItemEditingPanel {
 		newTransportItemDialog = null;
 		solsFromCB = null;
 		Arrays.fill(sols, null);
+		sols = null;
 	}
 
 
