@@ -14,38 +14,20 @@ import com.jfoenix.controls.JFXBadge;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXPopup;
-import com.jfoenix.controls.JFXRippler;
-import com.jfoenix.controls.JFXRippler.RipplerMask;
-import com.jfoenix.controls.JFXRippler.RipplerPos;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 import com.jfoenix.controls.JFXSnackbar;
-import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXToggleButton;
-//import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 
-
-import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.NotificationPane;
-import org.controlsfx.control.StatusBar;
-import org.controlsfx.control.action.Action;
-//import org.controlsfx.glyphfont.FontAwesome;
-//import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
-//import org.kordamp.ikonli.fontawesome.FontAwesome;
 
-import com.sun.management.OperatingSystemMXBean;
-
-import de.codecentric.centerdevice.MenuToolkit;
-import de.jensd.fx.fontawesome.Icon;
-import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -59,20 +41,14 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.stage.Modality;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
-import javafx.geometry.Side;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.effect.Blend;
@@ -81,17 +57,12 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.FlowPane;
@@ -108,84 +79,40 @@ import javafx.util.Duration;
 import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.ChangeListener;
-import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
-import javafx.event.EventHandler;
 import javafx.scene.input.ScrollEvent;
-import javafx.collections.ObservableList;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 
-
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Paint;
 import java.awt.Toolkit;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Array;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.swing.AbstractAction;
-import javax.swing.DesktopManager;
-import javax.swing.ImageIcon;
-import javax.swing.JDesktopPane;
-import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
-import org.mars_sim.msp.ui.javafx.BorderSlideBar;
-import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
-import org.mars_sim.msp.ui.javafx.notification.MessagePopup;
-import org.mars_sim.msp.ui.javafx.notification.PNotification;
+
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
-//import org.mars_sim.msp.ui.steelseries.tools.Orientation;
-import org.mars_sim.msp.ui.swing.DesktopPane;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
@@ -204,18 +131,10 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementTransparentPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
-import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
-
 
 import static javafx.scene.input.KeyCode.*;
-import static javafx.scene.input.KeyEvent.*;
 import static org.fxmisc.wellbehaved.event.EventPattern.*;
-import static org.fxmisc.wellbehaved.event.InputHandler.Result.*;
 import static org.fxmisc.wellbehaved.event.InputMap.*;
-
-//import org.reactfx.util.FxTimer;
-//import org.reactfx.util.Timer;
 
 
 /**
@@ -391,7 +310,7 @@ public class MainScene {
 		stage.setResizable(true);
 		stage.setMinWidth(sceneWidth.get());//1024);
 		stage.setMinHeight(sceneHeight.get());//480);
-		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in macOS) to toggle full screen mode");
+		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in macOS) to toggle between (1) full screen mode and (2) window mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 
 		// Detect if a user hits the top-right close button
@@ -846,7 +765,7 @@ public class MainScene {
 		pausePane = new StackPane();
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
 		pausePane.getChildren().add(createPausePaneContent());
-
+		pausePane.setPrefSize(150, 150);
 
 		if (OS.contains("mac")) {
 			((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
@@ -906,6 +825,8 @@ public class MainScene {
 
 		//pausePane.prefWidthProperty().bind(scene.widthProperty());
 		//pausePane.prefHeightProperty().bind(scene.heightProperty());
+    	pausePane.setLayoutX((sceneWidth.get()-pausePane.getPrefWidth())/2D);
+		pausePane.setLayoutY((sceneHeight.get()-pausePane.getPrefHeight())/2D);
 
 		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(35));//73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
@@ -1046,7 +967,7 @@ public class MainScene {
 
 		//timeSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
 		timeSlider.setMin(0); // need to be zero
-		timeSlider.setMax(13);//initial_time_ratio*32D);//8D);
+		timeSlider.setMax(12);//initial_time_ratio*32D);//8D);
 		timeSlider.setValue(7);//initial_time_ratio);
 		timeSlider.setMajorTickUnit(1);//initial_time_ratio*4);
 		timeSlider.setMinorTickCount(1);
@@ -2769,7 +2690,7 @@ public class MainScene {
 		southText.setText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
 
 		StringBuilder m = new StringBuilder();
-        m.append(MARS_DATE_TIME).append(marsClock.getDateString())//.append(ONE_SPACE)
+        m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(ONE_SPACE)
         	.append(marsClock.getTrucatedTimeStringUMST());
 		marsTimeButton.setText(m.toString());
 
@@ -2969,8 +2890,8 @@ public class MainScene {
 		    	}
 		    }
 		    if (!hasIt) {
-		    	pausePane.setLayoutX(scene.getWidth()/2D);
-				pausePane.setLayoutY(scene.getHeight()/2D);
+		    	pausePane.setLayoutX((scene.getWidth()-pausePane.getPrefWidth())/2D);
+				pausePane.setLayoutY((scene.getHeight()-pausePane.getPrefHeight())/2D);
 		    	root.getChildren().add(pausePane);
 		    }
 		});

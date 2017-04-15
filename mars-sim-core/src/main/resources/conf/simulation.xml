@@ -10,8 +10,8 @@
 		<!-- time-ratio (TR) is the default simulation time ratio : the ratio of real time to sim time -->
 		<!-- It denotes the speed of the simulation -->
 		<!-- Value must be positive number between 0.001 and 10800 and cannot be zero -->
-		<!-- Default: 512.0 -->
-		<time-ratio value="512" />
+		<!-- Default: 256.0 -->
+		<time-ratio value="256" />
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
 			 2. time ratio must be a multiple of 2.
 			 3. if time ratio is 512, then 1 real second equals 512 simulation seconds in mars-sim
@@ -82,7 +82,7 @@
 		<!-- average transit-time is the number of sols to send payload/cargo from Earth to Mars -->
 		<!-- Min : 1 ; Max : 430 -->
 		<!-- Default: 60 -->
-		<average-transit-time value="60" />
+		<average-transit-time value="0" />
 
 	</time-configuration>
 
