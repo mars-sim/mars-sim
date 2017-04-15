@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.07 2014-11-05
+ * @version 3.1.0 2017-04-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;

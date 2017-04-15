@@ -577,7 +577,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				//SwingUtilities.invokeLater(() -> {
 				String mn = marsTime.getMonthName();
 					if (mn != null)
-						martianMonthLabel.setText(mn);
+						if (martianMonthLabel != null)
+							martianMonthLabel.setText(mn);
 				//});
 				setSeason();
 

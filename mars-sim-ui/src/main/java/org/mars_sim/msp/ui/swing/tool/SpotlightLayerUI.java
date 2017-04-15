@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * SpotlightLayterUI.java
+ * @version 3.1.0 2017-04-15
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.AWTEvent;
@@ -20,27 +26,27 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 public class SpotlightLayerUI extends LayerUI<JPanel> {
 
 	//private static final long serialVersionUID = 1L;
-	
+
 	private boolean mActive;
 	private int mX, mY;
 
 	private SettlementMapPanel settlementMapPanel;
-	
+
 	public SpotlightLayerUI(SettlementMapPanel settlementMapPanel) {
 		this.settlementMapPanel = settlementMapPanel;
 	}
-	
+
 	  @Override
 	  public void installUI(JComponent c) {
 	    super.installUI(c);
-	    
+
 	    JLayer jlayer = (JLayer)c;
 	    jlayer.setLayerEventMask(
 	      AWTEvent.MOUSE_EVENT_MASK |
 	      AWTEvent.MOUSE_MOTION_EVENT_MASK
 	    );
-	    
-	    
+
+
 	  }
 
 	  @Override
@@ -58,30 +64,30 @@ public class SpotlightLayerUI extends LayerUI<JPanel> {
 	    super.paint (g2, c);
 
 	    if (mActive) {
-		    if (settlementMapPanel.isDaylightTrackingOn()) {		    	
+		    if (settlementMapPanel.isDaylightTrackingOn()) {
 			      // Create a radial gradient, transparent in the middle.
 			      java.awt.geom.Point2D center = new java.awt.geom.Point2D.Float(mX, mY);
 			      float radius = 60;
 			      float[] dist = {0.0f, 1.0f};
 			      //Color[] colors = {new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.gray};
-			      
+
 			      Color[] colors = {
 			    		  //new Color(0.0f, 0.0f, 0.0f, 0.0f),
 			    		  //new Color(0, 0, 0, 0)
-			    		  //new Color(g2.getColor().getRed() * 0.25f, g2.getColor().getGreen() * 0.25f, g2.getColor().getBlue() * 0.25f, 0f),//, g.getColor().getAlpha()), 
+			    		  //new Color(g2.getColor().getRed() * 0.25f, g2.getColor().getGreen() * 0.25f, g2.getColor().getBlue() * 0.25f, 0f),//, g.getColor().getAlpha()),
 			    		 //new Color(g2.getColor().getRed(), g2.getColor().getGreen(), g2.getColor().getBlue(), 0.0f)
-			    	  		new Color(.9f, .9f, .9f, .9f), 
+			    	  		new Color(.9f, .9f, .9f, .9f),
 			    	    	new Color(g2.getColor().getRed()/255f, g2.getColor().getGreen()/255f, g2.getColor().getBlue()/255f, 0.0f)
-			     
+
 			      };
- 
+
 			      RadialGradientPaint p =
 			          new RadialGradientPaint(center, radius, dist, colors);
 			      g2.setPaint(p);
 			      g2.setComposite(AlphaComposite.getInstance(
 			          AlphaComposite.SRC_OVER, 0.4f));
 			      g2.fillRect(0, 0, c.getWidth(), c.getHeight());
-		    }	      
+		    }
 	    }
 
 	    g2.dispose();

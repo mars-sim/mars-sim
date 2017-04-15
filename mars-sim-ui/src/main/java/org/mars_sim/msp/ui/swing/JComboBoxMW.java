@@ -34,9 +34,9 @@ implements MouseWheelListener {
 	public JComboBoxMW() {
 		super();
 		this.addMouseWheelListener(this);
-		((JTextField)this.getEditor().getEditorComponent())
-			.setBorder(BorderFactory.createCompoundBorder(
-				this.getBorder(),BorderFactory.createEmptyBorder(0,1,0,1)));
+		//((JTextField)this.getEditor().getEditorComponent())
+		//	.setBorder(BorderFactory.createCompoundBorder(
+		//		this.getBorder(),BorderFactory.createEmptyBorder(0,1,0,1)));
 	}
 
 	/**
