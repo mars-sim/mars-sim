@@ -351,8 +351,6 @@ public class LocalAreaUtil {
      */
     // 2015-12-08 Added checkImmovableBoundedOjectIntersected()
     public static boolean checkImmovableBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates) { //, boolean needToMove) {
-    	boolean result = true;
-
         Iterator<LocalBoundedObject> i = getAllImmovableBoundedObjectsAtLocation(coordinates).iterator();
     	while (i.hasNext()) {
     		LocalBoundedObject immovable = i.next();
@@ -363,7 +361,7 @@ public class LocalAreaUtil {
     			return false;
     		}
     	}
-        return result;
+        return true;
     }
 
     /**

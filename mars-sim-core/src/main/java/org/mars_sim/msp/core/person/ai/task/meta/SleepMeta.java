@@ -83,7 +83,6 @@ public class SleepMeta implements MetaTask, Serializable {
 
         double result = 0;
 
-
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE
             || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 

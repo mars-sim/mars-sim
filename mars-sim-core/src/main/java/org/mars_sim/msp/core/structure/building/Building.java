@@ -132,13 +132,15 @@ LocalBoundedObject, InsidePathLocation {
 	protected double powerNeededForEVAheater;
 
 	boolean isImpactImminent = false;
+	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
 
 	// 2014-10-28  Changed from "name" to "buildingType"
 	protected String buildingType;
+
 	protected String nickName;
 	// 2014-11-27 Added description for each building
-	protected String description = "Stay tuned";
+	protected String description;// = "Stay tuned";
 
 	//protected Set<Function> functions;
 	protected List<Function> functions;
@@ -245,7 +247,7 @@ LocalBoundedObject, InsidePathLocation {
 		if (b_inv == null) {
 			b_inv = super.getInventory(); // it's already been created in its super class
 
-			if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
+			if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
 				//b_inv = new Inventory(this);
 				b_inv.addGeneralCapacity(100);
 			} else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
@@ -417,11 +419,45 @@ LocalBoundedObject, InsidePathLocation {
 		List<Function> buildingFunctions = new ArrayList<Function>();
 		//Set<Function> buildingFunctions = new HashSet<Function>();
 
-		// Set power generation function.
-		if (buildingConfig.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
+		// Set administration function.
+		if (buildingConfig.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
 
-		//2014-10-17 Set thermal generation function.
-		if (buildingConfig.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
+		// Set astronomical observation function
+		if (buildingConfig.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
+
+		// Set building connection function.
+		if (buildingConfig.hasBuildingConnection(buildingType)) buildingFunctions.add(new BuildingConnection(this));
+
+		// Set communication function.
+		if (buildingConfig.hasCommunication(buildingType)) buildingFunctions.add(new Communication(this));
+
+		if (buildingConfig.hasCooking(buildingType))  {
+			// Set cooking function.
+			buildingFunctions.add(new Cooking(this));
+			// Set preparing dessert function.
+			buildingFunctions.add(new PreparingDessert(this));
+		}
+
+		// Set dining function.
+		if (buildingConfig.hasDining(buildingType)) buildingFunctions.add(new Dining(this));
+
+		// Set Earth return function.
+		if (buildingConfig.hasEarthReturn(buildingType)) buildingFunctions.add(new EarthReturn(this));
+		// Set EVA function.
+		//eva = new EVA(this); if (config.hasEVA(buildingType)) buildingFunctions.add(eva);
+		if (buildingConfig.hasEVA(buildingType)) buildingFunctions.add(new EVA(this));
+
+		// Set exercise function.
+		if (buildingConfig.hasExercise(buildingType)) buildingFunctions.add(new Exercise(this));
+
+		// Set farming function.
+		if (buildingConfig.hasFarming(buildingType)) buildingFunctions.add(new Farming(this));
+
+		//2014-11-23 Added food production
+		if (buildingConfig.hasFoodProduction(buildingType)) buildingFunctions.add(new FoodProduction(this));
+
+		// Set ground vehicle maintenance function.
+		if (buildingConfig.hasGroundVehicleMaintenance(buildingType)) buildingFunctions.add(new GroundVehicleMaintenance(this));
 
 		// Set life support function.
 		if (buildingConfig.hasLifeSupport(buildingType)) buildingFunctions.add(new LifeSupport(this));
@@ -429,77 +465,42 @@ LocalBoundedObject, InsidePathLocation {
 		// Set living accommodations function.
 		if (buildingConfig.hasLivingAccommodations(buildingType)) buildingFunctions.add(new LivingAccommodations(this));
 
-		// Set research function.
-		if (buildingConfig.hasResearchLab(buildingType)) buildingFunctions.add(new Research(this));
-
-		// Set communication function.
-		if (buildingConfig.hasCommunication(buildingType)) buildingFunctions.add(new Communication(this));
-
-		// Set EVA function.
-		//eva = new EVA(this);
-		//if (config.hasEVA(buildingType)) buildingFunctions.add(eva);
-		if (buildingConfig.hasEVA(buildingType)) buildingFunctions.add(new EVA(this));
-
-		// Set recreation function.
-		if (buildingConfig.hasRecreation(buildingType)) buildingFunctions.add(new Recreation(this));
-
-		// Set dining function.
-		if (buildingConfig.hasDining(buildingType)) buildingFunctions.add(new Dining(this));
-
-		// Set resource processing function.
-		if (buildingConfig.hasResourceProcessing(buildingType)) buildingFunctions.add(new ResourceProcessing(this));
-
-		// Set storage function.
-		if (buildingConfig.hasStorage(buildingType)) buildingFunctions.add(new Storage(this));
-
-		// Set medical care function.
-		if (buildingConfig.hasMedicalCare(buildingType)) buildingFunctions.add(new MedicalCare(this));
-
-		// Set farming function.
-		if (buildingConfig.hasFarming(buildingType)) buildingFunctions.add(new Farming(this));
-
-		// Set exercise function.
-		if (buildingConfig.hasExercise(buildingType)) buildingFunctions.add(new Exercise(this));
-
-		// Set ground vehicle maintenance function.
-		if (buildingConfig.hasGroundVehicleMaintenance(buildingType)) buildingFunctions.add(new GroundVehicleMaintenance(this));
-
-		// Set cooking function.
-		if (buildingConfig.hasCooking(buildingType)) buildingFunctions.add(new Cooking(this));
-
-		// Set preparing dessert function.
-		if (buildingConfig.hasCooking(buildingType)) buildingFunctions.add(new PreparingDessert(this));
+		// Set management function.
+		if (buildingConfig.hasManagement(buildingType)) buildingFunctions.add(new Management(this));
 
 		// Set manufacture function.
 		if (buildingConfig.hasManufacture(buildingType)) buildingFunctions.add(new Manufacture(this));
 
-		//2014-11-23 Added food production
-		if (buildingConfig.hasFoodProduction(buildingType)) buildingFunctions.add(new FoodProduction(this));
+		// Set medical care function.
+		if (buildingConfig.hasMedicalCare(buildingType)) buildingFunctions.add(new MedicalCare(this));
+
+		// Set power generation function.
+		if (buildingConfig.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
 
 		// Set power storage function.
 		if (buildingConfig.hasPowerStorage(buildingType)) buildingFunctions.add(new PowerStorage(this));
 
-		//2014-10-17  Added and imported ThermalStorage
-		// Set thermal storage function.
-		//if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
+		// Set recreation function.
+		if (buildingConfig.hasRecreation(buildingType)) buildingFunctions.add(new Recreation(this));
 
-		// Set astronomical observation function
-		if (buildingConfig.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
+		// Set research function.
+		if (buildingConfig.hasResearchLab(buildingType)) buildingFunctions.add(new Research(this));
 
-		// Set management function.
-		if (buildingConfig.hasManagement(buildingType)) buildingFunctions.add(new Management(this));
-
-		// Set Earth return function.
-		if (buildingConfig.hasEarthReturn(buildingType)) buildingFunctions.add(new EarthReturn(this));
-
-		// Set building connection function.
-		if (buildingConfig.hasBuildingConnection(buildingType)) buildingFunctions.add(new BuildingConnection(this));
-
-		// Set administration function.
-		if (buildingConfig.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
+		// Set resource processing function.
+		if (buildingConfig.hasResourceProcessing(buildingType)) buildingFunctions.add(new ResourceProcessing(this));
 
 		// Set robotic function.
 		if (buildingConfig.hasRoboticStation(buildingType)) buildingFunctions.add(new RoboticStation(this));
+
+		// Set storage function.
+		if (buildingConfig.hasStorage(buildingType)) buildingFunctions.add(new Storage(this));
+
+		//2014-10-17 Set thermal generation function.
+		if (buildingConfig.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
+
+		//2014-10-17  Added and imported ThermalStorage
+		// Set thermal storage function.
+		//if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
 
 		return buildingFunctions;
 	}

@@ -266,7 +266,7 @@ public class BuildingManager implements Serializable {
 
             // 2016-10-28 Call to remove all references of this building in all functions
             removeAllFunctionsfromBFMap(oldBuilding);
-    		//logger.info("removeBuilding() : a new building has just been removed");
+    		//logger.info("removeBuilding() : " + oldBuilding + " has just been removed");
 
             settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
         }
@@ -312,7 +312,7 @@ public class BuildingManager implements Serializable {
      */
     // 2016-10-28 Add removeAllFunctionsfromBFMap()
 	public void addAllFunctionstoBFMap(Building newBuilding) {
-	        if (buildingFunctionsMap != null) {
+		if (buildingFunctionsMap != null) {
         	// use this only after buildingFunctionsMap has been created
             for (BuildingFunction f : buildingConfig.getBuildingFunctions()) {
             	// if this building has this function
@@ -341,12 +341,12 @@ public class BuildingManager implements Serializable {
     public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
         if (!buildings.contains(newBuilding)) {
             buildings.add(newBuilding);
-       		//logger.info("addBuilding() : a new building has just been added");
 
             // 2016-10-17 Insert this new building into buildingFunctionsMap
             addAllFunctionstoBFMap(newBuilding);
 
             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
+       		//logger.info("addBuilding() : " + newBuilding.getNickName() + " has just been added");
 
             // Create new building connections if needed.
             if (createBuildingConnections) {

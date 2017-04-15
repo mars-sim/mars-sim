@@ -498,8 +498,8 @@ public class SimulationConfig implements Serializable {
 			         d = (int) Double.valueOf(str.trim()).doubleValue();
 			         //System.out.println("double d = " + d);
 
-			         if (d < 1 || d > 430)
-			 			throw new IllegalStateException("average-transit-time must be between 1 and 430.");
+			         if (d < 0 || d > 430)
+			 			throw new IllegalStateException("average-transit-time must be between 0 and 430.");
 
 			      } catch (NumberFormatException nfe) {
 			         System.out.println("NumberFormatException found in average-transit-time : " + nfe.getMessage());

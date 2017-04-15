@@ -47,7 +47,7 @@ implements Serializable {
 	  /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.walkSettlementInterior"); //$NON-NLS-1$
-    
+
 	/** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
             "Task.phase.walking")); //$NON-NLS-1$
@@ -93,11 +93,11 @@ implements Serializable {
 
         // Check that destination location is within destination building.
         if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-        	logger.warning(person + " is unable to walk to the destination in " + person.getBuildingLocation() + " at "+ person.getSettlement());       	
+        	logger.warning(person + " is unable to walk to the destination in " + person.getBuildingLocation() + " at "+ person.getSettlement());
         	//throw new IllegalStateException(
             //        "Given destination walking location not within destination building.");
-        	// 
-        	// TODO: determine if a mfalfunction within this building can cause this IllegalStateException 
+        	//
+        	// TODO: determine if a mfalfunction within this building can cause this IllegalStateException
         	// if that's the case, there is no need to throw IllegalStateException
         	//endTask();
         }
@@ -227,18 +227,22 @@ implements Serializable {
     		distanceKm = PERSON_WALKING_SPEED * timeHours;
     	    // Check that remaining path locations are valid.
             if (!checkRemainingPathLocations()) {
-                logger.severe(person.getName() + " unable to continue walking due to missing path objects.");
-                endTask();
-                return time;
+            	// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
+            	// Flooding with the following statement in stacktrace
+            	logger.severe(person.getName() + " unable to continue walking due to missing path objects.");
+                //endTask();
+                return time/2D;
             }
     	}
     	else if (robot != null) {
     		distanceKm = ROBOT_WALKING_SPEED * timeHours;
     	    // Check that remaining path locations are valid.
             if (!checkRemainingPathLocations()) {
+            	// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
+            	// Flooding with the following statement in stacktrace
                 logger.severe(robot.getName() + " unable to continue walking due to missing path objects.");
-                endTask();
-                return time;
+                //endTask();
+                return time/2D;
             }
     	}
 
@@ -391,7 +395,7 @@ implements Serializable {
      */
     private boolean checkRemainingPathLocations() {
 
-        boolean result = true;
+        //boolean result = true;
 
         // Check all remaining path locations.
         Iterator<InsidePathLocation> i = walkingPath.getRemainingPathLocations().iterator();
@@ -401,7 +405,9 @@ implements Serializable {
                 // Check that building still exists.
                 Building building = (Building) loc;
                 if (!settlement.getBuildingManager().containsBuilding(building)) {
-                    result = false;
+                	//System.out.println("building is NOT in BuildingManager");
+                    return false;
+                	//result = false;
                 }
             }
             else if (loc instanceof BuildingLocation) {
@@ -409,14 +415,16 @@ implements Serializable {
                 BuildingLocation buildingLoc = (BuildingLocation) loc;
                 Building building = buildingLoc.getBuilding();
                 if (!settlement.getBuildingManager().containsBuilding(building)) {
-                    result = false;
+                    return false;
+                	//result = false;
                 }
             }
             else if (loc instanceof BuildingConnector) {
                 // Check that building connector still exists.
                 BuildingConnector connector = (BuildingConnector) loc;
                 if (!settlement.getBuildingConnectorManager().containsBuildingConnector(connector)) {
-                    result = false;
+                    return false;
+                	//result = false;
                 }
             }
             else if (loc instanceof Hatch) {
@@ -424,12 +432,14 @@ implements Serializable {
                 Hatch hatch = (Hatch) loc;
                 BuildingConnector connector = hatch.getBuildingConnector();
                 if (!settlement.getBuildingConnectorManager().containsBuildingConnector(connector)) {
-                    result = false;
+                    return false;
+                	//result = false;
                 }
             }
         }
 
-        return result;
+        return true;
+        //return result;
     }
 
     /**

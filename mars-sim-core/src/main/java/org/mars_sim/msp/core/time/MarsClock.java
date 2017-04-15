@@ -79,6 +79,10 @@ public class MarsClock implements Serializable {
 	// This gives them 4 periods to use like we do months.
 	// They are a bit long so maybe they divide them up more later.
 
+    private static final String ONE_ZERO = "0";
+    private static final String TWO_ZEROS = "00";
+    private static final String THREE_ZEROS = "000";
+    private static final String UMST = " (UMST)";
     private static final String EARLY = "Early ";
     private static final String MID = "Mid ";
     private static final String LATE = "Late ";
@@ -462,7 +466,7 @@ public class MarsClock implements Serializable {
 
     /** Returns the current time string.
      *  ex. "0056"
-     */
+
 	public String getTrucatedTimeString() {
         StringBuilder s = new StringBuilder();
         int tb = (int)millisol;
@@ -478,25 +482,24 @@ public class MarsClock implements Serializable {
 
         return s.toString();
 	}
-
+*/
 
     /** Returns the current time string.
      *  ex. "0056"
      */
 	public String getTrucatedTimeStringUMST() {
-        StringBuilder s = new StringBuilder(" ");
+        StringBuilder s = new StringBuilder();
         int tb = (int)millisol;
         s.append(tb);
-        if (millisol > 100D)
-            s.insert(0,"0");
-        else if (millisol > 10D)
-            s.insert(0,"00");
-        else if (millisol == 100D)
-            ;
-        else
-        	s.insert(0,"000");
 
-        return s.append(" (UMST)").toString();
+        if (millisol < 10D)
+            s.insert(0, THREE_ZEROS);
+        else if (millisol < 100D)
+            s.insert(0, TWO_ZEROS);
+        else if (millisol < 1000D)
+        	s.insert(0, ONE_ZERO);
+
+        return s.append(UMST).toString();
 	}
 
 
@@ -509,15 +512,15 @@ public class MarsClock implements Serializable {
 //        String result = "" + tb;
         b.append(tb);
         if (millisol < 100D) {
-            b.insert(0,"0");
+            b.insert(0, ONE_ZERO);
 //            result = "0" + result;
         }
         if (millisol < 10D) {
-            b.insert(0,"0");
+            b.insert(0, ONE_ZERO);
 //            result = "0" + result;
         }
         while (b.length() < 7){
-            b.append("0");
+            b.append(ONE_ZERO);
 //            result += "0";
         }
 
@@ -534,15 +537,15 @@ public class MarsClock implements Serializable {
 //           String result = "" + tb;
            b.append(millisol);
            if (millisol < 100D) {
-               b.insert(0,"0");
+               b.insert(0,ONE_ZERO);
 //               result = "0" + result;
            }
            if (millisol < 10D) {
-               b.insert(0,"0");
+               b.insert(0,ONE_ZERO);
 //               result = "0" + result;
            }
            while (b.length() < 3){
-               b.append("0");
+               b.append(ONE_ZERO);
 //               result += "0";
            }
 
@@ -706,7 +709,7 @@ public class MarsClock implements Serializable {
 
 
     /**
-     * Creates a clone of this MarsClock object, with the time set the same.
+     * Creates a clone of this MarsClock object. Note: its time is set and won't increment.
      * @return clone of this MarsClock object
      */
     public Object clone() {

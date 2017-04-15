@@ -26,41 +26,42 @@ implements Serializable , Comparable<BuildingTemplate>{
 	//private static Logger logger = Logger.getLogger(BuildingTemplate.class.getName());
 
 	// Data members
-	
+
 	/**
 	 * an unique id for this building in a settlement
 	 */
 	private int id;
 	/**
-	 * an id for this building in a particular building type. e.g. ERV Base 1, ERV Base 2. 
+	 * an id for this building in a particular building type. e.g. ERV Base 1, ERV Base 2.
 	 */
-	private int typeID;
-	
+	//private int typeID;
+
 	private double width;
 	private double length;
 	private double xLoc;
 	private double yLoc;
 	private double facing;
-	
+
 	private String buildingType;
     // 2014-10-28 Added nickName
 	private String nickName;
 	private String scenario;
-		
+
 	private String missionName;
 
 	private List<BuildingConnectionTemplate> connectionList;
 
-	
+
 	/*
-	 * * BuildingTemplate Constructor. 
+	 * * BuildingTemplate Constructor.
 	 */
 	// May also be called by ResupplyConfig.java when buildings arrived
 	// 2014-10-27 Added nickName
 	public BuildingTemplate(String missionName, int id, String scenario, String buildingType, String nickName,
-		double width, double length, double xLoc, 
-		double yLoc, double facing) {
-		    
+		double width, double length,
+		double xLoc, double yLoc,
+		double facing) {
+
 		this.missionName = missionName;
 		this.id = id;
 		this.scenario = scenario;
@@ -73,7 +74,7 @@ implements Serializable , Comparable<BuildingTemplate>{
 		this.facing = facing;
 		connectionList = new ArrayList<BuildingConnectionTemplate>(0);
 	}
-	
+
 	// 2015-12-16 Added missionName
 	public String getMissionName() {
 		return missionName;
@@ -82,11 +83,11 @@ implements Serializable , Comparable<BuildingTemplate>{
 	public void setMissionName(String name) {
 		this.missionName = name;
 	}
-	
+
 	public String getScenario() {
 		return scenario;
 	}
-	
+
 	/**
 	 * Gets the building's unique ID.
 	 * @return ID number.
@@ -109,7 +110,7 @@ implements Serializable , Comparable<BuildingTemplate>{
 	 * Gets the building nickname.
 	 * @return building nickname.
 	 */
-	//2014-10-27 Added getNickName() 
+	//2014-10-27 Added getNickName()
 	public String getNickName() {
 		return nickName;
 	}
@@ -224,7 +225,7 @@ implements Serializable , Comparable<BuildingTemplate>{
 
 			if (otherObject instanceof BuildingConnectionTemplate) {
 				BuildingConnectionTemplate template = (BuildingConnectionTemplate) otherObject;
-				if ((id == template.id) && (xLocation == template.xLocation) && 
+				if ((id == template.id) && (xLocation == template.xLocation) &&
 						(yLocation == template.yLocation)) {
 					result = true;
 				}
@@ -238,5 +239,5 @@ implements Serializable , Comparable<BuildingTemplate>{
 		int compareId = ((BuildingTemplate) o).id;
 		return this.id - compareId ;
 	}
-	
+
 }

@@ -79,12 +79,52 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>trident</artifactId>
 			<version>7.3</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/1.8 : 90KB -->
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/1.8 : 90KB
+			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
+			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
+		-->
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.8</version>
+			<version>1.9</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-util : 115 KB -->
+		<dependency>
+		    <groupId>org.apache.xmlgraphics</groupId>
+		    <artifactId>batik-util</artifactId>
+		    <version>1.8</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-i18n : 13 KB -->
+		<!--dependency>
+		    <groupId>org.apache.xmlgraphics</groupId>
+		    <artifactId>batik-i18n</artifactId>
+		    <version>1.9</version>
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-constants : 8 KB-->
+		<!--dependency>
+		    <groupId>org.apache.xmlgraphics</groupId>
+		    <artifactId>batik-constants</artifactId>
+		    <version>1.9</version>
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-rasterizer : 6 KB
+			needed by batik-transcoder 1.9 or else Exception in thread "AWT-EventQueue-0" java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable -->
+        <!--dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-rasterizer</artifactId>
+            <version>1.9</version>
+        </dependency-->
+        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-codec -->
+       <!--dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-codec</artifactId>
+            <version>1.9</version>
+        </dependency-->
+
+		<!-- May switch to using SVG Salamander, an small fast and light-weight SVG engine
+			https://github.com/blackears/svgSalamander/wiki -->
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<!--  dependency>
 		    <groupId>commons-io</groupId>
@@ -100,7 +140,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<!-- Note : Due to the NoClassDefFoundError in org/apache/xmlgraphics/java2d/color/NamedColorSpace
 			One must stick with xmlgraphics-commons to bypass the error until the fix in the submodules_cyclic_deps branch is merged in future.
 			see http://batik.2283329.n4.nabble.com/batik-rasterizer-NoClassDefFoundError-NamedColorSpace-td4656257.html -->
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/xmlgraphics-commons (631 KB) -->
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/xmlgraphics-commons : 631 KB
+			org.apache.commons.io.IOUtils is needed by UIConfig beginning batik-transcoder 1.8 and 1.9-->
 		<dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>
 		    <artifactId>xmlgraphics-commons</artifactId>
@@ -237,7 +278,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
-			<version>7.6</version>
+			<version>7.7</version>
 		</dependency>
 		<!-- https://bitbucket.org/hansolo/enzo/wiki/Home
 		https://bintray.com/hansolo/Enzo/Enzo_All_In_One/Enzo-0.3.6 : 2.39MB -->

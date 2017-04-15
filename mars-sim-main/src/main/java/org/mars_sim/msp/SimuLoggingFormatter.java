@@ -56,7 +56,7 @@ public class SimuLoggingFormatter extends Formatter {
 		//sb.append(" ");
 
 		// Get the level name and add it to the buffer
-		sb.append("(");
+		sb.append(" (");
 		sb.append(record.getLevel().getName());
 		sb.append(") ");
 

@@ -7,32 +7,23 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.*;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionValues;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.javafx.FXUtilities;
+
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -42,56 +33,39 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-//import javafx.scene.input.KeyEvent;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
-import javafx.animation.Timeline;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyCode;
+
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
-import javafx.stage.StageStyle;
-import javafx.util.Duration;
 
 import java.awt.Cursor;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
-import java.lang.reflect.InvocationTargetException;
+
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 /**
@@ -109,7 +83,7 @@ public class TransportWizard {
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 9D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
 
-    private static int wait_time_in_secs = 30; // in seconds
+    private static int wait_time_in_secs = 60; // in seconds
 
     private final static String TITLE = "Transport Wizard";
 
@@ -168,7 +142,7 @@ public class TransportWizard {
 		this.mainWindow = mainWindow;
 		this.settlementWindow = desktop.getSettlementWindow();
 		this.mapPanel = settlementWindow.getMapPanel();
-		this.buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
 	/**
@@ -415,24 +389,8 @@ public class TransportWizard {
      			width, length, template.getXLoc(), template.getYLoc(), template.getFacing());
 		//System.out.println("inside checkTemplatePosition(), calling checkTemplateAddBuilding() now ");
      	// 2015-12-08 Added checkTemplateAddBuilding()
-        pauseAndCheck(mgr, newT);
-/*		// True if the template position is clear of obstacles (existing buildings/vehicles/construction sites)
-        if (resupply.checkBuildingTemplatePosition(correctedTemplate)) {
-     	   //System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
-     	   confirmBuildingLocation(mgr, correctedTemplate, defaultPosition);
-        } else {
-     	    // check if a vehicle is the obstacle and move it
-            boolean somethingStillBlocking = checkObstacleMoveVehicle(correctedTemplate);
-            if (somethingStillBlocking) {
-              	System.out.println("TransportWizard : somethingStillBlocking is true");
-            	BuildingTemplate repositionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
-             	checkTemplatePosition(mgr, repositionedTemplate, false);
-            } else {
-             	System.out.println("TransportWizard : somethingStillBlocking is false");
-            	confirmBuildingLocation(mgr, correctedTemplate, defaultPosition);
-            }
-        } // end of else {
-*/
+        pauseAndCheck(mgr, newT, true);
+
     }
 
 
@@ -442,25 +400,26 @@ public class TransportWizard {
      * @param correctedTemplate
      */
     // 2015-12-07 Added checkTemplateAddBuilding()
-    public synchronized void pauseAndCheck(BuildingManager mgr, BuildingTemplate correctedTemplate) {
+    public synchronized void pauseAndCheck(BuildingManager mgr, BuildingTemplate correctedTemplate, boolean preconfigured) {
     	//System.out.println("inside checkTemplateAddBuilding()");
+    	// TODO: make use of the preconfigured boolean field to distinguish between the planned template loaded from xml vs. a newly created template
 
-    	boolean previous = true; //0 = Simulation.instance().getMasterClock().isPaused();
+    	boolean previous = true;
 
 		// Pause simulation.
 		if (mainScene != null)
 			previous = mainScene.startPause();
 
     	// Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
-    	boolean checking = checkBuildingTemplatePosition(mgr, correctedTemplate);
+    	boolean ok = checkBuildingTemplatePosition(mgr, correctedTemplate);
     	//System.out.println("checking is " + checking);
-		if (checking) {
+		if (ok) {
 			createDialog(mgr, correctedTemplate, true, false); // true, false);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, true)");
 
 		} else {
 			// The building's original template position has been occupied. Get another location for the building
-			BuildingTemplate newT = clearCollision(correctedTemplate, mgr, 50);
+			BuildingTemplate newT = clearCollision(correctedTemplate, mgr, Resupply.MAX_COUNTDOWN);
 			//System.out.println("inside checkTemplateAddBuilding(), just got newT");
 			createDialog(mgr, newT, false, true);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, false)");
@@ -468,8 +427,6 @@ public class TransportWizard {
 
 		if (mainScene != null)
 			mainScene.endPause(previous);
-
-
 
     }
 
@@ -515,18 +472,16 @@ public class TransportWizard {
      */
     // 2015-12-07 Added clearCollision()
     public BuildingTemplate clearCollision(BuildingTemplate t, BuildingManager mgr, int count) {
-		logger.info("calling clearCollision()");
 		count--;
-
-    	boolean noVehicle = true;
+		logger.info("#" + (Resupply.MAX_COUNTDOWN - count) + " : calling clearCollision() for " + t.getNickName());
     	// check if a vehicle is the obstacle and move it
-    	noVehicle = checkCollisionMoveVehicle(t, mgr);
-		//System.out.println("noVehicle is now " + noVehicle);
+    	boolean noVehicle = checkCollisionMoveVehicle(t, mgr);
+    	//logger.info("noVehicle : " + noVehicle);
 
-	  	int noImmovable = checkCollisionImmovable(t, mgr, count);
-		//System.out.println("noImmovable is now " + noImmovable);
+	  	boolean noImmovable = checkCollisionImmovable(t, mgr);
+	  	//logger.info("noImmovable : " + noImmovable);
 
-		if (noImmovable != 0) {
+		if (!noImmovable) {
 			// if there are no obstacles
 			BuildingTemplate newT = resupply.positionNewResupplyBuilding(t.getBuildingType());
     		//System.out.println("inside clearCollision(), just got newT");
@@ -559,7 +514,7 @@ public class TransportWizard {
 
 		// true if no collision
         boolean noCollison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
-
+        //System.out.println("checkCollisionMoveVehicle() : noCollison is " + noCollison);
         return noCollison;
 
     }
@@ -569,36 +524,30 @@ public class TransportWizard {
      * @param building
      * @param buildingManager
      * @param count The number of times remaining checking collision
-     * @return int The remaining count or if zero, there is no collision.
+     * @return true if no collision.
      */
     // 2015-12-07 Added checkCollisionImmovable()
-    public int checkCollisionImmovable(BuildingTemplate t, BuildingManager mgr, int count) {
-		logger.info(count + " : calling checkCollisionImmovable(t, mgr) for " + t.getNickName());
-		if (count > 0)
-			count--;
+    public boolean checkCollisionImmovable(BuildingTemplate t, BuildingManager mgr) {
+		//logger.info("calling checkCollisionImmovable(t, mgr) for " + t.getNickName());
+
     	double xLoc = t.getXLoc();
     	double yLoc = t.getYLoc();
     	double w = t.getWidth();
 		double l = t.getLength();
 		double f = t.getFacing();
 
-		BoundedObject boundedObject = null;
+		BoundedObject boundedObject;// = new BoundedObject(xLoc, yLoc, w, l, f);
 
 		if (t.getBuildingType().equalsIgnoreCase("hallway")
-				&& t.getBuildingType().equalsIgnoreCase("tunnel"))
-				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+				|| t.getBuildingType().equalsIgnoreCase("tunnel"))
+				boundedObject = new BoundedObject(xLoc, yLoc, w-1, l-1, f);
 			else
-				boundedObject = new BoundedObject(xLoc, yLoc, w+1, l+1, f);
+				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
 		// true if no collision
-		boolean noCollison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
-        //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
+		boolean noCollision = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
 
-		if (noCollison)
-			return 0;
-		else
-			return count;
-
+		return noCollision;
     }
 
     /**
@@ -632,13 +581,11 @@ public class TransportWizard {
      * @param building
      * @param buildingManager
      * @param count The number of times remaining checking collision
-     * @return int The remaining count or if zero, there is no collision.
+     * @return true if no collision.
      */
     // 2015-12-07 Added checkCollisionImmovable()
-    public int checkCollisionImmovable(Building b, BuildingManager mgr, int count) {
+    public boolean checkCollisionImmovable(Building b, BuildingManager mgr, int count) {
 		logger.info(count + " : calling checkCollisionImmovable(b, mgr) for " + b.getNickName());
-		if (count > 0)
-			count--;
 
     	double xLoc = b.getXLocation();
     	double yLoc = b.getYLocation();
@@ -649,19 +596,16 @@ public class TransportWizard {
 		BoundedObject boundedObject = null;
 
 		if (b.getBuildingType().equalsIgnoreCase("hallway")
-			&& b.getBuildingType().equalsIgnoreCase("tunnel"))
-			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+			|| b.getBuildingType().equalsIgnoreCase("tunnel"))
+			boundedObject = new BoundedObject(xLoc, yLoc, w-1, l-1, f);
 		else
-			boundedObject = new BoundedObject(xLoc, yLoc, w+1, l+1, f);
+			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
 		// true if no collision
-		boolean noCollison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
+		boolean noCollision = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
 
-		if (noCollison)
-			return 0;
-		else
-			return count;
+		return noCollision;
 
     }
 
@@ -688,15 +632,15 @@ public class TransportWizard {
 			boolean isAtPreDefinedLocation, boolean isNewTemplate) {
 		//System.out.println("inside confirmBuildingLocation");
 		//Building newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
-		Building newBuilding = null;
+		Building newBuilding = mgr.prepareToAddBuilding(template, resupply, true);
 
-		if (isAtPreDefinedLocation || isNewTemplate) {
-			newBuilding = mgr.prepareToAddBuilding(template, resupply, true);
-		}
+		//if (isAtPreDefinedLocation || isNewTemplate) {
+		//	newBuilding = mgr.prepareToAddBuilding(template, resupply, false);
+		//}
 
         // Determine location and facing for the new building.
-		double xLoc = newBuilding.getXLocation();
-		double yLoc = newBuilding.getYLocation();
+		double xLoc = template.getXLoc();//newBuilding.getXLocation();
+		double yLoc = template.getYLoc();//newBuilding.getYLocation();
 		double scale = mapPanel.getScale();
 
 		Settlement currentS = settlementWindow.getMapPanel().getSettlement();
@@ -716,7 +660,7 @@ public class TransportWizard {
 		String header = null;
 		String title = null;
 		String message = "(1) Will default to \"Yes\" in 30 secs unless timer is cancelled."
-    			+ " (2) To manually place a site, click on \"Use Mouse/Keyboard Control\" button ";
+				 + System.lineSeparator() + "(2) To MANUALLY select a location, press 'Keyboard/Mouse' Button.";
 		StringProperty msg = new SimpleStringProperty(message);
 
 		if (isAtPreDefinedLocation) {
@@ -794,7 +738,7 @@ public class TransportWizard {
 
 				ButtonType buttonTypeYes = new ButtonType("Yes");
 				ButtonType buttonTypeNo = new ButtonType("No");
-				ButtonType buttonTypeMouseKB = new ButtonType("Use Mouse/Keyboard Control");
+				ButtonType buttonTypeMouseKB = new ButtonType("Keyboard/Mouse");
 				ButtonType buttonTypeCancelTimer = null;
 
 				Timer timer = null;
@@ -815,17 +759,18 @@ public class TransportWizard {
 			        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
 			        	    button.fire();
 			        	}
-			        	msg.set("Notes: (1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
-			        			+ " (2) To manually place a building, use Mouse/Keyboard Control.");
+			        	msg.set("(1) Will default to \"Yes\" in " + num + " seconds unless countdown timer is cancelled."
+			        			+ System.lineSeparator() +  "(2) To MANUALLY select a location, press 'Keyboard/Mouse' Button.");
 					});
 				}
 				else {
-					msg.set("Note: To manually place a building, use Mouse/Keyboard Control.");
+					msg.set("To MANUALLY select a location, press 'Keyboard/Mouse' Button.");
 					alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
 				}
 
-				if (newBuilding.getBuildingType().equals("Hallway")
-						|| newBuilding.getBuildingType().equals("Tunnel")) {
+				// For hallway and tunnel, use the computer-generated position
+				if (newBuilding.getBuildingType().equalsIgnoreCase("hallway")
+						|| newBuilding.getBuildingType().equalsIgnoreCase("tunnel")) {
 					Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeMouseKB);
 					button.setVisible(false);
 				}
@@ -835,10 +780,11 @@ public class TransportWizard {
 				result = alert.showAndWait();
 
 				if (result.isPresent() && result.get() == buttonTypeYes) {
-					logger.info(newBuilding.toString() + " from " + template.getMissionName()
-				 	+ " is put in place in " + mgr.getSettlement());
-					newBuilding.setInTransport(false);
-
+					if (template.getMissionName() != null) {
+						logger.info(newBuilding.toString() + " from " + template.getMissionName()
+					 			+ " is put in place in " + mgr.getSettlement());
+						newBuilding.setInTransport(false);
+					}
 				} else if (result.isPresent() && result.get() == buttonTypeNo) {
 			    	mgr.removeBuilding(newBuilding);
 			    	//System.out.println("just removing building");
@@ -847,7 +793,7 @@ public class TransportWizard {
 			    	// 2015-12-16 Added setMissionName()
 					repositionedTemplate.setMissionName(template.getMissionName());
 					//System.out.println("just called setMissionName()");
-					pauseAndCheck(mgr, repositionedTemplate);
+					pauseAndCheck(mgr, repositionedTemplate, false);
 					//checkTemplatePosition(mgr, repositionedTemplate, false);
 					//System.out.println("done calling checkTemplatePosition()");
 
@@ -885,13 +831,13 @@ public class TransportWizard {
 
 		// Platform.runLater(() -> {
 		// FXUtilities.runAndWait(() -> {
-			String msg = "Keyboard Control :\t(1) Highlight the Settlement Map Tool" + System.lineSeparator()
-					+ "\t\t\t\t(2) Use w/a/s/d, num pad keys arrows to move" + System.lineSeparator()
-					+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise" + System.lineSeparator()
-					+ "   Mouse Control :\t(1) Press & Hold the left button on the building" + System.lineSeparator()
-					+ "\t\t\t\t(2) Move the cursor to the destination" + System.lineSeparator()
-					+ "\t\t\t\t(3) Release button to drop it off" + System.lineSeparator()
-					+ "\t\t\t\t(4) Hit \"Confirm Position\" button to proceed";
+			String msg = "KEYBOARD :\t(1) Highlight the Settlement Map Tool" + System.lineSeparator()
+					+ "\t\t\t(2) Use w/a/s/d, num pad keys arrows to move" + System.lineSeparator()
+					+ "\t\t\t(3) Press 'r' or 'f' to rotate 45 degrees clockwise" + System.lineSeparator()
+					+ "   MOUSE :\t(1) Press & Hold the left button on the building" + System.lineSeparator()
+					+ "\t\t\t(2) Move the cursor to the destination" + System.lineSeparator()
+					+ "\t\t\t(3) Release button to drop it off" + System.lineSeparator()
+					+ "\t\t\t(4) Hit \"Confirm Position\" button to proceed";
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			//alert.setOnCloseRequest((event) -> event.consume());
 			//alert.initStyle(StageStyle.UNDECORATED);
@@ -1135,56 +1081,55 @@ public class TransportWizard {
 	    	  int yLoc = (int) b.getYLocation();
 	    	  int facing = (int) b.getFacing();
 
+			  for (KeyboardDirection dir : KeyboardDirection.values()) {
 
-				  for (KeyboardDirection dir : KeyboardDirection.values()) {
+				  if (enumMap.get(dir)) {
+					  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
+					  checkCollisionMoveVehicle(b, mgr);
+					  boolean ok2 = checkCollisionImmovable(b, mgr, Resupply.MAX_COUNTDOWN);
 
-    				  if (enumMap.get(dir)) {
-    					  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
-    					  //boolean ok1 = checkCollisionMoveVehicle(b, mgr);
-    					  int ok2 = checkCollisionImmovable(b, mgr, 10);
+					  if (ok2 && checkRadius(b, mgr)) {
 
-    					  if (ok2 == 0 && checkRadius(b, mgr)) {
+						  //System.out.println("ok2 : "+ ok2);
+		    			  xLoc += dir.getIncrX();
+		    			  yLoc += dir.getIncrY();
 
-    						  //System.out.println("ok2 : "+ ok2);
-			    			  xLoc += dir.getIncrX();
-			    			  yLoc += dir.getIncrY();
+		    			  b.setXLocation(xLoc);
+		    			  b.setYLocation(yLoc);
 
-			    			  b.setXLocation(xLoc);
-			    			  b.setYLocation(yLoc);
+		    			  facing += dir.getFacing();
+		    			  if (facing >= 360)
+		    			    facing = facing - 360;
+		    			  b.setFacing(facing);
 
-			    			  facing += dir.getFacing();
-			    			  if (facing >= 360)
-			    			    facing = facing - 360;
-			    			  b.setFacing(facing);
+		    			  repaint = true;
 
-			    			  repaint = true;
+					  } else {
 
-    					  } else {
+	    				  xLoc = xLoc - dir.getIncrX() * 2;
+		    			  yLoc = yLoc - dir.getIncrY() * 2;
 
-		    				  xLoc = xLoc - dir.getIncrX() * 2;
-			    			  yLoc = yLoc - dir.getIncrY() * 2;
+		    			  b.setXLocation(xLoc);
+		    			  b.setYLocation(yLoc);
 
-			    			  b.setXLocation(xLoc);
-			    			  b.setYLocation(yLoc);
+		    			  facing -= dir.getFacing();
+		    			  if (facing < 0)
+		    				  facing = facing + 360;
+		    			  b.setFacing(facing);
 
-			    			  facing -= dir.getFacing();
-			    			  if (facing < 0)
-			    				  facing = facing + 360;
-			    			  b.setFacing(facing);
+		    			  repaint = true;
 
-			    			  repaint = true;
-
-			    			  return;
-		    				  //break;
-			    			  //continue;
-		    			  }
+		    			  return;
+	    				  //break;
+		    			  //continue;
 	    			  }
-	    			  else {
-	    				  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
-	    				  //System.out.println("dir.getIncrY() : " + dir.getIncrY());
+    			  }
+    			  else {
+    				  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
+    				  //System.out.println("dir.getIncrY() : " + dir.getIncrY());
 
-	    			  }
-				  }
+    			  }
+			  }
 
 
 			  if (repaint) {
@@ -1216,10 +1161,10 @@ public class TransportWizard {
 			if (evt.getButton() == MouseEvent.BUTTON1) {
 				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			    // Check for collision here
-			    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
-			    int ok2 = checkCollisionImmovable(newBuilding, mgr, 10);
+			    checkCollisionMoveVehicle(newBuilding, mgr);
+			    boolean ok2 = checkCollisionImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
-			    if (ok1 && ok2 == 0) {
+			    if (ok2) {
 			    	boolean withinRadius = checkRadius(newBuilding, mgr);
 
 			    	if (withinRadius)
@@ -1244,10 +1189,10 @@ public class TransportWizard {
 		    int c = e.getKeyCode();
 		    //System.out.println("c is " + c);
 		    // Check for collision here
-		    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
-		    int ok2 = checkCollisionImmovable(newBuilding, mgr, 10);
+		    checkCollisionMoveVehicle(newBuilding, mgr);
+		    boolean ok2 = checkCollisionImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
-		    if (ok1 && ok2 == 0) {
+		    if (ok2) {
 		    	boolean withinRadius = checkRadius(newBuilding, mgr);
 
 		    	if (withinRadius)
@@ -1268,10 +1213,10 @@ public class TransportWizard {
 		    int c = e.getKeyCode();
 		    //System.out.println("c is " + c);
 		    // Check for collision here
-		    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
-		    int ok2 = checkCollisionImmovable(newBuilding, mgr, 10);
+		    checkCollisionMoveVehicle(newBuilding, mgr);
+		    boolean ok2 = checkCollisionImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
-		    if (ok1 && ok2 == 0) {
+		    if (ok2) {
 		    	boolean withinRadius = checkRadius(newBuilding, mgr);
 
 		    	if (withinRadius)

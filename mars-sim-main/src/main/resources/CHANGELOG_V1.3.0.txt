@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 3935) - 2017-04-13
+## v3.1.0-Preview 7 (build 39__) - 2017-04-__
 
 ### MINIMUM REQUIREMENTS :
 
@@ -35,6 +35,8 @@ https://mars-sim.github.io/
 
 3. Rework the minimum and maximum value of time ratio.
 
+4. Improve how a building is positioned using Transport Wizard.
+
 
 ### UI IMPROVEMENT :
 
@@ -50,7 +52,7 @@ https://mars-sim.github.io/
 4. Accept the use of comma (in addition to the default case of using dot) as the decimal
    mark when inputting lat/lon in the Config Editor.
 
-5. Switch to using an unobtrusive, transparent pause screen when sim is paused.
+5. Switch to using an unobtrusive, transparent pause pane when sim is paused.
 
 
 ### FIXES :
@@ -66,6 +68,8 @@ https://mars-sim.github.io/
 5. Remove external fonts to stop startup crash in linux.
 
 6. Fix errors when creating brand new Resupply Missions.
+
+7. Fix quality of dessert not showing up correctly.
 
 -----------------------------------------------------------------------------------------
 

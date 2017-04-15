@@ -242,7 +242,7 @@ implements ListSelectionListener {
 	 * Cancels the currently selected transport item.
 	 */
 	private void cancelTransportItem() {
-		String msg = "Are you sure you want to discard the highlighted mission?";
+		String msg = "Note: you have highlighted a mission on the top-left box 'Incoming Transport Items' and clicked on the 'Discard Mission' button.";
 
 		if (mainScene != null) {
 			// 2015-12-16 Added askFX()
@@ -283,7 +283,7 @@ implements ListSelectionListener {
 		alert.initModality(Modality.NONE);
 		//alert.initModality(Modality.APPLICATION_MODAL);  f
 		//alert.initModality(Modality.WINDOW_MODAL);
-		alert.setHeaderText("Confirmation for discarding this transport/ressuply mission");
+		alert.setHeaderText("Discard this transport/resupply mission ?");
 		alert.setContentText(msg);
 
 		ButtonType buttonTypeYes = new ButtonType("Yes");

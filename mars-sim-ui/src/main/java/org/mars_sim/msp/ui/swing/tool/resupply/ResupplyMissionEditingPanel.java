@@ -115,7 +115,7 @@ extends TransportItemEditingPanel {
 	private ResupplyWindow resupplyWindow;
 
 	private MarsClock marsCurrentTime;
-	private Settlement settlement;
+	//private Settlement settlement;
 
 	/** constructor. */
 	public ResupplyMissionEditingPanel(Resupply resupply, ResupplyWindow resupplyWindow,
@@ -153,7 +153,7 @@ extends TransportItemEditingPanel {
 			destinationCB.setSelectedItem(resupply.getSettlement());
 		}
 		else {
-			this.settlement = (Settlement) destinationCB.getSelectedItem();
+			//this.settlement = (Settlement) destinationCB.getSelectedItem();
 		}
 		destinationPane.add(destinationCB);
 
@@ -251,6 +251,7 @@ extends TransportItemEditingPanel {
 
 		// Create time until arrival radio button.
 		timeUntilArrivalRB = new JRadioButton();
+		timeUntilArrivalRB.setSelected(false);
 		dateTypeRBGroup.add(timeUntilArrivalRB);
 		timeUntilArrivalRB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
