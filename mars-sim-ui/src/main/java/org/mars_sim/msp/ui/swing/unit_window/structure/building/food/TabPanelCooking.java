@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.08 2015-12-10
+ * @version 3.1.0 2017-04-15
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -66,8 +66,8 @@ extends TabPanel {
     /** default logger. */
     //private static Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
-    private static final BuildingFunction COOK_MEAL = BuildingFunction.COOKING;
-    private static final BuildingFunction PREPARE_DESSERT = BuildingFunction.PREPARING_DESSERT;
+    private static final BuildingFunction COOKING = BuildingFunction.COOKING;
+    private static final BuildingFunction PREPARING_DESSERT = BuildingFunction.PREPARING_DESSERT;
 
 	// Data Members
 	private int numRow = 0;
@@ -132,13 +132,13 @@ extends TabPanel {
 
 		settlement = (Settlement) unit;
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
         while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(COOK_MEAL)) {
-				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);
+        	if (building.hasFunction(COOKING)) {
+				Cooking kitchen = (Cooking) building.getFunction(COOKING);
 
 				availableMealsCache += kitchen.getNumberOfAvailableCookedMeals();
 				mealsTodayCache += kitchen.getTotalNumberOfCookedMealsToday();
@@ -147,13 +147,13 @@ extends TabPanel {
         	}
         }
 
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(PREPARE_DESSERT).iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings(PREPARING_DESSERT).iterator();
         while (j.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = j.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(PREPARE_DESSERT)) {
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);
+        	if (building.hasFunction(PREPARING_DESSERT)) {
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARING_DESSERT);
 
 				availableDessertsCache += kitchen.getAvailableServingsDesserts();
 				dessertsTodayCache += kitchen.getTotalServingsOfDessertsToday();
@@ -293,7 +293,7 @@ extends TabPanel {
 		//if (!MainScene.OS.equals("linux")) {
 		//	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
-		
+
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(table);
 
@@ -324,13 +324,13 @@ extends TabPanel {
 		int availableMeals = 0;
 		int mealsToday = 0;
 		double mealsReplenishment = 0D;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
         while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(COOK_MEAL)) {
-				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);
+        	if (building.hasFunction(COOKING)) {
+				Cooking kitchen = (Cooking) building.getFunction(COOKING);
 
 				availableMeals += kitchen.getNumberOfAvailableCookedMeals();
 				mealsToday += kitchen.getTotalNumberOfCookedMealsToday();
@@ -379,13 +379,13 @@ extends TabPanel {
 		int availableDesserts = 0;
 		int dessertsToday = 0;
 		double dessertsReplenishment = 0;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(PREPARE_DESSERT).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(PREPARING_DESSERT).iterator();
         while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(PREPARE_DESSERT)) {
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);
+        	if (building.hasFunction(PREPARING_DESSERT)) {
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARING_DESSERT);
 
 				availableDesserts += kitchen.getAvailableServingsDesserts();
 				dessertsToday += kitchen.getTotalServingsOfDessertsToday();
@@ -398,18 +398,18 @@ extends TabPanel {
 		// Update # of desserts replenishment rate
 		if (dessertsReplenishmentCache != dessertsReplenishment) {
 			dessertsReplenishmentCache = dessertsReplenishment;
-			dessertsReplenishmentLabel.setText(Msg.getString("TabPanelCooking.dessertsReplenishment", dessertsReplenishmentCache)); //$NON-NLS-1$
+			dessertsReplenishmentLabel.setText(Msg.getString("TabPanelCooking.dessertsReplenishment", dessertsReplenishment)); //$NON-NLS-1$
 		}
 		// Update # of available Desserts
 		if (availableDessertsCache != availableDesserts) {
 			availableDessertsCache = availableDesserts;
-			availableDessertsLabel.setText(Msg.getString("TabPanelCooking.availableDesserts", availableDessertsCache)); //$NON-NLS-1$
+			availableDessertsLabel.setText(Msg.getString("TabPanelCooking.availableDesserts", availableDesserts)); //$NON-NLS-1$
 		}
 
 		// Update # of Desserts cooked today
 		if (dessertsTodayCache != dessertsToday) {
 			dessertsTodayCache = dessertsToday;
-			dessertsTodayLabel.setText(Msg.getString("TabPanelCooking.dessertsToday", dessertsTodayCache)); //$NON-NLS-1$
+			dessertsTodayLabel.setText(Msg.getString("TabPanelCooking.dessertsToday", dessertsToday)); //$NON-NLS-1$
 		}
 
 	}
@@ -562,15 +562,15 @@ extends TabPanel {
 
 		public void getMultimap() {
 
-			Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
+			Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
 
 	        while (i.hasNext()) { 		// for each building's kitchen in the settlement
 
 	        	Building building = i.next();
 	    		//System.out.println("Building is " + building.getNickName());
 
-	        	if (building.hasFunction(COOK_MEAL)) {
-					Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);
+	        	if (building.hasFunction(COOKING)) {
+					Cooking kitchen = (Cooking) building.getFunction(COOKING);
 
 					qualityMap = kitchen.getQualityMap();
 					timeMap = kitchen.getTimeMap();

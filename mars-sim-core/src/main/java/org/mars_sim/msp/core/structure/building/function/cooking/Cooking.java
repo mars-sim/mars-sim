@@ -107,6 +107,7 @@ implements Serializable {
     //private List<String> oilMenu;// = new CopyOnWriteArrayList<>();
     private static List<AmountResource> oilMenuAR;
 
+    private int bestQualityCache = -1;
     private int cookCapacity;
 	private int mealCounterPerSol = 0;
 	private int solCache = 1;
@@ -458,7 +459,6 @@ implements Serializable {
      * @return the meal
      */
     public CookedMeal chooseAMeal(Person person) {
-    	CookedMeal result = null;
     	CookedMeal bestFavDish = null;
         CookedMeal bestMeal = null;
         int bestQuality = -1;
@@ -471,31 +471,47 @@ implements Serializable {
             // TODO: define how a person will choose to eat a main dish and/or side dish
             String mealN = meal.getName();
             int mealQ = meal.getQuality();
-            if (mealN.equals(mainDish) || mealN.equals(sideDish) ) {
-                // currently a person will eat either a main dish or side dish but NOT both.
+            if (mealN.equals(mainDish)) {
+                // person will choose the main dish
             	if (mealQ > bestQuality) {
 	            	// save the one with the best quality
 	                bestQuality = mealQ;
 	                bestFavDish = meal;
+	            	cookedMeals.remove(bestFavDish);
+	            	return bestFavDish;
 	            }
-	        } else if (mealQ > bestQuality) {
+            }
+
+            else if (mealN.equals(sideDish)) {
+                // person will choose side dish
+            	if (mealQ > bestQuality) {
+	            	// save the one with the best quality
+	                bestQuality = mealQ;
+	                bestFavDish = meal;
+	            	cookedMeals.remove(bestFavDish);
+	            	return bestFavDish;
+	            }
+	        }
+
+            else if (mealQ > bestQuality) {
 	            // not his/her fav but still save the one with the best quality
                 bestQuality = mealQ;
                 bestMeal = meal;
             }
+
+			else {
+			    // not his/her fav but still save the one with the best quality
+				bestQuality = mealQ;
+			    bestMeal = meal;
+			}
         }
 
-        if (bestFavDish != null) {
-            // a person will eat his/her fav dish
-        	cookedMeals.remove(bestFavDish);
-        	result = bestFavDish;
-        } else if (bestMeal != null) {
+        if (bestMeal != null) {
             // a person will eat the best quality meal
         	cookedMeals.remove(bestMeal);
-        	result = bestMeal;
         }
 
-        return result;
+        return bestMeal;
     }
 
     /**
@@ -503,7 +519,8 @@ implements Serializable {
      * @return quality
      */
     public int getBestMealQuality() {
-        int bestQuality = -1;
+    	int bestQuality = -1;
+    	// Question: do we want to remember the best quality ever or just the best quality among the current servings ?
         Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
@@ -512,6 +529,10 @@ implements Serializable {
         }
 
         return bestQuality;
+    }
+
+    public int getBestMealQualityCache() {
+    	return bestQualityCache;
     }
 
     /**
@@ -1029,7 +1050,7 @@ implements Serializable {
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
 	    // Added 2014-12-08 : Sanity check for the passing of each day
-		int newSol = marsClock.getSolElapsedFromStart();
+		int newSol = marsClock.getSolOfMonth();//getSolElapsedFromStart();
 	    if (newSol != solCache) {
 	    	// 2015-01-12 Adjust the rate to go up automatically by default
 	       	solCache = newSol;

@@ -111,6 +111,7 @@ implements Serializable {
 
     private boolean makeNoMoreDessert = false;
 
+    private int bestQualityCache = -1;
 	private int dessertCounterPerSol = 0;
 	private int solCache = 1;
     private int cookCapacity;
@@ -130,7 +131,7 @@ implements Serializable {
 
     private List<PreparedDessert> servingsOfDessertList;
 
-
+	private MarsClock currentTime;// = Simulation.instance().getMasterClock().getMarsClock();
 
     /**
      * Constructor.
@@ -141,6 +142,8 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
         this.building = building;
+
+        currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
 
@@ -341,24 +344,36 @@ implements Serializable {
 
         Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
         while (i.hasNext()) {
-            PreparedDessert freshDessert = i.next();
-            if (freshDessert.getName().equals(favoriteDessert)) {
-                if (freshDessert.getQuality() > bestQuality) {
-                    bestQuality = freshDessert.getQuality();
-                    bestFavDessert = freshDessert;
+            PreparedDessert fresh = i.next();
+            int q = fresh.getQuality();
+            if (fresh.getName().equals(favoriteDessert)) {
+            	// person will choose his/her favorite dessert right away
+                if (q > bestQuality) {
+                	//if (q > currentBestQuality) {
+                	//	currentBestQuality = q;
+                	//	bestQuality = q;
+                	//}
+              		bestQuality = q;
+                    bestFavDessert = fresh;
+                    servingsOfDessertList.remove(bestFavDessert);
+                    return bestFavDessert;
                 }
             }
 
-            else if (freshDessert.getQuality() > bestQuality) {
-                bestQuality = freshDessert.getQuality();
-                bestDessert = freshDessert;
+            else if (q > bestQuality) {
+                bestQuality = q;
+                bestDessert = fresh;
+                break;
+            }
+
+            else {
+                bestQuality = q;
+                bestDessert = fresh;
             }
         }
 
-        if (bestFavDessert != null) {
-            servingsOfDessertList.remove(bestFavDessert);
-        }
-        else if (bestDessert != null) {
+
+        if (bestDessert != null) {
             servingsOfDessertList.remove(bestDessert);
         }
 
@@ -378,14 +393,20 @@ implements Serializable {
      * @return quality
      */
     public int getBestDessertQuality() {
-        int bestQuality = 0;
+        int bestQuality = -1;
+    	// Question: do we want to remember the best quality ever or just the best quality among the current servings ?
         Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
         while (i.hasNext()) {
             PreparedDessert freshDessert = i.next();
-            if (freshDessert.getQuality() > bestQuality) bestQuality = freshDessert.getQuality();
+            if (freshDessert.getQuality() > bestQuality)
+            	bestQuality = freshDessert.getQuality();
         }
 
-        return bestQuality;
+        return bestQualityCache;
+    }
+
+    public int getBestDessertQualityCache() {
+    	return bestQualityCache;
     }
 
  	public int getPopulation() {
@@ -529,17 +550,17 @@ implements Serializable {
         else {
 	        Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
 
-	        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	       // MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	        // TODO: quality also dependent upon the hygiene of a person
 	        int dessertQuality = getBestDessertSkill();
 
 	        // Create a serving of dessert and add it into the list
-		    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, time, producerName, this));
+		    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, (MarsClock)currentTime.clone(), producerName, this));
 
 		    useWater();
 
 		    dessertCounterPerSol++;
-		    logger.fine("addWork() : new dessert just prepared : " + selectedDessert);
+		    logger.info("a new serving of " + selectedDessert + " was just prepared by " + producerName);
 
 		    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
 
@@ -573,7 +594,7 @@ implements Serializable {
             while (i.hasNext()) {
 
                 PreparedDessert dessert = i.next();
-                MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+                //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
                 if (MarsClock.getTimeDiff(dessert.getExpirationTime(), currentTime) < 0D) {
                     try {
@@ -628,8 +649,9 @@ implements Serializable {
 
     // 2015-01-12 Added checkEndOfDay()
   	public synchronized void checkEndOfDay() {
-
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		if (currentTime == null)
+			currentTime = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
 		// Added 2015-01-04 : Sanity check for the passing of each day
 		int newSol = currentTime.getSolOfMonth();
 	    double rate = settlement.getDessertsReplenishmentRate();
@@ -668,24 +690,26 @@ implements Serializable {
      *
      * @param String food group
      * @return AmountResource of the specified fresh food
-     */
+
     public AmountResource getFreshFoodAR(String foodGroup) {
         AmountResource freshFoodAR = AmountResource.findAmountResource(foodGroup);
         return freshFoodAR;
     }
+     */
 
     /**
      * Computes amount of fresh food from a particular fresh food amount resource.
      *
      * @param AmountResource of a particular fresh food
      * @return Amount of a particular fresh food in kg, rounded to the 4th decimal places
-     */
+
     public double getFreshFood(AmountResource ar) {
         double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
     	// 2015-01-09 Added addDemandTotalRequest()
     	//inv.addDemandTotalRequest(ar);
         return freshFoodAvailable;
     }
+    */
 
     /**
      * Gets the amount of power required when function is at full power.
@@ -708,16 +732,6 @@ implements Serializable {
         return cookCapacity * 10D;
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        building = null;
-        inv = null;
-        settlement = null;
-        //servingsOfDessertList.clear();
-        servingsOfDessertList = null;
-    }
 
 	@Override
 	public double getFullHeatRequired() {
@@ -728,4 +742,15 @@ implements Serializable {
 	public double getPoweredDownHeatRequired() {
 		return 0;
 	}
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        building = null;
+        inv = null;
+        settlement = null;
+        //servingsOfDessertList.clear();
+        servingsOfDessertList = null;
+    }
 }

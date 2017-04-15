@@ -16,7 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * This class is a building function panel representing 
+ * This class is a building function panel representing
  * the dessert preparation of a settlement building.
  */
 public class BuildingPanelPreparingDessert
@@ -24,7 +24,7 @@ extends BuildingFunctionPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	// Domain members
 	private PreparingDessert kitchen;
 	/** The number of cooks label. */
@@ -62,7 +62,7 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Prepare cooking label
 		// 2014-11-21 Changed font type, size and color and label text
 		JLabel makingSoyLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.title"), JLabel.CENTER); //$NON-NLS-1$
@@ -83,23 +83,23 @@ extends BuildingFunctionPanel {
 		servingsDessertCache = kitchen.getAvailableServingsDesserts();
 		servingsDessertLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.availableDesserts", servingsDessertCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsDessertLabel);
-		
+
 		// 2015-01-06 Added servingsDessertTodayLabel
 		// Prepare servings dessert today label
 		servingsDessertTodayCache = kitchen.getTotalServingsOfDessertsToday();
 		servingsDessertTodayLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsDessertTodayLabel);
 
-		
+
 		// 2014-11-30 Added dessertQualityStr
-		String dessertQualityStr;
+		//String dessertQualityStr;
 		dessertQualityCache = kitchen.getBestDessertQuality();
 		// Update Dessert quality
-		if (dessertQualityCache == 0) dessertQualityStr = "None";
-		else dessertQualityStr = "" + dessertQualityCache;
-		dessertQualityLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertQualityStr), JLabel.CENTER); //$NON-NLS-1$
+		//if (dessertQualityCache == 0) dessertQualityStr = "None";
+		//else dessertQualityStr = "" + dessertQualityCache;
+		dessertQualityLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertQualityCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(dessertQualityLabel);
-	}	
+	}
 
 	/**
 	 * Update this panel
@@ -122,17 +122,17 @@ extends BuildingFunctionPanel {
 			servingsDessertTodayCache = kitchen.getTotalServingsOfDessertsToday();
 			servingsDessertTodayLabel.setText(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache)); //$NON-NLS-1$
 		}
-				
+
 		// 2014-11-30 Added dessertQualityStr
-		String dessertQualityStr;
+		//String dessertQualityStr;
 		int dessertQuality = 0;
 		dessertQuality = kitchen.getBestDessertQuality();
 		// Update Dessert quality
 		if (dessertQualityCache != dessertQuality) {
 			dessertQualityCache = dessertQuality;
-			if (dessertQuality == 0) dessertQualityStr = "None";
-			else dessertQualityStr = "" + dessertQuality;
-			dessertQualityLabel.setText(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertQualityStr)); //$NON-NLS-1$
+			//if (dessertQuality == 0) dessertQualityStr = "None";
+			//else dessertQualityStr = "" + dessertQuality;
+			dessertQualityLabel.setText(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertQuality)); //$NON-NLS-1$
 		}
 	}
 }

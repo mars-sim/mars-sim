@@ -16,7 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * This class is a building function panel representing 
+ * This class is a building function panel representing
  * the cooking and food prepation info of a settlement building.
  */
 public class BuildingPanelCooking
@@ -24,7 +24,7 @@ extends BuildingFunctionPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	// Domain members
 	private Cooking kitchen;
 	/** The number of cooks label. */
@@ -41,7 +41,7 @@ extends BuildingFunctionPanel {
 	private int numMealsCache;
 	private int mealQualityCache;
 	private int numMealsTodayCache;
-	
+
 	/**
 	 * Constructor.
 	 * @param kitchen the cooking building this panel is for.
@@ -63,7 +63,7 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Prepare cooking label
 		// 2014-11-21 Changed font type, size and color and label text
 		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
@@ -91,23 +91,23 @@ extends BuildingFunctionPanel {
 		numMealsTodayLabel = new JLabel(Msg.getString("BuildingPanelCooking.mealsToday", numMealsTodayCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numMealsTodayLabel);
 
-		
+
 		// Prepare meal quality label
-		String mealQualityStr;
+		//String mealQualityStr;
 		mealQualityCache = kitchen.getBestMealQuality();
 		// Update meal quality
-		if (mealQualityCache == 0) mealQualityStr = "None";
-		else mealQualityStr = "" + mealQualityCache;
+		//if (mealQualityCache == 0) mealQualityStr = "None";
+		//else mealQualityStr = "" + mealQualityCache;
 		//System.out.println("BuildingPanelCooking.java : initial mealQualityCache : " + mealQualityCache);
-		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityStr), JLabel.CENTER); //$NON-NLS-1$
+		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(mealQualityLabel);
-	}	
+	}
 
 	/**
 	 * Update this panel
 	 */
 	public void update() {
-		
+
 		int numCooks = 0;
 		numCooks = kitchen.getNumCooks();
 		// Update cook number
@@ -131,18 +131,18 @@ extends BuildingFunctionPanel {
 		if (numMealsTodayCache != numMealsToday) {
 			numMealsTodayCache = numMealsToday;
 			numMealsTodayLabel.setText(Msg.getString("BuildingPanelCooking.mealsToday", numMealsToday)); //$NON-NLS-1$
-		}	
-		
-		String mealQualityStr;
+		}
+
+		//String mealQualityStr;
 		int mealQuality = 0;
 		mealQuality = kitchen.getBestMealQuality();
 		// Update meal quality
 		if (mealQualityCache != mealQuality) {
 			mealQualityCache = mealQuality;
-			if (mealQuality == 0) mealQualityStr = "None";
-			else mealQualityStr = "" + mealQuality;
+			//if (mealQuality == 0) mealQualityStr = "None";
+			//else mealQualityStr = "" + mealQuality;
 			//System.out.println("BuildingPanelCooking.java : updated mealQualityCache : "+ mealQuality);
-			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityStr)); //$NON-NLS-1$
+			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQuality)); //$NON-NLS-1$
 		}
 	}
 }
