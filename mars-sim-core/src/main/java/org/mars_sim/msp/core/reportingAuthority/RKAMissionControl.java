@@ -19,7 +19,7 @@ implements Serializable {
 	//private final String name = "RKA";
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.RKA;
-	
+
 	private final String toolTipStr = "Roscosmos";
 
 	public String getToolTipStr() {
@@ -30,9 +30,12 @@ implements Serializable {
 	//	return name;
 	//}
 
-	public RKAMissionControl() {
+	private RKAMissionControl() {
 		missionAgenda = new ResearchingHealthHazard();
+	}
 
+	public static RKAMissionControl createMissionControl() {
+		return new RKAMissionControl();
 	}
 
 	@Override

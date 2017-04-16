@@ -16,15 +16,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -35,7 +31,6 @@ import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.EmotionJSONConfig;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -45,13 +40,7 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.FindingLife;
-import org.mars_sim.msp.core.reportingAuthority.FindingMineral;
-import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.reportingAuthority.SettlingMars;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -64,8 +53,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -93,11 +80,7 @@ public class UnitManager implements Serializable {
 	public static final int POPULATION_WITH_COMMANDER = 4;
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
-	public static ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
-	public static int NUM_SPONSORS = SPONSORS.length;
-
 	// Data members
-	//private int solCache;
 	/** Flag true if the class has just been deserialized */
 	public transient boolean justReloaded = true;
 	/** Collection of all units. */
@@ -140,13 +123,6 @@ public class UnitManager implements Serializable {
 	private VehicleConfig vehicleConfig;
 	private RobotConfig robotConfig;
 
-
-
-	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
-
-    //private transient ExecutorService settlementExecutor;
-	//private transient ThreadPoolExecutor personExecutor, settlementExecutor;
-
 	/**
 	 * Constructor.
 	 */
@@ -155,21 +131,13 @@ public class UnitManager implements Serializable {
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
-		//settlementNamesMap = new HashMap<>();
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		//emotionJSONConfig = new EmotionJSONConfig();
 		relationshipManager = Simulation.instance().getRelationshipManager();
-
-		//settlementExecutor = Executors.newSingleThreadExecutor();
-		//personExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-		//settlementExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
-
-
 	}
 
 	/**
@@ -222,22 +190,16 @@ public class UnitManager implements Serializable {
 			personFemaleNames = new ArrayList<String>();
 
 			Iterator<String> i = personNames.iterator();
+
 			while (i.hasNext()) {
 
 				String name = i.next();
-
-				//ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);
-
-				//if (sponsorType.equals(ReportingAuthorityType.MARS_SOCIETY)) {
-
-					PersonGender gender = personConfig.getPersonGender(name);
-					if (gender == PersonGender.MALE) {
-						personMaleNames.add(name);
-					} else if (gender == PersonGender.FEMALE) {
-						personFemaleNames.add(name);
-					}
-
-				//}
+				PersonGender gender = personConfig.getPersonGender(name);
+				if (gender == PersonGender.MALE) {
+					personMaleNames.add(name);
+				} else if (gender == PersonGender.FEMALE) {
+					personFemaleNames.add(name);
+				}
 
 				marsSociety.put(0, personMaleNames);
 				marsSociety.put(1, personFemaleNames);
@@ -283,7 +245,6 @@ public class UnitManager implements Serializable {
 		} catch (Exception e) {
 			throw new IllegalStateException("The first names list could not be loaded: " + e.getMessage(), e);
 		}
-		//System.out.println("done with initializeFirstNames()");
 	}
 
 
@@ -345,7 +306,6 @@ public class UnitManager implements Serializable {
 			while (i.hasNext()) {
 				addUnit(i.next());
 			}
-
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 		}
@@ -360,7 +320,6 @@ public class UnitManager implements Serializable {
 	public void removeUnit(Unit unit) {
 		if (units.contains(unit)) {
 			units.remove(unit);
-
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 		}
@@ -429,7 +388,6 @@ public class UnitManager implements Serializable {
 				usedNames.add(ri.next().getName());
 			}
 
-			//System.out.println("robotType is " + robotType);
 			unitName = robotType.getName();
 
 		} else if (unitType == UnitType.EQUIPMENT) {
@@ -469,8 +427,6 @@ public class UnitManager implements Serializable {
 				numStr = "" + num;
 			result = unitName + " " + numStr;
 
-			// System.out.println("Name : " +result + " Type : " +
-			// robotType.getDisplayName());
 		}
 
 		return result;
@@ -673,22 +629,16 @@ public class UnitManager implements Serializable {
 
 		if (personConfig == null) // FOR PASSING MAVEN TEST
 			personConfig = SimulationConfig.instance().getPersonConfiguration();
-		//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		//EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
 
-		//Crew crew = new Crew("Alpha");
 		// TODO: will setting a limit on # crew to 7 be easier ?
 
 		int size = personConfig.getNumberOfConfiguredPeople();
-
-		//int crew_id = -1;
 
 		// Create all configured people.
 		for (int x = 0; x < size; x++) {
 
 			// Get person's name (required)
 			int crew_id = personConfig.getCrew(x);
-			//System.out.println("crew_id : " + crew_id);
 
 			// Get person's name (required)
 			String name = personConfig.getConfiguredPersonName(x, crew_id);
@@ -707,7 +657,6 @@ public class UnitManager implements Serializable {
 
 			// Get person's settlement or randomly determine it if not configured.
 			String preConfigSettlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
-			//Settlement settlement = null;
 			if (preConfigSettlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
@@ -755,12 +704,8 @@ public class UnitManager implements Serializable {
 			// 2017-01-24 retrieve country & sponsor designation from people.xml (may be edited in CrewEditorFX)
 			String sponsor = personConfig.getConfiguredPersonSponsor(x, crew_id);
 			String country = personConfig.getConfiguredPersonCountry(x, crew_id);
-			//String sponsor = settlement.getSponsor();
-			//System.out.println("sponsor is " + sponsor);
-			//String country = getCountry(sponsor);
 
 			// Create person and add to the unit manager.
-			//Person person = new Person(name, gender, country, settlement, sponsor);
 			// 2017-04-11 Use Builder Pattern for creating an instance of Person
 			Person person = new PersonBuilderImpl(name, settlement)
 									.setGender(gender)
@@ -784,7 +729,6 @@ public class UnitManager implements Serializable {
 					// 2016-04-16 Designate a specific job to a person
 					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED, JobManager.MISSION_CONTROL);
 					// Assign a job to a person based on settlement's need
-					//person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
 				}
 			}
 
@@ -850,7 +794,6 @@ public class UnitManager implements Serializable {
 
 			// 2015-12-12 Added setEmotionalStates()
 			//person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
-
 		}
 
 		// 2016-12-21 Call updateAllAssociatedPeople()
@@ -894,15 +837,11 @@ public class UnitManager implements Serializable {
 						existingfullnames.add(n);
 					}
 
-					//System.out.println("done creating a namelist.");
-
 					boolean isUniqueName = false;
 					PersonGender gender = null;
 					Person person = null;
 					String fullname = null;
 					String country = getCountry(sponsor);
-					//System.out.println("country is " + country);
-		    		//ReportingAuthorityType type = ReportingAuthorityType.fromString(sponsor);
 
 					// Make sure settlement name isn't already being used.
 					while (!isUniqueName) {
@@ -998,7 +937,6 @@ public class UnitManager implements Serializable {
 
 					}
 
-					//person = new Person(fullname, gender, country, settlement, sponsor); // TODO: read from file
 					// 2017-04-11 Use Builder Pattern for creating an instance of Person
 					person = new PersonBuilderImpl(fullname, settlement)
 											.setGender(gender)
@@ -1207,17 +1145,14 @@ public class UnitManager implements Serializable {
 		}
 
 		settlement.setNumShift(numShift);
-		//System.out.println(" # shift is " + numShift);
 
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
-			//System.out.println(p.getName());
 			shiftType = settlement.getAEmptyWorkShift(pop); // keep pop as a param just to speed up processing
 			p.setShiftType(shiftType);
 		}
 
-		//settlement.printWorkShift("Sol 1");
 	}
 
 
@@ -1509,12 +1444,6 @@ public class UnitManager implements Serializable {
 				Settlement settlement = i.next();
 				int initial = settlement.getInitialNumOfRobots();
 				while (settlement.getCurrentNumOfRobots() < initial) {
-					//System.out.println("Settlement : " + settlement.getName());
-					//System.out.println("getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
-					//System.out.println("initial : " + initial);
-					// System.out.println(" getInitialNumOfRobots() : " +
-					// settlement.getInitialNumOfRobots());
-
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 
@@ -1546,15 +1475,6 @@ public class UnitManager implements Serializable {
 	public RobotType getABot(Settlement s, int max) {
 
 		int[] numBots = new int[]{0,0,0,0,0,0,0};
-/*
-		int numChefbot = 0;
-		int numConstructionbot = 0;
-		int numDeliverybot = 0;
-		int numGardenbot = 0;
-		int numMakerbot = 0;
-		int numMedicbot = 0;
-		int numRepairbot = 0;
-*/
 
 		RobotType robotType = null;
 
@@ -1745,28 +1665,6 @@ public class UnitManager implements Serializable {
 					robotType = RobotType.MAKERBOT;
 			}
 		}
-/*
-		int rand = RandomUtil.getRandomInt(15); // 0 to 15
-
-		if (numChefbot < 4 && rand < 2) // 0, 1
-			robotType = RobotType.CHEFBOT;
-		//else if (numConstructionbot < 3 && num < 4) // 2, 3
-		//	robotType = RobotType.CONSTRUCTIONBOT;
-		//else if (numDeliverybot < 1 && num < 5) // 4
-		//	robotType = RobotType.DELIVERYBOT;
-		else if (numGardenbot < 5 && rand < 8) // 5, 6, 7
-			robotType = RobotType.GARDENBOT;
-		else if (numMakerbot < 6 && rand < 11) // 8, 9, 10
-			robotType = RobotType.MAKERBOT;
-		else if (numMedicbot < 1 && rand < 12) // 11,
-			robotType = RobotType.MEDICBOT;
-		else if (numRepairbot < 5 && rand < 15) // 12, 13, 14,
-			robotType = RobotType.REPAIRBOT;
-		else {// if a particular robottype already exceeded the limit
-			RandomUtil.getRandomInt(15);
-			robotType = RobotType.MAKERBOT;
-		}
-*/
 
 		if (robotType == null) {
 			System.out.println("robotType : null");
@@ -1873,6 +1771,8 @@ public class UnitManager implements Serializable {
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
 
+			i.next().timePassing(time);
+/*
 			Unit unit = i.next();
 			if (unit instanceof Building) {
 				//Building b = (Building) unit;
@@ -1908,7 +1808,7 @@ public class UnitManager implements Serializable {
 			//}
 			else
 				unit.timePassing(time);
-
+*/
 		}
 /*
 		if (masterClock == null)
@@ -2135,9 +2035,9 @@ public class UnitManager implements Serializable {
 	}
 
 
-	public ReportingAuthorityType[] getSponsors() {
-		return SPONSORS;
-	}
+	//public ReportingAuthorityType[] getSponsors() {
+	//	return SPONSORS;
+	//}
 
 	@SuppressWarnings("restriction")
 	public ObservableList<Settlement> getSettlementOList() {
@@ -2210,18 +2110,6 @@ public class UnitManager implements Serializable {
 		return countries.indexOf(country);
 	}
 
-
-	//public ThreadPoolExecutor getPersonExecutor() {;
-	//	return personExecutor;
-	//}
-
-	//public String getBuild() {
-	//	return build;
-	//}
-
-	//public static void setBuild(String value) {
-	//	build = value;
-	//}
 
 	/**
 	 * Prepare object for garbage collection.

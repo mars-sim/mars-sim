@@ -23,7 +23,7 @@ implements Serializable {
 	//private final String name = "NASA";
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.NASA;
-			
+
 	private final String toolTipStr = "National Aeronautics and Space Administration";
 
 	public String getToolTipStr() {
@@ -33,16 +33,18 @@ implements Serializable {
 	//public String getName() {
 	//	return name;
 	//}
-	
+
 	public ReportingAuthorityType getOrg() {
 		return org;
 	}
-	
 
-	public NASAMissionControl() {
+
+	private NASAMissionControl() {
 		missionAgenda = new FindingLife();
-
 	}
 
+	public static NASAMissionControl createMissionControl() {
+		return new NASAMissionControl();
+	}
 
 }

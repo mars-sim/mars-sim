@@ -20,7 +20,7 @@ implements Serializable {
 	//private final String name = "JAXA";
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.JAXA;
-	
+
 	private final String toolTipStr = "Japan Aerospace Exploration Agency";
 
 	public String getToolTipStr() {
@@ -31,9 +31,12 @@ implements Serializable {
 	//	return name;
 	//}
 
-	public JAXAMissionControl() {
+	private JAXAMissionControl() {
 		missionAgenda = new ResearchingSpaceApplication();
+	}
 
+	public static JAXAMissionControl createMissionControl() {
+		return new JAXAMissionControl();
 	}
 
 	@Override

@@ -20,7 +20,7 @@ implements Serializable {
 	//private final String name = "ISRO";
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.ISRO;
-	
+
 	private final String toolTipStr = "The Indian Space Research Organisation";
 
 	public String getToolTipStr() {
@@ -31,9 +31,12 @@ implements Serializable {
 	//	return name;
 	//}
 
-	public ISROMissionControl() {
+	private ISROMissionControl() {
 		missionAgenda = new DevelopingAdvancedTechnology();
+	}
 
+	public static ISROMissionControl createMissionControl() {
+		return new ISROMissionControl();
 	}
 
 	@Override

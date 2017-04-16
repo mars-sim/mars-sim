@@ -21,7 +21,7 @@ implements Serializable {
 	//private final String name = "MS";
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.MARS_SOCIETY;
-	
+
 	private final String toolTipStr = "Mars Society";
 
 	//public String getName() {
@@ -32,9 +32,12 @@ implements Serializable {
 		return toolTipStr;
 	}
 
-	public MarsSocietyMissionControl() {
+	private MarsSocietyMissionControl() {
 		missionAgenda = new DeterminingHabitability();
+	}
 
+	public static MarsSocietyMissionControl createMissionControl() {
+		return new MarsSocietyMissionControl();
 	}
 
 	@Override

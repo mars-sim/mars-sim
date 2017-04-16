@@ -20,7 +20,7 @@ implements Serializable {
 	//private final String name = "CSA";
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.CSA;
-	
+
 	private final String toolTipStr = "Canadian Space Agency";
 
 	public String getToolTipStr() {
@@ -31,9 +31,12 @@ implements Serializable {
 	//	return name;
 	//}
 
-	public CSAMissionControl() {
+	private CSAMissionControl() {
 		missionAgenda = new AdvancingSpaceKnowledge();
+	}
 
+	public static CSAMissionControl createMissionControl() {
+		return new CSAMissionControl();
 	}
 
 	@Override

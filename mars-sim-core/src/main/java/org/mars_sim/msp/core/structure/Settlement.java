@@ -265,7 +265,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * Called by ArrivingSettlement to create a brand new settlement
 	 */
 	// 2014-10-29 Added settlement id
-	public Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber, int initialNumOfRobots) {
+	private Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber, int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 		this.name = name;

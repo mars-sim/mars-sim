@@ -172,7 +172,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
 
-        // TODO : avoid declaring a birth clock for each person
+        // TODO : avoid declaring a birth clock for each robot
         // Find a way to use existing EarthClock inside MasterClock, plus the difference in date
         birthTimeStamp = new EarthClock(createBirthTimeString());
         attributes = new RoboticAttributeManager(this);
@@ -197,7 +197,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 
     /**
-     * Gets the instance of the task schedule for a person.
+     * Gets the instance of the task schedule of the robot.
      */
     public TaskSchedule getTaskSchedule() {
     	return taskSchedule;
@@ -205,13 +205,13 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 
     /**
-     * Create a string representing the birth time of the person.
+     * Create a string representing the birth time of the robot.
      * @return birth time string.
      */
     // 2017-01-03 Revise createBirthTimeString()
     private String createBirthTimeString() {
     	StringBuilder s = new StringBuilder();
-        // Set a birth time for the person
+        // Set a birth time for the robot
         int year = EarthClock.getCurrentYear(earthClock);
         s.append(year);
 
@@ -728,7 +728,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 
 	/**
-	  * Gets the building the person is located at
+	  * Gets the building the robot is located at
 	  * Returns null if outside of a settlement
 	  * @return building
 	  */
@@ -738,7 +738,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 	}
 
 	/**
-	  * Computes the building the person is currently located at
+	  * Computes the building the robot is currently located at
 	  * Returns null if outside of a settlement
 	  * @return building
 	  */
@@ -753,7 +753,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 	}
 
 	/**
-	  * Computes the building the person is currently located at
+	  * Computes the building the robot is currently located at
 	  * Returns null if outside of a settlement
 	  * @return building
 	  */

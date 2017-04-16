@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * FindingMineral.java
+ * ProspectingMineral.java
  * @version 3.1.0 2017-01-14
  * @author Manny Kung
  */
@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
-public class FindingMineral implements MissionAgenda, Serializable  {
+public class ProspectingMineral implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 

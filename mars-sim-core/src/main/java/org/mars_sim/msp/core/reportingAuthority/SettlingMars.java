@@ -29,8 +29,4 @@ public class SettlingMars implements MissionAgenda, Serializable {
 		System.out.println("I'm putting together a report of the local in-situ resources "
 				+ "that we can collect and process for our immediate uses.");
 	}
-
-
-
-
 }

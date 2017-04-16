@@ -20,7 +20,7 @@ implements Serializable {
 	//private final String name = "ESA";
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.ESA;
-	
+
 	private final String toolTipStr = "European Space Agency";
 
 	public String getToolTipStr() {
@@ -31,9 +31,12 @@ implements Serializable {
 	//	return name;
 	//}
 
-	public ESAMissionControl() {
+	private ESAMissionControl() {
 		missionAgenda = new DevelopingSpaceActivity();
+	}
 
+	public static ESAMissionControl createMissionControl() {
+		return new ESAMissionControl();
 	}
 
 	@Override

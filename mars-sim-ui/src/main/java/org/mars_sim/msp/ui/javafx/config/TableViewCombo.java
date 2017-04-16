@@ -53,7 +53,7 @@ public class TableViewCombo {
 	private String[] headers = new String[]{"Settlement","Template","Settlers",
             								"Bots","Sponsor","Latitude","Longitude"};
 
-	private static ReportingAuthorityType[] SPONSORS = UnitManager.SPONSORS;
+	private static ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
 
     public static int NUM_SPONSORS = SPONSORS.length;
 

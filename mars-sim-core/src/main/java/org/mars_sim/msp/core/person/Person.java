@@ -41,7 +41,7 @@ import org.mars_sim.msp.core.reportingAuthority.DevelopingAdvancedTechnology;
 import org.mars_sim.msp.core.reportingAuthority.DevelopingSpaceActivity;
 import org.mars_sim.msp.core.reportingAuthority.ESAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.FindingLife;
-import org.mars_sim.msp.core.reportingAuthority.FindingMineral;
+import org.mars_sim.msp.core.reportingAuthority.ProspectingMineral;
 import org.mars_sim.msp.core.reportingAuthority.ISROMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.JAXAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
@@ -247,9 +247,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		taskSchedule = new TaskSchedule(this);
 		// 2015-06-07 Added Preference
 		preference = new Preference(this);
-		// preference.initializePreference();
+
 		assignReportingAuthority();
-		// 2016-01-13 Set up chromosomes
+		// 2016-01-13 Set up Chromosomes
 		setupChromosomeMap();
 		// Put person in proper building.
 		associatedSettlement.getInventory().storeUnit(this);
@@ -425,44 +425,41 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	}
 
+	/*
+	 * Sets sponsoring agency for the person
+	 */
 	public void setSponsor(String sponsor) {
 		this.sponsor = sponsor;
 	}
 
-	// 2016-08-12 Revised assignReportingAuthority()
+	/*
+	 * Assigns sponsoring agency and set up specific mission control for the person
+	 */
 	public void assignReportingAuthority() {
 		if (ra == null) {
 			if (sponsor.contains("CNSA")) {
-				ra = new CNSAMissionControl();
-				ra.setMissionAgenda(new FindingMineral());
+				ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
 
 			} else if (sponsor.contains("CSA")) {
-				ra = new CSAMissionControl();
-				ra.setMissionAgenda(new AdvancingSpaceKnowledge());
+				ra = CSAMissionControl.createMissionControl(); // AdvancingSpaceKnowledge
 
 			} else if (sponsor.contains("ESA")) {
-				ra = new ESAMissionControl();
-				ra.setMissionAgenda(new DevelopingSpaceActivity());
+				ra = ESAMissionControl.createMissionControl(); // DevelopingSpaceActivity;
 
 			} else if (sponsor.contains("ISRO")) {
-				ra = new ISROMissionControl();
-				ra.setMissionAgenda(new DevelopingAdvancedTechnology());
+				ra = ISROMissionControl.createMissionControl(); // DevelopingAdvancedTechnology
 
 			} else if (sponsor.contains("JAXA")) {
-				ra = new JAXAMissionControl();
-				ra.setMissionAgenda(new ResearchingSpaceApplication());
+				ra = JAXAMissionControl.createMissionControl(); // ResearchingSpaceApplication
 
 			} else if (sponsor.contains("NASA")) {
-				ra = new NASAMissionControl();
-				ra.setMissionAgenda(new FindingLife());
+				ra = NASAMissionControl.createMissionControl(); // FindingLife
 
 			} else if (sponsor.contains("MS")) {
-				ra = new MarsSocietyMissionControl();
-				ra.setMissionAgenda(new DeterminingHabitability());// SettlingMars());
+				ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
 
 			} else if (sponsor.contains("RKA")) {
-				ra = new RKAMissionControl();
-				ra.setMissionAgenda(new ResearchingHealthHazard());
+				ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
 
 			} else {
 				logger.warning(name + " has no reporting authority!");
@@ -471,10 +468,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 	}
 
+	/*
+	 * Gets sponsoring agency for the person
+	 */
 	public ReportingAuthority getReportingAuthority() {
 		return ra;
 	}
 
+	/*
+	 * Gets task preference for the person
+	 */
 	public Preference getPreference() {
 		return preference;
 	}
@@ -558,7 +561,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		// TODO: find out why sometimes day = 0 as seen on
 		if (day == 0) {
-			logger.warning(name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
+			logger.warning(name + "'s date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
 
