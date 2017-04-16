@@ -520,7 +520,7 @@ public class UnitManager implements Serializable {
 				int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
 				// System.out.println("in unitManager, scenarioID is " +
 				// scenarioID);
-				addUnit(new Settlement(name, scenarioID, template, sponsor, location, populationNumber, initialNumOfRobots));
+				addUnit(Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber, initialNumOfRobots));
 
 			}
 		} catch (Exception e) {

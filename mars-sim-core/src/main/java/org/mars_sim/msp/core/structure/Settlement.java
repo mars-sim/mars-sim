@@ -222,42 +222,26 @@ implements Serializable, LifeSupportType, Objective {
 	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
 
 
-	// constructor 0 for ConstructionStageTest
-	public Settlement() {
+	// Constructor 1 called by ConstructionStageTest
+	private Settlement() {
 		super(null, null);
 		unitManager = Simulation.instance().getUnitManager();
-		//inv = getInventory();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 	}
+
 
 	/**
-	 * Constructor for subclass extension.
-	 * @param name the settlement's name
-	 * @param location the settlement's location
-
-	// Constructor 1 for maven testing. Called by MockSettlement
-	// TODO: pending for deletion (use constructor 2 instead)
-	protected Settlement(String name, Coordinates location) {
-		// Use Structure constructor.
-		super(name, location);
-		this.name = name;
-		unitManager = Simulation.instance().getUnitManager();
-		if (missionManager == null) // for passing maven test
-			missionManager = Simulation.instance().getMissionManager();
-		inv = getInventory();
-		// 2016-12-21 Call updateAllAssociatedPeople()
-		updateAllAssociatedPeople();
-		updateAllAssociatedRobots();
-		// count++;
-		// logger.info("constructor 1 : count is " + count);
+	 * The static factory method called by ConstructionStageTest to return a new instance of Settlement for maven testing.
+	 */
+	public static Settlement createConstructionStage() {
+		return new Settlement();
 	}
-*/
 
 	// Constructor 2 for maven testing. Called by MockSettlement
 	// 2014-10-28 Added settlement id
-	protected Settlement(String name, int scenarioID, Coordinates location) {
+	public Settlement(String name, int scenarioID, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
 		this.name = name;
@@ -266,20 +250,22 @@ implements Serializable, LifeSupportType, Objective {
 			unitManager = Simulation.instance().getUnitManager();
 		if (missionManager == null) // for passing maven test
 			missionManager = Simulation.instance().getMissionManager();
-		//inv = getInventory();
-		// 2016-12-21 Call updateAllAssociatedPeople()
-		//updateAllAssociatedPeople(); // comment out to pass maven test
-		//updateAllAssociatedRobots(); // comment out to pass maven test
-		// count++;
-		// logger.info("constructor 2 : count is " + count);
 	}
 
-	// constructor 3
+	/**
+	 * The static factory method called by ConstructionStageTest to return a new instance of Settlement for maven testing.
+	 */
+	public static Settlement createMockSettlement(String name, int scenarioID, Coordinates location) {
+		return new Settlement(name, scenarioID, location);
+	}
+
+	/*
+	 * Constructor 3 for creating settlements.
+	 * Called by UnitManager to create the initial settlement
+	 * Called by ArrivingSettlement to create a brand new settlement
+	 */
 	// 2014-10-29 Added settlement id
-	// Called by UnitManager.java when users create the initial settlement
-	// Called by ArrivingSettlement.java when users create a brand new settlement
-	public Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber,
-			int initialNumOfRobots) {
+	public Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber, int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 		this.name = name;
@@ -288,8 +274,6 @@ implements Serializable, LifeSupportType, Objective {
 		this.scenarioID = id;
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
-		// count++;
-		// logger.info("constructor 3 : count is " + count);
 
 		marsClock = sim.getMasterClock().getMarsClock();
 		weather = sim.getMars().getWeather();
@@ -335,12 +319,14 @@ implements Serializable, LifeSupportType, Objective {
 			setObjective(ObjectiveType.CROP_FARM);
 
 		logger.info("Since " + this + " is based on template '" + template + "', set its development objective to " + objectiveType.toString());
-/*
-		foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
-		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
-		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER); //waterAR;//
-		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
-*/
+
+	}
+
+	/**
+	 * The static factory method called by UnitManager and ArrivingSettlement to create a brand new settlement
+	 */
+	public static Settlement createNewSettlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber, int initialNumOfRobots) {
+		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
 
 	/**

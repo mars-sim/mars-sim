@@ -108,7 +108,7 @@
 			<!-- No starting crops for this template. -->
 
 
-			<!-- Food Crop Tissue Culture-->
+			<!-- Food Crop Tissue Culture
 			<resource type="blueberry tissue culture" amount="0.1" />
 			<resource type="cabbage tissue culture" amount="0.1" />
 			<resource type="carrot tissue culture" amount="0.1" />
@@ -122,7 +122,7 @@
 			<resource type="green onion tissue culture" amount="0.1" />
 			<resource type="kidney bean tissue culture" amount="0.1" />
 			<resource type="lettuce tissue culture" amount="0.1" />
-			<resource type="morel Mushroom tissue culture" amount="0.1" />
+			<resource type="morel mushroom tissue culture" amount="0.1" />
 			<resource type="white mustard tissue culture" amount="0.1" />
 			<resource type="peas tissue culture" amount="0.1" />
 			<resource type="peanut tissue culture" amount="0.1" />
@@ -135,13 +135,14 @@
 			<resource type="soybean tissue culture" amount="0.1" />
 			<resource type="strawberry tissue culture" amount="0.1" />
 			<resource type="sugarcane tissue culture" amount="0.1" />
-			<resource type="swiss Chard tissue culture" amount="0.1" />
+			<resource type="swiss chard tissue culture" amount="0.1" />
 			<resource type="taro tissue culture" amount="0.1" />
 			<resource type="tomato tissue culture" amount="0.1" />
 			<resource type="wheat tissue culture" amount="0.1" />
 			<resource type="white onion tissue culture" amount="0.1" />
 			<resource type="white rice tissue culture" amount="0.1" />
 			<resource type="yam tissue culture" amount="0.1" />
+-->
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -282,7 +283,7 @@
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
-			<!-- Food Crop Tissue Culture-->
+			<!-- Food Crop Tissue Culture
 			<resource type="blueberry tissue culture" amount="0.2" />
 			<resource type="cabbage tissue culture" amount="0.2" />
 			<resource type="carrot tissue culture" amount="0.2" />
@@ -296,7 +297,7 @@
 			<resource type="green onion tissue culture" amount="0.2" />
 			<resource type="kidney bean tissue culture" amount="0.2" />
 			<resource type="lettuce tissue culture" amount="0.2" />
-			<resource type="morel Mushroom tissue culture" amount="0.2" />
+			<resource type="morel mushroom tissue culture" amount="0.2" />
 			<resource type="white mustard tissue culture" amount="0.2" />
 			<resource type="peas tissue culture" amount="0.2" />
 			<resource type="peanut tissue culture" amount="0.2" />
@@ -309,14 +310,14 @@
 			<resource type="soybean tissue culture" amount="0.2" />
 			<resource type="strawberry tissue culture" amount="0.2" />
 			<resource type="sugarcane tissue culture" amount="0.2" />
-			<resource type="swiss Chard tissue culture" amount="0.2" />
+			<resource type="swiss chard tissue culture" amount="0.2" />
 			<resource type="taro tissue culture" amount="0.2" />
 			<resource type="tomato tissue culture" amount="0.2" />
 			<resource type="wheat tissue culture" amount="0.2" />
 			<resource type="white onion tissue culture" amount="0.2" />
 			<resource type="white rice tissue culture" amount="0.2" />
 			<resource type="yam tissue culture" amount="0.2" />
-
+-->
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />
@@ -492,7 +493,7 @@
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
-			<!-- Food Crop Tissue Culture-->
+			<!-- Food Crop Tissue Culture
 			<resource type="blueberry tissue culture" amount="0.3" />
 			<resource type="cabbage tissue culture" amount="0.3" />
 			<resource type="carrot tissue culture" amount="0.3" />
@@ -506,7 +507,7 @@
 			<resource type="green onion tissue culture" amount="0.3" />
 			<resource type="kidney bean tissue culture" amount="0.3" />
 			<resource type="lettuce tissue culture" amount="0.3" />
-			<resource type="morel Mushroom tissue culture" amount="0.3" />
+			<resource type="morel mushroom tissue culture" amount="0.3" />
 			<resource type="white mustard tissue culture" amount="0.3" />
 			<resource type="peas tissue culture" amount="0.3" />
 			<resource type="peanut tissue culture" amount="0.3" />
@@ -519,14 +520,14 @@
 			<resource type="soybean tissue culture" amount="0.3" />
 			<resource type="strawberry tissue culture" amount="0.3" />
 			<resource type="sugarcane tissue culture" amount="0.3" />
-			<resource type="swiss Chard tissue culture" amount="0.3" />
+			<resource type="swiss chard tissue culture" amount="0.3" />
 			<resource type="taro tissue culture" amount="0.3" />
 			<resource type="tomato tissue culture" amount="0.3" />
 			<resource type="wheat tissue culture" amount="0.3" />
 			<resource type="white onion tissue culture" amount="0.3" />
 			<resource type="white rice tissue culture" amount="0.3" />
 			<resource type="yam tissue culture" amount="0.3" />
-
+-->
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />
@@ -802,7 +803,7 @@
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
-			<!-- Food Crop Tissue Culture-->
+			<!-- Food Crop Tissue Culture
 			<resource type="blueberry tissue culture" amount="0.4" />
 			<resource type="cabbage tissue culture" amount="0.4" />
 			<resource type="carrot tissue culture" amount="0.4" />
@@ -816,7 +817,7 @@
 			<resource type="green onion tissue culture" amount="0.4" />
 			<resource type="kidney bean tissue culture" amount="0.4" />
 			<resource type="lettuce tissue culture" amount="0.4" />
-			<resource type="morel Mushroom tissue culture" amount="0.4" />
+			<resource type="morel mushroom tissue culture" amount="0.4" />
 			<resource type="white mustard tissue culture" amount="0.4" />
 			<resource type="peas tissue culture" amount="0.4" />
 			<resource type="peanut tissue culture" amount="0.4" />
@@ -829,14 +830,14 @@
 			<resource type="soybean tissue culture" amount="0.4" />
 			<resource type="strawberry tissue culture" amount="0.4" />
 			<resource type="sugarcane tissue culture" amount="0.4" />
-			<resource type="swiss Chard tissue culture" amount="0.4" />
+			<resource type="swiss chard tissue culture" amount="0.4" />
 			<resource type="taro tissue culture" amount="0.4" />
 			<resource type="tomato tissue culture" amount="0.4" />
 			<resource type="wheat tissue culture" amount="0.4" />
 			<resource type="white onion tissue culture" amount="0.4" />
 			<resource type="white rice tissue culture" amount="0.4" />
 			<resource type="yam tissue culture" amount="0.4" />
-
+-->
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />

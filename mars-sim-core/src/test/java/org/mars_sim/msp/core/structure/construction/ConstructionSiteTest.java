@@ -38,7 +38,7 @@ public class ConstructionSiteTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        site = new ConstructionSite(new Settlement());
+        site = new ConstructionSite(Settlement.createConstructionStage());
 
         Map<Part, Integer> parts = new HashMap<Part, Integer>(1);
         parts.put(new Part("test part","test resource description", 1D), 1);

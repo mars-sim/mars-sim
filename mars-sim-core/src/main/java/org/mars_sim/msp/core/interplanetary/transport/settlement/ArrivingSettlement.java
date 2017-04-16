@@ -324,7 +324,8 @@ implements Transportable, Serializable {
 		// TODO: add the option of choosing sponsor
 		String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
 
-		Settlement newSettlement = new Settlement(name, scenarioID, template, sponsor, landingLocation, populationNum, numOfRobots);
+		//Settlement newSettlement = new Settlement(name, scenarioID, template, sponsor, landingLocation, populationNum, numOfRobots);
+		Settlement newSettlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, landingLocation, populationNum, numOfRobots);
 		unitManager.addUnit(newSettlement);
 
 		// Add new settlement to credit manager.
@@ -491,8 +492,7 @@ implements Transportable, Serializable {
 					resource, true, false);
 			if (amount > capacity) amount = capacity;
 			newSettlement.getInventory().storeAmountResource(resource, amount, true);
-    		// 2015-01-15 Add addSupplyAmount()
-			newSettlement.getInventory().addAmountSupplyAmount(resource, amount);
+			//newSettlement.getInventory().addAmountSupplyAmount(resource, amount);
 		}
 	}
 
