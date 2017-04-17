@@ -67,7 +67,7 @@ extends TestCase {
 		// Create test person.
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// 2017-04-11 Use Builder Pattern for creating an instance of Person
-		Person person = new PersonBuilderImpl("test person", settlement)
+		Person person = Person.create("test person", settlement)
 								.setGender(PersonGender.MALE)
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
@@ -140,7 +140,14 @@ extends TestCase {
         building1.addFunction(new EVA(building1, airlock0));
 
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		Person person = Person.create("test person", settlement)
+								.setGender(PersonGender.MALE)
+								.setCountry(null)
+								.setSponsor("Mars Society (MS)")
+								.build();
+		person.initialize();
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -240,7 +247,14 @@ extends TestCase {
         building1.addFunction(new EVA(building1, airlock0));
 
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		Person person = Person.create("test person", settlement)
+								.setGender(PersonGender.MALE)
+								.setCountry(null)
+								.setSponsor("Mars Society (MS)")
+								.build();
+		person.initialize();
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -320,7 +334,14 @@ extends TestCase {
         building1.addFunction(new EVA(building1, airlock0));
 
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		Person person = Person.create("test person", settlement)
+								.setGender(PersonGender.MALE)
+								.setCountry(null)
+								.setSponsor("Mars Society (MS)")
+								.build();
+		person.initialize();
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);

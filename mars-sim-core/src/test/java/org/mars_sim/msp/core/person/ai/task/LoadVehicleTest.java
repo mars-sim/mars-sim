@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -47,13 +48,13 @@ extends TestCase {
 	private static final String resourceName = "hammer";
 	private static final String description = "a tool";
 	private static final double massPerItem = 1.4D;
-	
+
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	public void testLoadingPhase() throws Exception {
 		Settlement settlement = new MockSettlement();
-		
+
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		MockBuilding building0 = new MockBuilding(buildingManager);
         building0.setID(0);
@@ -64,30 +65,37 @@ extends TestCase {
         building0.setYLocation(0D);
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
-        
+
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
-		
-		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+
+		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		Person person = Person.create("test person", settlement)
+								.setGender(PersonGender.MALE)
+								.setCountry(null)
+								.setSponsor("Mars Society (MS)")
+								.build();
+		person.initialize();
 		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
-		
+
 		Inventory vehicleInv = vehicle.getInventory();
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
 		vehicleInv.addAmountResourceTypeCapacity(food, 100D);
 		vehicleInv.addAmountResourceTypeCapacity(water, 100D);
 		vehicleInv.addAmountResourceTypeCapacity(methane, 100D);
 		vehicleInv.addGeneralCapacity(100D);
-		
+
 		Inventory settlementInv = settlement.getInventory();
-		
+
 		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);
 		settlementInv.storeAmountResource(oxygen, 100D, true);
 		settlementInv.addAmountResourceTypeCapacity(food, 100D);
@@ -97,29 +105,29 @@ extends TestCase {
 		settlementInv.addAmountResourceTypeCapacity(methane, 100D);
 		settlementInv.storeAmountResource(methane, 100D, true);
 		settlementInv.storeItemResources(hammer, 5);
-		
+
 		for (int x = 0; x < 5; x++) {
 			settlementInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
 		requiredResourcesMap.put(oxygen, new Double(100D));
 		requiredResourcesMap.put(food, new Double(100D));
 		requiredResourcesMap.put(water, new Double(100D));
 		requiredResourcesMap.put(methane, new Double(100D));
 		requiredResourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
-		
+
 		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
-		
-		LoadVehicleGarage loadVehicle = new LoadVehicleGarage(person, vehicle, requiredResourcesMap, optionalResourcesMap, 
+
+		LoadVehicleGarage loadVehicle = new LoadVehicleGarage(person, vehicle, requiredResourcesMap, optionalResourcesMap,
 		        requiredEquipmentMap, optionalEquipmentMap);
 		loadVehicle.loadingPhase(10D);
-		
+
 		assertEquals("Vehicle loaded correctly.", 5, vehicle.getInventory().findNumUnitsOfClass(SpecimenContainer.class));
 	}
 
@@ -130,12 +138,12 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		inv.addAmountResourceTypeCapacity(oxygen, 100D);
 		inv.storeAmountResource(oxygen, 100D, true);
 		inv.addAmountResourceTypeCapacity(food, 100D);
@@ -144,71 +152,71 @@ extends TestCase {
 		inv.storeAmountResource(water, 100D, true);
 		inv.addAmountResourceTypeCapacity(methane, 100D);
 		inv.storeAmountResource(methane, 100D, true);
-		
+
 		inv.storeItemResources(hammer, 5);
-		
+
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
 		resourcesMap.put(oxygen, new Double(100D));
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Vehicle vehicle = new MockVehicle(settlement);
-		
-		assertTrue("Enough supplies at settlement for trip.", 
+
+		assertTrue("Enough supplies at settlement for trip.",
 				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
-	
+
 	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
-		
+
 		inv.storeItemResources(hammer, 5);
-		
+
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
 		resourcesMap.put(oxygen, new Double(100D));
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Vehicle vehicle = new MockVehicle(settlement);
-		
-		assertFalse("Not enough amount resource supplies at settlement for trip.", 
+
+		assertFalse("Not enough amount resource supplies at settlement for trip.",
 				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
-	
+
 	public void testHasEnoughSuppliesNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		inv.addAmountResourceTypeCapacity(oxygen, 100D);
 		inv.storeAmountResource(oxygen, 100D, true);
 		inv.addAmountResourceTypeCapacity(food, 100D);
@@ -217,37 +225,37 @@ extends TestCase {
 		inv.storeAmountResource(water, 100D, true);
 		inv.addAmountResourceTypeCapacity(methane, 100D);
 		inv.storeAmountResource(methane, 100D, true);
-		
+
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
 		resourcesMap.put(oxygen, new Double(100D));
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Vehicle vehicle = new MockVehicle(settlement);
-		
-		assertFalse("Not enough item resource supplies at settlement for trip.", 
+
+		assertFalse("Not enough item resource supplies at settlement for trip.",
 				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
-	
+
 	public void testHasEnoughSuppliesNoEquipment() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		inv.addAmountResourceTypeCapacity(oxygen, 100D);
 		inv.storeAmountResource(oxygen, 100D, true);
 		inv.addAmountResourceTypeCapacity(food, 100D);
@@ -256,22 +264,22 @@ extends TestCase {
 		inv.storeAmountResource(water, 100D, true);
 		inv.addAmountResourceTypeCapacity(methane, 100D);
 		inv.storeAmountResource(methane, 100D, true);
-		
+
 		inv.storeItemResources(hammer, 5);
-		
+
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
 		resourcesMap.put(oxygen, new Double(100D));
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Vehicle vehicle = new MockVehicle(settlement);
-		
-		assertFalse("Not enough equipment supplies at settlement for trip.", 
+
+		assertFalse("Not enough equipment supplies at settlement for trip.",
 				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 
@@ -284,12 +292,12 @@ extends TestCase {
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		inv.addAmountResourceTypeCapacity(oxygen, 100D);
 		inv.storeAmountResource(oxygen, 100D, true);
 		inv.addAmountResourceTypeCapacity(food, 100D);
@@ -299,29 +307,29 @@ extends TestCase {
 		inv.addAmountResourceTypeCapacity(methane, 100D);
 		inv.storeAmountResource(methane, 100D, true);
 		inv.storeItemResources(hammer, 5);
-		
+
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
 		requiredResourcesMap.put(oxygen, new Double(100D));
 		requiredResourcesMap.put(food, new Double(100D));
 		requiredResourcesMap.put(water, new Double(100D));
 		requiredResourcesMap.put(methane, new Double(100D));
 		requiredResourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
-		
+
 		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
-		
-		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+
+		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
 		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
-	
+
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
@@ -331,36 +339,36 @@ extends TestCase {
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
-		
+
 		inv.storeItemResources(hammer, 5);
-		
+
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
 		requiredResourcesMap.put(oxygen, new Double(100D));
 		requiredResourcesMap.put(food, new Double(100D));
 		requiredResourcesMap.put(water, new Double(100D));
 		requiredResourcesMap.put(methane, new Double(100D));
 		requiredResourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
-		
+
 		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
-		
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
 		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
-	
+
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
@@ -370,12 +378,12 @@ extends TestCase {
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		inv.addAmountResourceTypeCapacity(oxygen, 100D);
 		inv.storeAmountResource(oxygen, 100D, true);
 		inv.addAmountResourceTypeCapacity(food, 100D);
@@ -384,29 +392,29 @@ extends TestCase {
 		inv.storeAmountResource(water, 100D, true);
 		inv.addAmountResourceTypeCapacity(methane, 100D);
 		inv.storeAmountResource(methane, 100D, true);
-		
+
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
 		requiredResourcesMap.put(oxygen, new Double(100D));
 		requiredResourcesMap.put(food, new Double(100D));
 		requiredResourcesMap.put(water, new Double(100D));
 		requiredResourcesMap.put(methane, new Double(100D));
 		requiredResourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
-		
+
 		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
-		
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
                 optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
-	
+
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
@@ -416,12 +424,12 @@ extends TestCase {
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		
+
 		inv.addAmountResourceTypeCapacity(oxygen, 100D);
 		inv.storeAmountResource(oxygen, 100D, true);
 		inv.addAmountResourceTypeCapacity(food, 100D);
@@ -431,22 +439,22 @@ extends TestCase {
 		inv.addAmountResourceTypeCapacity(methane, 100D);
 		inv.storeAmountResource(methane, 100D, true);
 		inv.storeItemResources(hammer, 5);
-		
+
 		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
 		requiredResourcesMap.put(oxygen, new Double(100D));
 		requiredResourcesMap.put(food, new Double(100D));
 		requiredResourcesMap.put(water, new Double(100D));
 		requiredResourcesMap.put(methane, new Double(100D));
 		requiredResourcesMap.put(hammer, Integer.valueOf(5));
-		
+
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
-		
+
 		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-		
+
 		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
-		
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
                 optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 }

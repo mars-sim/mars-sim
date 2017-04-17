@@ -32,6 +32,8 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonBuilder;
+import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
@@ -87,7 +89,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
     // Data members
     private String name;
-    private Person owner;
+	private String country;
+	private String sponsor;
+
     /** The height of the robot (in cm). */
     private int height;
     /** Settlement X location (meters) from settlement center. */
@@ -101,6 +105,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     /** The robot's achievement in scientific fields. */
     //private Map<ScienceType, Double> scientificAchievement;
 
+    private Person owner;
     /** Manager for robot's natural attributes. */
     private RoboticAttributeManager attributes;
     /** robot's mind. */
@@ -135,6 +140,24 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
     private Building currentBuilding;
 
+    protected Robot(String name, Settlement settlement, RobotType robotType) {
+        super(name, settlement.getCoordinates()); // if extending equipment
+    	//super(name, settlement.getCoordinates()); // if extending Unit
+        //super(name, null, birthplace, settlement); // if extending Person
+
+		// Initialize data members.
+        this.name = name;
+        this.associatedSettlement = settlement;
+        this.robotType = robotType;
+    }
+
+	/*
+	 * Uses static factory method to create an instance of RobotBuilder
+	 */
+	public static RobotBuilder<?> create(String name, Settlement settlement, RobotType robotType) {
+		return new RobotBuilderImpl(name, settlement, robotType);
+	}
+
     /**
      * Constructs a robot object at a given settlement.
      * @param name the robot's name
@@ -142,7 +165,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @param birthplace the location of the robot's birth
      * @param settlement {@link Settlement} the settlement the robot is at
      * @throws Exception if no inhabitable building available at settlement.
-     */
+
     public Robot(String name, RobotType robotType, String birthplace, Settlement settlement, Coordinates location) {
         super(name, location); // if extending equipment
     	//super(name, settlement.getCoordinates()); // if extending Unit
@@ -150,15 +173,18 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 		// Initialize data members.
         this.name = name;
-		isSalvaged = false;
-		salvageInfo = null;
-        this.name = name;
+        this.associatedSettlement = settlement;
         this.robotType = robotType;
         this.birthplace = birthplace;
-        this.associatedSettlement = settlement;
-        // Initialize data members
+    }
+     */
+
+    public void initialize() {
+
         xLoc = 0D;
         yLoc = 0D;
+		isSalvaged = false;
+		salvageInfo = null;
         isInoperable = false;
 
         masterClock = Simulation.instance().getMasterClock();
@@ -190,9 +216,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
         // Put robot into the settlement.
-        settlement.getInventory().storeUnit(this);
+        associatedSettlement.getInventory().storeUnit(this);
         // Put robot in proper building.
-        BuildingManager.addToRandomBuilding(this, settlement);
+        BuildingManager.addToRandomBuilding(this, associatedSettlement);
     }
 
 
@@ -561,6 +587,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
        return robotType;
     }
 
+    public void setRobotType(RobotType t) {
+    	this.robotType = t;
+    }
+
     /**
      * Gets the birthplace of the robot
      * @return the birthplace
@@ -788,6 +818,26 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 	public SkillManager getSkillManager() {
 		return botMind.getSkillManager();
+	}
+
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String c) {
+		this.country = c;
+		if (c != null)
+			birthplace = "Earth";
+		else
+			birthplace = "Mars";
+	}
+
+	/*
+	 * Sets sponsoring agency for the person
+	 */
+	public void setSponsor(String sponsor) {
+		this.sponsor = sponsor;
 	}
 
 

@@ -477,6 +477,9 @@ implements Serializable, Transportable {
             inv.storeItemResources(part, number);
         }
 
+        // Deliver Robots.
+        // TODO : add a combobox for selecting what bots to send
+
         // Deliver immigrants.
         // TODO : add a crew editor for user to define what team and who to send
         Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
@@ -493,7 +496,7 @@ implements Serializable, Transportable {
             String country = Simulation.instance().getUnitManager().getCountry(sponsor);
             //Person immigrant = new Person(immigrantName, gender, country, settlement, sponsor); //TODO: read from file
 			// 2017-04-11 Use Builder Pattern for creating an instance of Person
-			Person immigrant = new PersonBuilderImpl(immigrantName, settlement)
+			Person immigrant = Person.create(immigrantName, settlement)
 									.setGender(gender)
 									.setCountry(country)
 									.setSponsor(sponsor)

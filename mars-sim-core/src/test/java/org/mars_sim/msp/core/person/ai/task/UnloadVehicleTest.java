@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -36,7 +37,7 @@ extends TestCase {
 	}
 
     public void testUnloadingPhase() throws Exception {
-		
+
 		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
@@ -52,7 +53,7 @@ extends TestCase {
 		settlementInv.addAmountResourceTypeCapacity(food, 100D);
 		settlementInv.addAmountResourceTypeCapacity(water, 100D);
 		settlementInv.addAmountResourceTypeCapacity(methane, 100D);
-		
+
 		Vehicle vehicle = new MockVehicle(settlement);
 		Inventory vehicleInv = vehicle.getInventory();
 		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
@@ -68,7 +69,7 @@ extends TestCase {
 		for (int x = 0; x < 5; x++) {
 			vehicleInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-		
+
 		BuildingManager buildingManager = settlement.getBuildingManager();
         MockBuilding building0 = new MockBuilding(buildingManager);
         building0.setID(0);
@@ -79,13 +80,20 @@ extends TestCase {
         building0.setYLocation(0D);
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
-        
+
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
-		
-		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+
+		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		Person person = Person.create("test person", settlement)
+								.setGender(PersonGender.MALE)
+								.setCountry(null)
+								.setSponsor("Mars Society (MS)")
+								.build();
+		person.initialize();
 		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
-		
+
 		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);
 		unloadVehicle.unloadingPhase(11D);
 		unloadVehicle.unloadingPhase(12D);
@@ -94,7 +102,7 @@ extends TestCase {
 		unloadVehicle.unloadingPhase(15D);
 		unloadVehicle.unloadingPhase(16D);
 		unloadVehicle.unloadingPhase(100D);
-		
+
 		assertEquals("Vehicle unloaded correctly.", 0D, vehicleInv.getTotalInventoryMass(false), 0D);
 	}
 }

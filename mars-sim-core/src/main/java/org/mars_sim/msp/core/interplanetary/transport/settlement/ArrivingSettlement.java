@@ -353,7 +353,7 @@ implements Transportable, Serializable {
 			String country = unitManager.getCountry(sponsor);
 			//Person immigrant = new Person(immigrantName, gender, country, newSettlement, sponsor);
 			// 2017-04-11 Use Builder Pattern for creating an instance of Person
-			Person immigrant = new PersonBuilderImpl(immigrantName, newSettlement)
+			Person immigrant = Person.create(immigrantName, newSettlement)
 									.setGender(gender)
 									.setCountry(country)
 									.setSponsor(sponsor)
@@ -422,8 +422,13 @@ implements Transportable, Serializable {
             RobotType robotType = unitManager.getABot(newSettlement, numOfRobots);
 
             // Create arriving robot.
-            Robot robot = new Robot(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Earth",
-                    newSettlement, newSettlement.getCoordinates());
+            //Robot robot = new Robot(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Earth",
+            //        newSettlement, newSettlement.getCoordinates());
+			// 2017-04-16 Adopt Static Factory Method and Factory Builder Pattern
+			Robot robot = Robot.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType)
+					.setCountry("Earth").build();
+			robot.initialize();
+
             unitManager.addUnit(robot);
 
             // Initialize robot job.

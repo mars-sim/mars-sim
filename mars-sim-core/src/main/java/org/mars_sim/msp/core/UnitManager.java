@@ -44,6 +44,8 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotBuilder;
+import org.mars_sim.msp.core.robot.RobotBuilderImpl;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
@@ -707,7 +709,7 @@ public class UnitManager implements Serializable {
 
 			// Create person and add to the unit manager.
 			// 2017-04-11 Use Builder Pattern for creating an instance of Person
-			Person person = new PersonBuilderImpl(name, settlement)
+			Person person = Person.create(name, settlement)
 									.setGender(gender)
 									.setCountry(country)
 									.setSponsor(sponsor)
@@ -938,7 +940,7 @@ public class UnitManager implements Serializable {
 					}
 
 					// 2017-04-11 Use Builder Pattern for creating an instance of Person
-					person = new PersonBuilderImpl(fullname, settlement)
+					person = Person.create(fullname, settlement)
 											.setGender(gender)
 											.setCountry(country)
 											.setSponsor(sponsor)
@@ -1387,7 +1389,11 @@ public class UnitManager implements Serializable {
 
 					if (proceed) {
 						// Create robot and add to the unit manager.
-						Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates());
+						//Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates());
+						// 2017-04-16 Adopt Static Factory Method and Factory Builder Pattern
+						Robot robot = Robot.create(name, settlement, robotType)
+									.setCountry("Earth").build();
+						robot.initialize();
 						addUnit(robot);
 
 						if (isDestinationChange)
@@ -1448,8 +1454,12 @@ public class UnitManager implements Serializable {
 					RobotType robotType = getABot(settlement, initial);
 
 					//System.out.println("robotType is "+robotType.toString());
-					Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars",
-							settlement, settlement.getCoordinates());
+					//Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars",
+					//		settlement, settlement.getCoordinates());
+					// 2017-04-16 Adopt Static Factory Method and Factory Builder Pattern
+					Robot robot = Robot.create(getNewName(UnitType.ROBOT, null, null, robotType), settlement, robotType)
+								.setCountry("Earth").build();
+					robot.initialize();
 
 					addUnit(robot);
 					// System.out.println("UnitManager : createInitialRobots() :

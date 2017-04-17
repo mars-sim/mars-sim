@@ -162,7 +162,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @throws Exception
 	 *             if no inhabitable building available at settlement.
 	 */
-	public Person(String name, Settlement settlement) {
+	protected Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
 
@@ -171,7 +171,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlement = settlement;
-
 	}
 
 	/**
@@ -190,8 +189,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *            the person's sponsoring agency
 	 * @throws Exception
 	 *             if no inhabitable building available at settlement.
-	 */
-	public Person(String name, PersonGender gender, String country, Settlement settlement, String sponsor) {
+
+	Person(String name, PersonGender gender, String country, Settlement settlement, String sponsor) {
 		// logger.info("Person's constructor is in " +
 		// Thread.currentThread().getName() + " Thread");
 		// Use Unit constructor
@@ -211,7 +210,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.associatedSettlement = settlement;
 		this.sponsor = sponsor;
 
-		initialize();
+	}
+*/
+
+	/*
+	 * Uses static factory method to create an instance of PersonBuilder
+	 */
+	public static PersonBuilder<?> create(String name, Settlement settlement) {
+		return new PersonBuilderImpl(name, settlement);
 	}
 
 	public void initialize() {

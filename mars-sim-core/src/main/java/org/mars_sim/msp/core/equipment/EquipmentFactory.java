@@ -8,7 +8,11 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +29,8 @@ public final class EquipmentFactory {
 	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache =
 	    new HashMap<Class<? extends Equipment>, Equipment>(8);
 	private static Set<String> equipmentNamesCache;
+
+	//private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Private constructor for static factory class.
@@ -73,7 +79,12 @@ public final class EquipmentFactory {
 		else if (EVASuit.TYPE.equalsIgnoreCase(type)) return new EVASuit(location);
 		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return new GasCanister(location);
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return new LargeBag(location);
-		else if (Robot.TYPE.equalsIgnoreCase(type)) return new Robot(null, null, null, null, location);
+		//else if (Robot.TYPE.equalsIgnoreCase(type))  {
+	        // Get a robotType randomly
+        //    RobotType robotType = unitManager.getABot(Settlement, numOfRobots);
+		//	return Robot.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType);
+			//return new Robot(null, null, null, null, location);
+		//}
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
 		else throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 	}
@@ -106,7 +117,7 @@ public final class EquipmentFactory {
         else if (LargeBag.class.equals(equipmentClass)) return new LargeBag(location);
 		else if (SpecimenContainer.class.equals(equipmentClass)) return new SpecimenContainer(location);
 		else if (BuildingKit.class.equals(equipmentClass)) return new BuildingKit(location);
-		else if (Robot.class.equals(equipmentClass)) return new Robot(null, null, null, null, location);
+		//else if (Robot.class.equals(equipmentClass)) return new Robot(null, null, null, null, location);
 		else throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
 
