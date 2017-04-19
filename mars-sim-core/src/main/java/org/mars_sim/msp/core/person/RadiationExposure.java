@@ -358,11 +358,13 @@ public class RadiationExposure implements Serializable {
     /**
      * Check for radiation exposure of the person performing this EVA.
      * @param time the amount of time on EVA (in millisols)
+     * @return true if radiation is detected
      */
-    public void checkForRadiation(double time) {
+    public boolean isRadiationDetected(double time) {
 
     	if (person != null) {
 
+    		double totalExposure = 0;
     		double exposure = 0;
        	    double shield_factor = 0;
 
@@ -386,7 +388,7 @@ public class RadiationExposure implements Serializable {
 	        	    for (int j = 0; j < 3 ; j++) {
 		    	    	double baselevel = 0;
 		    	    	if (exposed[2]) {
-		    	    		baselevel = .0; // somewhat arbitrary
+		    	    		baselevel = 0.0; // somewhat arbitrary
 			    	    	exposure = (baselevel + RandomUtil.getRandomInt(-1,1) * RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time/RADIATION_CHECK_FREQ)) // highly unpredictable, somewhat arbitrary
 			    	    			* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
 		    	    	}
@@ -395,6 +397,7 @@ public class RadiationExposure implements Serializable {
 		    	    		baselevel = GCR_RAD_PER_SOL * time/100D;
 			    	    	exposure = baselevel + RandomUtil.getRandomInt(-1,1)
 			    	    			* RandomUtil.getRandomDouble(shield_factor * GCR_RAD_SWING * time/RADIATION_CHECK_FREQ); // according to Curiosity RAD's data
+
 		    	    	}
 		    	    	// for now, if GCR happens, ignore Baseline
 		    	    	else if (exposed[0]) {
@@ -404,19 +407,31 @@ public class RadiationExposure implements Serializable {
 		    	    	}
 
 		    	    	exposure = Math.round(exposure*10000.0)/10000.0;
-
 		    	    	addDose(j, exposure);
-		    	    	//System.out.println("rand is "+ rand);
-		    	    	if (i != 0) { // show logger.info for the GCR or SEP event only {
-			    	    	logger.info(person.getName() + " was exposed to " + exposure
-			    	    			+ " mSv dose of radiation in body region "
-			    	    			+ i + " during an EVA operation near " + person.getAssociatedSettlement());
-			    	    	person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
-		    	    	}
+
+		    	    	totalExposure = totalExposure + exposure;
 	        	    }
     	    	}
     	    }
+
+    		if (totalExposure > 0) {
+	    		if (person.getSettlement() != null)
+	    			logger.info(person.getName() + " was exposed to " + exposure
+    	    			+ " mSv dose of radiation" //in body region " + i
+    	    			+ " during an EVA operation near " + person.getSettlement());
+	    		else if (person.getMind().getMission() != null)
+	    			logger.info(person.getName() + " was exposed to " + exposure
+    	    			+ " mSv dose of radiation" // in body region " + i
+    	    			+ " during " + person.getMind().getMission().getName());
+
+    	    	person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
+
+    	    	return true;
+
+    		}
     	}
+
+    	return false;
     }
 
 }

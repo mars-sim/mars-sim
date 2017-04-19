@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -70,6 +71,7 @@ implements Serializable {
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
+	private MarsClock marsClock;
 	// 2017-04-10 WARNING: cannot use static or result in null
 	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
 	private AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(LifeSupportType.WATER);
@@ -86,6 +88,8 @@ implements Serializable {
         this.hasSiteDuration = hasSiteDuration;
         this.siteDuration = siteDuration;
         timeOnSite = 0D;
+
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // Check if person is in a settlement or a rover.
         if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
@@ -378,6 +382,7 @@ implements Serializable {
             logger.fine(person.getName() + " should end EVA: No EVA suit found.");
             return true;
         }
+
         Inventory suitInv = suit.getInventory();
 
         try {
@@ -482,19 +487,23 @@ implements Serializable {
      * Check for radiation exposure of the person performing this EVA.
      * @param time the amount of time on EVA (in millisols)
      */
-    protected void checkForRadiation(double time) {
+    protected boolean isRadiationDetected(double time) {
 
     	if (person != null) {
 
-    		//RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
-    		//re.checkForRadiation(time);
-
-    		person.getPhysicalCondition().getRadiationExposure().checkForRadiation(time);
+    	    int millisols =  (int) marsClock.getMillisol();
+    		// Check every RADIATION_CHECK_FREQ (in millisols)
+    	    // Compute whether a baseline, GCR, or SEP event has occurred
+    	    //// Note : remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
+    	    if (millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0)
+    	    		return person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
 
     	} else if (robot != null) {
 
+    		return false;
     	}
 
+		return false;
     }
 
     /**

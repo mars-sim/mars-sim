@@ -99,7 +99,7 @@ implements Serializable {
 	public MaintenanceEVA(Robot robot) {
 		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-/*		
+/*
 		settlement = robot.getSettlement();
 
 		try {
@@ -190,7 +190,7 @@ implements Serializable {
         	rManager = robot.getRoboticAttributeManager();
             experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
         }
-		
+
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
@@ -220,6 +220,12 @@ implements Serializable {
 	 * @throws Exception if error during maintenance.
 	 */
 	private double maintenancePhase(double time) {
+
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
 
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
@@ -270,9 +276,6 @@ implements Serializable {
 
 		// Check if an accident happens during maintenance.
 		checkForAccident(time);
-
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
 
 		return 0D;
 	}

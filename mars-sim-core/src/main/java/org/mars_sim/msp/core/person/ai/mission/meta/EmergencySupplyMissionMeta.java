@@ -28,10 +28,10 @@ public class EmergencySupplyMissionMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.emergencySupplyMission"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(EmergencySupplyMissionMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -44,7 +44,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double missionProbability = 0D;
 
         // Determine job modifier.
@@ -58,66 +58,61 @@ public class EmergencySupplyMissionMeta implements MetaMission {
         boolean inSettlement = person.getLocationSituation() == LocationSituation.IN_SETTLEMENT;
 
         if (inSettlement && (jobModifier > 0D)) {
-            
+
             // Check if mission is possible for person based on their circumstance.
-            boolean missionPossible = true;
+            //boolean missionPossible = true;
             Settlement settlement = person.getSettlement();
 
             // Check if available rover.
             if (!RoverMission.areVehiclesAvailable(settlement, false)) {
-                missionPossible = false;
+                return 0;
             }
 
             // Check if available backup rover.
             if (!RoverMission.hasBackupRover(settlement)) {
-                missionPossible = false;
+                return 0;
             }
 
-            // Check if minimum number of people are available at the settlement.
-            // Plus one to hold down the fort.
-            if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_PEOPLE + 1)) {
-                missionPossible = false;
-            }
+    	    // Check if minimum number of people are available at the settlement.
+            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
+    	        return 0;
+    	    }
 
-            // Check if minimum number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE) {
-                missionPossible = false;
-            }
-            
+    	    // Check if min number of EVA suits at settlement.
+            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
+    	        return 0;
+    	    }
+
             // Check for embarking missions.
             if (VehicleMission.hasEmbarkingMissions(settlement)) {
-                missionPossible = false;
+                return 0;
             }
 
             // Check if settlement has enough basic resources for a rover mission.
             if (!RoverMission.hasEnoughBasicResources(settlement)) {
-                missionPossible = false;
+                return 0;
             }
-            
-            if (missionPossible) {
-                
-                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
-                if (rover != null) {
-                    Settlement targetSettlement = EmergencySupplyMission.findSettlementNeedingEmergencySupplies(
-                            settlement, rover);
-                    if (targetSettlement == null) {
-                        missionPossible = false;
-                    }
+
+            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+            if (rover != null) {
+                Settlement targetSettlement = EmergencySupplyMission.findSettlementNeedingEmergencySupplies(
+                        settlement, rover);
+                if (targetSettlement == null) {
+                    return 0;
                 }
             }
-            
-            if (missionPossible) {
-                missionProbability = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
-                
-                // Crowding modifier.
-                int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-                if (crowding > 0) missionProbability *= (crowding + 1);
-                
-                // Job modifier.
-                missionProbability *= jobModifier;
-            }
+
+            missionProbability = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
+
+            // Crowding modifier.
+            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+            if (crowding > 0) missionProbability *= (crowding + 1);
+
+            // Job modifier.
+            missionProbability *= jobModifier;
+
         }
-        
+
         return missionProbability;
     }
 

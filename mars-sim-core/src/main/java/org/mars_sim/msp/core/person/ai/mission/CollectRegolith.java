@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-/** 
+/**
  * This class is a mission to travel in a rover to several
  * random locations around a settlement and collect Regolith.
  * TODO externalize strings
@@ -50,6 +50,9 @@ extends CollectResourcesMission {
 	/** Minimum number of people to do mission. */
 	public final static int MIN_PEOPLE = 2;
 
+	/** Minimum number of sol before this mission can commence. */
+	public final static int MIN_NUM_SOL = 3;
+
 	/**
 	 * Constructor.
 	 * @param startingPerson the person starting the mission.
@@ -57,10 +60,10 @@ extends CollectResourcesMission {
 	 */
 	public CollectRegolith (Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, 
-				getRegolithResource(), SITE_GOAL, 
-				COLLECTION_RATE, 
-				Bag.class, REQUIRED_BAGS, 
+		super(DEFAULT_DESCRIPTION, startingPerson,
+				getRegolithResource(), SITE_GOAL,
+				COLLECTION_RATE,
+				Bag.class, REQUIRED_BAGS,
 				NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -73,13 +76,13 @@ extends CollectResourcesMission {
 	 * @param description the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectRegolith (Collection<MissionMember> members, Settlement startingSettlement, 
+	public CollectRegolith (Collection<MissionMember> members, Settlement startingSettlement,
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, getRegolithResource(), 
-				SITE_GOAL, COLLECTION_RATE, 
-				Bag.class, REQUIRED_BAGS, regolithCollectionSites.size(), 
+		super(description, members, startingSettlement, getRegolithResource(),
+				SITE_GOAL, COLLECTION_RATE,
+				Bag.class, REQUIRED_BAGS, regolithCollectionSites.size(),
 				1, rover, regolithCollectionSites);
 	}
 

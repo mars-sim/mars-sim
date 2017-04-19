@@ -189,11 +189,11 @@ implements Serializable {
 
         // 2015-12-30 java.lang.NullPointerException on the following statement. why?
         boolean workAvailable = false;
-        
+
         // 2016-06-08 Checking stage for NullPointerException
         if (stage != null)
         	workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-        	
+
         //System.out.println("stage is " + stage); // test if stage is null
 
         return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
@@ -225,12 +225,12 @@ implements Serializable {
         //boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
 
         boolean workAvailable = false;
-        
+
         // 2016-06-08 Checking stage for NullPointerException
         if (stage != null)
         	workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-        
-        
+
+
         return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
     }
 
@@ -329,7 +329,10 @@ implements Serializable {
         checkForAccident(time);
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
 
         boolean availableWork = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
 

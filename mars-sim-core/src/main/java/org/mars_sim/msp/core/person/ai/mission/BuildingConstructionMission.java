@@ -83,7 +83,9 @@ implements Serializable {
 
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
-	private static final int MAX_PEOPLE = 10;
+	public static final int MAX_PEOPLE = 10;
+
+    public static int FIRST_AVAILABLE_SOL = 30;
 
 	/** Time (millisols) required to prepare construction site for stage. */
 	public static final double SITE_PREPARE_TIME = 500D;
@@ -111,7 +113,7 @@ implements Serializable {
 
 	/**
 	 * Constructor 1 for Case 1
-	 * 
+	 *
 	 * @param startingMember the mission member starting the mission.
 	 */
 	public BuildingConstructionMission(MissionMember startingMember) {
@@ -160,7 +162,7 @@ implements Serializable {
 		        addPhase(SELECT_SITE_PHASE);
 		        addPhase(PREPARE_SITE_PHASE);
 		        addPhase(CONSTRUCTION_PHASE);
-		        
+
 		        setPhase(SELECT_SITE_PHASE);
 		        setPhaseDescription(Msg.getString(
 		        		"Mission.phase.selectConstructionSite.description" //$NON-NLS-1$
@@ -169,7 +171,7 @@ implements Serializable {
 	        else {
 
 	        	init_case_1_step_3();
-	        	    	        
+
 	        	setPhase(PREPARE_SITE_PHASE);
 	            setPhaseDescription(Msg.getString(
 	            		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
@@ -214,7 +216,7 @@ implements Serializable {
 		    	constructionSite.setSkill(constructionSkill);
 		    	constructionSite.setSitePicked(false);
 		    	constructionSite.setManual(false);
-		    	//constructionSite.setManual(true);	    	
+		    	//constructionSite.setManual(true);
 		    	//constructionSite.setStageInfo(stageInfo);
 				manager.getSites().add(constructionSite);
 				settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
@@ -276,11 +278,11 @@ implements Serializable {
 		        logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
 		    }
 		    else {
-		    	
+
 		        if (stageInfo == null) {
 		            stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
 		        }
-		        
+
 		        if (stageInfo != null) {
 		            constructionStage = new ConstructionStage(stageInfo, constructionSite);
 		            constructionSite.addNewStage(constructionStage);
@@ -314,7 +316,7 @@ implements Serializable {
         addPhase(CONSTRUCTION_PHASE);
 
 	}
-	
+
 	/**
 	 * Constructor 2 for Case 2 and Case 3
 	 *
@@ -378,18 +380,18 @@ implements Serializable {
 		    	constructionSite.setStageInfo(stageInfo);
 		    	constructionSite.setManual(true);
 				manager.getSites().add(constructionSite);
-				
+
 				// Note : Should NOT invoke construction wizard to allow user to pick the site again.
 				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
- 	
+
 			    if (stageInfo != null) {
 			    	System.out.println("BuildingConstructionMission : Case 2. stageInfo is " + stageInfo.getName() );
 			    }
 			    else {
 			        System.out.println("BuildingConstructionMission : Case 2. new construction stageInfo could not be determined.");
 			    }
-			    
-				init_2(constructionSite, stageInfo);	        
+
+				init_2(constructionSite, stageInfo);
 				if (!isDone()) {
 				    // Reserve construction vehicles.
 				    //reserveConstructionVehicles();
@@ -397,7 +399,7 @@ implements Serializable {
 				    retrieveConstructionLUVParts();
 					useTwoPhases();
 				}
-				
+
 	        }
         }
 
@@ -868,26 +870,26 @@ implements Serializable {
 	            settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
 	            logger.log(Level.INFO, "New " + constructionSite.getBuildingName() +
 	                    " building constructed at " + settlement.getName());
-	            
+
 	        	//setDone(true);
 	        }
-	        
+
 	    }
-	    
+
     }
 
     @Override
     public void endMission(String reason) {
-    	//logger.info("BuildingConstructionMission's endMission() is in " + Thread.currentThread().getName() + " Thread");  	
+    	//logger.info("BuildingConstructionMission's endMission() is in " + Thread.currentThread().getName() + " Thread");
     	//logger.info("reason : " + reason);
-           
+
       	// Mark site as not undergoing construction.
-      	if (constructionSite != null) 
+      	if (constructionSite != null)
       		constructionSite.setUndergoingConstruction(false);
 
         // Unreserve all LUV attachment parts for this mission.
         unreserveLUVparts();
-           
+
       	super.endMission(reason);
     }
 
@@ -1019,7 +1021,7 @@ implements Serializable {
             }
         }
     }
-    
+
     /**
      * Gets a list of all construction vehicles used by the mission.
      * @return list of construction vehicles.

@@ -706,20 +706,18 @@ implements Serializable {
      */
     public static boolean canExitAirlock(Person person, Airlock airlock) {
 
-        boolean result = true;
-
 		// Check if person is outside.
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
-            result = false;
             logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since he/she is already outside.");
+            return false;
         }
 
         // Check if EVA suit is available.
         else if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
-            result = false;
             logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since no EVA suit is available.");
+            return false;
         }
 
         //double performance = person.getPerformanceRating();
@@ -727,7 +725,6 @@ implements Serializable {
         // TODO: if incapacitated, should someone else help this person to get out?
         else if (person.getPerformanceRating() == 0) {
 
-        	result = false;
         	// TODO: how to prevent the logger statement below from being repeated multiple times?
         	logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                 " due to crippling performance rating");
@@ -746,9 +743,11 @@ implements Serializable {
                 e.printStackTrace(System.err);
 
             }
+
+            return false;
         }
 
-        return result;
+        return true;
     }
 
     public static boolean canExitAirlock(Robot robot, Airlock airlock) {

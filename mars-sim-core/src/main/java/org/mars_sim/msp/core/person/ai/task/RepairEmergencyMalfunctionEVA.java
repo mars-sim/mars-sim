@@ -76,11 +76,11 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     public RepairEmergencyMalfunctionEVA(Person person) {
         super(NAME, person, false, 0D);
 
-        //2016-09-24 Factored in a person's preference for the new stress modifier 
+        //2016-09-24 Factored in a person's preference for the new stress modifier
       	int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
         //2016-09-24 Overrode the stress modifier of EVAOperation since it's a very serious EVA op
         super.setStressModifier(score/10D + STRESS_MODIFIER);
-        
+
         init();
 
         // Create starting task event if needed.
@@ -108,7 +108,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         init2();
 
         logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
- */       
+ */
     }
 
     public void init() {
@@ -311,7 +311,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             }
         }
         else if (robot != null) {
-/*        	
+/*
             Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
             while (i.hasNext() && (malfunction == null)) {
                 Malfunctionable e = i.next();
@@ -323,7 +323,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                             malfunction.getName(), entity.getName())); //$NON-NLS-1$
                 }
             }
-*/            
+*/
         }
 
     }
@@ -350,7 +350,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                              newLocation.getY(), person.getCoordinates());
                 }
                 else if (robot != null) {
-                	System.out.println(robot + " is calling determineMalfunctionLocation() in RepairEmergencyMalfunctionEVA.java");                 	
+                	System.out.println(robot + " is calling determineMalfunctionLocation() in RepairEmergencyMalfunctionEVA.java");
                 	 //goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(),
                      //        newLocation.getY(), robot.getCoordinates());
                 }
@@ -382,7 +382,13 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
      * @return the time remaining after performing this phase (in millisols)
      */
     private double repairMalfunctionPhase(double time) {
-        
+
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
             return time;
@@ -429,9 +435,6 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         // Check if an accident happens during maintenance.
         checkForAccident(time);
-
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
 
         return remainingWorkTime;
     }
@@ -507,7 +510,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
                 robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
             }
-*/            
+*/
         }
 
     }

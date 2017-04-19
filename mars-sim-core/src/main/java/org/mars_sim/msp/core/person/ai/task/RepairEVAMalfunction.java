@@ -539,6 +539,12 @@ implements Repair, Serializable {
      */
     private double repairMalfunctionPhase(double time) {
 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+
         boolean finishedRepair = false;
         if (isEVAMalfunction) {
             if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) <= 0D) {
@@ -633,9 +639,6 @@ implements Repair, Serializable {
 
         // Check if an accident happens during repair.
         checkForAccident(time);
-
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
 
         return workTimeLeft;
     }

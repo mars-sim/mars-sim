@@ -56,7 +56,7 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Exploration.class.getName());
-	
+
 	/** Default description. */
     public static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.exploration"); //$NON-NLS-1$
@@ -100,7 +100,7 @@ implements Serializable {
     public Exploration(Person startingPerson) {
 
         // Use RoverMission constructor.
-        super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_PEOPLE);
+        super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
         if (!isDone()) {
 
@@ -146,7 +146,7 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
     }
 //    public Exploration(Robot startingRobot) {
@@ -198,7 +198,7 @@ implements Serializable {
 //
 //        // Set initial mission phase.
 //        setPhase(VehicleMission.EMBARKING);
-//        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+//        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
 //                getStartingSettlement().getName())); //$NON-NLS-1$
 //    }
     /**
@@ -240,15 +240,15 @@ implements Serializable {
         // Add home navpoint.
         addNavpoint(new NavPoint(startingSettlement.getCoordinates(),
                 startingSettlement, startingSettlement.getName()));
- 
+
         Person person = null;
     	Robot robot = null;
-    	
+
         // Add mission members.
     	// TODO Refactor this.
         Iterator<MissionMember> i = members.iterator();
         while (i.hasNext()) {
-         	                    	
+
 	        MissionMember member = i.next();
 	        if (member instanceof Person) {
 	        	person = (Person) member;
@@ -257,15 +257,15 @@ implements Serializable {
 	        else if (member instanceof Robot) {
 	        	robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
-	        }    
+	        }
         }
-        
+
         // Add exploring site phase.
         addPhase(EXPLORE_SITE);
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
 
         // Check if vehicle can carry enough supplies for the mission.
@@ -321,22 +321,22 @@ implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                         getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
             } else {
                 setPhase(EXPLORE_SITE);
-                setPhaseDescription(Msg.getString("Mission.phase.exploreSite.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.exploreSite.description",
                         getCurrentNavpoint().getDescription())); //$NON-NLS-1$
             }
         } else if (EXPLORE_SITE.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase()))
             endMission(SUCCESSFULLY_DISEMBARKED);
@@ -393,7 +393,7 @@ implements Serializable {
         if (timeDiff >= EXPLORING_SITE_TIME) {
             timeExpired = true;
         }
-        
+
         // Update exploration site completion.
         double completion = timeDiff / EXPLORING_SITE_TIME;
         if (completion > 1D) {
@@ -446,7 +446,7 @@ implements Serializable {
                 determineEmergencyDestination(member);
                 setPhaseEnded(true);
             }
-        } 
+        }
         else {
             // If exploration time has expired for the site, have everyone end their exploration tasks.
             if (timeExpired) {
@@ -477,7 +477,7 @@ implements Serializable {
                     }
                 }
             }
-        } 
+        }
         else {
             currentSite.setExplored(true);
             currentSite = null;
@@ -518,7 +518,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(MissionMember member) {
         boolean result = super.isCapableOfMission(member);
-        
+
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -528,7 +528,7 @@ implements Serializable {
             }
             result = atStartingSettlement;
         }
-        
+
         return result;
     }
 
@@ -609,7 +609,7 @@ implements Serializable {
             dessert1Amount += (Double) result.get(dessert1);
         result.put(dessert1, dessert1Amount);
 */
-        
+
         return result;
     }
 
@@ -711,7 +711,7 @@ implements Serializable {
         double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
         if (dessert1TimeLimit < timeLimit)
             timeLimit = dessert1TimeLimit;
-*/        
+*/
         // Check water capacity as time limit.
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterConsumptionRate = config.getWaterConsumptionRate();
@@ -786,9 +786,9 @@ implements Serializable {
                 remainingRange -= siteDistance;
             }
         }
-        
+
         List<Coordinates> sites = null;
-        
+
         if (unorderedSites.size() > 1) {
             double unorderedSitesTotalDistance = getTotalDistance(startingLocation, unorderedSites);
 
@@ -828,7 +828,7 @@ implements Serializable {
             sites = unorderedSites;
             double totalDistance = getTotalDistance(startingLocation, unorderedSites);
         }
-        
+
         int explorationSiteNum = 1;
         Iterator<Coordinates> j = sites.iterator();
         while (j.hasNext()) {
@@ -839,10 +839,10 @@ implements Serializable {
             explorationSiteNum++;
         }
     }
-    
+
     private double getTotalDistance(Coordinates startingLoc, List<Coordinates> sites) {
         double result = 0D;
-        
+
         Coordinates currentLoc = startingLoc;
         Iterator<Coordinates> i = sites.iterator();
         while (i.hasNext()) {
@@ -850,10 +850,10 @@ implements Serializable {
             result += currentLoc.getDistance(site);
             currentLoc = site;
         }
-        
+
         // Add return trip to starting loc.
         result += currentLoc.getDistance(startingLoc);
-        
+
         return result;
     }
 
@@ -889,7 +889,7 @@ implements Serializable {
             }
         }
         else {
-            // Use random direction and distance for first location 
+            // Use random direction and distance for first location
             // if no minerals found within range.
             Direction direction = new Direction(RandomUtil
                     .getRandomDouble(2D * Math.PI));
@@ -921,7 +921,7 @@ implements Serializable {
     public List<ExploredLocation> getExploredSites() {
         return exploredSites;
     }
-    
+
     /**
      * Gets a map of exploration site names and their level of completion.
      * @return map of site names and completion level (0.0 - 1.0).
@@ -929,11 +929,11 @@ implements Serializable {
     public Map<String, Double> getExplorationSiteCompletion() {
         return new HashMap<String, Double>(explorationSiteCompletion);
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         if (explorationSiteCompletion != null) explorationSiteCompletion.clear();
         explorationSiteCompletion = null;
         explorationSiteStartTime = null;

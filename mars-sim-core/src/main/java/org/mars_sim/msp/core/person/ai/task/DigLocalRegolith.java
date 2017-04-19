@@ -64,7 +64,7 @@ implements Serializable {
 	private Settlement settlement;
 
 	private static AmountResource regolithAR = Rover.regolithAR;
-	
+
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -275,7 +275,10 @@ implements Serializable {
         checkForAccident(time);
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
 
         // Check if there is reason to cut the collection phase short and return
         // to the airlock.

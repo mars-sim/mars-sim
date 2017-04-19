@@ -694,7 +694,7 @@ implements Serializable {
 		if (person != null) {
 
 		    // 2015-05-29 Check for radiation exposure during the EVA operation.
-	        checkForRadiation(time);
+	        //checkForRadiation(time);
 	        // If there are any EVA problems, end walking outside task.
 	        if (!ignoreEndEVA && checkEVAProblem(person)) {
 	            endTask();
@@ -875,19 +875,22 @@ implements Serializable {
     /**
      * Check for radiation exposure of the person performing this EVA.
      * @param time the amount of time on EVA (in millisols)
-     */
-    protected void checkForRadiation(double time) {
+
+    protected void isRadiationDetected(double time) {
 
     	if (person != null) {
-
-    		RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
-    		re.checkForRadiation(time);
+    	    int millisols =  (int) marsClock.getMillisol();
+    		// Check every RADIATION_CHECK_FREQ (in millisols)
+    	    // Compute whether a baseline, GCR, or SEP event has occurred
+    	    // Note : remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
+    	    if (millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0)
+    	    	person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
 
     	} else if (robot != null) {
 
     	}
-
     }
+*/
 
     /**
      * Gets the person's EVA walking speed.

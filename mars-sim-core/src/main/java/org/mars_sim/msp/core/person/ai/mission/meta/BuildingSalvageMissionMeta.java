@@ -16,7 +16,9 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
@@ -51,12 +53,30 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
         double result = 0D;
 
+        // No construction until after the first ten sols of the simulation.
+        //MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+        //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        //double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+        //double totalTimeSols = totalTimeMillisols / 1000D;
+        //if (totalTimeSols < 10D)
+        //    return 0;
+        //int today = Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart();
+        if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
+        	return 0;
+
         // Check if person is in a settlement.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
-            boolean go = true;
-  
+            // Check if settlement has construction override flag set.
+            if (settlement.getConstructionOverride())
+            	return 0;
+
+
+            // Check if available light utility vehicles.
+            else if (!BuildingSalvageMission.isLUVAvailable(settlement))
+                return 0;
+
             // Check if enough available people at settlement for mission.
             int availablePeopleNum = 0;
             Iterator<Person> i = settlement.getInhabitants().iterator();
@@ -69,51 +89,31 @@ public class BuildingSalvageMissionMeta implements MetaMission {
                     availablePeopleNum++;
                 }
             }
-            
-            // No construction until after the first ten sols of the simulation.
-            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-            double totalTimeSols = totalTimeMillisols / 1000D;
-            
 
-            if (!(availablePeopleNum >= BuildingSalvageMission.MIN_PEOPLE))
-            	go = false;
-
-            // Check if available light utility vehicles.
-            else if (!BuildingSalvageMission.isLUVAvailable(settlement))
-            	go = false;
-            
-
-            else if (totalTimeSols < 10D)
-               	go = false;          	
-
-            // Check if settlement has construction override flag set.
-            else if (settlement.getConstructionOverride());
-           		go = false;  
-           	
-           	if (go) {	
-            //if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
-                try {
-                    int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-                    SalvageValues values = settlement.getConstructionManager()
-                            .getSalvageValues();
-                    double salvageProfit = values
-                            .getSettlementSalvageProfit(constructionSkill);
-                    result = salvageProfit;
-                    if (result > 10D) {
-                        result = 10D;
-                    }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE,
-                            "Error getting salvage construction site by a person.", e);
-                }
-            }
+            if (availablePeopleNum < BuildingSalvageMission.MIN_PEOPLE)
+                return 0;
 
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person
                     .getSettlement()) < BuildingSalvageMission.MIN_PEOPLE) {
-                result = 0D;
+            	return 0;
+            }
+
+            try {
+                int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+                SalvageValues values = settlement.getConstructionManager()
+                        .getSalvageValues();
+                double salvageProfit = values
+                        .getSettlementSalvageProfit(constructionSkill);
+                result = salvageProfit;
+                if (result > 10D) {
+                    result = 10D;
+                }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,
+                        "Error getting salvage construction site by a person.", e);
+                e.printStackTrace();
+            	return 0;
             }
 
             // Job modifier.
@@ -144,7 +144,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
 	            // Check if available light utility vehicles.
 	            boolean reservableLUV = BuildingSalvageMission.isLUVAvailable(settlement);
-	
+
 	            // No construction until after the first ten sols of the simulation.
 	            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
 	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();

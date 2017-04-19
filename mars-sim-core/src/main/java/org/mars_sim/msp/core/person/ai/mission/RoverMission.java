@@ -64,8 +64,11 @@ extends VehicleMission {
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 
 	// Static members
-	public static final int MIN_PEOPLE = 1; // Changed from 2 to 1
+    public static final int MIN_STAYING_MEMBERS = 2;
+    public static final int MIN_GOING_MEMBERS = 2;
+
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
+	public static final double MIN_WATER_RESERVE = 15D;
 
 	// Data members
 	private Settlement startingSettlement;
@@ -85,7 +88,7 @@ extends VehicleMission {
 	*/
 	protected RoverMission(String name, MissionMember startingMember) {
 		// Use VehicleMission constructor.
-		super(name, startingMember, MIN_PEOPLE);
+		super(name, startingMember, MIN_GOING_MEMBERS);
 	}
 
 	/**
@@ -710,6 +713,14 @@ extends VehicleMission {
 		boolean result = false;
 
 		if (settlement != null) {
+
+			// 2017-04-19
+			String template = settlement.getTemplate();
+			if (template.toLowerCase().contains("phase 1")
+					|| template.toLowerCase().contains("mining")
+					|| template.toLowerCase().contains("trading"))
+				minNum = 0;
+
 			int numAvailable = 0;
 			Iterator<Person> i = settlement.getInhabitants().iterator();
 			while (i.hasNext()) {

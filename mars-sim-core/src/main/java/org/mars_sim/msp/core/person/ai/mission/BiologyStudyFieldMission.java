@@ -40,13 +40,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-/** 
+/**
  * A mission to do biology research at a remote field location for a
  * scientific study.
  * TODO externalize strings
  */
 public class BiologyStudyFieldMission
-extends RoverMission 
+extends RoverMission
 implements Serializable {
 
 	/** default serial id. */
@@ -62,9 +62,6 @@ implements Serializable {
 	/** Mission phase. */
 	final public static MissionPhase RESEARCH_SITE = new MissionPhase(Msg.getString(
 			"Mission.phase.researchingFieldSite")); //$NON-NLS-1$
-
-	/** Minimum number of people to do mission. */
-	public final static int MIN_PEOPLE = 2;
 
 	/** Amount of time to field a site. */
 	public final static double FIELD_SITE_TIME = 1000D;
@@ -93,7 +90,7 @@ implements Serializable {
 	public BiologyStudyFieldMission(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
 		if (!isDone()) {
 			// Set the lead biology researcher and study.
@@ -120,11 +117,11 @@ implements Serializable {
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
+			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
 					getStartingSettlement(), getStartingSettlement().getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) 
+			if (hasVehicle() && !isVehicleLoadable())
 				endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
 		}
 
@@ -149,12 +146,12 @@ implements Serializable {
 	 * @param description the mission description.
 	 * @throws MissionException if error creating mission.
 	 */
-	public BiologyStudyFieldMission(Collection<Person> members, Settlement startingSettlement, 
-			Person leadResearcher, ScientificStudy study, Rover rover, Coordinates fieldSite, 
+	public BiologyStudyFieldMission(Collection<Person> members, Settlement startingSettlement,
+			Person leadResearcher, ScientificStudy study, Rover rover, Coordinates fieldSite,
 			String description) {
 
 		// Use RoverMission constructor.
-		super(description, leadResearcher, MIN_PEOPLE, rover);
+		super(description, leadResearcher, RoverMission.MIN_GOING_MEMBERS, rover);
 
 		setStartingSettlement(startingSettlement);
 		this.study = study;
@@ -172,7 +169,7 @@ implements Serializable {
 		while (i.hasNext()) i.next().getMind().setMission(this);
 
 		// Add home settlement
-		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
+		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
 				getStartingSettlement(), getStartingSettlement().getName()));
 
 		// Add researching site phase.
@@ -185,7 +182,7 @@ implements Serializable {
 				,getStartingSettlement().getName()));
 
 		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable()) 
+		if (hasVehicle() && !isVehicleLoadable())
 			endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
 	}
 
@@ -198,7 +195,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the lead researcher for the mission. 
+	 * Gets the lead researcher for the mission.
 	 * @return the researcher.
 	 */
 	public Person getLeadResearcher() {
@@ -220,7 +217,7 @@ implements Serializable {
 		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(researcher);
 		if (primaryStudy != null) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
+			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
 					!primaryStudy.isPrimaryResearchCompleted()) {
 				if (biology == primaryStudy.getScience()) {
 					// Primary study added twice to double chance of random selection.
@@ -234,7 +231,7 @@ implements Serializable {
 		Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(researcher).iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
+			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
 					!collabStudy.isCollaborativeResearchCompleted(researcher)) {
 				if (biology == collabStudy.getCollaborativeResearchers().get(researcher))
 					possibleStudies.add(collabStudy);
@@ -280,8 +277,8 @@ implements Serializable {
         double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
         if (dessert1TimeLimit < timeLimit)
             timeLimit = dessert1TimeLimit;
-   */     
-		
+   */
+
 		// Check water capacity as time limit.
 		//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterConsumptionRate = config.getWaterConsumptionRate();
@@ -303,13 +300,13 @@ implements Serializable {
 		return timeLimit;
 	}
 
-	/** 
+	/**
 	 * Determine the location of the research site.
 	 * @param roverRange the rover's driving range
 	 * @param tripTimeLimit the time limit (millisols) of the trip.
 	 * @throws MissionException of site can not be determined.
 	 */
-	private void determineFieldSite(double roverRange, double tripTimeLimit) 
+	private void determineFieldSite(double roverRange, double tripTimeLimit)
 	{
 
 		// Determining the actual traveling range.
@@ -349,7 +346,7 @@ implements Serializable {
 	}
 
 	@Override
-	protected double getMissionQualification(MissionMember member) {  
+	protected double getMissionQualification(MissionMember member) {
 	    double result = super.getMissionQualification(member);
 
 	    if ((result > 0D) && (member instanceof Person)) {
@@ -387,7 +384,7 @@ implements Serializable {
 			boolean useBuffer) {
 		if (equipmentNeededCache != null) return equipmentNeededCache;
 		else {
-			Map<Class, Integer> result = new HashMap<Class, Integer>();      
+			Map<Class, Integer> result = new HashMap<Class, Integer>();
 			equipmentNeededCache = result;
 			return result;
 		}
@@ -460,7 +457,7 @@ implements Serializable {
 		}
 	}
 
-	/** 
+	/**
 	 * Performs the research field site phase of the mission.
 	 * @param member the mission member currently performing the mission
 	 * @throws MissionException if problem performing phase.
@@ -549,7 +546,7 @@ implements Serializable {
 				    // TODO refactor.
 				    if (member instanceof Person) {
 				        Person person = (Person) member;
-				        assignTask(person, new BiologyStudyFieldWork(person, leadResearcher, study, 
+				        assignTask(person, new BiologyStudyFieldWork(person, leadResearcher, study,
 				                (Rover) getVehicle()));
 				    }
 				}
@@ -569,7 +566,7 @@ implements Serializable {
             }
             result = atStartingSettlement;
         }
-        
+
         return result;
 	}
 
@@ -614,19 +611,19 @@ implements Serializable {
 		// Determine life support supplies needed for trip.
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygenAR)) 
+		if (result.containsKey(oxygenAR))
 			oxygenAmount += (Double) result.get(oxygenAR);
 		result.put(oxygenAR, oxygenAmount);
 
 		//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(waterAR)) 
+		if (result.containsKey(waterAR))
 			waterAmount += (Double) result.get(waterAR);
 		result.put(waterAR, waterAmount);
 
 		//AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(foodAR)) 
+		if (result.containsKey(foodAR))
 			foodAmount += (Double) result.get(foodAR);
 		result.put(foodAR, foodAmount);
 

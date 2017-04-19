@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -32,10 +33,10 @@ public class MiningMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.mining"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -48,73 +49,82 @@ public class MiningMeta implements MetaMission {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
             // Check if a mission-capable rover is available.
-            boolean reservableRover = RoverMission.areVehiclesAvailable(
-                    settlement, false);
+            //boolean reservableRover =
+            if (!RoverMission.areVehiclesAvailable(settlement, false))
+                return 0;
 
             // Check if available backup rover.
-            boolean backupRover = RoverMission.hasBackupRover(settlement);
+            //boolean backupRover =
+            else if (!RoverMission.hasBackupRover(settlement))
+        		return 0;
 
-            // Check if minimum number of people are available at the settlement.
-            // Plus one to hold down the fort.
-            boolean minNum = RoverMission.minAvailablePeopleAtSettlement(
-                    settlement, (RoverMission.MIN_PEOPLE + 1));
+    	    // Check if minimum number of people are available at the settlement.
+            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
+    	        return 0;
+    	    }
 
+    	    // Check if min number of EVA suits at settlement.
+            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
+    	        return 0;
+    	    }
             // Check if there are enough bags at the settlement for collecting minerals.
-            boolean enoughBags = false;
+            //boolean enoughBags = false;
 
-            int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(
-                    Bag.class, false);
-            enoughBags = (numBags >= Mining.NUMBER_OF_BAGS);
+            else if (settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class, false) < Mining.NUMBER_OF_BAGS)
+            //int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class, false);
+            //enoughBags = (numBags >= Mining.NUMBER_OF_BAGS);
+        		return 0;
 
             // Check for embarking missions.
-            boolean embarkingMissions = VehicleMission
-                    .hasEmbarkingMissions(settlement);
+            //boolean embarkingMissions =
+            else if (!VehicleMission.hasEmbarkingMissions(settlement))
+    			return 0;
 
             // Check if settlement has enough basic resources for a rover mission.
-            boolean hasBasicResources = RoverMission
-                    .hasEnoughBasicResources(settlement);
+            //boolean hasBasicResources =
+            else if (!RoverMission.hasEnoughBasicResources(settlement))
+            	return 0;
 
             // Check if available light utility vehicles.
-            boolean reservableLUV = Mining.isLUVAvailable(settlement);
+            //boolean reservableLUV =
+            else if (!Mining.isLUVAvailable(settlement))
+            	return 0;
 
             // Check if LUV attachment parts available.
-            boolean availableAttachmentParts = Mining.areAvailableAttachmentParts(settlement);
-
+            //boolean availableAttachmentParts =
+            else if (!Mining.areAvailableAttachmentParts(settlement))
+            	return 0;
             // Check if starting settlement has minimum amount of methane fuel.
-            //AmountResource methane = AmountResource.findAmountResource("methane");
-            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) >= 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
-            
-            if (reservableRover && backupRover && minNum && enoughBags
-                    && !embarkingMissions && reservableLUV
-                    && availableAttachmentParts && hasBasicResources && enoughMethane) {
 
-                try {
-                    // Get available rover.
-                    Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(
-                            settlement, false);
-                    if (rover != null) {
+            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
+            	return 0;
 
-                        // Find best mining site.
-                        ExploredLocation miningSite = Mining.determineBestMiningSite(
-                                rover, settlement);
-                        if (miningSite != null) {
-                            result = Mining.getMiningSiteValue(miningSite, settlement);
-                            if (result > 1D) {
-                                result = 1D;
-                            }
+            try {
+                // Get available rover.
+                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(
+                        settlement, false);
+
+                if (rover != null) {
+                    // Find best mining site.
+                    ExploredLocation miningSite = Mining.determineBestMiningSite(
+                            rover, settlement);
+                    if (miningSite != null) {
+                        result = Mining.getMiningSiteValue(miningSite, settlement);
+                        if (result > 1D) {
+                            result = 1D;
                         }
                     }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error getting mining site.", e);
                 }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error getting mining site.", e);
             }
 
             // Crowding modifier
@@ -129,14 +139,7 @@ public class MiningMeta implements MetaMission {
             if (job != null) {
                 result *= job.getStartMissionProbabilityModifier(Mining.class);
             }
-        }
 
-        if (result > 0D) {
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < RoverMission.MIN_PEOPLE) {
-                result = 0D;
-            }
         }
 
         return result;

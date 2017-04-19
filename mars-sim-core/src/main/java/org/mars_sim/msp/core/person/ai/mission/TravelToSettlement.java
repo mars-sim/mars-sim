@@ -479,7 +479,7 @@ implements Serializable {
             double currentJobProspect = JobManager.getJobProspect(person,
                     currentJob, startingSettlement, true);
             double destinationJobProspect = 0D;
-            
+
             if (person.getMind().getJobLock()) {
                 destinationJobProspect = JobManager.getJobProspect(person,
                         currentJob, destinationSettlement, false);
@@ -488,7 +488,7 @@ implements Serializable {
                 destinationJobProspect = JobManager.getBestJobProspect(person,
                         destinationSettlement, false);
             }
-            
+
             if (destinationJobProspect > currentJobProspect) {
                 jobFactor = 1D;
             }
@@ -510,7 +510,7 @@ implements Serializable {
                 .getTotalScientificAchievement() - startingSettlement
                 .getTotalScientificAchievement()) / 10D;
         double jobScienceAchievementFactor = 0D;
-        
+
         if (member instanceof Person) {
             Person person = (Person) member;
             ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
@@ -520,10 +520,10 @@ implements Serializable {
                 jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
             }
         }
-        
+
         double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
 
-        if (destinationCrowding < RoverMission.MIN_PEOPLE) {
+        if (destinationCrowding < RoverMission.MIN_GOING_MEMBERS) {
             return 0;
         }
 
@@ -598,7 +598,7 @@ implements Serializable {
 //                + (crowdingFactor * CROWDING_MODIFIER);
 //                // (scienceAchievementFactor * SCIENCE_MODIFIER)
 //    }
- 
+
     @Override
     protected boolean isCapableOfMission(MissionMember member) {
         if (super.isCapableOfMission(member)) {
@@ -608,7 +608,7 @@ implements Serializable {
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -663,7 +663,7 @@ implements Serializable {
             }
             else if (member instanceof Robot) {
                 Robot robot = (Robot) member;
-                
+
                 // If robot has the "Driver" job, add 1 to their qualification.
                 if (robot.getBotMind().getRobotJob() instanceof Deliverybot) {
                     result += 1D;

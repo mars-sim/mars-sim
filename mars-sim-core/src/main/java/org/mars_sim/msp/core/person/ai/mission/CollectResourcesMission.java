@@ -85,12 +85,12 @@ implements Serializable {
 	private boolean endCollectingSite;
 	/** The total amount (kg) of resource collected. */
 	private double totalResourceCollected;
-	
+
 	private static AmountResource oxygenAR = Rover.oxygenAR;
 	private static AmountResource waterAR = Rover.waterAR;
 	private static AmountResource foodAR = Rover.foodAR;
 	private static AmountResource methaneAR = Rover.methaneAR;
-    
+
     /**
      * Constructor
      * @param missionName The name of the mission.
@@ -135,7 +135,7 @@ implements Serializable {
             recruitMembersForMission(startingPerson);
 
             // Determine collection sites
-            if (hasVehicle()) 
+            if (hasVehicle())
             	determineCollectionSites(getVehicle().getRange(),
                     getTotalTripTimeLimit(getRover(), getPeopleNumber(),
                     true), numSites);
@@ -155,7 +155,7 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
 
         // int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
@@ -213,7 +213,7 @@ implements Serializable {
 
      	Person person = null;
     	Robot robot = null;
-    	
+
         // Add mission members.
         Iterator<MissionMember> i = members.iterator();
         while (i.hasNext()) {
@@ -226,15 +226,15 @@ implements Serializable {
 	        else if (member instanceof Robot) {
 	        	robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
-	        }    
+	        }
         }
-        
+
         // Add collecting phase.
         addPhase(COLLECT_RESOURCES);
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
 
         // Check if vehicle can carry enough supplies for the mission.
@@ -260,38 +260,38 @@ implements Serializable {
             Settlement settlement = person.getSettlement();
 
             // Check if a mission-capable rover is available.
-            boolean reservableRover = areVehiclesAvailable(settlement, false);
+            if (!areVehiclesAvailable(settlement, false))
+                return 0;
 
             // Check if available backup rover.
-            boolean backupRover = hasBackupRover(settlement);
+            if (!hasBackupRover(settlement))
+                return 0;
 
             // Check if minimum number of people are available at the settlement.
             // Plus one to hold down the fort.
-            boolean minNum = minAvailablePeopleAtSettlement(settlement,
-                    (minPeople + 1));
+            if (!minAvailablePeopleAtSettlement(settlement,
+                    (minPeople + 1)))
+                return 0;
 
             // Check if there are enough specimen containers at the settlement for collecting rock samples.
-            boolean enoughContainers = (numCollectingContainersAvailable(
-                    settlement, containerType) >= containerNum);
+            if ((numCollectingContainersAvailable(
+                    settlement, containerType) < containerNum))
+                return 0;
 
             // Check for embarking missions.
-            boolean embarkingMissions = VehicleMission
-                    .hasEmbarkingMissions(settlement);
+            if (VehicleMission.hasEmbarkingMissions(settlement))
+                return 0;
 
             // Check if settlement has enough basic resources for a rover mission.
-            boolean hasBasicResources = RoverMission
-                    .hasEnoughBasicResources(settlement);
-            
+            if (!RoverMission.hasEnoughBasicResources(settlement))
+                return 0;
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methaneAR, false) >= 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
+            if (settlement.getInventory().getAmountResourceStored(methaneAR, false) <
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
+            	return 0;
 
-            //System.out.println("CollectResourcesMission.java : getNewMissionProbability() : enoughMethane is "+ enoughMethane );
-            
-            if (reservableRover && backupRover && minNum && enoughContainers
-                    && !embarkingMissions && hasBasicResources && enoughMethane)
-                result = 1D;
+            result = .5D;
 
             // Crowding modifier
             int crowding = settlement.getCurrentPopulationNum()
@@ -301,13 +301,16 @@ implements Serializable {
 
             // Job modifier.
             Job job = person.getMind().getJob();
-            if (job != null)
+            if (job != null) {
                 result *= job.getStartMissionProbabilityModifier(missionType);
+            	// If this town has a tourist objective, divided by bonus
+                result = result / settlement.getGoodsManager().getTourismFactor();
+            }
         }
 
         return result;
     }
-    
+
     /**
      * Gets the total amount of resources collected so far in the mission.
      * @return resource amount (kg).
@@ -324,16 +327,16 @@ implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                         getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
             } else {
                 setPhase(COLLECT_RESOURCES);
-                setPhaseDescription(Msg.getString("Mission.phase.collectResources.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.collectResources.description",
                         getCurrentNavpoint().getDescription())); //$NON-NLS-1$
                 collectionSiteStartTime = (MarsClock) Simulation.instance()
                         .getMasterClock().getMarsClock().clone();
@@ -341,7 +344,7 @@ implements Serializable {
         } else if (COLLECT_RESOURCES.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase()))
         	endMission(SUCCESSFULLY_DISEMBARKED);
@@ -384,7 +387,7 @@ implements Serializable {
 
         // Set total collected resources.
         totalResourceCollected = resourcesCollected;
-        
+
         // Calculate resources collected at the site so far.
         siteCollectedResources = resourcesCollected - collectingStart;
 
@@ -446,7 +449,7 @@ implements Serializable {
                 // TODO Refactor.
                 if (member instanceof Person) {
                     Person person = (Person) member;
-                    
+
                     // If person can collect resources, start him/her on that task.
                     if (CollectResources.canCollectResources(person, getRover(),
                             containerType, resourceType)) {
@@ -572,7 +575,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(MissionMember member) {
         boolean result = super.isCapableOfMission(member);
-        
+
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -582,7 +585,7 @@ implements Serializable {
             }
             result = atStartingSettlement;
         }
-        
+
         return result;
     }
 
@@ -645,7 +648,7 @@ implements Serializable {
 
     @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-    	
+
         Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
         double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
@@ -674,21 +677,21 @@ implements Serializable {
         if (result.containsKey(foodAR))
             foodAmount += (Double) result.get(foodAR);
         result.put(foodAR, foodAmount);
-     
-        
+
+
         /*
 		// 2015-03-09 Added the chosen dessert for the journey
 		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
     	// Added PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional and is only meant to help if food is low.
 		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum;// * PreparingDessert.DESSERT_SERVING_FRACTION;
-	  	// Put together a list of available dessert 
-        for(String n : availableDesserts) {   	
-    		AmountResource dessert = AmountResource.findAmountResource(n); 
+	  	// Put together a list of available dessert
+        for(String n : availableDesserts) {
+    		AmountResource dessert = AmountResource.findAmountResource(n);
         	// match the chosen dessert for the journey
     		// TODO: or load vehicle.getTypeOfDessertLoaded()
             if (result.containsKey(dessert))
-                dessertAmount += (Double) result.get(dessert);           
-            result.put(dessert, dessertAmount);	        	
+                dessertAmount += (Double) result.get(dessert);
+            result.put(dessert, dessertAmount);
         }
 */
         /*
@@ -790,7 +793,7 @@ implements Serializable {
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
-        
+
         /*
         // 2015-01-04 Added Soymilk
         // Check dessert1 capacity as time limit.
@@ -835,7 +838,7 @@ implements Serializable {
         }
         else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
-            
+
             // Include required number of containers.
             result.put(containerType, containerNum);
 
@@ -850,11 +853,11 @@ implements Serializable {
      * @return description
      */
     protected abstract String getCollectionSiteDescription(int siteNum);
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         resourceType = null;
         containerType = null;
         collectionSiteStartTime = null;

@@ -9,12 +9,15 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -44,43 +47,42 @@ public class CollectRegolithMeta implements MetaMission {
 
     	double result = 0;
 
-        // Check if min number of EVA suits at settlement.
-        if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
-                CollectRegolith.MIN_PEOPLE) {
-            result = 0D;
-        }
+        //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        //int today = currentTime.getSolElapsedFromStart();
+        if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < CollectRegolith.MIN_NUM_SOL)
+        	return 0;
 
-        else
-        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class,
-                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE, CollectRegolith.class);
+        //MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+        //double totalTimeSols = MarsClock.getTimeDiff(currentTime, startTime) / 1000D;
+        //if (totalTimeSols < CollectRegolith.MIN_NUM_SOL) {
+        //    return 0;
+        //}
 
-        if (result > 0D) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        Settlement settlement = person.getSettlement();
 
-            // Don't start mission until after first Sol of the simulation.
-            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            double totalTimeSols = MarsClock.getTimeDiff(currentTime, startTime) / 1000D;
-            if (totalTimeSols < 1D) {
-                result = 0;
+		    // Check if minimum number of people are available at the settlement.
+	        if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
+		        return 0;
+		    }
+
+		    // Check if min number of EVA suits at settlement.
+	        else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
+		        return 0;
+		    }
+
+	        else
+	        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class,
+	                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE, CollectRegolith.class);
+
+            // Factor the value of regolith at the settlement.
+            double value = person.getSettlement().getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
+            result *= value;
+            if (result > 1D) {
+                result = 1D;
             }
 
-            else {
-	            // Factor the value of regolith at the settlement.
-	            GoodsManager manager = person.getSettlement().getGoodsManager();
-	            //AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-	            double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
-	            result *= value;
-	            if (result > 1D) {
-	                result = 1D;
-	                // TODO : why setting result to 1D ?
-	            }
-            }
-
         }
-
-        //if (result > 0)
-        //	System.out.println("CollectRegolithMeta : " + result);
-
         return result;
     }
 

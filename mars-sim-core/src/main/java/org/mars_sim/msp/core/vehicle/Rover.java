@@ -26,10 +26,11 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
-/** 
+/**
  * The Rover class represents the rover type of ground vehicle.  It
  * contains information about the rover.
  */
@@ -48,14 +49,14 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 
 	/** The amount of work time to perform maintenance (millisols) */
     public static final double MAINTENANCE_WORK_TIME = 500D;
-	
+
 	private static double life_support_range_error_margin = 0;//3.0D;
 
 	// Data members
 	/** The rover's capacity for crew members. */
 	private int crewCapacity = 0;
 	private int robotCrewCapacity = 0;
-	
+
 	/** The rover's airlock. */
 	private Airlock airlock;
 	/** The rover's lab. */
@@ -64,23 +65,23 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	private SickBay sickbay;
 	/** The vehicle the rover is currently towing. */
 	private Vehicle towedVehicle;
-	
-	public static AmountResource methaneAR = AmountResource.findAmountResource("methane");
-	public static AmountResource regolithAR = AmountResource.findAmountResource("regolith");
-	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-    public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-    public static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-    public static AmountResource iceAR = AmountResource.findAmountResource("ice");
-    public static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
+
+	public static AmountResource methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource("methane");
+	public static AmountResource regolithAR = ResourceUtil.regolithAR;//AmountResource.findAmountResource("regolith");
+	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;//AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+    public static AmountResource waterAR = ResourceUtil.waterAR;//AmountResource.findAmountResource(LifeSupportType.WATER);
+    public static AmountResource foodAR = ResourceUtil.foodAR;//AmountResource.findAmountResource(LifeSupportType.FOOD);
+    public static AmountResource iceAR = ResourceUtil.iceAR;//AmountResource.findAmountResource("ice");
+    public static AmountResource rockSamplesAR = ResourceUtil.rockSamplesAR;//AmountResource.findAmountResource("rock samples");
 
     private static VehicleConfig config;// = SimulationConfig.instance().getVehicleConfiguration();
-	
+
     private static Inventory inv;// = getInventory();
-	
+
 	private List<Point2D> labActivitySpots;
 	private List<Point2D> sickBayActivitySpots;
 
-    /** 
+    /**
      * Constructs a Rover object at a given settlement
      * @param name the name of the rover
      * @param description the configuration description of the vehicle.
@@ -89,12 +90,12 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public Rover(String name, String description, Settlement settlement) {
         // Use GroundVehicle constructor
         super(name, description, settlement, MAINTENANCE_WORK_TIME);
-		
+
         life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
-        
+
 		// Get vehicle configuration.
 		config = SimulationConfig.instance().getVehicleConfiguration();
-		
+
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString("Rover");
 		malfunctionManager.addScopeString("Crewable");
@@ -102,16 +103,16 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		malfunctionManager.addScopeString(description);
 		if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
 		if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
-        
+
 		// Set crew capacity
 		crewCapacity = config.getCrewSize(description);
 		robotCrewCapacity = crewCapacity;
 
 		inv = getInventory();
-		
+
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(config.getTotalCapacity(description));
-	
+
 		// Set inventory resource capacities.
 		//AmountResource methane = AmountResource.findAmountResource("methane");
 		inv.addAmountResourceTypeCapacity(methaneAR, config.getCargoCapacity(description, "methane"));
@@ -121,43 +122,43 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		inv.addAmountResourceTypeCapacity(waterAR, config.getCargoCapacity(description, LifeSupportType.WATER));
 		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		inv.addAmountResourceTypeCapacity(foodAR, config.getCargoCapacity(description, LifeSupportType.FOOD));
-				
+
 		// TODO: can I call .addAmountResourceTypeCapacity() later after the chosen dessert is known?
 		// In RoverMission.java's getResourcesNeededForTrip() we add the storage space for the desserts
     	// getRover().getSettlementInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
-		
-		
-        //String dessertName = PreparingDessert.getADessert(dessertList);		
+
+
+        //String dessertName = PreparingDessert.getADessert(dessertList);
 		//AmountResource dessert = AmountResource.findAmountResource(dessertName);
 		//inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, dessertName));
 
 		//AmountResource solidWaste = AmountResource.findAmountResource("solid waste");
 		//inv.addAmountResourceTypeCapacity(solidWaste, config.getCargoCapacity(description, "solid waste"));
-		
+
 		/*
 		AmountResource foodWaste = AmountResource.findAmountResource("food waste");
 		inv.addAmountResourceTypeCapacity(foodWaste, config.getCargoCapacity(description, "food waste"));
 		AmountResource toxicWaste = AmountResource.findAmountResource("toxic waste");
 		inv.addAmountResourceTypeCapacity(toxicWaste, config.getCargoCapacity(description, "toxic waste"));
 */
-		
+
 		//AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 		inv.addAmountResourceTypeCapacity(rockSamplesAR, config.getCargoCapacity(description, "rock samples"));
 		//AmountResource ice = AmountResource.findAmountResource("ice");
 		inv.addAmountResourceTypeCapacity(iceAR, config.getCargoCapacity(description, "ice"));
-		
+
 		// Construct sick bay.
 		if (config.hasSickbay(description)) {
 			sickbay = new SickBay(this, config.getSickbayTechLevel(description), config.getSickbayBeds(description));
-			
+
 			// Initialize sick bay activity spots.
 			sickBayActivitySpots = new ArrayList<Point2D>(config.getSickBayActivitySpots(description));
 		}
-			
+
 		// Construct lab.
 		if (config.hasLab(description)) {
 			lab = new MobileLaboratory(1, config.getLabTechLevel(description), config.getLabTechSpecialties(description));
-			
+
 			// Initialize lab activity spots.
             labActivitySpots = new ArrayList<Point2D>(config.getLabActivitySpots(description));
 		}
@@ -171,11 +172,11 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         double airlockInteriorYLoc = config.getAirlockInteriorYLocation(description);
         double airlockExteriorXLoc = config.getAirlockExteriorXLocation(description);
         double airlockExteriorYLoc = config.getAirlockExteriorYLocation(description);
-		try { airlock = new VehicleAirlock(this, 2, airlockXLoc, airlockYLoc, airlockInteriorXLoc, airlockInteriorYLoc, 
+		try { airlock = new VehicleAirlock(this, 2, airlockXLoc, airlockYLoc, airlockInteriorXLoc, airlockInteriorYLoc,
 		        airlockExteriorXLoc, airlockExteriorYLoc); }
 		catch (Exception e) { e.printStackTrace(System.err); }
     }
-    
+
     /**
      * Sets the vehicle this rover is currently towing.
      * @param towedVehicle the vehicle being towed.
@@ -185,7 +186,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	this.towedVehicle = towedVehicle;
     	updatedTowedVehicleSettlementLocation();
     }
-    
+
     /**
      * Gets the vehicle this rover is currently towing.
      * @return towed vehicle.
@@ -203,7 +204,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     }
     public int getRobotCrewCapacity() {
         return robotCrewCapacity;
-    }    
+    }
     /**
      * Gets the current number of crewmembers.
      * @return number of crewmembers
@@ -237,7 +238,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public boolean isRobotCrewmember(Robot robot) {
         return getInventory().containsUnit(robot);
     }
-    
+
     /** Returns true if life support is working properly and is not out
      *  of oxygen or water.
      *  @return true if life support is OK
@@ -254,7 +255,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
         if (getTemperature() != NORMAL_TEMP) result = false;
-	
+
         return result;
     }
 
@@ -281,7 +282,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	getInventory().addAmountDemandTotalRequest(oxygenAR);
     	// 2015-01-09 addDemandRealUsage()
     	getInventory().addAmountDemand(oxygenAR, oxygenTaken);
-       	
+
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
@@ -300,8 +301,8 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	// 2015-01-09 Added addDemandTotalRequest()
     	getInventory().addAmountDemandTotalRequest(waterAR);
     	// 2015-01-09 addDemandRealUsage()
-    	getInventory().addAmountDemand(waterAR, waterTaken);    	
-    	
+    	getInventory().addAmountDemand(waterAR, waterTaken);
+
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
@@ -309,7 +310,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
      *  @return air pressure (Pa)
      */
     public double getAirPressure() {
-        double result = NORMAL_AIR_PRESSURE * 
+        double result = NORMAL_AIR_PRESSURE *
 	        (malfunctionManager.getAirPressureModifier() / 100D);
         double ambient = Simulation.instance().getMars().getWeather().getAirPressure(getCoordinates());
         if (result < ambient) return ambient;
@@ -327,7 +328,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         else return result;
     }
 
-    /** 
+    /**
      * Gets the rover's airlock.
      * @return rover's airlock
      */
@@ -335,14 +336,14 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         return airlock;
     }
 
-    /** 
+    /**
      * Perform time-related processes
      * @param time the amount of time passing (in millisols)
      * @throws exception if error during time.
      */
     public void timePassing(double time) {
         super.timePassing(time);
-        
+
         airlock.timePassing(time);
     }
 
@@ -352,7 +353,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
      */
     public Collection<Person> getAffectedPeople() {
         Collection<Person> people = super.getAffectedPeople();
-        
+
         Collection<Person> crew = getCrew();
         Iterator<Person> i = crew.iterator();
         while (i.hasNext()) {
@@ -362,10 +363,10 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 
         return people;
     }
-    
+
     public Collection<Robot> getAffectedRobots() {
         Collection<Robot> robots = super.getAffectedRobots();
-        
+
         Collection<Robot> crew = getRobotCrew();
         Iterator<Robot> i = crew.iterator();
         while (i.hasNext()) {
@@ -374,7 +375,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         }
 
         return robots;
-    }    
+    }
     /**
      * Checks if the rover has a laboratory.
      * @return true if lab.
@@ -390,7 +391,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	public Lab getLab() {
 		return lab;
 	}
-	
+
 	/**
      * Gets a list of lab activity spots.
      * @return list of activity spots as Point2D objects.
@@ -398,7 +399,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public List<Point2D> getLabActivitySpots() {
         return labActivitySpots;
     }
-	
+
 	/**
 	 * Checks if the rover has a sick bay.
 	 * @return true if sick bay
@@ -406,7 +407,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	public boolean hasSickBay() {
         return sickbay != null;
 	}
-	
+
 	/**
 	 * Gets the rover's sick bay.
 	 * @return sick bay
@@ -414,7 +415,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	public SickBay getSickBay() {
 		return sickbay;
 	}
-	
+
 	/**
      * Gets a list of sick bay activity spots.
      * @return list of activity spots as Point2D objects.
@@ -422,7 +423,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public List<Point2D> getSickBayActivitySpots() {
         return sickBayActivitySpots;
     }
-	
+
     /**
      * Checks if a particular operator is appropriate for a vehicle.
      * @param operator the operator to check
@@ -431,7 +432,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public boolean isAppropriateOperator(VehicleOperator operator) {
         return (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
     }
-    
+
     /**
      * Gets the resource type that this vehicle uses for fuel.
      * @return resource type as a string
@@ -444,30 +445,30 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     		return null;
     	}
     }
-    
-    /** 
-     * Sets unit's location coordinates 
+
+    /**
+     * Sets unit's location coordinates
      * @param newLocation the new location of the unit
      */
     public void setCoordinates(Coordinates newLocation) {
     	super.setCoordinates(newLocation);
-        
+
     	// Set towed vehicle (if any) to new location.
         if (towedVehicle != null) towedVehicle.setCoordinates(newLocation);
     }
-    
-    /** 
+
+    /**
      * Gets the range of the vehicle
      * @return the range of the vehicle (in km)
      * @throws Exception if error getting range.
      */
     public double getRange() {
     	double range = super.getRange();
-    	
+
     	double distancePerSol = getEstimatedTravelDistancePerSol();
-    	
+
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-    		
+
     	// Check food capacity as range limit.
     	//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
     	double foodConsumptionRate = config.getFoodConsumptionRate();
@@ -475,7 +476,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
     	double foodRange = distancePerSol * foodSols / life_support_range_error_margin;
     	if (foodRange < range) range = foodRange;
-    		
+
     	/*
 	       // 2015-01-04 Added Soymilk
     	// Check dessert capacity as range limit.
@@ -486,7 +487,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double dessertRange = distancePerSol * dessertSols / life_support_range_error_margin;
     	if (dessertRange < range) range = dessertRange;
     	*/
-    	
+
     	// Check water capacity as range limit.
     	//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
     	double waterConsumptionRate = config.getWaterConsumptionRate();
@@ -494,7 +495,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
     	double waterRange = distancePerSol * waterSols / life_support_range_error_margin;
     	if (waterRange < range) range = waterRange;
-    		
+
     	// Check oxygen capacity as range limit.
     	//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
     	double oxygenConsumptionRate = config.getNominalO2ConsumptionRate();
@@ -502,23 +503,23 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
     	double oxygenRange = distancePerSol * oxygenSols / life_support_range_error_margin;
     	if (oxygenRange < range) range = oxygenRange;
-    	
+
     	return range;
     }
-    
+
     @Override
     public void setParkedLocation(double xLocation, double yLocation, double facing) {
         super.setParkedLocation(xLocation, yLocation, facing);
-        
+
         // Update towed vehicle locations.
         updatedTowedVehicleSettlementLocation();
     }
-    
+
     /**
      * Updates the settlement location of any towed vehicles.
      */
     private void updatedTowedVehicleSettlementLocation() {
-        
+
         Vehicle towedVehicle = getTowedVehicle();
         if (towedVehicle != null) {
             if (towedVehicle instanceof Rover) {
@@ -540,7 +541,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
             }
         }
     }
-    
+
 	@Override
 	public Collection<Unit> getUnitCrew() {
 		// TODO Auto-generated method stub
@@ -550,11 +551,11 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	public static double getErrorMargin() {
 		return life_support_range_error_margin;
 	}
-	
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         if (airlock != null) airlock.destroy();
         airlock = null;
         if (lab != null) lab.destroy();

@@ -301,7 +301,7 @@ implements Serializable {
         	rManager = robot.getRoboticAttributeManager();
             experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
         }
-        
+
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
@@ -418,11 +418,15 @@ implements Serializable {
      */
     private double salvage(double time) {
 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+
         // Check for an accident during the EVA operation.
         checkForAccident(time);
-
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
 
         if (shouldEndEVAOperation() || stage.isComplete() || addTimeOnSite(time)) {
             // End operating light utility vehicle.

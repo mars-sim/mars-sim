@@ -76,8 +76,8 @@ extends RoverMission {
 
 	/** Minimum amount (kg) of an excavated mineral that can be collected. */
 	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
-	
-	/** The minimum number of mineral concentration estimation improvements for 
+
+	/** The minimum number of mineral concentration estimation improvements for
 	 * an exploration site for it to be considered mature enough to mine. */
 	private static final int MATURE_ESTIMATE_NUM = 10;
 
@@ -92,7 +92,7 @@ extends RoverMission {
 	private static AmountResource oxygenAR = Rover.oxygenAR;
 	private static AmountResource waterAR = Rover.waterAR;
 	private static AmountResource foodAR = Rover.foodAR;
-  
+
     /**
      * Constructor
      * @param startingPerson the person starting the mission.
@@ -101,7 +101,7 @@ extends RoverMission {
     public Mining(Person startingPerson) {
 
         // Use RoverMission constructor.
-        super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_PEOPLE);
+        super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
         if (!isDone()) {
             // Set mission capacity.
@@ -158,7 +158,7 @@ extends RoverMission {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
     }
 
@@ -195,7 +195,7 @@ extends RoverMission {
 
      	Person person = null;
     	Robot robot = null;
-    	
+
         // Add mission members.
     	// TODO refactor this.
         Iterator<MissionMember> i = members.iterator();
@@ -208,7 +208,7 @@ extends RoverMission {
 	        else if (member instanceof Robot) {
 	        	robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
-	        }    
+	        }
         }
 
         // Add mining site nav point.
@@ -237,7 +237,7 @@ extends RoverMission {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
     }
 
@@ -304,22 +304,22 @@ extends RoverMission {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                         getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
             } else {
                 setPhase(MINING_SITE);
-                setPhaseDescription(Msg.getString("Mission.phase.miningSite.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.miningSite.description",
                         getCurrentNavpoint().getDescription())); //$NON-NLS-1$
             }
         } else if (MINING_SITE.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase())) {
             endMission(SUCCESSFULLY_DISEMBARKED);
@@ -345,13 +345,13 @@ extends RoverMission {
         super.performEmbarkFromSettlementPhase(member);
         performEmbarkFrom();
     }
-    
+
 //    @Override
 //    protected void performEmbarkFromSettlementPhase(Robot robot) {
 //        super.performEmbarkFromSettlementPhase(robot);
 //        performEmbarkFrom();
 //    }
-    
+
     protected void performEmbarkFrom() {
         // Attach light utility vehicle for towing.
         if (!isDone() && (getRover().getTowedVehicle() == null)) {
@@ -378,19 +378,19 @@ extends RoverMission {
             }
         }
     }
- 
+
     @Override
-    protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {   	
+    protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
     	performDisembarkTo();
         super.performDisembarkToSettlementPhase(member, disembarkSettlement);
     }
-    
+
 //    @Override
-//    protected void performDisembarkToSettlementPhase(Robot robot, Settlement disembarkSettlement) {	
+//    protected void performDisembarkToSettlementPhase(Robot robot, Settlement disembarkSettlement) {
 //    	performDisembarkTo();
 //        super.performDisembarkToSettlementPhase(robot, disembarkSettlement);
 //    }
-    
+
     protected void performDisembarkTo() {
         // Unload towed light utility vehicle.
         if (!isDone() && (getRover().getTowedVehicle() != null)) {
@@ -418,7 +418,7 @@ extends RoverMission {
             }
         }
     }
-    
+
 
     /**
      * Perform the mining phase.
@@ -766,7 +766,7 @@ extends RoverMission {
                 }
             }
         }
-        
+
 //        // End each bot's mining site task.
 //        Iterator<Robot> j = getRobots().iterator();
 //        while (j.hasNext()) {
@@ -807,9 +807,9 @@ extends RoverMission {
                     .getSurfaceFeatures().getExploredLocations().iterator();
             while (i.hasNext()) {
                 ExploredLocation site = i.next();
-                
+
                 boolean isMature = (site.getNumEstimationImprovement() >= MATURE_ESTIMATE_NUM);
-                
+
                 if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature) {
                     // Only mine from sites explored from home settlement.
                     if (homeSettlement.equals(site.getSettlement())) {
@@ -895,7 +895,7 @@ extends RoverMission {
         double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
         if (dessert1TimeLimit < timeLimit)
             timeLimit = dessert1TimeLimit;
- */       
+ */
         // Check water capacity as time limit.
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterConsumptionRate = config.getWaterConsumptionRate();
@@ -950,7 +950,7 @@ extends RoverMission {
     @Override
     protected boolean isCapableOfMission(MissionMember member) {
         boolean result = super.isCapableOfMission(member);
-        
+
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -960,10 +960,10 @@ extends RoverMission {
             }
             result = atStartingSettlement;
         }
-        
+
         return result;
     }
-    
+
     @Override
     public double getEstimatedRemainingMissionTime(boolean useBuffer) {
         double result = super.getEstimatedRemainingMissionTime(useBuffer);
@@ -1041,7 +1041,7 @@ extends RoverMission {
         if (result.containsKey(dessert1))
             dessert1Amount += (Double) result.get(dessert1);
         result.put(dessert1, dessert1Amount);
- */       
+ */
         return result;
     }
 

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -31,10 +32,10 @@ public class ExplorationMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.exploration"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -47,77 +48,69 @@ public class ExplorationMeta implements MetaMission {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
-            boolean go = true;
-  
             // Check if a mission-capable rover is available.
             if (!RoverMission.areVehiclesAvailable(settlement, false)){
-            	go = false;
             	return 0;
             }
 
             // Check if available backup rover.
             else if (!RoverMission.hasBackupRover(settlement)){
-            	go = false;
             	return 0;
             }
-            
-            // Check if minimum number of people are available at the settlement.
-            // Plus one to hold down the fort.
-            else if (!RoverMission.minAvailablePeopleAtSettlement(
-                    settlement, (RoverMission.MIN_PEOPLE + 1))){
-            	go = false;
-            	return 0;
-            }
-            
+
+    	    // Check if minimum number of people are available at the settlement.
+            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
+    	        return 0;
+    	    }
+
+    	    // Check if min number of EVA suits at settlement.
+            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
+    	        return 0;
+    	    }
             // Check if there are enough specimen containers at the settlement for collecting rock samples.
             //boolean enoughContainers = false;
             //int numContainers = settlement.getSettlementInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
-            else if (!(settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false) 
+            else if (!(settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false)
             		>= Exploration.REQUIRED_SPECIMEN_CONTAINERS)){
-            	go = false;
             	return 0;
             }
-            
+
             // Check for embarking missions.
             else if (!VehicleMission.hasEmbarkingMissions(settlement)){
-            	go = false;
             	return 0;
             }
-            
+
             // Check if settlement has enough basic resources for a rover mission.
             else if (!RoverMission.hasEnoughBasicResources(settlement)){
-            	go = false;
             	return 0;
             }
-            
+
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            else if (!(settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) >= 
+            else if (!(settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE))
-            		go = false;
-            
-            if (go) {
+            	return 0;
+
             //if (reservableRover && backupRover && minNum && enoughContainers && !embarkingMissions && hasBasicResources && enoughMethane) {
-                try {
-                    // Get available rover.
-                    Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(
-                            settlement, false);
-                    if (rover != null) {
-                        // Check if any mineral locations within rover range.
-                        if (Exploration.hasNearbyMineralLocations(rover, settlement)) {
-                            result = 1D;
-                        }
+            try {
+                // Get available rover.
+                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(
+                        settlement, false);
+                if (rover != null) {
+                    // Check if any mineral locations within rover range.
+                    if (Exploration.hasNearbyMineralLocations(rover, settlement)) {
+                        result = 1D;
                     }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE,
-                            "Error determining mineral locations.", e);
                 }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,
+                        "Error determining mineral locations.", e);
             }
 
             // Crowding modifier
@@ -129,15 +122,11 @@ public class ExplorationMeta implements MetaMission {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null)
+            	// It this town has a tourist objective, add bonus
                 result *= job.getStartMissionProbabilityModifier(Exploration.class)* settlement.getGoodsManager().getTourismFactor();
         }
 
-        if (result > 0D) {
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < RoverMission.MIN_PEOPLE)
-                result = 0D;
-        }
+
 
         return result;
     }

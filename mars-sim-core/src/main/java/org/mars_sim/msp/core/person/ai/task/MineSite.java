@@ -152,9 +152,9 @@ implements Serializable {
      * @return true if person can mine a site.
      */
     public static boolean canMineSite(MissionMember member, Rover rover) {
-        
+
         boolean result = false;
-        
+
         if (member instanceof Person) {
             Person person = (Person) member;
 
@@ -174,7 +174,7 @@ implements Serializable {
 
             result = (exitable && (sunlight || darkRegion) && !medical);
         }
-        
+
         return result;
     }
 
@@ -211,7 +211,11 @@ implements Serializable {
         checkForAccident(time);
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
 
         // Check if there is reason to cut the mining phase short and return
         // to the rover.

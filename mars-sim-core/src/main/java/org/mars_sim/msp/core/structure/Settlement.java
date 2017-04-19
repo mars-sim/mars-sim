@@ -823,7 +823,7 @@ implements Serializable, LifeSupportType, Objective {
 	    // Compute whether a baseline, GCR, or SEP event has occurred
 	    remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
 	    if (remainder == 0)
-	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load
+	    	//if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load
 	    		checkRadiationProbability(time);
 
 	    // Updates the goodsManager twice per sol at random time.

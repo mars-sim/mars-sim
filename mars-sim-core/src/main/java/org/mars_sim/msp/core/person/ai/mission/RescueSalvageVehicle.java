@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-04-19
  * @author Scott Davis
  */
 
@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -35,9 +36,9 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
- * This class is a mission to rescue the crew of a vehicle 
- * that has an emergency beacon on and tow the vehicle back, or to simply tow 
+/**
+ * This class is a mission to rescue the crew of a vehicle
+ * that has an emergency beacon on and tow the vehicle back, or to simply tow
  * the vehicle back if the crew is already dead.
  * TODO externalize strings
  */
@@ -56,10 +57,14 @@ implements Serializable {
             "Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 
     // Static members
-    public static final int MISSION_MIN_MEMBERS = 2;
-    private static final int MISSION_MAX_MEMBERS = 3;
+    public static final int MIN_STAYING_MEMBERS = 1;
+
+    public static final int MIN_GOING_MEMBERS = 2;
+    private static final int MAX_GOING_MEMBERS = 3;
+
     public static final double BASE_RESCUE_MISSION_WEIGHT = 1000D;
     public static final double BASE_SALVAGE_MISSION_WEIGHT = 5D;
+
     private static final double RESCUE_RESOURCE_BUFFER = 1D;
 
     // Mission phases
@@ -70,28 +75,28 @@ implements Serializable {
     private Vehicle vehicleTarget;
     private boolean rescue = false;
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
-    
-    /** 
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;//Rover.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;//Rover.waterAR;
+	private static AmountResource foodAR = ResourceUtil.foodAR;//Rover.foodAR;
+
+    /**
      * Constructor
      * @param startingPerson the person starting the mission.
      * @throws MissionException if error constructing mission.
      */
     public RescueSalvageVehicle(Person startingPerson) {
         // Use RoverMission constructor
-        super(DEFAULT_DESCRIPTION, startingPerson, MISSION_MIN_MEMBERS);   
+        super(DEFAULT_DESCRIPTION, startingPerson, MIN_GOING_MEMBERS);
 
         if (!isDone()) {
             setStartingSettlement(startingPerson.getSettlement());
-            setMissionCapacity(MISSION_MAX_MEMBERS);
+            setMissionCapacity(MAX_GOING_MEMBERS);
 
             if (hasVehicle()) {
                 vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
                 int capacity = getRover().getCrewCapacity();
-                if (capacity < MISSION_MAX_MEMBERS) {
+                if (capacity < MAX_GOING_MEMBERS) {
                     setMissionCapacity(capacity);
                 }
 
@@ -105,11 +110,11 @@ implements Serializable {
                 if (getRescuePeopleNum(vehicleTarget) > 0) {
                     rescue = true;
                     setMinMembers(1);
-                    setDescription(Msg.getString("Mission.description.rescueSalvageVehicle.rescue", 
+                    setDescription(Msg.getString("Mission.description.rescueSalvageVehicle.rescue",
                             vehicleTarget.getName())); //$NON-NLS-1$)
                 }
                 else {
-                    setDescription(Msg.getString("Mission.description.rescueSalvageVehicle.salvage", 
+                    setDescription(Msg.getString("Mission.description.rescueSalvageVehicle.salvage",
                             vehicleTarget.getName())); //$NON-NLS-1$)
                 }
 
@@ -132,7 +137,7 @@ implements Serializable {
 
                 // Set initial phase
                 setPhase(VehicleMission.EMBARKING);
-                setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                         getStartingSettlement().getName())); //$NON-NLS-1$
             }
             else {
@@ -150,7 +155,7 @@ implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public RescueSalvageVehicle(Collection<MissionMember> members, Settlement startingSettlement, 
+    public RescueSalvageVehicle(Collection<MissionMember> members, Settlement startingSettlement,
             Vehicle vehicleTarget, Rover rover, String description) {
 
         // Use RoverMission constructor.
@@ -170,7 +175,7 @@ implements Serializable {
 
      	Person person = null;
     	Robot robot = null;
-    	
+
         // Add mission members.
         Iterator<MissionMember> i = members.iterator();
         while (i.hasNext()) {
@@ -183,15 +188,15 @@ implements Serializable {
 	        else if (member instanceof Robot) {
 	        	robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
-	        }    
+	        }
         }
-        
+
         // Add rendezvous phase.
         addPhase(RENDEZVOUS);
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
 
         // Check if vehicle can carry enough supplies for the mission.
@@ -260,7 +265,7 @@ implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
             if (rescue) {
                 logger.info(getVehicle().getName() + " starting rescue mission for " + vehicleTarget.getName());
@@ -272,17 +277,17 @@ implements Serializable {
         else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                         getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
             }
             else {
                 setPhase(RENDEZVOUS);
                 if (rescue) {
-                    setPhaseDescription(Msg.getString("Mission.phase.rendezvous.descriptionRescue", 
+                    setPhaseDescription(Msg.getString("Mission.phase.rendezvous.descriptionRescue",
                             vehicleTarget.getName())); //$NON-NLS-1$
                 }
                 else {
-                    setPhaseDescription(Msg.getString("Mission.phase.rendezvous.descriptionSalvage", 
+                    setPhaseDescription(Msg.getString("Mission.phase.rendezvous.descriptionSalvage",
                             vehicleTarget.getName())); //$NON-NLS-1$
                 }
             }
@@ -290,7 +295,7 @@ implements Serializable {
         else if (RENDEZVOUS.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         }
         else if (DISEMBARKING.equals(getPhase())) {
@@ -306,7 +311,7 @@ implements Serializable {
         }
     }
 
-    /** 
+    /**
      * Performs the rendezvous phase of the mission.
      * @param member the mission member currently performing the mission.
      */
@@ -324,17 +329,17 @@ implements Serializable {
                 Inventory roverInv = getRover().getInventory();
                 Inventory targetInv = vehicleTarget.getInventory();
                 double amountNeeded = amount - targetInv.getAmountResourceStored(resource, false);
-               	
+
                 // 2015-01-09 Added addDemandTotalRequest()
                 //targetInv.addDemandTotalRequest(resource);
-        		
-                if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource, false) > 
+
+                if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource, false) >
                 amountNeeded)) {
                     roverInv.retrieveAmountResource(resource, amountNeeded);
-         		
+
                     // 2015-01-09 addDemandRealUsage()
                     //roverInv.addDemandRealUsage(resource,amountNeeded);
-                    
+
                     targetInv.storeAmountResource(resource, amountNeeded, true);
        			 	// 2015-01-15 Add addSupplyAmount()
                     //targetInv.addSupplyAmount(harvestCropAR, harvestAmount);
@@ -568,15 +573,15 @@ implements Serializable {
         int result = 0;
 
         if (vehicle instanceof Crewable)
-            result = ((Crewable) vehicle).getCrewNum();     
+            result = ((Crewable) vehicle).getCrewNum();
         return result;
     }
-    
+
     public static int getRescueRobotsNum(Vehicle vehicle) {
         int result = 0;
 
         if (vehicle instanceof Crewable)
-            result = ((Crewable) vehicle).getRobotCrewNum();     
+            result = ((Crewable) vehicle).getRobotCrewNum();
         return result;
     }
 
@@ -657,7 +662,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(MissionMember member) {
         boolean result = super.isCapableOfMission(member);
-        
+
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -667,7 +672,7 @@ implements Serializable {
             }
             result = atStartingSettlement;
         }
-        
+
         return result;
     }
 
@@ -678,7 +683,7 @@ implements Serializable {
      * @return true if this is the closest settlement.
      * @throws MissionException if error in checking settlements.
      */
-    public static boolean isClosestCapableSettlement(Settlement thisSettlement, 
+    public static boolean isClosestCapableSettlement(Settlement thisSettlement,
             Vehicle thisVehicle) {
         boolean result = true;
 
@@ -691,7 +696,7 @@ implements Serializable {
                 double settlementDistance = settlement.getCoordinates().getDistance(
                         thisVehicle.getCoordinates());
                 if (settlementDistance < distance) {
-                    if (settlement.getCurrentPopulationNum() >= MISSION_MIN_MEMBERS) {
+                    if (settlement.getCurrentPopulationNum() >= MIN_GOING_MEMBERS) {
                         Iterator<Vehicle> iV = settlement.getParkedVehicles().iterator();
                         while (iV.hasNext() && result) {
                             Vehicle vehicle = iV.next();

@@ -63,7 +63,7 @@ implements Serializable {
     // Data members
     private Rover rover; // Rover used.
     protected AmountResource mineralType;
-     
+
     /**
      * Constructor
      * @param person the person performing the task.
@@ -249,8 +249,10 @@ implements Serializable {
         checkForAccident(time);
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
-
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
         // Check if site duration has ended or there is reason to cut the collect
         // minerals phase short and return to the rover.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
@@ -337,11 +339,11 @@ implements Serializable {
     public static boolean canCollectMinerals(MissionMember member, Rover rover, AmountResource mineralType) {
 
         boolean result = false;
-        
+
         if (member instanceof Person) {
-            
+
             Person person = (Person) member;
-        
+
             // Check if person can exit the rover.
             boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
@@ -365,7 +367,7 @@ implements Serializable {
             if (bag != null) {
                 carryMass += bag.getMass();
             }
-            
+
             EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
             if (suit != null) {
                 carryMass += suit.getMass();
@@ -379,7 +381,7 @@ implements Serializable {
 
             result = (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);
         }
-        
+
         return result;
     }
 //    public static boolean canCollectMinerals(Robot robot, Rover rover, AmountResource mineralType) {
@@ -440,7 +442,7 @@ implements Serializable {
         else if (robot != null) {
         	rManager = robot.getRoboticAttributeManager();
             experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
-        }     
+        }
 
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;

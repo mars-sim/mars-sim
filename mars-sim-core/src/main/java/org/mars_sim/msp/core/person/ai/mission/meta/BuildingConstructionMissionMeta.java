@@ -37,8 +37,6 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
-    private static int FIRST_AVAILABLE_SOL = 30;
-    
     @Override
     public String getName() {
         return NAME;
@@ -61,22 +59,22 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             boolean go = true;
 
             int availablePeopleNum = 0;
-            
+
             // No construction until after the first ten sols of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
-            
+
             Iterator<Person> i = settlement.getInhabitants().iterator();
             while (i.hasNext()) {
                 Person member = i.next();
                 boolean noMission = !member.getMind().hasActiveMission();
                 boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
-                if (noMission && isFit) 
+                if (noMission && isFit)
                 	availablePeopleNum++;
             }
-            
+
             // Check if available light utility vehicles.
             if (!BuildingConstructionMission.isLUVAvailable(settlement))
             	go = false;
@@ -84,16 +82,16 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             // Check if enough available people at settlement for mission.
             else if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
             	go = false;
-            
+
             // Check if settlement has construction override flag set.
             else if (settlement.getConstructionOverride())
             	go = false;
-            
+
             // No construction until after the first ten sols of the simulation.
 
             else if (totalTimeSols < FIRST_AVAILABLE_SOL)
             	go = false;
-        	
+
             // Check if min number of EVA suits at settlement.
         	else if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
                     BuildingConstructionMission.MIN_PEOPLE) {
@@ -120,19 +118,19 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
                             result *= 1.1D;
                         }
-                        
+
                         if (newSiteProfit > existingSiteProfit) {
                             // Divide profit by 10 to the power of the number of existing construction sites.
                             ConstructionManager manager = settlement.getConstructionManager();
                             int numSites = manager.getConstructionSites().size();
-                            
+
                             // 2016-06-06 Added considering the size of the settlement population
                             int numPeople = person.getSettlement().getCurrentPopulationNum();
                             int limit = (int)(2D * numSites - numPeople/24D);
-                           
+
                             result = result/Math.pow(10, 2 + limit) /5D;
-                           
-                            
+
+
                         }
 
 

@@ -111,7 +111,7 @@ implements Serializable {
     	// Use EVAOperation constructor.
         super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 /*
-       
+
 
         settlement = robot.getSettlement();
 
@@ -141,7 +141,7 @@ implements Serializable {
         else {
             endTask();
         }
-*/        
+*/
     }
     /**
      * Constructor
@@ -167,7 +167,7 @@ implements Serializable {
 
         logger.fine(person.getName() + " is unloading " + vehicle.getName());
     }
-    
+
     public UnloadVehicleEVA(Robot robot, Vehicle vehicle) {
         // Use EVAOperation constructor.
         super("Unloading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
@@ -186,9 +186,9 @@ implements Serializable {
         addPhase(UNLOADING);
 
         logger.fine(robot.getName() + " is unloading " + vehicle.getName());
-*/        
+*/
     }
-    
+
     /**
      * Gets a list of vehicles that need unloading and aren't reserved for a mission.
      * @param settlement the settlement the vehicle is at.
@@ -375,7 +375,11 @@ implements Serializable {
         checkForAccident(time);
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
 
         // Check if person should end EVA operation.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
@@ -551,7 +555,7 @@ implements Serializable {
         	rManager = robot.getRoboticAttributeManager();
             experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
         }
-        
+
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

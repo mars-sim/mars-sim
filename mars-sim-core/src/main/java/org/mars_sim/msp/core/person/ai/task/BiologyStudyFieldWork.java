@@ -109,9 +109,9 @@ implements Serializable {
      * @return true if person can research a site.
      */
     public static boolean canResearchSite(MissionMember member, Rover rover) {
-        
+
         boolean result = false;
-        
+
         if (member instanceof Person) {
             Person person = (Person) member;
 
@@ -131,7 +131,7 @@ implements Serializable {
 
             result = (exitable && (sunlight || darkRegion) && !medical);
         }
-        
+
         return result;
     }
 
@@ -168,7 +168,10 @@ implements Serializable {
         checkForAccident(time);
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
 
         // Check if site duration has ended or there is reason to cut the field
         // work phase short and return to the rover.

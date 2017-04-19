@@ -275,8 +275,10 @@ implements Serializable {
         checkForAccident(time);
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
-
+        if (isRadiationDetected(time)){
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
         // Check if there is reason to cut the collect
         // ice phase short and return.
         if (shouldEndEVAOperation()) {
