@@ -42,6 +42,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.stage.Modality;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
@@ -79,6 +80,7 @@ import javafx.util.Duration;
 import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
+import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -89,6 +91,7 @@ import javafx.scene.input.ScrollEvent;
 import java.awt.Toolkit;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -111,7 +114,8 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
-
+import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
+import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
@@ -182,7 +186,8 @@ public class MainScene {
 	private static final String UPTIME = "UpTime :";
 	private static final String TPS = "Ticks/s :";
 	private static final String SEC = "1 real sec :";
-	private static final String TR = "Time Ratio :";
+	private static final String TR = "Current TR :";
+	private static final String DTR = "Default TR :";
 	private static final String HZ = " Hz";
 
 	private static final String SOLAR_LONGITUDE = "Solar Longitude : ";
@@ -205,6 +210,7 @@ public class MainScene {
 
 	private double newTimeRatio = 0;
 	private double initial_time_ratio = 0;
+	private double sliderCache = 0;
 
 	private boolean isMuteCache;
 	private boolean flag = true;
@@ -243,6 +249,8 @@ public class MainScene {
 	private Blend blend;
 	private VBox mapLabelBox, speedVBox, soundVBox;
 	private Tab mainTab;
+
+    private Spinner spinner;
 
 	private JFXComboBox<Settlement> sBox;
 	private JFXBadge badgeIcon;
@@ -631,7 +639,7 @@ public class MainScene {
 		blend.setBottomInput(ds);
 
 		DropShadow ds1 = new DropShadow();
-		ds1.setColor(Color.web("#f13a00"));
+		ds1.setColor(Color.web("#d68268"));//f13a00"));
 		ds1.setRadius(20);
 		ds1.setSpread(0.2);
 
@@ -661,7 +669,7 @@ public class MainScene {
 
 	public Text createTextHeader(String s) {
 		DropShadow ds = new DropShadow();
-		ds.setOffsetY(3.0f);
+		ds.setOffsetY(1.0f);
 		ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
 
 		Text t = new Text();
@@ -926,6 +934,7 @@ public class MainScene {
      * Creates and returns the panel for simulation speed and time info
      */
 	// 2017-01-12 Added createSpeedPanel
+	@SuppressWarnings("unchecked")
 	public void createSpeedPanel() {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());
 
@@ -992,26 +1001,38 @@ public class MainScene {
         int default_ratio = (int)masterClock.getDefaultTimeRatio();
         StringBuilder s0 = new StringBuilder();
 
-        Label time_ratio_label0 = new Label(TR);
+        Label default_ratio_label0 = new Label(DTR);
         //time_ratio_label0.setEffect(blend);
-        time_ratio_label0.setAlignment(Pos.CENTER_RIGHT);
-        time_ratio_label0.setStyle("-fx-text-fill: #206982;"
+        default_ratio_label0.setAlignment(Pos.CENTER_RIGHT);
+        default_ratio_label0.setStyle("-fx-text-fill: #206982;"
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-		time_ratio_label0.setPadding(new Insets(1, 1, 1, 5));
-		setQuickToolTip(time_ratio_label0, "the ratio of the simulation time to the real time"); //$NON-NLS-1$
+        default_ratio_label0.setPadding(new Insets(1, 1, 1, 5));
+		setQuickToolTip(default_ratio_label0, "The default time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
 
-        Label time_ratio_label = new Label();
-        //time_ratio_label.setEffect(blend);
-        time_ratio_label.setStyle("-fx-text-fill: #206982;"
+        Label spinner_label0 = new Label(TR);
+        //time_ratio_label0.setEffect(blend);
+        spinner_label0.setAlignment(Pos.CENTER_RIGHT);
+        spinner_label0.setStyle("-fx-text-fill: #206982;"
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-		time_ratio_label.setPadding(new Insets(1, 1, 1, 5));
-		s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
-		time_ratio_label.setText(s0.toString());
-		setQuickToolTip(time_ratio_label, "e.g. if 128, then 1 real second equals 128 sim seconds"); //$NON-NLS-1$
+		spinner_label0.setPadding(new Insets(1, 1, 1, 5));
+		setQuickToolTip(spinner_label0, "The current time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
+
+        Label default_ratio_label = new Label();
+        //time_ratio_label.setEffect(blend);
+        default_ratio_label.setStyle("-fx-text-fill: #206982;"
+        			+ "-fx-font-size: 12px;"
+        		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+        			+ "-fx-font-weight: normal;");
+        //default_ratio_label.setPadding(new Insets(1, 1, 1, 5));
+        default_ratio_label.setAlignment(Pos.CENTER);
+		//s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
+		s0.append(default_ratio);
+		default_ratio_label.setText(s0.toString());
+		setQuickToolTip(default_ratio_label, "e.g. if 128, then 1 real second equals 128 sim seconds"); //$NON-NLS-1$
 
 
         Label real_time_label0 = new Label(SEC);
@@ -1031,7 +1052,8 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: italic;");
-        real_time_label.setPadding(new Insets(1, 1, 1, 5));
+        //real_time_label.setPadding(new Insets(1, 1, 1, 5));
+        real_time_label.setAlignment(Pos.CENTER);
 		setQuickToolTip(real_time_label, "e.g. 02m.08s means that 1 real second equals 2 real minutes & 8 real seconds"); //$NON-NLS-1$
 
 
@@ -1063,9 +1085,9 @@ public class MainScene {
 
 					masterClock.setTimeRatio(newTimeRatio);
 
-	            	StringBuilder s0 = new StringBuilder();
-					s0.append((int)newTimeRatio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
-					time_ratio_label.setText(s0.toString());
+	            	//StringBuilder s0 = new StringBuilder();
+					//s0.append((int)newTimeRatio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
+					//time_ratio_label.setText(s0.toString());
 
 					StringBuilder s1 = new StringBuilder();
 					s1.append(masterClock.getTimeTruncated(newTimeRatio));
@@ -1074,6 +1096,52 @@ public class MainScene {
             	}
             }
         });
+
+		// TODO: add pause radio box
+
+		spinner = new Spinner();
+		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        //spinner.setValueFactory(new SpinnerValueFactory.IntSpinnerValueFactory(0, 10));
+		List<Integer> items = FXCollections.observableArrayList(1,2,4,8,16,
+																32,64,128,256,512,
+																1024,2048,4096);//,8192);
+
+        spinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<>(items));
+        spinner.setMaxSize(85, 15);
+        //spinner.setAlignment(Pos.CENTER);
+        spinner.getValueFactory().setValue(default_ratio);
+
+        spinner.valueProperty().addListener((o, old_val, new_val) -> {
+
+		    	if (old_val != new_val) {
+
+		        	int value = (int)new_val;
+/*
+		        	if (default_ratio <= 64)
+		        		newTimeRatio = Math.pow(2, (int)value - 1);
+		        	else if (default_ratio <= 128)
+		        		newTimeRatio = Math.pow(2, (int)value);
+		        	else if (default_ratio <= 256)
+		        		newTimeRatio = Math.pow(2, (int)value + 1);
+		        	else if (default_ratio <= 512)
+		        		newTimeRatio = Math.pow(2, (int)value + 2);
+*/
+		        	newTimeRatio = value;
+
+					masterClock.setTimeRatio(newTimeRatio);
+
+		        	//StringBuilder s2 = new StringBuilder();
+					//s2.append((int)newTimeRatio);//.append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
+					//default_ratio_label.setText(s2.toString());
+
+					StringBuilder s3 = new StringBuilder();
+					s3.append(masterClock.getTimeTruncated(newTimeRatio));
+					real_time_label.setText(s3.toString());
+
+		    	}
+	        }
+        );
+
 
 
         Label TPSLabel0 = new Label(TPS);
@@ -1092,7 +1160,8 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        TPSLabel.setPadding(new Insets(1, 1, 1, 5));
+        //TPSLabel.setPadding(new Insets(1, 1, 1, 5));
+        TPSLabel.setAlignment(Pos.CENTER);
 		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
 		setQuickToolTip(TPSLabel, "e.g. 6.22 Hz means that for each second, the simulation is updated 6.22 times"); //$NON-NLS-1$
 
@@ -1109,6 +1178,7 @@ public class MainScene {
 		setQuickToolTip(upTimeLabel0, "how long the simulation has been up running"); //$NON-NLS-1$
 
         upTimeLabel = new Label();
+        upTimeLabel.setAlignment(Pos.CENTER);
         //upTimeLabel.setEffect(blend);
         upTimeLabel.setStyle("-fx-text-fill: #065185;"
     			+ "-fx-font-size: 12px;"
@@ -1131,34 +1201,38 @@ public class MainScene {
 	    ColumnConstraints left = new ColumnConstraints();
 	    left.setPrefWidth(earthTimeButton.getPrefWidth()*.4);
 
-		GridPane.setConstraints(time_ratio_label, 1, 0);
-		GridPane.setConstraints(real_time_label, 1, 1);
-		GridPane.setConstraints(TPSLabel, 1, 2);
-		GridPane.setConstraints(upTimeLabel, 1, 3);
+		GridPane.setConstraints(spinner, 1, 0);
+		GridPane.setConstraints(default_ratio_label, 1, 1);
+		GridPane.setConstraints(real_time_label, 1, 2);
+		GridPane.setConstraints(TPSLabel, 1, 3);
+		GridPane.setConstraints(upTimeLabel, 1, 4);
 
-		GridPane.setConstraints(time_ratio_label0, 0, 0);
-		GridPane.setConstraints(real_time_label0, 0, 1);
-		GridPane.setConstraints(TPSLabel0, 0, 2);
-		GridPane.setConstraints(upTimeLabel0, 0, 3);
+		GridPane.setConstraints(spinner_label0, 0, 0);
+		GridPane.setConstraints(default_ratio_label0, 0, 1);
+		GridPane.setConstraints(real_time_label0, 0, 2);
+		GridPane.setConstraints(TPSLabel0, 0, 3);
+		GridPane.setConstraints(upTimeLabel0, 0, 4);
 
-		GridPane.setHalignment(time_ratio_label, HPos.CENTER);
+		GridPane.setHalignment(spinner, HPos.CENTER);
+		GridPane.setHalignment(default_ratio_label, HPos.CENTER);
 		GridPane.setHalignment(real_time_label, HPos.CENTER);
 		GridPane.setHalignment(TPSLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
 
-		GridPane.setHalignment(time_ratio_label0, HPos.RIGHT);
+		GridPane.setHalignment(spinner_label0, HPos.RIGHT);
+		GridPane.setHalignment(default_ratio_label0, HPos.RIGHT);
 		GridPane.setHalignment(real_time_label0, HPos.RIGHT);
 		GridPane.setHalignment(TPSLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
-		gridPane.getChildren().addAll(time_ratio_label0, time_ratio_label, real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel);
+		gridPane.getChildren().addAll(spinner_label0, spinner, default_ratio_label0, default_ratio_label, real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel);
 
         speedVBox = new VBox();
 		speedVBox.getStyleClass().add("jfx-popup-container");
 		speedVBox.setPadding(new Insets(2, 2, 2, 2));
 		speedVBox.setAlignment(Pos.CENTER);
-        speedVBox.getChildren().addAll(header_label, timeSliderBox, gridPane);
+        speedVBox.getChildren().addAll(header_label, gridPane); //timeSliderBox
         speedPane.getChildren().addAll(speedVBox);
 
 	}
@@ -1230,7 +1304,8 @@ public class MainScene {
 		soundSlider = new JFXSlider();
 		//soundSlider.setEffect(blend);
 		soundSlider.getStyleClass().add("jfx-slider");
-		soundSlider.setPrefHeight(220);
+		//soundSlider.setEffect(blend);
+		soundSlider.setPrefWidth(220);
 		soundSlider.setPrefHeight(20);
 		soundSlider.setPadding(new Insets(0, 15, 0, 15));
 
@@ -1251,6 +1326,25 @@ public class MainScene {
 		Text header_label = createTextHeader("SOUND PANEL");
 
 		Label volumelabel = createBlendLabel("Volume");
+		volumelabel.setPadding(new Insets(0,0,5,0));
+
+        CheckBox muteBox = new CheckBox("mute");
+        muteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+    			+ "-fx-font: bold 9pt 'Corbel';"
+				+ "-fx-text-fill: #654b00;");
+        //cb.setPadding(new Insets(0,0,0,5));
+        muteBox.setAlignment(Pos.CENTER_RIGHT);
+        muteBox.setOnAction(s -> {
+        	if (muteBox.isSelected()) {
+        		// mute it
+		        sliderCache = soundSlider.getValue();
+		        soundSlider.setValue(0);
+			}
+			else {
+				// unmute it
+				soundSlider.setValue(sliderCache);
+			}
+        });
 
 		// detect dragging
         soundSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -1260,24 +1354,53 @@ public class MainScene {
             	if (old_val != new_val) {
 
 	            	float sliderValue = new_val.floatValue();
-	            	//System.out.println("sliderValue : " + sliderValue);
 
 	            	if (sliderValue <= 0) {
 				        soundPlayer.setMute(true);
+				        muteBox.setSelected(true);
 					}
 					else {
 						soundPlayer.setMute(false);
 						soundPlayer.setVolume((float) convertSlider2Volume(sliderValue));
+				        muteBox.setSelected(false);
 					}
             	}
             }
         });
 
+        Label empty = new Label();
+
+        GridPane gridPane = new GridPane();
+		gridPane.getStyleClass().add("jfx-popup-container");
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setPadding(new Insets(1, 1, 1, 1));
+		gridPane.setHgap(1.0);
+		gridPane.setVgap(1.0);
+
+		ColumnConstraints c = new ColumnConstraints();
+	    c.setPrefWidth(90);
+	    //ColumnConstraints mid = new ColumnConstraints();
+	    //mid.setPrefWidth(70);
+	    //ColumnConstraints left = new ColumnConstraints();
+	    //left.setPrefWidth(70);
+
+		GridPane.setConstraints(empty, 0, 0);
+		GridPane.setConstraints(volumelabel, 1, 0);
+		GridPane.setConstraints(muteBox, 2, 0);
+
+		GridPane.setHalignment(empty, HPos.CENTER);
+		GridPane.setHalignment(volumelabel, HPos.CENTER);
+		GridPane.setHalignment(muteBox, HPos.RIGHT);
+
+		gridPane.getColumnConstraints().addAll(c, c, c);
+		gridPane.getChildren().addAll(volumelabel, empty, muteBox);
+
+
         soundVBox = new VBox();
 		soundVBox.getStyleClass().add("jfx-popup-container");
 		soundVBox.setPadding(new Insets(5, 5, 5, 5));
 		soundVBox.setAlignment(Pos.CENTER);
-        soundVBox.getChildren().addAll(header_label, volumelabel, soundSlider);
+        soundVBox.getChildren().addAll(header_label, gridPane, soundSlider);
         soundPane.getChildren().addAll(soundVBox);
 
 	}
