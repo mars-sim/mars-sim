@@ -1126,7 +1126,9 @@ public class MainScene {
 */
 		        	newTimeRatio = value;
 
+		        	boolean flag = startPause();
 					masterClock.setTimeRatio(newTimeRatio);
+					endPause(flag);
 
 		        	//StringBuilder s2 = new StringBuilder();
 					//s2.append((int)newTimeRatio);//.append(DEFAULT).append(default_ratio).append(CLOSE_PAR);

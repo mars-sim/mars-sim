@@ -129,7 +129,7 @@ implements Serializable {
     private static AmountResource greyWaterAR;
     private static AmountResource foodWasteAR;
 
-    private List<PreparedDessert> servingsOfDessertList;
+    private List<PreparedDessert> servingsOfDessert;
 
 	private MarsClock currentTime;// = Simulation.instance().getMasterClock().getMarsClock();
 
@@ -154,7 +154,7 @@ implements Serializable {
 
 
         preparingWorkTime = 0D;
-        servingsOfDessertList = new CopyOnWriteArrayList<>();
+        servingsOfDessert = new CopyOnWriteArrayList<>();
 
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -329,7 +329,7 @@ implements Serializable {
      * @return number of servingsOfDessertList
      */
     public int getAvailableServingsDesserts() {
-        return servingsOfDessertList.size();
+        return servingsOfDessert.size();
     }
 
     /**
@@ -342,11 +342,11 @@ implements Serializable {
         int bestQuality = -1;
         String favoriteDessert = person.getFavorite().getFavoriteDessert();
 
-        Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
+        Iterator<PreparedDessert> i = servingsOfDessert.iterator();
         while (i.hasNext()) {
-            PreparedDessert fresh = i.next();
-            int q = fresh.getQuality();
-            if (fresh.getName().equals(favoriteDessert)) {
+            PreparedDessert d = i.next();
+            int q = d.getQuality();
+            if (d.getName().equals(favoriteDessert)) {
             	// person will choose his/her favorite dessert right away
                 if (q > bestQuality) {
                 	//if (q > currentBestQuality) {
@@ -354,27 +354,27 @@ implements Serializable {
                 	//	bestQuality = q;
                 	//}
               		bestQuality = q;
-                    bestFavDessert = fresh;
-                    servingsOfDessertList.remove(bestFavDessert);
+                    bestFavDessert = d;
+                    servingsOfDessert.remove(bestFavDessert);
                     return bestFavDessert;
                 }
             }
 
             else if (q > bestQuality) {
                 bestQuality = q;
-                bestDessert = fresh;
+                bestDessert = d;
                 break;
             }
 
             else {
                 bestQuality = q;
-                bestDessert = fresh;
+                bestDessert = d;
             }
         }
 
 
         if (bestDessert != null) {
-            servingsOfDessertList.remove(bestDessert);
+            servingsOfDessert.remove(bestDessert);
         }
 
         return bestDessert;
@@ -395,7 +395,7 @@ implements Serializable {
     public int getBestDessertQuality() {
         int bestQuality = 0;
     	// Question: do we want to remember the best quality ever or just the best quality among the current servings ?
-        Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
+        Iterator<PreparedDessert> i = servingsOfDessert.iterator();
         while (i.hasNext()) {
             //PreparedDessert freshDessert = i.next();
             //if (freshDessert.getQuality() > bestQuality)
@@ -562,7 +562,7 @@ implements Serializable {
 	        int dessertQuality = getBestDessertSkill();
 
 	        // Create a serving of dessert and add it into the list
-		    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, (MarsClock)currentTime.clone(), producerName, this));
+		    servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, (MarsClock)currentTime.clone(), producerName, this));
 
 		    useWater();
 
@@ -597,7 +597,7 @@ implements Serializable {
             double rate = settlement.getDessertsReplenishmentRate();
 
             // Handle expired prepared desserts.
-            Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
+            Iterator<PreparedDessert> i = servingsOfDessert.iterator();
             while (i.hasNext()) {
 
                 PreparedDessert dessert = i.next();
@@ -605,7 +605,7 @@ implements Serializable {
 
                 if (MarsClock.getTimeDiff(dessert.getExpirationTime(), currentTime) < 0D) {
                     try {
-                        servingsOfDessertList.remove(dessert);
+                        servingsOfDessert.remove(dessert);
 
                         // Check if prepared dessert has gone bad and has to be thrown out.
                         double quality = dessert.getQuality() / 2D + 1D;
@@ -758,6 +758,6 @@ implements Serializable {
         inv = null;
         settlement = null;
         //servingsOfDessertList.clear();
-        servingsOfDessertList = null;
+        servingsOfDessert = null;
     }
 }

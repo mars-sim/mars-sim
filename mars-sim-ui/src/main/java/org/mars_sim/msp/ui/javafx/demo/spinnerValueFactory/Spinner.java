@@ -102,7 +102,7 @@ public class Spinner<T> extends Control {
 
     @Override
 	public String getUserAgentStylesheet() {
-        return Spinner.class.getResource("spinner.css").toExternalForm();
+        return this.getClass().getResource("/fxui/css/spinner/spinner.css").toExternalForm();
     }
 
 

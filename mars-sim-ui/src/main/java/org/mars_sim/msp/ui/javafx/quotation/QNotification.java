@@ -95,8 +95,8 @@ public class QNotification {
         private static final double ICON_HEIGHT   = 48;//32;//24;
         private static       double width         = 500;
         private static       double height        = 75;
-        private static       double offsetX       = 7;
-        private static       double offsetY       = 32;
+        private static       double offsetX       = 23;
+        private static       double offsetY       = 66;
         private static       double spacingY      = 10;
         private static       Pos    popupLocation = Pos.TOP_RIGHT;
         private static       Stage  stageRef      = null;

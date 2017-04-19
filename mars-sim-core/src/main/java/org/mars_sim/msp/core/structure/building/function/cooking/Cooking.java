@@ -462,42 +462,42 @@ implements Serializable {
 
         Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
-            CookedMeal meal = i.next();
+            CookedMeal m = i.next();
             // TODO: define how a person will choose to eat a main dish and/or side dish
-            String mealN = meal.getName();
-            int mealQ = meal.getQuality();
-            if (mealN.equals(mainDish)) {
+            String n = m.getName();
+            int q = m.getQuality();
+            if (n.equals(mainDish)) {
                 // person will choose the main dish
-            	if (mealQ > bestQuality) {
+            	if (q > bestQuality) {
 	            	// save the one with the best quality
-	                bestQuality = mealQ;
-	                bestFavDish = meal;
+	                bestQuality = q;
+	                bestFavDish = m;
 	            	cookedMeals.remove(bestFavDish);
 	            	return bestFavDish;
 	            }
             }
 
-            else if (mealN.equals(sideDish)) {
+            else if (n.equals(sideDish)) {
                 // person will choose side dish
-            	if (mealQ > bestQuality) {
+            	if (q > bestQuality) {
 	            	// save the one with the best quality
-	                bestQuality = mealQ;
-	                bestFavDish = meal;
+	                bestQuality = q;
+	                bestFavDish = m;
 	            	cookedMeals.remove(bestFavDish);
 	            	return bestFavDish;
 	            }
 	        }
 
-            else if (mealQ > bestQuality) {
+            else if (q > bestQuality) {
 	            // not his/her fav but still save the one with the best quality
-                bestQuality = mealQ;
-                bestMeal = meal;
+                bestQuality = q;
+                bestMeal = m;
             }
 
 			else {
 			    // not his/her fav but still save the one with the best quality
-				bestQuality = mealQ;
-			    bestMeal = meal;
+				bestQuality = q;
+			    bestMeal = m;
 			}
         }
 
@@ -916,8 +916,8 @@ implements Serializable {
     public boolean consumeOil(double oilRequired) {
 	    // 2014-12-29 Added pickOneOil()
     	AmountResource oil = pickOneOil(oilRequired);
-    	inv.addAmountDemand(oil, oilRequired);
 	    if (oil != null) {
+	    	inv.addAmountDemand(oil, oilRequired);
 		    //may use the default amount of AMOUNT_OF_OIL_PER_MEAL;
 	    	retrieveAnIngredientFromMap(oilRequired, oil, true);
 	    	return true;
@@ -1032,7 +1032,9 @@ implements Serializable {
                         }
                         settlement.setMealsReplenishmentRate(rate);
                     }
-                    catch (Exception e) {}
+                    catch (Exception e) {
+                    	e.printStackTrace();
+                    }
                 }
             }
         }
@@ -1065,8 +1067,8 @@ implements Serializable {
 	 		if (!qualityMap.isEmpty()) qualityMap.clear();
 
 	 		// 2015-12-10 Reset the cache value for numCookableMeal
-	 		int size = getMealRecipesWithAvailableIngredients().size();
-	 		setNumCookableMeal(size);
+	 		//int size = getMealRecipesWithAvailableIngredients().size();
+	 		//setNumCookableMeal(size);
 
 	 		cleanUpKitchen();
 

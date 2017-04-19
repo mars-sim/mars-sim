@@ -165,11 +165,11 @@ public class EatMeal extends Task implements Serializable {
         else if (PICK_UP_MEAL.equals(getPhase())) {
             return pickUpMealPhase(time);
         }
-        else if (PICK_UP_DESSERT.equals(getPhase())) {
-            return pickUpDessertPhase(time);
-        }
         else if (EATING_MEAL.equals(getPhase())) {
             return eatingMealPhase(time);
+        }
+        else if (PICK_UP_DESSERT.equals(getPhase())) {
+            return pickUpDessertPhase(time);
         }
         else if (EATING_DESSERT.equals(getPhase())) {
             return eatingDessertPhase(time);
@@ -197,52 +197,21 @@ public class EatMeal extends Task implements Serializable {
           }
           else {
               // If no kitchen found, look for dessert.
-              setPhase(PICK_UP_DESSERT);
+              setPhase(EATING_MEAL);//PICK_UP_DESSERT);
               return time;
           }
       }
 
-      // Pick up a meal at kitchen if one is available.
-      cookedMeal = kitchen.chooseAMeal(person);
-      if (cookedMeal != null) {
-          logger.fine(person + " picking up a cooked meal to eat: " + cookedMeal.getName());
+      if (kitchen != null) {
+	      // Pick up a meal at kitchen if one is available.
+	      cookedMeal = kitchen.chooseAMeal(person);
+	      if (cookedMeal != null) {
+	          logger.fine(person + " picking up a cooked meal to eat: " + cookedMeal.getName());
+	      }
       }
 
-      setPhase(PICK_UP_DESSERT);
+      setPhase(EATING_MEAL);//PICK_UP_DESSERT);
       return time;
-    }
-
-    /**
-     * Perform the pick up dessert phase.
-     * @param time the amount of time (millisol) to perform the phase.
-     * @return the remaining time (millisol) after the phase has been performed.
-     */
-    private double pickUpDessertPhase(double time) {
-
-        // Determine preferred kitchen to get dessert.
-        if (dessertKitchen == null) {
-            dessertKitchen = getKitchenWithDessert(person);
-
-            if (dessertKitchen != null) {
-                // Walk to dessert kitchen.
-                walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), BuildingFunction.PREPARING_DESSERT, true);
-                return time;
-            }
-            else {
-                // If no dessert kitchen found, go eat meal.
-                setPhase(EATING_MEAL);
-                return time;
-            }
-        }
-
-        // Pick up a dessert at kitchen if one is available.
-        nameOfDessert = dessertKitchen.chooseADessert(person);
-        if (nameOfDessert != null) {
-            logger.fine(person + " picking up a prepared dessert to eat: " + nameOfDessert.getName());
-        }
-
-        setPhase(EATING_MEAL);
-        return time;
     }
 
     /**
@@ -273,7 +242,7 @@ public class EatMeal extends Task implements Serializable {
 
                 // If not enough preserved food available, change to dessert phase.
                 if (!enoughFood) {
-                    setPhase(EATING_DESSERT);
+                    setPhase(PICK_UP_DESSERT);//EATING_DESSERT);
                     remainingTime = time;
                 }
             }
@@ -283,12 +252,49 @@ public class EatMeal extends Task implements Serializable {
 
         // If finished eating, change to dessert phase.
         if (eatingTime < time) {
-            setPhase(EATING_DESSERT);
+            setPhase(PICK_UP_DESSERT);//EATING_DESSERT);
             remainingTime = time - eatingTime;
         }
 
         return remainingTime;
     }
+
+
+    /**
+     * Perform the pick up dessert phase.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the remaining time (millisol) after the phase has been performed.
+     */
+    private double pickUpDessertPhase(double time) {
+
+        // Determine preferred kitchen to get dessert.
+        if (dessertKitchen == null) {
+            dessertKitchen = getKitchenWithDessert(person);
+
+            if (dessertKitchen != null) {
+                // Walk to dessert kitchen.
+                walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), BuildingFunction.PREPARING_DESSERT, true);
+                return time;
+            }
+            else {
+                // If no dessert kitchen found, go eat meal.
+                setPhase(EATING_DESSERT);//EATING_MEAL);
+                return time;
+            }
+        }
+
+        if (dessertKitchen != null) {
+	        // Pick up a dessert at kitchen if one is available.
+	        nameOfDessert = dessertKitchen.chooseADessert(person);
+	        if (nameOfDessert != null) {
+	            logger.fine(person + " picking up a prepared dessert to eat: " + nameOfDessert.getName());
+	        }
+        }
+
+        setPhase(EATING_DESSERT);//EATING_MEAL);
+        return time;
+    }
+
 
     /**
      * Eat a cooked meal.
