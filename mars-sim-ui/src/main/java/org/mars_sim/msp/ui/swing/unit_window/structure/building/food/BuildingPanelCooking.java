@@ -94,7 +94,7 @@ extends BuildingFunctionPanel {
 
 		// Prepare meal quality label
 		//String mealQualityStr;
-		mealQualityCache = kitchen.getBestMealQuality();
+		mealQualityCache = kitchen.getBestMealQualityCache();
 		// Update meal quality
 		//if (mealQualityCache == 0) mealQualityStr = "None";
 		//else mealQualityStr = "" + mealQualityCache;
@@ -135,7 +135,7 @@ extends BuildingFunctionPanel {
 
 		//String mealQualityStr;
 		int mealQuality = 0;
-		mealQuality = kitchen.getBestMealQuality();
+		mealQuality = kitchen.getBestMealQualityCache();
 		// Update meal quality
 		if (mealQualityCache != mealQuality) {
 			mealQualityCache = mealQuality;

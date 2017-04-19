@@ -290,8 +290,13 @@ implements Serializable {
 	    	amountDemandTotalRequestMap.put(r, 1);
 	}
 
+	/**
+	 * Adds the demand of this resource. It prompts for raising its value point (VP).
+	 * @param resource
+	 * @param amount
+	 */
  	// 2015-01-09 addAmountDemand()
-   	public void addAmountDemand(AmountResource resource, double amount) {
+	public void addAmountDemand(AmountResource resource, double amount) {
    		String r = resource.getName();
 
     	if (amountDemandMap.containsKey(r)) {

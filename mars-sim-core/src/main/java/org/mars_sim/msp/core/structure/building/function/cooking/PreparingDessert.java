@@ -111,7 +111,7 @@ implements Serializable {
 
     private boolean makeNoMoreDessert = false;
 
-    private int bestQualityCache = -1;
+    private int bestQualityCache = 0;
 	private int dessertCounterPerSol = 0;
 	private int solCache = 1;
     private int cookCapacity;
@@ -393,19 +393,26 @@ implements Serializable {
      * @return quality
      */
     public int getBestDessertQuality() {
-        int bestQuality = -1;
+        int bestQuality = 0;
     	// Question: do we want to remember the best quality ever or just the best quality among the current servings ?
         Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
         while (i.hasNext()) {
-            PreparedDessert freshDessert = i.next();
-            if (freshDessert.getQuality() > bestQuality)
-            	bestQuality = freshDessert.getQuality();
+            //PreparedDessert freshDessert = i.next();
+            //if (freshDessert.getQuality() > bestQuality)
+            //	bestQuality = freshDessert.getQuality();
+            int q = i.next().getQuality();
+            if (q > bestQuality)
+            	bestQuality = q;
         }
 
-        return bestQualityCache;
+        if (bestQuality > bestQualityCache)
+        	bestQualityCache = bestQuality;
+
+        return bestQuality;
     }
 
     public int getBestDessertQualityCache() {
+    	getBestDessertQuality();
     	return bestQualityCache;
     }
 

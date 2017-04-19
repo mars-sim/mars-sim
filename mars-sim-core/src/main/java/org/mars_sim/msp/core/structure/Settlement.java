@@ -1717,6 +1717,7 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	//2015-12-01 Added hasPerson()
 	public boolean hasPerson(Person aPerson) {
+/*
 		boolean result = false;
 		Collection<Person> list = getAllAssociatedPeople();
 
@@ -1728,6 +1729,12 @@ implements Serializable, LifeSupportType, Objective {
 		}
 
 		return result;
+*/
+ 		return getAllAssociatedPeople()
+				.stream()
+				//.filter(p -> p.equals(aPerson))
+				//.findFirst() != null;
+				.anyMatch(p -> p.equals(aPerson));
 	}
 
 	/**

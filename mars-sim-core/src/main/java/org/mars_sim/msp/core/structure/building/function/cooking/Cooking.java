@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
@@ -107,7 +109,7 @@ implements Serializable {
     //private List<String> oilMenu;// = new CopyOnWriteArrayList<>();
     private static List<AmountResource> oilMenuAR;
 
-    private int bestQualityCache = -1;
+    private int bestQualityCache = 0;
     private int cookCapacity;
 	private int mealCounterPerSol = 0;
 	private int solCache = 1;
@@ -132,8 +134,7 @@ implements Serializable {
     public static AmountResource waterAR;
     public static AmountResource foodWasteAR;
     public static AmountResource foodAR;
-    //public AmountResource solidWasteAR;
-    //public AmountResource napkinAR;
+
 
     private Map<AmountResource, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     //private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
@@ -200,8 +201,6 @@ implements Serializable {
         greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
         NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);
         waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-        //napkinAR = AmountResource.findAmountResource(NAPKIN);
-        //solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);
 
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
@@ -212,19 +211,15 @@ implements Serializable {
 
     }
 
-    public void prepareOilMenu() {
-/*
-    	oilMenu = new CopyOnWriteArrayList<String>();
-        oilMenu.add(SOYBEAN_OIL);
-        oilMenu.add(GARLIC_OIL);
-        oilMenu.add(SESAME_OIL);
-        oilMenu.add(PEANUT_OIL);
-*/
-        oilMenuAR = new CopyOnWriteArrayList<AmountResource>();
-        oilMenuAR.add(AmountResource.findAmountResource(SOYBEAN_OIL));
-        oilMenuAR.add(AmountResource.findAmountResource(GARLIC_OIL));
-        oilMenuAR.add(AmountResource.findAmountResource(SESAME_OIL));
-        oilMenuAR.add(AmountResource.findAmountResource(PEANUT_OIL));
+    public static void prepareOilMenu() {
+
+    	if (oilMenuAR == null) {
+	        oilMenuAR = new CopyOnWriteArrayList<AmountResource>();
+	        oilMenuAR.add(AmountResource.findAmountResource(SOYBEAN_OIL));
+	        oilMenuAR.add(AmountResource.findAmountResource(GARLIC_OIL));
+	        oilMenuAR.add(AmountResource.findAmountResource(SESAME_OIL));
+	        oilMenuAR.add(AmountResource.findAmountResource(PEANUT_OIL));
+    	}
     }
 
 
@@ -519,19 +514,24 @@ implements Serializable {
      * @return quality
      */
     public int getBestMealQuality() {
-    	int bestQuality = -1;
+
+    	int bestQuality = 0;
     	// Question: do we want to remember the best quality ever or just the best quality among the current servings ?
         Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
-            CookedMeal meal = i.next();
-            if (meal.getQuality() > bestQuality)
-            	bestQuality = meal.getQuality();
+            //CookedMeal meal = i.next();
+            int q = i.next().getQuality();
+            if (q > bestQuality)
+            	bestQuality = q;
         }
 
+        if (bestQuality > bestQualityCache)
+        	bestQualityCache = bestQuality;
         return bestQuality;
     }
 
     public int getBestMealQualityCache() {
+    	getBestMealQuality();
     	return bestQualityCache;
     }
 
@@ -579,7 +579,6 @@ implements Serializable {
             }
 
             else {
-	    		//aMeal = pickAMeal();
             	// Randomly pick a meal which ingredients are available
 	    		aMeal = getACookableMeal();
 	    		if (aMeal != null) {
@@ -603,31 +602,36 @@ implements Serializable {
 
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
-            Building building = i.next();
-            Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
-            result += kitchen.getNumberOfAvailableCookedMeals();
+            //Building building = i.next();
+            //Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
+            //result += kitchen.getNumberOfAvailableCookedMeals();
+            result += ((Cooking) i.next().getFunction(BuildingFunction.COOKING)).getNumberOfAvailableCookedMeals();
         }
 
         return result;
+
     }
 
     /**
      * Chooses a hot meal recipe that can be cooked here.
      * @return hot meal or null if none available.
-     */
+
  	public HotMeal pickAMeal() {
 
  	    HotMeal result = null;
  	    // Determine list of meal recipes with available ingredients.
  	    List<HotMeal> availableMeals = getMealRecipesWithAvailableIngredients();
+ 	    int size = availableMeals.size();
  	    // Randomly choose a meal recipe from those available.
- 	    if (availableMeals.size() > 0) {
- 	        int mealIndex = RandomUtil.getRandomInt(availableMeals.size() - 1);
+ 	    if (size > 0) {
+ 	        int mealIndex = RandomUtil.getRandomInt(size - 1);
  	        result = availableMeals.get(mealIndex);
  	    }
 
  	    return result;
+
 	}
+     */
 
     /**
      * Randomly picks a hot meal with its ingredients fully available.
@@ -635,6 +639,7 @@ implements Serializable {
      */
  	// 2015-12-10 Added getACookableMeal()
  	public HotMeal getACookableMeal() {
+/*
  		HotMeal result = null;
  		List<HotMeal> meals = mealConfigMealList;
  		Collections.shuffle(meals);
@@ -648,6 +653,11 @@ implements Serializable {
  	    }
 
  	    return result;
+*/
+ 		return mealConfigMealList
+				.stream()
+				.filter(meal -> areAllIngredientsAvailable(meal) == true)
+				.findAny().orElse(null);//.get();
  	}
 
 
@@ -656,8 +666,8 @@ implements Serializable {
  	 * @return list of hot meal.
  	 */
  	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
+ /*
  		List<HotMeal> result = new CopyOnWriteArrayList<>();
-
  	    Iterator<HotMeal> i = mealConfigMealList.iterator();
  	    while (i.hasNext()) {
  	        HotMeal meal = i.next();
@@ -666,9 +676,13 @@ implements Serializable {
  	        }
  	    }
 
- 	    setNumCookableMeal(result.size());
+ 	     	    return result;
+*/
+ 		return mealConfigMealList
+				.stream()
+				.filter(meal -> areAllIngredientsAvailable(meal) == true)
+				.collect(Collectors.toList());
 
- 	    return result;
  	}
 
  	/**
@@ -693,8 +707,8 @@ implements Serializable {
 	 * @return true or false
 	 */
     public boolean areAllIngredientsAvailable(HotMeal aMeal) {
-    	boolean result = true;
-
+/*
+      	boolean result = true;
        	List<Ingredient> ingredientList = aMeal.getIngredientList();
         Iterator<Ingredient> i = ingredientList.iterator();
 
@@ -712,6 +726,12 @@ implements Serializable {
         }
 
 		return result;
+*/
+ 		return aMeal.getIngredientList()
+				.stream()
+				.allMatch(i -> retrieveAnIngredientFromMap(i.getDryMass(), i.getAR(), false));
+
+
     }
 
 
@@ -721,7 +741,7 @@ implements Serializable {
      */
     // 2015-01-02 Modified pickOneOil()
 	public AmountResource pickOneOil(double amount) {
-
+/*
 	    	List<AmountResource> available_oils = new CopyOnWriteArrayList<>();
 	    	int size = oilMenuAR.size();
 	    	for (int i=0; i<size; i++) {
@@ -729,33 +749,6 @@ implements Serializable {
 	    		if (getAmountAvailable(oilAR) > amount)//AMOUNT_OF_OIL_PER_MEAL)
 		 	    	available_oils.add(oilAR);
 	    	}
-/*
-	 	    if (getAmountAvailable("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
-	 	    	oilList.add("Soybean Oil");
-	 	    if (getAmountAvailable("Garlic Oil") > AMOUNT_OF_OIL_PER_MEAL)
-	 	    	oilList.add("Garlic Oil");
-	 	    if (getAmountAvailable("Sesame Oil") > AMOUNT_OF_OIL_PER_MEAL)
-	 	    	oilList.add("Sesame Oil");
-	 	    if (getAmountAvailable("Peanut Oil") > AMOUNT_OF_OIL_PER_MEAL)
-	 	    	oilList.add("Peanut Oil");
-*/
-/*
-			int upperbound = available_oils.size();
-	    	int lowerbound = 0;
-	    	String selectedOil = "None";
-	    	int index = 0;
-	    	if (upperbound > 0) {
-	    		index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
-	    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
-		    	selectedOil = available_oils.get(index);
-	    	}
-	    	else if (upperbound == 0) {
-	    		//selectedOil = "None";
-	    		if (oil_count < 10)
-	    			logger.info("Running out of oil in " + settlement.getName());
-	    		oil_count++;
-	    	}
-*/
 
 	    	int s = available_oils.size();
 	    	AmountResource selectedOil = null;
@@ -777,13 +770,19 @@ implements Serializable {
 
 	    	//logger.info("oil index : "+ index);
 	    	return selectedOil;
+*/
+	 		return oilMenuAR
+					.stream()
+					.filter(oil -> inv.getAmountResourceStored(oil, false) > amount)
+					.findFirst().orElse(null);//.get();;
+
+
 		}
 
 
     /**
      * Gets the amount of the food item in the whole settlement.
      * @return foodAvailable
-     */
     public double getAmountAvailable(AmountResource ar) {
 	    //AmountResource foodAR = AmountResource.findAmountResource(name);
 		//double foodAvailable = inv.getAmountResourceStored(foodAR, false);
@@ -791,6 +790,7 @@ implements Serializable {
 		//return inv.getAmountResourceStored(foodAR, false);
 		return inv.getAmountResourceStored(ar, false);
 	}
+     */
 
     /**
      * Cook a hot meal.
@@ -916,7 +916,7 @@ implements Serializable {
     public boolean consumeOil(double oilRequired) {
 	    // 2014-12-29 Added pickOneOil()
     	AmountResource oil = pickOneOil(oilRequired);
-
+    	inv.addAmountDemand(oil, oilRequired);
 	    if (oil != null) {
 		    //may use the default amount of AMOUNT_OF_OIL_PER_MEAL;
 	    	retrieveAnIngredientFromMap(oilRequired, oil, true);
@@ -948,24 +948,26 @@ implements Serializable {
      * Gets the amount resource of the fresh food from a specified food group.
      * @param String food group
      * @return AmountResource of the specified fresh food
-     */
+
      //2014-11-21 Added getFreshFoodAR()
     public AmountResource getFreshFoodAR(String foodGroup) {
         AmountResource freshFoodAR = AmountResource.findAmountResource(foodGroup);
         return freshFoodAR;
     }
+    */
 
     /**
      * Computes amount of fresh food from a particular fresh food amount resource.
      *
      * @param AmountResource of a particular fresh food
      * @return Amount of a particular fresh food in kg, rounded to the 4th decimal places
-     */
+
      //2014-11-21 Added getFreshFood()
     public double getFreshFood(AmountResource ar) {
         double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
         return freshFoodAvailable;
     }
+    */
 
     /**
      * Computes amount of fresh food available from a specified food group.
@@ -1063,7 +1065,8 @@ implements Serializable {
 	 		if (!qualityMap.isEmpty()) qualityMap.clear();
 
 	 		// 2015-12-10 Reset the cache value for numCookableMeal
-	 		getMealRecipesWithAvailableIngredients();
+	 		int size = getMealRecipesWithAvailableIngredients().size();
+	 		setNumCookableMeal(size);
 
 	 		cleanUpKitchen();
 

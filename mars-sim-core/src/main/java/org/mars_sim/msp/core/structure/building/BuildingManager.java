@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -775,7 +777,7 @@ public class BuildingManager implements Serializable {
      * @return inhabitable building.
      */
     public Building getRandomInhabitableBuilding() {
-
+/*
         Building result = null;
 
         List<Building> inhabitableBuildings = getBuildings(BuildingFunction.LIFE_SUPPORT);
@@ -785,6 +787,11 @@ public class BuildingManager implements Serializable {
         }
 
         return result;
+*/
+
+ 		return getBuildings(BuildingFunction.LIFE_SUPPORT)
+				.stream()
+				.findAny().orElse(null);
     }
 
     /**
@@ -792,7 +799,7 @@ public class BuildingManager implements Serializable {
      * @return random building.
      */
     public Building getRandomAirlockBuilding() {
-
+/*
         Building result = null;
 
         List<Building> evaBuildings = getBuildings(BuildingFunction.EVA);
@@ -802,6 +809,11 @@ public class BuildingManager implements Serializable {
         }
 
         return result;
+*/
+ 		return getBuildings(BuildingFunction.EVA)
+				.stream()
+				.findAny().orElse(null);
+
     }
 
     /**
@@ -816,7 +828,7 @@ public class BuildingManager implements Serializable {
         Robot robot = null;
         if (unit instanceof Person) {
          	person = (Person) unit;
-
+/*
             List<Building> habs = settlement.getBuildingManager().getBuildings(
                     new BuildingFunction[] { BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT });
 
@@ -829,6 +841,13 @@ public class BuildingManager implements Serializable {
                 building = goodHabs.get(rand);
                 //System.out.println("BuildingManager : " + unit.getName() + " is being added to " + building.getNickName());
             }
+*/
+            Building building = getLeastCrowdedBuildings(
+            					settlement.getBuildingManager().getBuildings(
+            						new BuildingFunction[] {
+            							BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT }))
+    										.stream()
+    										.findAny().orElse(null);
 
             if (building != null) {
         		addPersonOrRobotToBuildingRandomLocation(person, building);
@@ -1163,7 +1182,8 @@ public class BuildingManager implements Serializable {
      * @throws BuildingException if building in list does not have the life support function.
      */
     public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
-        List<Building> result = new ArrayList<Building>();
+/*
+    	List<Building> result = new ArrayList<Building>();
         try {
             for (Building building : buildingList) {
             //Iterator<Building> i = buildingList.iterator();
@@ -1180,6 +1200,11 @@ public class BuildingManager implements Serializable {
                     "building isn't a life support building.");
         }
         return result;
+*/
+        return buildingList
+        		.stream()
+        		.filter(b -> ((RoboticStation) b.getFunction(BuildingFunction.LIFE_SUPPORT)).getAvailableOccupancy() > 0)
+        		.collect(Collectors.toList());
     }
 
     /**
@@ -1314,6 +1339,7 @@ public class BuildingManager implements Serializable {
      * @return map of buildings and their probabilities.
      */
     public static List<Building> getChattyBuildings(List<Building> buildingList) {
+
     	List<Building> result = new ArrayList<Building>();
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
@@ -1342,7 +1368,8 @@ public class BuildingManager implements Serializable {
      * @return list of buildings without malfunctions.
      */
     public static List<Building> getNonMalfunctioningBuildings(List<Building> buildingList) {
-        List<Building> result = new ArrayList<Building>();
+/*
+    	List<Building> result = new ArrayList<Building>();
 
         for (Building building : buildingList) {
         //Iterator<Building> i = buildingList.iterator();
@@ -1354,6 +1381,11 @@ public class BuildingManager implements Serializable {
         }
 
         return result;
+*/
+        return buildingList
+        		.stream()
+        		.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+        		.collect(Collectors.toList());
     }
 
     /**

@@ -64,8 +64,12 @@ public class CookMealMeta implements MetaTask, Serializable {
             if (kitchenBuilding != null) {
                 Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
+                // Check if enough meals have been cooked at kitchen for this meal time.
+                boolean enoughMeals = kitchen.getCookNoMore();
+
+                if (enoughMeals) return 0;
+
                 // Check if there are enough ingredients to cook a meal.
-                //int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
                 // 2015-12-10 Used getNumCookableMeal()
                 int numGoodRecipes = kitchen.getNumCookableMeal();
                 //System.out.println("numGoodRecipes : " + numGoodRecipes);
@@ -73,23 +77,20 @@ public class CookMealMeta implements MetaTask, Serializable {
                 	// Need to reset numGoodRecipes periodically since it's a cache value
                 	// and won't get updated unless a meal is cooked.
                 	// Note: it's reset at least once a day at the end of a sol
-                	if (RandomUtil.getRandomInt(5) == 0)
+                	if (RandomUtil.getRandomInt(5) == 0) {
                 		// check again to reset the value once in a while
                 		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+	        			kitchen.setNumCookableMeal(numGoodRecipes);
+                	}
                 		//System.out.println("numGoodRecipes : " + numGoodRecipes);
                 }
 
-                // Check if enough meals have been cooked at kitchen for this meal time.
-                boolean enoughMeals = kitchen.getCookNoMore();
-
-                if ((numGoodRecipes > 0) && !enoughMeals) {
+                if ((numGoodRecipes > 0)) {
 
                     result = 300D;
-
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-
                     // Effort-driven task modifier.
                     result *= person.getPerformanceRating();
 
@@ -108,7 +109,7 @@ public class CookMealMeta implements MetaTask, Serializable {
                     if (result > 0D) {
                         result = result + result * person.getPreference().getPreferenceScore(this)/5D;
                     }
-                    
+
                     if (result < 0) result = 0;
 
                 }
@@ -129,8 +130,9 @@ public class CookMealMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+
         if (CookMeal.isMealTime(robot)) {
-        	
+
             if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
                 // See if there is an available kitchen.
                 Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
@@ -139,29 +141,31 @@ public class CookMealMeta implements MetaTask, Serializable {
 
                     Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
-                    // Check if there are enough ingredients to cook a meal.
-                    //int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
-                    // 2015-12-10 Used getNumCookableMeal()
-                    int numGoodRecipes = kitchen.getNumCookableMeal();
-
-                    if (numGoodRecipes == 0) {
-                    	// Need to reset numGoodRecipes periodically since it's a cache value
-                    	// and won't get updated unless a meal is cooked.
-                    	// Note: it's reset at least once a day at the end of a sol
-                    	if (RandomUtil.getRandomInt(5) == 0)
-                    		// check again to reset the value once in a while
-                    		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
-                    }
                     // Check if enough meals have been cooked at kitchen for this meal time.
                     boolean enoughMeals = kitchen.getCookNoMore();
 
-                    if ((numGoodRecipes > 0) && !enoughMeals) {
+                    if (enoughMeals) return 0;
+
+                    // Check if there are enough ingredients to cook a meal.
+                    // 2015-12-10 Used getNumCookableMeal()
+                    int numGoodRecipes = kitchen.getNumCookableMeal();
+
+                    if (numGoodRecipes < 2) {
+                    	// Need to reset numGoodRecipes periodically since it's a cache value
+                    	// and won't get updated unless a meal is cooked.
+                    	// Note: it's reset at least once a day at the end of a sol
+                    	if (RandomUtil.getRandomInt(5) == 0) {
+                    		// check again to reset the value once in a while
+                    		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+		        			kitchen.setNumCookableMeal(numGoodRecipes);
+	                	}
+                    }
+
+                    if ((numGoodRecipes > 0)) {
 
                         result = 300D;
-
                         // Crowding modifier.
                         result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-
                         // Effort-driven task modifier.
                         result *= robot.getPerformanceRating();
                     }

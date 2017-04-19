@@ -101,9 +101,13 @@ implements Serializable {
         	// Need to reset numGoodRecipes periodically since it's a cache value
         	// and won't get updated unless a meal is cooked.
         	// Note: it's reset at least once a day at the end of a sol
-        	if (RandomUtil.getRandomInt(5) == 0)
-        		// check again to reset the value once in a while
-        		size = kitchen.getMealRecipesWithAvailableIngredients().size();
+		    if (size == 0) {
+	        	if (RandomUtil.getRandomInt(5) == 0) {
+	        		// check again to reset the value once in a while
+	        		size = kitchen.getMealRecipesWithAvailableIngredients().size();
+	        		kitchen.setNumCookableMeal(size);
+	        	}
+		    }
 
 	        if (size == 0) {
 	        	counter++;
@@ -167,17 +171,20 @@ implements Serializable {
 
 		    //int size = kitchen.getMealRecipesWithAvailableIngredients().size();
 	    	// 2015-12-10 Used getNumCookableMeal()
-		    int size = kitchen.getNumCookableMeal();
+		    int numGoodRecipes = kitchen.getNumCookableMeal();
 
         	// Need to reset numGoodRecipes periodically since it's a cache value
         	// and won't get updated unless a meal is cooked.
         	// Note: it's reset at least once a day at the end of a sol
-        	if (RandomUtil.getRandomInt(5) == 0)
-        		// check again to reset the value once in a while
-        		size = kitchen.getMealRecipesWithAvailableIngredients().size();
+		    if (numGoodRecipes < 2) {
+	        	if (RandomUtil.getRandomInt(5) == 0) {
+	        		// check again to reset the value once in a while
+	        		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+	        		kitchen.setNumCookableMeal(numGoodRecipes);
+	        	}
+		    }
 
-
-	    	if (size == 0) {
+	    	if (numGoodRecipes == 0) {
 	        	counter++;
 	        	if (counter % 30 == 0 && counter < 150)
 	        		logger.severe("Warning: cannot cook meals in "
@@ -185,7 +192,7 @@ implements Serializable {
 	            		+ " because none of the ingredients of any meals are available ");
 
 	            // 2015-01-15 Added solElapsed
-	        	
+
 	        	MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	            int solElapsed = marsClock.getSolElapsedFromStart();
 	            if (solElapsed != solElapsedCache) {
@@ -311,10 +318,10 @@ implements Serializable {
         if (nameOfMeal != null)
         	setDescription(Msg.getString("Task.description.cookMeal.detail.finish",
         		nameOfMeal)); //$NON-NLS-1$
-        else 
+        else
             setDescription(Msg.getString("Task.description.cookMeal.detail",
                     getTypeOfMeal())); //$NON-NLS-1$
-        		
+
 	    // Add experience
 	    addExperience(time);
 
