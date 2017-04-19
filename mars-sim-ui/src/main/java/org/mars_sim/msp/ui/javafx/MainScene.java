@@ -962,18 +962,16 @@ public class MainScene {
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
 		speedPane.setPrefWidth(earthTimeButton.getPrefWidth());
-
 		simSpeedPopup = new JFXPopup(speedPane);
 
+		initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
+/*
 		// Set up a settlement view zoom bar
 		timeSlider = new JFXSlider();
 		//timeSlider.setEffect(blend);
 		timeSlider.getStyleClass().add("jfx-slider");
 		timeSlider.setPrefHeight(25);
 		timeSlider.setPadding(new Insets(2, 2, 2, 2));
-
-		initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
-
 		//timeSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
 		timeSlider.setMin(0); // need to be zero
 		timeSlider.setMax(12);//initial_time_ratio*32D);//8D);
@@ -992,7 +990,7 @@ public class MainScene {
         timeSliderBox.getChildren().add(timeSlider);
 
 		setQuickToolTip(timeSlider, "adjust the time ratio (how fast the simulation runs)"); //$NON-NLS-1$
-
+*/
 		//Label header_label = createHeader("SPEED PANEL");
 		Text header_label = createTextHeader("SPEED PANEL");
 
@@ -1062,7 +1060,7 @@ public class MainScene {
 		//String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 		s1.append(masterClock.getTimeTruncated(ratio));
 		real_time_label.setText(s1.toString());
-
+/*
 		// detect dragging
         timeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
@@ -1096,7 +1094,7 @@ public class MainScene {
             	}
             }
         });
-
+*/
 		// TODO: add pause radio box
 
 		spinner = new Spinner();
@@ -2454,7 +2452,7 @@ public class MainScene {
 		setStylesheet(soundPane, cssFile);
 		setStylesheet(soundVBox, cssFile);
 
-		setStylesheet(timeSlider, cssFile);
+		//setStylesheet(timeSlider, cssFile);
 		//setStylesheet(zoomSlider, cssFile);
 		setStylesheet(soundSlider, cssFile);
 

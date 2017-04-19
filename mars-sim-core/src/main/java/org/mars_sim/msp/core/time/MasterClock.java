@@ -52,11 +52,6 @@ public class MasterClock implements Serializable { // Runnable,
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
-	/** Clock thread sleep time (milliseconds) 40 milli secs --> 25Hz should be sufficient. */
-	//private static final long TIME_BETWEEN_UPDATES = 40_000_000L; //in nanoseconds (25 FPS)
-	//private static final int NO_DELAYS_PER_YIELD = 16;
-	//private static final int MAX_FRAME_SKIPS = 10;
-
 	private static final String	HOURS = "h ";
 	private static final String	MINUTES = "m ";
 	private static final String	ZERO_MINUTES = "00m ";
@@ -67,12 +62,15 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient volatile boolean keepRunning;
 	/** Pausing clock. */
 	private transient volatile boolean isPaused = false;
-	/** Simulation/real-time ratio. */
+	/** Simulation time ratio. */
 	private volatile double timeRatio = 0D;
-	/** Simulation/real-time ratio. */
+	/** Simulation time between updates. */
+	private volatile long timeBetweenUpdates = 0L;
+	/** Default time ratio. */
 	private volatile double defaultTimeRatio = 0D;
-	//private int count = 0;
-	private long timeBetweenUpdates = 0L;
+	/** Default time between updates. */
+	private volatile double defaultTmeBetweenUpdates = 0D;
+
 	private int noDelaysPerYield = 0;
 	private int maxFrameSkips = 0;
 
@@ -146,60 +144,53 @@ public class MasterClock implements Serializable { // Runnable,
         clockThreadTask = new ClockThreadTask();
 
         // Setting the initial time ratio.
-        double ratio = config.getSimulationTimeRatio();
-        double ms = config.getTimeBetweenUpdates();
+        double tr = config.getSimulationTimeRatio();
+        double tbu = config.getTimeBetweenUpdates();
 
         //TODO: should also test the CPU speed to determine the TPS
-
         long t1 = System.nanoTime();
         long diff = (long) ((t1 - t0) / 1_000D);
-        logger.info("CPU Benchmark 1 : " + diff + " ms");
+        logger.info("Startup Benchmark : " + diff + " ms");
 
         if (Simulation.NUM_THREADS == 1) {
-        	defaultTimeRatio = ratio/8D;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*16D);
+        	defaultTimeRatio = tr/8D;
+        	defaultTmeBetweenUpdates = tbu*16_000_000D;
         }
         else if (Simulation.NUM_THREADS == 2) {
-        	defaultTimeRatio = ratio/8D;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*14D);
+        	defaultTimeRatio = tr/8D;
+        	defaultTmeBetweenUpdates = tbu*14_000_000D;
         }
         else if (Simulation.NUM_THREADS <= 3) {
-        	defaultTimeRatio = ratio/4D;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*12D);
+        	defaultTimeRatio = tr/4D;
+        	defaultTmeBetweenUpdates = tbu*12_000_000D;
         }
         else if (Simulation.NUM_THREADS <= 4) {
-           	defaultTimeRatio = ratio/4D;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*10D);
+           	defaultTimeRatio = tr/4D;
+        	defaultTmeBetweenUpdates = tbu*10_000_000D;
         }
         else if (Simulation.NUM_THREADS <= 6) {
-        	defaultTimeRatio = ratio/2D;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*8D);
+        	defaultTimeRatio = tr/2D;
+        	defaultTmeBetweenUpdates = tbu*8_000_000D;
         }
         else if (Simulation.NUM_THREADS <= 8) {
-        	defaultTimeRatio = ratio/2D;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*6);
+        	defaultTimeRatio = tr/2D;
+        	defaultTmeBetweenUpdates = tbu*6_000_000D;
         }
         else if (Simulation.NUM_THREADS <= 12) {
-        	defaultTimeRatio = ratio;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*4);
+        	defaultTimeRatio = tr;
+        	defaultTmeBetweenUpdates = tbu*4_000_000D;
         }
         else if (Simulation.NUM_THREADS <= 16) {
-        	defaultTimeRatio = ratio;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms*2);
+        	defaultTimeRatio = tr;
+        	defaultTmeBetweenUpdates = tbu*2_000_000D;
         }
         else {
-        	defaultTimeRatio = ratio;
-        	setTimeRatio(defaultTimeRatio);
-            setTimeBetweenUpdates(ms);
+        	defaultTimeRatio = tr;
+        	defaultTmeBetweenUpdates = tbu*1_000_000D;
         }
+
+    	timeRatio = defaultTimeRatio;
+        timeBetweenUpdates = (long) defaultTmeBetweenUpdates;
 
         // 2015-10-31 Added loading the values below from SimulationConfig
         setNoDelaysPerYield(config.getNoDelaysPerYield());
@@ -429,13 +420,19 @@ public class MasterClock implements Serializable { // Runnable,
      * setTimeRatio is for setting the Masterclock's time ratio directly. It is a double
      * indicating the simetime:realtime ratio. 1000 means 1000 sim time minutes elapse for
      * each real-world minute.
-     */
+    */
     public void setTimeRatio(double ratio) {
         if (ratio >= 1D && ratio <= 65536D) {
-            timeRatio = Math.round(ratio*100D)/100D;
+
+        	if (ratio > timeRatio)
+        		timeBetweenUpdates = (long) (timeBetweenUpdates * 1.02); // increment by 2%
+        	else
+        		timeBetweenUpdates = (long) (timeBetweenUpdates * .98); // decrement by 2%
+
+            timeRatio = ratio;//Math.round(ratio*100D)/100D;
             //System.out.println("timeRatio : " + timeRatio + " ");
         }
-        else throw new IllegalArgumentException("Time ratio out of bounds ");
+        else throw new IllegalArgumentException("Time ratio is out of bounds ");
     }
 
 
@@ -460,19 +457,21 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Sets the sleep time between two successive game updates
      * @param value in milliseconds
-     */
+
     public void setTimeBetweenUpdates(double value) {
-        if (value >= 1D && value <= 10800D) {
-            timeBetweenUpdates = (long)value * 1_000_000L; // convert milli to nano
+        if (value >= 4D && value <= 250D) {
+            defaultTmeBetweenUpdates = (long)value * 1_000_000L; // convert milli (10E3) to nano (10E9) by multiplying 10E6
+            System.out.println("timeBetweenUpdates : " + timeBetweenUpdates);
         }
-        else throw new IllegalArgumentException("time between updates is out of bounds. Must be between 1 and 1000 ");
+        //else throw new IllegalArgumentException("time between updates is out of bounds. Must be between 1 and 1000 ");
     }
+     */
 
     /**
      * Gets the time between updates
      * @return value in milliseconds
      */
-    public double getTimeBetweenUpdates() {
+    public long getTimeBetweenUpdates() {
         return timeBetweenUpdates;
     }
 
@@ -495,7 +494,6 @@ public class MasterClock implements Serializable { // Runnable,
     public int getNoDelaysPerYield() {
         return noDelaysPerYield;
     }
-
 
     /**
      * Sets the maximum number of skipped frames allowed
@@ -564,18 +562,16 @@ public class MasterClock implements Serializable { // Runnable,
 			            // Pause simulation to allow other threads to complete.
 			            try {
 			                //Thread.yield();
-			                //Thread.sleep(SLEEP_TIME);
 							TimeUnit.NANOSECONDS.sleep(sleepTime);
 			            }
-			            //catch (Exception e) {
-			            //    logger.log(Level.WARNING, "program terminated while running sleep() in MasterClock.run() ", e);
-			            //}
 			            catch (InterruptedException e) {
 			            	Thread.currentThread().interrupt();
+				            //    logger.log(Level.WARNING, "program terminated while running sleep() in MasterClock.run() ", e);
 			            }
 
 			            overSleepTime = (System.nanoTime() - t2) - sleepTime;
 
+		            	timeBetweenUpdates = (long) (timeBetweenUpdates * .999975); // increment by .0075%
 		            }
 	            }
 
@@ -587,19 +583,33 @@ public class MasterClock implements Serializable { // Runnable,
 	            		Thread.yield();
 	            		noDelays = 0;
 	            	}
+
+	            	timeBetweenUpdates = (long) (timeBetweenUpdates * 1.0025); // increment by 0.25%
 	            }
 
 	            t1 = System.nanoTime();
 
 	         // 2015-07-03 Added skipping the sleep time if the statusUpdate() or other processes take too long
 	            int skips = 0;
+
+	            //if (excess > timeBetweenUpdates) {
+	            //	timeBetweenUpdates = (long) (timeBetweenUpdates * 1.015); // increment by 1.5%
+	            //	logger.info("excess > timeBetweenUpdates");
+	            //}
+
 	            while ((excess > timeBetweenUpdates) && (skips < maxFrameSkips)) {
 	            	excess -= timeBetweenUpdates;
 	            	//logger.warning("Making up a lost frame by calling statusUpdate() again. skips :" + skips);
-	            	// Make up a lost frame by calling statusUpdate() again
+	            	// Make up a lost frame by calling addTime() in MarsClock and EarthClock via statusUpdate()
 	            	statusUpdate();
 	            	skips++;
+
+	            	if (skips == maxFrameSkips) {
+		            	logger.info("skips >= maxFrameSkips");
+	            		timeBetweenUpdates = (long) (timeBetweenUpdates * .995); // decrement by .05%
+	            	}
 	            }
+
 	            // 2017-01-19 set excess to zero to prevent getting stuck in the above while loop after waking up from power saving
 	            excess = 0;
 
@@ -614,7 +624,7 @@ public class MasterClock implements Serializable { // Runnable,
     	//count++;
    		//System.out.println("count : " + count);
 
-        long lastTimeDiff;
+        //long lastTimeDiff;
 
         if (!isPaused) {
             // Update elapsed milliseconds.
@@ -623,7 +633,7 @@ public class MasterClock implements Serializable { // Runnable,
             double timePulse = getTimePulse();
             // Incrementing total time pulse number.
             totalPulses++;
-            long startTime = System.nanoTime();
+            //long startTime = System.nanoTime();
             //System.out.println("resolution : " + (System.nanoTime() - startTime));
             // Add time pulse length to Earth and Mars clocks.
             double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
@@ -641,8 +651,8 @@ public class MasterClock implements Serializable { // Runnable,
 		  			|| !clockListenerExecutor.isShutdown() )
 		  		fireClockPulse(timePulse);
 
-            long endTime = System.nanoTime();
-            lastTimeDiff = (long) ((endTime - startTime) / 1_000_000D);
+            //long endTime = System.nanoTime();
+            //lastTimeDiff = (long) ((endTime - startTime) / 1_000_000D);
             // TODO: how to prevent crashing autosaveTimer ?
             // will it help by restarting the autosaveTimer ?
             //Simulation.instance().getAutosaveTimer().playFromStart();

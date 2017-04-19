@@ -92,7 +92,9 @@ public class SimulationConfig implements Serializable {
 
 	public String build;
 
-	private double[] values = new double[] {0,0};
+	private double tbu = 0;
+
+	private double tr = 0;
 
 	private int[] integers = new int[] {0,0,0,0};
 
@@ -225,14 +227,13 @@ public class SimulationConfig implements Serializable {
 	 * ---------------------------------------------------------------------------------------------------- */
 
 	/**
-	 * Gets the simulation time to real time ratio.
-	 * Example: 100.0 mean 100 simulation seconds per 1 real second.
+	 * Gets the ratio of simulation time to real time in simulation.xml
 	 * @return ratio
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
 	public double getSimulationTimeRatio() {
-		if (values[0] != 0) {
-			return values[0];
+		if (tr != 0) {
+			return tr;
 		}
 
 		else {
@@ -260,21 +261,20 @@ public class SimulationConfig implements Serializable {
 				}
 			//if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
 			//else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
-			values[0] = d;
+			tr = d;
 			return d;
 		}
 	}
 
 	/**
 	 * Gets the time between updates in milliseconds in simulation.xml
-	 * Example: 100.0 mean 100 simulation seconds per 1 real second.
 	 * @return the time interval in milliseconds
 	 * @throws Exception if the value is not in configuration or is not valid.
 	 */
 	// 2015-10-31 getTimeBetweenUpdates()
 	public double getTimeBetweenUpdates() {
-		if (values[1] != 0) {
-			return values[1];
+		if (tbu != 0) {
+			return tbu;
 		}
 
 		else {
@@ -283,16 +283,16 @@ public class SimulationConfig implements Serializable {
 			Element el = timeConfig.getChild(TIME_BETWEEN_UPDATES);
 			String str = el.getAttributeValue(VALUE);
 
-			double d = 0;
+			double l = 0;
 
 			if ((str == null) || str.trim().length() == 0)
 				throw new IllegalStateException("time-between-updates must be greater than zero and cannot be blank.");
 			else {
 				try {
-			         d = Double.valueOf(str.trim()).doubleValue();
-			         //System.out.println("double d = " + d);
+			         l = Double.valueOf(str.trim()).doubleValue();
+			         //System.out.println("double tbu = " + l);
 
-			         if (d > 250 || d < 40)
+			         if (l > 250 || l < 40)
 			 			throw new IllegalStateException("time-between-updates must be between 40 and 250");
 
 
@@ -301,8 +301,8 @@ public class SimulationConfig implements Serializable {
 			      }
 			}
 
-			values[1] = d;
-			return d;
+			tbu = l;
+			return l;
 			//double result = Double.parseDouble(el.getAttributeValue(VALUE));
 			//if (result < 0D) throw new IllegalStateException("time-between-updates in simulation.xml must be positive number.");
 			//else if (result == 0D) throw new IllegalStateException("time-between-updates in simulation.xml cannot be zero.");

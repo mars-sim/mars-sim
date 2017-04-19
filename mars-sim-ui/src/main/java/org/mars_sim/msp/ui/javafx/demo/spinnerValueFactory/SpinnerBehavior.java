@@ -15,7 +15,7 @@ public class SpinnerBehavior<T> extends BehaviorBase<Spinner<T>> {
     // before the value steps. As the mouse is held down longer, we begin
     // to cut down the duration of subsequent steps (and also increase the
     // step size)
-    private static final double INITIAL_DURATION_MS = 750;
+    private static final double INITIAL_DURATION_MS = 1000;
 
     private long startTime;
 
