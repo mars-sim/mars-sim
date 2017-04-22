@@ -61,7 +61,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
         //if (totalTimeSols < 10D)
         //    return 0;
         //int today = Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart();
-        if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
+        if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < BuildingSalvageMission.FIRST_AVAILABLE_SOL)
         	return 0;
 
         // Check if person is in a settlement.

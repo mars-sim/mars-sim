@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
@@ -51,6 +52,10 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     public double getProbability(Person person) {
 
         double result = 0D;
+
+        //if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
+        //	return 0;
+
 /*
         // Check if person is in a settlement.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

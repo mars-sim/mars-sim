@@ -74,6 +74,7 @@ implements Serializable {
 	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
 
+    public static int FIRST_AVAILABLE_SOL = 2000;
 	/** Time (millisols) required to prepare construction site for salvaging stage. */
 	private static final double SITE_PREPARE_TIME = 500D;
 
@@ -200,7 +201,7 @@ implements Serializable {
 		// Set initial mission phase.
 		setPhase(PREPARE_SITE_PHASE);
 		setPhaseDescription(Msg.getString(
-				"Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$ 
+				"Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$
 				,settlement.getName()));
 	}
 //	public BuildingSalvageMission(Robot startingRobot) {
@@ -303,10 +304,10 @@ implements Serializable {
 //		// Set initial mission phase.
 //		setPhase(PREPARE_SITE_PHASE);
 //		setPhaseDescription(Msg.getString(
-//				"Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$ 
+//				"Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$
 //				,settlement.getName()));
 //	}
-	
+
 	/**
 	 * Constructor
 	 * @param members the mission members.
@@ -323,7 +324,7 @@ implements Serializable {
 		super(DEFAULT_DESCRIPTION, (MissionMember) members.toArray()[0], 1);
 
 		this.settlement = settlement;
-    	
+
 		ConstructionManager manager = settlement.getConstructionManager();
 
 		if (building != null) {
@@ -390,9 +391,9 @@ implements Serializable {
 	        else if (member instanceof Robot) {
 	        	Robot robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
-	        }     
+	        }
         }
-		
+
 		// Reserve construction vehicles and retrieve from inventory.
 		constructionVehicles = vehicles;
 		Iterator<GroundVehicle> j = vehicles.iterator();
@@ -423,7 +424,7 @@ implements Serializable {
 		// Set initial mission phase.
 		setPhase(PREPARE_SITE_PHASE);
 		setPhaseDescription(Msg.getString(
-				"Mission.phase.prepareSalvageSite.description", //$NON-NLS-1$ 
+				"Mission.phase.prepareSalvageSite.description", //$NON-NLS-1$
 				settlement.getName()));
 	}
 
@@ -462,7 +463,7 @@ implements Serializable {
 	 * @return building to salvage or null in none found.
 	 * @throws Exception if error determining building.
 	 */
-	private Building determineBuildingToSalvage(Settlement settlement, 
+	private Building determineBuildingToSalvage(Settlement settlement,
 			int constructionSkill) {
 		Building result = null;
 
@@ -515,7 +516,7 @@ implements Serializable {
 //		else if (SALVAGE_PHASE.equals(getPhase()))
 //			salvagePhase(robot);
 //	}
-	
+
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return settlement;
@@ -549,8 +550,8 @@ implements Serializable {
 //	private void prepareSitePhase(Robot robot) {
 //		prepareSitePhase();
 //	}
-	
-	private void prepareSitePhase() {		
+
+	private void prepareSitePhase() {
 		if (finishingExistingStage) {
 			// If finishing uncompleted existing construction stage, skip resource loading.
 			setPhaseEnded(true);
@@ -589,7 +590,7 @@ implements Serializable {
 			        Person person = (Person) member;
 			        if (SalvageBuilding.canSalvage(person)) {
 			            assignTask(person, new SalvageBuilding(person,
-			                    constructionStage, constructionSite, 
+			                    constructionStage, constructionSite,
 			                    constructionVehicles));
 			        }
 			    }
@@ -640,7 +641,7 @@ implements Serializable {
 //				// Assign salvage building task to robot.
 //				if (SalvageBuilding.canSalvage(robot)) {
 //					assignTask(robot, new SalvageBuilding(robot,
-//							constructionStage, constructionSite, 
+//							constructionStage, constructionSite,
 //							constructionVehicles));
 //				}
 //			}
@@ -676,7 +677,7 @@ implements Serializable {
 //		}
 //	}
 
-	
+
 	@Override
 	public void endMission(String reason) {
 		super.endMission(reason);
@@ -692,7 +693,7 @@ implements Serializable {
 	@Override
 	protected boolean isCapableOfMission(MissionMember member) {
 		boolean result = super.isCapableOfMission(member);
-		
+
 		if (result) {
 		    result = false;
 			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -701,7 +702,7 @@ implements Serializable {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 //	@Override
@@ -714,7 +715,7 @@ implements Serializable {
 //		}
 //		return false;
 //	}
-	
+
 	/**
 	 * Checks if a light utility vehicle (LUV) is available for the mission.
 	 * @param settlement the settlement to check.
@@ -825,9 +826,9 @@ implements Serializable {
 
 					// Place light utility vehicles at random location in construction site.
 					Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(constructionSite);
-					Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
+					Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(),
 							relativeLocSite.getY(), constructionSite);
-					luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(), 
+					luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(),
 							RandomUtil.getRandomDouble(360D));
 
 					if (settlement.getInventory().containsUnit(luvTemp)) {

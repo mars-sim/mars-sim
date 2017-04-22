@@ -370,6 +370,7 @@ implements UnitListener {
 				}
 
 				else {
+					logger.info("vehicle.getSettlement() != null. reason : " + reason);
 					// if the vehicle is still somewhere inside the settlement when it got broken down
 					// TODO: wait till the repair is done and the mission may resume ?!?
 					leaveVehicle();
@@ -385,12 +386,12 @@ implements UnitListener {
 			}
 		}
 
-		//else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
+		else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
 			//logger.info("Returning the control of " + vehicle + " to the settlement");
-       //     setPhaseEnded(true);
+            setPhaseEnded(true);
 			//leaveVehicle();
-		//	super.endMission(reason);
-		//}
+			super.endMission(reason);
+		}
 
 		else { // if vehicles are NOT available
 			//Questions : what are the typical cases here ?

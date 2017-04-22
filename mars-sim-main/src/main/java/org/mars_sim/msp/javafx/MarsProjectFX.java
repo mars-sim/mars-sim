@@ -398,9 +398,14 @@ public class MarsProjectFX extends Application  {
 
 	    if (!headless) {
 	    	// Using GUI mode
+	    	if (Simulation.OS.startsWith ("Windows")) {
+	    		System.setProperty( "sun.java2d.noddraw", "false" );
+	    		System.setProperty( "sun.java2d.ddscale","true" );
+	    		System.setProperty( "sun.java2d.ddforcevram", "true" );
+	    	}
 	    	//logger.info("Running " + Simulation.OS + " in GUI mode");
-	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
-	    	//System.setProperty("sun.java2d.ddforcevram", "true");
+	    	if (!Simulation.OS.startsWith ("Mac"))
+	    		System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 	       	// Enable capability of loading of svg image using regular method
 	    	//SvgImageLoaderFactory.install();
 		   	if (newSim) {

@@ -60,6 +60,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -92,6 +93,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
@@ -1178,11 +1180,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			this.unitWindow = unitWindow;
 		}
 
-		@Override
+	@Override
 		public void run() {
 //			try {
 				//while (!toolWindowExecutor.isTerminated()){
+		   	SwingUtilities.invokeLater(() -> {
 					unitWindow.update();
+	    	});
 /*					try {
 						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 					} catch (InterruptedException e) {
@@ -1238,7 +1242,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		public void run() {
 //			try {
 				//while (!toolWindowExecutor.isTerminated()){
-					toolWindow.update();
+				   	SwingUtilities.invokeLater(() -> {
+				   		toolWindow.update();
+				   	});
 /*					try {
 						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 					} catch (InterruptedException e) {
@@ -1517,7 +1523,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();
 			SwingUtilities.updateComponentTreeUI(toolWindow);
-			toolWindow.update();
+		   	SwingUtilities.invokeLater(() -> {
+		   		toolWindow.update();
+		   	});
 			//toolWindow.pack(); // why will it cause help window to stretch?
 		}
 	}
@@ -1528,7 +1536,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 			UnitWindow window = i.next();
 			SwingUtilities.updateComponentTreeUI(window);
-            window.update();
+		   	SwingUtilities.invokeLater(() -> {
+	            window.update();
+		   	});
 		}
 	}
 

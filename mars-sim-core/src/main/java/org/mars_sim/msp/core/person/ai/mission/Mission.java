@@ -50,7 +50,7 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Mission.class.getName());
 	// Global mission identifier
 	private static int missionIdentifer = 0;
-	
+
 	public static String SUCCESSFULLY_ENDED_CONSTRUCTION = "Successfully ended construction";
 	public static String SUCCESSFULLY_DISEMBARKED = "Successfully disembarked";
 	public static String USER_ABORTED_MISSION = "User aborted mission";
@@ -59,10 +59,10 @@ implements Serializable {
 	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
 	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found.";
-	
+
 	// Unique identifier
 	private int identifier;
-	
+
 	// Data members
 	/** Mission members. */
 //	private Collection<Person> people;
@@ -99,7 +99,7 @@ implements Serializable {
 	private static synchronized int getNextIdentifier() {
 		return missionIdentifer++;
 	}
-	
+
 	public Mission(String name, MissionMember startingMember, int minMembers) {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
@@ -140,7 +140,7 @@ implements Serializable {
 	public int getIdentifier() {
 		return identifier;
 	}
-	
+
 	/**
 	 * Generate the type from the Class name. Not ideal.
 	 * @return
@@ -148,7 +148,7 @@ implements Serializable {
 	public String getType() {
 		return getClass().getSimpleName();
 	}
-	
+
 	/**
 	 * Adds a listener.
 	 * @param newListener the listener to add.
@@ -316,12 +316,12 @@ implements Serializable {
         	if ((members.size() == 0) && !done) {
             	endMission("Not enough members.");
         	}
-        	
+
             // 2015-11-01 Added codes in reassigning a work shift
             if (member instanceof Person) {
             	Person person = (Person) member;
             	person.getMind().setMission(null);
-            	
+
             	ShiftType shift = null;
             	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
             	if (person.getSettlement() != null) {
@@ -434,7 +434,7 @@ implements Serializable {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 		//Collection<Person> people = members.stream()
 	    //.filter(p -> p instanceof Person).collect(Collectors.toList());
-		
+
 		Iterator<MissionMember> i = members.iterator();
 	    while (i.hasNext()) {
 	    	MissionMember m = i.next();
@@ -442,11 +442,11 @@ implements Serializable {
 	            people.add((Person) m);
 	        }
 	    }
-	    
+
 	    return people;
 		//return new ConcurrentLinkedQueue<Person>(people);
 	}
-	
+
 //	/**
 //	 * Determines if a mission includes the given robot.
 //	 * @param robot to be checked
@@ -503,7 +503,7 @@ implements Serializable {
 	public void setDone(boolean value) {
 		done = value;
 	}
-	
+
 	/**
 	 * Gets the name of the mission.
 	 * @return name of mission
@@ -721,8 +721,8 @@ implements Serializable {
 	 */
 	public void endMission(String reason) {
 		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
-		//logger.info("Reason : " + reason);
-		
+		logger.info("Calling endMission(). Mission ended. Reason : " + reason);
+
 		if (!done & reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
 				|| reason.equals(SUCCESSFULLY_DISEMBARKED)
 				|| reason.equals(USER_ABORTED_MISSION)) {
@@ -731,6 +731,7 @@ implements Serializable {
 			//logger.info("done firing End_Mission_Event");
 
 			if (members != null) {
+				logger.info("members : " + members);
 			    Object[] p = members.toArray();
                 for (Object aP : p) {
                     removeMember((MissionMember) aP);
@@ -1338,10 +1339,10 @@ implements Serializable {
 	public static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
 		int result = 0;
 
-		if (settlement == null) 
+		if (settlement == null)
 			result = 0;
 			//throw new NullPointerException();
-		
+
 		else {
 			result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
 

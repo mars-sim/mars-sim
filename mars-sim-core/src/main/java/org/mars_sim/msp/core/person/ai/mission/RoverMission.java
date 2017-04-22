@@ -908,32 +908,31 @@ extends VehicleMission {
 	 * @return true if enough resources.
 	 */
 	public static boolean hasEnoughBasicResources(Settlement settlement) {
-		boolean hasBasicResources = true;
 
 		Inventory inv = settlement.getInventory();
 		try {
 			//AmountResource methane = AmountResource.findAmountResource("methane");
 			if (inv.getAmountResourceStored(methaneAR, false) < 100D) {
-				hasBasicResources = false;
+				return false;
 			}
 			//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 			if (inv.getAmountResourceStored(oxygenAR, false) < 50D) {
-				hasBasicResources = false;
+				return false;
 			}
 			//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 			if (inv.getAmountResourceStored(waterAR, false) < 50D) {
-				hasBasicResources = false;
+				return false;
 			}
 			//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 			if (inv.getAmountResourceStored(foodAR, false) < 50D) {
-				hasBasicResources = false;
+				return false;
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 
-		return hasBasicResources;
+		return true;
 	}
 
     @Override

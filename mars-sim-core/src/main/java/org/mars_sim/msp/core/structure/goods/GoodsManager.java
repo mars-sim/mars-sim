@@ -135,7 +135,7 @@ public class GoodsManager implements Serializable {
     private static final double FARMING_FACTOR = 1D;
     private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
     private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
-    private static final double REGOLITH_INPUT_FACTOR = 1000D;
+    //private static final double REGOLITH_INPUT_FACTOR = 1000D;
     public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH;
     // 2015-02-13 Added four MAXIMUM/MINIMUM for computing VP
     private static final double MINIMUM_STORED_SUPPLY = 1D; //0.000001D;
@@ -2403,7 +2403,6 @@ public class GoodsManager implements Serializable {
             demand = getTraderNum();
         }
         else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
-            //AmountResource regolith = AmountResource.findAmountResource("regolith");
             demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
             if (demand > 10D) demand = 10D;
         }
