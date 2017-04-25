@@ -44,7 +44,7 @@ implements SettlementMapLayer {
 	// Static members
 	private static final Color HALLWAY_LABEL_COLOR = Color.gray;; //Color.blue;//new Color (79, 108, 44); // dull sage green
 	private static final Color BUILDING_LABEL_COLOR = new Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
-	
+
 	private static final Color BLACK_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //new Color(0, 0, 0, 150);
 	private static final Color WHITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
 
@@ -57,17 +57,17 @@ implements SettlementMapLayer {
 	private static final Color MEDICAL_LABEL_COLOR = new Color (0, 69, 92); // dull blue
 	private static final Color LIVING_LABEL_COLOR = new Color (236, 255, 179); // pale yellow
 	private static final Color RESOURCE_LABEL_COLOR = new Color (182, 201, 255); // pale blue
-	
-	
+
+
 	private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
 	private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
-	
+
 	private static final Color VEHICLE_LABEL_COLOR = new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
 	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan
 	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
-	
+
 	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan;
 	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //(255, 255, 255, 190);
 
@@ -150,22 +150,22 @@ implements SettlementMapLayer {
 				Building building = i.next();
 				String name = building.getNickName();
 				if (name.contains("Hallway")) {
-					// 2016-09-25 Shrank the size of a hallway label. 
+					// 2016-09-25 Shrank the size of a hallway label.
 					String words[] = name.split(" ");
 					int size = words.length;
-					//e.g. Turned "Hallway 12 " into "H12" 
+					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "H " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
-							HALLWAY_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, 0);
+							HALLWAY_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, 12);
 				}
 				else if (name.contains("Tunnel")) {
-					// 2016-09-25 Shrank the size of a hallway label. 
+					// 2016-09-25 Shrank the size of a hallway label.
 					String words[] = name.split(" ");
 					int size = words.length;
-					//e.g. Turned "Hallway 12 " into "H12" 
+					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "T " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
-							HALLWAY_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, 0);
+							HALLWAY_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, 12);
 				}
 				else {
 					// 2015-12-15 Split up the name into multiple lines
@@ -174,33 +174,33 @@ implements SettlementMapLayer {
 					if (name.contains("Reactor") || name.contains("Solar")
 							|| name.contains("Wind") || name.contains("Power")
 							|| name.contains("Generator") || name.contains("Battery")
-							|| name.contains("Areothermal")){					
+							|| name.contains("Areothermal")){
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									REACTOR_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, j * 12);
 						}
-					}					
-					else if (name.contains("Greenhouse")) {					
+					}
+					else if (name.contains("Greenhouse")) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									GREENHOUSE_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
-					else if (name.contains("Processor") || name.contains("Base")) {					
+					else if (name.contains("Processor") || name.contains("Base")) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									RESOURCE_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
 					else if (name.contains("Command") || name.contains("Hub")
-							|| name.contains("Lander")) {					
+							|| name.contains("Lander")) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									HAB_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
 					else if (name.contains("Bunkhouse") || name.contains("Residential")
-							|| name.contains("Lounge")) {					
+							|| name.contains("Lounge")) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									LIVING_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, j * 12);
@@ -209,32 +209,32 @@ implements SettlementMapLayer {
 					else if (name.contains("Bin") || name.contains("Workshop")
 							|| name.contains("Manu") || name.contains("Storage")
 							|| name.contains("Machin")
-							) {					
+							) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									SHOP_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
-					else if (name.contains("Garage")) {					
+					else if (name.contains("Garage")) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									GARAGE_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
-					else if (name.contains("Medical") || name.contains("Infirmary")) {					
+					else if (name.contains("Medical") || name.contains("Infirmary")) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									MEDICAL_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
 					else if (name.contains("Lab") || name.contains("Observatory")
-							|| name.contains("Research")) {					
+							|| name.contains("Research")) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 									LAB_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
-		
+
 					else {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),

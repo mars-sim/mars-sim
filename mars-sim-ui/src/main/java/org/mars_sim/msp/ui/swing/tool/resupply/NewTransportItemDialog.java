@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -185,4 +186,22 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 			dispose();
 		}
 	}
+
+	/**
+	 * Prepare this window for deletion.
+	 */
+	public void destroy() {
+
+		editingPanel  = null;
+		mainEditingPanel  = null;
+		mainEditingLayout  = null;
+		emptyPanel  = null;
+		resupplyMissionPanel  = null;
+		arrivingSettlementPanel  = null;
+		createButton  = null;
+		resupplyWindow  = null;
+	}
+
+
+
 }

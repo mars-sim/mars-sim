@@ -1100,9 +1100,24 @@ public class MainScene {
 		spinner = new Spinner();
 		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         //spinner.setValueFactory(new SpinnerValueFactory.IntSpinnerValueFactory(0, 10));
-		List<Integer> items = FXCollections.observableArrayList(1,2,4,8,16,
+
+		List<Integer> items = null;
+		if (default_ratio == 32)
+			items = FXCollections.observableArrayList(1,2,4,8,16,
+																32,64,128,256,512,
+																1024);
+		else if (default_ratio == 64)
+			items = FXCollections.observableArrayList(1,2,4,8,16,
+																32,64,128,256,512,
+																1024, 2048);
+		else if (default_ratio == 128)
+			items = FXCollections.observableArrayList(1,2,4,8,16,
 																32,64,128,256,512,
 																1024,2048,4096);//,8192);
+		else //if (default_ratio == 256)
+			items = FXCollections.observableArrayList(1,2,4,8,16,
+																32,64,128,256,512,
+																1024,2048,4096,8192);
 
         spinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<>(items));
         spinner.setMaxSize(85, 15);

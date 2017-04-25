@@ -102,6 +102,18 @@ public class StructureMapLayer implements SettlementMapLayer {
         this.scale = scale;
         this.building = building;
 
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+
+        // Get the map center point.
+        //double mapCenterX = mapWidth / 2D;
+        //double mapCenterY = mapHeight / 2D;
+
+        // Translate map from settlement center point.
+        g2d.translate(mapWidth / 2D + (xPos * scale), mapHeight / 2D + (yPos * scale));
+
+        // Rotate map from North.
+        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
         //2014-11-05 Added adjustScaleFactor()
         // discard the old scale value, compute a new value of scale.
@@ -111,31 +123,9 @@ public class StructureMapLayer implements SettlementMapLayer {
 	        double width = building.getWidth();
 	        double length = building.getLength();
 	        scale = adjustScaleFactor(width, length);
+        	drawOneBuilding(building, g2d0);
 	    	//System.out.println("StructureMapLayer.java : displayLayer() : width is "+ width);
 	      	//System.out.println("StructureMapLayer.java : displayLayer() : length is "+ length);
-        }
-
-        // Save original graphics transforms.
-        AffineTransform saveTransform = g2d.getTransform();
-
-        // Get the map center point.
-        double mapCenterX = mapWidth / 2D;
-        double mapCenterY = mapHeight / 2D;
-
-
-        // Translate map from settlement center point.
-        g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
-
-        // Rotate map from North.
-        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
-
-     	// 2014-11-05 Added if then else clause for loading
-        // an svg image for one building ONLY
-        if (building != null) {
-        	// Displaying a svg image for one single building
-        	//System.out.println("StructureMapLayer.java : displayLayer() : calling drawBuilding() only");
-        	//System.out.println("building is " + building);
-        	drawOneBuilding(building, g2d0);
         }
 
         else {  // Displaying svg images of all buildings in the entire settlement

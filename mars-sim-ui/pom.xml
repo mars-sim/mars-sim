@@ -84,18 +84,21 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/1.8 : 90KB
 			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
 			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
+			if using 1.8 or 1.9, import org.apache.batik.anim.dom.SAXSVGDocumentFactory
+			if using 1.7, import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 		-->
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.9</version>
+			<version>1.7</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-util : 115 KB -->
-		<dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-util : 115 KB
+		     Note : batik-util 1.8 is required only by batik-transcoder 1.9 -->
+		<!--dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>
 		    <artifactId>batik-util</artifactId>
 		    <version>1.8</version>
-		</dependency>
+		</dependency-->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-i18n : 13 KB -->
 		<!--dependency>

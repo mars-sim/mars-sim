@@ -335,6 +335,7 @@ public class BuildingManager implements Serializable {
         }
 	}
 
+
     /**
      * Adds a new building to the settlement.
      * @param newBuilding the building to add.
@@ -377,7 +378,6 @@ public class BuildingManager implements Serializable {
     public Building prepareToAddBuilding(BuildingTemplate template, Resupply resupply, boolean createBuildingConnections) {
 		//logger.info("BuildingManager's addOneBuilding() is on " + Thread.currentThread().getName() + " Thread");
     	// normally on JavaFX Application Thread
-		//this.resupply = resupply;
     	Building newBuilding = new Building(template, this);
         addBuilding(newBuilding, createBuildingConnections);
         return newBuilding;
@@ -386,20 +386,10 @@ public class BuildingManager implements Serializable {
     // 2016-11-07 Added getResupply()
     public Resupply getResupply() {
     	return resupply;
-    	//Resupply result = null;
-    	//if (!resupplies.isEmpty()) {
-    	//	result = resupplies.get(0);
-    	//}
-   		//return result;
     }
-
-    //public void removeResupply() {
-	//	resupplies.remove(0);
-    //}
 
     // 2016-11-07 Added addResupply()
     public void addResupply(Resupply resupply) {
-    	//resupplies.add(resupply);
     	this.resupply = resupply;
     }
 

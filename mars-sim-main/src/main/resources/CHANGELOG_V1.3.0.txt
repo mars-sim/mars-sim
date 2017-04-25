@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 39__) - 2017-04-__
+## v3.1.0-Preview 7 (build 3949) - 2017-04-24
 
 ### MINIMUM REQUIREMENTS :
 
@@ -24,6 +24,8 @@ https://mars-sim.github.io/
 2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact.
 
 3. Not compatible with 32-bit Java 8.
+
+4. Transport Wizard and Construction Wizard cannot properly place hallways/tunnels for new buildings.
 
 
 ### CORE ENGINE IMPROVEMENTS :
@@ -65,7 +67,7 @@ https://mars-sim.github.io/
 
 4. Further remove calling Repairbots to go outside to fix vehicles. Exclude sending Gardenbots to Trading Outpost & Mining Outpost at the start of sim.
 
-5. Remove external fonts to stop startup crash in linux.
+5. Remove external fonts that cause startup crash if using openJDK/openJFX in linux.
 
 6. Fix errors when creating brand new Resupply Missions.
 

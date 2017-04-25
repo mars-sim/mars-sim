@@ -463,7 +463,7 @@ implements ClockListener {
 		yPos += realYDiff;
 
 		//paintDoubleBuffer();
-		//repaint();
+		repaint();
 	}
 
 	/**

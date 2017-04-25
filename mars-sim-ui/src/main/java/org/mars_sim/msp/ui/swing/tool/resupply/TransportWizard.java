@@ -387,6 +387,9 @@ public class TransportWizard {
      	BuildingTemplate newT = new BuildingTemplate(template.getMissionName(),
      			buildingID, scenario, template.getBuildingType(), buildingNickName,
      			width, length, template.getXLoc(), template.getYLoc(), template.getFacing());
+
+		newT = clearCollision(newT, mgr, Resupply.MAX_COUNTDOWN);
+
 		//System.out.println("inside checkTemplatePosition(), calling checkTemplateAddBuilding() now ");
      	// 2015-12-08 Added checkTemplateAddBuilding()
         pauseAndCheck(mgr, newT, true);
@@ -403,7 +406,7 @@ public class TransportWizard {
     public synchronized void pauseAndCheck(BuildingManager mgr, BuildingTemplate correctedTemplate, boolean preconfigured) {
     	//System.out.println("inside checkTemplateAddBuilding()");
     	// TODO: make use of the preconfigured boolean field to distinguish between the planned template loaded from xml vs. a newly created template
-
+	    mapPanel.repaint();
     	boolean previous = true;
 
 		// Pause simulation.
@@ -421,7 +424,7 @@ public class TransportWizard {
 			// The building's original template position has been occupied. Get another location for the building
 			BuildingTemplate newT = clearCollision(correctedTemplate, mgr, Resupply.MAX_COUNTDOWN);
 			//System.out.println("inside checkTemplateAddBuilding(), just got newT");
-			createDialog(mgr, newT, false, true);
+			createDialog(mgr, newT, true, false); //false, true);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, false)");
 		}
 
@@ -481,10 +484,9 @@ public class TransportWizard {
 	  	boolean noImmovable = checkCollisionImmovable(t, mgr);
 	  	//logger.info("noImmovable : " + noImmovable);
 
-		if (!noImmovable) {
-			// if there are no obstacles
+		if (!noImmovable && count > 0) {// if there are obstacles
+			// get a new template
 			BuildingTemplate newT = resupply.positionNewResupplyBuilding(t.getBuildingType());
-    		//System.out.println("inside clearCollision(), just got newT");
 			// 2015-12-16 Added setMissionName()
     		newT.setMissionName(t.getMissionName());
 			// Call again recursively to check for any collision
@@ -540,7 +542,7 @@ public class TransportWizard {
 
 		if (t.getBuildingType().equalsIgnoreCase("hallway")
 				|| t.getBuildingType().equalsIgnoreCase("tunnel"))
-				boundedObject = new BoundedObject(xLoc, yLoc, w-1, l-1, f);
+				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 			else
 				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
@@ -585,6 +587,7 @@ public class TransportWizard {
      */
     // 2015-12-07 Added checkCollisionImmovable()
     public boolean checkCollisionImmovable(Building b, BuildingManager mgr, int count) {
+    	count--;
 		logger.info(count + " : calling checkCollisionImmovable(b, mgr) for " + b.getNickName());
 
     	double xLoc = b.getXLocation();
@@ -597,7 +600,7 @@ public class TransportWizard {
 
 		if (b.getBuildingType().equalsIgnoreCase("hallway")
 			|| b.getBuildingType().equalsIgnoreCase("tunnel"))
-			boundedObject = new BoundedObject(xLoc, yLoc, w-1, l-1, f);
+			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 		else
 			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
@@ -654,6 +657,7 @@ public class TransportWizard {
   		// set up the Settlement Map Tool to display the suggested location of the building
 		mapPanel.reCenter();
 		mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+	    //mapPanel.repaint();
 		//mapPanel.setShowBuildingLabels(true);
 		//mapPanel.getSettlementTransparentPanel().getBuildingLabelMenuItem().setSelected(true);
 
@@ -682,7 +686,7 @@ public class TransportWizard {
         if (mainScene != null) {
     		//System.out.println("inside confirmBuildingLocation, calling alertDialog");
         	alertDialog(title, header, msg, template, mgr, newBuilding, true);//, timer);
-
+        	mapPanel.repaint();
 		} else {
 			// for Swing mode
 	        desktop.openAnnouncementWindow("Pause for Transport Wizard");
@@ -769,11 +773,11 @@ public class TransportWizard {
 				}
 
 				// For hallway and tunnel, use the computer-generated position
-				if (newBuilding.getBuildingType().equalsIgnoreCase("hallway")
-						|| newBuilding.getBuildingType().equalsIgnoreCase("tunnel")) {
-					Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeMouseKB);
-					button.setVisible(false);
-				}
+				//if (newBuilding.getBuildingType().equalsIgnoreCase("hallway")
+				//		|| newBuilding.getBuildingType().equalsIgnoreCase("tunnel")) {
+				//	Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeMouseKB);
+				//	button.setVisible(false);
+				//}
 
 				Optional<ButtonType> result = null;
 
@@ -785,8 +789,10 @@ public class TransportWizard {
 					 			+ " is put in place in " + mgr.getSettlement());
 						newBuilding.setInTransport(false);
 					}
+
 				} else if (result.isPresent() && result.get() == buttonTypeNo) {
 			    	mgr.removeBuilding(newBuilding);
+			    	mapPanel.repaint();
 			    	//System.out.println("just removing building");
 			    	BuildingTemplate repositionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
 			    	//System.out.println("obtain new repositionedTemplate");
@@ -1104,6 +1110,8 @@ public class TransportWizard {
 
 		    			  repaint = true;
 
+		    			  return;
+
 					  } else {
 
 	    				  xLoc = xLoc - dir.getIncrX() * 2;
@@ -1302,7 +1310,6 @@ public class TransportWizard {
 				xLast = xPixel;
 				yLast = yPixel;
 			}
-
 		}
 	}
 

@@ -473,16 +473,21 @@ public class BuildingConnectorManager implements Serializable {
         boolean isBuildingConnector = newBuilding.hasFunction(BuildingFunction.BUILDING_CONNECTION);
         boolean hasLifeSupport = newBuilding.hasFunction(BuildingFunction.LIFE_SUPPORT);
 
+       // boolean needEndCap = false;
+        //if (newBuilding.getBuildingType().equalsIgnoreCase("hallway")
+		//		|| newBuilding.getBuildingType().equalsIgnoreCase("tunnel")) {
+        //	needEndCap = true;
+        //}
+
         // Only create building connections for inhabitable buildings.
         if (hasLifeSupport) {
-
             // If building connector, determine end connections first.
             if (isBuildingConnector) {
                 // Try to create connections at North and South ends.
                 createBuildingConnectorEndConnections(newBuilding);
 
             }
-
+            //else
             // Determine connections at points along each of the building's four sides.
             createBuildingConnectionsAlongSides(newBuilding);
         }
@@ -677,6 +682,7 @@ public class BuildingConnectorManager implements Serializable {
                                 firstBuildingConnectionPt.getY(), hatch1Facing, building, secondBuildingConnectionPt.getX(),
                                 secondBuildingConnectionPt.getY(), hatch2Facing);
                         addBuildingConnection(connector);
+
                         goodConnection = true;
                     }
                 }
