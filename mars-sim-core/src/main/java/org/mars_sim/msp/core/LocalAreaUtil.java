@@ -238,26 +238,27 @@ public class LocalAreaUtil {
     /**
      * Checks if a point location does not collide with any existing vehicle
      * or construction site.
-     * @param LocalBoundedObject object
-     * @param boolean needToMove
-     * @return true if location doesn't collide with anything.
+     * @param object LocalBoundedObject
+     * @param coordinates Coordinates
+     * @param needToMove does it need to move the intersected vehicle, if any
+     * @return true if location collide with any vehicles.
      */
     // 2015-12-08 Added checkVehicleBoundedOjectIntersected()
-    public static boolean checkVehicleBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates, boolean needToMove) {
-    	boolean result = true;
+    public static boolean isVehicleBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates, boolean needToMove) {
+    	boolean result = false;
 
     	Iterator<LocalBoundedObject> i = getAllVehicleBoundedObjectsAtLocation(coordinates).iterator();
     	while (i.hasNext()) {
     		LocalBoundedObject vehicle = i.next();
 
-    		if (getTwoBoundedOjectsIntersected(object, vehicle)) {
-    			result = false;
+    		if (isTwoBoundedOjectsIntersected(object, vehicle)) {
+    			result = true;
     			if (needToMove) {
     				Vehicle v = (Vehicle) vehicle;
     				v.determinedSettlementParkedLocationAndFacing();
                   	logger.info("checkVehicleBoundedOjectIntersected(): Colliding with vehicle " + v + ". Moving it to another location");
                     //  Call again recursively to clear any vehicles
-    				result = checkVehicleBoundedOjectIntersected(object, coordinates, needToMove);
+    				result = isVehicleBoundedOjectIntersected(object, coordinates, needToMove);
     			}
     		}
     	}
@@ -345,23 +346,23 @@ public class LocalAreaUtil {
 
     /**
      * Checks for collisions with any immovable objects
-     * @return true if location doesn't collide with anything.
+     * @return true if location collides with something.
      * @param LocalBoundedObject object
      * @param Coordinates coordinates
      */
     // 2015-12-08 Added checkImmovableBoundedOjectIntersected()
-    public static boolean checkImmovableBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates) { //, boolean needToMove) {
+    public static boolean isImmovableBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates) { //, boolean needToMove) {
         Iterator<LocalBoundedObject> i = getAllImmovableBoundedObjectsAtLocation(coordinates).iterator();
     	while (i.hasNext()) {
     		LocalBoundedObject immovable = i.next();
-    		if (getTwoBoundedOjectsIntersected(object, immovable)) {
+    		if (isTwoBoundedOjectsIntersected(object, immovable)) {
     			//result = false;
     			//logger.info("LocalAreaUtil: Colliding with an immovable object (a building or construction site");
     			//break;
-    			return false;
+    			return true;
     		}
     	}
-        return true;
+        return false;
     }
 
     /**
@@ -495,7 +496,7 @@ public class LocalAreaUtil {
             LocalBoundedObject boundedObject, double newXLoc, double newYLoc, double newFacing,
             Coordinates coordinates) {
 
-        return checkObjectCollision(boundedObject, boundedObject.getWidth(),
+        return isObjectCollisionFree(boundedObject, boundedObject.getWidth(),
                 boundedObject.getLength(), newXLoc, newYLoc, newFacing, coordinates);
 
     }
@@ -512,7 +513,7 @@ public class LocalAreaUtil {
      * @param coordinates the global coordinate location to check.
      * @return true if object doesn't collide with anything.
      */
-    public static boolean checkObjectCollision(Object object, double width, double length,
+    public static boolean isObjectCollisionFree(Object object, double width, double length,
             double xLoc, double yLoc, double facing, Coordinates coordinates) {
 
         boolean result = true;
@@ -522,7 +523,7 @@ public class LocalAreaUtil {
                 yLoc - (length / 2D), width, length);
         Path2D objectPath = getPathFromRectangleRotation(objectRect, facing);
 
-        result = checkPathCollision(object, objectPath, coordinates, false);
+        result = isPathCollisionFree(object, objectPath, coordinates, false);
 
         return result;
     }
@@ -542,7 +543,7 @@ public class LocalAreaUtil {
         // Create line path
         Path2D linePath = createLinePath(line);
 
-        result = checkPathCollision(null, linePath, coordinates, useCache);
+        result = isPathCollisionFree(null, linePath, coordinates, useCache);
 
         return result;
     }
@@ -600,15 +601,23 @@ public class LocalAreaUtil {
 
 
     // 2015-12-08 Added getTwoBoundedOjectsIntersected()
-    public static boolean getTwoBoundedOjectsIntersected(LocalBoundedObject o1, LocalBoundedObject o2) {
-    	boolean result = false;
+    /**
+     * Checks if two bound objects collide
+     * @param o1 the first bound object
+     * @param o2 the second bound object
+     * @return true if they do collide
+     */
+    public static boolean isTwoBoundedOjectsIntersected(LocalBoundedObject o1, LocalBoundedObject o2) {
+    	return doAreasCollide(getBoundedObjectArea(o1), getBoundedObjectArea(o2));
 
-    	Area a1 = getBoundedObjectArea(o1);
-    	Area a2 = getBoundedObjectArea(o2);
+    	//boolean result = false;
 
-    	result = doAreasCollide(a1, a2);
+    	//Area a1 = getBoundedObjectArea(o1);
+    	//Area a2 = getBoundedObjectArea(o2);
 
-    	return result;
+    	//result = doAreasCollide(a1, a2);
+
+    	//return result;
 
 /*
     	Set<Line2D> set1 = getLocalBoundedObjectLineSegments(o1);
@@ -722,7 +731,7 @@ public class LocalAreaUtil {
      * @param useCache true if caching should be used.
      * @return true if path doesn't collide with anything.
      */
-    private static boolean checkPathCollision(Object object, Path2D path, Coordinates coordinates, boolean useCache) {
+    private static boolean isPathCollisionFree(Object object, Path2D path, Coordinates coordinates, boolean useCache) {
 
         boolean result = true;
 
@@ -804,6 +813,7 @@ public class LocalAreaUtil {
         Area collide = new Area(area1);
         collide.intersect(area2);
         return !collide.isEmpty();
+
     }
 
     /**

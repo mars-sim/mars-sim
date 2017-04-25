@@ -721,11 +721,11 @@ implements Serializable {
 	 */
 	public void endMission(String reason) {
 		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
-		logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 
 		if (!done & reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
 				|| reason.equals(SUCCESSFULLY_DISEMBARKED)
 				|| reason.equals(USER_ABORTED_MISSION)) {
+			logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");

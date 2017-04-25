@@ -1214,7 +1214,7 @@ public class ConstructionWizard {
 
             // Check to see if proposed new site position intersects with any existing buildings
             // or construction sites.
-            if (site.getSettlement().getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX,
+            if (site.getSettlement().getBuildingManager().isBuildingLocationOpen(rectCenterX,
                     rectCenterY, site.getWidth(), site.getLength(), rectRotation, site)) {
                 // Set the new site here.
                 site.setXLocation(rectCenterX);

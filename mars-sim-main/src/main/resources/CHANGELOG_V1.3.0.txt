@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 3949) - 2017-04-24
+## v3.1.0-Preview 7 (build 3950) - 2017-04-25
 
 ### MINIMUM REQUIREMENTS :
 
@@ -24,8 +24,6 @@ https://mars-sim.github.io/
 2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact.
 
 3. Not compatible with 32-bit Java 8.
-
-4. Transport Wizard and Construction Wizard cannot properly place hallways/tunnels for new buildings.
 
 
 ### CORE ENGINE IMPROVEMENTS :
@@ -72,6 +70,9 @@ https://mars-sim.github.io/
 6. Fix errors when creating brand new Resupply Missions.
 
 7. Fix quality of dessert not showing up correctly.
+
+8. Temporarily disable Transport/Construction Wizard and adopt automated building/site placement.
+
 
 -----------------------------------------------------------------------------------------
 

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -392,7 +393,8 @@ public class TransportWizard {
 
 		//System.out.println("inside checkTemplatePosition(), calling checkTemplateAddBuilding() now ");
      	// 2015-12-08 Added checkTemplateAddBuilding()
-        pauseAndCheck(mgr, newT, true);
+		if (newT != null)
+			pauseAndCheck(mgr, newT, true);
 
     }
 
@@ -414,7 +416,7 @@ public class TransportWizard {
 			previous = mainScene.startPause();
 
     	// Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
-    	boolean ok = checkBuildingTemplatePosition(mgr, correctedTemplate);
+    	boolean ok = isTemplatePositionClear(mgr, correctedTemplate);
     	//System.out.println("checking is " + checking);
 		if (ok) {
 			createDialog(mgr, correctedTemplate, true, false); // true, false);
@@ -424,7 +426,8 @@ public class TransportWizard {
 			// The building's original template position has been occupied. Get another location for the building
 			BuildingTemplate newT = clearCollision(correctedTemplate, mgr, Resupply.MAX_COUNTDOWN);
 			//System.out.println("inside checkTemplateAddBuilding(), just got newT");
-			createDialog(mgr, newT, true, false); //false, true);
+			if (newT != null)
+				createDialog(mgr, newT, true, false); //false, true);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, false)");
 		}
 
@@ -439,8 +442,7 @@ public class TransportWizard {
      * @param template the building template.
      * @return true if building template position is clear.
      */
-    public boolean checkBuildingTemplatePosition(BuildingManager mgr, BuildingTemplate template) {
-  		//System.out.println("inside checkBuildingTemplatePosition()");
+    public boolean isTemplatePositionClear(BuildingManager mgr, BuildingTemplate template) {
 
         boolean result = true;
 
@@ -461,40 +463,26 @@ public class TransportWizard {
             length = DEFAULT_VARIABLE_BUILDING_LENGTH;
         }
 
-        result = mgr.checkIfNewBuildingLocationOpen(template.getXLoc(),
+        result = mgr.isBuildingLocationOpen(template.getXLoc(),
                 template.getYLoc(), width, length, template.getFacing());
-  		//System.out.println("inside checkBuildingTemplatePosition(), done calling mgr.checkIfNewBuildingLocationOpen()");
+
         return result;
     }
 
 
     /**
      * Identifies the type of collision and gets new template if the collision is immovable
-     * @param t
-     * @return BuildingTemplate
+     * @param bt a building template
+     * @param mgr BuildingManager
+     * @param count number of counts
+     * @return Updated building template
      */
     // 2015-12-07 Added clearCollision()
-    public BuildingTemplate clearCollision(BuildingTemplate t, BuildingManager mgr, int count) {
-		count--;
-		logger.info("#" + (Resupply.MAX_COUNTDOWN - count) + " : calling clearCollision() for " + t.getNickName());
-    	// check if a vehicle is the obstacle and move it
-    	boolean noVehicle = checkCollisionMoveVehicle(t, mgr);
-    	//logger.info("noVehicle : " + noVehicle);
-
-	  	boolean noImmovable = checkCollisionImmovable(t, mgr);
-	  	//logger.info("noImmovable : " + noImmovable);
-
-		if (!noImmovable && count > 0) {// if there are obstacles
-			// get a new template
-			BuildingTemplate newT = resupply.positionNewResupplyBuilding(t.getBuildingType());
-			// 2015-12-16 Added setMissionName()
-    		newT.setMissionName(t.getMissionName());
-			// Call again recursively to check for any collision
-			t = clearCollision(newT, mgr, count);
-		}
-
-		return t;
+    public BuildingTemplate clearCollision(BuildingTemplate bt, BuildingManager mgr, int count) {
+    	return resupply.clearCollision(bt, count);
     }
+
+
 
     /**
      * Checks for collision and relocate any vehicles if found
@@ -504,63 +492,7 @@ public class TransportWizard {
      * @return true if the location is clear of collision
      */
     // 2015-12-07 Added checkCollisionMoveVehicle()
-    public boolean checkCollisionMoveVehicle(BuildingTemplate t, BuildingManager mgr) {
-
-    	double xLoc = t.getXLoc();
-    	double yLoc = t.getYLoc();
-    	double w = t.getWidth();
-		double l = t.getLength();
-		double f = t.getFacing();
-
-		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
-
-		// true if no collision
-        boolean noCollison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
-        //System.out.println("checkCollisionMoveVehicle() : noCollison is " + noCollison);
-        return noCollison;
-
-    }
-
-    /**
-     * Check for collision for an immovable object
-     * @param building
-     * @param buildingManager
-     * @param count The number of times remaining checking collision
-     * @return true if no collision.
-     */
-    // 2015-12-07 Added checkCollisionImmovable()
-    public boolean checkCollisionImmovable(BuildingTemplate t, BuildingManager mgr) {
-		//logger.info("calling checkCollisionImmovable(t, mgr) for " + t.getNickName());
-
-    	double xLoc = t.getXLoc();
-    	double yLoc = t.getYLoc();
-    	double w = t.getWidth();
-		double l = t.getLength();
-		double f = t.getFacing();
-
-		BoundedObject boundedObject;// = new BoundedObject(xLoc, yLoc, w, l, f);
-
-		if (t.getBuildingType().equalsIgnoreCase("hallway")
-				|| t.getBuildingType().equalsIgnoreCase("tunnel"))
-				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
-			else
-				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
-
-		// true if no collision
-		boolean noCollision = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
-
-		return noCollision;
-    }
-
-    /**
-     * Checks for collision and relocate any vehicles if found
-     * @param xLoc
-     * @param yLoc
-     * @param coordinates
-     * @return true if the location is clear of collision
-     */
-    // 2015-12-07 Added checkCollisionMoveVehicle()
-    public boolean checkCollisionMoveVehicle(Building b, BuildingManager mgr) {
+    public boolean isCollisionFreeVehicle(Building b, BuildingManager mgr) {
 
     	double xLoc = b.getXLocation();
     	double yLoc = b.getYLocation();
@@ -570,10 +502,8 @@ public class TransportWizard {
 
 		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-		// true if no collision
-        boolean noCollison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
+        return !LocalAreaUtil.isVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
 
-        return noCollison;
     }
 
 
@@ -586,7 +516,7 @@ public class TransportWizard {
      * @return true if no collision.
      */
     // 2015-12-07 Added checkCollisionImmovable()
-    public boolean checkCollisionImmovable(Building b, BuildingManager mgr, int count) {
+    public boolean isCollisionFreeImmovable(Building b, BuildingManager mgr, int count) {
     	count--;
 		logger.info(count + " : calling checkCollisionImmovable(b, mgr) for " + b.getNickName());
 
@@ -596,19 +526,15 @@ public class TransportWizard {
 		double l = b.getLength();
 		double f = b.getFacing();
 
-		BoundedObject boundedObject = null;
+		//BoundedObject boundedObject = null;
 
-		if (b.getBuildingType().equalsIgnoreCase("hallway")
-			|| b.getBuildingType().equalsIgnoreCase("tunnel"))
-			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
-		else
-			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+		//if (b.getBuildingType().equalsIgnoreCase("hallway")
+		//	|| b.getBuildingType().equalsIgnoreCase("tunnel"))
+		//	boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+		//else
+		//	boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-		// true if no collision
-		boolean noCollision = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
-        //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
-
-		return noCollision;
+		return !LocalAreaUtil.isImmovableBoundedOjectIntersected(new BoundedObject(xLoc, yLoc, w, l, f), mgr.getSettlement().getCoordinates());
 
     }
 
@@ -943,7 +869,7 @@ public class TransportWizard {
 							//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 							mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-					    	boolean withinRadius = checkRadius(newBuilding, mgr);
+					    	boolean withinRadius = isWithinZone(newBuilding, mgr);
 
 					    	if (withinRadius)
 					    		moveNewBuildingTo(newBuilding, evt.getX(), evt.getY());
@@ -970,22 +896,31 @@ public class TransportWizard {
 	}
 
 	/**
-	 * Check if the new building is within the prescribed maximum radius
-	 * @param the new building
-	 * @param building manager
-	 * @return true if it's within the radius of an existing inhabitable building
+	 * Check if the new building is outside minimum radius and within the maximum radius
+	 * @param newBuilding the new building
+	 * @param mgr the building manager
+	 * @return true if it's within the prescribed zone
 	 */
-	public boolean checkRadius(Building newBuilding, BuildingManager mgr) {
+	public boolean isWithinZone(Building newBuilding, BuildingManager mgr) {
 
-    	boolean withinRadius = false;
+    	boolean withinRadius = true;
     	int maxDistance = 0;
     	int leastDistance = 0;
     	// TOD: also check if
     	boolean hasLifeSupport = buildingConfig.hasLifeSupport(newBuilding.getBuildingType());
     	if (hasLifeSupport) {
-    		maxDistance = Resupply.MAX_INHABITABLE_BUILDING_DISTANCE;
-    		leastDistance = Resupply.MIN_INHABITABLE_BUILDING_DISTANCE;
+
+    	  	if (newBuilding.getBuildingType().equalsIgnoreCase("Astronomy Observatory")) {
+    	  		maxDistance = Resupply.MAX_OBSERVATORY_BUILDING_DISTANCE;
+    	  		leastDistance = Resupply.MIN_OBSERVATORY_BUILDING_DISTANCE;
+    	  	}
+    	  	else {
+        		maxDistance = Resupply.MAX_INHABITABLE_BUILDING_DISTANCE;
+        		leastDistance = Resupply.MIN_INHABITABLE_BUILDING_DISTANCE;
+    	  	}
+
     	}
+
     	else {
     		maxDistance = Resupply.MAX_NONINHABITABLE_BUILDING_DISTANCE;
     		leastDistance = Resupply.MIN_NONINHABITABLE_BUILDING_DISTANCE;
@@ -1001,12 +936,64 @@ public class TransportWizard {
             double distance = Point2D.distance(startingBuilding.getXLocation(),
                 startingBuilding.getYLocation(), newBuilding.getXLocation(),
                 newBuilding.getYLocation());
-            if ((distance >= leastDistance) && (distance <= maxDistance)) {
-            	withinRadius = true;
+            //logger.info("distance : " + distance);
+            if (distance < leastDistance) {
+            	withinRadius = false;
             	break;
             }
         }
 
+
+	    return withinRadius;
+	}
+
+
+	/**
+	 * Check if the building template is outside minimum radius and within the maximum radius
+	 * @param bt the building template
+	 * @param buildingManager buildingManager
+	 * @return true if it's within the prescribed zone
+	 */
+	public boolean isWithinZone(BuildingTemplate bt, BuildingManager buildingManager) {
+
+    	boolean withinRadius = true;
+    	int maxDistance = 0;
+    	int leastDistance = 0;
+    	// TOD: also check if
+    	boolean hasLifeSupport = buildingConfig.hasLifeSupport(bt.getBuildingType());
+    	if (hasLifeSupport) {
+
+    	  	if (bt.getBuildingType().equalsIgnoreCase("Astronomy Observatory")) {
+    	  		maxDistance = Resupply.MAX_OBSERVATORY_BUILDING_DISTANCE;
+    	  		leastDistance = Resupply.MIN_OBSERVATORY_BUILDING_DISTANCE;
+    	  	}
+    	  	else {
+        		maxDistance = Resupply.MAX_INHABITABLE_BUILDING_DISTANCE;
+        		leastDistance = Resupply.MIN_INHABITABLE_BUILDING_DISTANCE;
+    	  	}
+
+    	}
+
+    	else {
+    		maxDistance = Resupply.MAX_NONINHABITABLE_BUILDING_DISTANCE;
+    		leastDistance = Resupply.MIN_NONINHABITABLE_BUILDING_DISTANCE;
+    	}
+
+    	List<Building> list = buildingManager.getBuildings(BuildingFunction.LIFE_SUPPORT);
+        Collections.shuffle(list);
+
+        Iterator<Building> i = list.iterator();
+        while (i.hasNext()) {
+            Building startingBuilding = i.next();
+
+            double distance = Point2D.distance(startingBuilding.getXLocation(), startingBuilding.getYLocation(),
+            		bt.getXLoc(), bt.getYLoc());
+            //logger.info("distance : " + distance);
+            if (distance < leastDistance) {
+            	withinRadius = false;
+            	break;
+            }
+        }
 
 	    return withinRadius;
 	}
@@ -1091,10 +1078,10 @@ public class TransportWizard {
 
 				  if (enumMap.get(dir)) {
 					  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
-					  checkCollisionMoveVehicle(b, mgr);
-					  boolean ok2 = checkCollisionImmovable(b, mgr, Resupply.MAX_COUNTDOWN);
+					  isCollisionFreeVehicle(b, mgr);
+					  boolean ok2 = isCollisionFreeImmovable(b, mgr, Resupply.MAX_COUNTDOWN);
 
-					  if (ok2 && checkRadius(b, mgr)) {
+					  if (ok2 && isWithinZone(b, mgr)) {
 
 						  //System.out.println("ok2 : "+ ok2);
 		    			  xLoc += dir.getIncrX();
@@ -1169,11 +1156,11 @@ public class TransportWizard {
 			if (evt.getButton() == MouseEvent.BUTTON1) {
 				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			    // Check for collision here
-			    checkCollisionMoveVehicle(newBuilding, mgr);
-			    boolean ok2 = checkCollisionImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
+			    isCollisionFreeVehicle(newBuilding, mgr);
+			    boolean ok2 = isCollisionFreeImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
 			    if (ok2) {
-			    	boolean withinRadius = checkRadius(newBuilding, mgr);
+			    	boolean withinRadius = isWithinZone(newBuilding, mgr);
 
 			    	if (withinRadius)
 			    		moveNewBuildingTo(newBuilding, evt.getX(), evt.getY());
@@ -1197,11 +1184,11 @@ public class TransportWizard {
 		    int c = e.getKeyCode();
 		    //System.out.println("c is " + c);
 		    // Check for collision here
-		    checkCollisionMoveVehicle(newBuilding, mgr);
-		    boolean ok2 = checkCollisionImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
+		    isCollisionFreeVehicle(newBuilding, mgr);
+		    boolean ok2 = isCollisionFreeImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
 		    if (ok2) {
-		    	boolean withinRadius = checkRadius(newBuilding, mgr);
+		    	boolean withinRadius = isWithinZone(newBuilding, mgr);
 
 		    	if (withinRadius)
 		    		handleKeyboardInput(newBuilding, c);
@@ -1221,11 +1208,11 @@ public class TransportWizard {
 		    int c = e.getKeyCode();
 		    //System.out.println("c is " + c);
 		    // Check for collision here
-		    checkCollisionMoveVehicle(newBuilding, mgr);
-		    boolean ok2 = checkCollisionImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
+		    isCollisionFreeVehicle(newBuilding, mgr);
+		    boolean ok2 = isCollisionFreeImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
 		    if (ok2) {
-		    	boolean withinRadius = checkRadius(newBuilding, mgr);
+		    	boolean withinRadius = isWithinZone(newBuilding, mgr);
 
 		    	if (withinRadius)
 		    		handleKeyboardInput(newBuilding, c);

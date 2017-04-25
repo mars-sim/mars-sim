@@ -1762,7 +1762,7 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Checks if a new building's proposed location is open or intersects with existing
+     * Checks if a proposed building location is open or intersects with existing
      * buildings or construction sites.
      * @param xLoc the new building's X location.
      * @param yLoc the new building's Y location.
@@ -1771,13 +1771,13 @@ public class BuildingManager implements Serializable {
      * @param facing the new building's facing (degrees clockwise from North).
      * @return true if new building location is open.
      */
-    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc,
+    public boolean isBuildingLocationOpen(double xLoc, double yLoc,
             double width, double length, double facing) {
-        return checkIfNewBuildingLocationOpen(xLoc, yLoc, width, length, facing, null);
+        return isBuildingLocationOpen(xLoc, yLoc, width, length, facing, null);
     }
 
     /**
-     * Checks if a new building's proposed location is open or intersects with existing
+     * Checks if a proposed building location is open or intersects with existing
      * buildings or construction sites.
      * @param xLoc the new building's X location.
      * @param yLoc the new building's Y location.
@@ -1787,11 +1787,11 @@ public class BuildingManager implements Serializable {
      * @param site the new construction site or null if none.
      * @return true if new building location is open.
      */
-    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc,
+    public boolean isBuildingLocationOpen(double xLoc, double yLoc,
             double width, double length, double facing, ConstructionSite site) {
         boolean goodLocation = true;
 
-        goodLocation = LocalAreaUtil.checkObjectCollision(site, width, length,
+        goodLocation = LocalAreaUtil.isObjectCollisionFree(site, width, length,
                 xLoc, yLoc, facing, settlement.getCoordinates());
 
         return goodLocation;

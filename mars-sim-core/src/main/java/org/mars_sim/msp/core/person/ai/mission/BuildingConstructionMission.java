@@ -1544,7 +1544,7 @@ implements Serializable {
 
             // Check to see if proposed new site position intersects with any existing buildings
             // or construction sites.
-            if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX,
+            if (settlement.getBuildingManager().isBuildingLocationOpen(rectCenterX,
                     rectCenterY, site.getWidth(), site.getLength(), rectRotation, site)) {
                 // Set the new site here.
                 site.setXLocation(rectCenterX);
