@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.08 2015-04-24
+ * @version 3.1.0 2017-04-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -85,6 +85,10 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
+        // Initialize data members
+        setDescription(Msg.getString("Task.description.cookMeal.detail",
+                getTypeOfMeal())); //$NON-NLS-1$
+
         // Get an available kitchen.
         Building kitchenBuilding = getAvailableKitchen(person);
 
@@ -97,6 +101,8 @@ implements Serializable {
 		    //int size = kitchen.getMealRecipesWithAvailableIngredients().size();
 	    	// 2015-12-10 Used getNumCookableMeal()
 		    int size = kitchen.getNumCookableMeal();
+
+	        //System.out.println(" # of cookableMeal : " + size);
 
         	// Need to reset numGoodRecipes periodically since it's a cache value
         	// and won't get updated unless a meal is cooked.
@@ -298,35 +304,41 @@ implements Serializable {
 
         double workTime = time;
 
-        if (robot != null) {
-		     // A robot moves slower than a person and incurs penalty on workTime
-	        workTime = time/2;
-		}
-
-		// Determine amount of effective work time based on "Cooking" skill.
-	    int cookingSkill = getEffectiveSkillLevel();
-	    if (cookingSkill == 0) {
-	        workTime /= 2;
-	    }
-	    else {
-	        workTime += workTime * (.2D * (double) cookingSkill);
-	    }
-
 	    // Add this work to the kitchen.
 	    String nameOfMeal = kitchen.addWork(workTime);
 
-        if (nameOfMeal != null)
+        if (nameOfMeal != null) {
+
         	setDescription(Msg.getString("Task.description.cookMeal.detail.finish",
         		nameOfMeal)); //$NON-NLS-1$
-        else
-            setDescription(Msg.getString("Task.description.cookMeal.detail",
-                    getTypeOfMeal())); //$NON-NLS-1$
 
-	    // Add experience
-	    addExperience(time);
+            if (robot != null) {
+    		     // A robot moves slower than a person and incurs penalty on workTime
+    	        workTime = time/2;
+    		}
 
-	    // Check for accident in kitchen.
-	    checkForAccident(time);
+    		// Determine amount of effective work time based on "Cooking" skill.
+    	    int cookingSkill = getEffectiveSkillLevel();
+    	    if (cookingSkill == 0) {
+    	        workTime /= 2;
+    	    }
+    	    else {
+    	        workTime += workTime * (.2D * (double) cookingSkill);
+    	    }
+
+    	    // Add experience
+    	    addExperience(time);
+
+    	    // Check for accident in kitchen.
+    	    checkForAccident(time);
+
+        }
+
+        //else
+        //    setDescription(Msg.getString("Task.description.cookMeal.detail",
+        //            getTypeOfMeal())); //$NON-NLS-1$
+
+
 
         return 0D;
     }

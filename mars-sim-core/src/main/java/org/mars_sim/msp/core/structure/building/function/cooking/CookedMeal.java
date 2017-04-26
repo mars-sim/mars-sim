@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookedMeal.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2017-04-26
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -23,29 +23,29 @@ implements Serializable, Cloneable {
 	private static final double SHELF_LIFE = 150D; // note: 100 mSol ~= 2.5 hrs
 
 	// Data members
-	private int quality;
+	private double quality;
 	private MarsClock expirationTime;
 	// 2014-11-28 Added name
 	private String mealName;
-	
+
 	private String producerName;
 	private String consumerName;
 	private Cooking kitchen;
 	private double dryMass;
-	
+
 	/**
 	 * Constructor.
 	 * @param quality the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	public CookedMeal(String mealName, int quality, double dryMass, MarsClock creationTime, String producerName, Cooking kitchen) {
+	public CookedMeal(String mealName, double quality, double dryMass, MarsClock creationTime, String producerName, Cooking kitchen) {
 		this.quality = quality;
 		this.mealName = mealName;
 		this.dryMass = dryMass;
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
 		this.producerName = producerName;
-		this.kitchen = kitchen; 
+		this.kitchen = kitchen;
 	}
 	// 2014-12-07 Added this constructor
 	public CookedMeal(CookedMeal cookedMeal, String consumerName) {
@@ -60,7 +60,7 @@ implements Serializable, Cloneable {
 		this.mealName = cookedMeal.mealName;
 		this.expirationTime = cookedMeal.expirationTime;
 	}
-	
+
 	// 2014-11-28 Added getName()
 	public String getName() {
 		return mealName;
@@ -70,7 +70,7 @@ implements Serializable, Cloneable {
 	 * Gets the quality of the meal.
 	 * @return quality
 	 */
-	public int getQuality() {
+	public double getQuality() {
 		return quality;
 	}
 
@@ -81,7 +81,7 @@ implements Serializable, Cloneable {
 	public double getDryMass() {
 		return dryMass;
 	}
-	
+
 	/**
 	 * Gets the expiration time of the meal.
 	 * @return expiration time
@@ -89,7 +89,7 @@ implements Serializable, Cloneable {
 	public MarsClock getExpirationTime() {
 		return expirationTime;
 	}
-	
+
 	public void setConsumerName(String consumerName) {
 		this.consumerName = consumerName;
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HotMeal.java
- * @version 3.07 2014-12-12
+ * @version 3.1.0 2017-04-26
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -104,7 +104,7 @@ public class HotMeal implements Serializable {
 	public List<Ingredient> getIngredientList() {
 		return ingredientList;
 	}
-	
+
 	public double getOil() {
 		return oil;
 	}
@@ -112,7 +112,7 @@ public class HotMeal implements Serializable {
 	public double getSalt() {
 		return salt;
 	}
-	
+
     public void destroy() {
     	ingredientList.clear();
         ingredientList = null;

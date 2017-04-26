@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMealMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-04-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -72,6 +72,8 @@ public class CookMealMeta implements MetaTask, Serializable {
                 // Check if there are enough ingredients to cook a meal.
                 // 2015-12-10 Used getNumCookableMeal()
                 int numGoodRecipes = kitchen.getNumCookableMeal();
+
+    	        //System.out.println(" # of cookableMeal : " + numGoodRecipes);
                 //System.out.println("numGoodRecipes : " + numGoodRecipes);
                 if (numGoodRecipes == 0) {
                 	// Need to reset numGoodRecipes periodically since it's a cache value

@@ -417,7 +417,8 @@
 		<process name="Press Garlic Oil from Garlic"
 		tech="1" skill="2" work-time="50" process-time="300"
 			power-required="1.0">
-		<description> Continuous pressing by means of expellers is a widely applied process for the extraction of oil from Garlic</description>
+		<description> Continuous pressing by means of expellers is a widely applied
+						process for the extraction of oil from Garlic</description>
 		<inputs>
 			<resource name="Garlic" amount="2.5" />
 		</inputs>
@@ -438,10 +439,9 @@
 			<resource name="Cabbage" amount="0.5" />
 			<resource name="Potato" amount="0.5" />
 			<resource name="Carrot" amount="0.5" />
-			<resource name="Table Salt" amount="0.05" />
+			<resource name="Table Salt" amount="0.01" />
 			<resource name="Soybean" amount="0.45" />
-			<resource name="Soybean Oil" amount="0.15" />
-			<resource name="Mustard" amount="0.1" />
+			<resource name="Soybean Oil" amount="0.10" />
 			<resource name="Sugar" amount="0.05" />
 		</inputs>
 		<outputs>

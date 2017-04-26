@@ -211,20 +211,17 @@ public class MarsProjectFX extends Application  {
 		+ "  where args include :\n"
 		+ "\n"
 		+ "    new             start a new sim (by default)\n"
-		+ "                    (Note : Whenever arg 'load' is not provided for,\n"
-		+ "                            'new' will be automatically appended.)\n"
-		+ "    headless        run in console mode and without an user interface (UI)\n"
+		+ "                    (Note : if 'load' is absent, 'new' is automatically appended.)\n"
+		+ "    headless        run in console mode and without the graphical interface\n"
 		+ "    0               256MB Min, 1024MB Max (by default)\n"
 		+ "    1               256MB Min, 512MB Max\n"
 		+ "    2               256MB Min, 768MB Max\n"
 		+ "    3               256MB Min, 1024MB Max\n"
 		+ "    4               256MB Min, 1536MB Max\n"
 		+ "    5               256MB Min, 2048MB Max\n"
-		+ "    load            open the File Chooser at the \\.mars-sim\\saved\\ and wait for\n"
-		+ "                    user to choose a saved sim\n"
-		+ "    load 123.sim    load the sim with filename '123.sim'\n"
-		+ "                    (Note : '123.sim' must be located at the same folder\n"
-		+ "                            as the jarfile.)\n";
+		+ "    load            go to directory /.mars-sim/saved/ and wait for user to choose a saved sim\n"
+		+ "    load 123.sim    load the saved sim with filename '123.sim'\n"
+		+ "                    (Note : '123.sim' must be located at the same directory as the jarfile.)\n";
 
     /** true if displaying graphic user interface. */
     private boolean headless = false, newSim = false, loadSim = false, savedSim = false;

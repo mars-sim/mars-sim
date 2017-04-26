@@ -430,13 +430,13 @@ extends TabPanel {
 
 		private Multiset<String> allServingsSet;
 
-		private Multimap<String, Integer> qualityMap;
-		private Multimap<String, Integer> allQualityMap;
+		private Multimap<String, Double> qualityMap;
+		private Multimap<String, Double> allQualityMap;
 
 		private Multimap<String, MarsClock> timeMap;
 		private Multimap<String, MarsClock> allTimeMap;
 
-		private Collection<Map.Entry<String,Integer>> allQualityMapE ;
+		private Collection<Map.Entry<String, Double>> allQualityMapE ;
 		private Collection<Entry<String, MarsClock>> allTimeMapE;
 
 		private CookingTableModel(Settlement settlement) {
@@ -445,7 +445,7 @@ extends TabPanel {
 			//dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			//dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			//dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
-		;
+
 			allServingsSet = HashMultiset.create();
 			allQualityMap = ArrayListMultimap.create();
 			allTimeMap = ArrayListMultimap.create();
@@ -516,9 +516,9 @@ extends TabPanel {
 				//allServingsSet.clear();
 			}
 			else if (column == 2) {
-				int best = 0;
-				int value = 0;
-				for (Map.Entry<String, Integer> entry : allQualityMapE) {
+				double best = 0;
+				double value = 0;
+				for (Map.Entry<String, Double> entry : allQualityMapE) {
 				    String key = entry.getKey();
 				    if (name == key) {
 				    	value = entry.getValue();
@@ -531,9 +531,9 @@ extends TabPanel {
 				}
 			}
 			else if (column == 3) {
-				int worst = 10;
-				int value = 0;
-				for (Map.Entry<String, Integer> entry : allQualityMapE) {
+				double worst = 10;
+				double value = 0;
+				for (Map.Entry<String, Double> entry : allQualityMapE) {
 				    String key = entry.getKey();
 				    if (name == key) {
 				    	value = entry.getValue();

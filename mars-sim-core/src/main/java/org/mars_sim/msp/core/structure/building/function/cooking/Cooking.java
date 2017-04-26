@@ -63,8 +63,18 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
 
+    public static final int RECHECKING_FREQ = 250; // in millisols
+    public static final int NUMBER_OF_MEAL_PER_SOL = 4;
+    // The average amount of cleaning agent (kg) used per sol for clean-up
+    //public static final double CLEANING_AGENT_PER_SOL = 0.1D;
+    // the average amount of water in kg per cooked meal during meal preparation and clean-up
+    //public static final double WATER_USAGE_PER_MEAL = 0.8D;
+    public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
+    public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
     /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
     public static final double COOKED_MEAL_WORK_REQUIRED = 8D; // 10 milli-sols is 15 mins
+    public static double UP = 0.01;
+    public static double DOWN = 0.007;
 
     public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
     public static final String FOOD_WASTE = "food waste";
@@ -78,28 +88,16 @@ implements Serializable {
     public static final String SESAME_OIL = "sesame oil";
     public static final String PEANUT_OIL = "peanut oil";
 
-    public static final int RECHECKING_FREQ = 250; // in millisols
+    private static List<AmountResource> oilMenuAR;
 
+    private boolean cookNoMore = false, no_oil_last_time = false;
+
+    private int cookCapacity, mealCounterPerSol = 0, solCache = 1, numCookableMeal, oil_count = 0;
     // 2015-01-12 Dynamically adjusted the rate of generating meals
     //public double mealsReplenishmentRate;
-    public static double UP = 0.01;
-    public static double DOWN = 0.007;
-    public static final int NUMBER_OF_MEAL_PER_SOL = 4;
-    public int oil_count = 0;
+    private double cleaningAgentPerSol, waterUsagePerMeal, cleanliness, cookingWorkTime, dryMassPerServing, bestQualityCache = 0;
 
-    public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
-    public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
-
-    // The average amount of cleaning agent (kg) used per sol for clean-up
-    //public static final double CLEANING_AGENT_PER_SOL = 0.1D;
-    private double cleaningAgentPerSol;
-
-    // the average amount of water in kg per cooked meal during meal preparation and clean-up
-    //public static final double WATER_USAGE_PER_MEAL = 0.8D;
-    private double waterUsagePerMeal;
-
-    private boolean cookNoMore = false;
-    private boolean no_oil_last_time = false;
+    private String producerName;
 
     // Data members
     private List<CookedMeal> cookedMeals = new CopyOnWriteArrayList<>();//<CookedMeal>();
@@ -107,21 +105,10 @@ implements Serializable {
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
     private List<CropType> cropTypeList;
     //private List<String> oilMenu;// = new CopyOnWriteArrayList<>();
-    private static List<AmountResource> oilMenuAR;
 
-    private int bestQualityCache = 0;
-    private int cookCapacity;
-	private int mealCounterPerSol = 0;
-	private int solCache = 1;
-	private int numCookableMeal;
-
-    private double cookingWorkTime;
-    private double dryMassPerServing;
-
-    private String producerName;
 
 	// 2014-12-08 Added multimaps
-	private Multimap<String, Integer> qualityMap;
+	private Multimap<String, Double> qualityMap;
 	private Multimap<String, MarsClock> timeMap;
 
     private Inventory inv;
@@ -134,7 +121,6 @@ implements Serializable {
     public static AmountResource waterAR;
     public static AmountResource foodWasteAR;
     public static AmountResource foodAR;
-
 
     private Map<AmountResource, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     //private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
@@ -269,9 +255,6 @@ implements Serializable {
     	} // end of while (i.hasNext())
     }
 
-//    public int getHotMealCacheSize() {
-//    	return hotMealCacheSize;
-//    }
 
 	/**
 	 * Gets the water content for a crop.
@@ -293,8 +276,8 @@ implements Serializable {
 	}
 
     // 2014-12-08 Added qualityMap
-    public Multimap<String, Integer> getQualityMap() {
-    	Multimap<String, Integer> qualityMapCache = ArrayListMultimap.create(qualityMap);
+    public Multimap<String, Double> getQualityMap() {
+    	Multimap<String, Double> qualityMapCache = ArrayListMultimap.create(qualityMap);
     	// Empty out the map so that the next read by TabPanelCooking.java will be brand new cookedMeal
 		if (!qualityMap.isEmpty()) {
 			qualityMap.clear();
@@ -456,7 +439,7 @@ implements Serializable {
     public CookedMeal chooseAMeal(Person person) {
     	CookedMeal bestFavDish = null;
         CookedMeal bestMeal = null;
-        int bestQuality = -1;
+        double bestQuality = -1;
       	String mainDish = person.getFavorite().getFavoriteMainDish();
       	String sideDish = person.getFavorite().getFavoriteSideDish();
 
@@ -465,7 +448,7 @@ implements Serializable {
             CookedMeal m = i.next();
             // TODO: define how a person will choose to eat a main dish and/or side dish
             String n = m.getName();
-            int q = m.getQuality();
+            double q = m.getQuality();
             if (n.equals(mainDish)) {
                 // person will choose the main dish
             	if (q > bestQuality) {
@@ -513,14 +496,14 @@ implements Serializable {
      * Gets the quality of the best quality meal at the facility.
      * @return quality
      */
-    public int getBestMealQuality() {
+    public double getBestMealQuality() {
 
-    	int bestQuality = 0;
+    	double bestQuality = 0;
     	// Question: do we want to remember the best quality ever or just the best quality among the current servings ?
         Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
             //CookedMeal meal = i.next();
-            int q = i.next().getQuality();
+            double q = i.next().getQuality();
             if (q > bestQuality)
             	bestQuality = q;
         }
@@ -530,7 +513,7 @@ implements Serializable {
         return bestQuality;
     }
 
-    public int getBestMealQualityCache() {
+    public double getBestMealQualityCache() {
     	getBestMealQuality();
     	return bestQualityCache;
     }
@@ -573,7 +556,8 @@ implements Serializable {
 
             int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(settlement);
 
-            //System.out.println("numSettlementCookedMeals : " + numSettlementCookedMeals + "  maxServings " + maxServings);
+            System.out.println("numSettlementCookedMeals : " + numSettlementCookedMeals + "       maxServings : " + maxServings);
+
             if (numSettlementCookedMeals >= maxServings) {
             	cookNoMore = true;
             }
@@ -707,6 +691,11 @@ implements Serializable {
 	 * @return true or false
 	 */
     public boolean areAllIngredientsAvailable(HotMeal aMeal) {
+
+ 		return aMeal.getIngredientList()
+				.stream()
+				.allMatch(i -> retrieveAnIngredientFromMap(i.getDryMass(), i.getAR(), false));
+
 /*
       	boolean result = true;
        	List<Ingredient> ingredientList = aMeal.getIngredientList();
@@ -727,10 +716,6 @@ implements Serializable {
 
 		return result;
 */
- 		return aMeal.getIngredientList()
-				.stream()
-				.allMatch(i -> retrieveAnIngredientFromMap(i.getDryMass(), i.getAR(), false));
-
 
     }
 
@@ -741,6 +726,11 @@ implements Serializable {
      */
     // 2015-01-02 Modified pickOneOil()
 	public AmountResource pickOneOil(double amount) {
+
+ 		return oilMenuAR
+				.stream()
+				.filter(oil -> inv.getAmountResourceStored(oil, false) > amount)
+				.findFirst().orElse(null);//.get();;
 /*
 	    	List<AmountResource> available_oils = new CopyOnWriteArrayList<>();
 	    	int size = oilMenuAR.size();
@@ -771,10 +761,6 @@ implements Serializable {
 	    	//logger.info("oil index : "+ index);
 	    	return selectedOil;
 */
-	 		return oilMenuAR
-					.stream()
-					.filter(oil -> inv.getAmountResourceStored(oil, false) > amount)
-					.findFirst().orElse(null);//.get();;
 
 
 		}
@@ -793,10 +779,13 @@ implements Serializable {
      */
 
     /**
-     * Cook a hot meal.
+     * Cooks a hot meal by retrieving ingredients
      * @param hotMeal the meal to cook.
+     * @return name of meal
      */
     public String cookAHotMeal(HotMeal hotMeal) {
+    	double mealQuality = 0;
+    	int q = 0;
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();
 	    Iterator<Ingredient> i = ingredientList.iterator();
@@ -804,9 +793,35 @@ implements Serializable {
 	        Ingredient oneIngredient = i.next();
 	        //String ingredientName = oneIngredient.getName();
     		AmountResource ingredientAR = oneIngredient.getAR();
+
+    		int id = oneIngredient.getID();
 	        // 2014-12-11 Updated to using dry weight
 	        double dryMass = oneIngredient.getDryMass();
-	        retrieveAnIngredientFromMap(dryMass, ingredientAR, true);
+
+	        boolean hasIt = retrieveAnIngredientFromMap(dryMass, ingredientAR, true);
+
+	        // 2017-04-26 Add the effect of the presence of ingredients on meal quality
+	        if (hasIt) {
+		        // In general, if the meal has more ingredient the better quality the meal
+		        mealQuality = mealQuality + .1;
+	        }
+
+	        else {
+		 		// ingredient 0, 1 and 2 are crucial and are must-have's
+		        // if ingredients 3-6 are NOT presented, add penalty to the meal quality
+	        	if (id < 3)
+	        		return null;
+	        	else if (id == 3)
+	        		mealQuality = mealQuality - .75;
+	        	else if (id == 4)
+	        		mealQuality = mealQuality - .5;
+	        	else if (id == 5)
+	        		mealQuality = mealQuality - .25;
+	        	else if (id == 6)
+	        		mealQuality = mealQuality - .25;
+	        }
+
+
 	    }
 
 	    // consume oil
@@ -822,11 +837,12 @@ implements Serializable {
 	    consumeWater();
 
 	    String nameOfMeal = hotMeal.getMealName();
-	    //TODO: kitchen equipment and quality of food should affect mealQuality
-	    int mealQuality = getBestCookSkill(has_oil);
+	    // 2017-04-26 Add how kitchen cleanliness affect meal quality
+	    mealQuality = mealQuality + getBestCookSkill(has_oil) + cleanliness;
+	    mealQuality = Math.round(mealQuality *10D)/10D;
 	    MarsClock expiration = (MarsClock) marsClock.clone();
 	    CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, expiration, producerName, this);
-	    logger.finest("A new meal was cooked by : " + meal.getName());
+	    //logger.finest("A new meal was cooked by : " + meal.getName());
 	    cookedMeals.add(meal);
 	    mealCounterPerSol++;
 
@@ -834,10 +850,12 @@ implements Serializable {
 	    qualityMap.put(nameOfMeal, mealQuality);
 	    timeMap.put(nameOfMeal, expiration);
 
-	    logger.finest(getBuilding().getBuildingManager().getSettlement().getName() +
-	            " has " + cookedMeals.size() + " meal(s) with quality score of " + mealQuality);
+	    logger.info(getBuilding().getBuildingManager().getSettlement().getName() +
+	            " has 1 serving of " + meal.getName() + " cooked by " + producerName + " with meal quality score of " + mealQuality);
 
 	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
+	    // Reduce a tiny bit of kitchen's cleanliness upon every meal made
+		cleanliness = cleanliness - .005;
 
 	    return nameOfMeal;
     }
@@ -1078,8 +1096,19 @@ implements Serializable {
 
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		Storage.retrieveAnResource(cleaningAgentPerSol, NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
-		Storage.retrieveAnResource(cleaningAgentPerSol*10D, waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+		boolean cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol, NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
+		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*10D, waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+
+		if (cleaning0)
+			cleanliness = cleanliness + .1;
+		else
+			cleanliness = cleanliness - .05;
+
+		if (cleaning1)
+			cleanliness = cleanliness + .1;
+		else
+			cleanliness = cleanliness - .05;
+
 	}
 
 	// 2015-01-16 Added salt as preservatives

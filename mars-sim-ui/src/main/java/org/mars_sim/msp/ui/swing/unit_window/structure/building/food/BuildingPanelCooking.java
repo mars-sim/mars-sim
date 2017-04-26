@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelCooking.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2017-04-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -39,7 +39,7 @@ extends BuildingFunctionPanel {
 	// Cache
 	private int numCooksCache;
 	private int numMealsCache;
-	private int mealQualityCache;
+	private double mealQualityCache;
 	private int numMealsTodayCache;
 
 	/**
@@ -134,7 +134,7 @@ extends BuildingFunctionPanel {
 		}
 
 		//String mealQualityStr;
-		int mealQuality = 0;
+		double mealQuality = 0;
 		mealQuality = kitchen.getBestMealQualityCache();
 		// Update meal quality
 		if (mealQualityCache != mealQuality) {
