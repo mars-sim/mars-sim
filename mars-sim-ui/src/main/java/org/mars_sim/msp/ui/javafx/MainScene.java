@@ -591,10 +591,10 @@ public class MainScene {
 		});
 	    Nodes.addInputMap(root, ctrlS);
 
-		InputMap<KeyEvent> ctrlA = consume(keyPressed(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN)), e -> {
+		InputMap<KeyEvent> ctrlE = consume(keyPressed(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN)), e -> {
 			saveSimulation(Simulation.SAVE_AS);
 		});
-	    Nodes.addInputMap(root, ctrlA);
+	    Nodes.addInputMap(root, ctrlE);
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)), e -> {
 			alertOnExit();
@@ -2940,7 +2940,6 @@ public class MainScene {
 
 		}
 		//endPause(previous);
-
 	}
 
 	/**
@@ -2953,7 +2952,7 @@ public class MainScene {
 		dir = null;
 		title = null;
 
-		//hideWaitStage(PAUSED);
+		hideWaitStage(PAUSED);
 
 		// 2015-01-25 Added autosave
 		if (type == Simulation.AUTOSAVE) {
@@ -2965,7 +2964,7 @@ public class MainScene {
 			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
 
 		} else if (type == Simulation.SAVE_AS) {
-			masterClock.setPaused(true);
+			//masterClock.setPaused(true);
 			Platform.runLater(() -> {
 				FileChooser chooser = new FileChooser();
 				dir = Simulation.DEFAULT_DIR;
@@ -2981,8 +2980,10 @@ public class MainScene {
 				File selectedFile = chooser.showSaveDialog(stage);
 				if (selectedFile != null)
 					fileLocn = selectedFile;// + Simulation.DEFAULT_EXTENSION;
-				else
+				else {
+					hideWaitStage(PAUSED);
 					return;
+				}
 
 				//hideWaitStage(PAUSED);
 				showWaitStage(SAVING);
@@ -3012,6 +3013,7 @@ public class MainScene {
 		        new Thread(task).start();
 			});
 		}
+
 	}
 
 

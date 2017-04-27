@@ -10,23 +10,30 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebHistory;
 import javafx.scene.Cursor;
 //import javafx.scene.text.Text;
-
+import javafx.scene.Node;
 import netscape.javascript.JSObject;
 //import javax.swing.*;
 //import javax.swing.event.HyperlinkEvent;
@@ -103,8 +110,9 @@ public class BrowserJFX {
           + "hr{width:90%;}";
 
 
-	private boolean isLocalHtml = true, isInternal = false;
-
+	private boolean isLocalHtml = true;
+	private Point2D pLimit;
+	private double width, height;
     public volatile String textInputCache, addressURLText, statusBarURLText, inputCache;
 
     private JFXPanel jfxPanel = new JFXPanel();
@@ -136,7 +144,67 @@ public class BrowserJFX {
         Platform.runLater(() -> {
             view = new WebView();
             engine = view.getEngine();
-        	//logger.info("Web Engine supported : " + engine.getUserAgent());
+        	logger.info("Web Engine supported : " + engine.getUserAgent());
+        	// For JDK 131, it prints the following :
+        	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
+
+            // 2017-04-27 Disable context menu (copy option)
+            view.setContextMenuEnabled(false);
+
+/*
+            // 2017-04-27 Add the use of WebEventDispatcher
+            WebEventDispatcher webEventDispatcher = new WebEventDispatcher(view.getEventDispatcher());
+
+			// features NOT used for now
+            engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+
+                @Override
+                public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+                    if(newValue.equals(State.SUCCEEDED)){
+                        // dispatch all events
+                        view.setEventDispatcher(webEventDispatcher);
+                    }
+                }
+
+            });
+*/
+/*			// features NOT used for now
+            engine.setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
+
+                @Override
+                public WebEngine call(PopupFeatures p) {
+                    Stage stage = new Stage(StageStyle.UTILITY);
+                    WebView wv2 = new WebView();
+                    stage.setScene(new Scene(wv2));
+                    stage.show();
+                    return wv2.getEngine();
+                }
+            });
+
+			// features NOT used for now
+            // 2017-04-27 Add ListChangeListener to disable mouse scroll
+            view.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
+
+            	@Override
+            	public void onChanged(ListChangeListener.Change<? extends Node> c) {
+                    pLimit = view.localToScene(view.getWidth(), view.getHeight());
+                    view.lookupAll(".scroll-bar")
+                    		.stream()
+                            .map(s -> (ScrollBar)s)
+                            .forEach(s -> {
+                                if(s.getOrientation().equals(Orientation.VERTICAL)){
+                                    width = s.getBoundsInLocal().getWidth();
+                                }
+                                if(s.getOrientation().equals(Orientation.HORIZONTAL)){
+                                    height = s.getBoundsInLocal().getHeight();
+                                }
+                            });
+                    // dispatch all events
+                    webEventDispatcher.setLimit(pLimit.subtract(width, height));
+                }
+            });
+*/
+
             history = engine.getHistory();
             entryList = history.getEntries();
         });
@@ -144,12 +212,16 @@ public class BrowserJFX {
         initJFX();
         panel = initJPanel();
 
+        btnGo.doClick(); // not useful
+
         Platform.runLater(() -> {
-            btnGo.doClick(); // not useful
-            //btnGo.doClick();
         	//history.go(0);
         	updateButtons();
         });
+
+        //SwingUtilities.invokeLater(()-> {
+        //    btnGo.doClick(); // not useful
+        //});
     }
 
 
@@ -285,7 +357,6 @@ public class BrowserJFX {
 
 		// Type 0 is internal command
 		if (URL_type == INTERNAL_COMMAND)  {
-			isInternal = true;
 			isLocalHtml = true;
 			//System.out.println("BrowserJFX : input is " + input);
 			determineURL(input + ".html", INTERNAL_COMMAND);
@@ -294,22 +365,18 @@ public class BrowserJFX {
 		// Type 1 is local html file
 		else if (URL_type == LOCAL_HTML) {
 			isLocalHtml = true;
-			isInternal = false;
 			determineURL(input, LOCAL_HTML);
 			//addCSS();
 			//btnGo.doClick();
 		}
 
 		else if (URL_type == REMOTE_HTML) {
-			isInternal = false;
 			isLocalHtml = false;
 			determineURL(input, REMOTE_HTML);
 		}
 
 		else {
 			isLocalHtml = false;
-			isInternal = false;
-
 			boolean https = input.toLowerCase().contains(HTTPS_HEADER);
 			boolean http = input.toLowerCase().contains(HTTP_HEADER);
 
@@ -319,7 +386,8 @@ public class BrowserJFX {
 				determineURL(input, REMOTE_HTML);
 			}
 			else {
-	    		System.out.println("parseInput() : URL_type is " + URL_type);
+	    		//System.out.println("parseInput() : URL_type is " + URL_type);
+	    		System.out.println("parseInput() : unknown url");
 				// Type 3 could be a remote url that has no "http://" or an invalid input
 				// e.g. type in google.com
 				// will need to add http://
@@ -656,9 +724,7 @@ public class BrowserJFX {
     @SuppressWarnings("restriction")
 	public void loadRemoteURL(final String content) {
     	isLocalHtml = false;
-    	isInternal = false;
-
-        Platform.runLater(()-> {
+    	Platform.runLater(()-> {
 			//boolean status = content.toLowerCase().contains(HTTPS_HEADER)
 			//		|| content.toLowerCase().contains(HTTP_HEADER);
 
@@ -683,8 +749,7 @@ public class BrowserJFX {
     @SuppressWarnings("restriction")
 	public void loadLocalURL(String content) {
        	isLocalHtml = true;
-    	isInternal = false;
-        Platform.runLater(()-> {
+    	Platform.runLater(()-> {
             engine.load(content);
             updateButtons();
             textInputCache = content;

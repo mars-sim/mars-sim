@@ -454,18 +454,6 @@ public class MasterClock implements Serializable { // Runnable,
         return defaultTimeRatio;
     }
 
-    /**
-     * Sets the sleep time between two successive game updates
-     * @param value in milliseconds
-
-    public void setTimeBetweenUpdates(double value) {
-        if (value >= 4D && value <= 250D) {
-            defaultTmeBetweenUpdates = (long)value * 1_000_000L; // convert milli (10E3) to nano (10E9) by multiplying 10E6
-            System.out.println("timeBetweenUpdates : " + timeBetweenUpdates);
-        }
-        //else throw new IllegalArgumentException("time between updates is out of bounds. Must be between 1 and 1000 ");
-    }
-     */
 
     /**
      * Gets the time between updates
@@ -800,7 +788,7 @@ public class MasterClock implements Serializable { // Runnable,
 */
 		Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
 		while (i.hasNext()) {
-			try {
+			//try {
 				ClockListenerTask task = i.next();
 
   		  		if ((task != null) && !(clockListenerExecutor.isTerminating() || clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown())) {
@@ -810,10 +798,10 @@ public class MasterClock implements Serializable { // Runnable,
   		  		else
   		  			return;
   				//}
-            } catch (Exception e) {
-				e.printStackTrace();
+            //} catch (Exception e) {
+			//	e.printStackTrace();
         		//throw new IllegalStateException("Error while firing clock pulse", e);
-            }
+            //}
         }
 
 	  	//endClockListenerExecutor();
