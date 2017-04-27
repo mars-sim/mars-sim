@@ -87,7 +87,7 @@ implements Serializable {
 	        if (isAvailable && !enoughDessert) {
 
 		        // Set the chef name at the kitchen.
-		        kitchen.setChef(person.getName());
+		        //kitchen.setChef(person.getName());
 
 		        // Add task phase
 		        addPhase(PREPARING_DESSERT);
@@ -129,7 +129,7 @@ implements Serializable {
 	        if (isAvailable && !enoughDessert) {
 
 		        // Set the chef name at the kitchen.
-		        kitchen.setChef(robot.getName());
+		        //kitchen.setChef(robot.getName());
 
 		        // Add task phase
 		        addPhase(PREPARING_DESSERT);
@@ -181,11 +181,16 @@ implements Serializable {
      */
     private double preparingDessertPhase(double time) {
 
+
         // If kitchen has malfunction, end task.
         if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
             endTask();
             return time;
         }
+
+        // Add this work to the kitchen.
+        String nameOfDessert = null;
+		double workTime = time;
 
 		if (person != null) {
 	        // If meal time is over, end task.
@@ -201,7 +206,11 @@ implements Serializable {
                 endTask();
                 return time;
             }
+
+            // Add this work to the kitchen.
+            nameOfDessert = kitchen.addWork(workTime, person);
 		}
+
 		else if (robot != null) {
 		    // If meal time is over, end task.
             if (!CookMeal.isMealTime(robot)) {
@@ -216,26 +225,25 @@ implements Serializable {
                 endTask();
                 return time;
             }
-		}
 
-		double workTime = time;
-
-		if (robot != null) {
 		    // A robot moves slower than a person and incurs penalty on workTime
 		    workTime = time/2;
+            // Add this work to the kitchen.
+		    nameOfDessert = kitchen.addWork(workTime, robot);
 		}
+
 
         // Determine amount of effective work time based on Cooking skill.
         int dessertMakingSkill = getEffectiveSkillLevel();
         if (dessertMakingSkill == 0) {
             workTime /= 2;
         }
+
         else {
             workTime += workTime * (.2D * (double) dessertMakingSkill);
         }
 
-        // Add this work to the kitchen.
-        String nameOfDessert = kitchen.addWork(workTime);
+
 
         if (nameOfDessert != null)
         	setDescription(Msg.getString("Task.description.prepareDessert.detail.finish",

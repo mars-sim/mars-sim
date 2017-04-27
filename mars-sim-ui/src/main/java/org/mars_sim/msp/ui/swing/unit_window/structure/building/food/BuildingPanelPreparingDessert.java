@@ -39,7 +39,7 @@ extends BuildingFunctionPanel {
 	private int numCooksCache;
 	private int servingsDessertCache;
 	private int servingsDessertTodayCache;
-	private int dessertQualityCache;
+	private double dessertQualityCache;
 
 	/**
 	 * Constructor.
@@ -125,8 +125,7 @@ extends BuildingFunctionPanel {
 
 		// 2014-11-30 Added dessertQualityStr
 		//String dessertQualityStr;
-		int dessertQuality = 0;
-		dessertQuality = kitchen.getBestDessertQualityCache();
+		double dessertQuality = kitchen.getBestDessertQualityCache();
 		// Update Dessert quality
 		if (dessertQualityCache != dessertQuality) {
 			dessertQualityCache = dessertQuality;

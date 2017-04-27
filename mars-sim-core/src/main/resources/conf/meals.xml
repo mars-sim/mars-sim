@@ -5,12 +5,12 @@
 <meal-configuration>
 
 	<!-- The average water usage (kg) for each cooked meal during meal preparation and clean-up-->
-	<!-- Default: 0.8 -->
-	<water-consumption-rate value="0.8" />
+	<!-- Default: 0.5 -->
+	<water-consumption-rate value="0.5" />
 
 	<!-- The average amount of cleaning agent (kg) used per sol for clean-up-->
-	<!-- Default: 0.8 -->
-	<cleaning-agent-per-sol value="0.1" />
+	<!-- Default: 0.075 -->
+	<cleaning-agent-per-sol value="0.075" />
 
 	<meal-list>
 		<!--  A MAIN DISH will have dry mass with a total proportion of 0.8

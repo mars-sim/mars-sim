@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -55,9 +57,10 @@ implements Serializable {
 	public static final String GREY_WATER = "grey water";
     public static final String FOOD_WASTE = "food waste";
 	public static final String WATER = "water";
+    public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
     /** The base amount of work time in milliSols (for cooking skill 0)
      * to prepare fresh dessert . */
-    public static final double PREPARE_DESSERT_WORK_REQUIRED = 2D;
+    public static final double PREPARE_DESSERT_WORK_REQUIRED = 3D;
 
     // 2015-01-12 Dynamically adjusted the rate of generating desserts
     //public double dessertsReplenishmentRate;
@@ -69,7 +72,7 @@ implements Serializable {
     // DESSERT_SERVING_FRACTION is used in every mission expedition
     public static final double DESSERT_SERVING_FRACTION = .5D;
     // amount of water in kg per dessert during preparation and clean-up
-    public static final double WATER_USAGE_PER_DESSERT = 1.0;
+    public static final double WATER_USAGE_PER_DESSERT = .5;
 
     private static double dessertMassPerServing;
 
@@ -85,6 +88,11 @@ implements Serializable {
 		};
 
     private static int NUM_DESSERTS = availableDesserts.length;
+
+	private static AmountResource waterAR;
+    private static AmountResource greyWaterAR;
+    private static AmountResource foodWasteAR;
+    public static AmountResource NaClOAR;
 
     public static AmountResource [] availableDessertsAR =
     	{
@@ -111,23 +119,17 @@ implements Serializable {
 
     private boolean makeNoMoreDessert = false;
 
-    private int bestQualityCache = 0;
-	private int dessertCounterPerSol = 0;
-	private int solCache = 1;
-    private int cookCapacity;
-    private int NumOfServingsCache; // used in timePassing
+	private int dessertCounterPerSol = 0, solCache = 1, cookCapacity; // used in timePassing
 
-	private double preparingWorkTime; // used in numerous places
+	private double preparingWorkTime, bestQualityCache = 0, cleanliness = 0, cleaningAgentPerSol, waterUsagePerMeal;
 
     private String producerName;
 
     private Building building;
     private Settlement settlement;
-    private Inventory inv ;
-
-	private static AmountResource waterAR;
-    private static AmountResource greyWaterAR;
-    private static AmountResource foodWasteAR;
+    private Inventory inv;
+    private Person person;
+    private Robot robot;
 
     private List<PreparedDessert> servingsOfDessert;
 
@@ -152,6 +154,10 @@ implements Serializable {
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL * DESSERT_SERVING_FRACTION;
 
+    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
+        // 2016-05-31 Added loading the two parameters from meals.xml
+        cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
+        waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
 
         preparingWorkTime = 0D;
         servingsOfDessert = new CopyOnWriteArrayList<>();
@@ -166,6 +172,7 @@ implements Serializable {
 		greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
 		waterAR = AmountResource.findAmountResource(WATER);
         foodWasteAR = AmountResource.findAmountResource(FOOD_WASTE);
+        NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);
     }
 
     public Inventory getInventory() {
@@ -209,9 +216,9 @@ implements Serializable {
 
 
     // 2015-01-12 Added setChef()
-    public void setChef(String name) {
-    	this.producerName = name;
-    }
+    //public void setChef(String name) {
+    //	this.producerName = name;
+    //}
 
     /**
      * Gets the value of the function for a named building.
@@ -289,7 +296,7 @@ implements Serializable {
     /**
      * Gets the skill level of the best cook using this facility.
      * @return skill level.
-     */
+
     public int getBestDessertSkill() {
         int result = 0;
 
@@ -315,6 +322,8 @@ implements Serializable {
 
         return result;
     }
+     */
+
 
     /**
      * Checks if there are any FreshDessertList in this facility.
@@ -339,13 +348,13 @@ implements Serializable {
     public PreparedDessert chooseADessert(Person person) {
         PreparedDessert bestDessert = null;
         PreparedDessert bestFavDessert = null;
-        int bestQuality = -1;
+        double bestQuality = -1;
         String favoriteDessert = person.getFavorite().getFavoriteDessert();
 
         Iterator<PreparedDessert> i = servingsOfDessert.iterator();
         while (i.hasNext()) {
             PreparedDessert d = i.next();
-            int q = d.getQuality();
+            double q = d.getQuality();
             if (d.getName().equals(favoriteDessert)) {
             	// person will choose his/her favorite dessert right away
                 if (q > bestQuality) {
@@ -392,15 +401,15 @@ implements Serializable {
      * Gets the quality of the best quality fresh Dessert at the facility.
      * @return quality
      */
-    public int getBestDessertQuality() {
-        int bestQuality = 0;
+    public double getBestDessertQuality() {
+    	double bestQuality = 0;
     	// Question: do we want to remember the best quality ever or just the best quality among the current servings ?
         Iterator<PreparedDessert> i = servingsOfDessert.iterator();
         while (i.hasNext()) {
             //PreparedDessert freshDessert = i.next();
             //if (freshDessert.getQuality() > bestQuality)
             //	bestQuality = freshDessert.getQuality();
-            int q = i.next().getQuality();
+        	double q = i.next().getQuality();
             if (q > bestQuality)
             	bestQuality = q;
         }
@@ -411,7 +420,7 @@ implements Serializable {
         return bestQuality;
     }
 
-    public int getBestDessertQualityCache() {
+    public double getBestDessertQualityCache() {
     	getBestDessertQuality();
     	return bestQualityCache;
     }
@@ -421,13 +430,37 @@ implements Serializable {
  	}
 
     /**
-     * Cleanup kitchen after eating.
+     * Finishes up preparing dessert
      */
-    public void cleanUp() {
+    public void finishUp() {
     	preparingWorkTime = 0D;
         makeNoMoreDessert = false;
     }
 
+	/**
+	 * Cleans up the kitchen with cleaning agent and water.
+	 */
+	// 2015-02-27 Added cleanUpKitchen()
+	public void cleanUpKitchen() {
+		boolean cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol*.1, NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
+		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol, waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+
+		if (cleaning0)
+			cleanliness = cleanliness + .05;
+		else
+			cleanliness = cleanliness - .025;
+
+		if (cleaning1)
+			cleanliness = cleanliness + .075;
+		else
+			cleanliness = cleanliness - .05;
+
+		if (cleanliness > 1)
+			cleanliness = 1;
+		else if (cleanliness < -1)
+			cleanliness = -1;
+
+	}
 
     /**
      * Check if no more dessert needs to be prepared during this meal time.
@@ -484,7 +517,12 @@ implements Serializable {
      * The amount of work is dependent upon the person's skill.
      * @param workTime work time (millisols)
       */
-    public String addWork(double workTime) {
+    public String addWork(double workTime, Unit theCook) {
+    	if (theCook instanceof Person)
+    		this.person = (Person)theCook;
+    	else if (theCook instanceof Robot)
+    		this.robot = (Robot)theCook;
+
     	String selectedDessert = null;
 
     	preparingWorkTime += workTime;
@@ -557,31 +595,60 @@ implements Serializable {
         else {
 	        Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
 
-	       // MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-	        // TODO: quality also dependent upon the hygiene of a person
-	        int dessertQuality = getBestDessertSkill();
+	        double dessertQuality = 0;
+        // TODO: quality also dependent upon the hygiene of a person
+		    double culinarySkillPerf = 0;
+		    // 2017-04-26 Add influence of a person/robot's performance on meal quality
+		    if (person != null)
+		    	culinarySkillPerf = .25 * person.getPerformanceRating() * person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+		    else if (robot != null)
+		    	culinarySkillPerf = .1 * robot.getPerformanceRating() * robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+
+	        dessertQuality = Math.round((dessertQuality + culinarySkillPerf + cleanliness)*10D)/10D;;
+
+		    if (person != null)
+		    	producerName = person.getName();
+		    else if (robot != null)
+		    	producerName = robot.getName();
 
 	        // Create a serving of dessert and add it into the list
 		    servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, (MarsClock)currentTime.clone(), producerName, this));
 
-		    useWater();
+		    consumeWater();
 
 		    dessertCounterPerSol++;
-		    logger.info("a new serving of " + selectedDessert + " was just prepared by " + producerName);
+
+		    logger.info(producerName + " prepared a serving of " + selectedDessert
+		    		+ " in " + getBuilding().getBuildingManager().getSettlement().getName()
+		    		+ " (dessert quality : " + dessertQuality + ")");
 
 		    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
+
+		    // Reduce a tiny bit of kitchen's cleanliness upon every meal made
+			cleanliness = cleanliness - .0075;
 
 		    return selectedDessert;
         }
 
     }
 
-    // 2015-01-28 Added useWater()
-    public void useWater() {
+    /**
+     * Consumes a certain amount of water for each dessert
+     */
+    // 2015-01-28 Added consumeWater()
+    public void consumeWater() {
+    	int sign = RandomUtil.getRandomInt(0, 1);
+    	double rand = RandomUtil.getRandomDouble(0.2);
+    	double usage = WATER_USAGE_PER_DESSERT;
     	//TODO: need to move the hardcoded amount to a xml file
-    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, waterAR, inv, true);
-		double wasteWaterAmount = WATER_USAGE_PER_DESSERT * .95;
+    	if (sign == 0)
+    		usage = 1 + rand;
+    	else
+    		usage = 1 - rand;
+    	Storage.retrieveAnResource(usage, waterAR, inv, true);
+		double wasteWaterAmount = usage * .5;
 		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv);
+
     }
 
 
@@ -648,8 +715,10 @@ implements Serializable {
         // Check if not meal time, clean up.
         Coordinates location = getBuilding().getBuildingManager().getSettlement().getCoordinates();
         if (!CookMeal.isMealTime(location)) {
-            cleanUp();
+            finishUp();
         }
+
+        cleanUpKitchen();
 
         checkEndOfDay();
     }

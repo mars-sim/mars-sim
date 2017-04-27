@@ -27,12 +27,12 @@ implements Serializable {
 	private static final double SHELF_LIFE = 150D;
 
 	// Data members
-	private int quality;
+	private double quality;
 	private MarsClock expirationTime;
 
 	// 2014-11-28 Added name
 	private String name;
-	
+
 	private String producerName;
 	private String consumerName;
 	private PreparingDessert kitchen;
@@ -43,23 +43,23 @@ implements Serializable {
 	 * @param quality the quality of the dessert
 	 * @param creationTime the time the dessert was cooked.
 	 */
-	public PreparedDessert(String name, int quality, double dryMass, MarsClock creationTime, String producerName, PreparingDessert kitchen) {
+	public PreparedDessert(String name, double quality, double dryMass, MarsClock creationTime, String producerName, PreparingDessert kitchen) {
 		this.quality = quality;
 		this.name = name;
 		this.dryMass = dryMass;
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
 		this.producerName = producerName;
-		this.kitchen = kitchen; 
+		this.kitchen = kitchen;
 	}
-	
+
 	public PreparedDessert(PreparedDessert preparedDessert, String consumerName) {
 		this.quality = preparedDessert.quality;
 		this.name = preparedDessert.name;
 		this.expirationTime = preparedDessert.expirationTime;
 		this.consumerName = consumerName;
 	}
-	
+
 	// 2014-11-28 Added getName()
 	public String getName() {
 		return name;
@@ -68,7 +68,7 @@ implements Serializable {
 	 * Gets the quality of the meal.
 	 * @return quality
 	 */
-	public int getQuality() {
+	public double getQuality() {
 		return quality;
 	}
 
@@ -79,7 +79,7 @@ implements Serializable {
 	public double getDryMass() {
 		return dryMass;
 	}
-	
+
 	/**
 	 * Gets the expiration time of the meal.
 	 * @return expiration time

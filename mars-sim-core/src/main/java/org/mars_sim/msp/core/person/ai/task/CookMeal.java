@@ -139,9 +139,6 @@ implements Serializable {
 
 		    	counter = 0;
 
-		    	// Set the chef name at the kitchen.
-				kitchen.setChef(person.getName());
-
 		    	// Add task phase
 			    addPhase(COOKING);
 				setPhase(COOKING);
@@ -212,8 +209,6 @@ implements Serializable {
 	        else {
 
 		    	counter = 0;
-				// 2015-01-06
-				kitchen.setChef(robot.getName());
 
 		    	// Add task phase
 			    addPhase(COOKING);
@@ -271,6 +266,9 @@ implements Serializable {
             return time;
         }
 
+	    String nameOfMeal = null;
+        double workTime = time;
+
 		if (person != null) {
 	        // If meal time is over, end task.
 	        if (!isMealTime(person.getCoordinates())) {
@@ -285,6 +283,9 @@ implements Serializable {
 	            endTask();
 	            return time;
 	        }
+
+		    // Add this work to the kitchen.
+	        nameOfMeal = kitchen.addWork(workTime, person);
 		}
 		else if (robot != null) {
 	        // If meal time is over, end task.
@@ -300,22 +301,18 @@ implements Serializable {
                 endTask();
                 return time;
             }
+
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+    	    // Add this work to the kitchen.
+            nameOfMeal = kitchen.addWork(workTime, robot);
 		}
 
-        double workTime = time;
-
-	    // Add this work to the kitchen.
-	    String nameOfMeal = kitchen.addWork(workTime);
 
         if (nameOfMeal != null) {
 
         	setDescription(Msg.getString("Task.description.cookMeal.detail.finish",
         		nameOfMeal)); //$NON-NLS-1$
-
-            if (robot != null) {
-    		     // A robot moves slower than a person and incurs penalty on workTime
-    	        workTime = time/2;
-    		}
 
     		// Determine amount of effective work time based on "Cooking" skill.
     	    int cookingSkill = getEffectiveSkillLevel();

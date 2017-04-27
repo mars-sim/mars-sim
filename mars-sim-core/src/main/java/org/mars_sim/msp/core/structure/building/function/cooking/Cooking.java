@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -114,6 +115,8 @@ implements Serializable {
     private Inventory inv;
     private HotMeal aMeal;
     private Settlement settlement;
+    private Person person;
+    private Robot robot;
 
     public static AmountResource tableSaltAR;
     public static AmountResource NaClOAR;
@@ -381,8 +384,8 @@ implements Serializable {
     /**
      * Gets the skill level of the best cook using this facility.
      * @return skill level.
-     */
-    public int getBestCookSkill(boolean has_oil) {
+
+    public int getBestCookSkill() {
         int result = 0;
 
         if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
@@ -396,8 +399,6 @@ implements Serializable {
                         int cookingSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
                         if (cookingSkill > result) {
                             result = cookingSkill;
-                            if (has_oil && result < 1)
-                            	result++;
                         }
                     }
                 }
@@ -407,6 +408,7 @@ implements Serializable {
 
         return result;
     }
+*/
 
     /**
      * Checks if there are any cooked meals in this facility.
@@ -519,9 +521,9 @@ implements Serializable {
     }
 
     /**
-     * Cleanup kitchen after meal time.
+     * Finishes up cooking
      */
-    public void cleanUp() {
+    public void finishUp() {
         cookingWorkTime = 0D;
         cookNoMore = false;
     }
@@ -544,7 +546,12 @@ implements Serializable {
      * @param workTime work time (millisols)
      */
  	// Called by CookMeal.java
-    public String addWork(double workTime) {
+    public String addWork(double workTime, Unit theCook) {
+    	if (theCook instanceof Person)
+    		this.person = (Person)theCook;
+    	else if (theCook instanceof Robot)
+    		this.robot = (Robot)theCook;
+
     	String nameOfMeal = null;
 
     	cookingWorkTime += workTime;
@@ -556,7 +563,7 @@ implements Serializable {
 
             int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(settlement);
 
-            System.out.println("numSettlementCookedMeals : " + numSettlementCookedMeals + "       maxServings : " + maxServings);
+            //System.out.println("numSettlementCookedMeals : " + numSettlementCookedMeals + "       maxServings : " + maxServings);
 
             if (numSettlementCookedMeals >= maxServings) {
             	cookNoMore = true;
@@ -694,6 +701,7 @@ implements Serializable {
 
  		return aMeal.getIngredientList()
 				.stream()
+				.filter(i -> i.getID() < 3) // 2017-04-26 only ingredient 0, 1, 2 are must-have's
 				.allMatch(i -> retrieveAnIngredientFromMap(i.getDryMass(), i.getAR(), false));
 
 /*
@@ -785,7 +793,6 @@ implements Serializable {
      */
     public String cookAHotMeal(HotMeal hotMeal) {
     	double mealQuality = 0;
-    	int q = 0;
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();
 	    Iterator<Ingredient> i = ingredientList.iterator();
@@ -808,7 +815,7 @@ implements Serializable {
 
 	        else {
 		 		// ingredient 0, 1 and 2 are crucial and are must-have's
-		        // if ingredients 3-6 are NOT presented, add penalty to the meal quality
+		        // if ingredients 3-6 are NOT presented, there's a penalty to the meal quality
 	        	if (id < 3)
 	        		return null;
 	        	else if (id == 3)
@@ -818,17 +825,35 @@ implements Serializable {
 	        	else if (id == 5)
 	        		mealQuality = mealQuality - .25;
 	        	else if (id == 6)
-	        		mealQuality = mealQuality - .25;
+	        		mealQuality = mealQuality - .15;
 	        }
 
 
 	    }
 
-	    // consume oil
-	    boolean has_oil = false;
+        // TODO: quality also dependent upon the hygiene of a person
+	    double culinarySkillPerf = 0;
+	    // 2017-04-26 Add influence of a person/robot's performance on meal quality
+	    if (person != null)
+	    	culinarySkillPerf = .25 * person.getPerformanceRating() * person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+	    else if (robot != null)
+	    	culinarySkillPerf = .1 * robot.getPerformanceRating() * robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
-	    if (!no_oil_last_time)
+	    // consume oil
+	    boolean has_oil = true;
+
+	    if (!no_oil_last_time) {
+	    	// see reseting no_oil_last_time in timePassing once in a while
+	    	// This reduce having to call consumeOil() all the time
 	    	has_oil = consumeOil(hotMeal.getOil());
+	    	no_oil_last_time = !has_oil;
+	    }
+
+	    // 2017-04-26 Add how kitchen cleanliness affect meal quality
+	    if (has_oil)
+	    	mealQuality = mealQuality + .2;
+
+	    mealQuality = Math.round(( mealQuality + culinarySkillPerf + cleanliness)*10D)/10D;;
 
 	    // consume salt
 	    retrieveAnIngredientFromMap(hotMeal.getSalt(), tableSaltAR, true);
@@ -837,25 +862,30 @@ implements Serializable {
 	    consumeWater();
 
 	    String nameOfMeal = hotMeal.getMealName();
-	    // 2017-04-26 Add how kitchen cleanliness affect meal quality
-	    mealQuality = mealQuality + getBestCookSkill(has_oil) + cleanliness;
-	    mealQuality = Math.round(mealQuality *10D)/10D;
-	    MarsClock expiration = (MarsClock) marsClock.clone();
-	    CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, expiration, producerName, this);
+
+	    MarsClock currentTime = (MarsClock) marsClock.clone();
+
+	    if (person != null)
+	    	producerName = person.getName();
+	    else if (robot != null)
+	    	producerName = robot.getName();
+
+	    CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, currentTime, producerName, this);
 	    //logger.finest("A new meal was cooked by : " + meal.getName());
 	    cookedMeals.add(meal);
 	    mealCounterPerSol++;
 
 	    // 2014-12-08 Added to Multimaps
 	    qualityMap.put(nameOfMeal, mealQuality);
-	    timeMap.put(nameOfMeal, expiration);
+	    timeMap.put(nameOfMeal, currentTime);
 
-	    logger.info(getBuilding().getBuildingManager().getSettlement().getName() +
-	            " has 1 serving of " + meal.getName() + " cooked by " + producerName + " with meal quality score of " + mealQuality);
+	    logger.info(producerName + " cooked a serving of " + meal.getName()
+	    	+ " in " + getBuilding().getBuildingManager().getSettlement().getName()
+	    	+ " (meal quality : " + mealQuality + ")");
 
 	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
 	    // Reduce a tiny bit of kitchen's cleanliness upon every meal made
-		cleanliness = cleanliness - .005;
+		cleanliness = cleanliness - .0075;
 
 	    return nameOfMeal;
     }
@@ -945,9 +975,9 @@ implements Serializable {
 	    	return false;
     }
 
-    public void setChef(String name) {
-    	this.producerName = name;
-    }
+    //public void setChef(String name) {
+    //	this.producerName = name;
+    //}
 
     /**
      * Gets the quantity of one serving of meal
@@ -1060,13 +1090,18 @@ implements Serializable {
         // Check if not meal time, clean up.
         Coordinates location = getBuilding().getBuildingManager().getSettlement().getCoordinates();
         if (!CookMeal.isMealTime(location)) {
-            cleanUp();
+            finishUp();
         }
+
+ 		cleanUpKitchen();
 
         // 2015-01-12 Added checkEndOfDay()
         checkEndOfDay();
     }
 
+    /**
+     * Checks in as the end of the day and empty map caches
+     */
     // 2015-01-12 Added checkEndOfDay()
 	public void checkEndOfDay() {
 		if (marsClock == null)
@@ -1088,26 +1123,32 @@ implements Serializable {
 	 		//int size = getMealRecipesWithAvailableIngredients().size();
 	 		//setNumCookableMeal(size);
 
-	 		cleanUpKitchen();
-
 	 		oil_count = 0;
 	    }
 	}
 
+	/**
+	 * Cleans up the kitchen with cleaning agent and water.
+	 */
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
 		boolean cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol, NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
 		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*10D, waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 
 		if (cleaning0)
-			cleanliness = cleanliness + .1;
+			cleanliness = cleanliness + .05;
+		else
+			cleanliness = cleanliness - .025;
+
+		if (cleaning1)
+			cleanliness = cleanliness + .075;
 		else
 			cleanliness = cleanliness - .05;
 
-		if (cleaning1)
-			cleanliness = cleanliness + .1;
-		else
-			cleanliness = cleanliness - .05;
+		if (cleanliness > 1)
+			cleanliness = 1;
+		else if (cleanliness < -1)
+			cleanliness = -1;
 
 	}
 
