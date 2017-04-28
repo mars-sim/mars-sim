@@ -30,21 +30,22 @@ import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebHistory.Entry;
 
 public class JavaFXBrowserWithHistory  extends Application{
-	
+
     //private final ProgressBar progressBar = new ProgressBar();
 
     public static void main(String[] args){
         launch(args);
     }
-    
-    public void start(Stage primaryStage){                
+
+    public void start(Stage primaryStage){
         BorderPane ap = new BorderPane();
 
-        Scene scene = new Scene(ap, 900, 900);
+        Scene scene = new Scene(ap, 1280, 900);
+        scene.getStylesheets().add("/css/buttondemo.css");
 
-        VBox sp = new VBox();
+        HBox sp = new HBox();
 
-        Button reloadButton = new Button("R");
+        Button reloadButton = new Button("Go");
         reloadButton.setMinWidth(30);
         reloadButton.setTooltip(new Tooltip("Reload this page"));
 
@@ -60,9 +61,9 @@ public class JavaFXBrowserWithHistory  extends Application{
         tf.setPromptText("URL Address");
         tf.setMinWidth(1024);
         tf.setPrefWidth(1024);
-        
 
-        ComboBox comboBox = new ComboBox();
+
+        ComboBox<String> comboBox = new ComboBox();
         comboBox.setPromptText("History");
         comboBox.setMaxWidth(110);
 
@@ -72,7 +73,7 @@ public class JavaFXBrowserWithHistory  extends Application{
         webEngine.load("http://www.google.com");
         webEngine.setJavaScriptEnabled(true);
 
-/*        
+/*
         Worker<?> worker = webEngine.getLoadWorker();
         worker.workDoneProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -84,7 +85,7 @@ public class JavaFXBrowserWithHistory  extends Application{
             }
         });
 */
-        
+
         WebHistory history = webEngine.getHistory();
 
         Button Google = new Button("Google");
@@ -132,26 +133,31 @@ public class JavaFXBrowserWithHistory  extends Application{
         tf.setOnKeyPressed((KeyEvent ke) -> {
             KeyCode key = ke.getCode();
             if(key == KeyCode.ENTER){
-            	
+
                 webEngine.load("http://" + tf.getText());
             }
         });
 
-/*        
+/*
         VBox statusBar = new VBox();
-        
+
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
         statusBar.getChildren().add(progressBar);
-*/       
+*/
         sp.getChildren().addAll(comboBox, Google, Yahoo, Bing, Facebook, Twitter, YouTube);
 
-        ap.setLeft(sp);
-        
-        HBox top = new HBox();
-        top.getChildren().addAll(backButton, forwardButton, reloadButton, tf);
-        
-        ap.setTop(top);
+        //ap.setTop(sp);
+
+
+        HBox bar = new HBox();
+        bar.getChildren().addAll(tf, backButton, reloadButton, forwardButton);
+
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(sp, bar);
+
+
+        ap.setTop(vbox);
         ap.setCenter(browser);
 
         browser.setPrefSize(700, 700);
@@ -163,7 +169,7 @@ public class JavaFXBrowserWithHistory  extends Application{
 
         primaryStage.show();
     }
-    
+
     private static Object executejQuery(final WebEngine engine, String minVersion, String jQueryLocation, String script) {
         return engine.executeScript(
                 "(function(window, document, version, callback) { "
@@ -183,6 +189,6 @@ public class JavaFXBrowserWithHistory  extends Application{
                 + "} "
                 + "})(window, document, \"" + minVersion + "\", function($, jquery_loaded) {" + script + "});");
     }
- 
-    
+
+
 }

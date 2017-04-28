@@ -3458,8 +3458,10 @@ public class MainScene {
 
  	public void hideWaitStage(int type) {
 		//FXUtilities.runAndWait(() -> { // not working for loading sim
-		if (type == LOADING)
+		if (type == LOADING) {
 			loadingCircleStage.hide();
+			loadingCircleStage.close();
+		}
 		else if (type == SAVING)
 			savingCircleStage.hide();
 		else if (type == PAUSED) {
@@ -3476,25 +3478,28 @@ public class MainScene {
 		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
 		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
+		StartUpLocation startUpLoc = null;
+
 		if (rootAnchorPane == null) {
 			StackPane pane = new StackPane();//starfield);
 			pane.setPrefHeight(sceneWidth.get());
 			pane.setPrefWidth(sceneHeight.get());
 
-			StartUpLocation startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());
+			startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());
 		}
 		else {
-			StartUpLocation startUpLoc = new StartUpLocation(scene.getWidth(), scene.getHeight());
-	        double xPos = startUpLoc.getXPos();
-	        double yPos = startUpLoc.getYPos();
-	        // Set Only if X and Y are not zero and were computed correctly
-	        if (xPos != 0 && yPos != 0) {
-	            stage.setX(xPos);
-	            stage.setY(yPos);
-	        }
-
-            stage.centerOnScreen();
+			startUpLoc = new StartUpLocation(scene.getWidth(), scene.getHeight());
 		}
+
+        double xPos = startUpLoc.getXPos();
+        double yPos = startUpLoc.getYPos();
+        // Set Only if X and Y are not zero and were computed correctly
+        if (xPos != 0 && yPos != 0) {
+            stage.setX(xPos);
+            stage.setY(yPos);
+        }
+
+        stage.centerOnScreen();
 	}
 
 

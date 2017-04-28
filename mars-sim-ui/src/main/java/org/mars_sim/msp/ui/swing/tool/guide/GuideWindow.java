@@ -49,7 +49,7 @@ import javafx.application.Platform;
 public class GuideWindow
 extends ToolWindow
 implements ActionListener,
-//HyperlinkListener, 
+//HyperlinkListener,
 ComponentListener {
 
 	/** default serial id. */
@@ -81,7 +81,7 @@ ComponentListener {
 	private JButton projectsiteButton = new JButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
 	//private JButton discussionButton = new JButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
 	private JButton wikiButton = new JButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
-	
+
 	private BrowserJFX browser;
 	private JPanel browserPanel;
 	/**
@@ -100,7 +100,7 @@ ComponentListener {
 		projectsiteURLstring = Msg.getString("url.projectsite"); //$NON-NLS-1$
 		//discussionURLstring = Msg.getString("url.discussion"); //$NON-NLS-1$
 		wikiURLstring = Msg.getString("url.wiki"); //$NON-NLS-1$
-		
+
 		browser = desktop.getBrowserJFX();
 		browserPanel = browser.getPanel();//.init();
 
@@ -129,29 +129,29 @@ ComponentListener {
 
 		wikiButton.setToolTipText(Msg.getString("GuideWindow.tooltip.wiki")); //$NON-NLS-1$
 		wikiButton.addActionListener(this);
-		
+
 		// A toolbar to hold all our buttons
 		JPanel toolPanel = new JPanel();
 		toolPanel.add(aboutButton);
-		toolPanel.add(tutorialButton);		
+		toolPanel.add(tutorialButton);
 		toolPanel.add(userguideButton);
 		toolPanel.add(shortcutsButton);
 		toolPanel.add(projectsiteButton);
 		toolPanel.add(wikiButton);
 		//toolPanel.add(discussionButton);
-	
+
 		mainPane.add(browserPanel, BorderLayout.CENTER);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
-		
+
 		setResizable(true);
-		setMaximizable(true);		
+		setMaximizable(true);
 		setVisible(true);
-		
+
 		setMinimumSize(new Dimension(800, 600));
 		setSize(new Dimension(1024, 600));
 
 		if (desktop.getMainScene() != null)
-			setClosable(false);		
+			setClosable(false);
 		else {
 			Dimension desktopSize = desktop.getSize();
 		    Dimension jInternalFrameSize = this.getSize();
@@ -162,13 +162,13 @@ ComponentListener {
 
 		// Pack window.
 		//pack(); // this will shrink the window to one line tall in swing mode
-		
+
 	}
 
-	
+
 
 	/**
-	 * Set a display URL .
+	 * Set a display URL
 	 */
 	// 2016-06-07 Added displaying the hyperlink's path and html filename.
 	public void setURL(String fileloc) {
@@ -178,9 +178,17 @@ ComponentListener {
 		Platform.runLater(()-> {
 			browser.setTextInputCache(fullLink);
 			browser.inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
-			browser.showURL();
+			browser.showFormattedURL();
 		});
 		browser.fireButtonGo(fullLink);
+	}
+
+	/**
+	 * Gets the full URL string for internal html files.
+	 */
+	// 2017-04-28 Added displaying the hyperlink's path and html filename.
+	public String getFullURL(String fileloc) {
+		return getClass().getResource(fileloc).toExternalForm();
 	}
 
 	/** Implementing ActionListener method. */
@@ -193,44 +201,44 @@ ComponentListener {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(input);
 				browser.inputURLType(input);
-				browser.showURL();
+				browser.showFormattedURL();
 			});
-		} 
+		}
 
 		else if (source == this.shortcutsButton) {
 			String input = shortcutsURL.toExternalForm();
 			Platform.runLater(()-> {
 				browser.setTextInputCache(input);
 				browser.inputURLType(input);
-				browser.showURL();
+				browser.showFormattedURL();
 			});
-		} 
-		
+		}
+
 		else if (source == this.aboutButton) {
 			String input = aboutURL.toExternalForm();
 			Platform.runLater(()-> {
 				browser.setTextInputCache(input);
 				browser.inputURLType(input);
-				browser.showURL();
+				browser.showFormattedURL();
 			});
-		} 
+		}
 
 		else if (source == this.tutorialButton) {
 			String input = tutorialURL.toExternalForm();
 			Platform.runLater(()-> {
 				browser.setTextInputCache(input);
 				browser.inputURLType(input);
-				browser.showURL();
+				browser.showFormattedURL();
 			});
-		} 
-		
+		}
+
 		else if (source == this.projectsiteButton) {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(projectsiteURLstring);
 				browser.inputURLType(projectsiteURLstring);
-				browser.showURL();
+				browser.showFormattedURL();
 			});
-/*			
+/*
 		} else if (source == this.discussionButton) {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(discussionURLstring);
@@ -242,13 +250,13 @@ ComponentListener {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(wikiURLstring);
 				browser.inputURLType(wikiURLstring);
-				browser.showURL();
+				browser.showFormattedURL();
 			});
 		}
-		
+
 	}
 
-	
+
 	/**
 	 * Implement ComponentListener interface.
 	 * Make sure the text is scrolled to the top.

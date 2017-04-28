@@ -12,16 +12,25 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener.Change;
 import javafx.concurrent.Worker;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
@@ -119,11 +128,22 @@ public class BrowserJFX {
     private JPanel panel = new JPanel(new BorderLayout());
 
     private JLabel statusBarLbl = new JLabel();
-    private JButton btnGo = new JButton("Go");
-    private JButton btnForward = new JButton(">");
-    private JButton btnBack = new JButton("<");
-    private JTextField urlTF = new JTextField();
+
+    //private JButton btnGo = new JButton("Go");
+    //private JButton btnForward = new JButton(">");
+    //private JButton btnBack = new JButton("<");
+    //private JTextField urlTF = new JTextField();
+
     private JProgressBar progressBar = new JProgressBar();
+
+    private Button reloadButton = new Button('\u27F3' + "");
+    private Button backButton = new Button("<");
+    private Button forwardButton = new Button(">");
+    private TextField tf = new TextField();
+    private ComboBox<String> comboBox = new ComboBox<String>();
+    private HBox bar = new HBox();
+    private VBox vbox = new VBox();
+    private HBox topButtonBar = new HBox();
 
     private MainScene mainScene;
     private MainDesktopPane desktop;
@@ -140,8 +160,12 @@ public class BrowserJFX {
     public BrowserJFX(MainDesktopPane desktop) {
     	this.desktop = desktop;
     	mainScene = desktop.getMainScene();
+		if (ourGuide == null)
+			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
 
         Platform.runLater(() -> {
+
+
             view = new WebView();
             engine = view.getEngine();
         	logger.info("Web Engine supported : " + engine.getUserAgent());
@@ -207,23 +231,156 @@ public class BrowserJFX {
 
             history = engine.getHistory();
             entryList = history.getEntries();
+
+        	highlight();
+
+        	int WIDTH = 25;
+        	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
+            reloadButton.setMinWidth(WIDTH+5);
+            reloadButton.setTooltip(new Tooltip("Reload this page"));
+
+            //backButton.setPadding(new Insets(0, 3, 0, 3));
+            backButton.setMinWidth(WIDTH);
+            backButton.setTooltip(new Tooltip("Go back"));
+
+            //forwardButton.setPadding(new Insets(0, 3, 0, 3));
+            forwardButton.setMinWidth(WIDTH);
+            forwardButton.setTooltip(new Tooltip("Go forward"));
+
+
+            comboBox.setPromptText("History");
+            //comboBox.setPadding(new Insets(3, 3, 3, 3));
+            comboBox.setMaxHeight(WIDTH);
+            comboBox.setMinHeight(WIDTH);
+            comboBox.setPrefHeight(WIDTH);
+            comboBox.setMaxWidth(WIDTH);
+            comboBox.setMinWidth(WIDTH);
+            comboBox.setPrefWidth(WIDTH);
+            comboBox.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent ev) {
+                    int offset = comboBox.getSelectionModel().getSelectedIndex() - history.getCurrentIndex();
+                    history.go(offset);
+                    readURLCombo();
+                }
+            });
+
+            reloadButton.setOnAction(e -> {
+        		goLoad(tf.getText().trim());
+
+            });
+
+            backButton.setOnAction(e -> {
+	            	engine.executeScript("history.back()");
+	                readURLCombo();
+	        });
+
+            forwardButton.setOnAction(e -> {
+                engine.executeScript("history.forward()");
+                readURLCombo();
+	        });
+
+            //Google.setOnAction(e -> webEngine.load("http://www.google.com"));
+            //Yahoo.setOnAction(e -> webEngine.load("http://www.yahoo.com"));
+            //Bing.setOnAction(e -> webEngine.load("http://www.bing.com"));
+            //Facebook.setOnAction(e -> webEngine.load("http://www.facebook.com"));
+            //Twitter.setOnAction(e -> webEngine.load("http://www.twitter.com"));
+            //YouTube.setOnAction(e -> webEngine.load("http://www.youtube.com"));
+
+            history.getEntries().addListener((Change<? extends Entry> c) -> {
+                c.next();
+                for (Entry e : c.getRemoved()) {
+                    comboBox.getItems().remove(e.getUrl());
+                    showFormattedURL();
+                }
+                for (Entry e : c.getAddedSubList()) {
+                	String fullURL = e.getUrl();
+                	String updateURL = fullURL;
+                	if (fullURL.contains(DOCS_HELP_DIR)) {
+                		isLocalHtml = true;
+                		int i = fullURL.indexOf("docs")-1;
+                		updateURL = fullURL.substring(i, fullURL.length());
+                	}
+                	else {
+                	}
+
+                    comboBox.getItems().add(updateURL);
+
+                    tf.setText(updateURL);
+            		statusBarURLText = updateURL;
+            		statusBarLbl.setText(updateURL);
+
+                }
+            });
+
+            //tf.setPadding(new Insets(0, 3, 0, 3));
+            tf.setPromptText("URL Address");
+            tf.setMaxHeight(WIDTH);
+            tf.setMinHeight(WIDTH);
+            tf.setPrefHeight(WIDTH);
+            //tf.setMinWidth(1024);
+            //tf.setPrefWidth(1024);
+            tf.prefWidthProperty().bind(mainScene.getScene().widthProperty()
+            		.subtract(comboBox.widthProperty())
+            		.subtract(reloadButton.widthProperty())
+            		.subtract(backButton.widthProperty())
+            		.subtract(forwardButton.widthProperty())
+            		);
+
+
+            tf.setOnKeyPressed((KeyEvent ke) -> {
+                KeyCode key = ke.getCode();
+                if(key == KeyCode.ENTER){
+            		goLoad(tf.getText().trim());
+                    //engine.load("http://" + tf.getText());
+                }
+            });
+
+/*
+            VBox statusBar = new VBox();
+            progressBar.setPreferredSize(new Dimension(150, 18));
+            progressBar.setStringPainted(true);
+            statusBar.getChildren().add(progressBar);
+            //sp.getChildren().addAll(comboBox, Google, Yahoo, Bing, Facebook, Twitter, YouTube);
+            //ap.setTop(sp);
+*/
+            bar.getChildren().addAll(comboBox, tf, backButton, reloadButton, forwardButton);
+            vbox.getChildren().addAll(topButtonBar, bar);
+
+        	//history.go(0);
+        	updateButtons();
         });
 
         initJFX();
         panel = initJPanel();
-
-        btnGo.doClick(); // not useful
-
-        Platform.runLater(() -> {
-        	//history.go(0);
-        	updateButtons();
-        });
 
         //SwingUtilities.invokeLater(()-> {
         //    btnGo.doClick(); // not useful
         //});
     }
 
+    public void readURLCombo() {
+    	String content = comboBox.getSelectionModel().getSelectedItem();
+    	if (content.contains(DOCS_HELP_DIR) && content.contains(".html")) {
+			if (ourGuide == null)
+				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			content = ourGuide.getFullURL(comboBox.getSelectionModel().getSelectedItem());
+    	}
+        textInputCache = content;
+        showFormattedURL();
+    }
+
+    public void goLoad(String input) {
+
+		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
+			if (ourGuide == null)
+				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide.setURL(input); //$NON-NLS-1$
+		}
+		else {
+        	fireButtonGo(input);
+		}
+    }
 
     public void fireButtonGo(String input) {
 		if (input != null && !input.isEmpty()) {
@@ -236,7 +393,7 @@ public class BrowserJFX {
 
     // 2016-04-22 Added ability to interpret internal commands
     public JPanel initJPanel() {
-
+/*
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -282,10 +439,10 @@ public class BrowserJFX {
 
         urlTF.setEditable(true);
         urlTF.requestFocusInWindow();
-
+*/
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
-
+/*
         JPanel topBar = new JPanel(new BorderLayout(5, 0));
         topBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         topBar.add(urlTF, BorderLayout.CENTER);
@@ -295,13 +452,13 @@ public class BrowserJFX {
         buttonPane.add(btnGo);
         buttonPane.add(btnForward);
         topBar.add(buttonPane, BorderLayout.EAST);
-
+*/
         JPanel statusBar = new JPanel(new BorderLayout(5, 0));
         statusBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         statusBar.add(statusBarLbl, BorderLayout.CENTER);
         statusBar.add(progressBar, BorderLayout.EAST);
 
-        panel.add(topBar, BorderLayout.NORTH);
+        //panel.add(topBar, BorderLayout.NORTH);
         panel.add(jfxPanel, BorderLayout.CENTER);
         panel.add(statusBar, BorderLayout.SOUTH);
 
@@ -431,7 +588,7 @@ public class BrowserJFX {
 		                    // 2016-11-30 Fix the URL not being displayed correctly
 		                    textInputCache = input;
 
-		                    showURL();
+		                    showFormattedURL();
 		                    //System.out.println("just clicked at a link");
 	                	}
                 	}
@@ -621,14 +778,18 @@ public class BrowserJFX {
                         }
                 );
 
-                jfxPanel.setScene(new Scene(view));
+                BorderPane borderPane = new BorderPane();
+
+                borderPane.setTop(vbox);
+                borderPane.setCenter(view);
+                jfxPanel.setScene(new Scene(borderPane));
         });
     }
 
     /*
-     * Show the url text in both the status bar and the address textfield
+     * Parses the url text and show it in both the status bar and the address textfield
      */
-    public void showURL() {
+    public void showFormattedURL() {
     	//logger.info("BrowserJFX's showURL() is on " + Thread.currentThread().getName() );
     	String content = textInputCache;
         //System.out.println("urlTF is " + urlTF.getText());
@@ -639,13 +800,15 @@ public class BrowserJFX {
     		int i = content.indexOf("docs")-1;
             String shortened = content.substring(i, content.length());
             //System.out.println("shortened is " + shortened);
-            urlTF.setText(shortened);
+            //urlTF.setText(shortened);
+            tf.setText(shortened);
     		statusBarURLText = shortened;
     		statusBarLbl.setText(shortened);
     	}
     	else {
     		// this is a remote link or internal link
-            urlTF.setText(content);
+            //urlTF.setText(content);
+            tf.setText(content);
     		statusBarURLText = content;
     		statusBarLbl.setText(content);
     	}
@@ -765,7 +928,8 @@ public class BrowserJFX {
             		statusBarURLText = content;
             	}
         		statusBarLbl.setText(statusBarURLText);
-                urlTF.setText(statusBarURLText);
+                //urlTF.setText(statusBarURLText);
+                tf.setText(statusBarURLText);
             }
         });
 
@@ -814,6 +978,7 @@ public class BrowserJFX {
     }
 
     public void updateButtons() {
+    	/*
     	//final WebHistory history = engine.getHistory();
     	//ObservableList<WebHistory.Entry> entryList = history.getEntries();
     	int currentIndex = history.getCurrentIndex();
@@ -835,6 +1000,7 @@ public class BrowserJFX {
     		btnForward.setEnabled(false);
     	}
 
+*/
 /*
     	if (entryList.size() > 1
 				&& currentIndex > 0)
@@ -852,7 +1018,7 @@ public class BrowserJFX {
     }
 
 
-
+/*
     @SuppressWarnings("restriction")
     public void goBack() {
     	Platform.runLater(() -> {
@@ -916,9 +1082,8 @@ public class BrowserJFX {
         	}
 
     	});
-
-
 	}
+*/
 
     public String getTextInputCache() {
     	return textInputCache;
@@ -932,10 +1097,10 @@ public class BrowserJFX {
         jfxPanel = null;
         panel = null;
         statusBarLbl = null;
-        btnGo = null;
-        btnForward = null;
-        btnBack = null;
-        urlTF = null;
+        //btnGo = null;
+        //btnForward = null;
+        //btnBack = null;
+        //urlTF = null;
         progressBar = null;
         mainScene = null;
         desktop = null;
