@@ -142,7 +142,7 @@ public class MainMenu {
     private boolean isDone;
 
     private StackPane root;
-	private Stage stage, mainSceneStage, circleStage, loadingCircleStage;//, waitStage;
+	private Stage stage;
 	public Scene mainMenuScene;
 
 	public MainMenu mainMenu;
@@ -156,9 +156,8 @@ public class MainMenu {
 
 	public SpinningGlobe spinningGlobe;
 
-    public MainMenu() {//MarsProjectFX marsProjectFX) {
+    public MainMenu() {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
-    	//this.marsProjectFX = marsProjectFX;
     	mainMenu = this;
  	}
 
@@ -172,6 +171,10 @@ public class MainMenu {
 		this.stage = stage;
 
     	Platform.setImplicitExit(false);
+		// Note: If this attribute is true, the JavaFX runtime will implicitly shutdown when the last window is closed;
+		// the JavaFX launcher will call the Application.stop method and terminate the JavaFX application thread.
+		// If this attribute is false, the application will continue to run normally even after the last window is closed,
+		// until the application calls exit. The default value is true.
 
     	stage.setOnCloseRequest(e -> {
 			boolean isExit = screen.exitDialog(stage);
@@ -267,13 +270,6 @@ public class MainMenu {
 
    }
 
-
-	public void setupMainSceneStage() {
-	       mainSceneStage = new Stage();
-	       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-
-	}
-
 	public Stage getStage() {
 		return stage;
 	}
@@ -290,21 +286,20 @@ public class MainMenu {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName());
 	   stage.setIconified(true);
 	   stage.hide();
+	   stage.close();
 	   // creates a mainScene instance
-	   mainScene = new MainScene(mainSceneStage);
+	   mainScene = new MainScene();
 
-
-	   //marsProjectFX.handleNewSimulation();
-	   //logger.info("Creating a new sim in " + OS);
        try {
-    	   //SimulationConfig.loadConfig(); // located to prepare()
-    	   // goes to scenario config editor
+    	   // Loads Scenario Config Editor
     	   Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
 
        } catch (Exception e) {
     	   e.printStackTrace();
     	   exitWithError("Error : could not create a new simulation ", e);
        }
+
+
    }
 
 	public class ConfigEditorTask implements Runnable {
@@ -320,6 +315,7 @@ public class MainMenu {
 
 	   stage.setIconified(true);
 	   stage.hide();
+	   stage.close();
 
 	   loadSim(null);
 
@@ -335,7 +331,6 @@ public class MainMenu {
     */
    public void loadSim(File selectedFile) {
 	   //logger.info("MainMenu's loadSim() is on " + Thread.currentThread().getName());
-	   Platform.runLater(() -> mainScene = new MainScene(mainSceneStage));
 
 	   String dir = Simulation.DEFAULT_DIR;
 	   String title = null;
@@ -385,6 +380,7 @@ public class MainMenu {
 			final File fileLocn = selectedFile;
 
 			Platform.runLater(() -> {
+				mainScene = new MainScene();
 				mainScene.createIndicator();
 				mainScene.showWaitStage(MainScene.LOADING);
 			});
@@ -397,7 +393,6 @@ public class MainMenu {
 			logger.info("No file was selected. Loading is cancelled");
 	        Platform.exit();
 	        System.exit(1);
-			//return;
 		}
 
    }
@@ -406,33 +401,6 @@ public class MainMenu {
 		Simulation.instance().getSimExecutor().execute(new LoadSimulationTask(fileLocn, autosaveDefaultName));
 		return 1;
 	}
-
-	/*
-	 * Loads the rest of the methods in MainScene.
-	*/
-   public void finalizeMainScene() {
-
-		Platform.runLater(() -> {
-
-			prepareScene();
-
-			mainScene.initializeTheme();
-			mainScene.prepareOthers();
-			//2016-02-07 Added calling setMonitor() for screen detection
-			// Note: setMonitor is needed for placing quotation pop at top right corner
-			setMonitor(mainSceneStage);
-			//mainSceneStage.setResizable(false);
-			mainSceneStage.centerOnScreen();
-			mainSceneStage.setTitle(Simulation.title);
-			mainSceneStage.show();
-			mainSceneStage.requestFocus();
-
-			mainScene.openInitialWindows();
-
-			mainScene.hideWaitStage(MainScene.LOADING);
-		});
-
-   }
 
    /*
     * Loads settlement data from a saved sim
@@ -452,7 +420,7 @@ public class MainMenu {
 
 			Simulation sim = Simulation.instance();
    			// Initialize the simulation.
-			sim.createNewSimulation();
+			Simulation.createNewSimulation();
 
 			try {
 				// Loading settlement data from the default saved simulation
@@ -473,25 +441,9 @@ public class MainMenu {
 					e.printStackTrace();
 				}
 
-			finalizeMainScene();
+			mainScene.finalizeMainScene();
 		}
 	}
-
-	/*
-	 * Prepares the scene in the main scene
-	 */
-	public void prepareScene() {
-		//logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
-		// prepare main scene
-		//mainScene.prepareMainScene();
-		UIConfig.INSTANCE.useUIDefault();
-		// creates and initialize scene
-		Scene mainSceneScene = mainScene.initializeScene();
-		// switch from the main menu's scene to the main scene's scene
-		mainSceneStage.setScene(mainSceneScene);
-
-	}
-
 
    public void runThree() {
 	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
@@ -592,9 +544,9 @@ public class MainMenu {
         stage.centerOnScreen();
 	}
 
-	public Stage getCircleStage() {
-		return circleStage;
-	}
+	//public Stage getCircleStage() {
+	//	return circleStage;
+	//}
 
 	public ScreensSwitcher getScreensSwitcher() {
 		return screen;
@@ -643,16 +595,14 @@ public class MainMenu {
 
 		root = null;
 		screen = null;
-		mainSceneStage = null;
 		stage = null;
-		circleStage = null;
 		mainMenuScene = null;
 		mainMenu = null;
 		mainScene = null;
-		//marsProjectFX = null;
 		executor = null;
 		multiplayerMode = null;
 		mainMenuController = null;
+		spinningGlobe = null;
 	}
 
 }

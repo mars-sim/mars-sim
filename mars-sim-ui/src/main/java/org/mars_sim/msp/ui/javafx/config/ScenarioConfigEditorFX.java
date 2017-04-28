@@ -6,20 +6,16 @@
  */
 package org.mars_sim.msp.ui.javafx.config;
 
-//import org.mars_sim.msp.javafx.undecorator.Undecorator;
-import insidefx.undecorator.Undecorator;
+
 import insidefx.undecorator.UndecoratorScene;
 
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerClient;
-import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import com.jfoenix.controls.JFXButton;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.text.DecimalFormatSymbols;
 import java.util.Collections;
@@ -27,17 +23,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -46,7 +37,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -60,8 +50,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -72,21 +60,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import javafx.concurrent.Task;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
-
 import org.controlsfx.control.MaskerPane;
-import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -105,18 +85,18 @@ public class ScenarioConfigEditorFX {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
-	private static final char CVS_SEPARADOR = new DecimalFormatSymbols().getPatternSeparator();
-	private static final int HORIZONTAL_SIZE = 1024;
+	//private static final char CVS_SEPARADOR = new DecimalFormatSymbols().getPatternSeparator();
+	//private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
 	private int clientID = 0;
-	private double orgSceneX, orgSceneY;
-	private double orgTranslateX, orgTranslateY;
+	//private double orgSceneX, orgSceneY;
+	//private double orgTranslateX, orgTranslateY;
 
 	private boolean hasError;
 	private boolean hasSettlement;
-	private boolean hasMSD, isCrewEditorOpen = false;
-	private boolean isDone;
+	private boolean isCrewEditorOpen = false;
+	//private boolean isDone;
 
 	private String playerName;
 	private String gameMode;
@@ -138,12 +118,8 @@ public class ScenarioConfigEditorFX {
 	private VBox topVB;
 	private BorderPane borderAll;
 	private Parent parent;
-	private SwingNode swingNode;
 	private Stage stage;
 	private Stage cstage;
-	private Scene scene;
-
-	private transient ThreadPoolExecutor executor;
 
 	private SimulationConfig config;
 	private MainMenu mainMenu;
@@ -152,7 +128,6 @@ public class ScenarioConfigEditorFX {
 	private SettlementConfig settlementConfig;
 	private MainScene mainScene;
 	private TableView<?> tableView;
-	private ScrollBar bar;
 	private TableViewCombo tableViewCombo;
 
 	private List<SettlementRegistry> settlementList;
@@ -602,7 +577,7 @@ public class ScenarioConfigEditorFX {
 			Platform.runLater(() -> {
 				//mainMenu.prepareScene();
 				//mainMenu.prepareStage();
-				mainMenu.finalizeMainScene();
+				mainScene.finalizeMainScene();
 				//mainScene.hideWaitStage(MainScene.LOADING);
 				// System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
 			});
@@ -629,18 +604,6 @@ public class ScenarioConfigEditorFX {
 		});
 	}
 
-
-/*
-	@SuppressWarnings("serial")
-	private void createSwingNode(final SwingNode swingNode) {
-
-		SwingUtilities.invokeLater(() -> {
-			settlementTableModel = new SettlementTableModel(this);
-			settlementTable = new SettlementTable(this, settlementTableModel);
-		});
-		swingNode.setContent(settlementScrollPane);
-	}
-*/
 
 	/**
 	 * Adds a new settlement with default values.
@@ -704,14 +667,6 @@ public class ScenarioConfigEditorFX {
 		updateSettlementNames();
 	}
 
-	/**
-	 * Sets the existing settlements loaded from others client machine.
-
-	private void setExistingSettlements() {
-		settlementTableModel.loadExistingSettlements();
-		updateSettlementNames();
-	}
-*/
 
 	/**
 	 * Set the simulation configuration based on dialog choices.

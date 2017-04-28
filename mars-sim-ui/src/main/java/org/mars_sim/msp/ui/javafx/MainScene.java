@@ -306,9 +306,10 @@ public class MainScene {
 	 *
 	 * @param stage
 	 */
-	public MainScene(Stage stage) {
+	public MainScene() {//Stage stage) {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
-		this.stage = stage;
+		stage = new Stage();
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 		this.isMainSceneDoneLoading = false;
 
 		sceneWidth = new SimpleDoubleProperty(DEFAULT_WIDTH);
@@ -331,6 +332,40 @@ public class MainScene {
 		// Detect if a user hits ESC
 		esc = new ESCHandler();
 		setEscapeEventHandler(true, stage);
+
+	}
+
+	/*
+	 * Loads the rest of the methods in MainScene.
+	*/
+   public void finalizeMainScene() {
+
+	   Platform.runLater(() -> {
+		   prepareScene();
+		   initializeTheme();
+		   prepareOthers();
+		   //2016-02-07 Added calling setMonitor() for screen detection and placing quotation pop at top right corner
+		   setMonitor(stage);
+		   stage.centerOnScreen();
+		   stage.setTitle(Simulation.title);
+		   stage.show();
+		   stage.requestFocus();
+
+		   openInitialWindows();
+		   hideWaitStage(MainScene.LOADING);
+		});
+   }
+
+	/*
+	 * Prepares the scene in the main scene
+	 */
+	public void prepareScene() {
+		//logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
+		UIConfig.INSTANCE.useUIDefault();
+		// creates and initialize scene
+		scene = initializeScene();
+		// switch from the main menu's scene to the main scene's scene
+		stage.setScene(scene);
 
 	}
 

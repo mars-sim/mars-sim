@@ -439,16 +439,6 @@ public class MarsProjectFX extends Application  {
 		            } catch (Exception e) {
 		                e.printStackTrace();
 		                showError("Could not load the user's saved sim.", e);
-/*
-		                try {
-		                	// try loading default.sim instead
-		                	handleLoadDefaultSimulation();
-
-			            } catch (Exception e2) {
-			                showError("Could not load the default saved sim. Starting a new sim now. ", e2);
-			                handleNewSimulation();
-			            }
-*/
 		            }
 	        	}
 
@@ -462,7 +452,6 @@ public class MarsProjectFX extends Application  {
 		                e2.printStackTrace();
 		            	exitWithError("Could not load the default saved sim.", e2);
 		                //showError("Could not load the default saved sim. Starting a new sim now. ", e2);
-		                //handleNewSimulation();
 		            }
 	        	}
 			}
@@ -506,7 +495,6 @@ public class MarsProjectFX extends Application  {
 		   		// CASE D1 and D2//
 	   	    	logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
 	   			mainMenu.initMainMenu(primaryStage);
-		   		mainMenu.setupMainSceneStage();
 
 		   		// Now in the Main Menu, wait for user to pick either options
 		   		// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
@@ -514,8 +502,6 @@ public class MarsProjectFX extends Application  {
 	   		}
 	   		else if (loadSim) {
 		   		// CASE E //
-
-		   		mainMenu.setupMainSceneStage();
 
 	        	if (savedSim) {
 
@@ -530,16 +516,7 @@ public class MarsProjectFX extends Application  {
 		            } catch (Exception e) {
 		                e.printStackTrace();
 		                exitWithError("Could not load the user's saved sim. ", e);
-/*
-		                try {
-		                	// load FileChooser instead
-				   			mainMenu.loadSim(null);
-				   			// Then wait for user to select a saved sim to load in loadSim();
 
-			            } catch (Exception e2) {
-			            	exitWithError("Could not load the default saved sim. ", e2);
-			            }
-*/
 		            }
 	        	}
 
