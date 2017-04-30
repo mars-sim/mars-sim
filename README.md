@@ -9,7 +9,7 @@ mars-sim uses both discrete event modeling and Agent-based Modeling and Simulati
 
 mars-sim is a semi-social and professional simulation that portrays the interaction between the settlers and their environment. Each settler has well defined job type, job role, technical skills, personality, natural attributes, task preferences and relationship with one another as they strive on Mars.
 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial landing base; a mining depot near sites with high mineral concentration; or a full blown, self-contained colony hosting higher functions with 48+ settlers having an elected mayor. In terms of economic development,  each settlment set the Value Points (VP) of each resource, based on its supply and demand.
+Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial landing base; a mining depot near sites with high mineral concentration; or a full blown, self-contained colony hosting higher functions with 48+ settlers having an elected mayor. In terms of economic development, each settlement sets the Value Points (VP) of each resource, based on its supply and demand.
 
 
 ## Tasks and Missions
@@ -30,7 +30,7 @@ For a general description of this project, see our project website at at https:/
 
 ## Feedback/Comments
 
-We welcome anyone to contribute mars-sim in terms of ideas and concepts. Feel free to provide your comments at our facebook community at https://www.facebook.com/groups/125541663548/. Note: see also old/archived discussions at https://sourceforge.net/p/mars-sim/discussion/
+We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel free to provide your comments at our facebook community at https://www.facebook.com/groups/125541663548/. Note: see also old/archived discussions at https://sourceforge.net/p/mars-sim/discussion/
 
 
 ## Download Binaries
@@ -46,7 +46,7 @@ Checkout our latest 3.1.0-preview versions at https://sourceforge.net/projects/m
 See our new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 
 
-## Supported Platform
+## Supported Platforms
 * Windows
 * MacOS (known bug when clicking on the tabs)
 * Linux (unwanted black shadow artifact on the spinning 3D Mars Globe)
