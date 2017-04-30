@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -88,7 +89,7 @@ implements ActionListener {
 
 	public static final int HORIZONTAL_MINIMAP = 320;
 	public static final int VERTICAL_MINIMAP = 695;
-	
+
 	// Data members
 	private Integer[] degrees = new Integer[181];
 	private JComboBoxMW<?> latCB, longCB;
@@ -145,7 +146,7 @@ implements ActionListener {
 	private MapLayer exploredSiteLayer;
 
 	private List<Landmark> landmarks;
-	
+
 	/**
 	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the desktop pane
@@ -155,24 +156,24 @@ implements ActionListener {
 		super(NAME, desktop);
 
 		landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
-		
+
 		if (desktop.getMainScene() != null) {
-			
-			//setTitleName(null);			
+
+			//setTitleName(null);
 			// 2016-10-21 Remove title bar
 		    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
 		    //getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 		    //BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
 		    //bi.setNorthPane(null);
 		    //setBorder(null);
-		    
+
 			// Prepare content pane
 			JPanel wholePane = new JPanel();
 			//mainPane.setLayout(new BorderLayout());
 			wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 			//mainPane.setBorder(new MarsPanelBorder());
 			setContentPane(wholePane);
-			
+
 			// Prepare globe display
 			globeNav = new GlobeDisplay(this);
 			JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -181,10 +182,10 @@ implements ActionListener {
 			globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 					new LineBorder(Color.gray)));
 			globePane.add(globeNav);
-			
+
 			globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 			wholePane.add(globePane);//, BorderLayout.NORTH);
-			
+
 			///////////////////////////////////////////////////////////////////////////
 
 			mapPaneInner = new JPanel(new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -195,21 +196,21 @@ implements ActionListener {
 			mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
 			mapPaneInner.setAlignmentY(CENTER_ALIGNMENT);
 	//		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-	
-			
+
+
 			JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 			detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 					new LineBorder(Color.gray)));
 			detailPane.setBackground(Color.black);
 			detailPane.setOpaque(true);
 			detailPane.add(mapPaneInner);
-			
+
 			map = new MapPanel(500L);
 			map.setNavWin(this);
 			map.addMouseListener(new mapListener());
 			map.addMouseMotionListener(new mouseMotionListener());
 			//map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-	
+
 			// Create map layers.
 			unitIconLayer = new UnitIconMapLayer(map);
 			unitLabelLayer = new UnitLabelMapLayer();
@@ -219,7 +220,7 @@ implements ActionListener {
 			trailLayer = new VehicleTrailMapLayer();
 			landmarkLayer = new LandmarkMapLayer();
 			exploredSiteLayer = new ExploredSiteMapLayer(map);
-	
+
 			// Add default map layers.
 			map.addMapLayer(shadingLayer, 0);
 			map.addMapLayer(unitIconLayer, 2);
@@ -227,24 +228,24 @@ implements ActionListener {
 			map.addMapLayer(navpointLayer, 4);
 			map.addMapLayer(trailLayer, 5);
 			map.addMapLayer(landmarkLayer, 6);
-	
+
 			map.showMap(new Coordinates((Math.PI / 2D), 0D));
 			//mapPaneInner.setAlignmentX(Component.CENTER_ALIGNMENT);
 			mapPaneInner.add(map, BorderLayout.CENTER);
 			//mapPane.add(mapPaneInner, BorderLayout.CENTER);
 			wholePane.add(detailPane);//, BorderLayout.CENTER);
-			
+
 
 			///////////////////////////////////////////////////////////////////////////
-			
-			
+
+
 			JPanel bottomPane = new JPanel();//new BorderLayout(0,0));//FlowLayout(FlowLayout.CENTER, 0, 0));/
 			bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
 			//bottomPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 			bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 			wholePane.add(bottomPane);//, BorderLayout.SOUTH);
 			//mapPaneInner.add(bottomPane, BorderLayout.SOUTH);
-			
+
 			///////////////////////////////////////////////////////////////////////////
 			// Prepare position entry panel
 			JPanel coordPane = new JPanel(new GridLayout(1, 6, 0, 0));//FlowLayout(FlowLayout.LEFT));//
@@ -253,17 +254,17 @@ implements ActionListener {
 			coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
 			bottomPane.add(coordPane);//, BorderLayout.NORTH);
 
-			
+
 			// Prepare latitude entry components
 			JLabel latLabel = new JLabel(" Lat : ", JLabel.RIGHT);//Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
 			//latLabel.setAlignmentY(.5F);
 			coordPane.add(latLabel);
-	
+
 			//latText = new JTextField(5);
 			//latText.setCaretPosition(latText.getText().length());
 			//latText.setHorizontalAlignment(JTextField.CENTER);
 			//coordPane.add(latText);
-	
+
 			// 2016-11-24 Switch to using ComboBoxMW for latitude
 			int size = degrees.length;
 			for (int i = 0; i<size; i++) {
@@ -272,8 +273,8 @@ implements ActionListener {
 			latCB = new JComboBoxMW<Integer>(degrees);
 			latCB.setSelectedItem(0);
 			coordPane.add(latCB);
-			
-			
+
+
 			String[] latStrings = {
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -282,26 +283,26 @@ implements ActionListener {
 			latDir.setEditable(false);
 			latDir.setPreferredSize(new Dimension(30, -1));
 			coordPane.add(latDir);
-	
+
 			// Put glue and strut spacers in
 			//positionPane.add(Box.createHorizontalGlue());
 			//positionPane.add(Box.createHorizontalStrut(5));
-	
+
 			// Prepare longitude entry components
 			JLabel longLabel = new JLabel(" Lon : ", JLabel.RIGHT);//Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
 			//longLabel.setAlignmentY(.5F);
 			coordPane.add(longLabel);
-	
+
 			//longText = new JTextField(5);
 			//longText.setCaretPosition(longText.getText().length());
 			//longText.setHorizontalAlignment(JTextField.CENTER);
 			//coordPane.add(longText);
-	
+
 			// 2016-11-24 Switch to using ComboBoxMW for longtitude
 			longCB = new JComboBoxMW<Integer>(degrees);
 			longCB.setSelectedItem(0);
 			coordPane.add(longCB);
-			
+
 			String[] longStrings = {
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -310,56 +311,58 @@ implements ActionListener {
 			longDir.setEditable(false);
 			longDir.setPreferredSize(new Dimension(30, -1));
 			coordPane.add(longDir);
-	
+
 			// Put glue and strut spacers in
 			//positionPane.add(Box.createHorizontalGlue());
 			//positionPane.add(Box.createHorizontalStrut(5));
-	
+
 			// Prepare location entry submit button
 			//goThere = new JButton(Msg.getString("NavigatorWindow.button.goThere")); //$NON-NLS-1$
 			//goThere.addActionListener(this);
 			//goThere.setAlignmentY(.5F);
 			//positionPane.add(goThere);
 			//bottomPane.add(goThere, BorderLayout.SOUTH);
-			
-			
+
+
 
 			///////////////////////////////////////////////////////////////////////////
 
-			
+
 			// Prepare topographical panel
 			//JPanel buttonsPane = new JPanel(new BorderLayout());
 			//buttonsPane.setBorder(new EmptyBorder(0, 3, 0, 0));
-			//bottomPane.add(buttonsPane, BorderLayout.NORTH);	
-	
+			//bottomPane.add(buttonsPane, BorderLayout.NORTH);
+
 			// Prepare options panel
 			JPanel optionsPane = new JPanel(new GridLayout(1, 3));
 			optionsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 			bottomPane.add(optionsPane);//, BorderLayout.CENTER);
-	
-			
+
+
 			// Prepare location entry submit button
-			goThere = new JButton(Msg.getString("NavigatorWindow.button.goThere")); //$NON-NLS-1$
+			goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
 			goThere.setToolTipText("Go to the location with your specified coordinates");
 			goThere.addActionListener(this);
 			//goThere.setAlignmentY(.5F);
 			//positionPane.add(goThere);
 			optionsPane.add(goThere);
-			
-			
+
+
 			// Prepare options button.
 			optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
 			optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 			optionsButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						if (optionsMenu == null) createOptionsMenu();
-						optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
+						SwingUtilities.invokeLater(() -> {
+							if (optionsMenu == null) createOptionsMenu();
+							optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
+						});
 					}
 				}
 			);
 			optionsPane.add(optionsButton);
-	
+
 			// Prepare minerals button.0
 			mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
 			mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
@@ -367,13 +370,15 @@ implements ActionListener {
 			mineralsButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						JPopupMenu mineralsMenu = createMineralsMenu();
-						mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
+						SwingUtilities.invokeLater(() -> {
+							JPopupMenu mineralsMenu = createMineralsMenu();
+							mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
+						});
 					}
 				}
 			);
 			optionsPane.add(mineralsButton);
-	
+
 			// Prepare legend icon
 			//ruler = new LegendDisplay();
 			//ruler.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
@@ -381,12 +386,12 @@ implements ActionListener {
 			//JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
 			//legendPanel.add(ruler, BorderLayout.NORTH);
 			//buttonsPane.add(legendPanel, BorderLayout.NORTH);
-			
+
 			setSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 			setPreferredSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
-		
+
 		}
-		
+
 		else {
 
 			// Prepare content pane
@@ -394,18 +399,18 @@ implements ActionListener {
 			mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 			mainPane.setBorder(new MarsPanelBorder());
 			setContentPane(mainPane);
-			
-			
+
+
 			// Prepare top layout panes
 			JPanel topMainPane = new JPanel();
 			topMainPane.setLayout(new BoxLayout(topMainPane, BoxLayout.X_AXIS));
 			mainPane.add(topMainPane);
 
-			
+
 			JPanel leftTopPane = new JPanel();
 			leftTopPane.setLayout(new BoxLayout(leftTopPane, BoxLayout.Y_AXIS));
 			topMainPane.add(leftTopPane);
-	
+
 			// Prepare globe display
 			//globeNav = new GlobeDisplay(this, 150, 150);
 			globeNav = new GlobeDisplay(this);//, GlobeDisplay.GLOBE_MAP_WIDTH, GlobeDisplay.GLOBE_MAP_HEIGHT);
@@ -427,11 +432,11 @@ implements ActionListener {
 	*/
 			// Put strut spacer in
 			topMainPane.add(Box.createHorizontalStrut(5));
-	
+
 			JPanel rightTopPane = new JPanel();
 			rightTopPane.setLayout(new BoxLayout(rightTopPane, BoxLayout.Y_AXIS));
 			topMainPane.add(rightTopPane);
-	
+
 			// Prepare surface map display
 			JPanel mapPane = new JPanel(new BorderLayout(0, 0));
 			mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
@@ -441,13 +446,13 @@ implements ActionListener {
 			mapPaneInner.setBackground(Color.black);
 			mapPaneInner.setOpaque(true);
 	//		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-	
+
 			map = new MapPanel(500L);
 			map.setNavWin(this);
 			map.addMouseListener(new mapListener());
 			map.addMouseMotionListener(new mouseMotionListener());
 			map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-	
+
 			// Create map layers.
 			unitIconLayer = new UnitIconMapLayer(map);
 			unitLabelLayer = new UnitLabelMapLayer();
@@ -457,7 +462,7 @@ implements ActionListener {
 			trailLayer = new VehicleTrailMapLayer();
 			landmarkLayer = new LandmarkMapLayer();
 			exploredSiteLayer = new ExploredSiteMapLayer(map);
-	
+
 			// Add default map layers.
 			map.addMapLayer(shadingLayer, 0);
 			map.addMapLayer(unitIconLayer, 2);
@@ -465,40 +470,39 @@ implements ActionListener {
 			map.addMapLayer(navpointLayer, 4);
 			map.addMapLayer(trailLayer, 5);
 			map.addMapLayer(landmarkLayer, 6);
-	
+
 			map.showMap(new Coordinates((Math.PI / 2D), 0D));
 			mapPaneInner.add(map, BorderLayout.CENTER);
 			mapPane.add(mapPaneInner, BorderLayout.CENTER);
-	
+
 
 			// Put some glue in to fill in extra space
 			rightTopPane.add(Box.createVerticalStrut(5));
-	
-			
-			
-			
+
 			// Prepare topographical panel
 			JPanel topoPane = new JPanel(new BorderLayout());
 			topoPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 			mainPane.add(topoPane);
-	
+
 			// Prepare options panel
 			JPanel optionsPane = new JPanel(new GridLayout(2, 1));
 			topoPane.add(optionsPane, BorderLayout.CENTER);
-	
+
 			// Prepare options button.
 			optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
 			optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 			optionsButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						if (optionsMenu == null) createOptionsMenu();
-						optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
+						SwingUtilities.invokeLater(() -> {
+							if (optionsMenu == null) createOptionsMenu();
+							optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
+						});
 					}
 				}
 			);
 			optionsPane.add(optionsButton);
-	
+
 			// Prepare minerals button.0
 			mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
 			mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
@@ -506,13 +510,15 @@ implements ActionListener {
 			mineralsButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						JPopupMenu mineralsMenu = createMineralsMenu();
-						mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
+						SwingUtilities.invokeLater(() -> {
+							JPopupMenu mineralsMenu = createMineralsMenu();
+							mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
+						});
 					}
 				}
 			);
 			optionsPane.add(mineralsButton);
-	
+
 			// Prepare legend icon
 			ruler = new LegendDisplay();
 			ruler.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
@@ -520,25 +526,25 @@ implements ActionListener {
 			JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
 			legendPanel.add(ruler, BorderLayout.NORTH);
 			topoPane.add(legendPanel, BorderLayout.EAST);
-	
-			
-			
-			
-			
+
+
+
+
+
 			// Prepare position entry panel
 			JPanel positionPane = new JPanel();
 			positionPane.setLayout(new BoxLayout(positionPane, BoxLayout.X_AXIS));
 			positionPane.setBorder(new EmptyBorder(6, 6, 3, 3));
-			mainPane.add(positionPane);		
-			
+			mainPane.add(positionPane);
+
 			// Prepare latitude entry components
 			JLabel latLabel = new JLabel(Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
 			latLabel.setAlignmentY(.5F);
 			positionPane.add(latLabel);
-	
+
 			latText = new JTextField(5);
 			positionPane.add(latText);
-	
+
 			String[] latStrings = {
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -547,19 +553,19 @@ implements ActionListener {
 			latDir.setEditable(false);
 			latDir.setPreferredSize(new Dimension(50, -1));
 			positionPane.add(latDir);
-	
+
 			// Put glue and strut spacers in
 			positionPane.add(Box.createHorizontalGlue());
 			positionPane.add(Box.createHorizontalStrut(5));
-	
+
 			// Prepare longitude entry components
 			JLabel longLabel = new JLabel(Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
 			longLabel.setAlignmentY(.5F);
 			positionPane.add(longLabel);
-	
+
 			longText = new JTextField(5);
 			positionPane.add(longText);
-	
+
 			String[] longStrings = {
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -568,22 +574,22 @@ implements ActionListener {
 			longDir.setEditable(false);
 			longDir.setPreferredSize(new Dimension(50, -1));
 			positionPane.add(longDir);
-	
+
 			// Put glue and strut spacers in
 			positionPane.add(Box.createHorizontalGlue());
 			positionPane.add(Box.createHorizontalStrut(5));
-	
+
 			// Prepare location entry submit button
-			goThere = new JButton(Msg.getString("NavigatorWindow.button.goThere")); //$NON-NLS-1$
+			goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
 			goThere.addActionListener(this);
 			goThere.setAlignmentY(.5F);
 			positionPane.add(goThere);
-						
+
 			setSize(new Dimension(HORIZONTAL, VERTICAL));
 			setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 
 		}
-		
+
 
 		if (desktop.getMainScene() != null) {
 			setClosable(false);
@@ -595,11 +601,11 @@ implements ActionListener {
 			setResizable(false);
 			setMaximizable(false);
 		}
-		
-		
+
+
 		setVisible(true);
 		// Pack window
-		//pack();
+		pack();
 	}
 
 	/** Update coordinates in map, buttons, and globe
@@ -622,7 +628,7 @@ implements ActionListener {
 	public GlobeDisplay getGlobeDisplay() {
 		return globeNav;
 	}
-	
+
 	/** ActionListener method overridden */
 	public void actionPerformed(ActionEvent event) {
 
@@ -632,10 +638,10 @@ implements ActionListener {
 			// Read longitude and latitude from user input, translate to radians,
 			// and recenter globe and surface map on that location.
 			try {
-				
+
 				double latitude = 0;
 				double longitude = 0;
-				
+
 				if (mainScene != null) {
 					latitude = (int)latCB.getSelectedItem();
 					longitude = (int)longCB.getSelectedItem();
@@ -644,11 +650,11 @@ implements ActionListener {
 				else {
 					latText.setCaretPosition(latText.getText().length());
 					longText.setCaretPosition(longText.getText().length());
-					
+
 					latitude = ((Float) new Float(latText.getText())).doubleValue();
-					longitude = ((Float) new Float(longText.getText())).doubleValue();				
+					longitude = ((Float) new Float(longText.getText())).doubleValue();
 				}
-				
+
 				String latDirStr = (String) latDir.getSelectedItem();
 				String longDirStr = (String) longDir.getSelectedItem();
 
@@ -686,7 +692,7 @@ implements ActionListener {
 				globeNav.showTopo();
 				//ruler.showColor();
 			}
-			
+
 			else {
 				// show surface map
 				map.setMapType(SurfMarsMap.TYPE);
@@ -733,12 +739,12 @@ implements ActionListener {
 
 		// Create day/night tracking menu item.
 		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.daylightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
-		dayNightItem.addActionListener(this);		
+		dayNightItem.addActionListener(this);
 		optionsMenu.add(dayNightItem);
 		//2016-06-08 Unchecked dayNightItem at the start of sim
 		//globeNav.setDayNightTracking(false);
 		//dayNightItem.setSelected(false);
-				
+
 		// Create topographical map menu item.
 		topoItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.topo"), TopoMarsMap.TYPE.equals(map.getMapType())); //$NON-NLS-1$
 		topoItem.addActionListener(this);
@@ -797,9 +803,11 @@ implements ActionListener {
 			mineralItem.addActionListener(
 					new ActionListener() {
 						public void actionPerformed(ActionEvent event) {
-							JCheckBoxMenuItem checkboxItem = (JCheckBoxMenuItem) event.getSource();
-							((MineralMapLayer) mineralLayer).setMineralDisplayed(checkboxItem.getText(),
-									checkboxItem.isSelected());
+							SwingUtilities.invokeLater(() -> {
+								JCheckBoxMenuItem checkboxItem = (JCheckBoxMenuItem) event.getSource();
+								((MineralMapLayer) mineralLayer).setMineralDisplayed(checkboxItem.getText(),
+										checkboxItem.isSelected());
+							});
 						}
 					});
 			mineralsMenu.add(mineralItem);
@@ -867,7 +875,7 @@ implements ActionListener {
 
 			double x = (double)(event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
 			double y = (double)(event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
-			
+
 			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(x, y, rho);
 
 			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
@@ -884,7 +892,7 @@ implements ActionListener {
 						map.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 						openUnitWindow(unit);
 					}
-					else 
+					else
 						map.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 			}
@@ -950,14 +958,14 @@ implements ActionListener {
 	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
-	
-	
+
+
 	public void destroy() {
 		map.destroy();
 		globeNav.destroy();
 		//navButtons = null;
 		ruler = null;
-		
+
 		unitIconLayer = null;
 		unitLabelLayer = null;
 		shadingLayer = null;
@@ -966,7 +974,7 @@ implements ActionListener {
 		navpointLayer = null;
 		landmarkLayer = null;
 		exploredSiteLayer = null;
-		
+
 		mapPaneInner = null;
 
 	}

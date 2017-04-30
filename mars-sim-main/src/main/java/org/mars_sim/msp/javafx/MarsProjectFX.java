@@ -401,8 +401,8 @@ public class MarsProjectFX extends Application  {
 	    		System.setProperty( "sun.java2d.ddforcevram", "true" );
 	    	}
 	    	//logger.info("Running " + Simulation.OS + " in GUI mode");
-	    	if (!Simulation.OS.startsWith ("Mac"))
-	    		System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
+	    	//if (Simulation.OS.startsWith ("Mac"))
+	    	//	System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX, causing delay in JPopMenu in Windows
 	       	// Enable capability of loading of svg image using regular method
 	    	//SvgImageLoaderFactory.install();
 		   	if (newSim) {

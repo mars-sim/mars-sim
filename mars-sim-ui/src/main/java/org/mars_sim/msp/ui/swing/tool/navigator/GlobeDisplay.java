@@ -53,10 +53,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	public final static int GLOBE_BOX_HEIGHT = 300;
 	public final static int GLOBE_BOX_WIDTH = 300;
-
+	public final static int LIMIT = 60; // the max amount of pixels in each mouse drag that the globe will update itself
 
 	private static final double HALF_PI = Math.PI / 2d;
-	private static int dragx, dragy;
+	private static int dragx, dragy, dxCache = 0, dyCache = 0;
 
 	// Data members
 	private double timeCache = 0;
@@ -163,33 +163,47 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				int difx, dify, x = e.getX(), y = e.getY();
+				//setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				int dx, dy, x = e.getX(), y = e.getY();
 
-				difx = dragx - x;
-				dify = dragy - y;
-				dragx = x;
-				dragy = y;
-				//System.out.println("x is " + x + "   y is " + y);
-				//System.out.println("difx is " + difx + "   dify is " + dify);
-				if ((difx != 0) || (dify != 0)
-						&& x < 250 && y < 250) {
+				dx = dragx - x;
+				dy = dragy - y;
 
-				    // Globe circumference in pixels.
-				    //double globeCircumference = height *2;
-				    //double rho = globeCircumference / (2D * Math.PI);
-                    centerCoords = centerCoords.convertRectToSpherical(
-                            (double) difx, (double) dify, rho);
+				if (dx != 0 || dy != 0) {//(dx < -2 || dx > 2) || (dy < -2 || dy > 2)) {
+					if (dx > -LIMIT && dx < LIMIT && dy > -LIMIT && dy < LIMIT) {
+						if ((dxCache - dx) > -LIMIT && (dxCache - dx) < LIMIT && (dyCache - dy) > -LIMIT && (dyCache - dy) < LIMIT) {
+							if ( x > 50 && x < 245 && y > 50 && y < 245) {
+								//System.out.print("(dragx, dragy) is (" + dragx + ", " + dragy + ")");
+								//System.out.print("(x, y) is (" + x + ", " + y + ")");
+								//System.out.print("\t(delta_x, delta_y) is (" + (dxCache - dx) + ", " +  (dyCache - dy) + ")");
+								//System.out.print("\t(dx, dy) is (" + dx + ", " + dy + ")");
 
-					recreate = false;
+							    // Globe circumference in pixels.
+							    //double globeCircumference = height *2;
+							    //double rho = globeCircumference / (2D * Math.PI);
+			                    centerCoords = centerCoords.convertRectToSpherical(
+			                            (double) dx, (double) dy, rho);
 
-					// Regenerate globe if recreate is true, then display
-					drawSphere();
+								recreate = false;
 
+								// Regenerate globe if recreate is true, then display
+								drawSphere();
 
+								//System.out.println("\tDrawn");
+							}
+						}
+					}
 				}
 
+				dxCache = dx;
+				dyCache = dy;
+
+				dragx = x;
+				dragy = y;
+
 				//e.consume();
-				super.mouseDragged(e);
+				//super.mouseDragged(e);
+				//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 
@@ -203,7 +217,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				dragy = e.getY();
 				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 
-				e.consume();
+				//e.consume();
 			}
 
 			@Override
@@ -213,7 +227,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				navwin.updateCoords(centerCoords);
 				navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-				e.consume();
+				//e.consume();
 			}
 		});
 
@@ -378,13 +392,18 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		// Draw real or topo globe
 		MarsGlobe globe = topo ? topoSphere : marsSphere;
 
-		if(globe.isImageDone()) {
-			dbg.drawImage(globe.getGlobeImage(), 0, 0, this);
+		Image image = globe.getGlobeImage();
+		if (image != null) {
+			if(globe.isImageDone()) {
+				dbg.drawImage(image, 0, 0, this);
+			}
+			else {
+				System.out.println("globe.isImageDone() is false");
+				return;
+			}
 		}
-		else {
-			return;
-		}
-
+		else
+			System.out.println("image is null");
 
 		if (showDayNightShading) {
 			drawShading(dbg);

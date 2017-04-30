@@ -122,29 +122,33 @@ public class MapPanel extends JPanel implements ClockListener {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				int difx, dify, x = e.getX(), y = e.getY();
+				//setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				int dx, dy, x = e.getX(), y = e.getY();
 
-				difx = dragx - x;
-				dify = dragy - y;
+				dx = dragx - x;
+				dy = dragy - y;
+
+
+				if (dx != 0 || dy != 0) {
+					if (x > 0 && x < 300 && y > 0 && y < 300) {
+					    //double rho = CannedMarsMap.PIXEL_RHO;
+			            centerCoords = centerCoords.convertRectToSpherical(
+			                    (double) dx, (double) dy, rho);
+
+						//if (!executor.isTerminated() || !executor.isShutdown() )
+						//	executor.execute(new MapTask());
+
+						map.drawMap(centerCoords);
+
+						paintDoubleBuffer();
+						repaint();
+					}
+				}
+
 				dragx = x;
 				dragy = y;
 
-				if ((difx != 0) || (dify != 0)) {
-
-				    //double rho = CannedMarsMap.PIXEL_RHO;
-		            centerCoords = centerCoords.convertRectToSpherical(
-		                    (double) difx, (double) dify, rho);
-
-					//if (!executor.isTerminated() || !executor.isShutdown() )
-					//	executor.execute(new MapTask());
-
-					map.drawMap(centerCoords);
-
-					paintDoubleBuffer();
-					repaint();
-
-				}
+				//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 

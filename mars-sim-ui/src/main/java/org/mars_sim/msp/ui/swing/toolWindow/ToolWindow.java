@@ -50,7 +50,7 @@ extends JInternalFrame {
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
 	private  MasterClock masterClock = Simulation.instance().getMasterClock();
-	
+
 	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
 	private SingleSelectionModel ssm;
@@ -78,14 +78,14 @@ extends JInternalFrame {
 		this.name = name;
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
-	      
+
 		// 2016-10-21 Remove title bar
 	    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
 	    getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 	    BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
 	    bi.setNorthPane(null);
 	    setBorder(null);
-	    
+
 	    //getRootPane().setOpaque(false);
 	    //getRootPane().setBackground(new Color(0,0,0,128));
 	    //setOpaque(false);
@@ -100,14 +100,14 @@ extends JInternalFrame {
 			msm = mainScene.getMainSceneMenu();
 			//ssm = mainScene.getJFXTabPane().getSelectionModel();
 		}
-			
+
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		//setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		// Set internal frame listener
 		//ToolFrameListener tool = new ToolFrameListener(this);
 		//addInternalFrameListener(tool);
-		
+
 		addInternalFrameListener(new ToolFrameListener());
 	}
 
@@ -126,7 +126,7 @@ extends JInternalFrame {
 	public void setTitleName(String value) {
 		setName(value);
 	}
-	
+
 	/**
 	 * Checks if the tool window has previously been opened.
 	 * @return true if tool window has previously been opened.
@@ -160,7 +160,7 @@ extends JInternalFrame {
 /*
 			if (ssm == null)
 				ssm = mainScene.getJFXTabPane().getSelectionModel();
-			
+
 			if (ssm.isSelected(MainScene.MAIN_TAB)) {
 				closeMaps();
 				//System.out.println("ToolWindow : closing other tools !");
@@ -170,7 +170,7 @@ extends JInternalFrame {
 				//desktop.closeToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
-			
+
 			else if (ssm.isSelected(MainScene.MAP_TAB)) {
 				//System.out.println("ToolWindow : closing other tools !");
 				//desktop.closeToolWindow(MonitorWindow.NAME);
@@ -189,7 +189,7 @@ extends JInternalFrame {
 				//desktop.closeToolWindow(MissionWindow.NAME);
 			}
 
-			
+
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MONITOR_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(MonitorWindow.NAME);
@@ -198,7 +198,7 @@ extends JInternalFrame {
 				desktop.closeToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
-		
+
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MISSION_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(MissionWindow.NAME);
@@ -207,7 +207,7 @@ extends JInternalFrame {
 				desktop.closeToolWindow(ScienceWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
-			
+
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.RESUPPLY_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(ResupplyWindow.NAME);
@@ -216,7 +216,7 @@ extends JInternalFrame {
 				desktop.closeToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
-			
+
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.SCIENCE_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(ScienceWindow.NAME);
@@ -227,14 +227,14 @@ extends JInternalFrame {
 			}
 
 */
-			
+
 			if ( this.isVisible() || this.isShowing() ) {
 				//System.out.println("this.getToolName() is "+ this.getToolName());
 				// Note: need to refresh the table column/row header
 				if (this.getToolName().equals(MonitorWindow.NAME))
 					monitorWindow.refreshTable();
 					//pack(); // create time lag, and draw artifact
-	
+
 					//mainScene.setLookAndFeel(1); causing java.lang.NullPointerException at com.jidesoft.plaf.basic.BasicJideTabbedPaneUI.getFontMetrics(BasicJideTabbedPaneUI.java:5063)
 					//SwingUtilities.updateComponentTreeUI(this); causing java.lang.NullPointerException
 					//Platform.runLater(() -> {
@@ -243,14 +243,14 @@ extends JInternalFrame {
 					//SwingUtilities.invokeLater(() -> SwingUtilities.updateComponentTreeUI(this));
 					// Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException when pressing the terminate button in eclipse
 					//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
-				// create time lag, draw artifact and search text out of focus			
+				// create time lag, draw artifact and search text out of focus
 			}
 
 			else if ( !this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {
 				//System.out.println(name + " is not visible");
 				Platform.runLater(() -> {
 					if (msm == null)
-							msm = mainScene.getMainSceneMenu();
+						msm = mainScene.getMainSceneMenu();
 					item = msm.getCheckMenuItem(name);
 					//System.out.println(item + " is obtained");
 					if (item != null) {
@@ -272,7 +272,7 @@ extends JInternalFrame {
 	public void destroy() {
 		item = null;
 		msm = null;
-		desktop = null; 
+		desktop = null;
 		masterClock = null;
 		mainScene = null;
 		monitorWindow = null;

@@ -152,41 +152,46 @@ public class MasterClock implements Serializable { // Runnable,
         long diff = (long) ((t1 - t0) / 1_000D);
         logger.info("Startup Benchmark : " + diff + " ms");
 
-        if (Simulation.NUM_THREADS == 1) {
-        	defaultTimeRatio = tr/8D;
-        	defaultTmeBetweenUpdates = tbu*16_000_000D;
+        int threads = Simulation.NUM_THREADS;
+        //defaultTimeRatio = threads * tr / 16D;
+        if (threads <= 16)
+        	defaultTmeBetweenUpdates = 12 / threads * tbu * 1_000_000D;
+
+        if (threads == 1) {
+        	defaultTimeRatio = tr/16D;
+        	//defaultTmeBetweenUpdates = tbu*10_000_000D;
         }
-        else if (Simulation.NUM_THREADS == 2) {
+        else if (threads == 2) {
         	defaultTimeRatio = tr/8D;
-        	defaultTmeBetweenUpdates = tbu*14_000_000D;
+        	//defaultTmeBetweenUpdates = tbu*8_000_000D;
         }
-        else if (Simulation.NUM_THREADS <= 3) {
+        else if (threads <= 3) {
         	defaultTimeRatio = tr/4D;
-        	defaultTmeBetweenUpdates = tbu*12_000_000D;
+        	//defaultTmeBetweenUpdates = tbu*6_000_000D;
         }
-        else if (Simulation.NUM_THREADS <= 4) {
+        else if (threads <= 4) {
            	defaultTimeRatio = tr/4D;
-        	defaultTmeBetweenUpdates = tbu*10_000_000D;
+        	//defaultTmeBetweenUpdates = tbu*4_000_000D; //*10_000_000D;
         }
-        else if (Simulation.NUM_THREADS <= 6) {
+        else if (threads <= 6) {
         	defaultTimeRatio = tr/2D;
-        	defaultTmeBetweenUpdates = tbu*8_000_000D;
+        	//defaultTmeBetweenUpdates = tbu*4_000_000D;
         }
-        else if (Simulation.NUM_THREADS <= 8) {
+        else if (threads <= 8) {
         	defaultTimeRatio = tr/2D;
-        	defaultTmeBetweenUpdates = tbu*6_000_000D;
+        	//defaultTmeBetweenUpdates = tbu*2_000_000D;
         }
-        else if (Simulation.NUM_THREADS <= 12) {
+        else if (threads <= 12) {
         	defaultTimeRatio = tr;
-        	defaultTmeBetweenUpdates = tbu*4_000_000D;
+        	//defaultTmeBetweenUpdates = tbu*2_000_000D;
         }
-        else if (Simulation.NUM_THREADS <= 16) {
+        else if (threads <= 16) {
         	defaultTimeRatio = tr;
-        	defaultTmeBetweenUpdates = tbu*2_000_000D;
+        	//defaultTmeBetweenUpdates = tbu*1_000_000D;
         }
         else {
         	defaultTimeRatio = tr;
-        	defaultTmeBetweenUpdates = tbu*1_000_000D;
+        	defaultTmeBetweenUpdates = .75*tbu*1_000_000D;
         }
 
     	timeRatio = defaultTimeRatio;

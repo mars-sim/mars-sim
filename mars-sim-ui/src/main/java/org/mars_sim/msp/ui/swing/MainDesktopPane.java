@@ -12,39 +12,26 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
-import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.SingleSelectionModel;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-//import javax.swing.SingleSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -60,25 +47,18 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
-import org.mars_sim.msp.ui.swing.sound.OGGSoundClip;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
-import org.mars_sim.msp.ui.swing.tool.FXInSwing;
-import org.mars_sim.msp.ui.swing.tool.JFXPannableView;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
-//import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.EventTableModel;
@@ -86,14 +66,12 @@ import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
-import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
@@ -128,15 +106,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
 
-	/* The desktop update thread. */
-//	private UpdateThread updateThread;
-	// 2015-04-01 Switched to using ThreadPoolExecutor
-	//private UpdateThreadTask updateThreadTask;
 	private ToolWindowTask toolWindowTask;
-	//private UnitWindowTask unitWindowTask;
-	//private ThreadPoolExecutor threadPoolExecutor;
 	private ThreadPoolExecutor toolWindowExecutor;
 	private ThreadPoolExecutor unitWindowExecutor;
+
 	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
 
 	/** The sound player. */
@@ -144,22 +117,20 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
 	private SettlementWindow settlementWindow;
+	private NavigatorWindow navWindow;
 	private TimeWindow timeWindow;
 	private Building building;
-	//private Settlement settlement;
 	private MainWindow mainWindow;
 	private MainScene mainScene;
 	private MarqueeTicker marqueeTicker;
 	private OrbitViewer orbitViewer;
 	private BrowserJFX browserJFX;
 	private EventTableModel eventTableModel;
-
 	private SingleSelectionModel ssm;
 	//private final ReentrantLock transportLock = new ReentrantLock();
     //private int transportCount = 0;
 	//private final ReentrantLock constructionLock = new ReentrantLock();
     //private int constructionCount = 0;
-
 
 	/**
 	 * Constructor 1.
@@ -231,10 +202,6 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		setupToolWindowTasks();
 
 		Simulation.instance().getMasterClock().addClockListener(this);
-
-		//updateThread = new UpdateThread(this);
-		//updateThread.setRun(true);
-		//updateThread.start();
 
 		if (mainScene == null)
 			prepareAnnouncementWindow();
@@ -534,7 +501,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	   	//logger.info("toolWindows.clear()");
 
 		// Prepare navigator window
-		NavigatorWindow navWindow = new NavigatorWindow(this);
+		navWindow = new NavigatorWindow(this);
 		try { navWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(navWindow);
@@ -663,6 +630,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 *  @return the tool window
 	 */
 	public ToolWindow getToolWindow(String toolName) {
+/*
 		ToolWindow result = null;
 		Iterator<ToolWindow> i = toolWindows.iterator();
 		while (i.hasNext()) {
@@ -672,6 +640,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			}
 		}
 		return result;
+*/
+		return toolWindows
+				.stream()
+				.filter(i -> toolName.equals(i.getToolName()))
+				.findAny()
+				.orElse(null);
+
 	}
 
 	/**
@@ -804,6 +779,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			}
 		}
 
+
 		window.getContentPane().validate();
 		window.getContentPane().repaint();
 		validate();
@@ -884,17 +860,47 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 	/**
+	 * Recreates the Mars Navigator Tool
+	 */
+	public void recreateNavWin() {
+		System.out.println("recreateNavWin()");//. toolWindows : " + toolWindows.size());
+		SwingUtilities.invokeLater(() -> {
+			ToolWindow window = getToolWindow(NavigatorWindow.NAME);
+			if ((window != null) && !window.isClosed()) {
+				//window.dispose();
+				try { window.setClosed(true); }
+				catch (java.beans.PropertyVetoException e) {}
+			}
+
+			window.dispose();
+			toolWindows.remove(window);
+
+			navWindow = new NavigatorWindow(this);
+			try { navWindow.setClosed(true); }
+			catch (PropertyVetoException e) { }
+
+			toolWindows.add(navWindow);
+			setupToolWindowTasks();
+	        if (!toolWindowExecutor.isShutdown())
+	        	toolWindowExecutor.shutdown();
+			openToolWindow(NavigatorWindow.NAME);
+	        //System.out.println("toolWindows : " + toolWindows.size());
+		});
+	}
+
+	/**
 	 * Closes a tool window if it is open
 	 * @param toolName the name of the tool window
 	 */
 	@SuppressWarnings("restriction")
 	public void closeToolWindow(String toolName) {
 		SwingUtilities.invokeLater(() -> {
-		ToolWindow window = getToolWindow(toolName);
-		if ((window != null) && !window.isClosed()) {
-			try { window.setClosed(true); }
-			catch (java.beans.PropertyVetoException e) {}
-		}
+			ToolWindow window = getToolWindow(toolName);
+			if ((window != null) && !window.isClosed()) {
+				try { window.setClosed(true); }
+				catch (java.beans.PropertyVetoException e) {}
+			}
+
 /*
 		// 2015-10-01 Added Platform.runLater()
 		if (mainScene != null) {
@@ -902,7 +908,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			Platform.runLater(() -> {
 
 				if (toolName.equals(NavigatorWindow.NAME)) {
-					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
+					//mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
 				}
 
 				else if (toolName.equals(SearchWindow.NAME)) {
@@ -929,7 +935,6 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
 				}
-
 			});
 		}
 */
@@ -1182,19 +1187,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	@Override
 		public void run() {
-//			try {
-				//while (!toolWindowExecutor.isTerminated()){
-		   	SwingUtilities.invokeLater(() -> {
-					unitWindow.update();
-	    	});
-/*					try {
-						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-*/				//}
-//			} catch (ConcurrentModificationException e) {} // Exception e) {} //
+	   	//SwingUtilities.invokeLater(() -> {
+			unitWindow.update();
+    	//});
 		}
 	}
 
@@ -1240,19 +1235,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		@Override
 		public void run() {
-//			try {
-				//while (!toolWindowExecutor.isTerminated()){
-				   	SwingUtilities.invokeLater(() -> {
-				   		toolWindow.update();
-				   	});
-/*					try {
-						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-*/				//}
-//			} catch (ConcurrentModificationException e) {} //Exception e) {}
+		   	//SwingUtilities.invokeLater(() -> {
+		   		toolWindow.update();
+		   	//});
 		}
 	}
 
@@ -1290,41 +1275,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		// Update all unit windows.
 		runUnitWindowExecutor();
 
-/*
-		try {
-			TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-*/
 		// Update all tool windows.
 		runToolWindowExecutor();
-/*
-        // Update all unit windows.
-		Iterator<UnitWindow> i1 = unitWindows.iterator();
-		try {
-			while (i1.hasNext()) {
-				i1.next().update();
-			}
-		}
-		catch (ConcurrentModificationException e) {
-			// Concurrent modifications exceptions may occur as
-			// unit windows are opened.
-		}
 
-		// Update all tool windows.
-		Iterator<ToolWindow> i2 = toolWindows.iterator();
-		try {
-			while (i2.hasNext()) {
-				i2.next().update();
-			}
-		}
-		catch (ConcurrentModificationException e) {
-			// Concurrent modifications exceptions may occur as
-			// unit windows are opened.
-		}
-*/
 	}
 
 
@@ -1523,9 +1476,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();
 			SwingUtilities.updateComponentTreeUI(toolWindow);
-		   	SwingUtilities.invokeLater(() -> {
+		   	//SwingUtilities.invokeLater(() -> {
 		   		toolWindow.update();
-		   	});
+		   	//});
 			//toolWindow.pack(); // why will it cause help window to stretch?
 		}
 	}
@@ -1536,9 +1489,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 			UnitWindow window = i.next();
 			SwingUtilities.updateComponentTreeUI(window);
-		   	SwingUtilities.invokeLater(() -> {
+		   	//SwingUtilities.invokeLater(() -> {
 	            window.update();
-		   	});
+		   	//});
 		}
 	}
 
@@ -1674,10 +1627,6 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		return announcementWindow;
 	}
 
-	//public Settlement getSettlement() {
-	//	return settlement;
-	//}
-
 	public SettlementWindow getSettlementWindow() {
 		return settlementWindow;
 	}
@@ -1811,14 +1760,26 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 	public void destroy() {
+		unitWindows = null;
+		toolWindows = null;
+		backgroundImageIcon = null;
+		backgroundLabel = null;
+		toolWindowTask = null;
+		toolWindowExecutor = null;
 		unitWindowExecutor = null;
+		toolWindowTaskList = null;
 		soundPlayer = null;
 		announcementWindow = null;
 		settlementWindow = null;
+		timeWindow = null;
 		building = null;
 		mainWindow = null;
 		mainScene = null;
+		marqueeTicker = null;
+		orbitViewer = null;
+		browserJFX = null;
 		eventTableModel = null;
+		ssm = null;
 	}
 
 }

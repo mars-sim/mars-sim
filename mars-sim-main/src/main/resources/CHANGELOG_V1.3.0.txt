@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 3950) - 2017-04-25
+## v3.1.0-Preview 7 (build 3956) - 2017-04-29
 
 ### MINIMUM REQUIREMENTS :
 
@@ -37,22 +37,26 @@ https://mars-sim.github.io/
 
 4. Improve how a building is positioned using Transport Wizard.
 
+5. Improve meal modeling. see project #5 at https://github.com/mars-sim/mars-sim/projects/5
+
 
 ### UI IMPROVEMENT :
 
-1. Set the initial position of the time ratio slider to near the middle in Speed Panel.
+1. Adopt the use of spinner for selecting the time ratio in Speed Panel.
 
-1. Add showing the season (for Northern/Southern Hemisphere) and solar longitude
+2. Add showing the season (for Northern/Southern Hemisphere) and solar longitude
    (in degrees) to Mars Calendar Panel.
 
-2. Refine death related info display.
+3. Refine death related info display.
 
-3. Add fast tooltips for Mars Calendar Panel and Speed panel.
+4. Add fast tooltips for Mars Calendar Panel and Speed panel.
 
-4. Accept the use of comma (in addition to the default case of using dot) as the decimal
+5. Accept the use of comma (in addition to the default case of using dot) as the decimal
    mark when inputting lat/lon in the Config Editor.
 
-5. Switch to using an unobtrusive, transparent pause pane when sim is paused.
+6. Switch to using an unobtrusive, transparent pause pane when sim is paused.
+
+7. Add url history in Help Browser.
 
 
 ### FIXES :
@@ -72,6 +76,10 @@ https://mars-sim.github.io/
 7. Fix quality of dessert not showing up correctly.
 
 8. Temporarily disable Transport/Construction Wizard and adopt automated building/site placement.
+
+9. Prevent Mars mini-globe from crashing and provide reset button.
+
+10. Fix trapped vehicle occupants (for not being released by the vehicle) upon being rescued and coming back to a settlement.
 
 
 -----------------------------------------------------------------------------------------

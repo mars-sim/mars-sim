@@ -1838,6 +1838,24 @@ public class MainScene {
 		});
 	}
 
+	public void addNavWin() {
+		System.out.println("addNavWin()");
+		//desktop.closeToolWindow(NavigatorWindow.NAME);
+		SwingUtilities.invokeLater(() -> desktop.recreateNavWin());
+		//SwingUtilities.invokeLater(() -> desktop.openToolWindow(NavigatorWindow.NAME));
+		//navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
+		//System.out.println("navWin : " + navWin.hashCode());
+		//minimapNode.setContent(navWin);
+		//minimapNode.setStyle("-fx-background-color: black; ");
+/*
+		minimapNode = new SwingNode();
+		minimapStackPane = new StackPane(minimapNode);
+		minimapNode.setContent(navWin);
+		minimapStackPane.setStyle("-fx-background-color: black; ");
+		minimapNode.setStyle("-fx-background-color: black; ");
+*/
+	}
+
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
@@ -2138,9 +2156,23 @@ public class MainScene {
 	}
 
 	public void openMinimap() {
+		//System.out.println("openMinimap()");
 		//if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 			desktop.openToolWindow(NavigatorWindow.NAME);
+			//System.out.println("navWin : " + navWin.hashCode());
+
+			//navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
+			//System.out.println("navWin : " + navWin.hashCode());
 			//minimapNode.setContent(navWin);
+			//minimapNode.setStyle("-fx-background-color: black; ");
+/*
+			minimapNode = new SwingNode();
+			minimapStackPane = new StackPane(minimapNode);
+			minimapNode.setContent(navWin);
+			minimapStackPane.setStyle("-fx-background-color: black; ");
+			minimapNode.setStyle("-fx-background-color: black; ");
+*/
+
 		    AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
 		    AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0
 		    boolean flag = false;
@@ -2261,8 +2293,10 @@ public class MainScene {
 	}
 
 	public void closeMinimap() {
+		//System.out.println("closeMinimap()");
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
+			//addNavWin();
 			mapAnchorPane.getChildren().remove(minimapStackPane);
 			minimapToggle.setSelected(false);
 			minimapToggle.setText("Minimap Off");

@@ -33,7 +33,7 @@ For a general description of this project, see our project website at at https:/
 We welcome anyone to contribute mars-sim in terms of ideas and concepts. Feel free to provide your comments at our facebook community at https://www.facebook.com/groups/125541663548/. Note: see also old/archived discussions at https://sourceforge.net/p/mars-sim/discussion/
 
 
-## Download
+## Download Binaries
 Checkout our latest 3.1.0-preview versions at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
 
 
@@ -47,18 +47,13 @@ See our new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 
 
 ## Supported Platform
-
 * Windows
-* MacOS (known bugs when clicking on the tabs)
-* Linux (may or may not have audio)
+* MacOS (known bug when clicking on the tabs)
+* Linux (unwanted black shadow artifact on the spinning 3D Mars Globe)
 
 
 ## Development Prerequisites
-
-* Eclipse IDE
-* m2eclipse (Maven/Eclipse integration)
-* Java Development Kit (JDK) 8u77 or up.
-See setting up development environment at https://github.com/mars-sim/mars-sim/wiki/Development-Environment for mars-sim.
+See setting up development environment at https://github.com/mars-sim/mars-sim/wiki/Development-Environment
 
 
 ## Official Codebase
