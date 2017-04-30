@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuildingMeta.java
- * @version 3.08 2015-06-15
+ * @version 3.1.0 2017-04-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -32,7 +32,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.salvageBuilding"); //$NON-NLS-1$
@@ -59,7 +59,6 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
             return 0;
         }
 
@@ -69,7 +68,6 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
         if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = 0D;
                 return 0;
             }
         }
@@ -110,9 +108,9 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
             if (result > 0D) {
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
-            
+
             if (result < 0D) {
-                result = 0D;
+                return 0;
             }
         }
 
@@ -161,7 +159,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
             }
 
         }
-*/        
+*/
         return result;
     }
 }

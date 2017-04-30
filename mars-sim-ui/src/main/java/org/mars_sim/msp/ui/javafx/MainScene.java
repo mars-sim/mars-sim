@@ -1137,7 +1137,10 @@ public class MainScene {
         //spinner.setValueFactory(new SpinnerValueFactory.IntSpinnerValueFactory(0, 10));
 
 		List<Integer> items = null;
-		if (default_ratio == 32)
+		if (default_ratio == 16)
+			items = FXCollections.observableArrayList(1,2,4,8,16,
+																32,64,128,256,512);
+		else if (default_ratio == 32)
 			items = FXCollections.observableArrayList(1,2,4,8,16,
 																32,64,128,256,512,
 																1024);
@@ -1155,7 +1158,11 @@ public class MainScene {
 																1024,2048,4096,8192);
 
         spinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<>(items));
-        spinner.setMaxSize(85, 15);
+        spinner.setMaxSize(95, 15);
+        spinner.setStyle("-fx-text-fill: #065185;"
+    			+ "-fx-font-size: 11px;"
+    		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+    			+ "-fx-font-weight:bold;");
         //spinner.setAlignment(Pos.CENTER);
         spinner.getValueFactory().setValue(default_ratio);
 
@@ -3141,10 +3148,10 @@ public class MainScene {
 
         Label label1 = new Label("ESC to resume");
         label1.setAlignment(Pos.CENTER);
-        label1.setPadding(new Insets(10));
-        label1.setStyle(" -fx-font: bold 12pt 'Corbel'; -fx-text-fill: cyan;");
+        label1.setPadding(new Insets(2));
+        label1.setStyle(" -fx-font: bold 11pt 'Corbel'; -fx-text-fill: cyan;");
         //label.setMaxWidth(250);
-        label1.setWrapText(true);
+        //label1.setWrapText(true);
 
         vbox.getChildren().addAll(label, label1);
         vbox.setAlignment(Pos.CENTER);

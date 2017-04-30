@@ -154,8 +154,10 @@ public class MasterClock implements Serializable { // Runnable,
 
         int threads = Simulation.NUM_THREADS;
         //defaultTimeRatio = threads * tr / 16D;
-        if (threads <= 16)
-        	defaultTmeBetweenUpdates = 12 / threads * tbu * 1_000_000D;
+        if (threads <= 32)
+        	defaultTmeBetweenUpdates = 12D / (Math.sqrt(threads) *2) * tbu * 1_000_000D;
+        else
+        	defaultTmeBetweenUpdates = 1.5 * tbu*1_000_000D;
 
         if (threads == 1) {
         	defaultTimeRatio = tr/16D;
@@ -191,15 +193,21 @@ public class MasterClock implements Serializable { // Runnable,
         }
         else {
         	defaultTimeRatio = tr;
-        	defaultTmeBetweenUpdates = .75*tbu*1_000_000D;
         }
 
     	timeRatio = defaultTimeRatio;
         timeBetweenUpdates = (long) defaultTmeBetweenUpdates;
 
+        logger.info("Default Time Ratio : " + (int)defaultTimeRatio + "x");
+        logger.info("Time between Updates : " + timeBetweenUpdates/1_000_000D + " ms");
+        logger.info("Default Ticks Per Second (TPS) : " + Math.round(1_000_000_000D/timeBetweenUpdates*10D)/10D + " Hz");
+
+
         // 2015-10-31 Added loading the values below from SimulationConfig
         setNoDelaysPerYield(config.getNoDelaysPerYield());
         setMaxFrameSkips(config.getMaxFrameSkips());
+
+        //logger.info("Ticks per sec : " + getPulsesPerSecond());
     }
 
     /**
