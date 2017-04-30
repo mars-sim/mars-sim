@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
@@ -100,6 +101,8 @@ public class BrowserJFX {
     public static final int REMOTE_HTML = 2;
     public static final int UNKNOWN = 3;
 
+    public static final int WIDTH = 25;
+
     public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
     public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
 
@@ -137,8 +140,8 @@ public class BrowserJFX {
     private JProgressBar progressBar = new JProgressBar();
 
     private Button reloadButton = new Button('\u27F3' + "");
-    private Button backButton = new Button("<");
-    private Button forwardButton = new Button(">");
+    private Button backButton = new Button('\u25c0' + "");//\u21e6' + "");
+    private Button forwardButton = new Button('\u25b6' + "");//u21e8' + "");
     private TextField tf = new TextField();
     private ComboBox<String> comboBox = new ComboBox<String>();
     private HBox bar = new HBox();
@@ -147,12 +150,13 @@ public class BrowserJFX {
 
     private MainScene mainScene;
     private MainDesktopPane desktop;
-    private WebView view;
-    private WebEngine engine;
-    private WebHistory history;
+    private WebView view = new WebView();
+    private WebEngine engine = view.getEngine();
+    private WebHistory history = engine.getHistory();
     private GuideWindow ourGuide;
 
-	private ObservableList<WebHistory.Entry> entryList;
+	private ObservableList<WebHistory.Entry> entryList = history.getEntries();
+	private SingleSelectionModel<String> ssm = comboBox.getSelectionModel();
 
 
 	// see http://www.java2s.com/Tutorials/Java/JavaFX/1500__JavaFX_WebEngine.htm
@@ -165,13 +169,16 @@ public class BrowserJFX {
 
         Platform.runLater(() -> {
 
-
-            view = new WebView();
-            engine = view.getEngine();
+            //view = new WebView();
+            //engine = view.getEngine();
+            //history = engine.getHistory();
+            //entryList = history.getEntries();
+            //ssm = comboBox.getSelectionModel();
         	logger.info("Web Engine supported : " + engine.getUserAgent());
         	// For JDK 131, it prints the following :
         	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
 
+        	highlight();
             // 2017-04-27 Disable context menu (copy option)
             view.setContextMenuEnabled(false);
 
@@ -229,24 +236,6 @@ public class BrowserJFX {
             });
 */
 
-            history = engine.getHistory();
-            entryList = history.getEntries();
-
-        	highlight();
-
-        	int WIDTH = 25;
-        	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
-            reloadButton.setMinWidth(WIDTH+5);
-            reloadButton.setTooltip(new Tooltip("Reload this page"));
-
-            //backButton.setPadding(new Insets(0, 3, 0, 3));
-            backButton.setMinWidth(WIDTH);
-            backButton.setTooltip(new Tooltip("Go back"));
-
-            //forwardButton.setPadding(new Insets(0, 3, 0, 3));
-            forwardButton.setMinWidth(WIDTH);
-            forwardButton.setTooltip(new Tooltip("Go forward"));
-
 
             comboBox.setPromptText("History");
             //comboBox.setPadding(new Insets(3, 3, 3, 3));
@@ -259,26 +248,63 @@ public class BrowserJFX {
             comboBox.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent ev) {
-                    int offset = comboBox.getSelectionModel().getSelectedIndex() - history.getCurrentIndex();
-                    history.go(offset);
+                	//System.out.println("reload");
+                	//System.out.println("i : " + history.getCurrentIndex());
+                    //int offset = ssm.getSelectedIndex() - history.getCurrentIndex();
+                    history.go(ssm.getSelectedIndex());
                     readURLCombo();
+                	//System.out.println("i : " + history.getCurrentIndex());
+    		    	//System.out.println("textInputCache : " + textInputCache);
+                	//System.out.println();
                 }
             });
 
+        	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
+            reloadButton.setMinWidth(WIDTH+5);
+            reloadButton.setTooltip(new Tooltip("Reload this page"));
             reloadButton.setOnAction(e -> {
         		goLoad(tf.getText().trim());
-
+		    	//System.out.println("textInputCache : " + textInputCache);
+            	//System.out.println();
             });
 
+            //backButton.setPadding(new Insets(0, 3, 0, 3));
+            backButton.setMinWidth(WIDTH+5);
+            backButton.setTooltip(new Tooltip("Go back"));
             backButton.setOnAction(e -> {
-	            	engine.executeScript("history.back()");
-	                readURLCombo();
+            	//System.out.println("backward");
+            	//System.out.println("i : " + history.getCurrentIndex());
+            	engine.executeScript("history.back()");
+		    	int i = history.getCurrentIndex();
+		    	//ssm.select(i); // question : will it load the url the 2nd time ?
+            	//System.out.println("i : " + history.getCurrentIndex());
+		    	if (i > 0)
+		    		textInputCache = entryList.get(i-1).getUrl();
+		    	//System.out.println("textInputCache : " + textInputCache);
+            	showFormattedURL();
+            	//System.out.println("i : " + history.getCurrentIndex());
+            	//System.out.println();
+            });
+
+            //forwardButton.setPadding(new Insets(0, 3, 0, 3));
+            forwardButton.setMinWidth(WIDTH+5);
+            forwardButton.setTooltip(new Tooltip("Go forward"));
+            forwardButton.setOnAction(e -> {
+            	//System.out.println("forward");
+            	//System.out.println("i : " + history.getCurrentIndex());
+                engine.executeScript("history.forward()");
+                int i = history.getCurrentIndex();
+            	int size = entryList.size();
+                //ssm.select(i);
+            	//System.out.println("i : " + history.getCurrentIndex());
+		    	if (i + 1 < size && size > 1)
+		    		textInputCache = entryList.get(i+1).getUrl();
+		    	//System.out.println("textInputCache : " + textInputCache);
+                showFormattedURL();
+            	//System.out.println("i : " + history.getCurrentIndex());
+            	//System.out.println();
 	        });
 
-            forwardButton.setOnAction(e -> {
-                engine.executeScript("history.forward()");
-                readURLCombo();
-	        });
 
             //Google.setOnAction(e -> webEngine.load("http://www.google.com"));
             //Yahoo.setOnAction(e -> webEngine.load("http://www.yahoo.com"));
@@ -287,7 +313,7 @@ public class BrowserJFX {
             //Twitter.setOnAction(e -> webEngine.load("http://www.twitter.com"));
             //YouTube.setOnAction(e -> webEngine.load("http://www.youtube.com"));
 
-            history.getEntries().addListener((Change<? extends Entry> c) -> {
+            entryList.addListener((Change<? extends Entry> c) -> {
                 c.next();
                 for (Entry e : c.getRemoved()) {
                     comboBox.getItems().remove(e.getUrl());
@@ -360,11 +386,11 @@ public class BrowserJFX {
     }
 
     public void readURLCombo() {
-    	String content = comboBox.getSelectionModel().getSelectedItem();
+    	String content = (String) ssm.getSelectedItem();
     	if (content.contains(DOCS_HELP_DIR) && content.contains(".html")) {
 			if (ourGuide == null)
 				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-			content = ourGuide.getFullURL(comboBox.getSelectionModel().getSelectedItem());
+			content = ourGuide.getFullURL((String) ssm.getSelectedItem());
     	}
         textInputCache = content;
         showFormattedURL();
@@ -382,12 +408,38 @@ public class BrowserJFX {
 		}
     }
 
+/*
+    public void goURL() {
+
+		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
+			if (ourGuide == null)
+				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide.setURL(input); //$NON-NLS-1$
+			setTextInputCache(fullLink);
+			inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
+			showFormattedURL();
+		}
+    }
+*/
+
     public void fireButtonGo(String input) {
 		if (input != null && !input.isEmpty()) {
 			// if the address bar is not empty
 			Platform.runLater(() -> {
+            	//System.out.println("fireButtonGo");
+            	//System.out.println("i : " + history.getCurrentIndex());
 				inputURLType(input);
+            	//System.out.println("i : " + history.getCurrentIndex());
+		    	int i = history.getCurrentIndex();
+		    	ssm.select(i); // question : will it load the url the 2nd time ?
+            	//System.out.println("i : " + history.getCurrentIndex());
+		    	if (entryList.size() != 0)
+		    		textInputCache = entryList.get(i).getUrl();
+            	//System.out.println("i : " + history.getCurrentIndex());
+		    	//System.out.println("textInputCache : " + textInputCache);
+            	//System.out.println();
 			});
+
 		}
     }
 

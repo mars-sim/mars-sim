@@ -179,8 +179,8 @@ ComponentListener {
 			browser.setTextInputCache(fullLink);
 			browser.inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
 			browser.showFormattedURL();
+			browser.fireButtonGo(fullLink);
 		});
-		browser.fireButtonGo(fullLink);
 	}
 
 	/**
