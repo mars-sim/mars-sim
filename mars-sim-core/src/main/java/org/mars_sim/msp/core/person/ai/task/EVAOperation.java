@@ -73,8 +73,8 @@ implements Serializable {
 
 	private MarsClock marsClock;
 	// 2017-04-10 WARNING: cannot use static or result in null
-	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(LifeSupportType.WATER);
+	private AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
 
 	/**
 	 * Constructor.

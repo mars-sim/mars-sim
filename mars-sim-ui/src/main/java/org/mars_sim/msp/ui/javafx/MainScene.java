@@ -3375,7 +3375,7 @@ public class MainScene {
 		}
 
 		quote = new QuotationPopup(this);
-		popAQuote();
+		//popAQuote();
 
 		isMainSceneDoneLoading = true;
 

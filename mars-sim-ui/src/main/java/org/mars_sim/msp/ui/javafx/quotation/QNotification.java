@@ -103,7 +103,7 @@ public class QNotification {
         private Duration              popupLifetime;
     	private static final int POPUP_IN_MILLISECONDS = 20_000;
         private Stage                 stage;
-        private Scene                 scene;
+        //private Scene                 scene;
         private ObservableList<Popup> popups;
         private static AnchorPane anchorPane;
    		double xPos = 0;
@@ -116,7 +116,7 @@ public class QNotification {
         // ******************** Constructor ***************************************
         private Notifier() {
             init();
-            initGraphics();
+            //initGraphics();
         }
 
 
@@ -125,20 +125,21 @@ public class QNotification {
             popupLifetime = Duration.millis(POPUP_IN_MILLISECONDS);
             popups = FXCollections.observableArrayList();
 
-            QUOTE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_quote_64.png"));//quote_24.png"));
+            QUOTE_ICON  = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_quote_64.png"));//quote_24.png"));
 
         }
 
         private void initGraphics() {
-            scene = new Scene(new Region());
-            scene.setFill(null);
-            scene.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
-            stage = new Stage();
-        	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-            stage.initStyle(StageStyle.TRANSPARENT);
+            //scene = new Scene(new Region());
+            //scene.setFill(null);
+            //scene.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
+            //stage = new Stage();
+        	//stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+            //stage.initStyle(StageStyle.TRANSPARENT);
             //stage.initModality(Modality.NONE);//APPLICATION_MODAL);//.WINDOW_MODAL);
-            stage.setScene(scene);
-            stage.hide();
+            //stage.setScene(scene);
+            //stage.centerOnScreen();
+            //stage.hide();
         }
 
 
@@ -169,10 +170,11 @@ public class QNotification {
          * @param OWNER
          */
         public static void setNotificationOwner(final Stage OWNER) {
-        	if (INSTANCE.stage.getOwner() == null) {
-        		INSTANCE.stage.initOwner(OWNER);
+        	INSTANCE.stage = OWNER;
+        	//if (INSTANCE.stage.getOwner() == null) {
+        	//	INSTANCE.stage.initOwner(OWNER);
         		//INSTANCE.stage.initModality(Modality.WINDOW_MODAL);
-        	}
+        	//}
         }
 
         public static void setPane(final AnchorPane anchorPane) {
@@ -226,10 +228,10 @@ public class QNotification {
             Notifier.spacingY = SPACING_Y;
         }
 
-        public void stop() {
-            popups.clear();
-            stage.close();
-        }
+        //public void stop() {
+        //    popups.clear();
+        //    stage.close();
+        //}
 
         /**
          * Returns the Duration that the notification will stay on screen before it
@@ -373,6 +375,7 @@ public class QNotification {
             popupLayout.getChildren().addAll(hBox, ta);
 
             StackPane popupContent = new StackPane();
+            popupContent.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
             popupContent.setPrefSize(width, ta.getPrefHeight() + ICON_HEIGHT + 10);//.getPrefHeight());
             popupContent.getStyleClass().add("notification");
             popupContent.getChildren().addAll(popupLayout);
@@ -443,6 +446,7 @@ public class QNotification {
 
             return calcX(stageRef.getX(), stageRef.getWidth());
         }
+
         private double getY() {
         	double h1 = Screen.getPrimary().getBounds().getWidth();
         	double h2 = 0;
