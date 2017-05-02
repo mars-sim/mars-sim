@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -115,7 +116,7 @@ extends TabPanel {
 		infoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(infoPanel);
 
-		totalPressureCache = settlement.getAirPressure();//getTotalPressure();
+		totalPressureCache = settlement.getAirPressure()/1000D; // convert to kPascal by multiplying 1000
 		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure", fmt2.format(totalPressureCache)), JLabel.CENTER); //$NON-NLS-1$
 		infoPanel.add(totalPressureLabel);
 
@@ -191,7 +192,7 @@ extends TabPanel {
 		Iterator<Building> k = buildingsCache.iterator();
 		while (k.hasNext()) {
 			Building b = k.next();
-			int id = b.getInhabitable_id();
+			int id = b.getInhabitableID();
 			double [][] vol = air.getPercentComposition();
 			//System.out.println("vol.length : " + vol.length + "  vol[].length : " + vol[0].length);
 			double percent = vol[gas][id];
@@ -260,12 +261,12 @@ extends TabPanel {
 			}
 
 
-			double totalPressure = settlement.getAirPressure(); //getTotalPressure();
+			double totalPressure = settlement.getAirPressure()/1000D; // convert to kPascal by multiplying 1000
 			if (totalPressureCache != totalPressure) {
 				totalPressureCache = totalPressure;
 				totalPressureLabel.setText(
 					Msg.getString("TabPanelAirComposition.label.totalPressure",  //$NON-NLS-1$
-					fmt2.format(totalPressure)
+					fmt2.format(totalPressureCache)//Math.round(totalPressureCache*10D)/10D
 					));
 			}
 
@@ -307,12 +308,11 @@ extends TabPanel {
 		}
 
 		public List<Building> selectBuildingsWithLS() {
-			List<Building> buildings = settlement.getBuildingManager().getBuildingsWithLifeSupport();
-			return buildings;
+			return settlement.getBuildingManager().getBuildingsWithLifeSupport();
 		}
 
 		public int getRowCount() {
-			return buildingsWithLS.size();
+			return size;
 		}
 
 		public int getColumnCount() {
@@ -378,7 +378,7 @@ extends TabPanel {
 			Iterator<Building> k = buildingsWithLS.iterator();
 			while (k.hasNext()) {
 				Building b = k.next();
-				int id = b.getInhabitable_id();
+				int id = b.getInhabitableID();
 				double [][] vol = air.getPercentComposition();
 				double percent = 0;
 				if (id < vol[0].length)
@@ -403,13 +403,19 @@ extends TabPanel {
 		}
 
 		public void update() {
-			List<Building> newBuildings = selectBuildingsWithLS();
-			if (!buildingsWithLS.equals(newBuildings)) {
-				buildingsWithLS = newBuildings;
-				size = buildingsWithLS.size();
+			//List<Building> newBuildings = selectBuildingsWithLS();
+			//if (!buildingsWithLS.equals(newBuildings)) {
+			//	Collections.sort(buildingsWithLS);
+			//	buildingsWithLS = newBuildings;
+			//}
+
+			int newSize = buildingsWithLS.size();
+			if (size != newSize) {
+				size = newSize;
+				buildingsWithLS = selectBuildingsWithLS();
+				Collections.sort(buildingsWithLS);
 			}
-			else
-				fireTableDataChanged();
+			fireTableDataChanged();
 		}
 	}
 }

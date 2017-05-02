@@ -72,7 +72,7 @@ extends TestCase {
 
 		BuildingManager buildingManager = settlement.getBuildingManager();
         MockBuilding building0 = new MockBuilding(buildingManager);
-        building0.setID(0);
+        building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);

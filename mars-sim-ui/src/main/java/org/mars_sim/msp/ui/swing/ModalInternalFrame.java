@@ -128,11 +128,12 @@ public abstract class ModalInternalFrame extends JInternalFrame {
                 		//System.out.println("ModalInternalFrame's startModal() : dispatch is true");
                         if (source instanceof Component) {
                         	// 2016-11-15 Attempting to give a text field correct focus for linux
-                        	//if (source instanceof JTextField) {
+                        	if (source instanceof JTextField) {
                         		//System.out.println("ModalInternalFrame : you just clicked on a Swing JTextField.");
-                        		//((JTextField) source).setEditable(true);
+                        		((JTextField) source).setEditable(true);
                         		//((JTextField) source).requestFocusInWindow();
-                        	//}
+                        		//(JTextField)source;//.getEditor().getEditorComponent();
+                        	}
 
                             ((Component) source).dispatchEvent(event);
                         }

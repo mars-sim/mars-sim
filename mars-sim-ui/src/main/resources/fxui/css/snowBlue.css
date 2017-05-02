@@ -217,19 +217,19 @@
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
-  	-fx-toggle-color: #065185;/*#03a9f4;*/
+  	-fx-toggle-color: #addbff; /* #065185;#03a9f4;*/
     -fx-background-color: transparent;
-    -fx-text-fill: #065185;/*#03a9f4;*/
+    -fx-text-fill: #7ebcea; /* #065185;#03a9f4;*/
     -fx-font-weight: bold;
 }
 
 .jfx-toggle-button{
-  	-fx-text-fill: grey;
+  	-fx-text-fill: white; /*when the toggle button is off */
   	-fx-background-color: transparent;
 }
 
 .jfx-button {
-	-fx-toggle-color: #065185; /* #03a9f4;*/
+	-fx-toggle-color: #409fe8; /*#065185;  #03a9f4;*/
 }
 
 .jfx-slider {
@@ -277,33 +277,65 @@
 	-fx-border-style: solid;
 }
 
-.combo-box-base
-{
-    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
-    -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: #065185;
-    -fx-background-radius: 5, 5, 5, 5;
-    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-padding: 2 2 2 2;
-    -fx-border-radius: 2px;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
-}
-
-.jfx-combo-box .list-cell
-{
-	-fx-font-size: 15.0;
-	-fx-background: #c9ddea; /*transparent;*/
-    -fx-background-color: #c9ddea; /*transparent;*/
-    -fx-text-fill: #065185;/*#03a9f4;*/
-    -fx-padding: 1 1 1 1;
-    -fx-cell-size: 1.66667em;
-}
-
+/*******************************************************************************
+*                                                                              *
+* JFX Check Box                                                                *
+*                                                                              *
+*******************************************************************************/
 .check-box {
     -fx-font-size: 12;
     -fx-font-weight: italic;
-    -fx-text-fill: #065185;/*#03a9f4;*/
+    -fx-text-fill: #7ebcea;
+    -fx-checked-color: #206982;
+    -fx-unchecked-color: #206982;
 }
+
+.jfx-check-box-all-colored > .box {
+    -jfx-checked-color: #206982;
+    -jfx-unchecked-color: #206982;
+    -fx-text-fill: #206982;
+}
+
+.jfx-check-box-text-colored {
+    -fx-text-fill: #7ebcea;
+}
+
+.jfx-check-box {
+    -fx-font-weight: BOLD;
+    -fx-font-size: 12;
+    -fx-font-weight: italic;
+    -fx-text-fill: #7ebcea;
+}
+
+/*******************************************************************************/
+
+.combo-box-base {
+    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
+    -fx-background-color: transparent, transparent, transparent, transparent;
+    -fx-text-fill: white; /* #7ebcea; #c9ddea;*/
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+}
+
+.jfx-combo-box .list-cell  {
+	-fx-font-size: 12.0;
+	-fx-background: transparent;
+    -fx-background-color: #206982;
+    -fx-text-fill: #7ebcea;
+    -fx-cell-size: 1.66667em;
+    -fx-pref-height: 25;
+}
+
+.jfx-combo-box .text-field {
+	-fx-font-size: 12.0;
+	-fx-background: transparent;
+    -fx-background-color: #c9ddea;
+    -fx-text-fill: #7ebcea; /*#7ebcea;#c9ddea; #03a9f4;*/
+    -fx-cell-size: 1.66667em;
+    -fx-pref-height: 25;
+}
+
+/*******************************************************************************/
 
 .ttip{
 	/*-fx-background-color:  linear-gradient(greenyellow, limegreen);*/

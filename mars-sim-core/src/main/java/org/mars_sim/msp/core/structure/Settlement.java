@@ -129,7 +129,7 @@ implements Serializable, LifeSupportType, Objective {
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 
-	private double currentPressure = NORMAL_AIR_PRESSURE;
+	private double currentPressure = NORMAL_AIR_PRESSURE; //[in Pascal]
 	/** Amount of time (millisols) that the settlement has had zero population.  */
 	private double zeroPopulationTime;
 
@@ -680,7 +680,7 @@ implements Serializable, LifeSupportType, Objective {
 		Iterator<Building> k = buildings.iterator();
 		while (k.hasNext()) {
 			Building b = k.next();
-			int id = b.getInhabitable_id();
+			int id = b.getInhabitableID();
 			double [] tp = compositionOfAir.getTotalPressure();
 			double p = tp[id];
 			result += p;
@@ -835,7 +835,7 @@ implements Serializable, LifeSupportType, Objective {
 	    // 2015-12-29 Added CompositionOfAir
 	    compositionOfAir.timePassing(time);
 
-	    currentPressure = getTotalPressure()*1000D;
+	    currentPressure = getTotalPressure() *1000D;
 
 	}
 

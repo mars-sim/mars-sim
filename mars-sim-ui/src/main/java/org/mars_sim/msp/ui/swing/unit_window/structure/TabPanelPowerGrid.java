@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -363,16 +364,21 @@ extends TabPanel {
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
 
+		private int size;
+
 		private PowerTableModel(Settlement settlement) {
 			this.settlement = settlement;
 			buildings = settlement.getBuildingManager().getBuildings();//getACopyOfBuildings()
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
+
+			buildings = settlement.getBuildingManager().getBuildings();
+			size = buildings.size();
 		}
 
 		public int getRowCount() {
-			return buildings.size();
+			return size;//buildings.size();
 		}
 
 		public int getColumnCount() {
@@ -444,10 +450,17 @@ extends TabPanel {
 		}
 
 		public void update() {
-			List<Building> newList = settlement.getBuildingManager().getBuildings();
-			if (!buildings.equals(newList))
-				buildings = newList;
-
+			//List<Building> newList = settlement.getBuildingManager().getACopyOfBuildings();
+			//if (!buildings.equals(newList)) {
+			//	Collections.sort(buildings);
+			//	buildings = newList;
+			//}
+			int newSize = buildings.size();
+			if (size != newSize) {
+				size = newSize;
+				buildings = settlement.getBuildingManager().getACopyOfBuildings();
+				Collections.sort(buildings);
+			}
 			fireTableDataChanged();
 		}
 	}

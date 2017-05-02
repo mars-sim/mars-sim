@@ -939,26 +939,18 @@ public class BrowserJFX {
     @SuppressWarnings("restriction")
 	public void loadRemoteURL(final String content) {
     	isLocalHtml = false;
-    	Platform.runLater(()-> {
-			//boolean status = content.toLowerCase().contains(HTTPS_HEADER)
-			//		|| content.toLowerCase().contains(HTTP_HEADER);
-
-			//if (status) {
+    	//Platform.runLater(()-> {
+			//try {
 				engine.load(content);
-				//System.out.println("just loading a https page");
 				updateButtons();
 				textInputCache = content;
 				statusBarURLText = content;
-                SwingUtilities.invokeLater(()-> statusBarLbl.setText(content));
-				//System.out.println("just set the statusbar label");
-
-                //}
-
-			//else {
-			//	System.out.println("loadRemoteURL()'s content is " + content);
+			//} catch (StringIndexOutOfBoundsException e) {
+			//	e.printStackTrace();
 			//}
-        });
+        //});
 
+        SwingUtilities.invokeLater(()-> statusBarLbl.setText(content));
     }
 
     @SuppressWarnings("restriction")
@@ -993,7 +985,6 @@ public class BrowserJFX {
         Platform.runLater(() -> {
                 engine.setJavaScriptEnabled(true);
                 //executejQuery(engine, " $(\"a\").css(\"color\", \"red\")");
-                //engine.setJavaScriptEnabled(false);
         });
     }
 

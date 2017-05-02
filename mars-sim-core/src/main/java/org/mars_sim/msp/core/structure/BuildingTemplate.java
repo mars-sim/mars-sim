@@ -27,9 +27,7 @@ implements Serializable , Comparable<BuildingTemplate>{
 
 	// Data members
 
-	/**
-	 * an unique id for this building in a settlement
-	 */
+	/** an unique template id for this particular settlement template */
 	private int id;
 	/**
 	 * an id for this building in a particular building type. e.g. ERV Base 1, ERV Base 2.
@@ -89,8 +87,8 @@ implements Serializable , Comparable<BuildingTemplate>{
 	}
 
 	/**
-	 * Gets the building's unique ID.
-	 * @return ID number.
+	 * Gets the building template's unique ID.
+	 * @return id.
 	 */
 	public int getID() {
 		return id;

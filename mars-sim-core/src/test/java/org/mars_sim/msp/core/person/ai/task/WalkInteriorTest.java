@@ -117,7 +117,7 @@ public class WalkInteriorTest extends TestCase {
         assertNotNull(connectorManager);
 
         MockBuilding building0 = new MockBuilding(buildingManager);
-        building0.setID(0);
+        building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
         building0.setLength(9D);
@@ -130,7 +130,7 @@ public class WalkInteriorTest extends TestCase {
         building0.addFunction(new EVA(building0, airlock0));
 
         MockBuilding building1 = new MockBuilding(buildingManager);
-        building1.setID(1);
+        building1.setTemplateID(1);
         building1.setName("building 1");
         building1.setWidth(6D);
         building1.setLength(9D);
@@ -140,7 +140,7 @@ public class WalkInteriorTest extends TestCase {
         buildingManager.addBuilding(building1, false);
 
         MockBuilding building2 = new MockBuilding(buildingManager);
-        building2.setID(2);
+        building2.setTemplateID(2);
         building2.setName("building 2");
         building2.setWidth(2D);
         building2.setLength(3D);

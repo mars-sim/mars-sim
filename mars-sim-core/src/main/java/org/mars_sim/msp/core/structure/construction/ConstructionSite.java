@@ -353,7 +353,7 @@ implements Serializable, LocalBoundedObject {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
 
         // 2014-10-27 Added uniqueName
-        int id = manager.getUniqueBuildingIDNumber();
+        int id = manager.getNextTemplateID();
         String buildingType = buildingStage.getInfo().getName();
         String uniqueName = manager.getBuildingNickName(buildingType);
 

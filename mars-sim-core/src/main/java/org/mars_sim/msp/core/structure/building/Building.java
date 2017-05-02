@@ -115,9 +115,10 @@ LocalBoundedObject, InsidePathLocation {
     //public double GREENHOUSE_TEMPERATURE = 24D;
 
     // Data members
-	protected int id;
+    /** an unique template id assigned for the settlement template that this building belong */
+	protected int templateID;
     // 2015-12-30 Add inhabitable_id for tracking composition of air
-	protected int inhabitable_id = -1;
+	protected int inhabitableID = -1;
 	protected int baseLevel;
 	private int solCache = 0;
 
@@ -172,7 +173,7 @@ LocalBoundedObject, InsidePathLocation {
 
 	DecimalFormat fmt = new DecimalFormat("###.####");
 
-	/** Constructor 1
+	/** Constructor 1.
 	 * Constructs a Building object.
 	 * @param template the building template.
 	 * @param manager the building's building manager.
@@ -229,7 +230,7 @@ LocalBoundedObject, InsidePathLocation {
 		super(nickName, manager.getSettlement().getCoordinates());
 	    //logger.info("Building's constructor 2 is on " + Thread.currentThread().getName() + " Thread");
 
-		this.id = id;
+		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 		this.manager = manager;
@@ -581,6 +582,13 @@ LocalBoundedObject, InsidePathLocation {
 		}
 	}
 
+	public void removeFunction(Function function) {
+		if (functions.contains(function)) {
+	        functions.remove(function);
+	        // 2016-10-28 Add calling removeOneFunctionfromBFMap()
+	        manager.removeOneFunctionfromBFMap(this, function);
+	    }
+	}
 
 	/**
 	 * Gets the building's building manager.
@@ -590,13 +598,7 @@ LocalBoundedObject, InsidePathLocation {
 		return manager;
 	}
 
-	/**
-	 * Gets the building's unique ID number.
-	 * @return ID integer.
-	 */
-	public int getID() {
-		return id;
-	}
+
 
 	/**
 	 * Sets the building's nickName
@@ -1138,9 +1140,8 @@ LocalBoundedObject, InsidePathLocation {
 						else {
 							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
 						}
-
 					}
-        	}
+				}
 			}
 		}
 	}
@@ -1149,20 +1150,36 @@ LocalBoundedObject, InsidePathLocation {
 		return location;
 	}
 
-	public int getInhabitable_id() {
-		return inhabitable_id;
+	/**
+	 * Gets the building's inhabitable ID number.
+	 * @return id.
+	 */
+	public int getInhabitableID() {
+		return inhabitableID;
 	}
 
+	/**
+	 * Sets the building's settlement inhabitable ID number.
+	 * @param id.
+	 */
 	public void setInhabitableID(int id) {
-		this.inhabitable_id = id;
+		inhabitableID = id;
 	}
 
-	public void removeFunction(Function function) {
-		if (functions.contains(function)) {
-	        functions.remove(function);
-	        // 2016-10-28 Add calling removeOneFunctionfromBFMap()
-	        manager.removeOneFunctionfromBFMap(this, function);
-	    }
+	/**
+	 * Gets the building's settlement template ID number.
+	 * @return id.
+	 */
+	public int getTemplateID() {
+		return templateID;
+	}
+
+	/**
+	 * Sets the building's settlement template ID number.
+	 * @param id.
+	 */
+	public void setTemplateID(int id) {
+		templateID = id;
 	}
 
 	/**

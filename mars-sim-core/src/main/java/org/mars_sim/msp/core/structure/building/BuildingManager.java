@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -101,9 +102,9 @@ public class BuildingManager implements Serializable {
     // Data members
     //private boolean flag_buildings_done = false;
     //private int numBuildingsCache = 0;
-    private int count = 0;
+    //private int count = 0;
 	private int solCache = 0;
-    private double sum = 0;
+    //private double sum = 0;
     private int millisolCache = -5;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
@@ -256,20 +257,17 @@ public class BuildingManager implements Serializable {
      * @param oldBuilding the building to remove.
      */
     public void removeBuilding(Building oldBuilding) {
-        if (buildings.contains(oldBuilding)) {
 
+        if (buildings.contains(oldBuilding)) {
             // Remove building connections (hatches) to old building.
             settlement.getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
-
             // Remove the building's functions from the settlement.
             oldBuilding.removeFunctionsFromSettlement();
 
             buildings.remove(oldBuilding);
-
             // 2016-10-28 Call to remove all references of this building in all functions
             removeAllFunctionsfromBFMap(oldBuilding);
     		//logger.info("removeBuilding() : " + oldBuilding + " has just been removed");
-
             settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
         }
     }
@@ -343,18 +341,17 @@ public class BuildingManager implements Serializable {
      */
     public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
         if (!buildings.contains(newBuilding)) {
-            buildings.add(newBuilding);
 
+            buildings.add(newBuilding);
             // 2016-10-17 Insert this new building into buildingFunctionsMap
             addAllFunctionstoBFMap(newBuilding);
 
             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
-       		//logger.info("addBuilding() : " + newBuilding.getNickName() + " has just been added");
-
             // Create new building connections if needed.
             if (createBuildingConnections) {
                 settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
             }
+       		//logger.info("addBuilding() : " + newBuilding.getNickName() + " has just been added");
         }
     }
 
@@ -533,8 +530,8 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets the building with a given ID number.
-     * @param id the unique building ID number.
+     * Gets the building with the given template ID.
+     * @param id the template ID .
      * @return building or null if none found.
      */
     public Building getBuilding(int id) {
@@ -553,10 +550,11 @@ public class BuildingManager implements Serializable {
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             Building b = i.next();
-            if (b.getID() == id) {
+            if (b.getTemplateID() == id) {
                 result = b;
-                //break;
-                // 2016-12-08 Note: the word 'break' here will cause maven test to fail
+                //System.out.println(b.getNickName() + " id " + id);
+                //return b; // 2017-05-01 NOTE: do NOT use return b or else it fails maven test.
+                //break; // 2016-12-08 NOTE: the word 'break' here will cause maven test to fail
             }
         }
 
@@ -600,6 +598,8 @@ public class BuildingManager implements Serializable {
             	if (b.hasFunction(bf))
             		list.add(b);
             }
+
+			Collections.sort(list);
 
     		buildingFunctionsMap.put(bf, list);
     		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
@@ -1756,8 +1756,7 @@ public class BuildingManager implements Serializable {
         double wearCondition = building.getMalfunctionManager().getWearCondition();
         result *= (wearCondition / 100D) * .75D + .25D;
 
-        logger.fine("getBuildingValue() : value is " + result);
-
+        //logger.fine("getBuildingValue() : value is " + result);
         return result;
     }
 
@@ -1844,26 +1843,6 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets an available building type ID for a new building.
-     * @param buildingType
-     * @return type ID
-     */
-    // 2015-12-13 Added getNextBuildingTypeID()
-    public int getNextBuildingTypeID(String buildingType) {
-
-        int largestTypeID = 0;
-        Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            String type = building.getBuildingType();
-            if (buildingType.equals(type))
-            	largestTypeID++;
-        }
-
-        return largestTypeID + 1;
-    }
-
-    /**
      * Obtains the inhabitable building having that particular id
      * @param id
      * @return inhabitable building
@@ -1874,7 +1853,7 @@ public class BuildingManager implements Serializable {
 		// 2016-12-08 Using Java 8 stream
 		return buildings
 				.stream()
-				.filter(b-> b.getInhabitable_id() == id)
+				.filter(b-> b.getInhabitableID() == id)
 				.findFirst().orElse(null);//.get();
 /*
     	Building result = null;
@@ -1892,16 +1871,16 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets the next unique ID number for a new building in a settlement (but not unique in a simulation)
-     * @return ID integer.
+     * Gets the next template ID for a new building in a settlement (but not unique in a simulation)
+     * @return template ID (starting from 0).
      */
-    public int getUniqueBuildingIDNumber() {
+    public int getNextTemplateID() {
 
         int largestID = 0;
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            int id = building.getID();
+            int id = building.getTemplateID();
             if (id > largestID) {
                 largestID = id;
             }
@@ -1912,7 +1891,7 @@ public class BuildingManager implements Serializable {
 
     /**
      * Gets a unique ID for a new inhabitable building in a settlement (but not unique in a simulation)
-     * @return ID integer (starting from 0).
+     * @return inhabitable ID (starting from 0).
      */
     // 2015-12-30 Added getNextInhabitableID()
     public int getNextInhabitableID() {
@@ -1920,22 +1899,32 @@ public class BuildingManager implements Serializable {
         int nextNum = -1;
         for (Building b : buildings) {
         	if (b.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                int id = b.getInhabitable_id();
+                int id = b.getInhabitableID();
                 if (id > nextNum)
                 	nextNum++;
             }
-
         }
-/*
-        Iterator<Building> i = getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
-        while (i.hasNext()) {
-            Building b = i.next();
-            int id = b.getInhabitable_id();
-            if (id > nextNum)
-            	nextNum++;
-        }
-*/
         return nextNum + 1;
+    }
+
+    /**
+     * Gets an available building type ID for a new building.
+     * @param buildingType
+     * @return type ID (starting from 1).
+     */
+    // 2015-12-13 Added getNextBuildingTypeID()
+    public int getNextBuildingTypeID(String buildingType) {
+
+        int largestTypeID = 0;
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            String type = building.getBuildingType();
+            if (buildingType.equals(type))
+            	largestTypeID++;
+        }
+
+        return largestTypeID + 1;
     }
 
     /**
@@ -2040,18 +2029,23 @@ public class BuildingManager implements Serializable {
      * Prepare object for garbage collection.
      */
     public void destroy() {
-        settlement = null;
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             i.next().destroy();
         }
         //buildings.clear();
         buildings = null;
+        settlement = null;
         //buildingValuesNewCache.clear();
         buildingValuesNewCache = null;
         //buildingValuesOldCache.clear();
         buildingValuesOldCache = null;
         lastBuildingValuesUpdateTime = null;
+        resupply = null;
+        meteorite = null;
+        marsClock = null;
+    	masterClock = null;
+        buildingConfig = null;
     }
 
 }

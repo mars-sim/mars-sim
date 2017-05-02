@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -395,13 +396,15 @@ extends TabPanel {
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
-		//private int n;
+
+		private int size;
 
 		private HeatTableModel(Settlement settlement) {
 			this.settlement = settlement;
 
 			//2014-11-02 Included only buildings having Thermal control system
 			buildingsWithThermal = selectBuildingsWithThermal();
+			this.size = buildingsWithThermal.size();
 
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
@@ -411,12 +414,13 @@ extends TabPanel {
 		//2015-04-02 Revised selectBuildingsWithThermal()
 		public List<Building> selectBuildingsWithThermal() {
 			List<Building> buildings = settlement.getBuildingManager().getBuildingsWithThermal();
+			Collections.sort(buildings);
 			return buildings;
 		}
 
 		//2014-11-02 Included only buildings having Thermal control system
 		public int getRowCount() {
-			return buildingsWithThermal.size();
+			return size; //buildingsWithThermal.size();
 		}
 
 		public int getColumnCount() {
@@ -514,9 +518,16 @@ extends TabPanel {
 
 		public void update() {
 			//2014-11-02 Included only buildings having Thermal control system
-			List<Building> newBuildings = selectBuildingsWithThermal();
-			if (!buildingsWithThermal.equals(newBuildings)) {
-				buildingsWithThermal = newBuildings;
+			//List<Building> newBuildings = selectBuildingsWithThermal();
+			//if (!buildingsWithThermal.equals(newBuildings)) {
+			//	buildingsWithThermal = newBuildings;
+			//}
+
+			int newSize = buildingsWithThermal.size();
+			if (size != newSize) {
+				size = newSize;
+				buildingsWithThermal = selectBuildingsWithThermal();
+				Collections.sort(buildingsWithThermal);
 			}
 			fireTableDataChanged();
 		}

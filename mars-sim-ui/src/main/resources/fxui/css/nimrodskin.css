@@ -217,7 +217,7 @@
 }
 
 .jfx-toggle-button{
-  	-fx-text-fill: GREY;
+  	-fx-text-fill: white; /*when the toggle button is off */
   	-fx-background-color: transparent;
 }
 
@@ -270,33 +270,66 @@
 	-fx-border-style: solid;
 }
 
-.combo-box-base
-{
-    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
-    -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: #894c02;
-    -fx-background-radius: 5, 5, 5, 5;
-    -fx-background-insets: 0 0 0 0, 0, 0, 0;
-    -fx-padding: 2 2 2 2;
-    -fx-border-radius: 2px;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
-}
 
-.jfx-combo-box .list-cell
-{
-	-fx-font-size: 15.0;
-	-fx-background: #ffeaaa; /*transparent;*/
-    -fx-background-color: #ffeaaa; /*transparent;*/
-    -fx-text-fill: #894c02;
-    -fx-padding: 2 2 2 2;
-    -fx-cell-size: 1.66667em;
-}
-
+/*******************************************************************************
+*                                                                              *
+* JFX Check Box                                                                *
+*                                                                              *
+*******************************************************************************/
 .check-box {
     -fx-font-size: 12;
     -fx-font-weight: italic;
     -fx-text-fill: yellow;
+    -fx-checked-color: yellow;
+    -fx-unchecked-color: yellow;
 }
+
+.jfx-check-box-all-colored > .box {
+    -jfx-checked-color: yellow;
+    -jfx-unchecked-color: yellow;
+    -fx-text-fill: yellow;
+}
+
+.jfx-check-box-text-colored {
+    -fx-text-fill: yellow;
+}
+
+.jfx-check-box {
+    -fx-font-weight: BOLD;
+    -fx-font-size: 12;
+    -fx-font-weight: italic;
+    -fx-text-fill: yellow;
+}
+
+/*******************************************************************************/
+
+.combo-box-base {
+    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
+    -fx-background-color: transparent, transparent, transparent, transparent;
+    -fx-text-fill: yellow;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+}
+
+.jfx-combo-box .list-cell  {
+	-fx-font-size: 12.0;
+	-fx-background: transparent;
+    -fx-background-color: #917215; /* #917215; */
+    -fx-text-fill: yellow;
+    -fx-cell-size: 1.66667em;
+    -fx-pref-height: 25;
+}
+
+.jfx-combo-box .text-field {
+	-fx-font-size: 12.0;
+	-fx-background: transparent;
+    -fx-background-color: #654b00;
+    -fx-text-fill: yellow;
+    -fx-cell-size: 1.66667em;
+    -fx-pref-height: 25;
+}
+
+/*******************************************************************************/
 
 .ttip{
 	/*-fx-background-color:  linear-gradient(greenyellow, limegreen);*/

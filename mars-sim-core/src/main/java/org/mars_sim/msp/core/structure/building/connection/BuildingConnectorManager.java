@@ -97,8 +97,9 @@ public class BuildingConnectorManager implements Serializable {
             BuildingTemplate buildingTemplate = i.next();
             int buildingID = buildingTemplate.getID();
             Building building = buildingManager.getBuilding(buildingID);
+            //Building building = buildingManager.getBuilding(0);
             if (building == null) {
-                throw new IllegalStateException("Building ID: " + buildingID + " does not exist for settlement " +
+                throw new IllegalStateException("Building ID: 0 does not exist for settlement " +
                         settlement.getName());
             }
 

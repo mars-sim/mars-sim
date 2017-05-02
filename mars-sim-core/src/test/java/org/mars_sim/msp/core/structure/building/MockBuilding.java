@@ -35,44 +35,44 @@ public class MockBuilding extends Building {
 		//functions = new HashSet<Function>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
-	
-	public void setID(int id) {
-	    this.id = id;
+
+	public void setTemplateID(int id) {
+		this.templateID = id;
 	}
-	
+
 	public void setBuildingType(String type) {
 	    this.buildingType = type;
 	}
-	
+
 	public void setXLocation(double xLoc) {
 	    this.xLoc = xLoc;
 	}
-	
+
 	public void setYLocation(double yLoc) {
 	    this.yLoc = yLoc;
 	}
-	
+
 	public void setWidth(double width) {
 	    this.width = width;
 	}
-	
+
 	public void setLength(double length) {
 	    this.length = length;
 	}
-	
+
 	public void setFacing(double facing) {
 	    this.facing = facing;
 	}
-	
+
 	public void addFunction(Function function) {
 	    functions.add(function);
 	}
-	
+
 //	public void removeFunction(Function function) {
 //		if (functions.contains(function))
 //	        functions.remove(function);
 //	}
-	
+
 	public Inventory getInventory() {
 		return manager.getSettlement().getInventory();
 	}

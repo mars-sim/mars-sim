@@ -208,7 +208,7 @@ implements Serializable, Transportable {
                     length = DEFAULT_VARIABLE_BUILDING_LENGTH;
                 }
 
-                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                int buildingID = settlement.getBuildingManager().getNextTemplateID();
                 // 2015-12-13 Added buildingTypeID
                 int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(template.getBuildingType());
                 // 2015-01-16 Added scenario
@@ -780,7 +780,7 @@ implements Serializable, Transportable {
                 // If no buildings at settlement, position new building at 0,0 with random facing.
                 // TODO: check to make sure it does not overlap another building.
 
-                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                int buildingID = settlement.getBuildingManager().getNextTemplateID();
                 // 2015-12-13 Added buildingTypeID
                 int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(buildingType);
 
@@ -1111,7 +1111,7 @@ implements Serializable, Transportable {
                     rectCenterY, width, length, rectRotation)) {
                 // Set the new building here.
 
-                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                int buildingID = settlement.getBuildingManager().getNextTemplateID();
                 // 2015-12-13 Added buildingTypeID
                 int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(newBuildingType);
                 // 2015-01-16 Added scenario
@@ -1200,7 +1200,7 @@ implements Serializable, Transportable {
             double newLength = p1.distance(p2);
             double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
             // Set the new building here.
-            int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+            int buildingID = settlement.getBuildingManager().getNextTemplateID();
             // 2015-12-13 Added buildingTypeID
             int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(newBuildingType);
 

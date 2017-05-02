@@ -56,8 +56,9 @@
 		<main-dish id="5" name="Bean Sprout Garlic Stir Fry" oil="0.1" salt="0.01" category="meal">
 			<ingredient id="0" name="Soy Sprout" proportion="0.5"/>
 			<ingredient id="1" name="Garlic" proportion="0.2"/>
-			<ingredient id="2" name="Green Onion" proportion="0.09"/>
-			<ingredient id="3" name="Rice Vinegar" proportion="0.01"/>
+			<ingredient id="2" name="Green Onion" proportion="0.05"/>
+			<ingredient id="3" name="Ginger" proportion="0.04"/>
+			<ingredient id="4" name="Rice Vinegar" proportion="0.01"/>
 		</main-dish>
 
 		<main-dish id="6" name="Veggie Burger" oil="0.05" salt="0.01" category="meal">
@@ -99,10 +100,10 @@
 		</main-dish>
 
 		<main-dish id="11" name="Hearty Quinoa Sprouts" oil="0.05" salt="0.001" category="meal">
-			<ingredient id="0" name="Quinoa Sprout" proportion="0.4"/>
-			<ingredient id="1" name="Ginger" proportion="0.15"/>
-			<ingredient id="2" name="Soy Sauce" proportion="0.05"/>
-			<ingredient id="3" name="Cucumber" proportion="0.2"/>
+			<ingredient id="0" name="Quinoa Sprout" proportion="0.5"/>
+			<ingredient id="1" name="Cucumber" proportion="0.2"/>
+			<ingredient id="2" name="Ginger" proportion="0.05"/>
+			<ingredient id="3" name="Soy Sauce" proportion="0.05"/>
 		</main-dish>
 
 		<main-dish id="12" name="Vegetarian Pho with Bean Sprout" oil="0.05" salt="0.01" category="meal">

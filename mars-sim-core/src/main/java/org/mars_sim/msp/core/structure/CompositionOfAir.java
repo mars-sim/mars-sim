@@ -177,7 +177,7 @@ public class CompositionOfAir implements Serializable {
 			//Iterator<Building> k = buildings.iterator();
 			//while (k.hasNext()) {
 			//	Building b = k.next();
-				int id = b.getInhabitable_id();
+				int id = b.getInhabitableID();
 
 				double t =  22.5 + C_TO_K ;
 				temperature [i][id] = t;
@@ -256,7 +256,7 @@ public class CompositionOfAir implements Serializable {
 			//Iterator<Building> k = buildings.iterator();
 			//while (k.hasNext()) {
 			//	Building b = k.next();
-				int id = b.getInhabitable_id();
+				int id = b.getInhabitableID();
 				if (id >= numBuildingsCache)
 					newBuildings.add(b);
 			}
@@ -265,7 +265,7 @@ public class CompositionOfAir implements Serializable {
 			//Iterator<Building> kk = newBuildings.iterator();
 			//while (kk.hasNext()) {
 			//	Building b = kk.next();
-				int id = b.getInhabitable_id();
+				int id = b.getInhabitableID();
 
 				for (int i=0; i<numGases; i++) {
 					new_temperature [i][id] = 22.5 + C_TO_K ;
@@ -302,7 +302,7 @@ public class CompositionOfAir implements Serializable {
 			//Iterator<Building> k = buildings.iterator();
 			//while (k.hasNext()) {
 			//	Building b = k.next();
-				int id = b.getInhabitable_id();
+				int id = b.getInhabitableID();
 
 				double t = C_TO_K  + b.getCurrentTemperature(); //b.getThermalGeneration().getHeating().getCurrentTemperature();
 				//ThermalGeneration gen = (ThermalGeneration) b.getFunction(BuildingFunction.THERMAL_GENERATION);

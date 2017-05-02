@@ -375,7 +375,7 @@ public class TransportWizard {
             //System.out.println("TransportWizard : set length to " + DEFAULT_VARIABLE_BUILDING_LENGTH);
         }
 
-        int buildingID = mgr.getUniqueBuildingIDNumber();
+        int buildingID = mgr.getNextTemplateID();
         // 2015-12-13 Added buildingTypeID
         int buildingTypeID = mgr.getNextBuildingTypeID(template.getBuildingType());
 
