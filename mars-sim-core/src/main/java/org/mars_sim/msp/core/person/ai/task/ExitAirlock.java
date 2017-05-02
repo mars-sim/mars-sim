@@ -78,8 +78,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
 
-	private AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(LifeSupportType.WATER);
 
     //private Person person = null;
     //private Robot robot = null;
@@ -158,6 +158,7 @@ implements Serializable {
      * @return the remaining time after performing the task phase.
      */
     private double procuringEVASuit(double time) {
+        //logger.info(person + " procuring an EVA suit.");
 
         double remainingTime = time;
 
@@ -167,28 +168,28 @@ implements Serializable {
                 hasSuit = true;
             }
 
-            logger.finer(person + " procuring EVA suit.");
-
             // Get an EVA suit from entity inventory.
             if (!hasSuit) {
                 Inventory inv = airlock.getEntityInventory();
                 EVASuit suit = getGoodEVASuit(inv);
                 if (suit != null) {
+                	//logger.info(person + " found an EVA suit.");
                     try {
                         inv.retrieveUnit(suit);
                         person.getInventory().storeUnit(suit);
                         loadEVASuit(suit);
                         hasSuit = true;
+                        //logger.info(person + " grabbed an EVA suit.");
                     }
                     catch (Exception e) {
-                        logger.severe(e.getMessage());
+                    	logger.log(Level.SEVERE, person + " could not take this EVA suit.", e.getMessage());
                     }
                 }
             }
 
             // If person still doesn't have an EVA suit, end task.
             if (!hasSuit) {
-                logger.finer(person.getName() + " does not have an EVA suit, ExitAirlock ended");
+                logger.info(person.getName() + " does not have an EVA suit, ExitAirlock ended");
                 endTask();
                 return 0D;
             }
@@ -539,7 +540,7 @@ implements Serializable {
                 }
                 else {
                     // If person is not airlock operator, just wait.
-                    logger.finer(person+ " is not the operator and is waiting inside an airlock for the completion of the air cycle.");
+                    logger.finer(person + " is not the operator and is waiting inside an airlock for the completion of the air cycle.");
                     remainingTime = 0D;
                 }
             }

@@ -36,7 +36,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
@@ -60,14 +60,13 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;   
+        double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        	
+
 
             // Check if an airlock is available
             if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                result = 0D;
                 return 0;
             }
 
@@ -75,11 +74,10 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
             if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
                 if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                    result = 0D;
                     return 0;
                 }
             }
-            
+
             Settlement settlement = person.getSettlement();
             Inventory inv = settlement.getInventory();
 
@@ -87,17 +85,15 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             // Check at least one EVA suit at settlement.
             int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
             if (numSuits == 0) {
-                result = 0D;
                 return 0;
             }
 
             // Check if at least one empty bag at settlement.
             int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
             if (numEmptyBags == 0) {
-                result = 0D;
                 return 0;
             }
-            
+
             try {
                 // Factor the value of regolith at the settlement.
                 GoodsManager manager = settlement.getGoodsManager();
@@ -106,18 +102,18 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
                 double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
 
                 int size = settlement.getAllAssociatedPeople().size();
-                
+
                 if (available < 10D*size)
                     result = value * REGOLITH_VALUE_MODIFIER;
                 else {
                 	;
                 }
-                
+
                 // TODO: simulate the probability of finding local regolith and its quantity
                 if (result > 200D) {
                     result = 200D;
                 }
-                
+
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error checking good value of regolith.");

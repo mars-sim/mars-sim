@@ -30,7 +30,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.unloadVehicleEVA"); //$NON-NLS-1$
@@ -53,91 +53,74 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
-        boolean noGo = false;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
         	//2016-10-04 Checked for radiation events
         	boolean[] exposed = person.getSettlement().getExposed();
 
-    		if (exposed[2]) {
-    			noGo = true;// SEP can give lethal dose of radiation, out won't go outside
+    		if (exposed[2]) {// SEP can give lethal dose of radiation, out won't go outside
                 return 0;
     		}
-    			
-            // Check if an airlock is available
-            if (!noGo)
-	    		if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-	                result = 0D;
-	                noGo = true;	
-	                return 0;
-	            }
 
-            if (!noGo) {
-	            // Check if it is night time.
-	            if (surface == null)
-	                surface = Simulation.instance().getMars().getSurfaceFeatures();
-	            
-	            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-	                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-	                    result = 0D;
-	                    noGo = true;
-	                    return 0;
-	                }
+            // Check if an airlock is available
+	    	if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
+
+            // Check if it is night time.
+            if (surface == null)
+                surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
+                if (!surface.inDarkPolarRegion(person.getCoordinates()))
+                    return 0;
+
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                int numVehicles = 0;
+                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getSettlement()).size();
+                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
+                result = 100D * numVehicles;
             }
-        	
-            if (!noGo) {
-   
-	            // Check all vehicle missions occurring at the settlement.
-	            try {
-	                int numVehicles = 0;
-	                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getSettlement()).size();
-	                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
-	                result = 100D * numVehicles;
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-	                e.printStackTrace(System.err);
-	            }
-	
-	            // Crowded settlement modifier
-	            Settlement settlement = person.getSettlement();
-	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-	                result *= 2D;
-	            }
-	
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-	
-	            // Job modifier.
-	            Job job = person.getMind().getJob();
-	            if (job != null) {
-	                result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class)
-                    		* person.getSettlement().getGoodsManager().getTransportationFactor();
-	            }
-	
-	            // Modify if operations is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
-	                result *= 1.5D;
-	            }
-	              
-                // 2015-06-07 Added Preference modifier
-                if (result > 0D) {
-                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-                }
-                
-               	if (exposed[0]) {
-	    			noGo = false;
-	    			result = result/1.2;// Baseline event can give lethal dose of radiation, out won't go outside
-	    		}
-	        	
-	        	if (exposed[1]) {
-	    			noGo = false;// GCR can give lethal dose of radiation, out won't go outside
-	    			result = result/2D;
-	    		}
-	            
+            catch (Exception e) {
+                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+                e.printStackTrace(System.err);
             }
-	            
+
+            // Crowded settlement modifier
+            Settlement settlement = person.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class)
+                		* person.getSettlement().getGoodsManager().getTransportationFactor();
+            }
+
+            // Modify if operations is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+                result *= 1.5D;
+            }
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0D) {
+                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+            }
+
+           	if (exposed[0]) {
+    			result = result/1.2;// Baseline event can give lethal dose of radiation, out won't go outside
+    		}
+
+        	if (exposed[1]) {// GCR can give lethal dose of radiation, out won't go outside
+    			result = result/2D;
+    		}
+
             if (result < 0) result = 0;
         }
 

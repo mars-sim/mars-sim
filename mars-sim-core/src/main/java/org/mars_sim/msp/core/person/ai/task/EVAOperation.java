@@ -73,8 +73,8 @@ implements Serializable {
 
 	private MarsClock marsClock;
 	// 2017-04-10 WARNING: cannot use static or result in null
-	private AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(LifeSupportType.WATER);
 
 	/**
 	 * Constructor.
@@ -367,20 +367,18 @@ implements Serializable {
      */
     public boolean checkEVAProblem(Person person) {
 
-        boolean result = false;
-
         // Check if it is night time.
         Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
             logger.fine(person.getName() + " should end EVA: night time.");
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-                result = true;
+                return false;
         }
 
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit == null) {
             logger.fine(person.getName() + " should end EVA: No EVA suit found.");
-            return true;
+            return false;
         }
 
         Inventory suitInv = suit.getInventory();
@@ -392,7 +390,7 @@ implements Serializable {
             double oxygen = suitInv.getAmountResourceStored(oxygenAR, false);
             if (oxygen <= (oxygenCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
-                result = true;
+                return false;
             }
 
             // Check if EVA suit is at 15% of its water capacity.
@@ -401,13 +399,13 @@ implements Serializable {
             double water = suitInv.getAmountResourceStored(waterAR, false);
             if (water <= (waterCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
-                result = true;
+                return false;
             }
 
             // Check if life support system in suit is working properly.
             if (!suit.lifeSupportCheck()) {
                 logger.fine(person.getName() + " should end EVA: EVA suit failed life support check.");
-                result = true;
+                return false;
             }
         }
         catch (Exception e) {
@@ -417,16 +415,16 @@ implements Serializable {
         // Check if suit has any malfunctions.
         if (suit.getMalfunctionManager().hasMalfunction()) {
             logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");
-            result = true;
+            return false;
         }
 
         // Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() == 0D) {
             logger.fine(person.getName() + " should end EVA: medical problems.");
-            result = true;
+            return false;
         }
 
-        return result;
+        return true;
     }
 
     public static boolean checkEVAProblem(Robot robot) {

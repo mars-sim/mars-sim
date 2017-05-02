@@ -112,7 +112,6 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(config.getTotalCapacity(description));
-
 		// Set inventory resource capacities.
 		//AmountResource methane = AmountResource.findAmountResource("methane");
 		inv.addAmountResourceTypeCapacity(methaneAR, config.getCargoCapacity(description, "methane"));
@@ -127,7 +126,6 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		// In RoverMission.java's getResourcesNeededForTrip() we add the storage space for the desserts
     	// getRover().getSettlementInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
 
-
         //String dessertName = PreparingDessert.getADessert(dessertList);
 		//AmountResource dessert = AmountResource.findAmountResource(dessertName);
 		//inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, dessertName));
@@ -135,7 +133,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		//AmountResource solidWaste = AmountResource.findAmountResource("solid waste");
 		//inv.addAmountResourceTypeCapacity(solidWaste, config.getCargoCapacity(description, "solid waste"));
 
-		/*
+/*
 		AmountResource foodWaste = AmountResource.findAmountResource("food waste");
 		inv.addAmountResourceTypeCapacity(foodWaste, config.getCargoCapacity(description, "food waste"));
 		AmountResource toxicWaste = AmountResource.findAmountResource("toxic waste");

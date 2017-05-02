@@ -52,7 +52,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.LIVING_ACCOMODATIONS;
 
-    private int beds;
+    private int beds; // max # of beds
     private int sleepers;
 	//private int solCache = 1;
 
@@ -251,64 +251,6 @@ public class LivingAccommodations extends Function implements Serializable {
 
 
     /**
-     * Retrieves an resource
-     * @param name
-     * @param requestedAmount
-
-    //2015-02-27 Added retrieveAnResource()
-    public void retrieveAnResource(String name, double requestedAmount) {
-    	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(name);
-	        double amountStored = inv.getAmountResourceStored(nameAR, false);
-	    	inv.addAmountDemandTotalRequest(nameAR);
-
-	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
-	            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-	     		// TODO: how to report it only 3 times and quit the reporting ?
-	            //logger.info("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());
-	    	}
-	    	else if (amountStored < requestedAmount) {
-	     		requestedAmount = amountStored;
-	     		// Note: option to stop withdrawing requestedAmount
-	     		// TODO: how to report it only 3 times and quit the reporting ?
-	    		//logger.info("Just used up all " + name);
-	        }
-	    	else {
-	    		inv.retrieveAmountResource(nameAR, requestedAmount);
-	    		inv.addAmountDemand(nameAR, requestedAmount);
-	    	}
-	    }  catch (Exception e) {
-    		logger.log(Level.SEVERE,e.getMessage());
-	    }
-    }
-*/
-
-    /**
-     * Stores an resource
-     * @param amount
-     * @param name
-
-    //2015-02-27 Added storeAnResource()
-    public void storeAnResource(double amount, String name) {
-    	try {
-            AmountResource ar = AmountResource.findAmountResource(name);
-            double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-
-            if (remainingCapacity < amount) {
-                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-            	amount = remainingCapacity;
-                //logger.info(" storage is full!");
-            }
-            // TODO: consider the case when it is full
-            inv.storeAmountResource(ar, amount, true);
-            inv.addAmountSupplyAmount(ar, amount);
-        }  catch (Exception e) {
-    		logger.log(Level.SEVERE,e.getMessage());
-        }
-    }
-*/
-
-    /**
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
@@ -324,47 +266,46 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     public void generateWaste(double time) {
     	double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
-
+    	int numBed = bedMap.size();
     	// Total wash water used at the settlement over this time period (average).
     	// This includes showering, washing hands, washing dishes, etc.
-        double washWaterUsageSettlement = washWaterUsage  * time * settlement.getCurrentPopulationNum();
+        double usage = washWaterUsage  * time * numBed;//settlement.getCurrentPopulationNum();
 
-        // If settlement is rationing wash water, only use 10% normal amount of water for washing.
-        if (settlement.isWashWaterRationing()) {
-            washWaterUsageSettlement *= .1D;
-        }
+        // 2017-05-02 If settlement is rationing water, reduce water usage according to its level
+        int level = settlement.waterRationLevel();
+        if (level != 0)
+            usage = usage / 1.5D / level;
 
-        // Total waste water produced (urination, defecation) over this time period (average).
-        double wasteWaterProducedSettlement = wasteWaterProduced * time * settlement.getCurrentPopulationNum();
 
-        // The proportion of beds this living accommodations building provides for the settlement.
-        double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
+        // 2017-05-02 Account for people who are out there in an excursion and NOT in the settlement
+        double absentee_factor = settlement.getCurrentPopulationNum()/settlement.getPopulationCapacity();
 
-        // Wash and waste water produced by this building over this time period.
-        double washWaterUsageBuilding = washWaterUsageSettlement * buildingProportionCap;
-        double wasteWaterProducedBuilding = wasteWaterProducedSettlement * buildingProportionCap;
+        double waterUsed = usage  * time * numBed * absentee_factor;
 
+        double waterProduced = wasteWaterProduced * time * numBed * absentee_factor;
         // Remove wash water from settlement.
-        Storage.retrieveAnResource(washWaterUsageBuilding * random_factor, waterAR, inv, true);
+        Storage.retrieveAnResource(waterUsed * random_factor, waterAR, inv, true);
+
 
         // Grey water is produced by both wash water and waste water.
+        double greyWaterProduced = waterUsed + (waterProduced * greyWaterFraction);
         // Black water is only produced by waste water.
-        double greyWaterProduced = washWaterUsageBuilding + (wasteWaterProducedBuilding * greyWaterFraction);
-        double blackWaterProduced = wasteWaterProducedBuilding * (1 - greyWaterFraction);
+        double blackWaterProduced = waterProduced * (1 - greyWaterFraction);
         //System.out.print("gw");
         Storage.storeAnResource(greyWaterProduced, greyWaterAR, inv);
         //System.out.print("bw");
         Storage.storeAnResource(blackWaterProduced, blackWaterAR, inv);
 
+
     	// Use toilet paper and generate toxic waste (used toilet paper).
         double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
-        double toiletPaperUsageSettlement = toiletPaperUsagePerMillisol * time * settlement.getCurrentPopulationNum();
-        double toiletPaperUsageBuilding = toiletPaperUsageSettlement * buildingProportionCap;
+        //double toiletPaperUsageSettlement = toiletPaperUsagePerMillisol * time * beds;//settlement.getCurrentPopulationNum();
+        double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed;//toiletPaperUsageSettlement * buildingProportionCap;
         //System.out.print("tt");
         Storage.retrieveAnResource(toiletPaperUsageBuilding * random_factor, toiletTissueAR, inv, true);
     	//System.out.println("LivingAcc : toxicWasteAR is " + toxicWasteAR);
-        //System.out.print("tw");
         Storage.storeAnResource(toiletPaperUsageBuilding, toxicWasteAR, inv);
+        //System.out.print("tw");
     }
 
     public Building getBuilding() {
@@ -380,13 +321,13 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     // 2016-01-10 Added hasAnUndesignatedBed
     public boolean hasAnUnmarkedBed() {
-    	List<Point2D> activitySpots = super.getActivitySpotsList();//(List<Point2D>) super.getAvailableActivitySpot(person);
-    	int numBeds = activitySpots.size();
+    	//List<Point2D> activitySpots = super.getActivitySpotsList();//(List<Point2D>) super.getAvailableActivitySpot(person);
+    	//int numBeds = activitySpots.size();
 
     	int numDesignated = bedMap.size();
 		//logger.info("# designated beds : " +  numDesignated + " # beds : " +  numBeds);
 
-    	if (numDesignated < numBeds)
+    	if (numDesignated < beds)
     		return true;
     	else
     		return false;

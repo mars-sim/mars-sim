@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -74,10 +75,10 @@ extends VehicleMission {
 	private Settlement startingSettlement;
 	private Map<AmountResource, Double> dessertResources;
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
-	private static AmountResource methaneAR = Rover.methaneAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource foodAR = ResourceUtil.foodAR;
+	private static AmountResource methaneAR = ResourceUtil.methaneAR;
 
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 

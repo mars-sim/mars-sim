@@ -78,6 +78,7 @@ public class CollectRegolithMeta implements MetaMission {
             // Factor the value of regolith at the settlement.
             double value = person.getSettlement().getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
             result *= value;
+
             if (result > 1D) {
                 result = 1D;
             }

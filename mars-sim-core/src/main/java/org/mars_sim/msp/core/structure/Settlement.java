@@ -3061,11 +3061,11 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-     * Checks if wash water needs rationing at the settlement due to low water supplies.
-     * @return true if water rationing.
+     * Sets water ration level at the settlement due to low water supplies.
+     * @return level of water ration.
      */
-    public boolean isWashWaterRationing() {
-        boolean result = false;
+    public int waterRationLevel() {
+        int result = 0;
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double storedWater = getInventory().getAmountResourceStored(waterAR, false);
@@ -3075,10 +3075,39 @@ implements Serializable, LifeSupportType, Objective {
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
         // If stored water is less than 10% of required drinking water for Orbit, wash water should be rationed.
-        if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
-            result = true;
+        if (storedWater < (requiredDrinkingWaterOrbit * .0025D)) {
+            result = 11;
         }
-
+        else if (storedWater < (requiredDrinkingWaterOrbit * .005D)) {
+            result = 10;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .01D)) {
+            result = 9;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .015D)) {
+            result = 8;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .025D)) {
+            result = 7;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .05D)) {
+            result = 6;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .075D)) {
+            result = 5;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
+            result = 4;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .125D)) {
+            result = 3;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .15D)) {
+            result = 2;
+        }
+        else if (storedWater < (requiredDrinkingWaterOrbit * .2D)) {
+            result = 1;
+        }
         return result;
     }
 

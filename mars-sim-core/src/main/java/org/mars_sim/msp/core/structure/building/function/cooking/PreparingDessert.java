@@ -718,8 +718,6 @@ implements Serializable {
             finishUp();
         }
 
-        cleanUpKitchen();
-
         checkEndOfDay();
     }
 
@@ -739,6 +737,8 @@ implements Serializable {
 			// 2015-01-12 Adjust this rate to go up automatically by default
 	    	rate += UP;
 	      	settlement.setDessertsReplenishmentRate(rate);
+
+	        cleanUpKitchen();
 		}
   	}
 

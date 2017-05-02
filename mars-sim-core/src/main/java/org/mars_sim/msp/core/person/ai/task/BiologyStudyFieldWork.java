@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldWork.java
- * @version 3.08 2015-07-05
+ * @version 3.1.0 2017-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -10,11 +10,13 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -35,6 +37,8 @@ implements Serializable {
 
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
+
+    private static Logger logger = Logger.getLogger(BiologyStudyFieldWork.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -110,29 +114,26 @@ implements Serializable {
      */
     public static boolean canResearchSite(MissionMember member, Rover rover) {
 
-        boolean result = false;
-
         if (member instanceof Person) {
             Person person = (Person) member;
 
             // Check if person can exit the rover.
             boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-            // Check if it is night time outside.
-            boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
-
-            // Check if in dark polar region.
-            boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+            Mars mars = Simulation.instance().getMars();
+            if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+                logger.fine(person.getName() + " end biology study field work : night time");
+                if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+                    return false;
+            }
 
             // Check if person's medical condition will not allow task.
-            boolean medical = person.getPerformanceRating() < .5D;
-
-            result = (exitable && (sunlight || darkRegion) && !medical);
+            if (person.getPerformanceRating() < .5D)
+            	return false;
         }
 
-        return result;
+        return true;
     }
 
     @Override

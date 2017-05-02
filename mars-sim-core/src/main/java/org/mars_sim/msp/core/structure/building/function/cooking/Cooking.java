@@ -159,7 +159,7 @@ implements Serializable {
 
         marsClock = sim.getMasterClock().getMarsClock();
 
-        BuildingConfig buildingConfig = simulationConfig.instance().getBuildingConfiguration(); // need this to pass maven test
+        BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
         this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
 
         // Load activity spots
@@ -954,8 +954,14 @@ implements Serializable {
     		usage = 1 + rand;
     	else
     		usage = 1 - rand;
+
+        // 2017-05-02 If settlement is rationing water, reduce water usage according to its level
+        int level = settlement.waterRationLevel();
+        if (level != 0)
+            usage = usage / 1.5D / level;
+
 	    retrieveAnIngredientFromMap(usage, waterAR, true);
-		double wasteWaterAmount = usage * .5;
+		double wasteWaterAmount = usage * .75;
 		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv);
     }
 
@@ -1093,8 +1099,6 @@ implements Serializable {
             finishUp();
         }
 
- 		cleanUpKitchen();
-
         // 2015-01-12 Added checkEndOfDay()
         checkEndOfDay();
     }
@@ -1122,6 +1126,8 @@ implements Serializable {
 	 		// 2015-12-10 Reset the cache value for numCookableMeal
 	 		//int size = getMealRecipesWithAvailableIngredients().size();
 	 		//setNumCookableMeal(size);
+
+	 		cleanUpKitchen();
 
 	 		oil_count = 0;
 	    }

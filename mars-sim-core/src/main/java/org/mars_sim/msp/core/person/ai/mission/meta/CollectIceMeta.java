@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIceMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.1.0 2017-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -18,10 +18,13 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -33,6 +36,9 @@ public class CollectIceMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.collectIce"); //$NON-NLS-1$
+
+    private static final int MIN_ICE_RESERVE = 5;
+	public static final double MIN_WATER_RESERVE = 10D;
 
     @Override
     public String getName() {
@@ -87,58 +93,49 @@ public class CollectIceMeta implements MetaMission {
             }
 
             // Check if starting settlement has minimum amount of methane fuel.
-            //AmountResource methane = AmountResource.findAmountResource("methane");
-            else if (settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) <
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-                return 0;
-            }
-
-            //AmountResource methane = AmountResource.findAmountResource("methane");
             else if (settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
                 return 0;
             }
 
             else {
-                // Check if there are any desirable settlements within range.
-                double topSettlementDesirability = 0D;
-                Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
-            	if (vehicle != null) {
+                // Factor the value of ice at the settlement.
+                GoodsManager manager = settlement.getGoodsManager();
+                //AmountResource iceResource = AmountResource.findAmountResource("ice");
+                //AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
+                double ice_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
+                ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
+            	if (ice_value > 300)
+            		ice_value = 300;
 
-	                Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
-	                        person, settlement, vehicle.getRange());
-	                if (desirableSettlements.size() == 0) {
-	                    return 0;
-	                }
-	                Iterator<Settlement> i = desirableSettlements.keySet().iterator();
-	                while (i.hasNext()) {
-	                    Settlement desirableSettlement = i.next();
-	                    double desirability = desirableSettlements.get(desirableSettlement);
-	                    if (desirability > topSettlementDesirability) {
-	                        topSettlementDesirability = desirability;
-	                    }
-	                }
-	            }
-
-                // Determine mission probability.
-                missionProbability = TravelToSettlement.BASE_MISSION_WEIGHT
-                        + (topSettlementDesirability / 100D);
-
-                // Prompt the collect ice mission to proceed more easily if water resource is dangerously low,
-
-                double remain = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+                double water_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
+                water_value = water_value * GoodsManager.ICE_VALUE_MODIFIER;
+                if (water_value > 300)
+            		water_value = 300;
 
                 int pop = settlement.getCurrentPopulationNum();
 
-                if (remain < RoverMission.MIN_WATER_RESERVE * pop ) {
-                	missionProbability = missionProbability * 3;
+                double ice_remain = settlement.getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
+                double water_remain = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+
+                if (ice_remain < MIN_ICE_RESERVE * pop + ice_value/60D && water_remain < MIN_WATER_RESERVE * pop + water_value/60D) {
+                	missionProbability = (water_value + ice_value + MIN_ICE_RESERVE * pop - ice_remain) / 100D;
                 }
-                else if (remain < RoverMission.MIN_WATER_RESERVE * pop * 1.5 ) {
-                	missionProbability = missionProbability * 2;
+                else
+                	return 0;
+
+                // Prompt the collect ice mission to proceed more easily if water resource is dangerously low,
+                if (water_remain > MIN_WATER_RESERVE * pop ) {
+                	;// no change to missionProbability
                 }
-                else if (remain < RoverMission.MIN_WATER_RESERVE * pop * 2) {
-                	missionProbability = missionProbability * 1.5;
+                else if (water_remain > MIN_WATER_RESERVE * pop / 1.5 ) {
+                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_remain) /20;
                 }
+                else if (water_remain > MIN_WATER_RESERVE * pop / 2D) {
+                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_remain) /10;
+                }
+                else
+                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_remain) /5;
 
             }
 
@@ -153,9 +150,12 @@ public class CollectIceMeta implements MetaMission {
             Job job = person.getMind().getJob();
             if (job != null) {
                 missionProbability *= job.getStartMissionProbabilityModifier(
-                        TravelToSettlement.class);
+                        CollectIce.class);
             }
 
+            if (missionProbability > 3D) {
+            	missionProbability = 3D;
+            }
         }
 
         return missionProbability;

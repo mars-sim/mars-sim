@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.08 2015-06-17
+ * @version 3.1.0 2017-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -166,23 +167,23 @@ implements Serializable {
     public static boolean canConstruct(Person person, ConstructionSite site) {
 
         // Check if person can exit the settlement airlock.
-        boolean exitable = false;
         Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(),
                 site.getYLocation());
         if (airlock != null) {
-            exitable = ExitAirlock.canExitAirlock(person, airlock);
+            if(!ExitAirlock.canExitAirlock(person, airlock))
+            	return false;
         }
 
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-        // Check if it is night time outside.
-        boolean sunlight = surface.getSolarIrradiance(person.getCoordinates()) > 0;
-
-        // Check if in dark polar region.
-        boolean darkRegion = surface.inDarkPolarRegion(person.getCoordinates());
+        Mars mars = Simulation.instance().getMars();
+        if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+            logger.fine(person.getName() + " end constructing building : night time");
+            if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+                return false;
+        }
 
         // Check if person's medical condition will not allow task.
-        boolean medical = person.getPerformanceRating() < .5D;
+        if (person.getPerformanceRating() < .5D)
+        	return false;
 
         // Check if there is work that can be done on the construction stage.
         ConstructionStage stage = site.getCurrentConstructionStage();
@@ -196,29 +197,30 @@ implements Serializable {
 
         //System.out.println("stage is " + stage); // test if stage is null
 
-        return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
+        return (workAvailable);
     }
 
 
     public static boolean canConstruct(Robot robot, ConstructionSite site) {
 
         // Check if robot can exit the settlement airlock.
-        boolean exitable = false;
         Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(), site.getYLocation());
         if (airlock != null) {
-            exitable = ExitAirlock.canExitAirlock(robot, airlock); // if robot is not in a building or in the settlement, exitable will be false
+            if(!ExitAirlock.canExitAirlock(robot, airlock))
+            	return false;
         }
 
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-        // Check if it is night time outside.
-        boolean sunlight = surface.getSolarIrradiance(robot.getCoordinates()) > 0;
-
-        // Check if in dark polar region.
-        boolean darkRegion = surface.inDarkPolarRegion(robot.getCoordinates());
+        Mars mars = Simulation.instance().getMars();
+        if (mars.getSurfaceFeatures().getSolarIrradiance(robot.getCoordinates()) == 0D) {
+            logger.fine(robot.getName() + " should end EVA: night time.");
+            if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
+                return false;
+        }
 
         // Check if robot's medical condition will not allow task.
-        boolean medical = robot.getPerformanceRating() < .5D;
+        if (robot.getPerformanceRating() < .5D)
+        	return false;
 
         // Check if there is work that can be done on the construction stage.
         ConstructionStage stage = site.getCurrentConstructionStage();
@@ -230,8 +232,7 @@ implements Serializable {
         if (stage != null)
         	workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
 
-
-        return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
+        return (workAvailable);
     }
 
     /**

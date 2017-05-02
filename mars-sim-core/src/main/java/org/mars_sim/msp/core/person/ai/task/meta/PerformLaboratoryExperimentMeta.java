@@ -31,7 +31,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.performLaboratoryExperiment"); //$NON-NLS-1$
@@ -53,17 +53,16 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-	            result = 0D;
 	            return 0;
-	        } 	       
+	        }
 	        else
 	        // the penalty for performing experiment inside a vehicle
 	        	result = -20D;
         }
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
             	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
@@ -147,7 +146,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
 	            result *= job.getStartTaskProbabilityModifier(PerformLaboratoryExperiment.class)
-	            		* person.getSettlement().getGoodsManager().getResearchFactor();;
+	            		* person.getSettlement().getGoodsManager().getResearchFactor();
 	        }
 
 	        // Modify if lab experimentation is the person's favorite activity.

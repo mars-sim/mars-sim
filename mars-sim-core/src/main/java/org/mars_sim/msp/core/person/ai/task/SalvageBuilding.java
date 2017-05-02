@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -174,47 +176,47 @@ implements Serializable {
     public static boolean canSalvage(Person person) {
 
         // Check if person can exit the settlement airlock.
-        boolean exitable = false;
         Airlock airlock = getWalkableAvailableAirlock(person);
         if (airlock != null) {
-            exitable = ExitAirlock.canExitAirlock(person, airlock);
+            if(!ExitAirlock.canExitAirlock(person, airlock))
+            	return false;
         }
 
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-        // Check if it is night time outside.
-        boolean sunlight = surface.getSolarIrradiance(person.getCoordinates()) > 0D;
-
-        // Check if in dark polar region.
-        boolean darkRegion = surface.inDarkPolarRegion(person.getCoordinates());
+        Mars mars = Simulation.instance().getMars();
+        if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+            logger.fine(person.getName() + " end salvaging building : night time");
+            if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+                return false;
+        }
 
         // Check if person's medical condition will not allow task.
-        boolean performance = person.getPerformanceRating() < .5D;
+        if (person.getPerformanceRating() < .5D)
+        	return false;
 
-        return (exitable && (sunlight || darkRegion) && !performance);
+        return true;
     }
 
     public static boolean canSalvage(Robot robot) {
 
         // Check if robot can exit the settlement airlock.
-        boolean exitable = false;
         Airlock airlock = getWalkableAvailableAirlock(robot);
         if (airlock != null) {
-            exitable = ExitAirlock.canExitAirlock(robot, airlock);
+            if(!ExitAirlock.canExitAirlock(robot, airlock))
+            	return false;
         }
 
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        Mars mars = Simulation.instance().getMars();
+        if (mars.getSurfaceFeatures().getSolarIrradiance(robot.getCoordinates()) == 0D) {
+            logger.fine(robot.getName() + " end salvaging building : night time");
+            if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
+                return false;
+        }
 
-        // Check if it is night time outside.
-        boolean sunlight = surface.getSolarIrradiance(robot.getCoordinates()) > 0D;
+        // Check if person's medical condition will not allow task.
+        if (robot.getPerformanceRating() < .5D)
+        	return false;
 
-        // Check if in dark polar region.
-        boolean darkRegion = surface.inDarkPolarRegion(robot.getCoordinates());
-
-        // Check if robot's medical condition will not allow task.
-        boolean performance = robot.getPerformanceRating() < .5D;
-
-        return (exitable && (sunlight || darkRegion) && !performance);
+        return true;
     }
 
     /**

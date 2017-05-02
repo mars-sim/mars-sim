@@ -144,6 +144,10 @@ public class GoodsManager implements Serializable {
     //private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
     //private static final String resource_name = "regolith";
 
+    /** Ice value probability modifier. */
+    public static double ICE_VALUE_MODIFIER = 10D;
+
+
     // Data members
     // 2016-11-02 Added modifiers due to Settlement Development Objectives
     private double cropFarm_factor = 1;

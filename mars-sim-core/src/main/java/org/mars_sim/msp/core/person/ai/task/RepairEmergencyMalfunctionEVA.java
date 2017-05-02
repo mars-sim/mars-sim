@@ -221,38 +221,36 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
      */
     public static boolean canPerformEVA(Person person) {
 
-        boolean result = true;
-
         // Check if an airlock is available
         Airlock airlock = EVAOperation.getWalkableAvailableAirlock(person);
         if (airlock == null) {
-            result = false;
+        	return false;
         }
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = false;
+                return false;
             }
         }
 
         // Check if person is outside.
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
-            result = false;
+        	return false;
         }
 
         // Check if EVA suit is available.
         if ((airlock != null) && !ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
-            result = false;
+        	return false;
         }
 
         // Check if person is incapacitated.
         if (person.getPerformanceRating() == 0D) {
-            result = false;
+        	return false;
         }
 
-        return result;
+        return true;
     }
 
     public static boolean canPerformEVA(Robot robot) {

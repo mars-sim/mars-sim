@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -345,18 +346,19 @@ implements Serializable {
             Person person = (Person) member;
 
             // Check if person can exit the rover.
-            boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
+            if(!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
+            	return false;
 
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-            // Check if it is night time outside.
-            boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
-
-            // Check if in dark polar region.
-            boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+            Mars mars = Simulation.instance().getMars();
+            if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+                logger.fine(person.getName() + " end collectin resources: night time");
+                if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+                    return false;
+            }
 
             // Check if person's medical condition will not allow task.
-            boolean medical = person.getPerformanceRating() < .5D;
+            if (person.getPerformanceRating() < .5D)
+            	return false;
 
             // Checks if available container with remaining capacity for resource.
             Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
@@ -378,7 +380,7 @@ implements Serializable {
             double carryCapacity = person.getInventory().getGeneralCapacity();
             boolean canCarryEquipment = (carryCapacity >= carryMass);
 
-            result = (exitable && (sunlight || darkRegion) && !medical && containerAvailable && canCarryEquipment);
+            result = (containerAvailable && canCarryEquipment);
         }
 
         return result;

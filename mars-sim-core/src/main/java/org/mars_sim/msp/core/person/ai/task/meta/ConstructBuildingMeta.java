@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuildingMeta.java
- * @version 3.08 2015-06-15
+  * @version 3.1.0 2017-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Meta task for the ConstructBuilding task.
  */
 public class ConstructBuildingMeta implements MetaTask, Serializable {
-    
+
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +59,6 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
             return 0;
         }
 
@@ -69,11 +68,10 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 
         if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = 0D;
                 return 0;
             }
         }
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             try {
@@ -112,7 +110,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
         if (result > 0D) {
             result = result + result * person.getPreference().getPreferenceScore(this)/5D;
         }
-     
+
         if (result < 0D) {
             result = 0D;
         }
@@ -128,7 +126,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
 		 double result = 0D;
 /*
-       
+
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
 
             if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -158,7 +156,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 
         // Effort-driven task modifier.
         result *= robot.getPerformanceRating();
-*/        
+*/
         return result;
     }
 }

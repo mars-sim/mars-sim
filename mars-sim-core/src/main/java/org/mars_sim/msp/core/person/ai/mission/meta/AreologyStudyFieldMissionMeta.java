@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMissionMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.1.0 2017-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -64,7 +64,6 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 
             // Check if available backup rover.
             else if (!RoverMission.hasBackupRover(settlement)) {
-
             	return 0;
             }
 

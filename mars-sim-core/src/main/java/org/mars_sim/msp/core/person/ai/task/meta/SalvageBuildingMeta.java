@@ -67,9 +67,8 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
             surface = Simulation.instance().getMars().getSurfaceFeatures();
 
         if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates()))
                 return 0;
-            }
         }
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

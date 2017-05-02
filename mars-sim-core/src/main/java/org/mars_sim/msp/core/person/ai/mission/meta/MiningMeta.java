@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MiningMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.1.0 2017-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;

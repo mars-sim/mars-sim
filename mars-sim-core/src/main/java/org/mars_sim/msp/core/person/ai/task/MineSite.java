@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -153,29 +154,26 @@ implements Serializable {
      */
     public static boolean canMineSite(MissionMember member, Rover rover) {
 
-        boolean result = false;
-
         if (member instanceof Person) {
             Person person = (Person) member;
 
             // Check if person can exit the rover.
-            boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
+            if(!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
+            	return false;
 
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-            // Check if it is night time outside.
-            boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0D;
-
-            // Check if in dark polar region.
-            boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+            Mars mars = Simulation.instance().getMars();
+            if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+                logger.fine(person.getName() + " end mining the site: night time");
+                if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+                    return false;
+            }
 
             // Check if person's medical condition will not allow task.
-            boolean medical = person.getPerformanceRating() < .5D;
-
-            result = (exitable && (sunlight || darkRegion) && !medical);
+            if (person.getPerformanceRating() < .5D)
+            	return false;
         }
 
-        return result;
+        return true;
     }
 
     @Override

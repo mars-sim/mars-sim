@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 3962) - 2017-05-02
+## v3.1.0-Preview 7 (build 3963) - 2017-05-02
 
 ### MINIMUM REQUIREMENTS :
 
@@ -35,6 +35,9 @@ https://mars-sim.github.io/
    height of the settlers.
 
 3. Rework the minimum and maximum value of time ratio and ticks per sec.
+
+4. Implement multi-phase water rationing approach if water reserve is below 20% of the
+   settlement's projected usage.
 
 
 ### UI IMPROVEMENT :
