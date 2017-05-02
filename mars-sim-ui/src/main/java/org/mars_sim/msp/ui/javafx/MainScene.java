@@ -183,6 +183,7 @@ public class MainScene {
 	private static final String ORBIT = "Orbit : ";
 	private static final String ADIR = "Adir";
 
+	private static final String BENCHMARK = "Benchmark :";
 	private static final String UPTIME = "UpTime :";
 	private static final String TPS = "Ticks/s :";
 	private static final String SEC = "1 real sec :";
@@ -235,7 +236,7 @@ public class MainScene {
 
 	private FlowPane flowPane;
 	private AnchorPane rootAnchorPane, mapAnchorPane ;
-	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
+	private SwingNode swingNode, mapNode, minimapNode, guideNode;//monNode, missionNode, resupplyNode, sciNode, guideNode ;
 	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
 	private Scene scene;
 
@@ -244,7 +245,7 @@ public class MainScene {
 
 	private IconNode soundIcon, marsNetIcon, speedIcon;
 	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
-	private Label lastSaveLabel,  TPSLabel, upTimeLabel, noteLabel; //monthLabel, yearLabel, LSLabel
+	private Label lastSaveLabel,  TPSLabel, upTimeLabel, noteLabel, benchmarkLabel; //monthLabel, yearLabel, LSLabel
 	private Text LSText, monthText, yearText, northText, southText;
 	private Blend blend;
 	private VBox mapLabelBox, speedVBox, soundVBox;
@@ -1041,7 +1042,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-        default_ratio_label0.setPadding(new Insets(1, 1, 1, 5));
+        default_ratio_label0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(default_ratio_label0, "The default time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
 
         Label spinner_label0 = new Label(TR);
@@ -1051,7 +1052,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-		spinner_label0.setPadding(new Insets(1, 1, 1, 5));
+		spinner_label0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(spinner_label0, "The current time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
 
         Label default_ratio_label = new Label();
@@ -1075,7 +1076,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: italic;");
-        real_time_label0.setPadding(new Insets(1, 1, 1, 5));
+        real_time_label0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(real_time_label0, "the amount of simulation time per real second"); //$NON-NLS-1$
 
 
@@ -1208,7 +1209,7 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        TPSLabel0.setPadding(new Insets(1, 1, 1, 5));
+        TPSLabel0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(TPSLabel0, "how often the simulation updates the changes, aka Frame Per Second (FPS)"); //$NON-NLS-1$
 
         TPSLabel = new Label();
@@ -1231,7 +1232,7 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        upTimeLabel0.setPadding(new Insets(1, 1, 1, 5));
+        upTimeLabel0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(upTimeLabel0, "how long the simulation has been up running"); //$NON-NLS-1$
 
         upTimeLabel = new Label();
@@ -1241,10 +1242,32 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        upTimeLabel.setPadding(new Insets(1, 1, 1, 5));
+        upTimeLabel.setPadding(new Insets(1, 1, 1, 2));
         if (uptimer != null)
         	upTimeLabel.setText (uptimer.getUptime());
 		setQuickToolTip(upTimeLabel, "e.g. 03m 05s means it has been running for 3 minutes & 5 seconds"); //$NON-NLS-1$
+
+        Label benchmarkLabel0 = new Label(BENCHMARK);
+        //upTimeLabel0.setEffect(blend);
+        benchmarkLabel0.setAlignment(Pos.CENTER_RIGHT);
+        benchmarkLabel0.setTextAlignment(TextAlignment.RIGHT);
+        benchmarkLabel0.setStyle("-fx-text-fill: #065185;"
+    			+ "-fx-font-size: 12px;"
+    		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+    			+ "-fx-font-weight: italic;");
+        benchmarkLabel0.setPadding(new Insets(1, 1, 1, 2));
+		setQuickToolTip(benchmarkLabel0, "how well this machine perform in mars-sim"); //$NON-NLS-1$
+
+		benchmarkLabel = new Label();
+		benchmarkLabel.setAlignment(Pos.CENTER);
+        //upTimeLabel.setEffect(blend);
+		benchmarkLabel.setStyle("-fx-text-fill: #065185;"
+    			+ "-fx-font-size: 12px;"
+    		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+    			+ "-fx-font-weight: italic;");
+		benchmarkLabel.setPadding(new Insets(1, 1, 1, 2));
+		benchmarkLabel.setText (masterClock.getDiffCache() + "");
+		setQuickToolTip(benchmarkLabel, "metric of performance per 1000 frames"); //$NON-NLS-1$
 
         GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container");
@@ -1263,27 +1286,36 @@ public class MainScene {
 		GridPane.setConstraints(real_time_label, 1, 2);
 		GridPane.setConstraints(TPSLabel, 1, 3);
 		GridPane.setConstraints(upTimeLabel, 1, 4);
+		GridPane.setConstraints(benchmarkLabel, 1, 5);
 
 		GridPane.setConstraints(spinner_label0, 0, 0);
 		GridPane.setConstraints(default_ratio_label0, 0, 1);
 		GridPane.setConstraints(real_time_label0, 0, 2);
 		GridPane.setConstraints(TPSLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
+		GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
 		GridPane.setHalignment(spinner, HPos.CENTER);
 		GridPane.setHalignment(default_ratio_label, HPos.CENTER);
 		GridPane.setHalignment(real_time_label, HPos.CENTER);
 		GridPane.setHalignment(TPSLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
+		GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
 
 		GridPane.setHalignment(spinner_label0, HPos.RIGHT);
 		GridPane.setHalignment(default_ratio_label0, HPos.RIGHT);
 		GridPane.setHalignment(real_time_label0, HPos.RIGHT);
 		GridPane.setHalignment(TPSLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
+		GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
-		gridPane.getChildren().addAll(spinner_label0, spinner, default_ratio_label0, default_ratio_label, real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel);
+		gridPane.getChildren().addAll(spinner_label0, spinner,
+				default_ratio_label0, default_ratio_label,
+				real_time_label0, real_time_label,
+				TPSLabel0, TPSLabel,
+				upTimeLabel0, upTimeLabel,
+				benchmarkLabel0, benchmarkLabel);
 
         speedVBox = new VBox();
 		speedVBox.getStyleClass().add("jfx-popup-container");
@@ -2869,6 +2901,8 @@ public class MainScene {
 		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
 
 		upTimeLabel.setText(uptimer.getUptime());
+
+		benchmarkLabel.setText (masterClock.getDiffCache() + "");
 
 		int solElapsed = marsClock.getSolElapsedFromStart();
 		if (solElapsed != solElapsedCache) {

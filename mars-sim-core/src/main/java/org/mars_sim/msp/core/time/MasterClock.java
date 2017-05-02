@@ -73,6 +73,7 @@ public class MasterClock implements Serializable { // Runnable,
 
 	private int noDelaysPerYield = 0;
 	private int maxFrameSkips = 0;
+	private int count = -100;
 
 	/** Flag for loading a new simulation. */
 	private transient volatile boolean loadSimulation;
@@ -83,7 +84,7 @@ public class MasterClock implements Serializable { // Runnable,
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
 
-	private long totalPulses = 1;
+	private long totalPulses = 1,  t2Cache = 0, diffCache = 0;
 	private transient long elapsedlast;
 	private transient long elapsedMilliseconds;
 
@@ -119,8 +120,6 @@ public class MasterClock implements Serializable { // Runnable,
     public MasterClock() {
         //logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
-        long t0 = System.nanoTime();
-
     	sim = Simulation.instance();
         // Initialize data members
         config = SimulationConfig.instance();
@@ -146,11 +145,6 @@ public class MasterClock implements Serializable { // Runnable,
         // Setting the initial time ratio.
         double tr = config.getSimulationTimeRatio();
         double tbu = config.getTimeBetweenUpdates();
-
-        //TODO: should also test the CPU speed to determine the TPS
-        long t1 = System.nanoTime();
-        long diff = (long) ((t1 - t0) / 1_000D);
-        logger.info("Startup Benchmark : " + diff + " ms");
 
         int threads = Simulation.NUM_THREADS;
         //defaultTimeRatio = threads * tr / 16D;
@@ -545,15 +539,29 @@ public class MasterClock implements Serializable { // Runnable,
 	        // Keep running until told not to by calling stop()
 	        keepRunning = true;
 
-	        if (!keepRunning)
-	        	System.out.println("keepRunning is false");
+	        //if (!keepRunning)
+	        //	;//System.out.println("keepRunning is false");
 
 	        while (keepRunning) {
+		        // 2015-06-26 Refactored codes for variable sleepTime
+	            t2 = System.nanoTime();
+
+		        //2017-05-01 Benchmark CPU speed
+		        long diff = 0;
+
+		        if (count >= 1000)
+		        	count = 0;
+
+		        if (count >= 0) {
+			        diff = (long) ((t2 - t2Cache) / 1_000_000D);
+		        	diffCache = (diff * count + diffCache)/(count + 1);
+		        }
+
+		        if (count == 0)
+		        	logger.info("Benchmarking this machine : " + diff + " per 1000 frames");
 
 	        	statusUpdate();
 
-		        // 2015-06-26 Refactored codes for variable sleepTime
-	            t2 = System.nanoTime();
 	            //dt = t2 - t1;
 	            sleepTime = timeBetweenUpdates - t2 + t1 - overSleepTime;
 	            //System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
@@ -614,7 +622,12 @@ public class MasterClock implements Serializable { // Runnable,
 	            // 2017-01-19 set excess to zero to prevent getting stuck in the above while loop after waking up from power saving
 	            excess = 0;
 
+		        t2Cache = t2;
+
+		        count++;
+
 	        } // end of while
+
 	    } // end of run
     }
 
@@ -1040,6 +1053,9 @@ public class MasterClock implements Serializable { // Runnable,
 		return clockListenerExecutor;
 	}
 
+	public long getDiffCache() {
+		return diffCache;
+	}
 
     /**
      * Prepare object for garbage collection.

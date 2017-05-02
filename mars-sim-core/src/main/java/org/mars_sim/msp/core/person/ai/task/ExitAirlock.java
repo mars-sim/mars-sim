@@ -839,6 +839,7 @@ implements Serializable {
      * Checks if entity unit has enough resource supplies to fill the EVA suit.
      * @param entityInv the entity unit.
      * @param suit the EVA suit.
+     * @return
      * @return true if enough supplies.
      * @throws Exception if error checking suit resources.
      */
@@ -848,17 +849,17 @@ implements Serializable {
         int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
         // Check if enough oxygen.
-        //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, true, false);
-        double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
+        AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
+        double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
         // Make sure there is enough extra oxygen for everyone else.
         availableOxygen -= (neededOxygen * otherPeopleNum);
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
-        //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.waterAR, true, false);
-        double availableWater = entityInv.getAmountResourceStored(ResourceUtil.waterAR, false);
+        AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+        double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
+        double availableWater = entityInv.getAmountResourceStored(waterAR, false);
         // Make sure there is enough extra water for everyone else.
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);

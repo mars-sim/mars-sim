@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
@@ -138,7 +139,7 @@ implements Serializable {
      */
     public static boolean canExploreSite(MissionMember member, Rover rover) {
 
-        boolean result = false;
+        //boolean result = false;
 
         if (member instanceof Person) {
             Person person = (Person) member;
@@ -146,21 +147,33 @@ implements Serializable {
             // Check if person can exit the rover.
             boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            if (!exitable)
+            	return false;
+           // SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
             // Check if it is night time outside.
-            boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0D;
+            //boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0D;
 
             // Check if in dark polar region.
-            boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+            //boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+
+            Mars mars = Simulation.instance().getMars();
+            if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+                logger.fine(person.getName() + " should end EVA: night time.");
+                if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+                    return true;
+            }
 
             // Check if person's medical condition will not allow task.
             boolean medical = person.getPerformanceRating() < .5D;
+            if (medical)
+            	return false;
 
-            result = (exitable && (sunlight || darkRegion) && !medical);
+            //result = (exitable && (sunlight || darkRegion) && !medical);
         }
 
-        return result;
+        //return result;
+        return true;
     }
 
     @Override

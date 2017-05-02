@@ -63,9 +63,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	private Weather weather ;
 
 	// 2017-04-10 WARNING: cannot use static or result in null
-	public AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(WATER);		// 2
-	public AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(OXYGEN);		// 3
-	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
+	public AmountResource waterAR;// = ResourceUtil.waterAR;//findAmountResource(WATER);		// 2
+	public AmountResource oxygenAR;// = ResourceUtil.oxygenAR;//findAmountResource(OXYGEN);		// 3
+	public AmountResource carbonDioxideAR;// = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
 
 
 	/**
@@ -86,9 +86,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
 
-		//oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		//waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-		//carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
+		oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+		waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+		carbonDioxideAR = ResourceUtil.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
 
 		// Set the resource capacities of the EVA suit.
 		getInventory().addAmountResourceTypeCapacity(oxygenAR, OXYGEN_CAPACITY);
