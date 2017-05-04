@@ -381,7 +381,7 @@ public class MainMenu {
 
 			Platform.runLater(() -> {
 				mainScene = new MainScene();
-				mainScene.createIndicator();
+				mainScene.createLoadingIndicator();
 				mainScene.showWaitStage(MainScene.LOADING);
 			});
 

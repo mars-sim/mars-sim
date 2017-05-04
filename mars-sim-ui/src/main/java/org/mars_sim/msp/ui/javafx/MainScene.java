@@ -371,13 +371,15 @@ public class MainScene {
 
 	}
 
-	public void createIndicator() {
+	public void createLoadingIndicator() {
 		// 2016-10-01 Added mainSceneExecutor for executing wait stages
 		startMainSceneExecutor();
 		createProgressCircle(LOADING);
+	}
+
+	public void createSavingIndicator() {
 		createProgressCircle(AUTOSAVING);
 		createProgressCircle(SAVING);
-		//createProgressCircle(PAUSED);
 	}
 
 	// 2015-12-28 Added setEscapeEventHandler()
@@ -3492,6 +3494,10 @@ public class MainScene {
  	 		savingScene = new Scene(asPane);//, 150, 150);
  	 		savingScene.setFill(Color.TRANSPARENT);
  			savingStage.setScene(savingScene);
+
+	    	//savingStage.xProperty().addListener((observable, oldValue, newValue) -> savingStage.setX(scene.getX()));
+	    	//savingStage.yProperty().addListener((observable, oldValue, newValue) -> savingStage.setY(scene.getY()));
+	    	//savingStage.setY(scene.getY() + .5 * (scene.getHeight() - savingStage.getHeight()));
  			savingStage.hide();
 
 	 	}
@@ -3533,15 +3539,12 @@ public class MainScene {
  	 */
  	public void showWaitStage(int type) {
 		if (type == AUTOSAVING) {
-			//savingStage.setScene(autosaveScene);
 			savingScene.setRoot(asPane);
- 	 		//savingMPane.setText("Autosaving");
 		}
 		else if (type == SAVING) {
 			savingScene.setRoot(sPane);
-			//savingStage.setScene(savingScene);
- 	 		//savingMPane.setText("Saving");
 		}
+
  		mainSceneExecutor.execute(new LoadWaitStageTask(type));
  	}
 
@@ -3563,9 +3566,13 @@ public class MainScene {
 				if (type == AUTOSAVING || type == SAVING) {
 					stopPausePopup();
 					setMonitor(savingStage);
-			    	savingStage.setX((scene.getWidth()-savingStage.getWidth())/2D);
-			    	savingStage.setY((scene.getHeight()-savingStage.getHeight())/2D);
+					//System.out.println("sPane.getWidth() / 2 : " + sPane.getWidth() / 2); // equals 0.0
+					//System.out.println("savingStage.getWidth() / 2 : " + savingStage.getWidth() / 2); // equals : NaN
+					savingStage.setX((int) (stage.getX() + scene.getWidth() / 2 - 50));
+					savingStage.setY((int) (stage.getY() + scene.getHeight() / 2 - 50));
 					savingStage.show();
+					//System.out.println("sPane.getWidth() / 2 : " + sPane.getWidth() / 2); // equals 50.0
+					//System.out.println("savingStage.getWidth() / 2 : " + savingStage.getWidth() / 2); // equals 50.0
 				}
 				else if (type == LOADING) {
 					setMonitor(loadingStage);

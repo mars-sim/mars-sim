@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 3965) - 2017-05-03
+## v3.1.0-Preview 7 (build 3966) - 2017-05-04
 
 ### MINIMUM REQUIREMENTS :
 
@@ -39,6 +39,8 @@ https://mars-sim.github.io/
 4. Implement multi-phase water rationing approach if water reserve is below 20% of the
    settlement's projected usage.
 
+5. Improve the decision of doing the local tasks of digging for ice/regolith vs.
+   going out on a group mission of collecting ice/regolith
 
 ### UI IMPROVEMENT :
 
@@ -58,6 +60,7 @@ https://mars-sim.github.io/
 
 7. Add url history in Help Browser.
 
+8. Display autosaving indicator when autosaving timer is triggered.
 
 ### FIXES :
 
