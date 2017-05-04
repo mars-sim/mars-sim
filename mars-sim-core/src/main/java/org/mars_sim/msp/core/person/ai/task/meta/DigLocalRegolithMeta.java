@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolithMeta.java
- * @version 3.08 2015-06-15
+ * @version 3.1.0 2017-05-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -19,10 +19,12 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -43,9 +45,6 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(DigLocalRegolithMeta.class.getName());
-
-    /** Regolith value probability modifier. */
-    private static double REGOLITH_VALUE_MODIFIER = 10D;
 
     @Override
     public String getName() {
@@ -94,57 +93,36 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
                 return 0;
             }
 
-            try {
-                // Factor the value of regolith at the settlement.
-                GoodsManager manager = settlement.getGoodsManager();
-                //AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-                double available = inv.getAmountResourceStored(Rover.regolithAR, false);
-                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
+            result = settlement.getRegolithProbabilityValue() * 10D;
 
-                int size = settlement.getAllAssociatedPeople().size();
-
-                if (available < 10D*size)
-                    result = value * REGOLITH_VALUE_MODIFIER;
-                else {
-                	;
-                }
-
-                // TODO: simulate the probability of finding local regolith and its quantity
-                if (result > 200D) {
-                    result = 200D;
-                }
-
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error checking good value of regolith.");
-            }
+            if (result <= 0)
+            	return 0;
 
             // Crowded settlement modifier
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity())
+                result *= 1.5D;
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
 
             // Job modifier.
             Job job = person.getMind().getJob();
-            if (job != null) {
+            if (job != null)
                 result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);
-            }
 
             // Modify if field work is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work")) {
-                result *= 2D;
-            }
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work"))
+                result *= 1.5D;
 
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
-            if (result < 0D) {
-                result = 0D;
-            }
+            //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
+            if (result <= 0)
+                return 0;
+            else if (result > 1D)
+            	result = 1;
         }
 
         return result;

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -33,12 +34,11 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class CollectIceMeta implements MetaMission {
 
+    private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
+
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.collectIce"); //$NON-NLS-1$
-
-    private static final int MIN_ICE_RESERVE = 100; // per person
-	public static final double MIN_WATER_RESERVE = 300D; // per person
 
     @Override
     public String getName() {
@@ -53,7 +53,7 @@ public class CollectIceMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double missionProbability = 0D;
+        double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
@@ -99,43 +99,11 @@ public class CollectIceMeta implements MetaMission {
             }
 
             else {
-                // Factor the value of ice at the settlement.
-                GoodsManager manager = settlement.getGoodsManager();
-                //AmountResource iceResource = AmountResource.findAmountResource("ice");
-                //AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
-                double ice_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
-                ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
-            	if (ice_value > 1000)
-            		ice_value = 1000;
 
-                double water_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
-                water_value = water_value * GoodsManager.ICE_VALUE_MODIFIER;
-                if (water_value > 1000)
-            		water_value = 1000;
+                result = settlement.getIceProbabilityValue();
 
-                int pop = settlement.getCurrentPopulationNum();
-
-                double ice_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
-                double water_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
-
-                if (ice_available < MIN_ICE_RESERVE * pop + ice_value/10D && water_available < MIN_WATER_RESERVE * pop + water_value/10D) {
-                	missionProbability = (water_value + ice_value + MIN_ICE_RESERVE * pop - ice_available) / 100D;
-                }
-                else
+                if (result <= 0)
                 	return 0;
-
-                // Prompt the collect ice mission to proceed more easily if water resource is dangerously low,
-                if (water_available > MIN_WATER_RESERVE * pop ) {
-                	;// no change to missionProbability
-                }
-                else if (water_available > MIN_WATER_RESERVE * pop / 1.5 ) {
-                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_available) /20;
-                }
-                else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
-                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_available) /10;
-                }
-                else
-                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_available) /5;
 
             }
 
@@ -143,22 +111,24 @@ public class CollectIceMeta implements MetaMission {
             int crowding = settlement.getCurrentPopulationNum()
                     - settlement.getPopulationCapacity();
             if (crowding > 0) {
-                missionProbability *= (crowding + 1);
+                result *= (crowding + 1);
             }
 
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                missionProbability *= job.getStartMissionProbabilityModifier(
-                        CollectIce.class);
+                result *= job.getStartMissionProbabilityModifier(CollectIce.class);
             }
 
-            if (missionProbability > 3D) {
-            	missionProbability = 3D;
-            }
+            //logger.info("CollectIceMeta's probability : " + Math.round(result*100D)/100D);
+
+            if (result > 2D)
+                result = 2D;
+            else if (result < 0)
+            	result = 0;
         }
 
-        return missionProbability;
+        return result;
     }
 
 	@Override

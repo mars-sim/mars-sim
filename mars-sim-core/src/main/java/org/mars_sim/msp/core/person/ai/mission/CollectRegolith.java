@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-05-04
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -50,8 +51,6 @@ extends CollectResourcesMission {
 	/** Minimum number of people to do mission. */
 	public final static int MIN_PEOPLE = 2;
 
-	/** Minimum number of sol before this mission can commence. */
-	public final static int MIN_NUM_SOL = 1;
 
 	/**
 	 * Constructor.
@@ -101,6 +100,6 @@ extends CollectResourcesMission {
 	 * @throws MissionException if error getting regolith resource.
 	 */
 	private static AmountResource getRegolithResource() {
-		return Rover.regolithAR;
+		return ResourceUtil.regolithAR;
 	}
 }

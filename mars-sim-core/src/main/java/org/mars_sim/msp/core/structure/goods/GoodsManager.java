@@ -135,8 +135,6 @@ public class GoodsManager implements Serializable {
     private static final double FARMING_FACTOR = 1D;
     private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
     private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
-    //private static final double REGOLITH_INPUT_FACTOR = 1000D;
-    public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH;
     // 2015-02-13 Added four MAXIMUM/MINIMUM for computing VP
     private static final double MINIMUM_STORED_SUPPLY = 1D; //0.000001D;
     //private static final double MINIMUM_TOTAL_DEMAND = 0.000001D;
@@ -348,7 +346,7 @@ public class GoodsManager implements Serializable {
         int solElapsed = marsClock.getSolElapsedFromStart();
         // System.out.println("GoodManager : solElapsed : "+ solElapsed);
         // Compact and/or clear supply and demand maps every 5 days
-        solElapsed = solElapsed % SOL_PER_REFRESH + 1;
+        solElapsed = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
     	//supply++;
         // 2015-02-13 Using MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when calculating VP

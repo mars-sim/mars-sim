@@ -67,6 +67,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -93,7 +94,9 @@ implements Serializable, LifeSupportType, Objective {
 
 	private static final double MAX_TEMP = 48.0D;
 
-	public static final int SOL_PER_REFRESH = 5;
+	public static final int SUPPLY_DEMAND_REFRESH = 10;
+
+	private static final int RESOURCE_UPDATE_FREQ = 25;
 
 	private static final int SAMPLING_FREQ = 250; // in millisols
 
@@ -102,6 +105,14 @@ implements Serializable, LifeSupportType, Objective {
 	private static final int RESOURCE_STAT_SOLS = 12;
 
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
+
+    public static final int MIN_REGOLITH_RESERVE = 10; // per person
+
+	public static final int MIN_SAND_RESERVE = 5; // per person
+
+    public static final int MIN_ICE_RESERVE = 200; // per person
+
+	public static final double MIN_WATER_RESERVE = 400D; // per person
 
 	public static double water_consumption;
 
@@ -136,6 +147,8 @@ implements Serializable, LifeSupportType, Objective {
 	public double mealsReplenishmentRate = 0.6;
 
 	public double dessertsReplenishmentRate = 0.7;
+
+	private double iceProbabilityValue = 0, regolithProbabilityValue = 0;
 
 	// 2014-11-23 Added foodProductionOverride
 	private boolean foodProductionOverride = false;
@@ -837,6 +850,12 @@ implements Serializable, LifeSupportType, Objective {
 
 	    currentPressure = getTotalPressure() *1000D;
 
+	    remainder = millisols % RESOURCE_UPDATE_FREQ ;
+	    if (remainder == 0) {
+	    	iceProbabilityValue = getIceProbability();
+	    	regolithProbabilityValue = getRegolithProbability();
+	    }
+
 	}
 
 	public void sampleAllResources() {
@@ -1252,13 +1271,13 @@ implements Serializable, LifeSupportType, Objective {
 	// 2015-02-13 Added refreshMapDaily()
 	public void refreshDataMap(int solElapsed) {
 		// Clear maps once every x number of days
-		if (solElapsed % SOL_PER_REFRESH == 0) {
+		if (solElapsed % SUPPLY_DEMAND_REFRESH == 0) {
 			// True if solElapsed is an exact multiple of x
 			// Carry out the daily average of the previous 5 days
-			getInventory().compactAmountSupplyAmountMap(SOL_PER_REFRESH);
+			getInventory().compactAmountSupplyAmountMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearAmountSupplyRequestMap();
 			// Carry out the daily average of the previous 5 days
-			getInventory().compactAmountDemandAmountMap(SOL_PER_REFRESH);
+			getInventory().compactAmountDemandAmountMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearAmountDemandTotalRequestMap();
 			getInventory().clearAmountDemandMetRequestMap();
 			// 2015-03-06 Added clearing of weather data map
@@ -3253,6 +3272,97 @@ implements Serializable, LifeSupportType, Objective {
     //public String toString() {
     //	return name;
     //}
+
+    public double getRegolithProbability() {
+    	double result = 0;
+
+        double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
+        regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
+    	if (regolith_value > 1000)
+    		regolith_value = 1000;
+    	else if (regolith_value <= 5)
+    		return 0;
+
+        double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandAR));
+        sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
+        if (sand_value > 1000)
+    		sand_value = 1000;
+        else if (sand_value <= 3)
+        	return 0;
+
+        int pop = getAllAssociatedPeople().size();//getCurrentPopulationNum();
+
+        double regolith_available = getInventory().getAmountResourceStored(ResourceUtil.regolithAR, false);
+        double sand_available = getInventory().getAmountResourceStored(ResourceUtil.sandAR, false);
+
+        if (regolith_available < MIN_REGOLITH_RESERVE * pop + regolith_value/10 && sand_available < MIN_SAND_RESERVE * pop + sand_value/10) {
+        	result = (MIN_REGOLITH_RESERVE * pop /2.5D - regolith_available) / 10D;
+        }
+
+        // Prompt the collect ice mission to proceed more easily if water resource is dangerously low,
+        if (regolith_available > MIN_REGOLITH_RESERVE * pop ) {
+        	;// no change to missionProbability
+        }
+        else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 1.5 ) {
+        	result = result + (MIN_REGOLITH_RESERVE * pop - regolith_available) /20D;
+        }
+        else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 2D) {
+        	result = result + (MIN_REGOLITH_RESERVE * pop - regolith_available) /10D;
+        }
+        else
+        	result = result + (MIN_REGOLITH_RESERVE * pop - regolith_available) /5D;
+
+    	return result;
+    }
+
+    public double getIceProbability() {
+    	double result = 0;
+
+        double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
+        ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
+    	if (ice_value > 1000)
+    		ice_value = 1000;
+
+        double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
+        water_value = water_value * GoodsManager.ICE_VALUE_MODIFIER;
+        if (water_value > 1000)
+    		water_value = 1000;
+
+        // 2016-10-14 Compare the available amount of water and ice reserve
+        double ice_available = getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
+        double water_available = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+
+        int pop = getAllAssociatedPeople().size();//getCurrentPopulationNum();
+
+        // TODO: create a task to find local ice and simulate the probability of finding local ice and its quantity
+        if (ice_available < MIN_ICE_RESERVE * pop + ice_value/10D && water_available < MIN_WATER_RESERVE * pop + water_value/10D) {
+        	result = (MIN_ICE_RESERVE * pop - ice_available + MIN_WATER_RESERVE * pop - water_available) * 2D + water_value + ice_value ;
+        }
+
+        // Prompt the collect ice mission to proceed more easily if water resource is dangerously low,
+        if (water_available > MIN_WATER_RESERVE * pop ) {
+        	;// no change to missionProbability
+        }
+        else if (water_available > MIN_WATER_RESERVE * pop / 1.5 ) {
+        	result = result + (MIN_WATER_RESERVE * pop - water_available) /20D;
+        }
+        else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
+        	result = result + (MIN_WATER_RESERVE * pop - water_available) /10D;
+        }
+        else
+        	result = result + (MIN_WATER_RESERVE * pop - water_available) /5D;
+
+    	return result;
+    }
+
+	public double getIceProbabilityValue() {
+		return iceProbabilityValue;
+	}
+
+	public double getRegolithProbabilityValue() {
+		return regolithProbabilityValue;
+	}
+
 
 	@Override
 	public void destroy() {

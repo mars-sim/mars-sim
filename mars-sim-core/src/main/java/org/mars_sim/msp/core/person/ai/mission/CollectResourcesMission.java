@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -86,10 +87,10 @@ implements Serializable {
 	/** The total amount (kg) of resource collected. */
 	private double totalResourceCollected;
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
-	private static AmountResource methaneAR = Rover.methaneAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource foodAR = ResourceUtil.foodAR;
+	private static AmountResource methaneAR = ResourceUtil.methaneAR;
 
     /**
      * Constructor
@@ -252,9 +253,8 @@ implements Serializable {
      * @return the weighted probability
      */
     public static double getNewMissionProbability(Person person,
-            Class containerType, int containerNum, int minPeople,
-            Class missionType) {
-        double result = 0D;
+            Class containerType, int containerNum, int minPeople) {
+        double result = 1;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
@@ -291,21 +291,6 @@ implements Serializable {
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
             	return 0;
 
-            result = .3D;
-
-            // Crowding modifier
-            int crowding = settlement.getCurrentPopulationNum()
-                    - settlement.getPopulationCapacity();
-            if (crowding > 0)
-                result *= (crowding + 1);
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartMissionProbabilityModifier(missionType);
-            	// If this town has a tourist objective, divided by bonus
-                result = result / settlement.getGoodsManager().getTourismFactor();
-            }
         }
 
         return result;

@@ -1,16 +1,19 @@
 /**
  * Mars Simulation Project
  * CollectRegolithMeta.java
- * @version 3.1.0 2017-03-21
+ * @version 3.1.0 2017-05-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
+
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -29,13 +32,14 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class CollectRegolithMeta implements MetaMission {
 
+    private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
+
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.collectRegolith"); //$NON-NLS-1$
 
-    private static final int MIN_REGOLITH_RESERVE = 10; // per person
-	public static final int MIN_SAND_RESERVE = 5; // per person
-
+	/** starting sol for this mission to commence. */
+	public final static int MIN_STARTING_SOL = 1;
 
     @Override
     public String getName() {
@@ -52,16 +56,9 @@ public class CollectRegolithMeta implements MetaMission {
 
     	double result = 0;
 
-        //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        //int today = currentTime.getSolElapsedFromStart();
-        if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < CollectRegolith.MIN_NUM_SOL)
+        if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < MIN_STARTING_SOL)
         	return 0;
 
-        //MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-        //double totalTimeSols = MarsClock.getTimeDiff(currentTime, startTime) / 1000D;
-        //if (totalTimeSols < CollectRegolith.MIN_NUM_SOL) {
-        //    return 0;
-        //}
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        Settlement settlement = person.getSettlement();
@@ -78,49 +75,36 @@ public class CollectRegolithMeta implements MetaMission {
 
 	        else
 	        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class,
-	                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE, CollectRegolith.class);
+	                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
 
-	        if (result == 0)
+	        if (result <= 0)
 	        	return 0;
 
-            // Factor the value of ice at the settlement.
-            GoodsManager manager = settlement.getGoodsManager();
-            //AmountResource iceResource = AmountResource.findAmountResource("ice");
-            //AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
-            double regolith_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
-            regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
-        	if (regolith_value > 1000)
-        		regolith_value = 1000;
-        	else if (regolith_value <= 5)
-        		return 0;
+	        result = result + settlement.getRegolithProbabilityValue()/2D;
 
-            double sand_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandAR));
-            sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
-            if (sand_value > 1000)
-        		sand_value = 1000;
-            else if (sand_value <= 3)
-            	return 0;
+            // Crowding modifier
+            int crowding = settlement.getCurrentPopulationNum()
+                    - settlement.getPopulationCapacity();
+            if (crowding > 0)
+                result *= (crowding + 1);
 
-            int pop = settlement.getCurrentPopulationNum();
-
-            double regolith_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.regolithAR, false);
-            double sand_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.sandAR, false);
-
-            if (regolith_available < MIN_REGOLITH_RESERVE * pop + regolith_value/10D && sand_available < MIN_SAND_RESERVE * pop + sand_value/10D) {
-            	result = (sand_value + regolith_value + MIN_REGOLITH_RESERVE * pop - regolith_available) / 100D;
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartMissionProbabilityModifier(CollectRegolith.class);
+            	// If this town has a tourist objective, divided by bonus
+                result = result / settlement.getGoodsManager().getTourismFactor();
             }
-            else
-            	return 0;
 
-            // Factor the value of regolith at the settlement.
-            double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
-            result *= value;
+            //logger.info("CollectRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
-            if (result > 1D) {
-                result = 1D;
-            }
+            if (result <= 0)
+                return 0;
+            else if (result > 1D)
+            	result = 1;
 
         }
+
         return result;
     }
 
