@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -31,6 +32,10 @@ public class CollectRegolithMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.collectRegolith"); //$NON-NLS-1$
+
+    private static final int MIN_REGOLITH_RESERVE = 10; // per person
+	public static final int MIN_SAND_RESERVE = 5; // per person
+
 
     @Override
     public String getName() {
@@ -75,8 +80,40 @@ public class CollectRegolithMeta implements MetaMission {
 	        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class,
 	                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE, CollectRegolith.class);
 
+	        if (result == 0)
+	        	return 0;
+
+            // Factor the value of ice at the settlement.
+            GoodsManager manager = settlement.getGoodsManager();
+            //AmountResource iceResource = AmountResource.findAmountResource("ice");
+            //AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
+            double regolith_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
+            regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
+        	if (regolith_value > 1000)
+        		regolith_value = 1000;
+        	else if (regolith_value <= 5)
+        		return 0;
+
+            double sand_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandAR));
+            sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
+            if (sand_value > 1000)
+        		sand_value = 1000;
+            else if (sand_value <= 3)
+            	return 0;
+
+            int pop = settlement.getCurrentPopulationNum();
+
+            double regolith_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.regolithAR, false);
+            double sand_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.sandAR, false);
+
+            if (regolith_available < MIN_REGOLITH_RESERVE * pop + regolith_value/10D && sand_available < MIN_SAND_RESERVE * pop + sand_value/10D) {
+            	result = (sand_value + regolith_value + MIN_REGOLITH_RESERVE * pop - regolith_available) / 100D;
+            }
+            else
+            	return 0;
+
             // Factor the value of regolith at the settlement.
-            double value = person.getSettlement().getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
+            double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
             result *= value;
 
             if (result > 1D) {

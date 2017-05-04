@@ -37,8 +37,8 @@ public class CollectIceMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.collectIce"); //$NON-NLS-1$
 
-    private static final int MIN_ICE_RESERVE = 5;
-	public static final double MIN_WATER_RESERVE = 10D;
+    private static final int MIN_ICE_RESERVE = 100; // per person
+	public static final double MIN_WATER_RESERVE = 300D; // per person
 
     @Override
     public String getName() {
@@ -105,37 +105,37 @@ public class CollectIceMeta implements MetaMission {
                 //AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
                 double ice_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
                 ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
-            	if (ice_value > 300)
-            		ice_value = 300;
+            	if (ice_value > 1000)
+            		ice_value = 1000;
 
                 double water_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
                 water_value = water_value * GoodsManager.ICE_VALUE_MODIFIER;
-                if (water_value > 300)
-            		water_value = 300;
+                if (water_value > 1000)
+            		water_value = 1000;
 
                 int pop = settlement.getCurrentPopulationNum();
 
-                double ice_remain = settlement.getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
-                double water_remain = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+                double ice_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
+                double water_available = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
 
-                if (ice_remain < MIN_ICE_RESERVE * pop + ice_value/60D && water_remain < MIN_WATER_RESERVE * pop + water_value/60D) {
-                	missionProbability = (water_value + ice_value + MIN_ICE_RESERVE * pop - ice_remain) / 100D;
+                if (ice_available < MIN_ICE_RESERVE * pop + ice_value/10D && water_available < MIN_WATER_RESERVE * pop + water_value/10D) {
+                	missionProbability = (water_value + ice_value + MIN_ICE_RESERVE * pop - ice_available) / 100D;
                 }
                 else
                 	return 0;
 
                 // Prompt the collect ice mission to proceed more easily if water resource is dangerously low,
-                if (water_remain > MIN_WATER_RESERVE * pop ) {
+                if (water_available > MIN_WATER_RESERVE * pop ) {
                 	;// no change to missionProbability
                 }
-                else if (water_remain > MIN_WATER_RESERVE * pop / 1.5 ) {
-                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_remain) /20;
+                else if (water_available > MIN_WATER_RESERVE * pop / 1.5 ) {
+                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_available) /20;
                 }
-                else if (water_remain > MIN_WATER_RESERVE * pop / 2D) {
-                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_remain) /10;
+                else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
+                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_available) /10;
                 }
                 else
-                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_remain) /5;
+                	missionProbability = missionProbability + (MIN_WATER_RESERVE * pop - water_available) /5;
 
             }
 

@@ -290,7 +290,7 @@ extends TabPanel {
 		private Settlement settlement;
 		private BuildingManager manager;
 
-		private List<Building> buildingsWithLS = new ArrayList<>();;
+		private List<Building> buildings = new ArrayList<>();;
 
 		private CompositionOfAir air;
 
@@ -302,8 +302,8 @@ extends TabPanel {
 			this.settlement = settlement;
 			this.manager = settlement.getBuildingManager();
 			this.air = settlement.getCompositionOfAir();
-			this.buildingsWithLS = selectBuildingsWithLS();
-			this.size = buildingsWithLS.size();
+			this.buildings = selectBuildingsWithLS();
+			this.size = buildings.size();
 
 		}
 
@@ -375,7 +375,7 @@ extends TabPanel {
 
 		public double getComposition(int gas) {
 			double result = 0;
-			Iterator<Building> k = buildingsWithLS.iterator();
+			Iterator<Building> k = buildings.iterator();
 			while (k.hasNext()) {
 				Building b = k.next();
 				int id = b.getInhabitableID();
@@ -403,18 +403,20 @@ extends TabPanel {
 		}
 
 		public void update() {
-			//List<Building> newBuildings = selectBuildingsWithLS();
-			//if (!buildingsWithLS.equals(newBuildings)) {
-			//	Collections.sort(buildingsWithLS);
-			//	buildingsWithLS = newBuildings;
-			//}
-
-			int newSize = buildingsWithLS.size();
+			int newSize = buildings.size();
 			if (size != newSize) {
 				size = newSize;
-				buildingsWithLS = selectBuildingsWithLS();
-				Collections.sort(buildingsWithLS);
+				buildings = selectBuildingsWithLS();
+				Collections.sort(buildings);
 			}
+			else {
+				List<Building> newBuildings = selectBuildingsWithLS();
+				if (!buildings.equals(newBuildings)) {
+					buildings = newBuildings;
+					Collections.sort(buildings);
+				}
+			}
+
 			fireTableDataChanged();
 		}
 	}

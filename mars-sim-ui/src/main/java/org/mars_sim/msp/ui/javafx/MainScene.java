@@ -1210,7 +1210,7 @@ public class MainScene {
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
         TPSLabel0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(TPSLabel0, "how often the simulation updates the changes, aka Frame Per Second (FPS)"); //$NON-NLS-1$
+		setQuickToolTip(TPSLabel0, "how often the simulation updates the changes"); //$NON-NLS-1$
 
         TPSLabel = new Label();
         //TPSLabel.setEffect(blend);
@@ -1221,7 +1221,7 @@ public class MainScene {
         //TPSLabel.setPadding(new Insets(1, 1, 1, 5));
         TPSLabel.setAlignment(Pos.CENTER);
 		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
-		setQuickToolTip(TPSLabel, "e.g. 6.22 Hz means that for each second, the simulation is updated 6.22 times"); //$NON-NLS-1$
+		setQuickToolTip(TPSLabel, "e.g. 6.22 Hz means for each second, the simulation is updated 6.22 times"); //$NON-NLS-1$
 
 
         Label upTimeLabel0 = new Label(UPTIME);
@@ -1245,7 +1245,7 @@ public class MainScene {
         upTimeLabel.setPadding(new Insets(1, 1, 1, 2));
         if (uptimer != null)
         	upTimeLabel.setText (uptimer.getUptime());
-		setQuickToolTip(upTimeLabel, "e.g. 03m 05s means it has been running for 3 minutes & 5 seconds"); //$NON-NLS-1$
+		setQuickToolTip(upTimeLabel, "e.g. 03m 05s means 3 minutes and 5 seconds"); //$NON-NLS-1$
 
         Label benchmarkLabel0 = new Label(BENCHMARK);
         //upTimeLabel0.setEffect(blend);
@@ -1256,7 +1256,7 @@ public class MainScene {
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
         benchmarkLabel0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(benchmarkLabel0, "how well this machine perform in mars-sim"); //$NON-NLS-1$
+		setQuickToolTip(benchmarkLabel0, "how well this machine perform in mars-sim \n (the lower the number the better the performance)"); //$NON-NLS-1$
 
 		benchmarkLabel = new Label();
 		benchmarkLabel.setAlignment(Pos.CENTER);
@@ -1267,7 +1267,7 @@ public class MainScene {
     			+ "-fx-font-weight: italic;");
 		benchmarkLabel.setPadding(new Insets(1, 1, 1, 2));
 		benchmarkLabel.setText (masterClock.getDiffCache() + "");
-		setQuickToolTip(benchmarkLabel, "metric of performance per 1000 frames"); //$NON-NLS-1$
+		setQuickToolTip(benchmarkLabel, "a real time metric of performance"); //$NON-NLS-1$
 
         GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container");

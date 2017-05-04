@@ -22,12 +22,12 @@ public class UpTimer implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = -4992839027918134952L;
-	
+
 	/** Initialized logger. */
     private static Logger logger = Logger.getLogger(UpTimer.class.getName());
-	
+
 	private static final long NANOSECONDS_PER_MILLISECONDS = 1000000L;
-	
+
 	/** The time limit (ms) allowed between time pulses. */
 	private static final long TIME_LIMIT = 3000L;
 
@@ -38,14 +38,14 @@ public class UpTimer implements Serializable {
 	private long days, hours, minutes, seconds;
 
 	// Data members
-	/** in case it gets divided by 0 right away. */
+	/** The last up time. Sets to 1 in case it gets divided by 0 right away. */
 	private long uptime = 1;
 	private long utsec = 0;
 
 	private transient boolean paused = true;
 
 	private MasterClock masterClock;// = Simulation.instance().getMasterClock();
-	
+
     public UpTimer(MasterClock masterclock) {
     	this.masterClock = masterclock;
         this.setPaused(false);
@@ -85,25 +85,25 @@ public class UpTimer implements Serializable {
 
     	result.append(hours);
     	result.append("h ");
-        
+
         if (minutes < 10) {
         	result.append("0");
         }
 
     	result.append(minutes);
     	result.append("m ");
-    	
+
         if (seconds < 10) {
         	result.append("0");
         }
 
     	result.append(seconds);
     	result.append("s ");
-    	
+
         return result.toString();
-/*    		
+/*
         String minstr = "" + minutes;
-        if (minutes < 10) 
+        if (minutes < 10)
         	minstr = "0" + minutes;
 
         String secstr = "" + seconds;
@@ -118,15 +118,15 @@ public class UpTimer implements Serializable {
         String hourstr = "" + hours;
         return daystr + hourstr + ":" + minstr + ":" + secstr;
 */
-    	
-        
+
+
     }
 
     public long getUptimeMillis() {
         thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
         if (paused) {
             return uptime;
-        } 
+        }
         else {
             if ((thiscall - lastcall) < TIME_LIMIT) {
                 uptime = uptime + (thiscall - lastcall);
@@ -143,13 +143,29 @@ public class UpTimer implements Serializable {
         }
     }
 
+    /**
+     * Gets the last uptime
+     * @return uptime
+     */
+    public long getLastUptime() {
+    	return uptime;
+    }
+
+    /**
+     * Checks if the simulation is paused
+     * @return true if the simulation is paused
+     */
     public boolean isPaused() {
         return paused;
     }
 
-    public void setPaused(boolean isPaused) {
-        paused = isPaused;
-        if (isPaused) {
+    /**
+     * Sets the simulation pause mode
+     * @param value
+     */
+    public void setPaused(boolean value) {
+        paused = value;
+        if (value) {
 
         } else {
             thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;

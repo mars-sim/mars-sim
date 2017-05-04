@@ -46,6 +46,9 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());
 
+    private static final int MIN_ICE_RESERVE = 200; // per person
+	public static final double MIN_WATER_RESERVE = 400D; // per person
+
     /** Ice value probability modifier. */
     //public static double ICE_VALUE_MODIFIER = 10D;
 
@@ -102,23 +105,22 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
                 //AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
                 double ice_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
                 ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
-            	if (ice_value > 300)
-            		ice_value = 300;
+            	if (ice_value > 1000)
+            		ice_value = 1000;
 
                 double water_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
                 water_value = water_value * GoodsManager.ICE_VALUE_MODIFIER;
-                if (water_value > 300)
-            		water_value = 300;
+                if (water_value > 1000)
+            		water_value = 1000;
 
                 // 2016-10-14 Compare the available amount of water and ice reserve
                 double ice_available = inv.getAmountResourceStored(ResourceUtil.iceAR, false);
                 double water_available = inv.getAmountResourceStored(ResourceUtil.waterAR, false);
 
-                int size = settlement.getAllAssociatedPeople().size();
+                int pop = settlement.getAllAssociatedPeople().size();
 
                 // TODO: create a task to find local ice and simulate the probability of finding local ice and its quantity
-
-                if (water_available < 200D * size && ice_available < 200D * size ) {
+                if (ice_available < MIN_ICE_RESERVE * pop + ice_value/10D && water_available < MIN_WATER_RESERVE * pop + water_value/10D) {
                 	result = water_value + ice_value;
                 }
                 else {

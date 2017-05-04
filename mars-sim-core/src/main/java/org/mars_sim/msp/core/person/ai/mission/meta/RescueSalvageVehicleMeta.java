@@ -83,6 +83,11 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 return 0;
             }
 
+            // Check for embarking missions.
+            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
+                return 0;
+            }
+
             // Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
             // Also check for backup rover for salvage mission.
             //boolean rescue = false;
@@ -108,32 +113,26 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 }
             }
 
-            // Check for embarking missions.
-            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-                return 0;
+            // Determine mission probability.
+            if (rescuePeople) {
+                missionProbability = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
+            }
+            else {
+                missionProbability = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
             }
 
-            // Determine mission probability.
-            //if (missionPossible) {
-                if (rescuePeople) {
-                    missionProbability = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
-                }
-                else {
-                    missionProbability = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
-                }
+            // Crowding modifier.
+            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+            if (crowding > 0) {
+                missionProbability *= (crowding + 1);
+            }
 
-                // Crowding modifier.
-                int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-                if (crowding > 0) {
-                    missionProbability *= (crowding + 1);
-                }
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                missionProbability *= job.getStartMissionProbabilityModifier(RescueSalvageVehicle.class);
+            }
 
-                // Job modifier.
-                Job job = person.getMind().getJob();
-                if (job != null) {
-                    missionProbability *= job.getStartMissionProbabilityModifier(RescueSalvageVehicle.class);
-                }
-            //}
         }
 
         return missionProbability;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.08 2015-07-02
+ * @version 3.1.0 2017-05-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -62,6 +63,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -69,6 +71,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 /**
  * The tab panel for showing mission details.
@@ -104,11 +109,11 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	private JPanel missionCustomPane;
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 	private MissionWindow missionWindow;
-	
-    private static AmountResource iceAR = AmountResource.findAmountResource("ice");
-    private static AmountResource regolithAR = AmountResource.findAmountResource("regolith");
 
-	
+    private static AmountResource iceAR = ResourceUtil.iceAR;//.findAmountResource("ice");
+    private static AmountResource regolithAR = ResourceUtil.regolithAR;//AmountResource.findAmountResource("regolith");
+
+
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
@@ -126,45 +131,81 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		// Create the main panel.
 		Box mainPane = Box.createVerticalBox();
+		//JPanel mainPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 
 		// Create the description panel.
-		Box descriptionPane = new CustomBox();
-		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(descriptionPane);
+		Box infoPane = new CustomBox();
+		infoPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel topPane = new JPanel(new SpringLayout());
+		infoPane.setSize(new Dimension(200, 150));
+		infoPane.setBorder(new MarsPanelBorder());
+		infoPane.add(topPane);
+		mainPane.add(infoPane);
+
+		//JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		//descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		//springPane0.add(descriptionPane);
 
 		// Create the description label.
-		descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description", "")); //$NON-NLS-1$		
-		//descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description", ""),SwingConstants.LEFT); //$NON-NLS-1$
-		descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		descriptionPane.add(descriptionLabel);
+		JLabel descriptionLabel0 = new JLabel(Msg.getString("MainDetailPanel.description", JLabel.LEFT)); //$NON-NLS-1$
+		descriptionLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		topPane.add(descriptionLabel0);
+
+		descriptionLabel = new JLabel("None", JLabel.LEFT);
+		//descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description")); //$NON-NLS-1$
+
+		String s = "";
 		// 2015-12-15 Implemented the missing descriptionLabel
 		if (missionWindow.getCreateMissionWizard() != null) {
-			String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription(); 
+			s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDescription());
 			//System.out.println("Mission Description : " + s);
-			descriptionLabel.setText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
-			descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
+			descriptionLabel.setText(s);
 		}
-		
-		// Create the type label.
-		typeLabel = new JLabel(Msg.getString("MainDetailPanel.type", "")); //$NON-NLS-1$
-		typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		descriptionPane.add(typeLabel);
-		typeLabel.setToolTipText(Msg.getString("MainDetailPanel.type", ""));
-				
-		// Create the phase label.
-		phaseLabel = new JLabel(Msg.getString("MainDetailPanel.phase", "")); //$NON-NLS-1$
-		phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		descriptionPane.add(phaseLabel);
+		else
+			descriptionLabel.setText("None");
 
+		JPanel wrapper0 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		wrapper0.add(descriptionLabel);
+		topPane.add(wrapper0);
+
+		// Create the type label.
+		JLabel typeLabel0 = new JLabel(Msg.getString("MainDetailPanel.type", JLabel.LEFT)); //$NON-NLS-1$
+		typeLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		topPane.add(typeLabel0);
+		typeLabel0.setToolTipText(Msg.getString("MainDetailPanel.type"));//$NON-NLS-1$
+
+		typeLabel = new JLabel("None", JLabel.LEFT);
+		//typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel wrapper1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		wrapper1.add(typeLabel);
+		topPane.add(wrapper1);
+
+		// Create the phase label.
+		JLabel phaseLabel0 = new JLabel(Msg.getString("MainDetailPanel.phase", JLabel.LEFT)); //$NON-NLS-1$
+		phaseLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		topPane.add(phaseLabel0);
+
+		phaseLabel = new JLabel("None", JLabel.LEFT);
+		//phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel wrapper2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		wrapper2.add(phaseLabel);
+		topPane.add(wrapper2);
+
+		// 2017-05-03 Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(topPane,
+		                                3, 2, //rows, cols
+		                                10, 2,        //initX, initY
+		                                25, 2);       //xPad, yPad
 		// Create the member panel.
 		Box memberPane = new CustomBox();
 		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(memberPane);
 
 		// Create the member number label.
-		memberNumLabel = new JLabel(Msg.getString("MainDetailPanel.missionMembersMinMax","","","")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		memberNumLabel = new JLabel(Msg.getString("MainDetailPanel.missionMembersMinMax","","","", JLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		memberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		memberPane.add(memberNumLabel);
 
@@ -175,7 +216,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		// Prepare member list panel
 		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
-		memberListPane.setPreferredSize(new Dimension(100, 100));
+		memberListPane.setPreferredSize(new Dimension(100, 150));
 		memberBottomPane.add(memberListPane, BorderLayout.CENTER);
 
 		// Create scroll panel for member list.
@@ -186,8 +227,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		memberTableModel = new MemberTableModel();
 
 		// Create member table.
-		memberTable = new JTable(memberTableModel);
+		//memberTable = new JTable(memberTableModel);
+		memberTable = new ZebraJTable(memberTableModel);
 		memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 		memberTable.setRowSelectionAllowed(true);
 		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		memberTable.getSelectionModel().addListSelectionListener(
@@ -196,40 +239,45 @@ implements ListSelectionListener, MissionListener, UnitListener {
 						if (e.getValueIsAdjusting()) {
 							// Open window for selected person.
 							int index = memberTable.getSelectedRow();
-							
+
 							MissionMember member = memberTableModel.getMemberAtIndex(index);
 							Person person = null;
 							Robot robot = null;
 							if (member instanceof Person) {
 								person = (Person) memberTableModel.getMemberAtIndex(index);
-								if (person != null) 
+								if (person != null)
 									getDesktop().openUnitWindow(person, false);
 
 							}
 							else if (member instanceof Robot) {
 								robot = (Robot) memberTableModel.getMemberAtIndex(index);
-								if (robot != null) 
+								if (robot != null)
 									getDesktop().openUnitWindow(robot, false);
 							}
-							
+
 						}
 					}
 				});
 		memberScrollPane.setViewportView(memberTable);
 
 		// Create the travel panel.
-		Box travelPane = new CustomBox();
-		travelPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(travelPane);
+		Box travelBox = new CustomBox();
+		travelBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+		// 2017-05-03 Prepare SpringLayout
+		JPanel travelPane = new JPanel(new SpringLayout());
+		travelPane.setSize(new Dimension(200, 250));
+		travelPane.setBorder(new MarsPanelBorder());
+		travelBox.add(travelPane);
+		mainPane.add(travelBox);
 
 		// Create the vehicle panel.
-		JPanel vehiclePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		vehiclePane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel vehiclePane = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		vehiclePane.setAlignmentX(Component.BOTTOM_ALIGNMENT);
 		travelPane.add(vehiclePane);
 
 		// Create center map button
 		centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
-		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
+		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
 		centerMapButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (currentMission != null) {
@@ -242,12 +290,12 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		vehiclePane.add(centerMapButton);
 
 		// Create the vehicle label.
-		JLabel vehicleLabel = new JLabel(Msg.getString("MainDetailPanel.vehicle")); //$NON-NLS-1$
+		JLabel vehicleLabel = new JLabel("   " + Msg.getString("MainDetailPanel.vehicle"), JLabel.RIGHT); //$NON-NLS-1$
 		vehiclePane.add(vehicleLabel);
 
 		// Create the vehicle panel.
-		vehicleButton = new JButton("   "); //$NON-NLS-1$
-		vehiclePane.add(vehicleButton);
+		vehicleButton = new JButton("\t\t\t\t\t"); //$NON-NLS-1$
+		vehicleButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		vehicleButton.setVisible(false);
 		vehicleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -279,26 +327,60 @@ implements ListSelectionListener, MissionListener, UnitListener {
                 }
 			}
 		});
+		JPanel wrapper00 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		wrapper00.add(vehicleButton);
+		travelPane.add(wrapper00);
 
 		// Create the vehicle status label.
-		vehicleStatusLabel = new JLabel(Msg.getString("MainDetailPanel.vehicleStatus","")); //$NON-NLS-1$ //$NON-NLS-2$
-		vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		travelPane.add(vehicleStatusLabel);
+		JLabel vehicleStatusLabel0 = new JLabel(Msg.getString("MainDetailPanel.vehicleStatus", JLabel.LEFT));//$NON-NLS-1$ //$NON-NLS-2$
+		//vehicleStatusLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(vehicleStatusLabel0);
+
+		vehicleStatusLabel = new JLabel("Not Applicable", JLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
+		//vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel wrapper01 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		wrapper01.add(vehicleStatusLabel);
+		travelPane.add(wrapper01);
+
 
 		// Create the speed label.
-		speedLabel = new JLabel(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
-		speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		travelPane.add(speedLabel);
+		JLabel speedLabel0 = new JLabel(Msg.getString("MainDetailPanel.vehicleSpeed", JLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$
+		//speedLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(speedLabel0);
+
+		speedLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
+		//speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel wrapper02 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		wrapper02.add(speedLabel);
+		travelPane.add(wrapper02);
 
 		// Create the distance next navpoint label.
-		distanceNextNavLabel = new JLabel(Msg.getString("MainDetailPanel.distanceNextNavPoint", "0")); //$NON-NLS-1$
-		distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		travelPane.add(distanceNextNavLabel);
+		JLabel distanceNextNavLabel0 = new JLabel(Msg.getString("MainDetailPanel.distanceNextNavPoint", JLabel.LEFT)); //$NON-NLS-1$
+		//distanceNextNavLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(distanceNextNavLabel0);
+
+		distanceNextNavLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		//distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel wrapper03 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		wrapper03.add(distanceNextNavLabel);
+		travelPane.add(wrapper03);
 
 		// Create the traveled distance label.
-		traveledLabel = new JLabel(Msg.getString("MainDetailPanel.distanceTraveled", "0", "0")); //$NON-NLS-1$
-		traveledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		travelPane.add(traveledLabel);
+		JLabel traveledLabel0 = new JLabel(Msg.getString("MainDetailPanel.distanceTraveled", JLabel.LEFT)); //$NON-NLS-1$
+		//traveledLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(traveledLabel0);
+
+		traveledLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		//traveledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel wrapper04 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		wrapper04.add(traveledLabel);
+		travelPane.add(wrapper04);
+
+		// 2017-05-03 Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(travelPane,
+		                                5, 2, //rows, cols
+		                                10, 5,        //initX, initY
+		                                5, 1);       //xPad, yPad
 
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
@@ -385,6 +467,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	 * Note: this is called when a mission is selected on MissionWindow's mission list.
 	 */
 	public void valueChanged(ListSelectionEvent e) {
+
+		TableStyle.setTableStyle(memberTable);
+
 		// Remove mission and unit listeners.
 		if (currentMission != null) currentMission.removeMissionListener(this);
 		if (currentVehicle != null) currentVehicle.removeUnitListener(this);
@@ -394,40 +479,37 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		if (mission != null) {
 			// Update mission info in UI.
-			
+
 			if (mission.getDescription() != null) {
-				descriptionLabel.setText(Msg.getString(
-					"MainDetailPanel.description", //$NON-NLS-1$
-					Conversion.capitalize(mission.getDescription())
-				));
-			}			
+				descriptionLabel.setText(Conversion.capitalize(mission.getDescription()));
+			}
 			//2016-09-25 Used getTypePanel().getDescription()
 			else if (missionWindow.getCreateMissionWizard().getTypePanel().getDescription() != null) {
-				String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription(); 
+				String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
 				//System.out.println("Mission Description : " + s);
-				descriptionLabel.setText(Msg.getString("MainDetailPanel.description", s));
-			}		
+				descriptionLabel.setText(s);
+			}
 
-			
-			typeLabel.setText(Msg.getString("MainDetailPanel.type",mission.getName())); //$NON-NLS-1$
+
+			typeLabel.setText(mission.getName()); //$NON-NLS-1$
 			String phaseText = mission.getPhaseDescription();
-			
+
 			phaseLabel.setToolTipText(phaseText);
 			if (phaseText.length() > 45) phaseText = phaseText.substring(0, 45) + "...";
-			phaseLabel.setText(Msg.getString("MainDetailPanel.phase", phaseText)); //$NON-NLS-1$
+			phaseLabel.setText(phaseText); //$NON-NLS-1$
 
-			
+
 			int memberNum = mission.getMembersNumber();
 			int minMembers = mission.getMinMembers();
 			String maxMembers = ""; //$NON-NLS-1$
-			
+
 			if (mission instanceof VehicleMission) {
 				maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
 			}
 			else {
 				maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
 			}
-			
+
 			memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax",memberNum,minMembers,maxMembers)); //$NON-NLS-1$
 			memberTableModel.setMission(mission);
 			centerMapButton.setEnabled(true);
@@ -441,17 +523,20 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					isVehicle = true;
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
-					vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
-					speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+					String s = vehicle.getStatus();
+					if (s == null)
+						s = "Not Applicable";
+					vehicleStatusLabel.setText(s);
+					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					try {
 						int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
-						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavPoint",distanceNextNav)); //$NON-NLS-1$
+						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint",distanceNextNav)); //$NON-NLS-1$
 					}
 					catch (Exception e2) {}
 					int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
 					int totalDistance = (int) vehicleMission.getTotalDistance();
 					traveledLabel.setText(Msg.getString(
-						"MainDetailPanel.distanceTraveled", //$NON-NLS-1$
+						"MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
 						totalDistance
 					));
@@ -469,10 +554,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				        isVehicle = true;
 				        vehicleButton.setText(vehicle.getName());
 	                    vehicleButton.setVisible(true);
-	                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
-	                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
-	                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    vehicleStatusLabel.setText(vehicle.getStatus()); //$NON-NLS-1$
+	                    speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 	                    vehicle.addUnitListener(this);
 	                    currentVehicle = vehicle;
 				    }
@@ -487,22 +572,22 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	                    isVehicle = true;
 	                    vehicleButton.setText(vehicle.getName());
 	                    vehicleButton.setVisible(true);
-	                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
-	                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
-	                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    vehicleStatusLabel.setText(vehicle.getStatus()); //$NON-NLS-1$
+	                    speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 	                    vehicle.addUnitListener(this);
 	                    currentVehicle = vehicle;
 	                }
 			}
-			
+
 			if (!isVehicle) {
 				// Clear vehicle info.
 				vehicleButton.setVisible(false);
-				vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus","")); //$NON-NLS-1$ //$NON-NLS-2$
-				speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
-				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
-				traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
+				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 				currentVehicle = null;
 			}
 
@@ -512,17 +597,17 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		}
 		else {
 			// Clear mission info in UI.
-			descriptionLabel.setText(Msg.getString("MainDetailPanel.description","")); //$NON-NLS-1$ //$NON-NLS-2$
-			typeLabel.setText(Msg.getString("MainDetailPanel.type","")); //$NON-NLS-1$ //$NON-NLS-2$
-			phaseLabel.setText(Msg.getString("MainDetailPanel.phase","")); //$NON-NLS-1$ //$NON-NLS-2$
-			memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", "", "", "")); //$NON-NLS-1$ //$NON-NLS-2$
+			descriptionLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			typeLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			phaseLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			memberNumLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
 			memberTableModel.setMission(null);
 			centerMapButton.setEnabled(false);
 			vehicleButton.setVisible(false);
-			vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus","")); //$NON-NLS-1$ //$NON-NLS-2$
-			speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
-			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
-			traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+			vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
+			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 			currentMission = null;
 			currentVehicle = null;
 			customPanelLayout.show(missionCustomPane, EMPTY);
@@ -605,26 +690,33 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			MissionEventType type = event.getType();
 
 			// Update UI based on mission event type.
-			if (type == MissionEventType.NAME_EVENT) 
-				typeLabel.setText(Msg.getString("MainDetailPanel.type",mission.getName())); //$NON-NLS-1$
+			if (type == MissionEventType.NAME_EVENT)
+				typeLabel.setText(mission.getName()); //$NON-NLS-1$
 			else if (type == MissionEventType.DESCRIPTION_EVENT) {
 				// 2015-12-15 Implemented the missing descriptionLabel
 				if (missionWindow.getCreateMissionWizard() != null) {
-					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription(); 
-					//System.out.println("Mission Description : " + s);
-					descriptionLabel.setText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
-					descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
+					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
+					if (s == null) {
+						s = "None";
+					}
+					else {
+						s = Conversion.capitalize(s);
+					}
+					descriptionLabel.setText(s);
 				}
 				else {
-					descriptionLabel.setText(Msg.getString("MainDetailPanel.description",mission.getDescription())); //$NON-NLS-1$
+					String s = mission.getDescription();
+					if (s == null)
+						s = "None";
+					descriptionLabel.setText(s);
 				}
 			}
 			else if (type == MissionEventType.PHASE_DESCRIPTION_EVENT) {
 				String phaseText = mission.getPhaseDescription();
 				if (phaseText.length() > 45) phaseText = phaseText.substring(0, 45) + "...";
-				phaseLabel.setText(Msg.getString("MainDetailPanel.phase",phaseText)); //$NON-NLS-1$
+				phaseLabel.setText(phaseText); //$NON-NLS-1$
 			}
-			else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT || 
+			else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT ||
 					type == MissionEventType.MIN_MEMBERS_EVENT || type == MissionEventType.CAPACITY_EVENT) {
 				int memberNum = mission.getMembersNumber();
 				int minMembers = mission.getMinMembers();
@@ -646,15 +738,18 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				if (vehicle != null) {
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
-					vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
-					speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+					String s = vehicle.getStatus();
+					if (s == null)
+						s = "Not Applicable";
+					vehicleStatusLabel.setText(s);
+					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
 				}
 				else {
 					vehicleButton.setVisible(false);
-					vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus","")); //$NON-NLS-1$ //$NON-NLS-2$
-					speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
+					vehicleStatusLabel.setText("Not Applicable");
+					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
 					if (currentVehicle != null) currentVehicle.removeUnitListener(panel);
 					currentVehicle = null;
 				}
@@ -663,12 +758,12 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				VehicleMission vehicleMission = (VehicleMission) mission;
 				try {
 					int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
-					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavPoint",distanceNextNav)); //$NON-NLS-1$
+					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
 				}
 				catch (Exception e2) {}
 				int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
 				int totalDistance = (int) vehicleMission.getTotalDistance();
-				traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled",travelledDistance,  //$NON-NLS-1$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", travelledDistance,  //$NON-NLS-1$
 					totalDistance));
 			}
 
@@ -692,10 +787,14 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			// Update vehicle info in UI based on event type.
 			UnitEventType type = event.getType();
 			Vehicle vehicle = (Vehicle) event.getSource();
-			if (type == UnitEventType.STATUS_EVENT) 
-				vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
-			else if (type == UnitEventType.SPEED_EVENT) 
-				speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+			if (type == UnitEventType.STATUS_EVENT) {
+				String s = vehicle.getStatus();
+				if (s == null)
+					s = "Not Applicable";
+				vehicleStatusLabel.setText(s);
+			}
+			else if (type == UnitEventType.SPEED_EVENT)
+				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 		}
 	}
 
@@ -732,7 +831,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-	
+
 		// Private members.
 		private Mission mission;
 		private List<MissionMember> members;
@@ -784,7 +883,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				MissionMember member = (MissionMember) array[row];
 				if (column == 0) return member.getName();
 				else return member.getTaskDescription();
-			}   
+			}
 			else return Msg.getString("unknown"); //$NON-NLS-1$
 		}
 
@@ -808,10 +907,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
 			}
-			else if ((type == UnitEventType.TASK_DESC_EVENT) || 
-					(type == UnitEventType.TASK_EVENT) || 
-					(type == UnitEventType.TASK_ENDED_EVENT) || 
-					(type == UnitEventType.TASK_SUBTASK_EVENT) || 
+			else if ((type == UnitEventType.TASK_DESC_EVENT) ||
+					(type == UnitEventType.TASK_EVENT) ||
+					(type == UnitEventType.TASK_ENDED_EVENT) ||
+					(type == UnitEventType.TASK_SUBTASK_EVENT) ||
 					(type == UnitEventType.TASK_NAME_EVENT)) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
 			}
@@ -829,7 +928,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				}
 			}
 
-			return result;    
+			return result;
 		}
 
 		/**
@@ -882,10 +981,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		 */
 		MissionMember getMemberAtIndex(int index) {
 			if ((index >= 0) && (index < members.size())) {
-				
-				
 				return (MissionMember) members.toArray()[index];
-			} 
+			}
 			else {
 				return null;
 			}
@@ -920,7 +1017,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			}
 		}
 	}
-	
+
 	// 2016-09-24 Added getMissionWindow()
 	public MissionWindow getMissionWindow() {
 		return missionWindow;

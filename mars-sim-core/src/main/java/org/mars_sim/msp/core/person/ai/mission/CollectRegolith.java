@@ -51,7 +51,7 @@ extends CollectResourcesMission {
 	public final static int MIN_PEOPLE = 2;
 
 	/** Minimum number of sol before this mission can commence. */
-	public final static int MIN_NUM_SOL = 3;
+	public final static int MIN_NUM_SOL = 1;
 
 	/**
 	 * Constructor.

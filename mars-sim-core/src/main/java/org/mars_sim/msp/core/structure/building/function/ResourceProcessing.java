@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 3.07 2014-06-20
+ * @version 3.1.0 2017-05-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The ResourceProcessing class is a building function indicating 
+ * The ResourceProcessing class is a building function indicating
  * that the building has a set of resource processes.
  */
 public class ResourceProcessing
@@ -40,7 +40,7 @@ implements Serializable {
 	private List<ResourceProcess> resourceProcesses;
 
 	private static BuildingConfig config;
-	
+
 	/**
 	 * Constructor.
 	 * @param building the building the function is for.
@@ -54,7 +54,7 @@ implements Serializable {
 
 		powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getBuildingType());
 		resourceProcesses = config.getResourceProcesses(building.getBuildingType());
-		
+
 		// Load activity spots
         loadActivitySpots(config.getResourceProcessingActivitySpots(building.getBuildingType()));
 	}
@@ -159,7 +159,7 @@ implements Serializable {
 
 		double productionLevel = 0D;
 		if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
-		else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN) 
+		else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
 			productionLevel = powerDownProcessingLevel;
 
 		// Run each resource process.
@@ -200,7 +200,7 @@ implements Serializable {
 		}
 		return result;
 	}
-	
+
     @Override
     public double getMaintenanceTime() {
         return resourceProcesses.size() * 5D;

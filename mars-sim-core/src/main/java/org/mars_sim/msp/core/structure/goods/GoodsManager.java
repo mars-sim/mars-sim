@@ -146,7 +146,8 @@ public class GoodsManager implements Serializable {
 
     /** Ice value probability modifier. */
     public static double ICE_VALUE_MODIFIER = 10D;
-
+    public static double REGOLITH_VALUE_MODIFIER = 3;
+    public static double SAND_VALUE_MODIFIER = 2;
 
     // Data members
     // 2016-11-02 Added modifiers due to Settlement Development Objectives

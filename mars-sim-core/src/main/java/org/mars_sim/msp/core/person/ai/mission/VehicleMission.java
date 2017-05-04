@@ -382,6 +382,7 @@ implements UnitListener {
 				// for ALL OTHER REASONS
 	            //setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
 				leaveVehicle();
+	            setPhaseEnded(true);
 				super.endMission(reason);
 			}
 		}
@@ -401,6 +402,7 @@ implements UnitListener {
 			// Case : if a vehicle is parked at a settlement and had an accident and was repaired,
 			//somehow this mission did not end and the Mission Tool shows the Regolith mission was still on-going
 			//and the occupants did not leave the vehicle.
+            setPhaseEnded(true);
 			super.endMission(reason);
 
 		}
@@ -774,8 +776,8 @@ implements UnitListener {
 				            .getAmountResourceStored((AmountResource) resource, false);
 				    if (amountStored < amount) {
 				        logger.severe(vehicle.getName() + " does not have enough " + resource +
-				                " to continue with " + getName() + " (required: " + amount +
-				                " kg, stored: " + amountStored + " kg)");
+				                " to continue with " + getName() + " (required: " + Math.round(amount*100D)/100D +
+				                " kg, stored: " + Math.round(amountStored*100D)/100D + " kg)");
 				        result = false;
 				    }
 				}

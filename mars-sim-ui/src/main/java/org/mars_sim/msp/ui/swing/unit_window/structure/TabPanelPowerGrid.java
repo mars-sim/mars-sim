@@ -450,16 +450,18 @@ extends TabPanel {
 		}
 
 		public void update() {
-			//List<Building> newList = settlement.getBuildingManager().getACopyOfBuildings();
-			//if (!buildings.equals(newList)) {
-			//	Collections.sort(buildings);
-			//	buildings = newList;
-			//}
 			int newSize = buildings.size();
 			if (size != newSize) {
 				size = newSize;
 				buildings = settlement.getBuildingManager().getACopyOfBuildings();
 				Collections.sort(buildings);
+			}
+			else {
+				List<Building> newBuildings = settlement.getBuildingManager().getACopyOfBuildings();
+				if (!buildings.equals(newBuildings)) {
+					buildings = newBuildings;
+					Collections.sort(buildings);
+				}
 			}
 			fireTableDataChanged();
 		}

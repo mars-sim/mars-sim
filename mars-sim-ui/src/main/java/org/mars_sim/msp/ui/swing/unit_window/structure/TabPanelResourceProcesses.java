@@ -17,6 +17,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +34,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
@@ -51,10 +54,15 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private List<Building> processingBuildings;
+	private List<Building> buildings;
 	private JScrollPane processesScrollPane;
 	private JPanel processListPanel;
 	private JCheckBox overrideCheckbox;
+
+	private Settlement settlement;
+	private BuildingManager mgr;
+
+	private int size;
 
 	/**
 	 * Constructor.
@@ -71,8 +79,10 @@ extends TabPanel {
 			unit, desktop
 		);
 
-		Settlement settlement = (Settlement) unit;
-		processingBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESOURCE_PROCESSING);
+		settlement = (Settlement) unit;
+		mgr = settlement.getBuildingManager();
+		buildings = mgr.getBuildings(BuildingFunction.RESOURCE_PROCESSING);
+		size = buildings.size();
 
 		// Prepare resource processes label panel.
 		JPanel resourceProcessesLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -123,7 +133,7 @@ extends TabPanel {
 
 		//    	try {
 		// Add a label for each process in each processing building.
-		Iterator<Building> i = processingBuildings.iterator();
+		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			ResourceProcessing processing = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
@@ -142,11 +152,18 @@ extends TabPanel {
 	@Override
 	public void update() {
 		// Check if building list has changed.
-		Settlement settlement = (Settlement) unit;
-		List<Building> tempBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESOURCE_PROCESSING);
-		if (!tempBuildings.equals(processingBuildings)) {
-			// Populate process list.
-			processingBuildings = tempBuildings;
+		List<Building> newBuildings = selectBuildingsWithRP();
+		int newSize = buildings.size();
+		if (size != newSize) {
+			size = newSize;
+			buildings = selectBuildingsWithRP();
+			Collections.sort(buildings);
+			populateProcessList();
+			processesScrollPane.validate();
+		}
+		else if (!buildings.equals(newBuildings)) {
+			buildings = newBuildings;
+			Collections.sort(buildings);
 			populateProcessList();
 			processesScrollPane.validate();
 		}
@@ -158,6 +175,10 @@ extends TabPanel {
 				panel.update();
 			}
 		}
+	}
+
+	private List<Building> selectBuildingsWithRP() {
+		return mgr.getBuildings(BuildingFunction.RESOURCE_PROCESSING);
 	}
 
 	/**

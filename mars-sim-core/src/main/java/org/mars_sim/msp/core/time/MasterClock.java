@@ -68,8 +68,10 @@ public class MasterClock implements Serializable { // Runnable,
 	private volatile long timeBetweenUpdates = 0L;
 	/** Default time ratio. */
 	private volatile double defaultTimeRatio = 0D;
-	/** Default time between updates. */
-	private volatile double defaultTmeBetweenUpdates = 0D;
+	/** Default time between updates in nanoseconds. */
+	private volatile double default_tbu_ns = 0D;
+	/** Default time between updates in milliseconds. */
+	private volatile double default_tbu_ms = 0;
 
 	private int noDelaysPerYield = 0;
 	private int maxFrameSkips = 0;
@@ -148,10 +150,14 @@ public class MasterClock implements Serializable { // Runnable,
 
         int threads = Simulation.NUM_THREADS;
         //defaultTimeRatio = threads * tr / 16D;
-        if (threads <= 32)
-        	defaultTmeBetweenUpdates = 12D / (Math.sqrt(threads) *2) * tbu * 1_000_000D;
-        else
-        	defaultTmeBetweenUpdates = 1.5 * tbu*1_000_000D;
+        if (threads <= 32) {
+        	default_tbu_ms =  12D / (Math.sqrt(threads) *2) * tbu;
+        	default_tbu_ns = default_tbu_ms * 1_000_000D;
+        }
+        else {
+        	default_tbu_ms = 1.5 * tbu;
+        	default_tbu_ns = default_tbu_ms*1_000_000D;
+        }
 
         if (threads == 1) {
         	defaultTimeRatio = tr/16D;
@@ -190,11 +196,11 @@ public class MasterClock implements Serializable { // Runnable,
         }
 
     	timeRatio = defaultTimeRatio;
-        timeBetweenUpdates = (long) defaultTmeBetweenUpdates;
+        timeBetweenUpdates = (long) default_tbu_ns;
 
         logger.info("Default Time Ratio : " + (int)defaultTimeRatio + "x");
-        logger.info("Time between Updates : " + timeBetweenUpdates/1_000_000D + " ms");
-        logger.info("Default Ticks Per Second (TPS) : " + Math.round(1_000_000_000D/timeBetweenUpdates*10D)/10D + " Hz");
+        logger.info("Time between Updates : " + default_tbu_ms + " ms");
+        logger.info("Default Ticks Per Second (TPS) : " + Math.round(1_000/default_tbu_ms*10D)/10D + " Hz");
 
 
         // 2015-10-31 Added loading the values below from SimulationConfig
@@ -326,16 +332,6 @@ public class MasterClock implements Serializable { // Runnable,
     }
 
     /**
-     * Checks if in the process of loading a simulation.
-     *
-     * @return true if loading simulation.
-
-    public boolean isLoadingSimulation() {
-        return loadSimulation;
-    }
-*/
-
-    /**
      * Sets the save simulation flag and the file to save to.
      * @param file save to file or null if default file.
      */
@@ -345,25 +341,7 @@ public class MasterClock implements Serializable { // Runnable,
         this.file = file;
     }
 
-    /**
-     * Sets the autosave simulation flag and the file to save to.
-     * @param file autosave to file or null if default file.
-     */
-    // 2015-01-08 Added autosaveSimulation
-    //public void autosaveSimulation() {
-    //    autosaveSimulation = true;
-    //    this.file = null;
-    //}
 
-    /**
-     * Sets the autosave simulation flag and the file to save to.
-     * @param file autosave to file or null if default file.
-     */
-    // 2016-08-01 Added autosaveSimulation
-    //public void autosaveSimulation(File file) {
-    //    autosaveSimulation = true;
-    //    this.file = file;
-    //}
     /**
      * Checks if in the process of saving a simulation.
      * @return true if saving simulation.
@@ -405,36 +383,45 @@ public class MasterClock implements Serializable { // Runnable,
         if (timeRatio > 0D) {
             double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
-            //System.out.print(" timePulseSeconds : " + timePulseSeconds);
         }
         else {
             timePulse = 1D;
         }
-        //System.out.println("  timePulse : " + timePulse );
+
         return timePulse;
     }
 
+    /*
+     * Gets the total number of pulses since the start of the sim
+     */
     public long getTotalPulses() {
         return totalPulses;
     }
 
+    /**
+     * Resets the total number of pulses using the default TBU
+     * @return totalPulses
+     */
     // 2017-01-09 Add resetTotalPulses()
 	public void resetTotalPulses() {
-		totalPulses = (totalPulses*3)/5;
+		//double default_tps = 1_000/default_tbu_ms;
+		//double tps = (double) totalPulses / (uptimer.getUptimeMillis() / 1000D);
+		totalPulses = (long) (1D/default_tbu_ms * uptimer.getLastUptime());
+		//totalPulses = (long) (totalPulses*.6);
 	}
 
     /**
      * setTimeRatio is for setting the Masterclock's time ratio directly. It is a double
-     * indicating the simetime:realtime ratio. 1000 means 1000 sim time minutes elapse for
-     * each real-world minute.
-    */
+     * indicating the sim time to realtime ratio.
+     * @param ratio
+     */
     public void setTimeRatio(double ratio) {
         if (ratio >= 1D && ratio <= 65536D) {
 
         	if (ratio > timeRatio)
-        		timeBetweenUpdates = (long) (timeBetweenUpdates * 1.02); // increment by 2%
+        		timeBetweenUpdates = (long) (timeBetweenUpdates * 1.005); // increment by .5%
         	else
-        		timeBetweenUpdates = (long) (timeBetweenUpdates * .98); // decrement by 2%
+        		timeBetweenUpdates = (long) (timeBetweenUpdates * .995); // decrement by .5%
 
             timeRatio = ratio;//Math.round(ratio*100D)/100D;
             //System.out.println("timeRatio : " + timeRatio + " ");
@@ -580,7 +567,7 @@ public class MasterClock implements Serializable { // Runnable,
 
 			            overSleepTime = (System.nanoTime() - t2) - sleepTime;
 
-		            	timeBetweenUpdates = (long) (timeBetweenUpdates * .999975); // increment by .0075%
+		            	//timeBetweenUpdates = (long) (timeBetweenUpdates * .999905); // decrement by .0005%
 		            }
 	            }
 
@@ -593,7 +580,7 @@ public class MasterClock implements Serializable { // Runnable,
 	            		noDelays = 0;
 	            	}
 
-	            	timeBetweenUpdates = (long) (timeBetweenUpdates * 1.0025); // increment by 0.25%
+	            	//timeBetweenUpdates = (long) (timeBetweenUpdates * 1.0025); // increment by 0.25%
 	            }
 
 	            t1 = System.nanoTime();
@@ -614,8 +601,12 @@ public class MasterClock implements Serializable { // Runnable,
 	            	skips++;
 
 	            	if (skips == maxFrameSkips) {
-		            	logger.info("skips >= maxFrameSkips");
-	            		timeBetweenUpdates = (long) (timeBetweenUpdates * .995); // decrement by .05%
+		            	logger.info("# of skips = maxFrameSkips. Slowing down TBU...");
+		            	resetTotalPulses();
+		            	if (timeBetweenUpdates > (long) (default_tbu_ns * 1.25))
+		            		timeBetweenUpdates = (long) (default_tbu_ns * 1.25);
+		            	else
+		            		timeBetweenUpdates = (long) (timeBetweenUpdates * .9925); // decrement by 2.5%
 	            	}
 	            }
 

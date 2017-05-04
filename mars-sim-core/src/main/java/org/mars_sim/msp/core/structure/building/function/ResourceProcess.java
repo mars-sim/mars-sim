@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 3.07 2015-01-09
-
+ * @version 3.1.0 2017-05-03
  * @author Scott Davis
  */
 
@@ -49,7 +48,7 @@ implements Serializable {
 	 * Constructor.
 	 * @param name the name of the process.
 	 * @param powerRequired the amount of power required to run the process (kW).
-	 * @param defaultOn true of process is on by default, false if off by default. 
+	 * @param defaultOn true of process is on by default, false if off by default.
 	 */
 	public ResourceProcess(String name, double powerRequired, boolean defaultOn) {
 		this.name = name;
@@ -78,11 +77,11 @@ implements Serializable {
 	 */
 	public void addMaxInputResourceRate(AmountResource resource, double rate, boolean ambient) {
 		if (ambient) {
-			if (!maxAmbientInputResourceRates.containsKey(resource)) 
+			if (!maxAmbientInputResourceRates.containsKey(resource))
 				maxAmbientInputResourceRates.put(resource, rate);
 		}
 		else {
-			if (!maxInputResourceRates.containsKey(resource)) 
+			if (!maxInputResourceRates.containsKey(resource))
 				maxInputResourceRates.put(resource, rate);
 		}
 	}
@@ -99,7 +98,7 @@ implements Serializable {
 				maxWasteOutputResourceRates.put(resource, rate);
 		}
 		else {
-			if (!maxOutputResourceRates.containsKey(resource)) 
+			if (!maxOutputResourceRates.containsKey(resource))
 				maxOutputResourceRates.put(resource, rate);
 		}
 	}
@@ -150,7 +149,7 @@ implements Serializable {
 	 * Gets the set of input resources.
 	 * @return set of resources.
 	 */
-	public Set<AmountResource> getInputResources() {   
+	public Set<AmountResource> getInputResources() {
 		Set<AmountResource> results = new HashSet<AmountResource>();
 		results.addAll(maxInputResourceRates.keySet());
 		results.addAll(maxAmbientInputResourceRates.keySet());
@@ -219,7 +218,7 @@ implements Serializable {
 	 * @param inventory the inventory pool to use for processes.
 	 * @throws Exception if error processing resources.
 	 */
-	public void processResources(double time, double productionLevel, 
+	public void processResources(double time, double productionLevel,
 			Inventory inventory) {
 
 		if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
@@ -227,7 +226,7 @@ implements Serializable {
 
 		// logger.info(name + " process");
 
-		if (runningProcess) {       
+		if (runningProcess) {
 			// Convert time from millisols to seconds.
 			// double timeSec = MarsClock.convertMillisolsToSeconds(time);
 
@@ -245,11 +244,11 @@ implements Serializable {
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
 				double remainingAmount = inventory.getAmountResourceStored(resource, false);
-				
+
 				// 2015-01-09 Added addDemandTotalRequest()
 				inventory.addAmountDemandTotalRequest(resource);
-				
-				if (resourceAmount > remainingAmount) 
+
+				if (resourceAmount > remainingAmount)
 					resourceAmount = remainingAmount;
 
 				try {
@@ -268,7 +267,7 @@ implements Serializable {
 				double maxRate = maxOutputResourceRates.get(resource);
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
-				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, 
+				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource,
 						false, false);
 				if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
 				try {
@@ -282,7 +281,7 @@ implements Serializable {
 		}
 		else productionLevel = 0D;
 
-		// Set the current production level.        
+		// Set the current production level.
 		currentProductionLevel = productionLevel;
 	}
 
@@ -311,7 +310,7 @@ implements Serializable {
 			double desiredResourceAmount = maxRate * time;
 			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);
 			double proportionAvailable = 1D;
-			if (desiredResourceAmount > 0D) 
+			if (desiredResourceAmount > 0D)
 				proportionAvailable = inventoryResourceAmount / desiredResourceAmount;
 			if (bottleneck > proportionAvailable) bottleneck = proportionAvailable;
 		}

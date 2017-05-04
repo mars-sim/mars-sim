@@ -392,7 +392,7 @@ extends TabPanel {
 		private Settlement settlement;
 		// Make sure it's from java.util.List, not java.awt.List
 		//private List<Building> buildings; // java.util.List, not java.awt.List
-		private List<Building> buildingsWithThermal = new ArrayList<>();;
+		private List<Building> buildings = new ArrayList<>();;
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
@@ -403,8 +403,8 @@ extends TabPanel {
 			this.settlement = settlement;
 
 			//2014-11-02 Included only buildings having Thermal control system
-			buildingsWithThermal = selectBuildingsWithThermal();
-			this.size = buildingsWithThermal.size();
+			buildings = selectBuildingsWithThermal();
+			this.size = buildings.size();
 
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
@@ -449,7 +449,7 @@ extends TabPanel {
 
 		public Object getValueAt(int row, int column) {
 
-			Building building = buildingsWithThermal.get(row);
+			Building building = buildings.get(row);
 			HeatMode heatMode = building.getHeatMode();
 			//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -473,7 +473,7 @@ extends TabPanel {
 					else return null;
 				}
 				else if (column == 1)
-					return buildingsWithThermal.get(row);
+					return buildings.get(row);
 				else if (column == 2)
 					// return temperature of the building;
 					return building.getCurrentTemperature();
@@ -518,16 +518,18 @@ extends TabPanel {
 
 		public void update() {
 			//2014-11-02 Included only buildings having Thermal control system
-			//List<Building> newBuildings = selectBuildingsWithThermal();
-			//if (!buildingsWithThermal.equals(newBuildings)) {
-			//	buildingsWithThermal = newBuildings;
-			//}
-
-			int newSize = buildingsWithThermal.size();
+			int newSize = buildings.size();
 			if (size != newSize) {
 				size = newSize;
-				buildingsWithThermal = selectBuildingsWithThermal();
-				Collections.sort(buildingsWithThermal);
+				buildings = selectBuildingsWithThermal();
+				Collections.sort(buildings);
+			}
+			else {
+				List<Building> newBuildings = selectBuildingsWithThermal();
+				if (!buildings.equals(newBuildings)) {
+					buildings = newBuildings;
+					Collections.sort(buildings);
+				}
 			}
 			fireTableDataChanged();
 		}

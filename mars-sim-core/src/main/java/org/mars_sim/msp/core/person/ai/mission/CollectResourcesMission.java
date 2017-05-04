@@ -291,7 +291,7 @@ implements Serializable {
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
             	return 0;
 
-            result = .5D;
+            result = .3D;
 
             // Crowding modifier
             int crowding = settlement.getCurrentPopulationNum()

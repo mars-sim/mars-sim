@@ -52,6 +52,7 @@ public class ResourceUtil implements Serializable {
     public static final String ICE = "ice";
     public static final String REGOLITH = "regolith";
     public static final String ROCK_SAMLES = "rock samples";
+    public static final String SAND = "sand";
 
     public static final String FOOD_WASTE = "food waste";
     public static final String SOLID_WASTE = "solid waste";
@@ -101,6 +102,7 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource regolithAR;
     public static AmountResource iceAR;
     public static AmountResource rockSamplesAR;
+	public static AmountResource sandAR;
 
     public static AmountResource fertilizerAR;
     public static AmountResource soilAR;
@@ -195,6 +197,8 @@ public class ResourceUtil implements Serializable {
         fertilizerAR = findAmountResource(FERTILIZER);  // 142
     	regolithAR = findAmountResource(REGOLITH);		// 153
         rockSamplesAR = findAmountResource(ROCK_SAMLES);	// 154
+      	sandAR = findAmountResource(SAND);		// 155
+
 
         NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE);	// 156
         napkinAR = findAmountResource(NAPKIN);				// 161
