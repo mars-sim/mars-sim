@@ -81,10 +81,10 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient volatile boolean loadSimulation;
 	/** Mode for saving a simulation. */
 	private transient volatile int saveType;
-	/** Flag for auto-saving a simulation. */
-	//private transient volatile boolean autosaveSimulation;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
+	/** Flag for getting ready for autosaving. */
+	private transient volatile boolean autosave;
 
 	private long totalPulses = 1,  t2Cache = 0, diffCache = 0;
 	private transient long elapsedlast;
@@ -341,6 +341,21 @@ public class MasterClock implements Serializable { // Runnable,
         this.file = file;
     }
 
+    /**
+     * Sets the value of autosave
+     * @param value
+     */
+    public void setAutosave(boolean value) {
+    	autosave = value;
+    }
+
+    /**
+     * Gets the value of autosave
+     * @return autosave
+     */
+    public boolean getAutosave() {
+    	return autosave;
+    }
 
     /**
      * Checks if in the process of saving a simulation.

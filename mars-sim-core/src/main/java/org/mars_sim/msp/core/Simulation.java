@@ -916,6 +916,7 @@ implements ClockListener, Serializable {
 		}
 
 		if (autosaveDefault) {
+			// For headless
 			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
 						ae -> masterClock.saveSimulation(AUTOSAVE_AS_DEFAULT, null)));
@@ -926,9 +927,12 @@ implements ClockListener, Serializable {
 	        //.subscribe(tick -> masterClock.saveSimulation(null));
 		}
 		else {
+			// for GUI
 			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.saveSimulation(AUTOSAVE, null)));
+						ae -> masterClock.setAutosave(true)));
+				//masterClock.saveSimulation(AUTOSAVE, null)));
+
 			//autosaveTimer = FxTimer.runLater(
     		//		java.time.Duration.ofMinutes(60 * autosave_minute),
     		//        () -> masterClock.autosaveSimulation());

@@ -162,7 +162,8 @@ public class MainScene {
 
 	public static final int LOADING = 0;
 	public static final int SAVING = 1;
-	public static final int PAUSED = 2;
+	public static final int AUTOSAVING = 2;
+	public static final int PAUSED = 3;
 
 	public static final int DEFAULT_WIDTH = 1280;//1366;
 	public static final int DEFAULT_HEIGHT = 768;
@@ -232,20 +233,21 @@ public class MainScene {
 	private StackPane mainAnchorPane, //monPane,
 					mapStackPane, minimapStackPane,
 					speedPane, soundPane, calendarPane,
-					settlementBox, chatBoxPane, pausePane;
+					settlementBox, chatBoxPane, pausePane,
+					asPane, sPane;
 
-	private FlowPane flowPane;
-	private AnchorPane rootAnchorPane, mapAnchorPane ;
+	//private FlowPane flowPane;
+	private AnchorPane rootAnchorPane, mapAnchorPane;
 	private SwingNode swingNode, mapNode, minimapNode, guideNode;//monNode, missionNode, resupplyNode, sciNode, guideNode ;
-	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
-	private Scene scene;
+	private Stage stage, loadingStage, savingStage;
+	private Scene scene, savingScene;
 
 	private File fileLocn = null;
 	private Thread newSimThread;
 
 	private IconNode soundIcon, marsNetIcon, speedIcon;
 	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
-	private Label lastSaveLabel,  TPSLabel, upTimeLabel, noteLabel, benchmarkLabel; //monthLabel, yearLabel, LSLabel
+	private Label lastSaveLabel, TPSLabel, upTimeLabel, noteLabel, benchmarkLabel; //monthLabel, yearLabel, LSLabel
 	private Text LSText, monthText, yearText, northText, southText;
 	private Blend blend;
 	private VBox mapLabelBox, speedVBox, soundVBox;
@@ -254,10 +256,10 @@ public class MainScene {
     private Spinner spinner;
 
 	private JFXComboBox<Settlement> sBox;
-	private JFXBadge badgeIcon;
-	private JFXSnackbar snackbar;
-	private JFXToggleButton cacheToggle, calendarButton, minimapToggle, mapToggle;
-	private static JFXSlider zoomSlider, timeSlider, soundSlider;
+	//private JFXBadge badgeIcon;
+	//private JFXSnackbar snackbar;
+	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; //calendarButton,
+	private static JFXSlider zoomSlider, soundSlider; //timeSlider,
 	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn; // miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
@@ -266,7 +268,7 @@ public class MainScene {
 	private ESCHandler esc = null;
 
 	private Timeline timeline;
-	private NotificationPane notificationPane;
+	//private NotificationPane notificationPane;
 
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
@@ -281,7 +283,6 @@ public class MainScene {
 
 	private QuotationPopup quote;
 	//private MessagePopup messagePopup;
-
 	//private BorderSlideBar topFlapBar;
 
     private Simulation sim = Simulation.instance();
@@ -374,8 +375,9 @@ public class MainScene {
 		// 2016-10-01 Added mainSceneExecutor for executing wait stages
 		startMainSceneExecutor();
 		createProgressCircle(LOADING);
+		createProgressCircle(AUTOSAVING);
 		createProgressCircle(SAVING);
-		createProgressCircle(PAUSED);
+		//createProgressCircle(PAUSED);
 	}
 
 	// 2015-12-28 Added setEscapeEventHandler()
@@ -2946,6 +2948,12 @@ public class MainScene {
         e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF1());
 		earthTimeButton.setText(e.toString());
 
+		//2017-05-03 Add triggering the display of pause pane when autosaving
+		if (masterClock.getAutosave()) {
+			saveSimulation(Simulation.AUTOSAVE);
+			masterClock.setAutosave(false);
+		}
+
 		//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
 		if (sim.getJustSaved()) {
 			String newLastSaveStamp = sim.getLastSave();
@@ -3030,7 +3038,10 @@ public class MainScene {
 		//boolean previous = startPause();
 		if (!masterClock.isPaused()) {
 			//hideWaitStage(PAUSED);
-			showWaitStage(SAVING);
+			if (type == Simulation.SAVE_DEFAULT || type == Simulation.SAVE_AS)
+				showWaitStage(SAVING);
+			else
+				showWaitStage(AUTOSAVING);
 
 	        Task<Void> task = new Task<Void>() {
 	            @Override
@@ -3442,47 +3453,68 @@ public class MainScene {
  	 	    		   );
  	 		Scene scene = new Scene(stackPane, 100, 100);
  	 		scene.setFill(Color.TRANSPARENT);
- 			loadingCircleStage = new Stage();
+ 			loadingStage = new Stage();
  			//loadingCircleStage.setOpacity(1);
- 			setEscapeEventHandler(true, loadingCircleStage);
- 			loadingCircleStage.initOwner(stage);
- 			loadingCircleStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT specified.
- 			loadingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
- 			loadingCircleStage.initStyle (StageStyle.TRANSPARENT);
- 			loadingCircleStage.setScene(scene);
- 			loadingCircleStage.hide();
+ 			setEscapeEventHandler(true, loadingStage);
+ 			loadingStage.initOwner(stage);
+ 			loadingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT specified.
+ 			loadingStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+ 			loadingStage.initStyle (StageStyle.TRANSPARENT);
+ 			loadingStage.setScene(scene);
+ 			loadingStage.hide();
 	 	}
 
- 		else if (type == SAVING) {
+ 		else if (type == AUTOSAVING) {
  	 		//ProgressIndicator indicator = new ProgressIndicator();
- 	 		MaskerPane indicator = new MaskerPane();
- 	 		indicator.setSkin(null);
+ 			MaskerPane mPane = new MaskerPane();
+ 	 		mPane.setText("Autosaving");
+ 	 		mPane.setSkin(null);
  	 		//indicator.setOpacity(.5);
- 	 		indicator.setStyle("-fx-background-color: transparent; ");
+ 	 		mPane.setStyle("-fx-background-color: transparent; ");
  	 		//indicator.setScaleX(1.5);
  	 		//indicator.setScaleY(1.5);
- 	 		StackPane stackPane = new StackPane();
+ 	 		asPane = new StackPane();
  	 		//stackPane.setOpacity(0.5);
- 	 		stackPane.getChildren().add(indicator);
- 	 		StackPane.setAlignment(indicator, Pos.CENTER);
- 	 		stackPane.setBackground(Background.EMPTY);
- 	 		//stackPane.setStyle("-fx-background-color: transparent; ");
- 	 		stackPane.setStyle(
- 	 	    		   //"-fx-border-style: none; "
+ 	 		asPane.getChildren().add(mPane);
+ 	 		StackPane.setAlignment(mPane, Pos.CENTER);
+ 	 		asPane.setBackground(Background.EMPTY);
+ 	 		asPane.setStyle(//"-fx-border-style: none; "
  	 	       			"-fx-background-color: transparent; "
  	 	       			//+ "-fx-background-radius: 3px;"
  	 	    		   );
 
- 	 		Scene scene = new Scene(stackPane);//, 150, 150);
- 	 		scene.setFill(Color.TRANSPARENT);
- 	 		indicator.setText("Saving");
- 			savingCircleStage = new Stage();
- 			savingCircleStage.initOwner(stage);
- 			savingCircleStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT specified.
- 			savingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
- 			savingCircleStage.initStyle (StageStyle.TRANSPARENT);
- 			savingCircleStage.setScene(scene);
- 			savingCircleStage.hide();
+ 			savingStage = new Stage();
+ 			savingStage.initOwner(stage);
+ 			savingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT specified.
+ 			savingStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+ 			savingStage.initStyle (StageStyle.TRANSPARENT);
+
+ 	 		savingScene = new Scene(asPane);//, 150, 150);
+ 	 		savingScene.setFill(Color.TRANSPARENT);
+ 			savingStage.setScene(savingScene);
+ 			savingStage.hide();
+
+	 	}
+
+ 		else if (type == SAVING) {
+ 	 		//ProgressIndicator indicator = new ProgressIndicator();
+ 			MaskerPane mPane = new MaskerPane();
+ 	 		mPane.setText("Saving");
+ 	 		mPane.setSkin(null);
+ 	 		//indicator.setOpacity(.5);
+ 	 		mPane.setStyle("-fx-background-color: transparent; ");
+ 	 		//indicator.setScaleX(1.5);
+ 	 		//indicator.setScaleY(1.5);
+ 	 		sPane = new StackPane();
+ 	 		//stackPane.setOpacity(0.5);
+ 	 		sPane.getChildren().add(mPane);
+ 	 		StackPane.setAlignment(mPane, Pos.CENTER);
+ 	 		sPane.setBackground(Background.EMPTY);
+ 	 		sPane.setStyle(//"-fx-border-style: none; "
+ 	 	       			"-fx-background-color: transparent; "
+ 	 	       			//+ "-fx-background-radius: 3px;"
+ 	 	    		   );
+
 	 	}
 
  		else if (type == PAUSED) {
@@ -3495,7 +3527,21 @@ public class MainScene {
  	}
 
 
+ 	/**
+ 	 * Starts the wait stage in an executor thread
+ 	 * @param type
+ 	 */
  	public void showWaitStage(int type) {
+		if (type == AUTOSAVING) {
+			//savingStage.setScene(autosaveScene);
+			savingScene.setRoot(asPane);
+ 	 		//savingMPane.setText("Autosaving");
+		}
+		else if (type == SAVING) {
+			savingScene.setRoot(sPane);
+			//savingStage.setScene(savingScene);
+ 	 		//savingMPane.setText("Saving");
+		}
  		mainSceneExecutor.execute(new LoadWaitStageTask(type));
  	}
 
@@ -3514,14 +3560,16 @@ public class MainScene {
  			//logger.info("LoadWaitStageTask is on " + Thread.currentThread().getName());
 			Platform.runLater(() -> {
 				//FXUtilities.runAndWait(() -> {}) does NOT work
-				if (type == LOADING) {
-					setMonitor(loadingCircleStage);
-					loadingCircleStage.show();
-				}
-				else if (type == SAVING) {
+				if (type == AUTOSAVING || type == SAVING) {
 					stopPausePopup();
-					setMonitor(savingCircleStage);
-					savingCircleStage.show();
+					setMonitor(savingStage);
+			    	savingStage.setX((scene.getWidth()-savingStage.getWidth())/2D);
+			    	savingStage.setY((scene.getHeight()-savingStage.getHeight())/2D);
+					savingStage.show();
+				}
+				else if (type == LOADING) {
+					setMonitor(loadingStage);
+					loadingStage.show();
 				}
 				else if (type == PAUSED) {
 					stopPausePopup();
@@ -3533,12 +3581,13 @@ public class MainScene {
 
  	public void hideWaitStage(int type) {
 		//FXUtilities.runAndWait(() -> { // not working for loading sim
-		if (type == LOADING) {
-			loadingCircleStage.hide();
-			loadingCircleStage.close();
+ 		if (type == AUTOSAVING || type == SAVING) {
+			savingStage.hide();
 		}
-		else if (type == SAVING)
-			savingCircleStage.hide();
+		else if (type == LOADING) {
+			loadingStage.hide();
+			loadingStage.close();
+		}
 		else if (type == PAUSED) {
 			stopPausePopup();
 		}
@@ -3686,11 +3735,10 @@ public class MainScene {
 		rootAnchorPane = null;
 		newSimThread = null;
 		stage = null;
-		loadingCircleStage = null;
-		savingCircleStage = null;
-		pausingCircleStage = null;
+		loadingStage = null;
+		savingStage = null;
 		timeline = null;
-		notificationPane = null;
+		//notificationPane = null;
 		desktop.destroy();
 		desktop = null;
 		menuBar = null;
