@@ -900,6 +900,10 @@ implements Serializable {
         return result;
     }
 
+    public Collection<Unit> getAllContainedUnits() {
+    	return containedUnits;
+    }
+
     /**
      * Checks if a unit is in storage.
      * @param unit the unit.

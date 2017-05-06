@@ -467,11 +467,11 @@ public class MarsNode {
       TextFlow textFlow = new TextFlow();
       textFlow.setLayoutX(80);
       textFlow.setLayoutY(80);
-      Text text1 = new Text("Settlers: " + settlement.getCurrentPopulationNum() + " of " + settlement.getPopulationCapacity() + "\n");
+      Text text1 = new Text("Settlers: " + settlement.getNumCurrentPopulation() + " of " + settlement.getPopulationCapacity() + "\n");
       text1.setFont(Font.font(family, FontWeight.LIGHT, size));
       //Text text2 = new Text("\nNames: " + settlement.getInhabitants());
       //text2.setFont(Font.font(family, FontPosture.ITALIC, size));
-      Text text3 = new Text("Bots: " + settlement.getCurrentNumOfRobots() + " of " + settlement.getRobotCapacity() + "\n");
+      Text text3 = new Text("Bots: " + settlement.getNumCurrentRobots() + " of " + settlement.getRobotCapacity() + "\n");
       text3.setFont(Font.font(family, FontWeight.LIGHT, size));
       //Text text4 = new Text("\nNames: " + settlement.getRobots());
       //text4.setFont(Font.font(family, FontPosture.ITALIC, size));

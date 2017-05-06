@@ -685,12 +685,12 @@ public class UnitManager implements Serializable {
 
 			// If settlement does not have initial population capacity, try
 			// another settlement.
-			if (settlement.getInitialPopulation() <= settlement.getCurrentPopulationNum()) {
+			if (settlement.getInitialPopulation() <= settlement.getNumCurrentPopulation()) {
 				Iterator<Settlement> i = getSettlements().iterator();
 				Settlement newSettlement = null;
 				while (i.hasNext() && (newSettlement == null)) {
 					Settlement tempSettlement = i.next();
-					if (tempSettlement.getInitialPopulation() > tempSettlement.getCurrentPopulationNum()) {
+					if (tempSettlement.getInitialPopulation() > tempSettlement.getNumCurrentPopulation()) {
 						newSettlement = tempSettlement;
 					}
 				}
@@ -826,7 +826,7 @@ public class UnitManager implements Serializable {
 				int initPop = settlement.getInitialPopulation();
 
 				// Fill up the settlement by creating more people
-				while (settlement.getCurrentPopulationNum() < initPop) {
+				while (settlement.getNumCurrentPopulation() < initPop) {
 
 					String sponsor = settlement.getSponsor();
 			    	//System.out.println("sponsor is " + sponsor);
@@ -1366,7 +1366,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// If settlement does not have initial robot capacity, try another settlement.
-			if (settlement.getInitialNumOfRobots() <= settlement.getCurrentNumOfRobots()) {
+			if (settlement.getInitialNumOfRobots() <= settlement.getNumCurrentRobots()) {
 				return;
 			}
 
@@ -1449,7 +1449,7 @@ public class UnitManager implements Serializable {
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
 				int initial = settlement.getInitialNumOfRobots();
-				while (settlement.getCurrentNumOfRobots() < initial) {
+				while (settlement.getNumCurrentRobots() < initial) {
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 

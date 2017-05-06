@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -93,13 +94,17 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
                 return 0;
             }
 
-            result = settlement.getRegolithProbabilityValue() * 10D;
+            result = settlement.getRegolithProbabilityValue() * 5000D;
+            //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
-            if (result <= 0)
+            if (result < 1)
             	return 0;
 
             // Crowded settlement modifier
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity())
+            if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
+                result *= 1.5D;
+
+            if (settlement.getNumCurrentPopulation() <= 4)
                 result *= 1.5D;
 
             // Effort-driven task modifier.
@@ -112,7 +117,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
             // Modify if field work is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work"))
-                result *= 1.5D;
+                result *= RandomUtil.getRandomInt(1, 3);
 
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;

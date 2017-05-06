@@ -305,6 +305,8 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
+        logger.info(person.getName() + " collected " + Math.round(iceCollected*10D)/10D + " kg of ice in a DigLocalIce task.");
+
         // Add experience points
         addExperience(time);
 

@@ -60,7 +60,7 @@ implements Serializable {
     private Job job;
     /** The person's personality. */
     private PersonalityType mbti;
-    
+
     private PersonalityTraitManager trait;
     /** The person's skill manager. */
     private SkillManager skillManager;
@@ -72,7 +72,7 @@ implements Serializable {
     private static Simulation sim = Simulation.instance();
     //private static MasterClock masterClock;// = sim.getMasterClock();
     //private static MarsClock marsClock;// = masterClock.getMarsClock();
-    
+
     /**
      * Constructor 1.
      * @param person the person owning this mind
@@ -92,12 +92,12 @@ implements Serializable {
         //if (masterClock != null) { // to avoid NullPointerException during maven test
 	    //    marsClock = masterClock.getMarsClock();
         //}
-        
+
         // Set the Big Five personality trait.
         trait = new PersonalityTraitManager(person);
-        
+
         // Set the MBTI personality type.
-        mbti = new PersonalityType(person);    
+        mbti = new PersonalityType(person);
 
         // Construct a task manager
         taskManager = new TaskManager(this);
@@ -134,9 +134,9 @@ implements Serializable {
     		if (jobLock) {
     	        //if (masterClock == null)
     	        //	masterClock = sim.getMasterClock();
-    	        
+
     			//if (marsClock == null)
-    			//	marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
+    			//	marsClock = masterClock.getMarsClock();// needed for loading a saved sim
 
     		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
     	        // check for the passing of each day
@@ -149,7 +149,7 @@ implements Serializable {
     		else
     			checkJob();
     	}
-    	
+
 
         // Update stress based on personality.
         mbti.updateStress(time);
@@ -169,7 +169,7 @@ implements Serializable {
     // 2015-04-30 Added checkJob()
     public void checkJob() { //String status, String approvedBy) {
         // Check if this person needs to get a new job or change jobs.
-        if (job == null) { // removing !jobLock 
+        if (job == null) { // removing !jobLock
         	// Note: getNewJob() is checking if existing job is "good enough"/ or has good prospect
          	Job newJob = JobManager.getNewJob(person);
            	// 2015-04-30 Already excluded mayor/manager job from being assigned in JobManager.getNewJob()
@@ -178,7 +178,7 @@ implements Serializable {
         	if (job != null)
         		jobStr = job.getName(person.getGender());
         	if (newJob != null) {
-        		//System.out.println("timePassing() : newJob is null"); 	
+        		//System.out.println("timePassing() : newJob is null");
 	           	if (!newJobStr.equals(jobStr)) {
 		            //job = newJob;
 	           		setJob(newJob, false, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
@@ -307,7 +307,7 @@ implements Serializable {
     	String jobStr = null;
     	JobHistory jh = person.getJobHistory();
     	Settlement s = person.getSettlement();
-    	
+
     	if (job == null)
     		jobStr = null;
     	else
@@ -320,7 +320,7 @@ implements Serializable {
 
     	// TODO : check if the initiator's role allows the job to be changed
     	if (!newJobStr.equals(jobStr)) {
-    		
+
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
 
@@ -370,7 +370,7 @@ implements Serializable {
 	                }
 
 		        }
-		        
+
 		    	// the new job will be Locked in until the beginning of the next day
 		        jobLock = true;
 		        //System.out.println("Mind's assignJob() : just set jobLock = true");
@@ -426,6 +426,14 @@ implements Serializable {
     }
 
     /**
+     * Stops the person's current mission.
+
+     */
+    public void stopMission() {
+    	mission = null;
+    }
+
+    /**
      * Determines a new action for the person based on available tasks, missions and active missions.
      * @param tasks can actions be tasks?
      * @param missions can actions be new missions?
@@ -474,8 +482,8 @@ implements Serializable {
                 Task newTask = taskManager.getNewTask();
                 if (newTask != null)
                 	taskManager.addTask(newTask);
-                else 
-                	logger.severe(person + " : newTask is null ");                
+                else
+                	logger.severe(person + " : newTask is null ");
 
                 return;
             }
@@ -572,11 +580,11 @@ implements Serializable {
     public void setJobLock(boolean value) {
     	jobLock = value;
     }
-    
+
     public PersonalityTraitManager getPersonalityTraitManager() {
     	return trait;
     }
-    
+
     /**
      * Prepare object for garbage collection.
      */

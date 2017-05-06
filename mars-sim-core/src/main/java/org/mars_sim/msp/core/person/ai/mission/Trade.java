@@ -429,7 +429,7 @@ implements Serializable {
     public Trade(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
             Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
         // Use RoverMission constructor.
-        super(description, (MissionMember) members.toArray()[0], 1, rover);
+        super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
         Person person = null;
         Robot robot = null;

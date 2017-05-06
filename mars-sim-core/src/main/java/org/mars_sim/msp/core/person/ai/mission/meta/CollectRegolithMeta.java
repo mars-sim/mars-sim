@@ -63,8 +63,13 @@ public class CollectRegolithMeta implements MetaMission {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        Settlement settlement = person.getSettlement();
 
+	        // a settlement with <= 4 population can always do DigLocalRegolith task
+	        // should avoid the risk of mission.
+	        if (settlement.getNumCurrentPopulation() <= 3)//.getAllAssociatedPeople().size() <= 4)
+	        	return 0;
+
 		    // Check if minimum number of people are available at the settlement.
-	        if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
+	        else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
 		        return 0;
 		    }
 
@@ -80,10 +85,10 @@ public class CollectRegolithMeta implements MetaMission {
 	        if (result <= 0)
 	        	return 0;
 
-	        result = result + settlement.getRegolithProbabilityValue()/2D;
+	        result = result + settlement.getRegolithProbabilityValue() / 30D;
 
             // Crowding modifier
-            int crowding = settlement.getCurrentPopulationNum()
+            int crowding = settlement.getNumCurrentPopulation()
                     - settlement.getPopulationCapacity();
             if (crowding > 0)
                 result *= (crowding + 1);
@@ -98,7 +103,7 @@ public class CollectRegolithMeta implements MetaMission {
 
             //logger.info("CollectRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
-            if (result <= 0)
+            if (result < 0.5)
                 return 0;
             else if (result > 1D)
             	result = 1;

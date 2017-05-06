@@ -32,6 +32,9 @@ import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
@@ -68,10 +71,10 @@ implements Serializable {
 		// Use Job constructor
 		super(Areologist.class);
 
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add areologist-related tasks.
+		jobTasks.add(StudyFieldSamples.class);
+
+		// Research related tasks
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
 		jobTasks.add(InviteStudyCollaborator.class);
@@ -80,8 +83,11 @@ implements Serializable {
 		jobTasks.add(ProposeScientificStudy.class);
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
-		jobTasks.add(StudyFieldSamples.class);
 
+		// Add side tasks
+		jobTasks.add(ConsolidateContainers.class);
+		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(WriteReport.class);
 		jobTasks.add(ReviewJobReassignment.class);
 

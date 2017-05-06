@@ -89,7 +89,7 @@ implements MouseListener, ActionListener {
 
 
 		// Create population num label
-		populationNumCache = settlement.getCurrentPopulationNum();
+		populationNumCache = settlement.getNumCurrentPopulation();
 		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population",
 		        populationNumCache), JLabel.CENTER); //$NON-NLS-1$
 		populationCountPanel.add(populationNumLabel);
@@ -138,7 +138,7 @@ implements MouseListener, ActionListener {
 	public void update() {
 		Settlement settlement = (Settlement) unit;
 
-		int num = settlement.getCurrentPopulationNum();
+		int num = settlement.getNumCurrentPopulation();
 		// Update population num
 		if (populationNumCache != num) {
 			populationNumCache = num;

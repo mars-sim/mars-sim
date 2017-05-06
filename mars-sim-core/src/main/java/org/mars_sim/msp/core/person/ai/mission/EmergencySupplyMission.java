@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -75,7 +76,8 @@ implements Serializable {
             "Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
 	// Static members
-	private static final int MAX_MEMBERS = 2;
+	private static final int MAX_MEMBERS = 3;
+	private static final int MIN_MEMBERS = 1;
 	public static final double BASE_STARTING_PROBABILITY = 100D;
 	private static final double VEHICLE_FUEL_DEMAND = 1000D;
 	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
@@ -99,10 +101,10 @@ implements Serializable {
 	private Map<Part, Integer> emergencyParts;
 	private Vehicle emergencyVehicle;
 
-	private static AmountResource foodAR = Rover.foodAR;//AmountResource.findAmountResource(LifeSupportType.FOOD);
-	private static AmountResource oxygenAR =  Rover.oxygenAR;//AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	private static AmountResource waterAR = Rover.waterAR;//AmountResource.findAmountResource(LifeSupportType.WATER);
-	private static AmountResource methaneAR = Rover.methaneAR;//AmountResource.findAmountResource("methane");
+	private static AmountResource foodAR = ResourceUtil.foodAR;//AmountResource.findAmountResource(LifeSupportType.FOOD);
+	private static AmountResource oxygenAR =  ResourceUtil.oxygenAR;//AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR = ResourceUtil.waterAR;//AmountResource.findAmountResource(LifeSupportType.WATER);
+	private static AmountResource methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource("methane");
 	//private static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
 	//private static AmountResource iceAR = AmountResource.findAmountResource("ice");
 
@@ -182,7 +184,7 @@ implements Serializable {
             Settlement emergencySettlement, Map<Good, Integer> emergencyGoods,
             Rover rover, String description) {
         // Use RoverMission constructor.
-        super(description, (Person) members.toArray()[0], 1, rover);
+        super(description, (Person) members.toArray()[0], MIN_MEMBERS, rover);
 
         outbound = true;
 

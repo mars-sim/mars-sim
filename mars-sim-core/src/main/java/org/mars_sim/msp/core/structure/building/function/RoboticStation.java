@@ -164,7 +164,7 @@ public class RoboticStation extends Function implements Serializable {
         Settlement settlement = getBuilding().getBuildingManager()
                 .getSettlement();
         double energyPerRobot = POWER_USAGE_PER_ROBOT * millisols * SECONDS_IN_MILLISOL;
-        double energyUsageSettlement = energyPerRobot * settlement.getCurrentNumOfRobots();
+        double energyUsageSettlement = energyPerRobot * settlement.getNumCurrentRobots();
         double buildingProportionCap = (double) slots / (double) settlement.getRobotCapacity();
         double energyUsageBuilding = energyUsageSettlement * buildingProportionCap;
 

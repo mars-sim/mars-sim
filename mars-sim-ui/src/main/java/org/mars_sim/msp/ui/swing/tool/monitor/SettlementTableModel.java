@@ -65,9 +65,10 @@ extends UnitTableModel {
 	private final static int GREY_WATER = 10;
 	private final static int BLACK_WATER = 11;
 	private final static int ROCK_SAMPLES = 12;
-	private final static int ICE = 13;
+	private final static int REGOLITH = 13;
+	private final static int ICE = 14;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 14;
+	private final static int COLUMNCOUNT = 15;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of columns. */
@@ -88,20 +89,22 @@ extends UnitTableModel {
 		columnTypes[MALFUNCTION] = String.class;
 		columnNames[OXYGEN] = "Oxygen";
 		columnTypes[OXYGEN] = Integer.class;
+		columnNames[HYDROGEN] = "Hydrogen";
+		columnTypes[HYDROGEN] = Integer.class;
+		columnNames[CO2] = "CO2";
+		columnTypes[CO2] = Integer.class;
 		columnNames[WATER] = "Water";
 		columnTypes[WATER] = Integer.class;
 		columnNames[METHANE] = "Methane";
 		columnTypes[METHANE] = Integer.class;
-		columnNames[ROCK_SAMPLES] = "Rock Samples";
-		columnTypes[ROCK_SAMPLES] = Integer.class;
-		columnNames[HYDROGEN] = "Hydrogen";
-		columnTypes[HYDROGEN] = Integer.class;
 		columnNames[GREY_WATER] = "Grey Water";
 		columnTypes[GREY_WATER] = Integer.class;
 		columnNames[BLACK_WATER] = "Black Water";
 		columnTypes[BLACK_WATER] = Integer.class;
-		columnNames[CO2] = "CO2";
-		columnTypes[CO2] = Integer.class;
+		columnNames[ROCK_SAMPLES] = "Rock Samples";
+		columnTypes[ROCK_SAMPLES] = Integer.class;
+		columnNames[REGOLITH] = "Regolith";
+		columnTypes[REGOLITH] = Integer.class;
 		columnNames[ICE] = "Ice";
 		columnTypes[ICE] = Integer.class;
 	};
@@ -147,73 +150,77 @@ extends UnitTableModel {
 				// Invoke the appropriate method, switch is the best solution
 				// althought disliked by some
 				switch (columnIndex) {
-				case NAME : {
-					result = settle.getName();
-				} break;
+					case NAME : {
+						result = settle.getName();
+					} break;
 
-				case WATER : {
-					result = resourceMap.get(ResourceUtil.waterAR);
-				} break;
+					case WATER : {
+						result = resourceMap.get(ResourceUtil.waterAR);
+					} break;
 
+					case OXYGEN : {
+						result = resourceMap.get(ResourceUtil.oxygenAR);
+					} break;
 
-				case OXYGEN : {
-					result = resourceMap.get(ResourceUtil.oxygenAR);
-				} break;
+					case METHANE : {
+						result = resourceMap.get(ResourceUtil.methaneAR);
+					} break;
 
-				case METHANE : {
-					result = resourceMap.get(ResourceUtil.methaneAR);
-				} break;
+					case HYDROGEN : {
+						result = resourceMap.get(ResourceUtil.hydrogenAR);
+					} break;
 
-				case ROCK_SAMPLES : {
-					result = resourceMap.get(ResourceUtil.rockSamplesAR);
-				} break;
+					case CO2 : {
+						result = resourceMap.get(ResourceUtil.carbonDioxideAR);
+					} break;
 
-				case MALFUNCTION: {
-					int severity = 0;
-					Malfunction malfunction = null;
-					Iterator<Building> i = settle.getBuildingManager().getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
-					while (i.hasNext()) {
-						Building building = i.next();
-						Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
-						if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
-							malfunction = tempMalfunction;
-							severity = tempMalfunction.getSeverity();
+					case ROCK_SAMPLES : {
+						result = resourceMap.get(ResourceUtil.rockSamplesAR);
+					} break;
+
+					case REGOLITH : {
+						result = resourceMap.get(ResourceUtil.regolithAR);
+					} break;
+
+					case PARKED : {
+						result = settle.getParkedVehicleNum();
+					} break;
+
+					case POWER : {
+						result = (int) settle.getPowerGrid().getGeneratedPower();
+					} break;
+
+					case GREY_WATER : {
+						result = resourceMap.get(ResourceUtil.greyWaterAR);
+					} break;
+
+					case BLACK_WATER : {
+						result = resourceMap.get(ResourceUtil.blackWaterAR);
+					} break;
+
+					case ICE : {
+						result = resourceMap.get(ResourceUtil.iceAR);
+					} break;
+
+					case POPULATION : {
+						result = settle.getAllAssociatedPeople().size();
+					} break;
+
+					case MALFUNCTION: {
+						int severity = 0;
+						Malfunction malfunction = null;
+						Iterator<Building> i = settle.getBuildingManager().getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
+						while (i.hasNext()) {
+							Building building = i.next();
+							Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
+							if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
+								malfunction = tempMalfunction;
+								severity = tempMalfunction.getSeverity();
+							}
 						}
-					}
-					if (malfunction != null) result = malfunction.getName();
-				} break;
+						if (malfunction != null) result = malfunction.getName();
+					} break;
 
-				case POPULATION : {
-					result = settle.getAllAssociatedPeople().size();
-				} break;
-
-				case PARKED : {
-					result = settle.getParkedVehicleNum();
-				} break;
-
-				case POWER : {
-					result = (int) settle.getPowerGrid().getGeneratedPower();
-				} break;
-
-				case HYDROGEN : {
-					result = resourceMap.get(ResourceUtil.hydrogenAR);
-				} break;
-
-				case GREY_WATER : {
-					result = resourceMap.get(ResourceUtil.greyWaterAR);
-				} break;
-
-				case BLACK_WATER : {
-					result = resourceMap.get(ResourceUtil.blackWaterAR);
-				} break;
-
-				case CO2 : {
-					result = resourceMap.get(ResourceUtil.carbonDioxideAR);
-				} break;
-
-				case ICE : {
-					result = resourceMap.get(ResourceUtil.iceAR);
-				} break;
 				}
 			}
 			catch (Exception e) {}
@@ -261,6 +268,8 @@ extends UnitTableModel {
 					tempColumnNum = BLACK_WATER;
 				else if (target.equals(ResourceUtil.rockSamplesAR))
 					tempColumnNum = ROCK_SAMPLES;
+				else if (target.equals(ResourceUtil.regolithAR))
+					tempColumnNum = REGOLITH;
 				else if (target.equals(ResourceUtil.iceAR))
 					tempColumnNum = ICE;
 
@@ -308,6 +317,8 @@ extends UnitTableModel {
 				resourceMap.put(ResourceUtil.methaneAR, getResourceStored(newUnit, ResourceUtil.methaneAR));
 				//AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 				resourceMap.put(ResourceUtil.rockSamplesAR, getResourceStored(newUnit, ResourceUtil.rockSamplesAR));
+
+				resourceMap.put(ResourceUtil.regolithAR, getResourceStored(newUnit, ResourceUtil.regolithAR));
 				//AmountResource greyWater = AmountResource.findAmountResource("grey water");
 				resourceMap.put(ResourceUtil.greyWaterAR, getResourceStored(newUnit, ResourceUtil.greyWaterAR));
 				//AmountResource blackWater = AmountResource.findAmountResource("black water");
@@ -316,6 +327,7 @@ extends UnitTableModel {
 				resourceMap.put(ResourceUtil.iceAR, getResourceStored(newUnit, ResourceUtil.iceAR));
 				//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
 				resourceMap.put(ResourceUtil.carbonDioxideAR, getResourceStored(newUnit, ResourceUtil.carbonDioxideAR));
+
 				resourceCache.put(newUnit, resourceMap);
 			}
 			catch (Exception e) {}

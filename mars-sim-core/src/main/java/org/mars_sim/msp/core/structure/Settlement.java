@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -436,8 +437,19 @@ implements Serializable, LifeSupportType, Objective {
 	 * Gets the current population number of the settlement
 	 * @return the number of inhabitants
 	 */
-	public int getCurrentPopulationNum() {
-		return getInhabitants().size();
+	public int getNumCurrentPopulation() {
+		int n = 0;
+		//Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
+		//while (i.hasNext()) {
+		//	if (i.next() instanceof Person)
+		//		n++;
+		//}
+		for (Unit u : getInventory().getAllContainedUnits()) {
+			if (u instanceof Person)
+				n++;
+		}
+		return n;
+		//return getInhabitants().size();
 	}
 
 	/**
@@ -453,7 +465,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return the available population capacity
 	 */
 	public int getAvailablePopulationCapacity() {
-		return getPopulationCapacity() - getCurrentPopulationNum();
+		return getPopulationCapacity() - getNumCurrentPopulation();
 	}
 
 	/**
@@ -502,8 +514,14 @@ implements Serializable, LifeSupportType, Objective {
 	 * Gets the current number of robots in the settlement
 	 * @return the number of robots
 	 */
-	public int getCurrentNumOfRobots() {
-		return getRobots().size();
+	public int getNumCurrentRobots() {
+		int n = 0;
+		for (Unit u : getInventory().getAllContainedUnits()) {
+			if (u instanceof Robot)
+				n++;
+		}
+		return n;
+		//return getRobots().size();
 	}
 
 	/**
@@ -520,7 +538,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return the available robots capacity
 	 */
 	public int getAvailableRobotCapacity() {
-		return getRobotCapacity() - getCurrentNumOfRobots();
+		return getRobotCapacity() - getNumCurrentRobots();
 	}
 
 	/**
@@ -784,7 +802,7 @@ implements Serializable, LifeSupportType, Objective {
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
 
-		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
+		int overCrowding = getNumCurrentPopulation() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
 			Iterator<Person> i = getInhabitants().iterator();
@@ -797,7 +815,7 @@ implements Serializable, LifeSupportType, Objective {
 		// TODO: what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
 		// building and turn the heat off.
-		if (getCurrentPopulationNum() == 0) {
+		if (getNumCurrentPopulation() == 0) {
 			zeroPopulationTime += time;
 			if (zeroPopulationTime > 1000D) {
 				if (powerGrid.getPowerMode() != PowerMode.POWER_DOWN)
@@ -2636,7 +2654,7 @@ implements Serializable, LifeSupportType, Objective {
 		if (inclusiveChecking)
 			decrementShiftType(st);
 
-		int pop = getCurrentPopulationNum();
+		int pop = getNumCurrentPopulation();
 		int quotient = pop / numShift;
 		int remainder = pop % numShift;
 
@@ -2771,7 +2789,7 @@ implements Serializable, LifeSupportType, Objective {
 	// 2015-11-01 Edited getAEmptyWorkShift
 	public ShiftType getAEmptyWorkShift(int pop) {
 		if (pop == -1)
-			pop = getCurrentPopulationNum();
+			pop = getNumCurrentPopulation();
 
 		int rand = -1;
 		ShiftType shiftType = ShiftType.OFF;
@@ -3090,7 +3108,7 @@ implements Serializable, LifeSupportType, Objective {
         double storedWater = getInventory().getAmountResourceStored(waterAR, false);
 
         //PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
-        double requiredDrinkingWaterOrbit = water_consumption * getCurrentPopulationNum() *
+        double requiredDrinkingWaterOrbit = water_consumption * getNumCurrentPopulation() *
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
         // If stored water is less than 10% of required drinking water for Orbit, wash water should be rationed.
@@ -3278,15 +3296,15 @@ implements Serializable, LifeSupportType, Objective {
 
         double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
         regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
-    	if (regolith_value > 1000)
-    		regolith_value = 1000;
+    	if (regolith_value > 2000)
+    		regolith_value = 2000;
     	else if (regolith_value <= 5)
     		return 0;
 
         double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandAR));
         sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
-        if (sand_value > 1000)
-    		sand_value = 1000;
+        if (sand_value > 2000)
+    		sand_value = 2000;
         else if (sand_value <= 3)
         	return 0;
 
@@ -3304,13 +3322,13 @@ implements Serializable, LifeSupportType, Objective {
         	;// no change to missionProbability
         }
         else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 1.5 ) {
-        	result = result + (MIN_REGOLITH_RESERVE * pop - regolith_available) /20D;
+        	result = 20D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
         }
         else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 2D) {
-        	result = result + (MIN_REGOLITH_RESERVE * pop - regolith_available) /10D;
+        	result = 10D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
         }
         else
-        	result = result + (MIN_REGOLITH_RESERVE * pop - regolith_available) /5D;
+        	result = 5D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
 
     	return result;
     }
@@ -3320,13 +3338,17 @@ implements Serializable, LifeSupportType, Objective {
 
         double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
         ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
-    	if (ice_value > 1000)
-    		ice_value = 1000;
+    	if (ice_value > 4000)
+    		ice_value = 4000;
+    	if (ice_value < 2)
+    		return 0;
 
         double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
-        water_value = water_value * GoodsManager.ICE_VALUE_MODIFIER;
-        if (water_value > 1000)
-    		water_value = 1000;
+        water_value = water_value * GoodsManager.WATER_VALUE_MODIFIER;
+        if (water_value > 4000)
+    		water_value = 4000;
+    	if (water_value < 3)
+    		return 0;
 
         // 2016-10-14 Compare the available amount of water and ice reserve
         double ice_available = getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
@@ -3344,13 +3366,13 @@ implements Serializable, LifeSupportType, Objective {
         	;// no change to missionProbability
         }
         else if (water_available > MIN_WATER_RESERVE * pop / 1.5 ) {
-        	result = result + (MIN_WATER_RESERVE * pop - water_available) /20D;
+        	result = 20D * result + (MIN_WATER_RESERVE * pop - water_available);
         }
         else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
-        	result = result + (MIN_WATER_RESERVE * pop - water_available) /10D;
+        	result = 10D * result + (MIN_WATER_RESERVE * pop - water_available) ;
         }
         else
-        	result = result + (MIN_WATER_RESERVE * pop - water_available) /5D;
+        	result = 5D * result + (MIN_WATER_RESERVE * pop - water_available);
 
     	return result;
     }

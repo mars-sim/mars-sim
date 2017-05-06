@@ -281,7 +281,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
-			<version>7.7</version>
+			<version>7.9</version>
 		</dependency>
 		<!-- https://bitbucket.org/hansolo/enzo/wiki/Home
 		https://bintray.com/hansolo/Enzo/Enzo_All_In_One/Enzo-0.3.6 : 2.39MB -->

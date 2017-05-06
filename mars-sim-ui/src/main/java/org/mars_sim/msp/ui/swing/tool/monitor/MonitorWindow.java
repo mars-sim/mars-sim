@@ -268,10 +268,6 @@ implements TableModelListener, ActionListener {
 
 		addTab(new UnitTab(this, new VehicleTableModel(unitManager), true, VEHICLE_ICON));
 
-		// Open the people tab at the start of the sim
-		tabsSection.setSelectedIndex(6);
-		tabChanged(true);
-
 		// Add a listener for the tab changes
 		tabsSection.addChangeListener(
 			new ChangeListener() {
@@ -280,7 +276,6 @@ implements TableModelListener, ActionListener {
 				}
 			}
 		);
-
 
 		// Note: must use setSize() to define a starting size
 		setSize(new Dimension(1280, 512));
@@ -291,10 +286,6 @@ implements TableModelListener, ActionListener {
 		setResizable(true);
 		setMaximizable(true);
 
-		//if (desktop.getMainScene() != null) {
-			//setClosable(false);
-		//}
-
 		setVisible(true);
 
 		Dimension desktopSize = desktop.getSize();
@@ -303,6 +294,9 @@ implements TableModelListener, ActionListener {
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
 
+		// Open the people tab at the start of the sim
+		tabsSection.setSelectedIndex(2);
+		table.repaint();
 	}
 
 	/**
@@ -400,7 +394,7 @@ implements TableModelListener, ActionListener {
 	 *
 	 * @return Monitor tab being displayed.
 	 */
-	private MonitorTab getSelected() {
+	public MonitorTab getSelected() {
 		//SwingUtilities.updateComponentTreeUI(this);
 		MonitorTab selected = null;
 		int selectedIdx = tabsSection.getSelectedIndex();
@@ -409,63 +403,70 @@ implements TableModelListener, ActionListener {
 		return selected;
 	}
 
+	public void setTab() {
+		tabsSection.setSelectedIndex(6);
+	}
+
+	public void setTableChanged() {
+		tabChanged(false);
+	}
+
+	public void setSelectedTab() {
+		int i = tabsSection.getSelectedIndex();
+		tabsSection.setSelectedIndex(i);
+	}
+
 	public void tabChanged(boolean reloadSearch) {
 		//SwingUtilities.updateComponentTreeUI(this);
 		//System.out.println("tabChanged()");
-		MonitorTab selected = getSelected();
+		MonitorTab newTab = getSelected();
 		JTable table = null;
-		if (selected != null) {
-			//System.out.println("tabChanged() : selected is " + selected);
-			String status = selected.getCountString();
-			rowCount.setText(status);
-			if (oldTab != null) {
-				MonitorModel model = oldTab.getModel();
-				if (model != null) oldTab.getModel().removeTableModelListener(this);
-			}
-			selected.getModel().addTableModelListener(this);
-			oldTab = selected;
+		if (newTab != oldTab) {
+			newTab.getModel().addTableModelListener(this);
+			//if (oldTab != null) System.out.println("tabChanged() : oldTab is " + oldTab.getName());
+			//System.out.println("tabChanged() : newTab is " + newTab.getName());
 
-			// Enable/disable buttons based on selected tab.
+			// Disable all buttons
 			buttonMap.setEnabled(false);
 			buttonDetails.setEnabled(false);
 			buttonMissions.setEnabled(false);
 			buttonFilter.setEnabled(false);
 
-			if (selected instanceof UnitTab) {
+			if (newTab instanceof UnitTab) {
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
-				table = ((UnitTab) selected).getTable();
+				table = ((UnitTab) newTab).getTable();
 			}
-			else if (selected instanceof MissionTab) {
+			else if (newTab instanceof MissionTab) {
 				buttonMap.setEnabled(true);
 				buttonMissions.setEnabled(true);
-				table = ((MissionTab) selected).getTable();
+				table = ((MissionTab) newTab).getTable();
 			}
-			else if (selected instanceof EventTab) {
+			else if (newTab instanceof EventTab) {
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
-				table = ((EventTab) selected).getTable();
+				table = ((EventTab) newTab).getTable();
 			}
-			else if (selected instanceof FoodInventoryTab) {
+			else if (newTab instanceof FoodInventoryTab) {
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
-				table = ((FoodInventoryTab) selected).getTable();
+				table = ((FoodInventoryTab) newTab).getTable();
 			}
-			else if (selected instanceof TradeTab) {
+			else if (newTab instanceof TradeTab) {
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
-				table = ((TradeTab) selected).getTable();
+				table = ((TradeTab) newTab).getTable();
 			}
 
 			// Note: needed for periodic refreshing in ToolWindow
 			this.table = table;
+            TableStyle.setTableStyle(table);
 
 			// 2015-09-25 Update skin theme using TableStyle's setTableStyle()
 			if (table != null) { // for pie and bar chart, skip the codes below
-	            //TableStyle.setTableStyle(table);
 	            //TableStyle.setTableStyle(new RowNumberTable(table));
 	            //System.out.println("Starting createSearchableBar() for "+ table);
 
@@ -473,6 +474,19 @@ implements TableModelListener, ActionListener {
 	            if (reloadSearch)
 	            	createSearchableBar(table);
 			}
+
+			String status = newTab.getCountString();
+			rowCount.setText(status);
+
+
+
+			if (oldTab != null) {
+				MonitorModel model = oldTab.getModel();
+				if (model != null) oldTab.getModel().removeTableModelListener(this);
+			}
+
+			// Set oldTab to newTab
+			oldTab = newTab;
 		}
 
 		//SwingUtilities.updateComponentTreeUI(this);
@@ -551,7 +565,7 @@ implements TableModelListener, ActionListener {
 		tabs.add(newTab);
 		tabsSection.addTab(newTab.getName(), newTab.getIcon(), newTab); //"", newTab.getIcon(), newTab);//
 		tabsSection.setSelectedIndex(tabs.size()-1);
-		tabChanged(true);
+		//tabChanged(true);
 	}
 
 	private void removeTab(MonitorTab oldTab) {
@@ -562,7 +576,7 @@ implements TableModelListener, ActionListener {
 		if (getSelected() == oldTab) {
 			tabsSection.setSelectedIndex(0);
 		}
-		tabChanged(true);
+		//tabChanged(true);
 	}
 
 	private void centerMap() {

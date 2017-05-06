@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults the
@@ -191,7 +192,6 @@ public class PersonTableModel extends UnitTableModel {
 
 		// 2014-12-30 Added desktop
 		// this.desktop = desktop;
-
 	}
 
 	/**

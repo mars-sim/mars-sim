@@ -278,7 +278,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 
         // 2017-05-02 Account for people who are out there in an excursion and NOT in the settlement
-        double absentee_factor = settlement.getCurrentPopulationNum()/settlement.getPopulationCapacity();
+        double absentee_factor = settlement.getNumCurrentPopulation()/settlement.getPopulationCapacity();
 
         double waterUsed = usage  * time * numBed * absentee_factor;
 

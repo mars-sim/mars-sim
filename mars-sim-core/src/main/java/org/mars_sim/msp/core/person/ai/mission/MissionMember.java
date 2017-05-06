@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionMemberable.java
- * @version 3.08 2015-07-20
+ * @version 3.1.0 2017-05-05
  * @author Scott Davis
  */
 
@@ -83,4 +83,10 @@ public interface MissionMember {
      * @return the member's vehicle
      */
     public Vehicle getVehicle();
+
+    /**
+     * Sets the person's vehicle.
+     * @param vehicle
+     */
+    public void setVehicle(Vehicle vehicle);
 }

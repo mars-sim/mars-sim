@@ -73,19 +73,18 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
     /* default logger. */
 	private static transient Logger logger = Logger.getLogger(Robot.class.getName());
-    /** The base carrying capacity (kg) of a robot. */
-    private final static double BASE_CAPACITY = 60D;
 
 	// Static members
+    /** The base carrying capacity (kg) of a robot. */
+    private final static double BASE_CAPACITY = 60D;
+    /** The enum type of this equipment. */
 	public static final String TYPE = "Robot";
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 80D;
-
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334000D;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
-
 
     // Data members
     private String name;
@@ -100,11 +99,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     private double yLoc;
     /** True if robot is dead and buried. */
     private boolean isInoperable;
-	private boolean isSalvaged;
 
+	private boolean isSalvaged;
     /** The robot's achievement in scientific fields. */
     //private Map<ScienceType, Double> scientificAchievement;
-
     private Person owner;
     /** Manager for robot's natural attributes. */
     private RoboticAttributeManager attributes;
@@ -139,6 +137,8 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     private Settlement associatedSettlement;
 
     private Building currentBuilding;
+
+	private Vehicle vehicle;
 
     protected Robot(String name, Settlement settlement, RobotType robotType) {
         super(name, settlement.getCoordinates()); // if extending equipment
@@ -840,10 +840,15 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 		this.sponsor = sponsor;
 	}
 
+	@Override
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+	}
 
     @Override
     public void destroy() {
         super.destroy();
+		vehicle = null;
     	if (salvageInfo != null) salvageInfo.destroy();
 		salvageInfo = null;
         attributes.destroy();
@@ -857,4 +862,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         //scientificAchievement.clear();
         //scientificAchievement = null;
     }
+
+
 }

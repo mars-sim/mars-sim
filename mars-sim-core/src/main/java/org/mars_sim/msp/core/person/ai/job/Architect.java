@@ -17,7 +17,10 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
@@ -43,10 +46,14 @@ implements Serializable {
 		super(Architect.class);
 
 		// Add architect-related tasks.
-		jobTasks.add(ManufactureConstructionMaterials.class);
+		jobTasks.add(ConsolidateContainers.class);
 		jobTasks.add(ConstructBuilding.class);
+		jobTasks.add(ManufactureConstructionMaterials.class);
 		jobTasks.add(SalvageBuilding.class);
 
+		// Add side tasks
+		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(WriteReport.class);
 		jobTasks.add(ReviewJobReassignment.class);
 
@@ -61,6 +68,7 @@ implements Serializable {
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionStarts.add(EmergencySupplyMission.class);
 		jobMissionJoins.add(EmergencySupplyMission.class);
+
 	}
 
 	@Override

@@ -139,7 +139,7 @@ public class ChainOfCommand implements Serializable {
             	pop = person.getSettlement().getAllAssociatedPeople().size();
             	if (pop == 0) {
             		//logger.warning("person.getSettlement().getAllAssociatedPeople().size() = 0");
-            		pop = person.getSettlement().getCurrentPopulationNum();
+            		pop = person.getSettlement().getNumCurrentPopulation();
             		if (pop == 0)
             			logger.warning("person.getSettlement().getCurrentPopulationNum() = 0");
             	}

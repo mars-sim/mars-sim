@@ -89,7 +89,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 
             // Crowded settlement modifier
             Settlement settlement = person.getSettlement();
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+            if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
                 result *= 2D;
             }
 

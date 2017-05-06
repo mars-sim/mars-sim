@@ -145,6 +145,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Building quarters;
 	private Building diningBuilding;
 	private Building currentBuilding;
+	private Vehicle vehicle;
 
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
@@ -1338,8 +1339,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	@Override
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+	}
+
+	@Override
 	public void destroy() {
 		super.destroy();
+		vehicle = null;
 		attributes.destroy();
 		attributes = null;
 		mind.destroy();
@@ -1352,4 +1359,5 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		scientificAchievement.clear();
 		scientificAchievement = null;
 	}
+
 }
