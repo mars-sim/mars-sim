@@ -15,12 +15,13 @@ import java.util.Map;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+import org.mars_sim.msp.core.tool.Conversion;
+
 
 
 public class SimuLoggingFormatter extends Formatter {
 
-    public final static String LINEFEED =
-	System.getProperty("line.separator");
+    public final static String LINEFEED = System.getProperty("line.separator");
 
     private DateFormat df = DateFormat.getDateTimeInstance();
     private Date date = new Date();
@@ -57,21 +58,30 @@ public class SimuLoggingFormatter extends Formatter {
 
 		// Get the level name and add it to the buffer
 		sb.append(" (");
-		sb.append(record.getLevel().getName());
+		sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
 		sb.append(") ");
 
-		String source = (record.getSourceClassName())
-				.replaceAll("org.mars_sim.msp.ui.","ui.")
-				.replaceAll("org.mars_sim.msp.core.","core.")
-				.replaceAll("org.mars_sim.msp.mapdata.","mapdata.")
-				.replaceAll("org.mars_sim.msp.network.","network.")
-				.replaceAll("org.mars_sim.msp.","main.");
+		String path = record.getSourceClassName();
+		String source = null;
+
+		if (msg.contains("exception") || msg.contains("Exception")) {
+			source = path
+					.replaceAll("org.mars_sim.msp.ui.","ui.")
+					.replaceAll("org.mars_sim.msp.core.","core.")
+					.replaceAll("org.mars_sim.msp.mapdata.","mapdata.")
+					.replaceAll("org.mars_sim.msp.network.","network.")
+					.replaceAll("org.mars_sim.msp.android","android.")
+					.replaceAll("org.mars_sim.msp.service","service.")
+					.replaceAll("org.mars_sim.msp.","main.");
+		}
+		else
+			source = path.substring(path.lastIndexOf(".") + 1, path.length());
 
 		// record.getLoggerName()
 		//sb.append(record.getSourceClassName());
 		//sb.append(record.getClass().getSimpleName());
 		sb.append(source);
-		sb.append(" ");
+		sb.append(" : ");
 
 		// Get the formatted message (includes localization
 		// and substitution of paramters) and add it to the buffer
