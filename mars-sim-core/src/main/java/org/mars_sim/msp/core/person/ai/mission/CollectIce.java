@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-/** 
+/**
  * This class is a mission to travel in a rover to several
  * random locations around a settlement and collect ice.
  * TODO externalize strings
@@ -57,7 +57,7 @@ extends CollectResourcesMission {
 	 */
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, getIceResource(), SITE_GOAL, 
+		super(DEFAULT_DESCRIPTION, startingPerson, getIceResource(), SITE_GOAL,
 				COLLECTION_RATE, Bag.class, REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -70,14 +70,14 @@ extends CollectResourcesMission {
 	 * @param description the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectIce(Collection<MissionMember> members, Settlement startingSettlement, 
-			List<Coordinates> iceCollectionSites, Rover rover, 
+	public CollectIce(Collection<MissionMember> members, Settlement startingSettlement,
+			List<Coordinates> iceCollectionSites, Rover rover,
 			String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, getIceResource(), SITE_GOAL, 
-				COLLECTION_RATE, Bag.class, REQUIRED_BAGS, iceCollectionSites.size(), 
-				1, rover, iceCollectionSites);
+		super(description, members, startingSettlement, getIceResource(), SITE_GOAL,
+				COLLECTION_RATE, Bag.class, REQUIRED_BAGS, iceCollectionSites.size(),
+				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
 	}
 
 	/**

@@ -16,6 +16,11 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
@@ -40,8 +45,15 @@ implements Serializable {
 
 		// Add Manager-related tasks.
 		jobTasks.add(MeetTogether.class);
-		jobTasks.add(WriteReport.class);
+		jobTasks.add(ConnectWithEarth.class);
+		jobTasks.add(HaveConversation.class);
+
+		// Add side tasks
+		jobTasks.add(ConsolidateContainers.class);
+		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(ReviewJobReassignment.class);
+		jobTasks.add(WriteReport.class);
 
 		// Add Manager-related missions.
 		jobMissionStarts.add(Trade.class);

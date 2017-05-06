@@ -275,6 +275,7 @@ extends MonitorTab {
         else {
             // Simple JTable
             this.table = new ZebraJTable(model) {
+
             	/** default serial id. */
 				//private static final long serialVersionUID = 1L;
 				/**
@@ -313,6 +314,12 @@ extends MonitorTab {
             };
         }
 
+        // 2014-12-29 Added ColumnResizer
+     	SwingUtilities.invokeLater(() -> {
+            TableStyle.setTableStyle(table);
+	     	adjustColumnPreferredWidths(table);
+	    });
+
     	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
         //TableStyle.setTableStyle(table);
 
@@ -326,12 +333,6 @@ extends MonitorTab {
 
 		// 2015-06-08 Added RowNumberTable
         JTable rowTable = new RowNumberTable(table);
-    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
-        //TableStyle.setTableStyle(rowTable);
-
-    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
-        //table = TableStyle.setTableStyle(table);
-
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
         //scroller.setBorder(new MarsPanelBorder());
@@ -344,10 +345,6 @@ extends MonitorTab {
         setName(model.getName());
         setSortColumn(0);
 
-        // 2014-12-29 Added ColumnResizer
-     	SwingUtilities.invokeLater(() -> {
-	     	adjustColumnPreferredWidths(table);
-	    });
 
     }
 

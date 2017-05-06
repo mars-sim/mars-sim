@@ -158,7 +158,7 @@ public class TravelToSettlementMeta implements MetaMission {
                 + (topSettlementDesirability / 100D);
 
         // Crowding modifier.
-        int crowding = settlement.getCurrentPopulationNum()
+        int crowding = settlement.getNumCurrentPopulation()
                 - settlement.getPopulationCapacity();
         if (crowding > 0) {
             missionProbability *= (crowding + 1);

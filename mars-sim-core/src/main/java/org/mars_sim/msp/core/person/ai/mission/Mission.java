@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.07 2015-03-01
+ * @version 3.1.0 2017-05-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -15,13 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEventType;
+
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
@@ -51,43 +49,44 @@ implements Serializable {
 	// Global mission identifier
 	private static int missionIdentifer = 0;
 
-	public static String SUCCESSFULLY_ENDED_CONSTRUCTION = "Successfully ended construction";
-	public static String SUCCESSFULLY_DISEMBARKED = "Successfully disembarked";
-	public static String USER_ABORTED_MISSION = "User aborted mission";
-	public static String UNREPAIRABLE_MALFUNCTION = "unrepairable malfunction";
+	public static String SUCCESSFULLY_ENDED_CONSTRUCTION = "Mission accomplished and all members successfully ended construction";
+	public static String SUCCESSFULLY_DISEMBARKED = "Mission accomplished and all members successfully disembarked";
+	public static String USER_ABORTED_MISSION = "MIssion aborted by user";
+	public static String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction";
 	public static String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
 	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
 	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found.";
 
-	// Unique identifier
-	private int identifier;
 
 	// Data members
-	/** Mission members. */
-//	private Collection<Person> people;
-//	private Collection<Robot> robots;
-	private Collection<MissionMember> members;
+	/** Unique identifier */
+	private int identifier;
+	/** The minimum number of members for mission. */
+	private int minMembers;
+	/** The number of people that can be in the mission. */
+	private int missionCapacity;
+	/** Has the current phase ended? */
+	private boolean phaseEnded;
+	/** True if mission is completed. */
+	private boolean done;
 	/** Name of mission. */
 	private String name;
 	/** Description of the mission. */
 	private String description;
-	/** The minimum number of members for mission. */
-//	private int minPeople;
-//	private int minRobots;
-	private int minMembers;
-	/** True if mission is completed. */
-	private boolean done;
-	/** A collection of the mission's phases. */
-	private Collection<MissionPhase> phases;
+
 	/** The current phase of the mission. */
 	private MissionPhase phase;
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
-	/** Has the current phase ended? */
-	private boolean phaseEnded;
-	/** The number of people that can be in the mission. */
-	private int missionCapacity;
+	/**	The name of the starting member  */
+	private MissionMember startingMember;
+
+	/** Mission members. */
+	private Collection<MissionMember> members;
+	/** A collection of the mission's phases. */
+	private Collection<MissionPhase> phases;
+
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
 
@@ -104,6 +103,7 @@ implements Serializable {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
 		this.name = name;
+		this.startingMember = startingMember;
 		description = name;
 //		people = new ConcurrentLinkedQueue<Person>();
 //		robots = new ConcurrentLinkedQueue<Robot>();
@@ -126,7 +126,15 @@ implements Serializable {
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
         // Log mission starting.
-        logger.info(description + " started by " + startingMember.getName() + " at "  + startingMember.getSettlement());
+        int n = members.size();
+        String s = null;
+        if (n == 0)
+        	s = " at ";
+        else if (n == 1)
+        	s = " with 1 other at ";
+        else
+        	s = " with " + n + " others at ";
+        logger.info(startingMember.getName() + " started " + description + s + startingMember.getSettlement());
 
         // Add starting member to mission.
         // 2015-11-01 Temporarily set the shift type to none during the mission
@@ -305,22 +313,10 @@ implements Serializable {
      */
     public final void removeMember(MissionMember member) {
     	if (members.contains(member)) {
-            members.remove(member);
-			//logger.info("done removing " + member);
-
-            // Creating missing finishing event.
-            //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
-            Simulation.instance().getEventManager().registerNewEvent(new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH));
-            fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
-
-        	if ((members.size() == 0) && !done) {
-            	endMission("Not enough members.");
-        	}
-
             // 2015-11-01 Added codes in reassigning a work shift
             if (member instanceof Person) {
             	Person person = (Person) member;
-            	person.getMind().setMission(null);
+            	person.getMind().stopMission();//setMission(null);
 
             	ShiftType shift = null;
             	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
@@ -335,6 +331,18 @@ implements Serializable {
             	}
 
             }
+
+            members.remove(member);
+			//logger.info("done removing " + member);
+
+            // Creating missing finishing event.
+            //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
+            Simulation.instance().getEventManager().registerNewEvent(new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH));
+            fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
+
+        	if ((members.size() == 0) && !done) {
+            	endMission("Not enough members.");
+        	}
 
             //logger.fine(member.getName() + " removed from mission : " + name);
         }
@@ -722,16 +730,18 @@ implements Serializable {
 	public void endMission(String reason) {
 		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
 
-		if (!done & reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
-				|| reason.equals(SUCCESSFULLY_DISEMBARKED)
-				|| reason.equals(USER_ABORTED_MISSION)) {
-			logger.info("Calling endMission(). Mission ended. Reason : " + reason);
+		if (!done) {
+				//& reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
+				//|| reason.equals(SUCCESSFULLY_DISEMBARKED)
+				//|| reason.equals(USER_ABORTED_MISSION)) {
+			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
+	        logger.info(startingMember.getName() + " ended the " + description + " at "  + startingMember.getSettlement() + ". Reason : " + reason);
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");
 
 			if (members != null) {
-				logger.info("members : " + members);
+				logger.info("Mission members removed : " + members);
 			    Object[] p = members.toArray();
                 for (Object aP : p) {
                     removeMember((MissionMember) aP);
@@ -740,6 +750,8 @@ implements Serializable {
 
 			//logger.info(description + " ending at the " + phase + " phase due to " + reason);
 		}
+		else
+	        logger.info("Calling endMission() : done is true. Mission info : " + startingMember.getName() + " initiated " + description + " at "  + startingMember.getSettlement() + ". Reason : " + reason);
 	}
 
 	/**
@@ -897,7 +909,7 @@ implements Serializable {
                 break;
             }
         }
-
+/*
         // Recruit robots qualified for the mission.
         Iterator <Robot> k = Simulation.instance().getUnitManager().getRobots().iterator();
         while (k.hasNext() && (getMembersNumber() < missionCapacity)) {
@@ -906,7 +918,7 @@ implements Serializable {
                 robot.setMission(this);
             }
         }
-
+*/
         if (getMembersNumber() < minMembers) {
             endMission("Not enough members");
         }

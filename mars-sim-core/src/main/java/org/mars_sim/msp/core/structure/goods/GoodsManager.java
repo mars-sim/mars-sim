@@ -142,10 +142,11 @@ public class GoodsManager implements Serializable {
     //private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
     //private static final String resource_name = "regolith";
 
-    /** Ice value probability modifier. */
-    public static double ICE_VALUE_MODIFIER = 10D;
-    public static double REGOLITH_VALUE_MODIFIER = 3;
-    public static double SAND_VALUE_MODIFIER = 2;
+    /** VP probability modifier. */
+    public static double ICE_VALUE_MODIFIER = 2D;
+    public static double WATER_VALUE_MODIFIER = 3D;
+    public static double REGOLITH_VALUE_MODIFIER = 3D;
+    public static double SAND_VALUE_MODIFIER = 2D;
 
     // Data members
     // 2016-11-02 Added modifiers due to Settlement Development Objectives
@@ -568,7 +569,7 @@ public class GoodsManager implements Serializable {
             //double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
         	double amountNeededSol = personConfig.getWaterUsageRate();
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-            int numPeople = settlement.getCurrentPopulationNum();
+            int numPeople = settlement.getNumCurrentPopulation();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
         }
         else return 0D;
@@ -584,7 +585,7 @@ public class GoodsManager implements Serializable {
         if (resource.equals(ResourceUtil.toiletTissueAR)) {
             double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-            int numPeople = settlement.getCurrentPopulationNum();
+            int numPeople = settlement.getNumCurrentPopulation();
             return numPeople * amountNeededOrbit;
         }
         else return 0D;

@@ -105,7 +105,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
             missionProbability = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
 
             // Crowding modifier.
-            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+            int crowding = settlement.getNumCurrentPopulation() - settlement.getPopulationCapacity();
             if (crowding > 0) missionProbability *= (crowding + 1);
 
             // Job modifier.

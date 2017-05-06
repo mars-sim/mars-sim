@@ -517,11 +517,12 @@ public class MainScene {
 				//rootAnchorPane.getChildren().remove(monPane);
 			}
 			else {
+
 				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 				//rootAnchorPane.getChildren().add(monPane);
 		        //AnchorPane.setRightAnchor(monPane, 0.0);
 		        //AnchorPane.setBottomAnchor(monPane, 0.0);
-				SwingUtilities.invokeLater(() ->desktop.openToolWindow(MonitorWindow.NAME));
+				SwingUtilities.invokeLater(() -> desktop.openToolWindow(MonitorWindow.NAME));
 			}
 		});
 	    Nodes.addInputMap(root, f4);
@@ -649,10 +650,12 @@ public class MainScene {
 				//	setTheme(6);
 			}
 			else {
-				if (theme == 6)
+				if (theme == 6) {
 					setTheme(7);
-				else if (theme == 7)
+				}
+				else if (theme == 7) {
 					setTheme(6);
+				}
 			}
 		});
 	    Nodes.addInputMap(root, ctrlT);
@@ -2398,10 +2401,12 @@ public class MainScene {
 		// (2). the inability of loading the tab icons of the Monitor Tool at the beginning
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
-		if (OS.contains("linux"))
+		if (OS.contains("linux")) {
 			setTheme(0);
-		else
+		}
+		else {
 			setTheme(7);
+		}
 		//logger.info("done with MainScene's initializeTheme()");
 	}
 

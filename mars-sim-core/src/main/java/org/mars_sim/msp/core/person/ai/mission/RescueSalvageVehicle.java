@@ -159,7 +159,7 @@ implements Serializable {
             Vehicle vehicleTarget, Rover rover, String description) {
 
         // Use RoverMission constructor.
-        super(description, (MissionMember) members.toArray()[0], 1, rover);
+        super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
         setStartingSettlement(startingSettlement);
         this.vehicleTarget = vehicleTarget;
@@ -696,7 +696,7 @@ implements Serializable {
                 double settlementDistance = settlement.getCoordinates().getDistance(
                         thisVehicle.getCoordinates());
                 if (settlementDistance < distance) {
-                    if (settlement.getCurrentPopulationNum() >= MIN_GOING_MEMBERS) {
+                    if (settlement.getNumCurrentPopulation() >= MIN_GOING_MEMBERS) {
                         Iterator<Vehicle> iV = settlement.getParkedVehicles().iterator();
                         while (iV.hasNext() && result) {
                             Vehicle vehicle = iV.next();

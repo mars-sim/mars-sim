@@ -25,7 +25,7 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
  * The view is displayed inside a tab panel within the window and depends on
  * a UnitTableModel
  */
-abstract class MonitorTab
+public abstract class MonitorTab
 extends JPanel {
 
 	/** default serial id. */

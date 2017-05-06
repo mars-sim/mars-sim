@@ -203,7 +203,7 @@ class DestinationSettlementPanel extends WizardPanel {
             		return (int) distance;
             	}
             	else if (column == 2) 
-            		result = settlement.getCurrentPopulationNum();
+            		result = settlement.getNumCurrentPopulation();
             	else if (column == 3) {
             		result = settlement.getPopulationCapacity();
             	}

@@ -89,7 +89,7 @@ implements MouseListener, ActionListener {
 
 
 		// Create robot num label
-		robotNumCache = settlement.getCurrentNumOfRobots();
+		robotNumCache = settlement.getNumCurrentRobots();
 		robotNumLabel = new JLabel(Msg.getString("TabPanelBots.robot",
 		        robotNumCache), JLabel.CENTER); //$NON-NLS-1$
 		robotCountPanel.add(robotNumLabel);
@@ -140,8 +140,8 @@ implements MouseListener, ActionListener {
 		Settlement settlement = (Settlement) unit;
 
 		// Update robot num
-		if (robotNumCache != settlement.getCurrentNumOfRobots()) {
-			robotNumCache = settlement.getCurrentNumOfRobots();
+		if (robotNumCache != settlement.getNumCurrentRobots()) {
+			robotNumCache = settlement.getNumCurrentRobots();
 			robotNumLabel.setText(Msg.getString("TabPanelBots.robot",
 			        robotNumCache)); //$NON-NLS-1$
 		}

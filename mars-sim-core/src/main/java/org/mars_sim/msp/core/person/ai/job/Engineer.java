@@ -19,9 +19,18 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
+import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
@@ -50,19 +59,27 @@ implements Serializable {
 		// Use Job constructor
 		super(Engineer.class);
 
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add engineer-related tasks.
+		jobTasks.add(LoadVehicleEVA.class);
+		jobTasks.add(LoadVehicleGarage.class);
+		jobTasks.add(Maintenance.class);
+		jobTasks.add(MaintenanceEVA.class);
+		jobTasks.add(MaintainGroundVehicleGarage.class);
+		jobTasks.add(MaintainGroundVehicleEVA.class);
+		jobTasks.add(ManufactureGood.class);
+		jobTasks.add(RepairMalfunction.class);
+		jobTasks.add(RepairEVAMalfunction.class);
 		jobTasks.add(UnloadVehicleEVA.class);
 		jobTasks.add(UnloadVehicleGarage.class);
-		jobTasks.add(ManufactureGood.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(SalvageGood.class);
 
-		jobTasks.add(WriteReport.class);
+		// Add side tasks
+		jobTasks.add(ConsolidateContainers.class);
+		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(ReviewJobReassignment.class);
+		jobTasks.add(WriteReport.class);
+
 
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

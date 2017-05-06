@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -94,28 +95,29 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
                 return 0;
             }
 
-            result = settlement.getIceProbabilityValue() * 10D;
+            result = settlement.getIceProbabilityValue() * 4000D;
 
-            if (result <= 0)
+            if (result < 1)
             	return 0;
 
             // Crowded settlement modifier
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+            if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
                 result *= 1.5D;
-            }
+
+            if (settlement.getNumCurrentPopulation() <= 4)
+                result *= 1.5D;
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
 
             // Job modifier.
             Job job = person.getMind().getJob();
-            if (job != null) {
+            if (job != null)
                 result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);
-            }
 
             // Modify if field work is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work"))
-                result *= 1.5D;
+                result *= RandomUtil.getRandomInt(1, 3);
 
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;

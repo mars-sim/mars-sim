@@ -743,7 +743,7 @@ extends VehicleMission {
 	protected final boolean hasDangerousMedicalProblemAtAssociatedSettlement() {
 		boolean result = false;
 		if (getAssociatedSettlement() != null) {
-			if (getAssociatedSettlement().getCurrentPopulationNum() == 1) {
+			if (getAssociatedSettlement().getNumCurrentPopulation() == 1) {
 				Person person = (Person) getAssociatedSettlement()
 						.getInhabitants().toArray()[0];
 				if (person.getPhysicalCondition().hasSeriousMedicalProblems())

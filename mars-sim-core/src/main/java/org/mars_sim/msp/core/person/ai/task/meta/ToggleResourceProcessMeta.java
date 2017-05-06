@@ -114,7 +114,7 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 
                 // Crowded settlement modifier
                 if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                    if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                    if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
                         result *= 2D;
                     }
                 }

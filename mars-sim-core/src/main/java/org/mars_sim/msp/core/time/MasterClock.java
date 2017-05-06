@@ -559,8 +559,7 @@ public class MasterClock implements Serializable { // Runnable,
 		        	diffCache = (diff * count + diffCache)/(count + 1);
 		        }
 
-		        if (count == 0)
-		        	logger.info("Benchmarking this machine : " + diff + " per 1000 frames");
+		        //if (count == 0) logger.info("Benchmarking this machine : " + diff + " per 1000 frames");
 
 	        	statusUpdate();
 

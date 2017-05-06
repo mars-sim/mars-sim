@@ -50,7 +50,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	/** The amount of work time to perform maintenance (millisols) */
     public static final double MAINTENANCE_WORK_TIME = 500D;
 
-	private static double life_support_range_error_margin = 0;//3.0D;
+	private static double life_support_range_error_margin;
 
 	// Data members
 	/** The rover's capacity for crew members. */

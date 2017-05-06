@@ -82,7 +82,7 @@ extends CollectResourcesMission {
 		super(description, members, startingSettlement, getRegolithResource(),
 				SITE_GOAL, COLLECTION_RATE,
 				Bag.class, REQUIRED_BAGS, regolithCollectionSites.size(),
-				1, rover, regolithCollectionSites);
+				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}
 
 	/**

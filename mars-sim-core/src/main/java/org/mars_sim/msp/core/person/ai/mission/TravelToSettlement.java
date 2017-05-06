@@ -241,7 +241,7 @@ implements Serializable {
             Settlement startingSettlement, Settlement destinationSettlement,
             Rover rover, String description) {
         // Use RoverMission constructor.
-        super(description, (MissionMember) members.toArray()[0], 1, rover);
+        super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
         // Initialize data members
         setStartingSettlement(startingSettlement);

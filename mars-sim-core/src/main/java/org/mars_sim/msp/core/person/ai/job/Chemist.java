@@ -21,6 +21,9 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
@@ -60,11 +63,10 @@ implements Serializable {
 
 		// Add chemist-related tasks.
 		jobTasks.add(ManufactureGood.class);
-		// 2015-01-12 Added ProduceFood
 		jobTasks.add(ProduceFood.class);
-		jobTasks.add(WriteReport.class);
-		jobTasks.add(ReviewJobReassignment.class);
+		jobTasks.add(StudyFieldSamples.class);
 
+		// Research related tasks
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
 		jobTasks.add(InviteStudyCollaborator.class);
@@ -74,8 +76,13 @@ implements Serializable {
 		jobTasks.add(ProposeScientificStudy.class);
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
-		jobTasks.add(StudyFieldSamples.class);
 
+		// Add side tasks
+		jobTasks.add(ConsolidateContainers.class);
+		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(DigLocalIce.class);
+		jobTasks.add(ReviewJobReassignment.class);
+		jobTasks.add(WriteReport.class);
 
 		// Add chemist-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

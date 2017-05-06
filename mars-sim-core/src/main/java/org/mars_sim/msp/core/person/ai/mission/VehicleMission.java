@@ -63,7 +63,8 @@ implements UnitListener {
 	// Static members
 
 	/** Modifier for number of parts needed for a trip. */
-	private static final double PARTS_NUMBER_MODIFIER = 2D;
+	private static final double PARTS_NUMBER_MODIFIER = 5D;
+	private static final double AVERAGE_NUM_MALFUNCTION = 4;
 
 	// Data members
 	private Vehicle vehicle;
@@ -79,6 +80,9 @@ implements UnitListener {
 	/** Vehicle traveled distance at start of mission. */
 	private double startingTravelledDistance;
 
+	/** Description of the mission */
+	private String description;
+
 	// Mission tasks tracked
 	/** The current operate vehicle task. */
 	private OperateVehicle operateVehicleTask;
@@ -90,6 +94,7 @@ implements UnitListener {
 		// Use TravelMission constructor.
 		super(name, startingMember, minPeople);
 
+		description = name;
 		this.startingMember = startingMember;
 
 		// Add mission phases.
@@ -333,9 +338,22 @@ implements UnitListener {
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
-				logger.info("User just aborted the mission. Switching to emergency mode to go to the nearest settlement.");
-				// will recursively call endMission() with a brand new "reason"
-				determineEmergencyDestination(startingMember);
+				if (vehicle.getSettlement() == null) { // if the vehicle has not arrived or departed a settlement
+					String s =  null;
+					if (description.startsWith("A") || description.startsWith("I")) {
+						s = " an " + description;
+					}
+					else
+						s = " a " + description;
+					logger.info("User just aborted" + s + ". Switching to emergency mode to go to the nearest settlement.");
+					// will recursively call endMission() with a brand new "reason"
+					determineEmergencyDestination(startingMember);
+				}
+				else {
+					leaveVehicle();
+		            setPhaseEnded(true);
+					super.endMission(reason);
+				}
 
 			}
 
@@ -369,11 +387,13 @@ implements UnitListener {
 					}
 				}
 
-				else {
-					logger.info("vehicle.getSettlement() != null. reason : " + reason);
+				else { // e.g. unrepairable malfunction
+					//logger.info(startingMember.getName() + " ended " + description + ". "+ vehicle.getName() + " is at " + vehicle.getSettlement() + ". Reason : " + reason);
+					logger.info(vehicle.getName() + " is currently at " + vehicle.getSettlement() + " and its mission ended. Reason : " + reason);
 					// if the vehicle is still somewhere inside the settlement when it got broken down
 					// TODO: wait till the repair is done and the mission may resume ?!?
 					leaveVehicle();
+		            setPhaseEnded(true);
 					super.endMission(reason);
 				}
 			}
@@ -725,8 +745,8 @@ implements UnitListener {
 			double drivingTime = getEstimatedTripTime(false, distance);
 			double numberAccidents = drivingTime
 					* OperateVehicle.BASE_ACCIDENT_CHANCE;
-			// Average number malfunctions per accident is two.
-			double numberMalfunctions = numberAccidents * 2D;
+			// Average number malfunctions per accident is 3.
+			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
 			Map<Part, Double> parts = vehicle.getMalfunctionManager()
 					.getRepairPartProbabilities();
@@ -845,10 +865,12 @@ implements UnitListener {
 					// 2016-09-19 Added updateTravelDestination() below
 					updateTravelDestination();
 				}
+
 			} else {
 				endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
 
 			}
+
 		} else {
 			endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
 		}

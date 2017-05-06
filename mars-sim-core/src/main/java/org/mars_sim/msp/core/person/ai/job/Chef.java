@@ -19,7 +19,10 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
@@ -48,13 +51,15 @@ implements Serializable {
 
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
-		// 2014-11-02 Changed name to PrepareDessert
 		jobTasks.add(PrepareDessert.class);
-		//2014-11-23 Added ProduceFood
 		jobTasks.add(ProduceFood.class);
 
-		jobTasks.add(WriteReport.class);
+		// Add side tasks
+		jobTasks.add(ConsolidateContainers.class);
+		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(ReviewJobReassignment.class);
+		jobTasks.add(WriteReport.class);
 
 		// Add chef-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
@@ -109,7 +114,7 @@ implements Serializable {
 		}
 
 		// Add total population / 10.
-		int population = settlement.getCurrentPopulationNum();
+		int population = settlement.getNumCurrentPopulation();
 		result+= ((double) population / 10D);
 
 		return result;

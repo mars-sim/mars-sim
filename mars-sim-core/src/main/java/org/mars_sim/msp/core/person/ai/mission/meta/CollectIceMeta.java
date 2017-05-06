@@ -57,13 +57,15 @@ public class CollectIceMeta implements MetaMission {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // Check if mission is possible for person based on their
-            // circumstance.
-
             Settlement settlement = person.getSettlement();
 
+	        // a settlement with <= 4 population can always do DigLocalRegolith task
+	        // should avoid the risk of mission.
+	        if (settlement.getNumCurrentPopulation() <= 3)//.getAllAssociatedPeople().size() <= 4)
+	        	return 0;
+
             // Check if available rover.
-            if (!RoverMission.areVehiclesAvailable(settlement, false)) {
+	        else if (!RoverMission.areVehiclesAvailable(settlement, false)) {
                 return 0;
             }
 
@@ -100,15 +102,12 @@ public class CollectIceMeta implements MetaMission {
 
             else {
 
-                result = settlement.getIceProbabilityValue();
-
-                if (result <= 0)
-                	return 0;
+                result = settlement.getIceProbabilityValue() / 40D;
 
             }
 
             // Crowding modifier.
-            int crowding = settlement.getCurrentPopulationNum()
+            int crowding = settlement.getNumCurrentPopulation()
                     - settlement.getPopulationCapacity();
             if (crowding > 0) {
                 result *= (crowding + 1);
@@ -122,9 +121,9 @@ public class CollectIceMeta implements MetaMission {
 
             //logger.info("CollectIceMeta's probability : " + Math.round(result*100D)/100D);
 
-            if (result > 2D)
-                result = 2D;
-            else if (result < 0)
+            if (result > 1D)
+                result = 1D;
+            else if (result < 0.5)
             	result = 0;
         }
 

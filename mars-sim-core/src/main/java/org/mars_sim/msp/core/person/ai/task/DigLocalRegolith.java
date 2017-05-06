@@ -303,6 +303,8 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
+        logger.info(person.getName() + " collected " + Math.round(regolithCollected*10D)/10D + " kg of regolith in a DigLocalRegolith task.");
+
         // Add experience points
         addExperience(time);
 
