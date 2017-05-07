@@ -72,6 +72,7 @@ implements Serializable {
 	// Data members
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
+	private Building kitchenBuilding;
 
 	private int counter;
 	private int solElapsedCache;
@@ -90,7 +91,7 @@ implements Serializable {
                 getTypeOfMeal())); //$NON-NLS-1$
 
         // Get an available kitchen.
-        Building kitchenBuilding = getAvailableKitchen(person);
+        kitchenBuilding = getAvailableKitchen(person);
 
 	    if (kitchenBuilding != null) {
 	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
@@ -164,7 +165,7 @@ implements Serializable {
                 getTypeOfMeal())); //$NON-NLS-1$
 
         // Get available kitchen if any.
-        Building kitchenBuilding = getAvailableKitchen(robot);
+        kitchenBuilding = getAvailableKitchen(robot);
 
 	    if (kitchenBuilding != null) {
 	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
@@ -405,6 +406,7 @@ implements Serializable {
         chance *= kitchen.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
+
 			if (person != null) {
 	            logger.info(person.getName() + " has an accident while cooking.");
 			}
@@ -412,7 +414,7 @@ implements Serializable {
 				logger.info(robot.getName() + " has an accident while cooking.");
 			}
 
-            kitchen.getBuilding().getMalfunctionManager().accident();
+            kitchen.getBuilding().getMalfunctionManager().createAccident();
         }
     }
 

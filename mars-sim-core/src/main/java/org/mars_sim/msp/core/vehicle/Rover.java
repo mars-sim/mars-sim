@@ -563,4 +563,9 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         towedVehicle = null;
     }
 
+	@Override
+	public String getNickName() {
+		return getName();
+	}
+
 }

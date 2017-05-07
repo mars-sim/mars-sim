@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.malfunction;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
 
 import java.util.Collection;
 
@@ -30,6 +31,12 @@ public interface Malfunctionable {
     public String getName();
 
     /**
+     * Gets the nickname of the building.
+     * @return name the building nickname
+     */
+    public String getNickName();
+
+    /**
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
@@ -40,4 +47,10 @@ public interface Malfunctionable {
      * @return inventory
      */
     public Inventory getInventory();
+
+    /**
+     * Gets the settlement associated with this entity.
+     * @return settlement
+     */
+    public Settlement getSettlement();
 }

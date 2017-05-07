@@ -48,7 +48,7 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.salvageGood"); //$NON-NLS-1$
-	
+
     /** Task phases. */
     private static final TaskPhase SALVAGE = new TaskPhase(Msg.getString(
             "Task.phase.salvage")); //$NON-NLS-1$
@@ -63,12 +63,12 @@ implements Serializable {
 	/** The salvage process. */
 	private SalvageProcess process;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
 	public SalvageGood(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, 
+		super(NAME, person, true, false, STRESS_MODIFIER,
 				true, 10D + RandomUtil.getRandomDouble(40D));
 
 		// Get available manufacturing workshop if any.
@@ -98,7 +98,7 @@ implements Serializable {
 		addPhase(SALVAGE);
 		setPhase(SALVAGE);
 	}
-	
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.MANUFACTURE;
@@ -214,9 +214,16 @@ implements Serializable {
 		chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			logger.info(person.getName() + " has accident while salvaging " + 
+			logger.info(person.getName() + " has accident while salvaging " +
 					process.getInfo().getItemName() + ".");
-			workshop.getBuilding().getMalfunctionManager().accident();
+			if (person != null)
+				logger.info(person.getName() + " has accident while salvaging " +
+					process.getInfo().getItemName() + ".");
+			else if (robot != null)
+				logger.info(robot.getName() + " has accident while salvaging " +
+					process.getInfo().getItemName() + ".");
+
+			workshop.getBuilding().getMalfunctionManager().createAccident();
 		}
 	}
 
@@ -253,13 +260,13 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets a list of manufacturing buildings needing work from a list of buildings 
+	 * Gets a list of manufacturing buildings needing work from a list of buildings
 	 * with the manufacture function.
 	 * @param buildingList list of buildings with the manufacture function.
 	 * @param skill the materials science skill level of the person.
 	 * @return list of manufacture buildings needing work.
 	 */
-	private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList, 
+	private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList,
 			int skill) {
 
 		List<Building> result = new ArrayList<Building>();
@@ -282,7 +289,7 @@ implements Serializable {
 	 * @param skill the materials science skill level of the person.
 	 * @return subset list of buildings with processes requiring work, or original list if none found.
 	 */
-	private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList, 
+	private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList,
 			int skill) {
 
 		List<Building> result = new ArrayList<Building>();
@@ -310,7 +317,7 @@ implements Serializable {
 	 * @param skill the materials science skill level of the person.
 	 * @return true if processes requiring work.
 	 */
-	public static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, 
+	public static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding,
 			int skill) {
 
 		boolean result = false;
@@ -330,7 +337,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets a subset list of manufacturing buildings with the highest tech level from a list of buildings 
+	 * Gets a subset list of manufacturing buildings with the highest tech level from a list of buildings
 	 * with the manufacture function.
 	 * @param buildingList list of buildings with the manufacture function.
 	 * @return subset list of highest tech level buildings.
@@ -369,7 +376,7 @@ implements Serializable {
 	 * @param manufacturingBuilding the manufacturing building.
 	 * @return highest process good value.
 	 */
-	public static double getHighestSalvagingProcessValue(Person person, 
+	public static double getHighestSalvagingProcessValue(Person person,
 			Building manufacturingBuilding) {
 
 		double highestProcessValue = 0D;
@@ -384,10 +391,10 @@ implements Serializable {
 				techLevel, skillLevel).iterator();
 		while (i.hasNext()) {
 			SalvageProcessInfo process = i.next();
-			if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) || 
+			if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) ||
 					isSalvageProcessRunning(process, manufacturingFunction)) {
 				Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
-				double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement, 
+				double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement,
 						person);
 				if (processValue > highestProcessValue) {
 					highestProcessValue = processValue;
@@ -405,7 +412,7 @@ implements Serializable {
 	 * @param manufactureBuilding the manufacturing building.
 	 * @return true if process is running.
 	 */
-	private static boolean isSalvageProcessRunning(SalvageProcessInfo processInfo, 
+	private static boolean isSalvageProcessRunning(SalvageProcessInfo processInfo,
 			Manufacture manufactureBuilding) {
 		boolean result = false;
 
@@ -432,7 +439,7 @@ implements Serializable {
 		Iterator<SalvageProcess> i = workshop.getSalvageProcesses().iterator();
 		while (i.hasNext() && (result == null)) {
 			SalvageProcess process = i.next();
-			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && 
+			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) &&
 					(process.getWorkTimeRemaining() > 0D)) {
 				result = process;
 			}
@@ -459,7 +466,7 @@ implements Serializable {
 			while (i.hasNext()) {
 				SalvageProcessInfo processInfo = i.next();
 				if (ManufactureUtil.canSalvageProcessBeStarted(processInfo, workshop)) {
-					double processValue = ManufactureUtil.getSalvageProcessValue(processInfo, 
+					double processValue = ManufactureUtil.getSalvageProcessValue(processInfo,
 							person.getSettlement(), person);
 					if (processValue > 0D) {
 						processValues.put(processInfo, processValue);
@@ -471,7 +478,7 @@ implements Serializable {
 			SalvageProcessInfo selectedProcess = RandomUtil.getWeightedRandomObject(processValues);
 
 			if (selectedProcess != null) {
-				Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess, 
+				Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess,
 						person.getSettlement());
 				if (salvagedUnit != null) {
 					result = new SalvageProcess(selectedProcess, workshop, salvagedUnit);

@@ -457,7 +457,7 @@ implements ResearchScientificStudy, Serializable {
      * @param time the amount of time researching (in millisols)
      */
     private void checkForAccident(double time) {
-
+/*
         double chance = .001D;
 
         // Mathematics skill modification.
@@ -485,9 +485,11 @@ implements ResearchScientificStudy, Serializable {
             if (RandomUtil.lessThanRandPercent(chance * time)) {
                 logger.info(person.getName() + " has a lab accident while performing " +
                         "mathematical modeling");
-                entity.getMalfunctionManager().accident();
+
+                entity.getMalfunctionManager().createAccident();
             }
         }
+*/
     }
 
     /**

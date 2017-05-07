@@ -380,6 +380,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
      * @return the time remaining after performing this phase (in millisols)
      */
     private double repairMalfunctionPhase(double time) {
+    	String name = null;
 
         // 2015-05-29 Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
@@ -413,8 +414,10 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         // Determine effective work time based on "Mechanic" skill.
         int mechanicSkill = 0;
-        if (person != null)
+        if (person != null) {
+	        name = person.getName();
             mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        }
         else if (robot != null)
             ;//mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
@@ -426,7 +429,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         }
 
         // Add work to emergency malfunction.
-        double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
+        double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime, name);
 
         // Add experience points
         addExperience(time);

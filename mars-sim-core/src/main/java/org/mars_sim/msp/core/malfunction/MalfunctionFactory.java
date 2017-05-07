@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 3.07 2014-12-28
-
+ * @version 3.1.0 2017-05-06
  * @author Scott Davis
  */
 
@@ -40,11 +39,11 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
 
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
-	
+
 	// Data members
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
@@ -59,7 +58,7 @@ implements Serializable {
 	public MalfunctionFactory(MalfunctionConfig config)  {
 		 this.config = config;
 		 //logger.info("start calling config.getMalfunctionList()");
-	
+
 		 malfunctions = config.getMalfunctionList();
 		 //logger.info("Done with calling config.getMalfunctionList()");
 	}
@@ -332,7 +331,7 @@ implements Serializable {
 		}
 		return item;
 	}
-	
+
 	/**
 	 * Prepares the object for garbage collection.
 	 */

@@ -618,9 +618,9 @@ implements Serializable {
 
 		    dessertCounterPerSol++;
 
-		    logger.info(producerName + " prepared a serving of " + selectedDessert
-		    		+ " in " + getBuilding().getBuildingManager().getSettlement().getName()
-		    		+ " (dessert quality : " + dessertQuality + ")");
+		    //logger.info(producerName + " prepared a serving of " + selectedDessert
+		    //		+ " in " + getBuilding().getBuildingManager().getSettlement().getName()
+		    //		+ " (dessert quality : " + dessertQuality + ")");
 
 		    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
 

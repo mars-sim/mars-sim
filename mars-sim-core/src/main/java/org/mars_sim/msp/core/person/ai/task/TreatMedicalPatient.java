@@ -391,8 +391,13 @@ public class TreatMedicalPatient extends Task implements Serializable {
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has accident during medical treatment.");
-            entity.getMalfunctionManager().accident();
+
+			if (person != null)
+				logger.info(person.getName() + " has accident while providing medical treatment.");
+			else if (robot != null)
+				logger.info(robot.getName() + " has accident while providing medical treatment.");
+
+            entity.getMalfunctionManager().createAccident();
         }
     }
 

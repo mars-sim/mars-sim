@@ -427,7 +427,8 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             logger.info(person.getName() + " injuried onself during medical self-treatment.");
-            entity.getMalfunctionManager().accident();
+
+            entity.getMalfunctionManager().createAccident();
         }
     }
 

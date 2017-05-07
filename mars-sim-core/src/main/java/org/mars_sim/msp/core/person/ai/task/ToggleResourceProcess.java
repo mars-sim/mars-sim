@@ -457,7 +457,13 @@ implements Serializable {
         chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            building.getMalfunctionManager().accident();
+			if (person != null) {
+	            logger.info(person.getName() + " has an accident while toggling a resource process.");
+			}
+			else if (robot != null) {
+				logger.info(robot.getName() + " has an accident while toggling a resource process.");
+			}
+            building.getMalfunctionManager().createAccident();
         }
     }
 

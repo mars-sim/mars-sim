@@ -71,9 +71,7 @@ implements Serializable {
 	/** True if mission is completed. */
 	private boolean done;
 	/** Name of mission. */
-	private String name;
-	/** Description of the mission. */
-	private String description;
+	private String missionName;
 
 	/** The current phase of the mission. */
 	private MissionPhase phase;
@@ -99,12 +97,11 @@ implements Serializable {
 		return missionIdentifer++;
 	}
 
-	public Mission(String name, MissionMember startingMember, int minMembers) {
+	public Mission(String missionName, MissionMember startingMember, int minMembers) {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
-		this.name = name;
+		this.missionName = missionName;
 		this.startingMember = startingMember;
-		description = name;
 //		people = new ConcurrentLinkedQueue<Person>();
 //		robots = new ConcurrentLinkedQueue<Robot>();
 		members = new ConcurrentLinkedQueue<MissionMember>();
@@ -129,12 +126,12 @@ implements Serializable {
         int n = members.size();
         String s = null;
         if (n == 0)
-        	s = " at ";
+        	s = "' at ";
         else if (n == 1)
-        	s = " with 1 other at ";
+        	s = "' with 1 other at ";
         else
-        	s = " with " + n + " others at ";
-        logger.info(startingMember.getName() + " started " + description + s + startingMember.getSettlement());
+        	s = "' with " + n + " others at ";
+        logger.info(startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement());
 
         // Add starting member to mission.
         // 2015-11-01 Temporarily set the shift type to none during the mission
@@ -209,7 +206,7 @@ implements Serializable {
 	 * Gets the string representation of this mission.
 	 */
 	public String toString() {
-		return description;
+		return missionName;
 	}
 
 //	/**
@@ -258,7 +255,7 @@ implements Serializable {
 
             fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
-            logger.finer(member.getName() + " added to mission: " + name);
+            logger.finer(member.getName() + " added to mission: " + missionName);
 	    }
 	}
 
@@ -313,6 +310,9 @@ implements Serializable {
      */
     public final void removeMember(MissionMember member) {
     	if (members.contains(member)) {
+            members.remove(member);
+			//logger.info("done removing " + member);
+
             // 2015-11-01 Added codes in reassigning a work shift
             if (member instanceof Person) {
             	Person person = (Person) member;
@@ -331,9 +331,6 @@ implements Serializable {
             	}
 
             }
-
-            members.remove(member);
-			//logger.info("done removing " + member);
 
             // Creating missing finishing event.
             //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
@@ -517,7 +514,7 @@ implements Serializable {
 	 * @return name of mission
 	 */
 	public final String getName() {
-		return name;
+		return missionName;
 	}
 
 	/**
@@ -525,7 +522,7 @@ implements Serializable {
 	 * @param name the new mission name
 	 */
 	protected final void setName(String name) {
-		this.name = name;
+		this.missionName = name;
 		fireMissionUpdate(MissionEventType.NAME_EVENT, name);
 	}
 
@@ -534,7 +531,7 @@ implements Serializable {
 	 * @return mission description
 	 */
 	public final String getDescription() {
-		return description;
+		return missionName;
 	}
 
 	/**
@@ -542,8 +539,8 @@ implements Serializable {
 	 * @param description the new description.
 	 */
 	public final void setDescription(String description) {
-		if (!this.description.equals(description)) {
-			this.description = description;
+		if (!this.missionName.equals(description)) {
+			this.missionName = description;
 			fireMissionUpdate(MissionEventType.DESCRIPTION_EVENT, description);
 		}
 	}
@@ -630,42 +627,6 @@ implements Serializable {
         }
     }
 
-//	/**
-//	 * Performs the mission.
-//	 * @param person the person performing the mission.
-//	 * @throws MissionException if problem performing the mission.
-//	 */
-//	public void performMission(Person person) {
-//
-//		// If current phase is over, decide what to do next.
-//		if (phaseEnded) {
-//			determineNewPhase();
-//		}
-//
-//		// Perform phase.
-//		if (!done) {
-//			performPhase(person);
-//		}
-//	}
-
-
-//	/**
-//	 * Performs the mission.
-//	 * @param robot the robot performing the mission.
-//	 * @throws MissionException if problem performing the mission.
-//	 */
-//	public void performMission(Robot robot) {
-//
-//		// If current phase is over, decide what to do next.
-//		if (phaseEnded) {
-//			determineNewPhase();
-//		}
-//
-//		// Perform phase.
-//		if (!done) {
-//			performPhase(robot);
-//		}
-//	}
 
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
@@ -683,27 +644,6 @@ implements Serializable {
         }
     }
 
-//	/**
-//	 * The person performs the current phase of the mission.
-//	 * @param person the person performing the phase.
-//	 * @throws MissionException if problem performing the phase.
-//	 */
-//	protected void performPhase(Person person) {
-//		if (phase == null) {
-//			endMission("Current mission phase is null.");
-//		}
-//	}
-//
-//	/**
-//	 * The robot performs the current phase of the mission.
-//	 * @param robot the robot performing the phase.
-//	 * @throws MissionException if problem performing the phase.
-//	 */
-//	protected void performPhase(Robot robot) {
-//		if (phase == null) {
-//			endMission("Current mission phase is null.");
-//		}
-//	}
 
 	/**
 	 * Gets the mission capacity for participating people.
@@ -735,7 +675,7 @@ implements Serializable {
 				//|| reason.equals(SUCCESSFULLY_DISEMBARKED)
 				//|| reason.equals(USER_ABORTED_MISSION)) {
 			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
-	        logger.info(startingMember.getName() + " ended the " + description + " at "  + startingMember.getSettlement() + ". Reason : " + reason);
+	        logger.info(startingMember.getName() + " ended the '" + missionName + "' at "  + startingMember.getSettlement() + ". Reason : " + reason);
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");
@@ -751,7 +691,7 @@ implements Serializable {
 			//logger.info(description + " ending at the " + phase + " phase due to " + reason);
 		}
 		else
-	        logger.info("Calling endMission() : done is true. Mission info : " + startingMember.getName() + " initiated " + description + " at "  + startingMember.getSettlement() + ". Reason : " + reason);
+	        logger.info("Calling endMission() : done is true. Mission info : " + startingMember.getName() + " initiated '" + missionName + "' at "  + startingMember.getSettlement() + ". Reason : " + reason);
 	}
 
 	/**
@@ -1374,8 +1314,7 @@ implements Serializable {
 			members.clear();
 		}
 		members = null;
-		name = null;
-		description = null;
+		missionName = null;
 		if (phases != null) {
 			phases.clear();
 		}

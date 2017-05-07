@@ -73,17 +73,17 @@ implements Repair, Serializable {
 
         if (unit instanceof Person) {
          	this.person = (Person) unit;
-         	
+
          	int score = person.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
-            //2016-09-24 Factored in a person's preference for the new stress modifier 
+            //2016-09-24 Factored in a person's preference for the new stress modifier
             super.setStressModifier(score/10D + STRESS_MODIFIER);
         }
         else if (unit instanceof Robot) {
         	//this.robot = (Robot) unit;
         }
-        
+
         claimMalfunction();
-        
+
         if (entity != null) {
         	addPersonOrRobotToMalfunctionLocation(entity);
         }
@@ -94,25 +94,25 @@ implements Repair, Serializable {
         // Create starting task event if needed.
         TaskEvent startingEvent = null ;
         if (getCreateEvents() && !isDone()) {
-        	if (person != null) 
-                startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");   
+        	if (person != null)
+                startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
         	else if (robot != null)
-                startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");            
-        	            
+                startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");
+
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }
 
         // Initialize task phase
         addPhase(REPAIRING);
         setPhase(REPAIRING);
-        
+
         if (malfunction != null) {
         	if (person != null) {
-                logger.fine(person.getName() + " starting work on emergency malfunction: " + 
+                logger.fine(person.getName() + " starting work on emergency malfunction: " +
                         malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
         	}
         	else if (robot != null) {
-                //logger.fine(robot.getName() + " starting work on emergency malfunction: " + 
+                //logger.fine(robot.getName() + " starting work on emergency malfunction: " +
                         //malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
         	}
         }
@@ -137,6 +137,7 @@ implements Repair, Serializable {
      * @return the amount of time (millisol) left after performing the phase.
      */
     private double repairingPhase(double time) {
+    	String name = null;
 
         // Check if the emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
@@ -150,15 +151,17 @@ implements Repair, Serializable {
         }
 
         double workTime = 0;
-	
-		if (person != null) {			
+
+		if (person != null) {
+	        name = person.getName();
 	        workTime = time;
 		}
 		else if (robot != null) {
+			name = robot.getName();
 		     // A robot moves slower than a person and incurs penalty on workTime
-	        //workTime = time/2;
+	        workTime = time/2;
 		}
- 
+
 		// Determine effective work time based on "Mechanic" skill.
         int mechanicSkill = getEffectiveSkillLevel();
         if (mechanicSkill == 0) {
@@ -169,7 +172,7 @@ implements Repair, Serializable {
         }
 
         // Add work to emergency malfunction.
-        double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
+        double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime, name);
 
         // Add experience
         addExperience(time);
@@ -197,7 +200,7 @@ implements Repair, Serializable {
             //newPoints *= getTeachingExperienceModifier();
             //robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
         }
-       
+
      }
 
     /**
@@ -219,7 +222,7 @@ implements Repair, Serializable {
 
         return result;
     }
-    
+
     public static boolean hasEmergencyMalfunction(Robot robot) {
 
         boolean result = false;
@@ -248,13 +251,13 @@ implements Repair, Serializable {
                 if (manager.hasEmergencyMalfunction()) {
                     malfunction = manager.getMostSeriousEmergencyMalfunction();
                     entity = e;
-                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail", 
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail",
                             malfunction.getName(), entity.getName())); //$NON-NLS-1$
                 }
             }
         }
         else if (robot != null) {
-/*        	
+/*
             Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
             while (i.hasNext() && (malfunction == null)) {
                 Malfunctionable e = i.next();
@@ -262,11 +265,11 @@ implements Repair, Serializable {
                 if (manager.hasEmergencyMalfunction()) {
                     malfunction = manager.getMostSeriousEmergencyMalfunction();
                     entity = e;
-                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail", 
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail",
                             malfunction.getName(), entity.getName())); //$NON-NLS-1$
                 }
             }
-*/            
+*/
         }
 
     }
@@ -306,17 +309,17 @@ implements Repair, Serializable {
             walkToRandomLocation(true);
         }
     }
-   
+
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = null;
-    	if (person != null) 
-            manager = person.getMind().getSkillManager();        
+    	if (person != null)
+            manager = person.getMind().getSkillManager();
     	else if (robot != null)
     	    ;//manager = robot.getBotMind().getSkillManager();
-        return 
+        return
         		manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-    }  
+    }
 
     @Override
     public List<SkillType> getAssociatedSkills() {

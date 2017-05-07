@@ -9,7 +9,7 @@ public class MockVehicle extends Vehicle {
 		// Use Vehicle constructor
 		super("Mock Vehicle", "Mock Vehicle", settlement, 10D, 100D, 1D, 100D);
 	}
-	
+
 	public boolean isAppropriateOperator(VehicleOperator operator) {
 		return false;
 	}
@@ -17,9 +17,14 @@ public class MockVehicle extends Vehicle {
 	public AmountResource getFuelType() {
 		return null;
 	}
-	
+
     @Override
     public void determinedSettlementParkedLocationAndFacing() {
     	// Do nothing
     }
+
+	@Override
+	public String getNickName() {
+		return getName();
+	}
 }

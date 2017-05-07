@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 public class BuildingKit
 extends Equipment
 implements Serializable, Malfunctionable, Salvagable {
-	
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ implements Serializable, Malfunctionable, Salvagable {
 	public static final String TYPE = "Building Kit";
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 30D;
-	
+
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334000D;
 	/** 100 millisols. */
@@ -43,9 +43,9 @@ implements Serializable, Malfunctionable, Salvagable {
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
 
-	
+
 	/**
-	 * The BuildingKit class represents a building kit in a building. 
+	 * The BuildingKit class represents a building kit in a building.
 	 */
 	public BuildingKit(Coordinates location) {
 		super(TYPE, location);
@@ -73,7 +73,7 @@ implements Serializable, Malfunctionable, Salvagable {
 	public String getKitName() {
 		return kitName;
 	}
-	
+
 	/**
 	 * Indicate the start of a salvage process on the item.
 	 * @param info the salvage process info.
@@ -99,7 +99,7 @@ implements Serializable, Malfunctionable, Salvagable {
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
 	}
-	
+
 	/**
 	 * Time passing for the Building Kit.
 	 * @param time the amount of time passing (millisols)
@@ -116,8 +116,8 @@ implements Serializable, Malfunctionable, Salvagable {
 		}
 		malfunctionManager.timePassing(time);
 	}
-	
-	
+
+
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -125,5 +125,12 @@ implements Serializable, Malfunctionable, Salvagable {
 		salvageInfo = null;
 	}
 
-	
+
+	@Override
+	public String getNickName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

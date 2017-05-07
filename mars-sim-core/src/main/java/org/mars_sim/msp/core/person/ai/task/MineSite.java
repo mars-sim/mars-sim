@@ -433,7 +433,13 @@ implements Serializable {
             chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                luv.getMalfunctionManager().accident();
+    			if (person != null) {
+    	            logger.info(person.getName() + " has an accident while performing maintenance on " + luv.getName() + ".");
+    			}
+    			else if (robot != null) {
+    				logger.info(robot.getName() + " has an accident while performing maintenance on " + luv.getName() + ".");
+    			}
+                luv.getMalfunctionManager().createAccident(luv.getName());
             }
         }
     }

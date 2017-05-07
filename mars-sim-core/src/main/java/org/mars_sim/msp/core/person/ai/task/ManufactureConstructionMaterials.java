@@ -617,9 +617,14 @@ implements Serializable {
                 .getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has accident while manufacturing " +
-                    "construction materials.");
-            workshop.getBuilding().getMalfunctionManager().accident();
+            logger.info(person.getName() + " has accident while manufacturing construction materials.");
+
+			if (person != null)
+				logger.info(person.getName() + " has accident while manufacturing construction materials.");
+			else if (robot != null)
+				logger.info(robot.getName() + " has accident while manufacturing construction materials.");
+
+            workshop.getBuilding().getMalfunctionManager().createAccident();
         }
     }
 

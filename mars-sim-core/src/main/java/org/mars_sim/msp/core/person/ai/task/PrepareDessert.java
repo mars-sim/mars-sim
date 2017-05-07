@@ -94,7 +94,7 @@ implements Serializable {
 		        setPhase(PREPARING_DESSERT);
 
 		        String jobName = person.getMind().getJob().getName(person.getGender());
-		        logger.finest(jobName + " " + person.getName() + " making dessert in " + kitchen.getBuilding().getNickName() +
+		        logger.info(jobName + " " + person.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
 		                " at " + person.getSettlement());
 	        }
 	        else {
@@ -136,7 +136,7 @@ implements Serializable {
 		        setPhase(PREPARING_DESSERT);
 
 		        String jobName = RobotJob.getName(robot.getRobotType());
-		        logger.finest(jobName + " " + robot.getName() + " making dessert in " + kitchen.getBuilding().getNickName() +
+		        logger.info(jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
 		                " at " + robot.getSettlement());
 	        }
 	        else {
@@ -331,12 +331,12 @@ implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             if (person != null) {
-                logger.fine(person.getName() + " has accident while making dessert");
+                logger.fine(person.getName() + " has an accident while making dessert");
             }
             else if (robot != null) {
-                logger.fine(robot.getName() + " has accident while making dessert");
+                logger.fine(robot.getName() + " has an accident while making dessert");
             }
-            kitchen.getBuilding().getMalfunctionManager().accident();
+            kitchen.getBuilding().getMalfunctionManager().createAccident();
         }
     }
 

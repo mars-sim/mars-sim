@@ -62,11 +62,13 @@ implements Serializable {
     public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
 
     // Data members.
+    private boolean operatingLUV;
+
     private ConstructionStage stage;
     private ConstructionSite site;
-    private List<GroundVehicle> vehicles;
     private LightUtilityVehicle luv;
-    private boolean operatingLUV;
+
+    private List<GroundVehicle> vehicles;
 
     /**
      * Constructor.
@@ -530,7 +532,15 @@ implements Serializable {
             chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                luv.getMalfunctionManager().accident();
+
+    			if (person != null) {
+    	            logger.info(person.getName() + " has an accident while constructing the site " + site.getName());
+    			}
+    			else if (robot != null) {
+    				logger.info(robot.getName() + " has an accident while constructing the site " + site.getName());
+    			}
+
+                luv.getMalfunctionManager().createAccident(site.getName());
             }
         }
     }

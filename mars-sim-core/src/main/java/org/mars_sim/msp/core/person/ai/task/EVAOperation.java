@@ -470,8 +470,14 @@ implements Serializable {
     	            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
 
     	            if (RandomUtil.lessThanRandPercent(chance * time)) {
-    	                logger.fine(person.getName() + " has accident during EVA operation.");
-    	                suit.getMalfunctionManager().accident();
+    	    			if (person != null) {
+    	    	            logger.info(person.getName() + " has an accident during EVA operation.");
+    	    			}
+    	    			else if (robot != null) {
+    	    				logger.info(robot.getName() + " has an accident during EVA operation.");
+    	    			}
+
+    	                suit.getMalfunctionManager().createAccident("EVA operation");
     	            }
     	        }
     	}

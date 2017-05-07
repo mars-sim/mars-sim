@@ -61,7 +61,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public final static String TOWED = "Towed";
 
     // The error margin for determining vehicle range. (actual distance / safe distance)
-    private static double fuel_range_error_margin = 0; //1.7D
+    private static double fuel_range_error_margin;
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)

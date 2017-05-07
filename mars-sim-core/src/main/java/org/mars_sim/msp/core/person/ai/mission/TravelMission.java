@@ -45,7 +45,7 @@ extends Mission {
 
     /**
      * Constructor (note: The constructor handles setting the initial nav point.)
-     * @param name the name of the mission.
+     * @param missionName the name of the mission.
      * @param startingPerson the person starting the mission.
      * @param minPeople the minimum number of people required for mission.
      * @throws MissionException if error constructing mission.
@@ -88,9 +88,9 @@ extends Mission {
         setTravelStatus(AT_NAVPOINT);
     }
     */
-    protected TravelMission(String name, MissionMember startingMember, int minPeople) {
+    protected TravelMission(String missionName, MissionMember startingMember, int minPeople) {
         // Use Mission constructor.
-        super(name, startingMember, minPeople);
+        super(missionName, startingMember, minPeople);
 
 //        Person person = null;
 //        Robot robot = null;

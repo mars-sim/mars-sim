@@ -544,9 +544,15 @@ implements ResearchScientificStudy, Serializable {
             chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                logger.info(person.getName() + " has a lab accident while performing " +
+
+    			if (person != null)
+    				logger.info(person.getName() + " has a lab accident while performing " +
                         science.getName() + " experiment");
-                entity.getMalfunctionManager().accident();
+    			else if (robot != null)
+    				logger.info(robot.getName() + " has a lab accident while performing " +
+                        science.getName() + " experiment");
+
+                entity.getMalfunctionManager().createAccident();
             }
         }
     }

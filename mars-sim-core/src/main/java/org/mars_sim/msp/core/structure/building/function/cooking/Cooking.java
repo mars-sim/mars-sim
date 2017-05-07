@@ -879,9 +879,9 @@ implements Serializable {
 	    qualityMap.put(nameOfMeal, mealQuality);
 	    timeMap.put(nameOfMeal, currentTime);
 
-	    logger.info(producerName + " cooked a serving of " + meal.getName()
-	    	+ " in " + getBuilding().getBuildingManager().getSettlement().getName()
-	    	+ " (meal quality : " + mealQuality + ")");
+	    //logger.info(producerName + " cooked a serving of " + meal.getName()
+	    //	+ " in " + getBuilding().getBuildingManager().getSettlement().getName()
+	    //	+ " (meal quality : " + mealQuality + ")");
 
 	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
 	    // Reduce a tiny bit of kitchen's cleanliness upon every meal made

@@ -73,6 +73,8 @@ implements Serializable {
     // Data members
     /** The greenhouse the person is tending. */
     private Farming greenhouse;
+    /** The building where the greenhouse the person is tending. */
+    private Building farmBuilding;
 
     //private SkillManager skillManager;
 
@@ -96,7 +98,7 @@ implements Serializable {
 		//skillManager = person.getMind().getSkillManager();
 
         // Get available greenhouse if any.
-        Building farmBuilding = getAvailableGreenhouse(person);
+        farmBuilding = getAvailableGreenhouse(person);
         if (farmBuilding != null) {
             greenhouse = (Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
 
@@ -139,7 +141,7 @@ implements Serializable {
 		//skillManager = robot.getBotMind().getSkillManager();
 
         // Get available greenhouse if any.
-        Building farmBuilding = getAvailableGreenhouse(robot);
+        farmBuilding = getAvailableGreenhouse(robot);
         if (farmBuilding != null) {
             greenhouse = (Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
 
@@ -551,8 +553,15 @@ implements Serializable {
         chance *= greenhouse.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // logger.info(person.getName() + " has accident while tending the greenhouse.");
-            greenhouse.getBuilding().getMalfunctionManager().accident();
+
+			if (person != null) {
+	            logger.info(person.getName() + " has an accident while tending greenhouse.");
+			}
+			else if (robot != null) {
+				logger.info(robot.getName() + " has an accident while tending greenhouse.");
+			}
+
+        	farmBuilding.getMalfunctionManager().createAccident();
         }
     }
 
