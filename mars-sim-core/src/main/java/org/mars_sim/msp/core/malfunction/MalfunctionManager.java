@@ -36,8 +36,9 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
- * The MalfunctionManager class manages the current malfunctions in a unit.
+ * The MalfunctionManager class manages the current malfunctions in each of the 6 types of units (namely, Building, BuildingKit, EVASuit, Robot, MockBuilding, or Vehicle)
  */
+// TODO: have one single MalfunctionUtility class to handle static methods that are common to all 6 types of units
 public class MalfunctionManager
 implements Serializable {
 
@@ -543,18 +544,52 @@ implements Serializable {
 	/**
 	 * Called when the unit has an accident.
 	 */
-	public void accident() {
-		String name = Conversion.capitalize(entity.getName());
-		if (name.contains("EVA"))
-			name = "with " + name;
+	public void createAccident(String s) {
+		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
+
+		if (s.contains("EVA")) {
+			sb.insert(0, "with ");
+
+		}
 		else {
-			if (Conversion.checkVowel(name))
-				name = "in an " + name;
+
+			if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") || s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
+				sb.insert(0, "in an ");
 			else
-				name = "in a " + name;
+				sb.insert(0, "in a ");
+
 		}
 
-		logger.info("An accident occurs " + name);
+		accident(sb.toString());
+	}
+
+	/**
+	 * Called when the unit has an accident.
+	 */
+	public void createAccident() {
+		String n = entity.getNickName();
+		StringBuilder sb = new StringBuilder(Conversion.capitalize(n));
+
+		if (n.contains("EVA")) {
+			sb.insert(0, "with ");
+
+		}
+		else {
+			sb.insert(0, "in ");
+		}
+
+		if (entity.getSettlement() != null) {
+			sb.append(" at " + entity.getSettlement());
+		}
+
+		accident(sb.toString());
+	}
+
+	/**
+	 * Called when the unit has an accident.
+	 */
+	public void accident(String s) {
+		logger.info("An accident occurs " + s);
 
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.

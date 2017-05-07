@@ -304,8 +304,12 @@ implements Serializable {
 		chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			// logger.info(person.getName() + " has accident during medical assistance.");
-			entity.getMalfunctionManager().accident();
+			if (person != null)
+				logger.info(person.getName() + " has accident while offering medical assistance.");
+			else if (robot != null)
+				logger.info(robot.getName() + " has accident while offering medical assistance.");
+
+			entity.getMalfunctionManager().createAccident();
 		}
 	}
 

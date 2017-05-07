@@ -1024,8 +1024,8 @@ implements Serializable {
 		            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		            if (RandomUtil.lessThanRandPercent(chance * time)) {
-		                logger.fine(person.getName() + " has accident during EVA walking.");
-		                suit.getMalfunctionManager().accident();
+		                logger.fine(person.getName() + " has accident during an EVA.");
+		                suit.getMalfunctionManager().createAccident("EVA");
 		            }
 		        }
 		}
@@ -1045,7 +1045,7 @@ implements Serializable {
 
 		            if (RandomUtil.lessThanRandPercent(chance * time)) {
 		                logger.fine(robot.getName() + " has accident during EVA walking.");
-		                suit.getMalfunctionManager().accident();
+		                suit.getMalfunctionManager().createAccident();
 		            }
 		        }
 		}

@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.AreologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -80,9 +81,9 @@ implements Serializable {
 	/** The person leading the areology research. */
 	private Person leadResearcher;
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource foodAR = ResourceUtil.foodAR;
 
 
 	/**
@@ -120,11 +121,11 @@ implements Serializable {
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
+			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
 					getStartingSettlement(), getStartingSettlement().getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) 
+			if (hasVehicle() && !isVehicleLoadable())
 				endMission("Vehicle is not loadable. (AreologyStudyFieldMission)");
 		}
 
@@ -133,7 +134,7 @@ implements Serializable {
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
 				getStartingSettlement().getName())); //$NON-NLS-1$
 	}
 
@@ -149,7 +150,7 @@ implements Serializable {
 	 * @throws MissionException if error creating mission.
 	 */
 	public AreologyStudyFieldMission(
-			Collection<Person> members, Settlement startingSettlement, 
+			Collection<Person> members, Settlement startingSettlement,
 			Person leadResearcher, ScientificStudy study, Rover rover,
 			Coordinates fieldSite, String description
 			) {
@@ -177,7 +178,7 @@ implements Serializable {
 		}
 
 		// Add home settlement
-		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
+		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
 				getStartingSettlement(), getStartingSettlement().getName()));
 
 		// Add researching site phase.
@@ -185,7 +186,7 @@ implements Serializable {
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
 				getStartingSettlement().getName())); //$NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
@@ -203,7 +204,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the lead researcher for the mission. 
+	 * Gets the lead researcher for the mission.
 	 * @return the researcher.
 	 */
 	public Person getLeadResearcher() {
@@ -225,7 +226,7 @@ implements Serializable {
 		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(researcher);
 		if (primaryStudy != null) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
+			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
 					!primaryStudy.isPrimaryResearchCompleted()) {
 				if (areology == primaryStudy.getScience()) {
 					// Primary study added twice to double chance of random selection.
@@ -239,7 +240,7 @@ implements Serializable {
 		Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(researcher).iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
+			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
 					!collabStudy.isCollaborativeResearchCompleted(researcher)) {
 				if (areology == collabStudy.getCollaborativeResearchers().get(researcher)) {
 					possibleStudies.add(collabStudy);
@@ -287,8 +288,8 @@ implements Serializable {
         double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
         if (dessert1TimeLimit < timeLimit)
             timeLimit = dessert1TimeLimit;
- */     
-		
+ */
+
 		// Check water capacity as time limit.
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterConsumptionRate = config.getWaterConsumptionRate();
@@ -316,13 +317,13 @@ implements Serializable {
 		return timeLimit;
 	}
 
-	/** 
+	/**
 	 * Determine the location of the research site.
 	 * @param roverRange the rover's driving range
 	 * @param tripTimeLimit the time limit (millisols) of the trip.
 	 * @throws MissionException of site can not be determined.
 	 */
-	private void determineFieldSite(double roverRange, double tripTimeLimit) 
+	private void determineFieldSite(double roverRange, double tripTimeLimit)
 	{
 
 		// Determining the actual traveling range.
@@ -359,11 +360,11 @@ implements Serializable {
 	}
 
 	@Override
-	protected double getMissionQualification(MissionMember member) {  
+	protected double getMissionQualification(MissionMember member) {
 		double result = super.getMissionQualification(member);
 
 		if ((result > 0D) && (member instanceof Person)) {
-		    
+
 		    Person person = (Person) member;
 
 			// Add modifier if person is a researcher on the same scientific study.
@@ -416,25 +417,25 @@ implements Serializable {
 		if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+			setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
 					getNextNavpoint().getDescription())); //$NON-NLS-1$
 		}
 		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
 						getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
 			}
 			else {
 				setPhase(RESEARCH_SITE);
-				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description", 
+				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description",
 						getCurrentNavpoint().getDescription())); //$NON-NLS-1$
 			}
 		}
 		else if (RESEARCH_SITE.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+			setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
 					getNextNavpoint().getDescription())); //$NON-NLS-1$
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
@@ -471,7 +472,7 @@ implements Serializable {
 		}
 	}
 
-	/** 
+	/**
 	 * Performs the research field site phase of the mission.
 	 * @param member the mission member currently performing the mission
 	 */
@@ -559,7 +560,7 @@ implements Serializable {
 				    // TODO Refactor
 				    if (member instanceof Person) {
 				        Person person = (Person) member;
-				        assignTask(person, new AreologyStudyFieldWork(person, leadResearcher, study, 
+				        assignTask(person, new AreologyStudyFieldWork(person, leadResearcher, study,
 				                (Rover) getVehicle()));
 				    }
 				}
@@ -579,7 +580,7 @@ implements Serializable {
 			}
 			result = atStartingSettlement;
 		}
-		
+
 		return result;
 	}
 
@@ -647,21 +648,21 @@ implements Serializable {
 			foodAmount += (Double) result.get(foodAR);
 		}
 		result.put(foodAR, foodAmount);
-		
-		/* 
+
+		/*
 		// 2015-03-09 Added the chosen dessert for the journey
-		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();		
+		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
 	  	// Added PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional and is only meant to help if food is low.
-		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum * PreparingDessert.DESSERT_SERVING_FRACTION ;		
-	  	// Put together a list of available dessert 
-        for(String n : availableDesserts) {   	
-    		AmountResource dessert = AmountResource.findAmountResource(n); 
+		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum * PreparingDessert.DESSERT_SERVING_FRACTION ;
+	  	// Put together a list of available dessert
+        for(String n : availableDesserts) {
+    		AmountResource dessert = AmountResource.findAmountResource(n);
         	// match the chosen dessert for the journey
             if (result.containsKey(dessert))
                 dessertAmount += (Double) result.get(dessert);
-            result.put(dessert, dessertAmount);	        	
+            result.put(dessert, dessertAmount);
         }
-      */       
+      */
 		/*
 	       // 2015-01-04 Added Soymilk
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");

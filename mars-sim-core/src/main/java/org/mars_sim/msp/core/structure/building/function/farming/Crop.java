@@ -856,11 +856,8 @@ public class Crop implements Serializable {
 	public double calculateHarvestModifier(double maxPeriodHarvest, double time) {
 		// TODO: use theoretical model for crop growth, instead of empirical model below.
 		// TODO: the calculation should be uniquely tuned to each crop
-
 		double harvestModifier = 1D;
-		//timeCache = timeCache + time;
 
-		// TODO: Modify harvest modifier according to the moisture level
 		// TODO: Modify harvest modifier according to the pollination by the number of bees in the greenhouse
 
 		// Determine harvest modifier according to amount of light.
@@ -1019,23 +1016,25 @@ public class Crop implements Serializable {
 		// Calculate water usage
 		double waterRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageWaterNeeded;
 		double greyWaterAvailable = inv.getAmountResourceStored(greyWaterAR, false);
+		double waterUsed = 0;
+		double totalWaterUsed = 0;
+		double fertilizerModifier = 0;
 
 		// First water crops with grey water if it is available.
-		double greyWaterUsed = waterRequired;
-		if (greyWaterUsed > greyWaterAvailable) {
-		    greyWaterUsed = greyWaterAvailable;
+		if (greyWaterAvailable >= waterRequired) {
+			waterUsed = waterRequired;
+		    Storage.retrieveAnResource(waterUsed, greyWaterAR, inv, true);
+		    fertilizerModifier = 1D;
 		}
-		if (greyWaterUsed > 0D) {
-		    Storage.retrieveAnResource(greyWaterUsed, greyWaterAR, inv, true);
-		}
-
 		// If not enough grey water, use water mixed with fertilizer.
-		double waterUsed = 0D;
-		if (greyWaterUsed < waterRequired) {
+		else if (greyWaterAvailable < waterRequired) {
+		    Storage.retrieveAnResource(greyWaterAvailable, greyWaterAR, inv, true);
+
 		    double waterAvailable = inv.getAmountResourceStored(waterAR, false);
-		    waterUsed = waterRequired - greyWaterUsed;
+		    waterUsed = waterRequired - greyWaterAvailable;
 		    if (waterUsed > waterAvailable) {
 		        waterUsed = waterAvailable;
+		        // should incur penalty due to insufficient water
 		    }
 		    if (waterUsed > 0D) {
 		        Storage.retrieveAnResource(waterUsed, waterAR, inv, true);
@@ -1047,38 +1046,27 @@ public class Crop implements Serializable {
 
 		    if (fertilizerUsed > fertilizerAvailable) {
 		        fertilizerUsed = fertilizerAvailable;
+		        // should incur penalty due to insufficient fertilizer
+		        fertilizerModifier = fertilizerUsed / fertilizerAvailable;
 		    }
+		    else
+		    	fertilizerModifier = 1D;
 		    if (fertilizerUsed > 0D) {
 		        Storage.retrieveAnResource(fertilizerUsed, fertilizerAR, inv, true);
 		    }
+
+			totalWaterUsed = greyWaterAvailable + waterUsed;
 		}
 
-		double totalWaterUsed = greyWaterUsed + waterUsed;
-
-//		double waterAvailable = inv.getAmountResourceStored(waterAR, false);
-//
-//		double waterUsed = waterRequired;
-//		if (waterRequired > waterAvailable) {
-//			// 2015-01-25 Added diff, waterUsed and consumeWater() when grey water is not available
-//			double diff = waterUsed - waterAvailable;
-//			waterUsed = waterAvailable;
-//		}
-//
-//		// Determine watering fertilizer needed when grey water isn't available.
-//		double wateringFertilizer = FERTILIZER_NEEDED_WATERING * growingArea * time;
-//
-//		Storage.retrieveAnResource(wateringFertilizer, FERTILIZER, inv, true);
-//		Storage.retrieveAnResource(waterRequired, LifeSupportType.WATER, inv, true);
 
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
-		// TODO: need more work
-		double waterReclaimed = waterRequired * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
+		// TODO: Modify harvest modifier according to the moisture level
+		double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
 		Storage.storeAnResource(waterReclaimed, waterAR, inv);
 
 		double waterModifier = totalWaterUsed / waterRequired * .5D + .5D;
 		if (waterModifier > 1.1)
 			waterModifier = 1.1;
-
 
 		// Calculate O2 and CO2 usage
 		double o2Modifier = 0, co2Modifier = 0;
@@ -1137,10 +1125,11 @@ public class Crop implements Serializable {
 
 		if (lightMemoryCache < .5) {
 			// 2015-08-26 Tuned harvestModifier
-			harvestModifier = .7 * harvestModifier
-					+ .1 * harvestModifier * temperatureModifier
+			harvestModifier = .5 * harvestModifier
+					+ .2 * harvestModifier * temperatureModifier
 					+ .1 * harvestModifier * waterModifier
-					+ .1 * harvestModifier * co2Modifier;
+					+ .1 * harvestModifier * co2Modifier
+					+ .1 * harvestModifier * fertilizerModifier;
 		}
 
 		// TODO: add airPressureModifier in future

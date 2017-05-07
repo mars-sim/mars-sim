@@ -25,18 +25,18 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Vehicle name. */
     public static final String NAME = "Light Utility Vehicle";
 
     /** The amount of work time to perform maintenance (millisols) */
     public static final double MAINTENANCE_WORK_TIME = 200D;
-    
+
     // Data members.
     /** The LightUtilityVehicle's capacity for crewmembers. */
     private int crewCapacity = 0;
     private int robotCrewCapacity = 0;
-    
+
     private Collection<Part> attachments = null;
     private int slotNumber  = 0;
 
@@ -60,7 +60,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
         crewCapacity = config.getCrewSize(description);
         robotCrewCapacity = config.getCrewSize(description);
-        		
+
         Inventory inv = getInventory();
         inv.addGeneralCapacity(config.getTotalCapacity(description));
 
@@ -79,7 +79,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     	if (operator instanceof Person)
         	result = (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
     	else if (operator instanceof Robot)
-        	result = (operator instanceof Robot) && (getInventory().containsUnit((Unit) operator));   	
+        	result = (operator instanceof Robot) && (getInventory().containsUnit((Unit) operator));
     	return result ;
     }
 
@@ -91,7 +91,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
 
-    
+
     /**
      * Gets the number of crewmembers the vehicle can carry.
      * @return capacity
@@ -156,7 +156,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     public void timePassing(double time) {
         super.timePassing(time);
         // Add active time if crewed.
-        if (getCrewNum() > 0 || getRobotCrewNum() > 0 ) malfunctionManager.activeTimePassing(time);      
+        if (getCrewNum() > 0 || getRobotCrewNum() > 0 ) malfunctionManager.activeTimePassing(time);
     }
 
     @Override
@@ -171,6 +171,11 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	public Collection<Unit> getUnitCrew() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getNickName() {
+		return getName();
 	}
 
 

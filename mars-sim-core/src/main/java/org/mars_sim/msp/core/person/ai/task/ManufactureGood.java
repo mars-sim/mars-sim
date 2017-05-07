@@ -62,7 +62,7 @@ implements Serializable {
 	// Data members
 	/** The manufacturing workshop the person is using. */
 	private Manufacture workshop;
-	
+
 	private SkillManager skillManager;
 
 	/**
@@ -83,7 +83,7 @@ implements Serializable {
 		}
 
 		skillManager = person.getMind().getSkillManager();
-		
+
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
 		if (manufactureBuilding != null) {
@@ -138,12 +138,12 @@ implements Serializable {
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.MANUFACTURE;
     }
-    
+
     @Override
     protected BuildingFunction getRelatedBuildingRoboticFunction() {
         return BuildingFunction.MANUFACTURE;
     }
-    
+
 	/**
 	 * Cancel any manufacturing processes that's beyond the skill of any people
 	 * associated with the settlement.
@@ -166,7 +166,7 @@ implements Serializable {
 					highestSkillLevel = skill;
 				}
 			}
-			
+
 			skillManager = null;
 			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
 			//Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
@@ -190,7 +190,7 @@ implements Serializable {
 				Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
 				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
 						manufacturingFunction.getProcesses());
-				for (ManufactureProcess process : processes) {				
+				for (ManufactureProcess process : processes) {
 				//Iterator<ManufactureProcess> k = processes.iterator();
 				//while (k.hasNext()) {
 				//	ManufactureProcess process = k.next();
@@ -221,20 +221,20 @@ implements Serializable {
                     highestSkillLevel = skill;
                 }
             }
-            
+
             skillManager = null;
-            for (Robot tempRobot : settlement.getAllAssociatedRobots()) {            
+            for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
             //Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
             //while (l.hasNext()) {
             //    Robot tempRobot = l.next();
                 if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
-                    if (skillManager == null) 
+                    if (skillManager == null)
                     	skillManager = tempRobot.getBotMind().getSkillManager();
 	                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 	                if (skill > highestSkillLevel) {
 	                    highestSkillLevel = skill;
 	                }
-                }                
+                }
             }
 
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
@@ -589,14 +589,14 @@ implements Serializable {
 					endTask();
 				}
 			}
-			
+
 			if (process != null)
-				// 2016-11-26 Inserted process into setDescription() 
-				setDescription(Msg.getString("Task.description.manufactureGood.detail", 
+				// 2016-11-26 Inserted process into setDescription()
+				setDescription(Msg.getString("Task.description.manufactureGood.detail",
                     Conversion.capitalize(process.toString()))); //$NON-NLS-1$
 			else
 				setDescription(Msg.getString("Task.description.manufactureGood.checking")); //$NON-NLS-1$
-			
+
 		}
 
 		// Add experience
@@ -722,11 +722,11 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null)
-				logger.info(person.getName() + " has accident while manufacturing.");
+				logger.info(person.getName() + " has accident while manufacturing good.");
 			else if (robot != null)
-				logger.info(robot.getName() + " has accident while manufacturing.");
+				logger.info(robot.getName() + " has accident while manufacturing godd.");
 
-			workshop.getBuilding().getMalfunctionManager().accident();
+			workshop.getBuilding().getMalfunctionManager().createAccident();
 		}
 	}
 

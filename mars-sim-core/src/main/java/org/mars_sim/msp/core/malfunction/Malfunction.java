@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Malfunction.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-05-06
  * @author Scott Davis
  */
 
@@ -23,27 +23,20 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** 
+/**
  * The Malfunction class represents a
  * malfunction in a vehicle, structure or equipment.
  */
 public class Malfunction implements Serializable {
-    
+
     //private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
     //private static Logger logger = Logger.getLogger(CLASS_NAME);
 	private static Logger logger = Logger.getLogger(Malfunction.class.getName());
 
-    
+
     // Data members
-    private String name; 
     private int severity;
     private double probability;
-    private Collection<String> scope;
-    private Map<AmountResource, Double> resourceEffects;
-    private Map<String, Double> lifeSupportEffects;
-    private Map<ComplaintType, Double> medicalComplaints;
-    private Map<Part, Integer> repairParts;
-
     // Work time tracking
     private double workTime;
     private double workTimeCompleted;
@@ -51,14 +44,22 @@ public class Malfunction implements Serializable {
     private double emergencyWorkTimeCompleted;
     private double EVAWorkTime;
     private double EVAWorkTimeCompleted;
-    
-    /** 
+    private String name;
+
+    private Collection<String> scope;
+    private Map<AmountResource, Double> resourceEffects;
+    private Map<String, Double> lifeSupportEffects;
+    private Map<ComplaintType, Double> medicalComplaints;
+    private Map<Part, Integer> repairParts;
+
+
+    /**
      * Constructs a Malfunction object
-     * @param name name of the malfunction 
+     * @param name name of the malfunction
      */
-    public Malfunction(String name, int severity, double probability, double emergencyWorkTime, 
-		       double workTime, double EVAWorkTime, Collection<String> scope, 
-		       Map<AmountResource, Double> resourceEffects, 
+    public Malfunction(String name, int severity, double probability, double emergencyWorkTime,
+		       double workTime, double EVAWorkTime, Collection<String> scope,
+		       Map<AmountResource, Double> resourceEffects,
 		       Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints) {
 
         // Initialize data members
@@ -80,15 +81,15 @@ public class Malfunction implements Serializable {
     }
 
     /**
-     * Returns the name of the malfunction. 
-     * @return name of the malfunction 
+     * Returns the name of the malfunction.
+     * @return name of the malfunction
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Returns true if malfunction is fixed. 
+     * Returns true if malfunction is fixed.
      * @return true if malfunction is fixed
      */
     public boolean isFixed() {
@@ -97,11 +98,11 @@ public class Malfunction implements Serializable {
         if (workTimeCompleted < workTime) result = false;
         if (emergencyWorkTimeCompleted < emergencyWorkTime) result = false;
         if (EVAWorkTimeCompleted < EVAWorkTime) result = false;
-	
+
         return result;
     }
 
-    /** 
+    /**
      * Returns the severity level of the malfunction.
      * @return severity of malfunction (1 - 100)
      */
@@ -116,7 +117,7 @@ public class Malfunction implements Serializable {
     public double getProbability() {
         return probability;
     }
-    
+
     /**
      * Returns the work time required to repair the malfunction.
      * @return work time (in millisols)
@@ -124,17 +125,17 @@ public class Malfunction implements Serializable {
     public double getWorkTime() {
         return workTime;
     }
-   
+
     /**
      * Returns the completed work time.
      * @return completed work time (in millisols)
      */
     public double getCompletedWorkTime() {
-        return workTimeCompleted; 
+        return workTimeCompleted;
     }
 
-    /** 
-     * Adds work time to the malfunction. 
+    /**
+     * Adds work time to the malfunction.
      * @param time work time (in millisols)
      * @return remaining work time not used (in millisols)
      */
@@ -155,33 +156,31 @@ public class Malfunction implements Serializable {
     public double getEmergencyWorkTime() {
         return emergencyWorkTime;
     }
-   
+
     /**
      * Returns the completed emergency work time.
      * @return completed emergency work time (in millisols)
      */
     public double getCompletedEmergencyWorkTime() {
-        return emergencyWorkTimeCompleted; 
+        return emergencyWorkTimeCompleted;
     }
 
-    /** 
-     * Adds emergency work time to the malfunction. 
+    /**
+     * Adds emergency work time to the malfunction.
      * @param time emergency work time (in millisols)
      * @return remaining work time not used (in millisols)
      */
-    public double addEmergencyWorkTime(double time) {
+    public double addEmergencyWorkTime(double time, String repairer) {
         emergencyWorkTimeCompleted += time;
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
             emergencyWorkTimeCompleted = emergencyWorkTime;
-            logger.info(name 
-            		+ " (Code: " + Integer.toHexString(hashCode()) 
-            		+ ") Emergency repaired finished.");
+            logger.info(name + " incident - emergency repair finished by " + repairer);
             return remaining;
         }
         return 0D;
     }
-    
+
     /**
      * Returns the EVA work time required to repair the malfunction.
      * @return EVA work time (in millisols)
@@ -189,17 +188,17 @@ public class Malfunction implements Serializable {
     public double getEVAWorkTime() {
         return EVAWorkTime;
     }
-   
+
     /**
      * Returns the completed EVA work time.
      * @return completed EVA work time (in millisols)
      */
     public double getCompletedEVAWorkTime() {
-        return EVAWorkTimeCompleted; 
+        return EVAWorkTimeCompleted;
     }
 
-    /** 
-     * Adds EVA work time to the malfunction. 
+    /**
+     * Adds EVA work time to the malfunction.
      * @param time EVA work time (in millisols)
      * @return remaining work time not used (in millisols)
      */
@@ -269,14 +268,14 @@ public class Malfunction implements Serializable {
         Malfunction clone = new Malfunction(name, severity, probability, emergencyWorkTime,
             workTime, EVAWorkTime, scope, resourceEffects, lifeSupportEffects, medicalComplaints);
 
-        if (emergencyWorkTime > 0D) 
-            logger.info(name 
-            		+ " (Code: " + Integer.toHexString(clone.hashCode()) 
-            		+ ") Commencing emergency repair.");
-	
+        String id = " (id: " + Integer.toHexString(hashCode()) + ")";
+
+        if (emergencyWorkTime > 0D)
+            logger.info(name + id + " incident - triggering the emergency repair alert");
+
         return clone;
     }
-    
+
     /**
      * Determines the parts that are required to repair this malfunction.
      * @throws Exception if error determining the repair parts.
@@ -287,33 +286,32 @@ public class Malfunction implements Serializable {
         for (String partName : partNames) {
             if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
-                Part part = (Part) ItemResource.findItemResource(partName);               
+                Part part = (Part) ItemResource.findItemResource(partName);
                 repairParts.put(part, number);
-                logger.info(name 
-                		+ " - the repair requires the part(s) " + part.getName() + " (quantity: " + number + ")");
+                logger.info(name + " incident - the repair requires the part " + part.getName() + " (quantity: " + number + ")");
             }
         }
     }
-    
+
     public void produceSolidWaste(double amount, String name, Inventory inv) {
-        
+
     	try {
-            AmountResource ar = AmountResource.findAmountResource(name);      
+            AmountResource ar = AmountResource.findAmountResource(name);
             double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
 
             if (remainingCapacity < amount) {
                 // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
             	amount = remainingCapacity;
                 //logger.info(" storage is full!");
-            }	            
-            // TODO: consider the case when it is full  	            
+            }
+            // TODO: consider the case when it is full
             inv.storeAmountResource(ar, amount, true);
             inv.addAmountSupplyAmount(ar, amount);
         }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
         }
     }
-    
+
     /**
      * Gets the parts required to repair this malfunction.
      * @return map of parts and their number.
@@ -321,7 +319,7 @@ public class Malfunction implements Serializable {
     public Map<Part, Integer> getRepairParts() {
     	return new HashMap<Part, Integer>(repairParts);
     }
-    
+
     /**
      * Repairs the malfunction with a number of a part.
      * @param part the part.
@@ -331,21 +329,21 @@ public class Malfunction implements Serializable {
     	if (part == null) throw new IllegalArgumentException("part is null");
     	if (repairParts.containsKey(part)) {
     		int numberNeeded = repairParts.get(part);
-    		if (number > numberNeeded) throw new IllegalArgumentException("number " + number + 
+    		if (number > numberNeeded) throw new IllegalArgumentException("number " + number +
     				" is greater that number of parts needed: " + numberNeeded);
     		else {
-    			numberNeeded -= number;   			
-                
-    			// 2015-02-26 Added produceSolidWaste() 			
-                produceSolidWaste(part.getMass(), "Solid Waste", inv);   
-                
+    			numberNeeded -= number;
+
+    			// 2015-02-26 Added produceSolidWaste()
+                produceSolidWaste(part.getMass(), "Solid Waste", inv);
+
     			if (numberNeeded > 0) repairParts.put(part, numberNeeded);
     			else repairParts.remove(part);
     		}
     	}
     	else throw new IllegalArgumentException("Part " + part + " is not needed for repairs.");
     }
-    
+
     /**
      * Gets the string value for the object.
      */

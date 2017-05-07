@@ -42,7 +42,7 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.driveGroundVehicle"); //$NON-NLS-1$
-	
+
     /** Task phases. */
     private static final TaskPhase AVOID_OBSTACLE = new TaskPhase(Msg.getString(
             "Task.phase.avoidObstacle")); //$NON-NLS-1$
@@ -60,7 +60,7 @@ implements Serializable {
 	// Data members
 	private int sideDirection = NONE;
 
-	/** 
+	/**
 	 * Default Constructor.
 	 * @param person the person to perform the task
 	 * @param vehicle the vehicle to be driven
@@ -70,13 +70,13 @@ implements Serializable {
 	 */
 	public DriveGroundVehicle(Person person, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-    	
+
     	// Use OperateVehicle constructor
-        super(NAME, person, vehicle, destination, startTripTime, 
+        super(NAME, person, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
         // Set initial parameters
-        setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+        setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
@@ -85,20 +85,20 @@ implements Serializable {
     }
 	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-    	
+
     	// Use OperateVehicle constructor
-        super(NAME, robot, vehicle, destination, startTripTime, 
+        super(NAME, robot, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
         // Set initial parameters
-        setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+        setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
 
         logger.fine(robot.getName() + " is driving " + vehicle.getName());
     }
-	
+
     /**
      * Constructs with a given starting phase.
      * @param person the person to perform the task
@@ -108,15 +108,15 @@ implements Serializable {
      * @param startTripDistance the starting distance to destination for the trip
      * @param startingPhase the starting phase for the task
      */
-    public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, 
+    public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination,
             MarsClock startTripTime, double startTripDistance, TaskPhase startingPhase) {
-    	
+
         // Use OperateVehicle constructor
-    	super(NAME, person, vehicle, destination, startTripTime, 
+    	super(NAME, person, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
-    	
+
         // Set initial parameters
-    	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+    	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
@@ -124,31 +124,31 @@ implements Serializable {
 
         logger.fine(person.getName() + " is driving " + vehicle.getName());
     }
-    public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, 
+    public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination,
             MarsClock startTripTime, double startTripDistance, TaskPhase startingPhase) {
-    	
+
         // Use OperateVehicle constructor
-    	super(NAME, robot, vehicle, destination, startTripTime, 
+    	super(NAME, robot, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
-    	
+
         // Set initial parameters
-    	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+    	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
 		if (startingPhase != null) setPhase(startingPhase);
 
         logger.fine(robot.getName() + " is driving " + vehicle.getName());
-    }    
+    }
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
      */
     protected double performMappedPhase(double time) {
-    	
+
         time = super.performMappedPhase(time);
-    	
+
         if (getPhase() == null) {
     	    throw new IllegalArgumentException("Task phase is null");
     	}
@@ -162,7 +162,7 @@ implements Serializable {
     	    return time;
     	}
     }
-	
+
 	/**
 	 * Move the vehicle in its direction at its speed for the amount of time given.
 	 * Stop if reached destination.
@@ -170,15 +170,15 @@ implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-		
+
 		// If vehicle is stuck, try winching.
 		if (((GroundVehicle) getVehicle()).isStuck() && (!WINCH_VEHICLE.equals(getPhase()))) {
 			setPhase(WINCH_VEHICLE);
 			return(time);
 		}
-		
+
         // If speed is less the 1 kph, change to avoiding obstacle phase.
-        if ((getVehicle().getSpeed() < 1D) && (!AVOID_OBSTACLE.equals(getPhase())) && 
+        if ((getVehicle().getSpeed() < 1D) && (!AVOID_OBSTACLE.equals(getPhase())) &&
         		(!WINCH_VEHICLE.equals(getPhase()))) {
             setPhase(AVOID_OBSTACLE);
             return(time);
@@ -186,7 +186,7 @@ implements Serializable {
         else return super.mobilizeVehicle(time);
 	}
 
-    /** 
+    /**
      * Perform task in obstacle phase.
      * @param time the amount of time to perform the task (in millisols)
      * @return time remaining after performing phase (in millisols)
@@ -198,10 +198,10 @@ implements Serializable {
 
         // Update vehicle elevation.
         updateVehicleElevationAltitude();
-        
+
         // Get the direction to the destination.
         Direction destinationDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination());
-        
+
         // If speed in destination direction is good, change to mobilize phase.
         double destinationSpeed = getSpeed(destinationDirection);
         if (destinationSpeed >= 1D) {
@@ -210,17 +210,17 @@ implements Serializable {
             sideDirection = NONE;
             return time;
         }
-        
+
         // Determine the direction to avoid the obstacle.
         Direction travelDirection = getObstacleAvoidanceDirection();
-        
+
         // If an obstacle avoidance direction could not be found, winch vehicle.
         if (travelDirection == null) {
             setPhase(WINCH_VEHICLE);
             sideDirection = NONE;
             return time;
         }
-        
+
         // Set the vehicle's direction.
         vehicle.setDirection(travelDirection);
 
@@ -229,20 +229,20 @@ implements Serializable {
 
         // Drive in the direction
         timeUsed = time - mobilizeVehicle(time);
-        
+
         // Add experience points
         addExperience(time);
 
         // Check for accident.
         if (!isDone()) checkForAccident(timeUsed);
-        
+
         // If vehicle has malfunction, end task.
         if (getVehicle().getMalfunctionManager().hasMalfunction()) endTask();
 
         return time - timeUsed;
     }
 
-    /** 
+    /**
      * Perform task in winching phase.
      * @param time the amount of time to perform the phase.
      * @return time remaining after performing the phase.
@@ -275,25 +275,25 @@ implements Serializable {
 
         // Check for accident.
         if (!isDone()) checkForAccident(timeUsed);
-        
+
         // If vehicle has malfunction, end task.
         if (getVehicle().getMalfunctionManager().hasMalfunction()) endTask();
 
         return time - timeUsed;
     }
 
-    /** 
+    /**
      * Gets the direction for obstacle avoidance.
      * @return direction for obstacle avoidance in radians or null if none found.
      */
     private Direction getObstacleAvoidanceDirection() {
         Direction result = null;
-        
+
     	GroundVehicle vehicle = (GroundVehicle) getVehicle();
         boolean foundGoodPath = false;
-        
+
         double initialDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination()).getDirection();
-        
+
         if (sideDirection == NONE) {
             for (int x = 1; (x < 11) && !foundGoodPath; x++) {
                 double modAngle = x * (Math.PI / 10D);
@@ -324,10 +324,10 @@ implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
 	/**
 	 * Update vehicle with its current elevation or altitude.
 	 */
@@ -335,8 +335,8 @@ implements Serializable {
         // Update vehicle elevation.
 		((GroundVehicle) getVehicle()).setElevation(getVehicleElevation());
 	}
-    
-    /** 
+
+    /**
      * Determine vehicle speed for a given direction.
      * @param direction the direction of travel
      * @return speed in km/hr
@@ -347,19 +347,19 @@ implements Serializable {
     	result *= getTerrainModifier(direction);
     	return result;
     }
-    
+
     /**
-     * Gets the lighting condition speed modifier.  
+     * Gets the lighting condition speed modifier.
      * @return speed modifier (0D - 1D)
      */
     protected double getSpeedLightConditionModifier() {
     	// Ground vehicles travel at 30% speed at night.
     	SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
     	double lightConditions = surface.getSolarIrradiance(getVehicle().getCoordinates());
-        double result = ((lightConditions / 600D) * .7D) + .3D; 
+        double result = ((lightConditions / 600D) * .7D) + .3D;
         return result;
     }
-    
+
     /**
      * Gets the terrain speed modifier.
      * @param direction the direction of travel.
@@ -367,10 +367,10 @@ implements Serializable {
      */
     protected double getTerrainModifier(Direction direction) {
     	GroundVehicle vehicle = (GroundVehicle) getVehicle();
-        
+
         // Get vehicle's terrain handling capability.
         double handling = vehicle.getTerrainHandlingCapability();
-        
+
         // Determine modifier.
         double angleModifier = handling + getEffectiveSkillLevel() - 10D;
         if (angleModifier < 0D) angleModifier = Math.abs(1D / angleModifier);
@@ -386,14 +386,14 @@ implements Serializable {
     protected void checkForAccident(double time) {
 
     	GroundVehicle vehicle = (GroundVehicle) getVehicle();
-    	
+
         double chance = OperateVehicle.BASE_ACCIDENT_CHANCE;
 
         // Driver skill modification.
         int skill = getEffectiveSkillLevel();
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
-	
+
         // Get task phase modification.
         if (AVOID_OBSTACLE.equals(getPhase())) chance *= 1.2D;
         if (WINCH_VEHICLE.equals(getPhase())) chance *= 1.3D;
@@ -415,27 +415,34 @@ implements Serializable {
 
         // Modify based on the vehicle's wear condition.
         chance *= vehicle.getMalfunctionManager().getWearConditionAccidentModifier();
-        
+
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // logger.info(person.getName() + " has accident driving " + vehicle.getName());
-	    	vehicle.getMalfunctionManager().accident();
+
+			if (person != null) {
+	            logger.info(person.getName() + " has an accident driving " + vehicle.getName());
+			}
+			else if (robot != null) {
+				logger.info(robot.getName() + " has an accident driving " + vehicle.getName());
+			}
+
+	    	vehicle.getMalfunctionManager().createAccident(vehicle.getName());
 		}
     }
-    
+
 	/**
 	 * Gets the effective skill level a person has at this task.
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
-		if (person != null) 
-			manager = person.getMind().getSkillManager();			
+		if (person != null)
+			manager = person.getMind().getSkillManager();
 		else if (robot != null)
 			manager = robot.getBotMind().getSkillManager();
-		
+
 		return manager.getEffectiveSkillLevel(SkillType.DRIVING);
 	}
-	
+
 	/**
 	 * Gets a list of the skills associated with this task.
 	 * May be empty list if no associated skills.
@@ -446,7 +453,7 @@ implements Serializable {
 		results.add(SkillType.DRIVING);
 		return results;
 	}
-	
+
 	/**
 	 * Adds experience to the person's skills used in this task.
 	 * @param time the amount of time (ms) the person performed this task.
@@ -456,33 +463,33 @@ implements Serializable {
         // Add one point for every 100 millisols.
         double newPoints = time / 100D;
         int experienceAptitude = 0;
-		if (person != null) 
-	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);			
+		if (person != null)
+	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		else if (robot != null)
 			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
-        
+
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		double phaseModifier = 1D;
 		if (AVOID_OBSTACLE.equals(getPhase())) phaseModifier = 4D;
 		newPoints *= phaseModifier;
-		if (person != null) 
-		       person.getMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);			
+		if (person != null)
+		       person.getMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);
 		else if (robot != null)
 			robot.getBotMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);
-        
+
 	}
-	
+
     /**
      * Ends the task and performs any final actions.
      */
     public void endTask() {
-		if (person != null) 
-		       logger.fine(person.getName() + " finished driving " + getVehicle().getName());			
+		if (person != null)
+		       logger.fine(person.getName() + " finished driving " + getVehicle().getName());
 		else if (robot != null)
 			logger.fine(robot.getName() + " finished driving " + getVehicle().getName());
         // ((GroundVehicle) getVehicle()).setStuck(false);
-    	
+
     	super.endTask();
     }
 }

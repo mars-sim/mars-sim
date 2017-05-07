@@ -863,5 +863,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         //scientificAchievement = null;
     }
 
+	@Override
+	public String getNickName() {
+		return name;
+	}
+
 
 }

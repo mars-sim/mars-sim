@@ -90,11 +90,11 @@ implements UnitListener {
 	/** Caches */
 	protected Map<Class, Integer> equipmentNeededCache;
 
-	protected VehicleMission(String name, MissionMember startingMember, int minPeople) {
+	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
-		super(name, startingMember, minPeople);
+		super(missionName, startingMember, minPeople);
 
-		description = name;
+		description = missionName;
 		this.startingMember = startingMember;
 
 		// Add mission phases.
@@ -111,11 +111,12 @@ implements UnitListener {
 	}
 
 
-	protected VehicleMission(String name, MissionMember startingMember, int minPeople,
+	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople,
 			Vehicle vehicle) {
 		// Use TravelMission constructor.
-		super(name, startingMember, minPeople);
+		super(missionName, startingMember, minPeople);
 
+		description = missionName;
 		this.startingMember = startingMember;
 
 		// Add mission phases.
@@ -349,8 +350,20 @@ implements UnitListener {
 					// will recursively call endMission() with a brand new "reason"
 					determineEmergencyDestination(startingMember);
 				}
+
+				if (EMBARKING.equals(getPhase())) {
+		            setPhaseEnded(true);
+				}
+
+				else if (TRAVELLING.equals(getPhase())) {
+		            setPhaseEnded(true);
+				}
+
+				else if (DISEMBARKING.equals(getPhase())) {
+					logger.info("Can't be aborted. This mission is at the very last phase of the mission. Members are unloading resources and being disembarked. Please be patient!");
+				}
+
 				else {
-					leaveVehicle();
 		            setPhaseEnded(true);
 					super.endMission(reason);
 				}
@@ -796,8 +809,8 @@ implements UnitListener {
 				            .getAmountResourceStored((AmountResource) resource, false);
 				    if (amountStored < amount) {
 				        logger.severe(vehicle.getName() + " does not have enough " + resource +
-				                " to continue with " + getName() + " (required: " + Math.round(amount*100D)/100D +
-				                " kg, stored: " + Math.round(amountStored*100D)/100D + " kg)");
+				                " to continue with " + getName() + " (Required: " + Math.round(amount*100D)/100D +
+				                " kg. Stored: " + Math.round(amountStored*100D)/100D + " kg)");
 				        result = false;
 				    }
 				}
@@ -806,8 +819,8 @@ implements UnitListener {
 					int numStored = inv.getItemResourceNum((ItemResource) resource);
 					if (numStored < num) {
 						logger.severe(vehicle.getName() + " does not have enough " + resource +
-								" to continue with " + getName() + " (required: " + num +
-								", stored: " + numStored + ")");
+								" to continue with " + getName() + " (Required: " + num +
+								". Stored: " + numStored + ")");
 						result = false;
 					}
 				} else {

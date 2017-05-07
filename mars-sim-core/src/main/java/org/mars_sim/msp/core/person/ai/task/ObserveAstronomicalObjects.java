@@ -381,8 +381,12 @@ implements ResearchScientificStudy, Serializable {
             chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                logger.info(person.getName() + " has a observatory accident while observing astronomical objects.");
-                entity.getMalfunctionManager().accident();
+    			if (person != null)
+    				logger.info(person.getName() + " has accident while observing astronomical objects.");
+    			else if (robot != null)
+    				logger.info(robot.getName() + " has accident while observing astronomical objects.");
+
+                entity.getMalfunctionManager().createAccident();
             }
         }
     }

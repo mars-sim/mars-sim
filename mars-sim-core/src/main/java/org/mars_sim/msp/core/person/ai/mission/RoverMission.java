@@ -94,25 +94,25 @@ extends VehicleMission {
 
 	/**
 	 * Constructor with min people.
-	 * @param name the name of the mission.
+	 * @param missionName the name of the mission.
 	 * @param startingMember the mission member starting the mission.
 	 * @param minPeople the minimum number of members required for mission.
 	*/
-	protected RoverMission(String name,  MissionMember startingMember, int minPeople) {
+	protected RoverMission(String missionName,  MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
-		super(name, startingMember, minPeople);
+		super(missionName, startingMember, minPeople);
 	}
 	/**
 	 * Constructor with min people and rover.
-	 * @param name the name of the mission.
+	 * @param missionName the name of the mission.
 	 * @param startingMember the mission member starting the mission.
 	 * @param minPeople the minimum number of people required for mission.
 	 * @param rover the rover to use on the mission.
 	*/
-	protected RoverMission(String name, MissionMember startingMember, int minPeople,
+	protected RoverMission(String missionName, MissionMember startingMember, int minPeople,
 			Rover rover) {
 		// Use VehicleMission constructor.
-		super(name, startingMember, minPeople, rover);
+		super(missionName, startingMember, minPeople, rover);
 	}
 
 	/**
@@ -502,7 +502,7 @@ extends VehicleMission {
 
 				        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
 				        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be retrieved and moved back to the settlement in emergency?
-				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",person.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
+				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding", person.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
 				    }
 				}
 				else if (member instanceof Robot) {
@@ -536,7 +536,7 @@ extends VehicleMission {
 
 				        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
 				        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be retrieved and moved back to the settlement in emergency?
-				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
+				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding", robot.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
 /*
                         logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
                         logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$

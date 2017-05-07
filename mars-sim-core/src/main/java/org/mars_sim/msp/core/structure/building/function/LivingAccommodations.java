@@ -38,11 +38,10 @@ public class LivingAccommodations extends Function implements Serializable {
     /* default logger.*/
  	private static Logger logger = Logger.getLogger(LivingAccommodations.class.getName());
 
-    /** Amount of water in kg used per person per Sol for cleaning, bathing, etc. */
-    //public final static double WASH_WATER_USAGE_PERSON_SOL = 26D;
+
     public final static double TOILET_WASTE_PERSON_SOL = .02D;
-    //public final static double GREY_WATER_RATIO = .8;
-    //public final static double BLACK_WATER_RATIO = .2;
+    public final static double WASH_AND_WASTE_WATER_RATIO = .85D;
+
     public final static String WATER = "water";
     public final static String BLACK_WATER = "black water";
     public final static String GREY_WATER = "grey water";
@@ -104,7 +103,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
         PersonConfig personconfig = simulationConfig.getPersonConfiguration();
         washWaterUsage = personconfig.getWaterUsageRate() / 1000D;
-        wasteWaterProduced = (personconfig.getWaterConsumptionRate() + personconfig.getFoodConsumptionRate()) / 1000D;
+        //wasteWaterProduced = (personconfig.getWaterConsumptionRate() + personconfig.getFoodConsumptionRate()) / 1000D;
         double grey2BlackWaterRatio = personconfig.getGrey2BlackWaterRatio();
         greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
 
@@ -267,30 +266,26 @@ public class LivingAccommodations extends Function implements Serializable {
     public void generateWaste(double time) {
     	double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
     	int numBed = bedMap.size();
-    	// Total wash water used at the settlement over this time period (average).
+    	// Total average wash water used at the settlement over this time period.
     	// This includes showering, washing hands, washing dishes, etc.
-        double usage = washWaterUsage  * time * numBed;//settlement.getCurrentPopulationNum();
-
+        double usage = washWaterUsage  * time * numBed;
         // 2017-05-02 If settlement is rationing water, reduce water usage according to its level
         int level = settlement.waterRationLevel();
         if (level != 0)
             usage = usage / 1.5D / level;
-
-
         // 2017-05-02 Account for people who are out there in an excursion and NOT in the settlement
         double absentee_factor = settlement.getNumCurrentPopulation()/settlement.getPopulationCapacity();
 
         double waterUsed = usage  * time * numBed * absentee_factor;
-
-        double waterProduced = wasteWaterProduced * time * numBed * absentee_factor;
+        //double waterProduced = wasteWaterProduced * time * numBed * absentee_factor;
+        double wasteWaterProduced = usage * WASH_AND_WASTE_WATER_RATIO;
         // Remove wash water from settlement.
         Storage.retrieveAnResource(waterUsed * random_factor, waterAR, inv, true);
 
-
-        // Grey water is produced by both wash water and waste water.
-        double greyWaterProduced = waterUsed + (waterProduced * greyWaterFraction);
+        // Grey water is produced by wash water.
+        double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
         // Black water is only produced by waste water.
-        double blackWaterProduced = waterProduced * (1 - greyWaterFraction);
+        double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
         //System.out.print("gw");
         Storage.storeAnResource(greyWaterProduced, greyWaterAR, inv);
         //System.out.print("bw");

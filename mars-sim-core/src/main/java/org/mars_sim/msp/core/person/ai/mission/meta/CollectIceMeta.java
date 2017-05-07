@@ -95,7 +95,7 @@ public class CollectIceMeta implements MetaMission {
             }
 
             // Check if starting settlement has minimum amount of methane fuel.
-            else if (settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) <
+            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
                 return 0;
             }

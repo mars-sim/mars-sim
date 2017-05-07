@@ -331,4 +331,15 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		}
 		return people;
 	}
+
+	@Override
+	public String getNickName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void destroy() {
+		malfunctionManager = null;
+		weather = null;
+	}
 }

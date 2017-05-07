@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
-/** 
+/**
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
  * fuel power source building on or off.
  */
@@ -117,9 +117,9 @@ implements Serializable {
         boolean goodLocation = false;
         for (int x = 0; (x < 50) && !goodLocation; x++) {
             Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                     boundedLocalPoint.getY(), building);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                     person.getCoordinates());
         }
 
@@ -135,18 +135,18 @@ implements Serializable {
         // Determine location within power source building.
         // TODO: Use action point rather than random internal location.
         Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(powerBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(),
                 buildingLoc.getY(), powerBuilding);
 
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(),
                 powerBuilding)) {
 
             // Add subtask for walking to power building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(),
                     powerBuilding));
         }
         else {
-            logger.fine(person.getName() + " unable to walk to power building " + 
+            logger.fine(person.getName() + " unable to walk to power building " +
                     powerBuilding.getName());
             endTask();
         }
@@ -275,7 +275,7 @@ implements Serializable {
      * @param fuelSource the fuel power source.
      * @return true if any input resources are empty.
      */
-    private static boolean isEmptyInputResource(Settlement settlement, 
+    private static boolean isEmptyInputResource(Settlement settlement,
             FuelPowerSource fuelSource) {
         boolean result = false;
 
@@ -418,7 +418,7 @@ implements Serializable {
             Settlement settlement = building.getBuildingManager().getSettlement();
             String toggle = "off";
             if (toggleOn) toggle = "on";
-            logger.fine(person.getName() + " turning " + toggle + " " + powerSource.getType() + 
+            logger.fine(person.getName() + " turning " + toggle + " " + powerSource.getType() +
                     " at " + settlement.getName() + ": " + building.getName());
         }
 
@@ -454,7 +454,13 @@ implements Serializable {
         chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            building.getMalfunctionManager().accident();
+			if (person != null) {
+	            logger.info(person.getName() + " has an accident while toggling a fuel power source.");
+			}
+			else if (robot != null) {
+				logger.info(robot.getName() + " has an accident while toggling a fuel power source.");
+			}
+            building.getMalfunctionManager().createAccident();
         }
     }
 

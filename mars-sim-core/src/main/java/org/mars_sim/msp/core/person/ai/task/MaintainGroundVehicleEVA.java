@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
+/**
  * The MaintainGroundVehicleGarage class is a task for performing
  * preventive maintenance on ground vehicles outside a settlement.
  */
@@ -60,7 +60,7 @@ implements Serializable {
     private GroundVehicle vehicle;
     private Settlement settlement;
 
-    /** 
+    /**
      * Constructor.
      * @param person the person to perform the task
      */
@@ -98,9 +98,9 @@ implements Serializable {
         boolean goodLocation = false;
         for (int x = 0; (x < 50) && !goodLocation; x++) {
             Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                     boundedLocalPoint.getY(), vehicle);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                     person.getCoordinates());
         }
 
@@ -165,7 +165,7 @@ implements Serializable {
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
         if (finishedMaintenance) vehicle.setReservedForMaintenance(false);
 
-        if (finishedMaintenance || malfunction || shouldEndEVAOperation() || 
+        if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
                 addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
             return time;
@@ -227,12 +227,19 @@ implements Serializable {
         chance *= vehicle.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // logger.info(person.getName() + " has accident while performing maintenance on " + vehicle.getName() + ".");
-            vehicle.getMalfunctionManager().accident();
+
+			if (person != null) {
+	            logger.info(person.getName() + " has an accident while performing maintenance on " + vehicle.getName() + ".");
+			}
+			else if (robot != null) {
+				logger.info(robot.getName() + " has an accident while performing maintenance on " + vehicle.getName() + ".");
+			}
+
+            vehicle.getMalfunctionManager().createAccident(vehicle.getName());
         }
     }
 
-    /** 
+    /**
      * Gets the vehicle  the person is maintaining.
      * Returns null if none.
      * @return entity
@@ -295,7 +302,7 @@ implements Serializable {
         }
 
         if (result != null) {
-            setDescription(Msg.getString("Task.description.maintainGroundVehicleEVA.detail", 
+            setDescription(Msg.getString("Task.description.maintainGroundVehicleEVA.detail",
                     result.getName())); //$NON-NLS-1$
         }
 
@@ -313,7 +320,7 @@ implements Serializable {
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean hasMalfunction = manager.hasMalfunction();
         double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-        boolean minTime = (effectiveTime >= 1000D); 
+        boolean minTime = (effectiveTime >= 1000D);
         boolean enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
         if (!hasMalfunction && minTime && enoughParts) result = effectiveTime;
         return result;
@@ -324,7 +331,7 @@ implements Serializable {
         SkillManager manager = person.getMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-        return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
+        return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
     }
 
     @Override
