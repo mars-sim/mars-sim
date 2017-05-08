@@ -103,6 +103,10 @@
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->
 			<resource type="food" amount="1657.0" />
+			<resource type="grey water" amount="100.0" />
+			<resource type="black water" amount="25.0" />
+			<resource type="carbon dioxide" amount="1000.0" />
+			<resource type="Fertilizer" amount="10.0" />
 
 			<!-- Crop -->
 			<!-- No starting crops for this template. -->

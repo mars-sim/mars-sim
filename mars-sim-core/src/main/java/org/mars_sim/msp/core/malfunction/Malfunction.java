@@ -288,7 +288,7 @@ public class Malfunction implements Serializable {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
                 Part part = (Part) ItemResource.findItemResource(partName);
                 repairParts.put(part, number);
-                logger.info(name + " incident - the repair requires the part " + part.getName() + " (quantity: " + number + ")");
+                logger.info(name + " incident - the repair requires " + part.getName() + " (quantity: " + number + ")");
             }
         }
     }

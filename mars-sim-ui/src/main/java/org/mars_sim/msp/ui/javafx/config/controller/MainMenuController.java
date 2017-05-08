@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * MainMenuController.java
+ * @version 3.1.0 2017-05-08
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.javafx.config.controller;
 
 import java.net.URL;
@@ -10,12 +17,15 @@ import org.mars_sim.msp.ui.javafx.mainmenu.ScreensSwitcher;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 public class MainMenuController implements Initializable, ControlledScreen {
 
 	@FXML
 	Label rotationRate;
+
+	//@FXML private Button button0, button1, button2;
 
     ScreensSwitcher switcher;
     /**
@@ -33,6 +43,11 @@ public class MainMenuController implements Initializable, ControlledScreen {
     //@FXML
     //private void onMouseExited(ActionEvent event) {
     //	menu.setFont("-fx-text-fill: #FFB03B;");
+    //}
+
+    //@FXML
+    //private void enlarge(ActionEvent event){
+    //	button0.setStyle("-fx-background-color:#dae7f3;");
     //}
 
     @FXML

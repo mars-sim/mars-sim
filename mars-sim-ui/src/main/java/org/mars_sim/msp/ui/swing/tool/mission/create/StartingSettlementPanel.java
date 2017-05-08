@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -217,7 +218,7 @@ class StartingSettlementPanel extends WizardPanel {
 
 			// Add columns.
 			columns.add("Name");
-			columns.add("Pop.");
+			columns.add("Pop");
 			columns.add("Rovers");
 			columns.add("Oxygen");
 			columns.add("Water");
@@ -247,23 +248,19 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 2)
 						result = inv.findNumUnitsOfClass(Rover.class);
 					if (column == 3) {
-						//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-						result = (int) inv.getAmountResourceStored(Rover.oxygenAR, false);
+						result = (int) inv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
 					}
 					else if (column == 4) {
-						//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-						result = (int) inv.getAmountResourceStored(Rover.waterAR, false);
+						result = (int) inv.getAmountResourceStored(ResourceUtil.waterAR, false);
 					}
 					else if (column == 5) {
-						//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-						result = (int) inv.getAmountResourceStored(Rover.foodAR, false);
+						result = (int) inv.getAmountResourceStored(ResourceUtil.foodAR, false);
 					}
 					else if (column == 6) {
 						result = (int) determineHighestDessertResources(inv);
 					}
 					else if (column == 7) {
-						//AmountResource methane = AmountResource.findAmountResource("methane");
-						result = (int) inv.getAmountResourceStored(Rover.methaneAR, false);
+						result = (int) inv.getAmountResourceStored(ResourceUtil.methaneAR, false);
 					}
 					else if (column == 8)
 						result = inv.findNumUnitsOfClass(EVASuit.class);
@@ -388,24 +385,19 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
 				}
 				else if (column == 3) {
-					//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-					if (inv.getAmountResourceStored(Rover.oxygenAR, false) < 100D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.oxygenAR, false) < 100D) result = true;
 				}
 				else if (column == 4) {
-					//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-					if (inv.getAmountResourceStored(Rover.waterAR, false) < 100D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.waterAR, false) < 100D) result = true;
 				}
 				else if (column == 5) {
-					//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-					if (inv.getAmountResourceStored(Rover.foodAR, false) < 100D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.foodAR, false) < 100D) result = true;
 				}
 				else if (column == 6) {
-					//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-					if (determineHighestDessertResources(inv) < 100D) result = true;
+					if (determineHighestDessertResources(inv) < 10D) result = true;
 				}
 				else if (column == 7) {
-					//AmountResource methane = AmountResource.findAmountResource("methane");
-					if (inv.getAmountResourceStored(Rover.methaneAR, false) < 100D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.methaneAR, false) < 100D) result = true;
 				}
 				else if (column == 8) {
 					if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;

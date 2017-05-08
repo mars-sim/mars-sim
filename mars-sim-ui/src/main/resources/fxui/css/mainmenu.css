@@ -6,22 +6,24 @@
  * @author Manny Kung
  */
 
-#option{
+#menu-button{
 	-fx-font-size: 20.0px;
-    -fx-text-fill: white;  /* #FFB03B;light mud color*/
+	-fx-stroke-width: 2;
+    -fx-text-fill: white; /* very light yellow #f9efe0, light mud color: #FFB03B , dark mud : #945f16*/
     -fx-font-weight: bold;
 }
 
 
-#option:hover {
-	-fx-font-size: 26.0px;
+#menu-button:hover {
+	-fx-font-size: 24.0px;
     -fx-stroke-width: 3;
     -fx-font-weight: bold;
-    -fx-text-fill: #FFB03B; /*light mud color*/ /* #FFDF00; gold */
+    -fx-text-fill: white; /*light mud color*/ /* #FFDF00; gold */
 	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
     -fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 
 }
+
 
 /*
 .label {

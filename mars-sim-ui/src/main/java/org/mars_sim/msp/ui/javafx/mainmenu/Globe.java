@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * Mars3DGlobe.java
- * @version 3.08 2015-11-27
+ * Globe.java
+ * @version 3.1.0 2017-05-08
  * @author Manny Kung
  */
 
@@ -37,8 +37,8 @@ import javafx.util.Duration;
 import javafx.scene.Node;
 
 
-public class Globe { 
-    
+public class Globe {
+
     double ONE_FRAME = 1.0 / 24.0;
     double DELTA_MULTIPLIER = 200.0;
     double CONTROL_MULTIPLIER = 0.1;
@@ -56,8 +56,8 @@ public class Globe {
     //Image nImage = new Image("http://planetmaker.wthr.us/img/earth_normalmap_flat_1024x512.jpg");
  	//Image sImage = new Image("http://planetmaker.wthr.us/img/earth_specularmap_flat_1024x512.jpg");
 
-    	  
- 	// Mars 
+
+ 	// Mars
 	//Image sImage = new Image(this.getClass().getResource("/maps/Mars_Clouds.jpg").toExternalForm());
     //Image dImage = new Image(this.getClass().getResource("/maps/Mars_Map.jpg").toExternalForm());
     //Image nImage = new Image(this.getClass().getResource("/maps/Mars_Normal.jpg").toExternalForm()); //.toString());
@@ -76,7 +76,7 @@ public class Globe {
     //Image dImage = new Image(this.getClass().getResource("/maps/MarsV3Shaded1k.jpg").toExternalForm());
     //Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
     //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-1k.png").toExternalForm()); //.toString());
-	
+
     // Mars 1k maps
 	//Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
     //Image dImage = new Image(this.getClass().getResource("/maps/mars_1k_color.jpg").toExternalForm());
@@ -91,18 +91,18 @@ public class Globe {
 
     final Group root = new Group();
     final Group axisGroup = new Group();
-    
-    final PerspectiveCamera camera = new PerspectiveCamera(true);  
+
+    final PerspectiveCamera camera = new PerspectiveCamera(true);
     final double cameraDistance = 1450;//450;
-    
+
     final Xform world = new Xform();
     final Xform cameraXform = new Xform();
     final Xform cameraXform2 = new Xform();
     final Xform cameraXform3 = new Xform();
     final Xform sphereGroup = new Xform();
-    
+
     private Timeline timeline;
-    
+
     boolean timelinePlaying = false;
 
     double mousePosX;
@@ -116,7 +116,7 @@ public class Globe {
 	public Globe() {
 	    root.getChildren().addAll(world);
 	    buildCamera();
-	    buildSphereGroup();	
+	    buildSphereGroup();
 	}
 
 	public Parent getRoot() {
@@ -126,7 +126,7 @@ public class Globe {
 	public Xform getWorld() {
 		return world;
 	}
-	
+
     private void buildCamera() {
 	    root.getChildren().add(cameraXform);
         cameraXform.getChildren().add(cameraXform2);
@@ -140,7 +140,7 @@ public class Globe {
         cameraXform.ry.setAngle(0.0);//320.0);
         cameraXform.rx.setAngle(-20);//40);
     }
-    
+
     public PerspectiveCamera getCamera(){ //StackPane root) {
     	return camera;
     }
@@ -148,15 +148,15 @@ public class Globe {
     private void buildSphereGroup() {
 
         final PhongMaterial material = new PhongMaterial();
-        
+
         material.setDiffuseColor(Color.WHITE);//TRANSPARENT);//BROWN);
         material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
-        
+
         material.setSpecularColor(Color.TRANSPARENT);
         material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
-        
+
         material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
-        
+
         //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
         Xform marsXform = new Xform();

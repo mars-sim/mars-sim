@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * ScreensSwitcher.java
+ * @version 3.1.0 2017-05-08
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import java.util.HashMap;
@@ -48,11 +55,11 @@ public class ScreensSwitcher extends StackPane {
     public boolean loadScreen(String name, String resource) {
         try {
             FXMLLoader myLoader = new FXMLLoader(getClass().getResource(resource));
-            Parent loadScreen = (Parent) myLoader.load();
-            ControlledScreen myScreenController = ((ControlledScreen) myLoader.getController());
-            myScreenController.setScreenParent(this);
-            mainMenu.setController(myScreenController);
-            addScreen(name, loadScreen);
+            Parent screen = (Parent) myLoader.load();
+            ControlledScreen controller = ((ControlledScreen) myLoader.getController());
+            controller.setScreenParent(this);
+            mainMenu.setController(controller);
+            addScreen(name, screen);
             return true;
         } catch (Exception e) {
             //System.out.println(e.getMessage());
@@ -118,10 +125,10 @@ public class ScreensSwitcher extends StackPane {
 	public boolean exitDialog(Stage stage) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.initOwner(stage);
-		alert.setTitle("Exit MSP");//("Confirmation Dialog");
-		alert.setHeaderText("Do you really want to exit MSP?");
+		alert.setTitle("Confirmation for Exit");//("Confirmation Dialog");
+		alert.setHeaderText("Leaving mars-sim ?");
 		//alert.initModality(Modality.APPLICATION_MODAL);
-		alert.setContentText("Note: Yes to exit any running sim & without saving.");
+		alert.setContentText("Note: Yes to exit mars-sim");
 		ButtonType buttonTypeYes = new ButtonType("Yes");
 		ButtonType buttonTypeNo = new ButtonType("No");
 	   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);

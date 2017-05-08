@@ -379,15 +379,26 @@ extends VehicleMission {
 
 					if (!isDone() && isRoverInAGarage()) {
 
-						// Store one EVA suit for person (if possible).
-						if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
-							EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
-							if (getVehicle().getInventory().canStoreUnit(suit, false)) {
-								settlement.getInventory().retrieveUnit(suit);
-								getVehicle().getInventory().storeUnit(suit);
+						int numEVASuit = 0;
+						// Store one or two EVA suit for person (if possible).
+						int limit = RandomUtil.getRandomInt(1, 2);
+						while (numEVASuit <= limit) {
+							if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
+								EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
+								if (getVehicle().getInventory().canStoreUnit(suit, false)) {
+									settlement.getInventory().retrieveUnit(suit);
+									getVehicle().getInventory().storeUnit(suit);
+									numEVASuit++;
+								}
+
+								else {
+									endMission(Msg.getString("RoverMission.log.cannotBeLoaded", suit.getName(),getVehicle().getName())); //$NON-NLS-1$
+									return;
+								}
 							}
+
 							else {
-								endMission(Msg.getString("RoverMission.log.cannotBeLoaded",suit.getName(),getVehicle().getName())); //$NON-NLS-1$
+								endMission(Msg.getString("RoverMission.log.noEVASuit", getVehicle().getName())); //$NON-NLS-1$
 								return;
 							}
 						}

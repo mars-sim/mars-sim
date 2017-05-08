@@ -237,7 +237,7 @@ public class MainScene {
 					asPane, sPane;
 
 	//private FlowPane flowPane;
-	private AnchorPane rootAnchorPane, mapAnchorPane;
+	private AnchorPane anchorPane, mapAnchorPane;
 	private SwingNode swingNode, mapNode, minimapNode, guideNode;//monNode, missionNode, resupplyNode, sciNode, guideNode ;
 	private Stage stage, loadingStage, savingStage;
 	private Scene scene, savingScene;
@@ -811,7 +811,7 @@ public class MainScene {
 		// Create jfxTabPane
 		createJFXTabs();
 
-		rootAnchorPane = new AnchorPane();
+		anchorPane = new AnchorPane();
 
 		pausePane = new StackPane();
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
@@ -862,14 +862,14 @@ public class MainScene {
         AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 125);
         AnchorPane.setRightAnchor(lastSaveLabel,  marsTimeButton.getMinWidth() +  marsTimeButton.getMinWidth() + 125);
 
-        rootAnchorPane.getChildren().addAll(
+        anchorPane.getChildren().addAll(
         		jfxTabPane,
         		marsNetBtn, speedBtn,
         		lastSaveLabel,
         		earthTimeButton, marsTimeButton, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 
-		root.getChildren().addAll(rootAnchorPane);
+		root.getChildren().addAll(anchorPane);
 
 
     	scene = new Scene(root, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
@@ -3420,7 +3420,7 @@ public class MainScene {
 	}
 
 	public AnchorPane getAnchorPane() {
-		return rootAnchorPane;
+		return anchorPane;
 	}
 
 	public MenuBar getMenuBar() {
@@ -3616,7 +3616,7 @@ public class MainScene {
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 		StartUpLocation startUpLoc = null;
 
-		if (rootAnchorPane == null) {
+		if (anchorPane == null) {
 			StackPane pane = new StackPane();//starfield);
 			pane.setPrefHeight(sceneWidth.get());
 			pane.setPrefWidth(sceneHeight.get());
@@ -3744,7 +3744,7 @@ public class MainScene {
 		marsNetBtn = null;
 		chatBox = null;
 		mainAnchorPane = null;
-		rootAnchorPane = null;
+		anchorPane = null;
 		newSimThread = null;
 		stage = null;
 		loadingStage = null;

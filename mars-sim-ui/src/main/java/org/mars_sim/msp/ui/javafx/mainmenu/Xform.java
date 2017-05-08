@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * Xform.java
+ * @version 3.1.0 2017-05-08
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
 /*
@@ -44,9 +51,9 @@ public class Xform extends Group {
         XYZ, XZY, YXZ, YZX, ZXY, ZYX
     }
 
-    public Translate t  = new Translate(); 
-    public Translate p  = new Translate(); 
-    public Translate ip = new Translate(); 
+    public Translate t  = new Translate();
+    public Translate p  = new Translate();
+    public Translate ip = new Translate();
     public Rotate rx = new Rotate();
     { rx.setAxis(Rotate.X_AXIS); }
     public Rotate ry = new Rotate();
@@ -55,32 +62,32 @@ public class Xform extends Group {
     { rz.setAxis(Rotate.Z_AXIS); }
     public Scale s = new Scale();
 
-    public Xform() { 
-        super(); 
-        getTransforms().addAll(t, rz, ry, rx, s); 
+    public Xform() {
+        super();
+        getTransforms().addAll(t, rz, ry, rx, s);
     }
 
-    public Xform(RotateOrder rotateOrder) { 
-        super(); 
+    public Xform(RotateOrder rotateOrder) {
+        super();
         // choose the order of rotations based on the rotateOrder
         switch (rotateOrder) {
         case XYZ:
-            getTransforms().addAll(t, p, rz, ry, rx, s, ip); 
+            getTransforms().addAll(t, p, rz, ry, rx, s, ip);
             break;
         case XZY:
-            getTransforms().addAll(t, p, ry, rz, rx, s, ip); 
+            getTransforms().addAll(t, p, ry, rz, rx, s, ip);
             break;
         case YXZ:
-            getTransforms().addAll(t, p, rz, rx, ry, s, ip); 
+            getTransforms().addAll(t, p, rz, rx, ry, s, ip);
             break;
         case YZX:
             getTransforms().addAll(t, p, rx, rz, ry, s, ip);  // For Camera
             break;
         case ZXY:
-            getTransforms().addAll(t, p, ry, rx, rz, s, ip); 
+            getTransforms().addAll(t, p, ry, rx, rz, s, ip);
             break;
         case ZYX:
-            getTransforms().addAll(t, p, rx, ry, rz, s, ip); 
+            getTransforms().addAll(t, p, rx, ry, rz, s, ip);
             break;
         }
     }

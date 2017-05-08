@@ -263,7 +263,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- See resources.xml -->
 				<!-- amount: the amount (kg) of the resource. -->
 
-				<resource-initial resource="water" amount="500.0" />
+				<resource-initial resource="water" amount="1000.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
 				<resource-initial resource="Food" amount="300.0" />
 				<!-- <resource-initial resource="regolith" amount="500.0" />  -->
@@ -2016,7 +2016,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<resource-initial resource="Solid Waste" amount="0.0" />
 
-				<resource-initial resource="water" amount="500.0" />
+				<resource-initial resource="water" amount="1000.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
 
 				<resource-initial resource="chlorine" amount="50.0" />
