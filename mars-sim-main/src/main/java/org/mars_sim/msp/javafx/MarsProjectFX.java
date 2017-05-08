@@ -409,6 +409,7 @@ public class MarsProjectFX extends Application  {
 		   		// CASE D1 and D2 //
 		   		// Note 1 : should NOT run createNewSimulation() until after clicking "Start" in Config Editor
 	   		}
+
 	   		else if (loadSim) {
 		   		// CASE E //
 	   		}
@@ -423,6 +424,7 @@ public class MarsProjectFX extends Application  {
 			    // Start the simulation.
 			    startSimulation(true);
 			}
+
 			else if (loadSim) {
 		   		// CASE B //
 				// Initialize the simulation.
@@ -500,6 +502,7 @@ public class MarsProjectFX extends Application  {
 		   		// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
 		   		// 2. 'Load Sim' -call runTwo(), need to call sim.runStartTask(false);
 	   		}
+
 	   		else if (loadSim) {
 		   		// CASE E //
 

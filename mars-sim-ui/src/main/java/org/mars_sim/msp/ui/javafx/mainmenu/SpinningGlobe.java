@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SpinningGlobe.java
- * @version 3.08 2015-11-09
+ * @version 3.1.0 2017-05-08
  * @author Manny Kung
  */
 
@@ -95,8 +95,7 @@ public class SpinningGlobe extends Application {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SpinningGlobe.class.getName());
 
-	/** Logger for the class */
-	//private static final Logger logger;
+	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 
     // -------------------------- STATIC METHODS --------------------------
@@ -142,27 +141,45 @@ public class SpinningGlobe extends Application {
 
     public SpinningGlobe() {
     }
-    
+
 	/*
 	 * Creates a spinning globe
 	 */
-   public Parent createGlobe() {
+   public Parent createDraggingGlobe() {
 	   boolean support = Platform.isSupported(ConditionalFeature.SCENE3D);
 	   if (support)
 		   logger.info("JavaFX 3D features supported");
 	   else
 		   logger.info("JavaFX 3D features NOT supported");
-	   
+
        globe = new Globe();
        rotateGlobe();
-       
+
 	   // Use a SubScene
        subScene = new SubScene(globe.getRoot(), WIDTH, HEIGHT);//, true, SceneAntialiasing.BALANCED);
        subScene.setId("sub");
        subScene.setCamera(globe.getCamera());//subScene));
-       
-       return new Group(subScene);
+
+       //return new Group(subScene);
+       return new HBox(subScene);
    }
+
+	/*
+	 * Creates a spinning globe
+	 */
+  public Parent createFixedGlobe() {
+	   boolean support = Platform.isSupported(ConditionalFeature.SCENE3D);
+	   if (support)
+		   logger.info("JavaFX 3D features supported");
+	   else
+		   logger.info("JavaFX 3D features NOT supported");
+
+      globe = new Globe();
+      rotateGlobe();
+
+      //return new Group(globe.getRoot());
+      return new HBox(globe.getRoot());
+  }
 
    public void rotateGlobe() {
 	   rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), globe.getWorld());
@@ -196,8 +213,8 @@ public class SpinningGlobe extends Application {
    public Globe getGlobe() {
 	   return globe;
    }
-   
-   
+
+
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -205,7 +222,15 @@ public class SpinningGlobe extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setResizable(false);
-        Parent globe = createGlobe();     
+        Parent globe = null;
+        Scene scene = null;
+
+        if (OS.contains("window")) {
+        	globe = createFixedGlobe();
+        }
+        else {
+            globe = createDraggingGlobe();
+        }
 
     	StackPane root = new StackPane();
         root.setPrefHeight(WIDTH);
@@ -214,20 +239,27 @@ public class SpinningGlobe extends Application {
         			"-fx-background-color: transparent; "
         			+ "-fx-background-radius: 1px;");
 
-        root.getChildren().add(globe);     
-        Scene scene = new Scene(root, 640, 640, true, SceneAntialiasing.BALANCED);
+        root.getChildren().add(globe);
+        scene = new Scene(root, 640, 640, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.BLACK);
-        
-        // Add mouse and keyboard control
-        getGlobe().handleMouse(scene);
-        getGlobe().handleKeyboard(scene);
-        
+
+        if (OS.contains("window")) {
+
+        }
+        else {
+            // Add mouse and keyboard control
+            getGlobe().handleMouse(scene);
+            getGlobe().handleKeyboard(scene);
+        }
+
+
+
         primaryStage.setScene(scene);
         primaryStage.show();
-        
+
     }
 
-    
+
  	public void destroy() {
 
  		rt = null;

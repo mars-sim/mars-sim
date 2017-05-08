@@ -221,6 +221,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		// Create scroll panel for member list.
 		JScrollPane memberScrollPane = new JScrollPane();
+		//memberScrollPane.setPreferredSize(new Dimension(300, 250));
 		memberListPane.add(memberScrollPane, BorderLayout.CENTER);
 
 		// Create member table model.
@@ -229,6 +230,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// Create member table.
 		//memberTable = new JTable(memberTableModel);
 		memberTable = new ZebraJTable(memberTableModel);
+		//memberTable.setPreferredSize(new Dimension(300, 250));
 		memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
 		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 		memberTable.setRowSelectionAllowed(true);
@@ -266,7 +268,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// 2017-05-03 Prepare SpringLayout
 		JPanel travelPane = new JPanel(new SpringLayout());
 		travelPane.setSize(new Dimension(200, 250));
-		travelPane.setBorder(new MarsPanelBorder());
+		//travelPane.setBorder(new MarsPanelBorder());
 		travelBox.add(travelPane);
 		mainPane.add(travelBox);
 

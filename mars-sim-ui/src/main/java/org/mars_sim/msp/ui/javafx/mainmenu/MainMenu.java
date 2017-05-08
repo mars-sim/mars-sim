@@ -86,6 +86,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -125,6 +126,7 @@ public class MainMenu {
 
     private static final int WIDTH = 1024;//768-20;
     private static final int HEIGHT = 768-50;
+    private static final double VIEWPORT_SIZE = 600;
 
 	// Data members
     private double fileSize;
@@ -136,14 +138,15 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
-    private double anchorX;
-    private double rate;
+    //private double anchorX;
+    //private double rate;
 
-    private boolean isDone;
+    //private boolean isDone;
 
-    private StackPane root;
+    //private AnchorPane anchor;
+    private AnchorPane root;
 	private Stage stage;
-	public Scene mainMenuScene;
+	public Scene scene;
 
 	public MainMenu mainMenu;
 	public MainScene mainScene;
@@ -193,54 +196,107 @@ public class MainMenu {
        screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        screen.setScreen(MainMenu.screen1ID);
 
-       if (screen.lookup("#menuOptionBox") == null)
-			System.out.println("Warning: menu option box is not found");
+       //if (screen.lookup("#menuBox") == null)
+		//	System.out.println("Warning: menu option box is not found");
 
-       VBox menuOptionBox = ((VBox) screen.lookup("#menuOptionBox"));
+       VBox menuBox = ((VBox) screen.lookup("#menuBox"));
+
+       HBox mapBox = ((HBox) screen.lookup("#mapBox"));
+
+       //StackPane pane = new StackPane(mapBox);
 
        Rectangle rect = new Rectangle(WIDTH, HEIGHT);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
        rect.setArcWidth(40);
        rect.setArcHeight(40);
-       rect.setEffect(new DropShadow(40,5,5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
+       rect.setEffect(new DropShadow(40, 5, 5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
        // 2015-11-23 Added StarfieldFX
        StarfieldFX sf = new StarfieldFX();
        Parent starfield = sf.createStars(WIDTH-20, HEIGHT-20);
 
-       root = new StackPane();//starfield);
+       root = new AnchorPane();
+       root.setStyle(//"-fx-border-style: none; "
+       			"-fx-background-color: transparent; "
+       			+ "-fx-background-radius: 1px;");
        root.setPrefHeight(WIDTH);
        root.setPrefWidth(HEIGHT);
-       root.setStyle(
-    		   //"-fx-border-style: none; "
-       			"-fx-background-color: transparent; "
-       			+ "-fx-background-radius: 1px;"
-    		   );
 
        spinningGlobe = new SpinningGlobe(this);
-       Parent globe = spinningGlobe.createGlobe();
+
+       Parent globe = null;
+
+       if (OS.contains("window")) { //"linux")) { //
+    	   globe = spinningGlobe.createFixedGlobe();
+    	   //globe.setTranslateX(-VIEWPORT_SIZE / 14d);
+    	   globe.setTranslateY(-VIEWPORT_SIZE / 6.5d);
+           mapBox.getChildren().add(globe);
+           AnchorPane.setTopAnchor(rect, 0.0);
+           AnchorPane.setLeftAnchor(rect, 0.0);
+           AnchorPane.setTopAnchor(starfield, 0.0);
+           AnchorPane.setLeftAnchor(starfield, 0.0);
+           AnchorPane.setTopAnchor(mapBox, 5.0);
+           AnchorPane.setLeftAnchor(mapBox, 5.0);
+           AnchorPane.setTopAnchor(screen, 0.0);
+           AnchorPane.setLeftAnchor(screen, 0.0);
+
+       }
+
+       else {
+    	   globe = spinningGlobe.createDraggingGlobe();
+           mapBox.getChildren().add(globe);
+           AnchorPane.setTopAnchor(rect, 0.0);
+           AnchorPane.setLeftAnchor(rect, 0.0);
+           AnchorPane.setTopAnchor(starfield, 0.0);
+           AnchorPane.setLeftAnchor(starfield, 0.0);
+           AnchorPane.setTopAnchor(mapBox, 100.0);
+           AnchorPane.setLeftAnchor(mapBox, 0.0);
+           AnchorPane.setTopAnchor(screen, 0.0);
+           AnchorPane.setRightAnchor(screen, 0.0);
+
+       }
 
        screen.setCache(true);
        starfield.setCache(true);
        screen.setCacheHint(CacheHint.SCALE_AND_ROTATE);
        starfield.setCacheHint(CacheHint.SCALE_AND_ROTATE);
 
-       root.getChildren().addAll(rect, starfield, globe, screen);
+       root.getChildren().addAll(rect, starfield, mapBox, screen);
+       screen.toFront();
 
-       mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
-       mainMenuScene.setFill(Color.DARKGOLDENROD);//Color.BLACK);
-       mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
+       if (OS.contains("window")) { //"linux")) { //
+    	   scene = new Scene(root,
+    			      //new StackPane(root),
+    			      WIDTH-10, HEIGHT-10,
+    			      //VIEWPORT_SIZE, VIEWPORT_SIZE,
+    			      true,
+    			      SceneAntialiasing.BALANCED
+    			    );
+
+    	   //scene.setCamera(new PerspectiveCamera());
+       }
+       else {
+    	   scene = new Scene(root, WIDTH-5, HEIGHT-5, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+
+            // Add keyboard control
+           spinningGlobe.getGlobe().handleKeyboard(scene);
+           // Add mouse control
+           spinningGlobe.getGlobe().handleMouse(scene);
+       }
+
+
+
+       scene.setFill(Color.DARKGOLDENROD);//Color.BLACK);
+
+       scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm());
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
-       mainMenuScene.setCursor(Cursor.HAND);
-
-       spinningGlobe.getGlobe().handleMouse(mainMenuScene);
-       spinningGlobe.getGlobe().handleKeyboard(mainMenuScene);
+       scene.setCursor(Cursor.HAND);
 
        // Makes the menu option box fades in
-       mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){
+       scene.setOnMouseEntered(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
                FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuOptionBox);
+                       = new FadeTransition(Duration.millis(1000), menuBox);
                fadeTransition.setFromValue(0.0);
                fadeTransition.setToValue(1.0);
                fadeTransition.play();
@@ -248,10 +304,10 @@ public class MainMenu {
        });
 
        // Makes the menu option box fades out
-       mainMenuScene.setOnMouseExited(new EventHandler<MouseEvent>(){
+       scene.setOnMouseExited(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
                FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuOptionBox);
+                       = new FadeTransition(Duration.millis(1000), menuBox);
                fadeTransition.setFromValue(1.0);
                fadeTransition.setToValue(0.0);
                fadeTransition.play();
@@ -262,7 +318,7 @@ public class MainMenu {
 	   stage.setTitle(Simulation.title);
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
        //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       stage.setScene(mainMenuScene);
+       stage.setScene(scene);
        //2016-02-07 Added calling setMonitor()
        setMonitor(stage);
        stage.centerOnScreen();
@@ -311,7 +367,7 @@ public class MainMenu {
 
    public void runTwo() {
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName());
-	   mainMenuScene.setCursor(Cursor.WAIT);
+	   scene.setCursor(Cursor.WAIT);
 
 	   stage.setIconified(true);
 	   stage.hide();
@@ -319,7 +375,7 @@ public class MainMenu {
 
 	   loadSim(null);
 
-       mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
+       scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
    }
 
@@ -520,7 +576,7 @@ public class MainMenu {
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 
 		if (root == null) {
-	       root = new StackPane();//starfield);
+	       root = new AnchorPane();//starfield);
 	       root.setPrefHeight(WIDTH);
 	       root.setPrefWidth(HEIGHT);
 		}
@@ -596,7 +652,7 @@ public class MainMenu {
 		root = null;
 		screen = null;
 		stage = null;
-		mainMenuScene = null;
+		scene = null;
 		mainMenu = null;
 		mainScene = null;
 		executor = null;

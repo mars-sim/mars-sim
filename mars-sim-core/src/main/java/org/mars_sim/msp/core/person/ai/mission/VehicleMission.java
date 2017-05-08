@@ -64,7 +64,19 @@ implements UnitListener {
 
 	/** Modifier for number of parts needed for a trip. */
 	private static final double PARTS_NUMBER_MODIFIER = 5D;
-	private static final double AVERAGE_NUM_MALFUNCTION = 4;
+	/** Estimate number of broken parts per malfunctions */
+	private static final double AVERAGE_NUM_MALFUNCTION = 3;
+
+	/** True if vehicle's emergency beacon has been turned on */
+    //private boolean isBeaconOn = false;
+	/** True if vehicle has been loaded. */
+	protected boolean loadedFlag = false;
+	/** Vehicle traveled distance at start of mission. */
+	private double startingTravelledDistance;
+	/** Description of the mission */
+	private String description;
+	/** Log cache array for storing previous log statements */
+	private String[] logCache = new String[] {"", ""};
 
 	// Data members
 	private Vehicle vehicle;
@@ -72,20 +84,9 @@ implements UnitListener {
 	private VehicleOperator lastOperator;
 
 	private MissionMember startingMember;
-	/** True if vehicle has been loaded. */
-	protected boolean loadedFlag = false;
-	/** True if vehicle's emergency beacon has been turned on */
-    //private boolean isBeaconOn = false;
-
-	/** Vehicle traveled distance at start of mission. */
-	private double startingTravelledDistance;
-
-	/** Description of the mission */
-	private String description;
-
-	// Mission tasks tracked
 	/** The current operate vehicle task. */
 	private OperateVehicle operateVehicleTask;
+
 
 	/** Caches */
 	protected Map<Class, Integer> equipmentNeededCache;
@@ -803,27 +804,42 @@ implements UnitListener {
 			while (iR.hasNext() && result) {
 				Resource resource = iR.next();
 				if (resource instanceof AmountResource) {
-
 				    double amount = (Double) neededResources.get(resource);
-				    double amountStored = inv
-				            .getAmountResourceStored((AmountResource) resource, false);
+				    double amountStored = inv.getAmountResourceStored((AmountResource) resource, false);
+
 				    if (amountStored < amount) {
-				        logger.severe(vehicle.getName() + " does not have enough " + resource +
+				    	String newLog = vehicle.getName() + " does not have enough " + resource +
 				                " to continue with " + getName() + " (Required: " + Math.round(amount*100D)/100D +
-				                " kg. Stored: " + Math.round(amountStored*100D)/100D + " kg)");
+				                " kg. Stored: " + Math.round(amountStored*100D)/100D + " kg)";
+
+				    	if (!logCache[0].equals(newLog)) {
+					    	logCache[0] = newLog;
+							logger.severe(logCache[0]);
+				    	}
+
 				        result = false;
 				    }
 				}
+
 				else if (resource instanceof ItemResource) {
 					int num = (Integer) neededResources.get(resource);
 					int numStored = inv.getItemResourceNum((ItemResource) resource);
+
 					if (numStored < num) {
-						logger.severe(vehicle.getName() + " does not have enough " + resource +
+				    	String newLog = vehicle.getName() + " does not have enough " + resource +
 								" to continue with " + getName() + " (Required: " + num +
-								". Stored: " + numStored + ")");
+								". Stored: " + numStored + ")";
+
+				    	if (!logCache[1].equals(newLog)) {
+					    	logCache[1] = newLog;
+							logger.severe(logCache[1]);
+				    	}
+
 						result = false;
 					}
-				} else {
+				}
+
+				else {
 					throw new IllegalStateException(getPhase()
 							+ " : Unknown resource type: " + resource);
 				}

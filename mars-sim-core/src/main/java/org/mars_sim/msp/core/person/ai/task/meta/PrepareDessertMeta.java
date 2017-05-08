@@ -65,7 +65,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
         if (CookMeal.isMealTime(person.getCoordinates())) {
             // See if there is an available kitchen.
             Building kitchenBuilding = PrepareDessert.getAvailableKitchen(person);
-            
+
             if (kitchenBuilding != null) {
 
                 PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
@@ -78,7 +78,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
                 if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                    result = 200D;
+                    result = 50D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
@@ -102,7 +102,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
                     if (result > 0D) {
                         result = result + result * person.getPreference().getPreferenceScore(this)/5D;
                     }
-                    
+
         	        if (result < 0) result = 0;
                 }
             }
@@ -135,7 +135,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
                    if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                       result = 300D;
+                       result = 50D;
 
                        // Crowding modifier.
                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);

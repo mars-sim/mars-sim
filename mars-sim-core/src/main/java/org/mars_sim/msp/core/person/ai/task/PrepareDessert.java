@@ -58,8 +58,13 @@ implements Serializable {
 	private static final double STRESS_MODIFIER = -.2D;
 
 	// Data members
+	/** Log cache array for storing previous log statements */
+	private static String[] logCache = new String[] {"", ""};
+
 	/** The kitchen the person is making dessert. */
 	private PreparingDessert kitchen;
+
+
 
 	/**
 	 * Constructor.
@@ -74,18 +79,16 @@ implements Serializable {
         Building kitchenBuilding = getAvailableKitchen(person);
 
         if (kitchenBuilding != null) {
-            kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
 
+            kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding, false);
 
             boolean isAvailable = kitchen.getAListOfDesserts().size() > 0;
-
             // Check if enough desserts have been prepared at the kitchen for this meal time.
             boolean enoughDessert = kitchen.getMakeNoMoreDessert();
 
 	        if (isAvailable && !enoughDessert) {
-
 		        // Set the chef name at the kitchen.
 		        //kitchen.setChef(person.getName());
 
@@ -94,8 +97,15 @@ implements Serializable {
 		        setPhase(PREPARING_DESSERT);
 
 		        String jobName = person.getMind().getJob().getName(person.getGender());
-		        logger.info(jobName + " " + person.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
-		                " at " + person.getSettlement());
+
+		    	String newLog = jobName + " " + person.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
+		                " at " + person.getSettlement();
+
+		    	if (!logCache[0].equals(newLog)) {
+			    	logCache[0] = newLog;
+					logger.info(logCache[0]);
+		    	}
+
 	        }
 	        else {
 	            // No dessert available or enough desserts have been prepared for now.
@@ -135,9 +145,17 @@ implements Serializable {
 		        addPhase(PREPARING_DESSERT);
 		        setPhase(PREPARING_DESSERT);
 
+/*				// Note: still too repetitive for reporting what a chefbot does.
 		        String jobName = RobotJob.getName(robot.getRobotType());
-		        logger.info(jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
-		                " at " + robot.getSettlement());
+
+		    	String newLog = jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
+		                " at " + robot.getSettlement();
+
+		    	if (!logCache[1].equals(newLog)) {
+			    	logCache[1] = newLog;
+					logger.info(logCache[1]);
+		    	}
+*/
 	        }
 	        else {
 	            // No dessert available or enough has been prepared for now.

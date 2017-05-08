@@ -70,12 +70,16 @@ implements Serializable {
 	private static final double MEALTIME_DURATION = 100D; // 250 milliSol = 6 hours
 
 	// Data members
+	//private int counter;
+	//private int solElapsedCache;
+
+	/** Log cache array for storing previous log statements */
+	private static String[] logCache = new String[]{"", "", "", ""};
+
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
 	private Building kitchenBuilding;
 
-	private int counter;
-	private int solElapsedCache;
 
 	/**
 	 * Constructor.
@@ -117,6 +121,7 @@ implements Serializable {
 		    }
 
 	        if (size == 0) {
+/*
 	        	counter++;
 
 	        	// display the msg when no ingredients are detected at first and after n warnings
@@ -125,28 +130,47 @@ implements Serializable {
 	            		+ person.getSettlement().getName()
 	            		+ " because none of the ingredients of a meal are available ");
 	        	}
+*/
 
+				String newLog = "Warning: cannot cook meals in "
+	            		+ person.getSettlement().getName()
+	            		+ " because none of the ingredients of a meal are available ";
+
+				if (!logCache[2].equals(newLog)) {
+					logCache[2] = newLog;
+					logger.info(logCache[2]);
+				}
+/*
 	            // 2015-01-15 Added solElapsed
 	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	            int solElapsed = marsClock.getSolElapsedFromStart();
 	            if (solElapsed != solElapsedCache) {
 	            	counter = 0;
+	            	logCache[2] = "";
 	            	solElapsedCache = solElapsed;
 	            }
-
+*/
 	            endTask();
 		    }
 	        else {
 
-		    	counter = 0;
+		    	//counter = 0;
 
 		    	// Add task phase
 			    addPhase(COOKING);
 				setPhase(COOKING);
 
 				String jobName = person.getMind().getJob().getName(person.getGender());
-				logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() +
-				    	                " in " + person.getSettlement());
+
+				String newLog = jobName + " " + person.getName() + " made meal at " + kitchen.getBuilding().getNickName() +
+				    	                " in " + person.getSettlement();
+
+
+		    	if (!logCache[0].equals(newLog)) {
+			    	logCache[0] = newLog;
+					logger.info(logCache[0]);
+		    	}
+
 		    }
 	    }
 	    else {
@@ -189,35 +213,53 @@ implements Serializable {
 		    }
 
 	    	if (numGoodRecipes == 0) {
-	        	counter++;
+/*
+	    		counter++;
 	        	if (counter % 30 == 0 && counter < 150)
 	        		logger.severe("Warning: cannot cook meals in "
 	            		+ robot.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ");
+*/
+
+				String newLog = "Warning: cannot cook meals in "
+	            		+ robot.getSettlement().getName()
+	            		+ " because none of the ingredients of a meal are available ";
+
+				if (!logCache[3].equals(newLog)) {
+					logCache[3] = newLog;
+					logger.info(logCache[3]);
+				}
 
 	            // 2015-01-15 Added solElapsed
-
+/*
 	        	MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	            int solElapsed = marsClock.getSolElapsedFromStart();
 	            if (solElapsed != solElapsedCache) {
 	            	counter = 0;
+	            	logCache[3] = "";
 	            	solElapsedCache = solElapsed;
 	            }
-
+*/
 	            endTask();
 
 		    }
 	        else {
 
-		    	counter = 0;
+		    	//counter = 0;
 
 		    	// Add task phase
 			    addPhase(COOKING);
 				setPhase(COOKING);
 
 				String jobName = RobotJob.getName(robot.getRobotType());
-				logger.finest(jobName + " " + robot.getName() + " cooking at " + kitchen.getBuilding().getNickName() +
-				    	                " in " + robot.getSettlement());
+
+				String newLog = jobName + " " + robot.getName() + " made meal at " + kitchen.getBuilding().getNickName() +
+    	                " in " + robot.getSettlement();
+
+				if (!logCache[1].equals(newLog)) {
+					logCache[1] = newLog;
+					logger.info(logCache[1]);
+				}
 
 		    }
 	    }

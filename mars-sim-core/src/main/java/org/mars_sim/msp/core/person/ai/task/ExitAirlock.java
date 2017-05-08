@@ -68,6 +68,8 @@ implements Serializable {
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = .5D;
+	/** Log cache array for storing previous log statements */
+	private static String[] logCache = new String[] {"", ""};
 
     // Data members
     /** The airlock to be used. */
@@ -716,8 +718,14 @@ implements Serializable {
 
         // Check if EVA suit is available.
         else if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
-            logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " since no EVA suit is available.");
+	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
+                    " since no EVA suit is available.";
+
+	    	if (!logCache[0].equals(newLog)) {
+		    	logCache[0] = newLog;
+				logger.severe(logCache[0]);
+	    	}
+
             return false;
         }
 
@@ -726,13 +734,18 @@ implements Serializable {
         // TODO: if incapacitated, should someone else help this person to get out?
         else if (person.getPerformanceRating() == 0) {
 
-        	// TODO: how to prevent the logger statement below from being repeated multiple times?
-        	logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                " due to crippling performance rating");
+        	// 2017-05-08 Prevent the logger statement below from being repeated multiple times
+	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
+	                " due to crippling performance rating";
+
+	    	if (!logCache[1].equals(newLog)) {
+		    	logCache[1] = newLog;
+				logger.severe(logCache[1]);
+	    	}
 
             // 2016-02-28 Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
             try {
-            	logger.info(person.getName() + " is nearly abandoning the action of exiting the airlock and switching to a new task");
+            	//logger.info(person.getName() + " is nearly abandoning the action of exiting the airlock and switching to a new task");
             	// 2016-10-07 Note: calling getNewAction() below is still considered "experimental"
             	// It may have caused StackOverflowError if a very high fatigue person is stranded in the airlock and cannot go outside.
             	// Intentionally add a 5% performance boost
@@ -789,7 +802,7 @@ implements Serializable {
             EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
             if (suit != null) {
                 result = true;
-                logger.severe(person.getName() + " already has an EVA suit in inventory!");
+                //logger.severe(person.getName() + " already has an EVA suit in inventory!");
             }
         }
         else if (robot != null) {
@@ -850,17 +863,17 @@ implements Serializable {
         int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
         // Check if enough oxygen.
-        AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
-        double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
+        //AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, true, false);
+        double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
         // Make sure there is enough extra oxygen for everyone else.
         availableOxygen -= (neededOxygen * otherPeopleNum);
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
-        AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
-        double availableWater = entityInv.getAmountResourceStored(waterAR, false);
+        //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+        double neededWater = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.waterAR, true, false);
+        double availableWater = entityInv.getAmountResourceStored(ResourceUtil.waterAR, false);
         // Make sure there is enough extra water for everyone else.
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);
