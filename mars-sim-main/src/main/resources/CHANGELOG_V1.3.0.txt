@@ -4,7 +4,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 7 (build 3971) - 2017-05-07
+## v3.1.0-Preview 7 (build 3972) - 2017-05-08
 
 ### MINIMUM REQUIREMENTS :
 
@@ -21,7 +21,7 @@ https://mars-sim.github.io/
    recommend using MacOS's style top menu to gain access to each Tool. Known JavaFX
    WebEngine bug in displaying certain fonts in Help Browser.
 
-2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact.
+2. In Linux, the text fields does not allow text input.
 
 3. Not compatible with 32-bit Java 8.
 
@@ -92,6 +92,7 @@ https://mars-sim.github.io/
 10. Fix the "trapped" vehicle occupants (held up by the finished mission) and release
     them back to their settlement.
 
+11. Remove the shadow artifact on the surface of the spinning Mars Globe in Linux.
 
 -----------------------------------------------------------------------------------------
 
