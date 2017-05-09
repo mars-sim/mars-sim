@@ -8,9 +8,9 @@
 
 #menu-button{
 	-fx-font-size: 20.0px;
-	-fx-stroke-width: 2;
-    -fx-text-fill: white; /* very light yellow #f9efe0, light mud color: #FFB03B , dark mud : #945f16*/
-    -fx-font-weight: bold;
+	-fx-stroke-width: 1;
+    -fx-text-fill: #FFB03B; /* very light yellow #f9efe0, light mud color: #FFB03B , dark mud : #945f16*/
+    -fx-font-weight: italic;
 }
 
 
@@ -29,7 +29,7 @@
 .label {
     -fx-stroke-width: 3;
     -fx-font-weight: bold;
-    -fx-text-fill: #e5f3f6; 
+    -fx-text-fill: #e5f3f6;
     -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
 }
 */

@@ -152,14 +152,16 @@ public class Globe {
         material.setDiffuseColor(Color.WHITE);//TRANSPARENT);//BROWN);
         material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
 
-        material.setSpecularColor(Color.LIGHTGOLDENRODYELLOW);//.DARKGOLDENROD);//ORANGE);//.LIGHTGRAY);//WHITE);
-
-        if (!MainMenu.OS.contains("linux")) {
-            //material.setSpecularColor(Color.WHITE);
-            material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
-        }
-
         material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
+
+
+        //if (!MainMenu.OS.contains("linux")) {
+        //    material.setSpecularColor(Color.LIGHTGOLDENRODYELLOW);//WHITE);
+        //    material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
+        //}
+        //else
+        	material.setSpecularColor(Color.LIGHTGOLDENRODYELLOW);//LIGHTGRAY);//		.DARKGOLDENROD);//ORANGE);//.LIGHTGRAY);//WHITE);
+
 
         //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
