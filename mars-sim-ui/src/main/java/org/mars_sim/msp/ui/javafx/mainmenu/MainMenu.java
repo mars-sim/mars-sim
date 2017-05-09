@@ -224,8 +224,8 @@ public class MainMenu {
        spinningGlobe = new SpinningGlobe(this);
 
        Parent globe = null;
-
-       if (OS.contains("window")) { //"linux")) { //
+/*
+       if (OS.contains("linux")) { //"window")) { //
     	   globe = spinningGlobe.createFixedGlobe();
     	   //globe.setTranslateX(-VIEWPORT_SIZE / 14d);
     	   globe.setTranslateY(-VIEWPORT_SIZE / 6.5d);
@@ -242,6 +242,7 @@ public class MainMenu {
        }
 
        else {
+*/
     	   globe = spinningGlobe.createDraggingGlobe();
            mapBox.getChildren().add(globe);
            AnchorPane.setTopAnchor(rect, 0.0);
@@ -253,7 +254,7 @@ public class MainMenu {
            AnchorPane.setTopAnchor(screen, 0.0);
            AnchorPane.setRightAnchor(screen, 0.0);
 
-       }
+       //}
 
        screen.setCache(true);
        starfield.setCache(true);
@@ -262,8 +263,8 @@ public class MainMenu {
 
        root.getChildren().addAll(rect, starfield, mapBox, screen);
        screen.toFront();
-
-       if (OS.contains("window")) { //"linux")) { //
+/*
+       if (OS.contains("linux")) { //"window")) { //
     	   scene = new Scene(root,
     			      //new StackPane(root),
     			      WIDTH-10, HEIGHT-10,
@@ -275,13 +276,14 @@ public class MainMenu {
     	   //scene.setCamera(new PerspectiveCamera());
        }
        else {
+*/
     	   scene = new Scene(root, WIDTH-5, HEIGHT-5, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
 
             // Add keyboard control
            spinningGlobe.getGlobe().handleKeyboard(scene);
            // Add mouse control
            spinningGlobe.getGlobe().handleMouse(scene);
-       }
+       //}
 
 
 
