@@ -56,6 +56,7 @@ public class ScreensSwitcher extends StackPane {
         try {
             FXMLLoader myLoader = new FXMLLoader(getClass().getResource(resource));
             Parent screen = (Parent) myLoader.load();
+            screen.getStylesheets().add("/fxui/css/mainmenu.css");
             ControlledScreen controller = ((ControlledScreen) myLoader.getController());
             controller.setScreenParent(this);
             mainMenu.setController(controller);

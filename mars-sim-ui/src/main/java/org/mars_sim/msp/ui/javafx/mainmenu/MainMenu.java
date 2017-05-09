@@ -200,19 +200,16 @@ public class MainMenu {
 		//	System.out.println("Warning: menu option box is not found");
 
        VBox menuBox = ((VBox) screen.lookup("#menuBox"));
-
        HBox mapBox = ((HBox) screen.lookup("#mapBox"));
 
-       //StackPane pane = new StackPane(mapBox);
-
-       Rectangle rect = new Rectangle(WIDTH, HEIGHT);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
+       Rectangle rect = new Rectangle(WIDTH+5, HEIGHT+5);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
        rect.setArcWidth(40);
        rect.setArcHeight(40);
        rect.setEffect(new DropShadow(40, 5, 5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
        // 2015-11-23 Added StarfieldFX
        StarfieldFX sf = new StarfieldFX();
-       Parent starfield = sf.createStars(WIDTH-20, HEIGHT-20);
+       Parent starfield = sf.createStars(WIDTH-30, HEIGHT-30);
 
        root = new AnchorPane();
        root.setStyle(//"-fx-border-style: none; "
