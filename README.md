@@ -51,6 +51,11 @@ See our new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 * MacOS (known bug when clicking on the tabs)
 * Linux (unwanted black shadow artifact on the spinning 3D Mars Globe)
 
+## Java environment Setup
+* Windows
+  - Edit the `JAVA_HOME` and `PATH` in System's Environment Variables in Control Panel 
+  - Set `JAVA_HOME` to JDK's destination such as `C:\Program Files\Java\jdk1.8.0_131`
+  - Add '%JAVA_HOME%;%JAVA_HOME%\bin;' to `PATH`          
 
 ## Development Prerequisites
 See setting up development environment at https://github.com/mars-sim/mars-sim/wiki/Development-Environment
