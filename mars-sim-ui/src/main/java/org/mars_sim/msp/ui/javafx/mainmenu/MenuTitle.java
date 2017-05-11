@@ -19,7 +19,7 @@ public class MenuTitle extends Pane {
         }
 
         text = new Text(spread);
-        text.setFont(Font.loadFont(MenuApp.class.getResource("Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), size));
+        text.setFont(Font.loadFont(MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), size));
         text.setFill(color);
         text.setEffect(new DropShadow(50, Color.BLACK));
 

@@ -57,7 +57,7 @@ public class MenuApp extends Application {
     }
 
     private void addBackground() {
-        ImageView imageView = new ImageView(new Image(getClass().getResource("mars.jpg").toExternalForm()));
+        ImageView imageView = new ImageView(new Image(this.getClass().getResource("/images/mainMenu/mars.jpg").toExternalForm()));
         imageView.setFitWidth(WIDTH);
         imageView.setFitHeight(HEIGHT);
 
