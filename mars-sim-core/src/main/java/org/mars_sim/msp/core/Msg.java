@@ -97,7 +97,7 @@ public class Msg {
 */
 	/**
 	 * replaces all occurrences of "{n}" (with n an integer)
-	 * with the 
+	 * with the
 	 * @param key
 	 * @param args
 	 * @return
@@ -190,7 +190,7 @@ public class Msg {
 			if (
 				rest != null && (
 					rest.startsWith("(") || rest.startsWith("{")
-				) && ( 
+				) && (
 					rest.endsWith(")") || rest.endsWith("}")
 				)
 			) {
@@ -215,13 +215,14 @@ public class Msg {
 
 	/** prints an error message to the console. */
 	public static final String handle(Exception e,String key) {
-		String msg = new StringBuffer()
-		.append("!!") //$NON-NLS-1$
+		// 2017-05-09 Upgrade from StringBuffer to StringBuilder
+		StringBuilder msg = new StringBuilder();
+		msg.append("!!") //$NON-NLS-1$
 		.append(key)
 		.append("??") //$NON-NLS-1$
 		.toString();
-		logger.log(Level.WARNING,msg);
-		return msg;
+		logger.log(Level.WARNING, msg.toString());
+		return msg.toString();
 	}
 
 	/**
