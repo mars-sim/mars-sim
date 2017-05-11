@@ -23,36 +23,36 @@ public class FoodProductionProcessItem implements Serializable {
 	private String name;
 	private Type type;
 	private double amount;
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
-	
+
 	public void setType(Type type) {
 		this.type = type;
 	}
-	
+
 	public double getAmount() {
 		return amount;
 	}
-	
+
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
 	}
-	
+
     /**
      * Checks if another object is equal to this one.
      */
@@ -71,7 +71,7 @@ public class FoodProductionProcessItem implements Serializable {
                 result = false;
             }
         }
-        
+
         return result;
     }
 
@@ -80,10 +80,11 @@ public class FoodProductionProcessItem implements Serializable {
      * @return hash code.
      */
     public int hashCode() {
-        StringBuffer buff = new StringBuffer("");
-        buff.append(name);
-        buff.append(type);
-        buff.append(amount);
-        return buff.hashCode();
+		// 2017-05-09 Upgrade from StringBuffer to StringBuilder
+        StringBuilder sb = new StringBuilder("");
+        sb.append(name);
+        sb.append(type);
+        sb.append(amount);
+        return sb.hashCode();
     }
 }
