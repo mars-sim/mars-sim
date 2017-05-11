@@ -124,12 +124,12 @@ public class MainMenu {
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
-    private static final int WIDTH = 1024;//768-20;
-    private static final int HEIGHT = 768-50;
-    private static final double VIEWPORT_SIZE = 600;
+    public static final int WIDTH = 1024;//768-20;
+    public static final int HEIGHT = 768;
+    //private static final double VIEWPORT_SIZE = 768;
 
 	// Data members
-    private double fileSize;
+    //private double fileSize;
 
     public static String screen1ID = "main";
     public static String screen1File = "/fxui/fxml/MainMenu.fxml";
@@ -141,23 +141,22 @@ public class MainMenu {
     //private double anchorX;
     //private double rate;
 
-    //private boolean isDone;
-
-    //private AnchorPane anchor;
-    private AnchorPane root;
+    private Parent root;
+    //private AnchorPane root;
 	private Stage stage;
-	public Scene scene;
+	private Scene scene;
 
-	public MainMenu mainMenu;
-	public MainScene mainScene;
-	public ScreensSwitcher screen;
+	private MainMenu mainMenu;
+	private MainScene mainScene;
+	private ScreensSwitcher screen;
 
 	//private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
 	private MultiplayerMode multiplayerMode;
-	public MainMenuController mainMenuController;
+	private MainMenuController mainMenuController;
 
-	public SpinningGlobe spinningGlobe;
+	//private SpinningGlobe spinningGlobe;
+	private MenuApp menuApp;
 
     public MainMenu() {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
@@ -180,7 +179,7 @@ public class MainMenu {
 		// until the application calls exit. The default value is true.
 
     	stage.setOnCloseRequest(e -> {
-			boolean isExit = screen.exitDialog(stage);
+			boolean isExit = exitDialog(stage);
 			if (!isExit) {
 				e.consume();
 			}
@@ -189,17 +188,20 @@ public class MainMenu {
 	    		System.exit(0);
 			}
 		});
-
+    	
+/*
        screen = new ScreensSwitcher(this);
        screen.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);
-       screen.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
-       screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
+       //screen.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
+       //screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        screen.setScreen(MainMenu.screen1ID);
 
        //if (screen.lookup("#menuBox") == null)
 		//	System.out.println("Warning: menu option box is not found");
 
        VBox menuBox = ((VBox) screen.lookup("#menuBox"));
+       //VBox menuBox = 
+       
        HBox mapBox = ((HBox) screen.lookup("#mapBox"));
 
        Rectangle rect = new Rectangle(WIDTH+5, HEIGHT+5);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
@@ -207,10 +209,15 @@ public class MainMenu {
        rect.setArcHeight(40);
        rect.setEffect(new DropShadow(40, 5, 5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
+    		   
        // 2015-11-23 Added StarfieldFX
        StarfieldFX sf = new StarfieldFX();
        Parent starfield = sf.createStars(WIDTH-30, HEIGHT-30);
-
+*/
+       menuApp = new MenuApp(mainMenu);
+       root = menuApp.createContent();
+       
+/*
        root = new AnchorPane();
        root.setStyle(//"-fx-border-style: none; "
        			"-fx-background-color: transparent; "
@@ -219,39 +226,21 @@ public class MainMenu {
        root.setPrefWidth(HEIGHT);
 
        spinningGlobe = new SpinningGlobe(this);
+       Parent globe = spinningGlobe.createDraggingGlobe();   
+       //globe.setTranslateX(0);
+       globe.setTranslateY(80);
+       //mapBox.getChildren().add(globe);     
+       menuApp.getRoot().getChildren().addAll(globe);
 
-       Parent globe = null;
-/*
-       if (OS.contains("linux")) { //"window")) { //
-    	   globe = spinningGlobe.createFixedGlobe();
-    	   //globe.setTranslateX(-VIEWPORT_SIZE / 14d);
-    	   globe.setTranslateY(-VIEWPORT_SIZE / 6.5d);
-           mapBox.getChildren().add(globe);
-           AnchorPane.setTopAnchor(rect, 0.0);
-           AnchorPane.setLeftAnchor(rect, 0.0);
-           AnchorPane.setTopAnchor(starfield, 0.0);
-           AnchorPane.setLeftAnchor(starfield, 0.0);
-           AnchorPane.setTopAnchor(mapBox, 5.0);
-           AnchorPane.setLeftAnchor(mapBox, 5.0);
-           AnchorPane.setTopAnchor(screen, 0.0);
-           AnchorPane.setLeftAnchor(screen, 0.0);
-
-       }
-
-       else {
-*/
-    	   globe = spinningGlobe.createDraggingGlobe();
-           mapBox.getChildren().add(globe);
-           AnchorPane.setTopAnchor(rect, 0.0);
-           AnchorPane.setLeftAnchor(rect, 0.0);
-           AnchorPane.setTopAnchor(starfield, 0.0);
-           AnchorPane.setLeftAnchor(starfield, 0.0);
-           AnchorPane.setTopAnchor(mapBox, 100.0);
-           AnchorPane.setLeftAnchor(mapBox, 0.0);
-           AnchorPane.setTopAnchor(screen, 0.0);
-           AnchorPane.setRightAnchor(screen, 0.0);
-
-       //}
+ 
+       AnchorPane.setTopAnchor(rect, 0.0);
+       AnchorPane.setLeftAnchor(rect, 0.0);
+       AnchorPane.setTopAnchor(starfield, 0.0);
+       AnchorPane.setLeftAnchor(starfield, 0.0);
+       AnchorPane.setTopAnchor(mapBox, 100.0);
+       AnchorPane.setLeftAnchor(mapBox, 0.0);
+       AnchorPane.setTopAnchor(screen, 0.0);
+       AnchorPane.setRightAnchor(screen, 0.0);
 
        screen.setCache(true);
        starfield.setCache(true);
@@ -260,31 +249,16 @@ public class MainMenu {
 
        root.getChildren().addAll(rect, starfield, mapBox, screen);
        screen.toFront();
-/*
-       if (OS.contains("linux")) { //"window")) { //
-    	   scene = new Scene(root,
-    			      //new StackPane(root),
-    			      WIDTH-10, HEIGHT-10,
-    			      //VIEWPORT_SIZE, VIEWPORT_SIZE,
-    			      true,
-    			      SceneAntialiasing.BALANCED
-    			    );
+*/   
+       
 
-    	   //scene.setCamera(new PerspectiveCamera());
-       }
-       else {
-*/
-    	   scene = new Scene(root, WIDTH-5, HEIGHT-5, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+	   scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+        // Add keyboard control
+	   menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene);
+       // Add mouse control
+	   menuApp.getSpinningGlobe().getGlobe().handleMouse(scene);
 
-            // Add keyboard control
-           spinningGlobe.getGlobe().handleKeyboard(scene);
-           // Add mouse control
-           spinningGlobe.getGlobe().handleMouse(scene);
-       //}
-
-
-
-       scene.setFill(Color.DARKGOLDENROD);//Color.BLACK);
+       scene.setFill(Color.BLACK);//DARKGOLDENROD);//Color.BLACK);
 
        scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm());
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
@@ -294,8 +268,9 @@ public class MainMenu {
        // Makes the menu option box fades in
        scene.setOnMouseEntered(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
+        	   menuApp.startAnimation();
                FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuBox);
+                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
                fadeTransition.setFromValue(0.0);
                fadeTransition.setToValue(1.0);
                fadeTransition.play();
@@ -306,7 +281,7 @@ public class MainMenu {
        scene.setOnMouseExited(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
                FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuBox);
+                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
                fadeTransition.setFromValue(1.0);
                fadeTransition.setToValue(0.0);
                fadeTransition.play();
@@ -549,15 +524,15 @@ public class MainMenu {
 	   //}
    //}
 
-   /*
-    * Sets the main menu controller at the start of the Simulation.instance().
-    */
-   // 2015-09-27 Added setController()
-   public void setController(ControlledScreen myScreenController) {
+	/*
+	* Sets the main menu controller at the start of the Simulation.instance().
+	*/
+	// 2015-09-27 Added setController()
+	public void setController(ControlledScreen myScreenController) {
 	   if (mainMenuController == null)
 		   if (myScreenController instanceof MainMenuController )
 			   mainMenuController = (MainMenuController) myScreenController;
-   }
+	}
 
 	public void chooseScreen(int num) {
 
@@ -574,13 +549,16 @@ public class MainMenu {
 		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 
+/*
+		AnchorPane anchor = null;
 		if (root == null) {
-	       root = new AnchorPane();//starfield);
-	       root.setPrefHeight(WIDTH);
-	       root.setPrefWidth(HEIGHT);
+	       anchor = new AnchorPane();
+	       anchor.setPrefWidth(WIDTH);
+	       anchor.setPrefHeight(HEIGHT);
 		}
+*/
 
-		StartUpLocation startUpLoc = new StartUpLocation(root.getPrefWidth(), root.getPrefHeight());
+		StartUpLocation startUpLoc = new StartUpLocation(WIDTH, HEIGHT);
         double xPos = startUpLoc.getXPos();
         double yPos = startUpLoc.getYPos();
         // Set Only if X and Y are not zero and were computed correctly
@@ -612,7 +590,7 @@ public class MainMenu {
 	}
 
 	public SpinningGlobe getSpinningGlobe() {
-		return spinningGlobe;
+		return menuApp.getSpinningGlobe();
 	}
 
     /**
@@ -646,18 +624,44 @@ public class MainMenu {
         //}
     }
 
+	public boolean exitDialog(Stage stage) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.initOwner(stage);
+		alert.setTitle("Confirmation for Exit");//("Confirmation Dialog");
+		alert.setHeaderText("Leaving mars-sim ?");
+		//alert.initModality(Modality.APPLICATION_MODAL);
+		alert.setContentText("Note: Yes to exit mars-sim");
+		ButtonType buttonTypeYes = new ButtonType("Yes");
+		ButtonType buttonTypeNo = new ButtonType("No");
+	   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+	   	Optional<ButtonType> result = alert.showAndWait();
+	   	if (result.get() == buttonTypeYes){
+	   		if (mainMenu.getMultiplayerMode() != null)
+	   			if (mainMenu.getMultiplayerMode().getChoiceDialog() != null)
+	   				mainMenu.getMultiplayerMode().getChoiceDialog().close();
+	   		alert.close();
+			Platform.exit();
+    		System.exit(0);
+	   		return true;
+	   	} else {
+	   		alert.close();
+	   	    return false;
+	   	}
+   	}
+	
 	public void destroy() {
-
 		root = null;
 		screen = null;
 		stage = null;
 		scene = null;
+		screen = null;
 		mainMenu = null;
 		mainScene = null;
 		executor = null;
 		multiplayerMode = null;
 		mainMenuController = null;
-		spinningGlobe = null;
+		menuApp = null;
+		
 	}
 
 }
