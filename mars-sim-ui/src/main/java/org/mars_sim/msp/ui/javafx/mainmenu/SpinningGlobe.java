@@ -105,8 +105,8 @@ public class SpinningGlobe extends Application {
     //    logger = LoggerFactory.getLogger(MainMenu.class);
     //}
 
-    private static final int WIDTH = 640;//768-20;
-    private static final int HEIGHT = 640;//768-20;
+    public static final int WIDTH = 768;
+    public static final int HEIGHT = 768;
 
     private static final double MIN_SCALE = .5;
     private static final double MAX_SCALE = 4;
