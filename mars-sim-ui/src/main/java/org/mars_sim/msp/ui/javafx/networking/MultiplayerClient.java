@@ -260,7 +260,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		// Get the Stage.
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
     	stage.setOnCloseRequest(e -> {
-			boolean isExit = mainMenu.getScreensSwitcher().exitDialog(stage);
+			boolean isExit = mainMenu.exitDialog(stage);//.getScreensSwitcher().exitDialog(stage);
 			if (!isExit) {
 				e.consume();
 			}
@@ -354,7 +354,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		// Add corner icon.
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/login32.png").toString()));
 	   	stage.setOnCloseRequest(e -> {
-				boolean isExit = mainMenu.getScreensSwitcher().exitDialog(stage);
+				boolean isExit = mainMenu.exitDialog(stage);//getScreensSwitcher().exitDialog(stage);
 				if (!isExit) {
 					e.consume();
 				}
@@ -519,7 +519,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		//	sendBye();
 		//});
 	   	stage.setOnCloseRequest(e -> {
-				boolean isExit = mainMenu.getScreensSwitcher().exitDialog(stage);
+				boolean isExit = mainMenu.exitDialog(stage);//getScreensSwitcher().exitDialog(stage);
 				if (!isExit) {
 					e.consume();
 				}

@@ -210,29 +210,31 @@
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
-  	-fx-toggle-color: yellow;
+  	-jfx-toggle-color: #f8c202;
     -fx-background-color: transparent;
     -fx-text-fill: yellow;
     -fx-font-weight: bold;
 }
 
 .jfx-toggle-button{
+  	-jfx-toggle-color: #f8c202;
   	-fx-text-fill: white; /*when the toggle button is off */
   	-fx-background-color: transparent;
 }
 
 .jfx-button {
-	-fx-toggle-color: #f8c202;
+	-jfx-toggle-color: #f8c202; /* f8c202 is mud mid orange */
 }
 
 .jfx-slider {
-  	-fx-background-color: white;
+  	-fx-background-color: transparent; /* only this setting works. other color settings on jfx-slider don't */
   	-fx-snap-to-ticks : true;
     -fx-font-size: 14px;
     -fx-text-fill: white;
 }
 
 .jfx-slider .svg-slider .thumb{
+	-fx-background-color: #f8c202;
 	-fx-stroke : black;
 	-fx-fill : black;
 }
@@ -241,21 +243,22 @@
 }
 
 .jfx-slider-style {
+	-fx-background-color: #f8c202;
 	-fx-indicator-position: right;
 }
 
 .jfx-slider-style > .thumb {
-	-fx-background-color: grey;
+	-fx-background-color: #f8c202;
 }
 
 .jfx-slider-style .track {
-	-fx-background-color: #ff5252;
+	-fx-background-color: #f8c202;
 	-fx-pref-height: 5px;
 	-fx-pref-width: 5px;
 }
 
 .jfx-slider-style .sliderValue {
-	-fx-stroke: #00cc66;
+	-fx-stroke: #f8c202; /* 00cc66 is mid green */
 	-fx-font-size: 12.0;
 }
 
@@ -281,12 +284,12 @@
     -fx-font-weight: italic;
     -fx-text-fill: yellow;
     -fx-checked-color: yellow;
-    -fx-unchecked-color: yellow;
+    -fx-unchecked-color: gray;
 }
 
 .jfx-check-box-all-colored > .box {
-    -jfx-checked-color: yellow;
-    -jfx-unchecked-color: yellow;
+    -jfx-checked-color: gray;
+    -jfx-unchecked-color: gray;
     -fx-text-fill: yellow;
 }
 
@@ -295,6 +298,8 @@
 }
 
 .jfx-check-box {
+    -jfx-checked-color: gray;
+    -jfx-unchecked-color: gray;
     -fx-font-weight: BOLD;
     -fx-font-size: 12;
     -fx-font-weight: italic;

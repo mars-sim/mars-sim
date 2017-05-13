@@ -2587,7 +2587,7 @@ public class MainScene {
 		setStylesheet(soundVBox, cssFile);
 
 		//setStylesheet(timeSlider, cssFile);
-		//setStylesheet(zoomSlider, cssFile);
+		setStylesheet(zoomSlider, cssFile);
 		setStylesheet(soundSlider, cssFile);
 
 
@@ -3735,7 +3735,7 @@ public class MainScene {
 		soundPlayer.enableMasterGain(false);
 		if (soundSlider != null) soundSlider.setDisable(true);//.setValue(0);
 	}
-
+    
 	public void destroy() {
 		quote = null;
 		//messagePopup = null;

@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * MenuApp.java
+ * @version 3.1.0 2017-05-12
+ * @author Manny KUng
+ */
+
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import javafx.animation.*;
@@ -37,7 +44,7 @@ public class MenuApp extends Application {
 
 
     private Pane root = new Pane();
-    private VBox menuBox = new VBox(-5);
+    private VBox menuBox;
     private HBox optionMenu = new HBox();
     private Line line;
     
@@ -50,6 +57,10 @@ public class MenuApp extends Application {
     public MenuApp(MainMenu mainMenu) {
     	
     	this.mainMenu = mainMenu;
+  
+    }
+    
+    public void setupMenuData() {
     	
     	menuData = Arrays.asList(
                 new Pair<String, Runnable>("New Sim", () -> mainMenu.runOne()),
@@ -59,10 +70,9 @@ public class MenuApp extends Application {
                 new Pair<String, Runnable>("Benchmark", () -> {}),
                 new Pair<String, Runnable>("Game Options", () -> {}),
                 new Pair<String, Runnable>("Credits", () -> {}),
-                new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
+                new Pair<String, Runnable>("Exit to Desktop", () -> mainMenu.exitDialog(mainMenu.getStage()))   //Platform::exit)
         );
-    	
-    }
+    }    
     
     Parent createContent() {
         //addBackground();
@@ -123,8 +133,8 @@ public class MenuApp extends Application {
 
     private void addLine(double x, double y) {
         line = new Line(x, y, x, y + 430);
-        line.setStrokeWidth(5);
-        line.setStroke(Color.LIGHTGOLDENRODYELLOW);//color(139D/255D, 69D/255D, 19D/255D));//DARKGOLDENROD);//.LIGHTSALMON);//.LIGHTSLATEGRAY);//.CORAL);//.LIGHTGOLDENRODYELLOW);//color(1, 1, 1, 0.75));
+        line.setStrokeWidth(2);
+        line.setStroke(Color.DARKGOLDENROD);//LIGHTGOLDENRODYELLOW);//color(139D/255D, 69D/255D, 19D/255D));//.LIGHTSALMON);//.LIGHTSLATEGRAY);//.CORAL);//.LIGHTGOLDENRODYELLOW);//color(1, 1, 1, 0.75));
         line.setEffect(new DropShadow(8, Color.BLACK));
         //line.setEffect(new BoxBlur(1, 1, 3));
         line.setScaleY(0);
@@ -133,12 +143,48 @@ public class MenuApp extends Application {
         //root.getChildren().add(line);
     }
 
+    private void addMenu(double x, double y) {
+    	setupMenuData();
+    	
+    	menuBox = new VBox(-5);
+        menuData.forEach(data -> {
+            MenuItem item = new MenuItem(data.getKey());
+            item.setOnAction(data.getValue());
+            item.setTranslateX(-300);
+
+            Rectangle clip = new Rectangle(300, 40);
+            clip.translateXProperty().bind(item.translateXProperty().negate());
+
+            item.setClip(clip);
+            menuBox.getChildren().add(item);
+        });
+        
+        menuBox.setTranslateX(x);
+        //menuBox.setTranslateY(y);
+        optionMenu.getChildren().add(menuBox);
+        optionMenu.setTranslateX(WIDTH/1.45);//2.6);
+        optionMenu.setTranslateY(y);
+        
+        boolean flag = false;
+	    for (Node node : root.getChildren()) {
+	    	if (node == optionMenu) {
+	    		flag = true;
+	    		break;
+	    	}
+	    }
+    	if (!flag)
+        	root.getChildren().add(optionMenu);
+    	
+    }
+
+    
     void startAnimation() {
         ScaleTransition st = new ScaleTransition(Duration.seconds(1), line);
         st.setToY(1);
         st.setOnFinished(e -> {
 
-            for (int i = 0; i < menuBox.getChildren().size(); i++) {
+        	int size = menuBox.getChildren().size();
+            for (int i = 0; i < size; i++) {
                 Node n = menuBox.getChildren().get(i);
 
                 TranslateTransition tt = new TranslateTransition(Duration.seconds(1 + i * 0.15), n);
@@ -150,28 +196,28 @@ public class MenuApp extends Application {
         st.play();
     }
 
-    private void addMenu(double x, double y) {
-        menuBox.setTranslateX(x);
-        //menuBox.setTranslateY(y);
-        menuData.forEach(data -> {
-            MenuItem item = new MenuItem(data.getKey());
-            item.setOnAction(data.getValue());
-            item.setTranslateX(-300);
-
-            Rectangle clip = new Rectangle(300, 40);
-            clip.translateXProperty().bind(item.translateXProperty().negate());
-
-            item.setClip(clip);
-
-            menuBox.getChildren().add(item);
+    void endAnimation() {
+        ScaleTransition st = new ScaleTransition(Duration.seconds(.5), line);
+        st.setToY(0);
+        st.play();
+        st.setOnFinished(e -> {  
         });
-
-        optionMenu.getChildren().add(menuBox);
-        optionMenu.setTranslateX(WIDTH/1.5);//2.6);
-        optionMenu.setTranslateY(y);
-        root.getChildren().add(optionMenu);
     }
-
+ 
+    void clearMenuItems() {
+    	optionMenu.getChildren().remove(line);
+        line = null;
+	    menuBox.getChildren().removeAll(menuData);
+        //menuData.forEach(data -> {
+        //    menuBox.getChildren().remove(menuData);
+        //});
+        menuData = null;
+        optionMenu.getChildren().remove(menuBox);
+        menuBox = null;
+        addLine(X_OFFSET, Y_OFFSET);
+        addMenu(X_OFFSET + 10, Y_OFFSET - 25);	
+    }
+    
     public HBox getOptionMenu() {
     	return optionMenu;
     }
@@ -182,6 +228,10 @@ public class MenuApp extends Application {
     
     public SpinningGlobe getSpinningGlobe() {
     	return spinningGlobe;
+    }
+    
+    public List<Pair<String, Runnable>> getMenuData() {
+    	return menuData;
     }
     
     @Override
