@@ -5,10 +5,10 @@
 }
 
 .jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label {
-    -fx-background-color: #206982;
+    -fx-background-color: #065185;
 }
 .jfx-tab-pane .tab-header-background {
-    -fx-background-color: #206982;
+    -fx-background-color: #065185; 
 }
 .jfx-tab-pane .tab-selected-line {
     -fx-stroke: #3291D2;

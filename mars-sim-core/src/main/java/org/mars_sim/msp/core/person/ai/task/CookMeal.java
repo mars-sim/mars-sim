@@ -134,7 +134,7 @@ implements Serializable {
 
 				String newLog = "Warning: cannot cook meals in "
 	            		+ person.getSettlement().getName()
-	            		+ " because none of the ingredients of a meal are available ";
+	            		+ " because none of the ingredients of any meals are available ";
 
 				if (!logCache[2].equals(newLog)) {
 					logCache[2] = newLog;
@@ -223,7 +223,7 @@ implements Serializable {
 
 				String newLog = "Warning: cannot cook meals in "
 	            		+ robot.getSettlement().getName()
-	            		+ " because none of the ingredients of a meal are available ";
+	            		+ " because none of the ingredients of any meals are available ";
 
 				if (!logCache[3].equals(newLog)) {
 					logCache[3] = newLog;

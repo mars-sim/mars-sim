@@ -83,6 +83,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
@@ -141,6 +142,8 @@ public class MainMenu {
     //private double anchorX;
     //private double rate;
 
+    private int currentItem = 0;
+    
     private Parent root;
     //private AnchorPane root;
 	private Stage stage;
@@ -208,8 +211,7 @@ public class MainMenu {
        rect.setArcWidth(40);
        rect.setArcHeight(40);
        rect.setEffect(new DropShadow(40, 5, 5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
-
-    		   
+	   
        // 2015-11-23 Added StarfieldFX
        StarfieldFX sf = new StarfieldFX();
        Parent starfield = sf.createStars(WIDTH-30, HEIGHT-30);
@@ -251,7 +253,6 @@ public class MainMenu {
        screen.toFront();
 */   
        
-
 	   scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
         // Add keyboard control
 	   menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene);
@@ -280,14 +281,16 @@ public class MainMenu {
        // Makes the menu option box fades out
        scene.setOnMouseExited(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
+        	   menuApp.endAnimation();
                FadeTransition fadeTransition
                        = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
                fadeTransition.setFromValue(1.0);
                fadeTransition.setToValue(0.0);
                fadeTransition.play();
+        	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
            }
        });
-
+     
        stage.setResizable(false);
 	   stage.setTitle(Simulation.title);
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -300,6 +303,11 @@ public class MainMenu {
 
    }
 
+	public void createMenuApp() {
+		 menuApp = new MenuApp(mainMenu);
+	     root = menuApp.createContent();
+	}
+	
 	public Stage getStage() {
 		return stage;
 	}
@@ -581,9 +589,9 @@ public class MainMenu {
 	//	return circleStage;
 	//}
 
-	public ScreensSwitcher getScreensSwitcher() {
-		return screen;
-	}
+	//public ScreensSwitcher getScreensSwitcher() {
+	//	return screen;
+	//}
 
 	public MainMenuController getMainMenuController() {
 		return mainMenuController;
@@ -648,7 +656,7 @@ public class MainMenu {
 	   	    return false;
 	   	}
    	}
-	
+    
 	public void destroy() {
 		root = null;
 		screen = null;

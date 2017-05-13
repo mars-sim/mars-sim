@@ -34,7 +34,7 @@
 
 .tool-bar:horizontal {
 	-fx-font-weight: normal;
-	-fx-font-family: "Noto";
+/*	-fx-font-family: "Noto";*/
 	-fx-font-size: 9pt;
 	-fx-background-color: transparent, transparent, transparent, transparent;
 	-fx-border-width: 1;
@@ -108,7 +108,7 @@
 .text-area {
 /*	-fx-font: 10pt 'Corbel';				*/
     -fx-font-size       : 0.80em;
-    -fx-font-family : "Liberation Mono";
+/*    -fx-font-family : "Liberation Mono";*/
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     -fx-text-fill: #a2b3db;
@@ -119,7 +119,7 @@
 #unit_description {
 /*	-fx-font: 10pt 'Corbel';				*/
     -fx-font-size       : 1.2em;
-    -fx-font-family : "Liberation Mono";
+/*    -fx-font-family : "Liberation Mono";*/
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     -fx-text-fill: #a2b3db;
@@ -131,7 +131,7 @@
 #quotation {
 /*	-fx-font: 14pt 'Corbel';    */
     -fx-font-size       : 1.0em;
-    -fx-font-family : "Liberation Mono";
+/*    -fx-font-family : "Liberation Mono";*/
     -fx-content-display : left;
     -fx-graphic-text-gap: 7;
     -fx-text-fill       : -foreground-color;
@@ -154,7 +154,7 @@
 #quotation .scroll-bar {
     -fx-base: #202020;
     -fx-background: #4f4747;
-    -fx-border-color: #707576;
+    -fx-border-color: #707576; /*707576 is mid grey; 4f4747 is dark grey */
 }
 
 #quotation .scroll-bar .thumb {
@@ -214,29 +214,40 @@
     -fx-border-width: 2;
 }
 
+/*  
+	03a9f4 is bright mid blue; 
+	7ebcea is light blue; 
+	a2b3db is very pale bluish purple
+    409fe8 is above mid blue;
+    3291D2 is mid blue; menu item
+    065185 is dull dark blue;    
+    206982 is dull dark green;     
+*/
+
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
-  	-fx-toggle-color: #addbff; /* #065185;#03a9f4;*/
+  	-jfx-toggle-color: #409fe8;
     -fx-background-color: transparent;
-    -fx-text-fill: #7ebcea; /* #065185;#03a9f4;*/
+    -fx-text-fill: #7ebcea; 
     -fx-font-weight: bold;
 }
 
 .jfx-toggle-button{
-  	-fx-text-fill: white; /*when the toggle button is off */
+  	-jfx-toggle-color: #409fe8;
+  	-fx-text-fill: white; /* when the toggle button is off */
   	-fx-background-color: transparent;
 }
 
 .jfx-button {
-	-fx-toggle-color: #409fe8; /*#065185;  #03a9f4;*/
+	-jfx-toggle-color: #409fe8;
 }
 
 .jfx-slider {
-  	-fx-background-color: white;
+  	-fx-background-color: transparent; /* only this setting works. other color settings on jfx-slider don't */
   	-fx-snap-to-ticks : true;
     -fx-font-size: 14px;
-    -fx-text-fill: #7ebcea;
+    -fx-text-fill: #7ebcea; 
 }
 
 .svg-slider .thumb{
@@ -248,7 +259,7 @@
 }
 
 .jfx-slider-style {
-	-fx-indicator-position: right;
+	-jfx-indicator-position: right;
 }
 
 .jfx-slider-style > .thumb {
@@ -256,7 +267,7 @@
 }
 
 .jfx-slider-style .track {
-	-fx-background-color: #ff5252;
+	-fx-background-color: #03a9f4;
 	-fx-pref-height: 5px;
 	-fx-pref-width: 5px;
 }
@@ -286,14 +297,14 @@
     -fx-font-size: 12;
     -fx-font-weight: italic;
     -fx-text-fill: #7ebcea;
-    -fx-checked-color: #206982;
-    -fx-unchecked-color: #206982;
+    -fx-checked-color: gray;
+    -fx-unchecked-color: gray;
 }
 
 .jfx-check-box-all-colored > .box {
-    -jfx-checked-color: #206982;
-    -jfx-unchecked-color: #206982;
-    -fx-text-fill: #206982;
+    -jfx-checked-color: gray;
+    -jfx-unchecked-color: gray;
+    -fx-text-fill: #3291d2; /*206982;*/
 }
 
 .jfx-check-box-text-colored {
@@ -301,6 +312,8 @@
 }
 
 .jfx-check-box {
+    -jfx-checked-color: gray;
+    -jfx-unchecked-color: gray;
     -fx-font-weight: BOLD;
     -fx-font-size: 12;
     -fx-font-weight: italic;
@@ -320,7 +333,7 @@
 .jfx-combo-box .list-cell  {
 	-fx-font-size: 12.0;
 	-fx-background: transparent;
-    -fx-background-color: #206982;
+    -fx-background-color: #065185;
     -fx-text-fill: #7ebcea;
     -fx-cell-size: 1.66667em;
     -fx-pref-height: 25;

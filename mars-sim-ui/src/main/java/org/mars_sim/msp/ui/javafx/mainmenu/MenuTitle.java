@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * MenuTitle.java
+ * @version 3.1.0 2017-05-12
+ * @author Manny KUng
+ */
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import javafx.scene.effect.DropShadow;
@@ -9,6 +15,7 @@ import javafx.scene.text.Text;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+@SuppressWarnings("restriction")
 public class MenuTitle extends Pane {
     private Text text;
 
