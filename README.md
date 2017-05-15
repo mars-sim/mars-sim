@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/mars-sim/mars-sim.svg?branch=master)](https://travis-ci.org/mars-sim/mars-sim)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/dee6a80651fe420b85adf22c4ca79574)](https://www.codacy.com/app/mokun/mars-sim?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mars-sim/mars-sim&amp;utm_campaign=Badge_Grade)
+
 # mars-sim
 
 The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars in a virtual environment. Each agent has various human-like characteristics, capable of making distinct decisions on a virtual Mars and interacting with one another on the surface of Mars.
