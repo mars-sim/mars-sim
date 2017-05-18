@@ -85,9 +85,16 @@
 	    	/>
 
 	  <crop name="Corn" growing-time="65" crop-category="grains"
-	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="15.0" daily-PAR="34.56" />
+	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="37.0" daily-PAR="34.56" />
 
 		<!--
+		http://lib.dr.iastate.edu/cgi/viewcontent.cgi?article=4354&context=etd
+		Corn stover is a broad term which describes all of the above ground biomass
+		from the corn crop except the grain. This biomass is comprised of structural
+		components including stalks, leaves, tassel, husk, and cob. The U.S. Department of
+		Energy estimates that over 76 million metric tons of corn stover are available from the
+		roughly 28 million hectares of corn produced each year (Perlack, 2005).  
+
 		Worldwide, with a yield of over 5 T/ha . Production can be significantly higher in certain regions of the world;
 		2009 forecasts for production in Iowa were 11614 kg/ha
 
