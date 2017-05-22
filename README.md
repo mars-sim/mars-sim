@@ -68,5 +68,4 @@ See setting up development environment at https://github.com/mars-sim/mars-sim/w
 
 
 ## Download 
-- Source Codes : ![Github Releases](https://img.shields.io/github/downloads/mars-sim/mars-sim/total.svg)
 - Binaries : https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
