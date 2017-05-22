@@ -39,10 +39,6 @@ For a general description of this project, see our project website at at https:/
 We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel free to provide your comments at our facebook community at https://www.facebook.com/groups/125541663548/. Note: see also old/archived discussions at https://sourceforge.net/p/mars-sim/discussion/
 
 
-## Download Binaries
-Checkout our latest 3.1.0-preview versions at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
-
-
 ## Issues/Tickets
 * Current : https://github.com/mars-sim/mars-sim/issues
 * Past/Archived : https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed
@@ -69,3 +65,8 @@ See setting up development environment at https://github.com/mars-sim/mars-sim/w
 
 ## Official Codebase
 * https://github.com/mars-sim/mars-sim
+
+
+## Download 
+- Source Codes : ![Github Releases](https://img.shields.io/github/downloads/mars-sim/mars-sim/total.svg)
+- Binaries : https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
