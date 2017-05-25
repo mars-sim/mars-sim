@@ -28,7 +28,7 @@
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
 		<version>${junit.version}</version>
-<!--		<scope>test</scope>		-->
+		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.assertj</groupId>
@@ -82,13 +82,13 @@
 	    <artifactId>commons-collections</artifactId>
 	    <version>3.2.2</version>
 	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json/1.0.4 : 102 KB
+	<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json : 122 KB
 		https://jsonp.java.net/
 		http://docs.oracle.com/javaee/7/tutorial/jsonp.htm -->
 	<dependency>
 		<groupId>org.glassfish</groupId>
 		<artifactId>javax.json</artifactId>
-		<version>1.1.0-M1</version>
+		<version>1.1</version>
 	</dependency>
 	<!-- http://tukaani.org/xz/java.html
 		https://mvnrepository.com/artifact/org.tukaani/xz : 120 KB-->
