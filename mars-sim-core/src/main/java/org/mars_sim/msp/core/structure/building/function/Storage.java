@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -61,8 +63,7 @@ implements Serializable {
 		// Get building resource capacity.
 		storageCapacity = config.getStorageCapacities(building.getBuildingType());
 
-		// Get initial resources in building.
-		//Inventory inv = building.getBuildingManager().getSettlement().getSettlementInventory();
+		// Initialize resource capacity in buildings.
 		Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
 		while (i1.hasNext()) {
 			AmountResource resource = i1.next();
@@ -80,19 +81,20 @@ implements Serializable {
 
 		}
 
+		// Fill up initial resources in buildings.
 		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getBuildingType());
 		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 		while (i2.hasNext()) {
 			AmountResource resource = i2.next();
 			//System.out.println("Storage.java : resource : " + resource.getName());
-			double initialResource = initialResources.get(resource);
+			double initialAmount = initialResources.get(resource);
 			//System.out.println("Storage.java : initialResource : " + initialResource);
 			double resourceCapacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
 			//System.out.println("Storage.java : resourceCapacity : " + resourceCapacity);
 			//System.out.println("\t\t" + resource.getName() + " : " + initialResource + " : " + resourceCapacity);
-			if (initialResource > resourceCapacity)
-				initialResource = resourceCapacity;
-			inv.storeAmountResource(resource, initialResource, true);
+			if (initialAmount > resourceCapacity)
+				initialAmount = resourceCapacity;
+			inv.storeAmountResource(resource, initialAmount, true);
 			//double newCapacity = inv.getAmountResourceCapacity(resource, false);
 			// NOTE : Just calling getAmountResourceStored() below is CRTICAL for initializing the Amount Resource cache in the inventory (via calling initializeAmountResourceStoredCache())
 			// without that, it will generate a string of NullPonterException when loading a saved sim.
@@ -100,7 +102,15 @@ implements Serializable {
 			//System.out.println(building.getNickName() + "'s resource-initial " + " -\t" + resource.getName() + "\t\t: " + stored + " / " + newCapacity);
 		}
 
-
+		// 2017-05-24 initialize inventory of this building for resource storage 
+		Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
+		Iterator<AmountResource> i3 = resources.iterator();
+		while (i3.hasNext()) {
+			AmountResource ar = i3.next();	
+			double resourceCapacity = inv.getAmountResourceRemainingCapacity(ar, true, false);
+			if (resourceCapacity >= 0)
+				inv.storeAmountResource(ar, 0, true);
+		}
 	}
 
 	/**
@@ -256,7 +266,7 @@ implements Serializable {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
 				result = false;
-			    //logger.info(name + " storage is full!");
+			    logger.info(ar.getName() + " storage is full!");
 			}
 			else {
 				inv.storeAmountResource(ar, amount, true);

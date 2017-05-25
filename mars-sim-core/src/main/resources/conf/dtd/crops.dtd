@@ -12,6 +12,7 @@
 <!ATTLIST crop name CDATA #REQUIRED>
 <!ATTLIST crop growing-time CDATA #REQUIRED>
 <!ATTLIST crop crop-category CDATA #REQUIRED>
+<!ATTLIST crop life-cycle CDATA #IMPLIED>
 <!ATTLIST crop edible-biomass CDATA #REQUIRED>
 <!ATTLIST crop edible-water-content CDATA #REQUIRED>
 <!ATTLIST crop inedible-biomass CDATA #REQUIRED>

@@ -105,12 +105,15 @@
 			<resource type="food" amount="1657.0" />
 			<resource type="grey water" amount="100.0" />
 			<resource type="black water" amount="25.0" />
-			<resource type="carbon dioxide" amount="1000.0" />
-			<resource type="Fertilizer" amount="10.0" />
+			<resource type="carbon dioxide" amount="10.0" />
+			<resource type="fertilizer" amount="10.0" />
 
 			<!-- Crop -->
 			<!-- No starting crops for this template. -->
 
+			<resource type="Mustard Seed" amount="50.0" />
+			<resource type="Sesame Seed" amount="50.0" />
+			
 
 			<!-- Food Crop Tissue Culture
 			<resource type="blueberry tissue culture" amount="0.1" />
@@ -171,7 +174,8 @@
 
 			<!-- Food Derived Items -->
 			<!-- No food derived items in this template. -->
-
+			<resource type="mustard" amount="50.0" />
+			
 			<!-- Part packages (see part_packages.xml) -->
 			<!-- name: the part package name. -->
 			<!-- number: the number of packages. -->
@@ -251,8 +255,8 @@
 			<resource type="food" amount="3314.0" />
 			<resource type="grey water" amount="300.0" />
 			<resource type="black water" amount="75.0" />
-			<resource type="carbon dioxide" amount="2000.0" />
-			<resource type="Fertilizer" amount="50.0" />
+			<resource type="carbon dioxide" amount="20.0" />
+			<resource type="fertilizer" amount="50.0" />
 
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
@@ -260,32 +264,44 @@
 			<resource type="Carrot" amount="50.0" />
 			<resource type="Celery" amount="50.0" />
 			<resource type="Corn" amount="50.0" />
+			
 			<resource type="Cranberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Garlic" amount="50.0" />
 			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+			
 			<resource type="Green Onion" amount="50.0" />
 			<resource type="Kidney Bean" amount="50.0" />
 			<resource type="Lettuce" amount="50.0" />
 			<resource type="Peanut" amount="50.0" />
 			<resource type="Peas" amount="50.0" />
+			
 			<resource type="Potato" amount="50.0" />
 			<resource type="Quinoa" amount="50.0" />
-			<resource type="Rice" amount="50.0" />
+			<resource type="Rice" amount="50.0" />		
 			<resource type="Soybean" amount="50.0" />
 			<resource type="Strawberry" amount="50.0" />
-			<resource type="Sugarcane" amount="50.0" />
+			
+			<resource type="Sugarcane" amount="50.0" />		
 			<resource type="Swiss Chard" amount="50.0" />
 			<resource type="Taro" amount="50.0" />
 			<resource type="Tomato" amount="50.0" />
+			
 			<resource type="Wheat" amount="50.0" />
 			<resource type="White Rice" amount="50.0" />
 			<resource type="White Onion" amount="50.0" />
 			<resource type="Yam" amount="50.0" />
 
+			<resource type="morel mushroom" amount="50.0" />
+			<resource type="radish" amount="50.0" />	
+			<resource type="red beet" amount="50.0" />
+			<resource type="sweet potato" amount="50.0" />
+			
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
+			
+			<resource type="mustard" amount="50.0" />
 
 			<!-- Food Crop Tissue Culture
 			<resource type="blueberry tissue culture" amount="0.2" />
@@ -342,8 +358,9 @@
 			<resource type="Epsom Salt" amount="50.0" />
 			<resource type="Table Salt" amount="50.0" />
 			<resource type="Sugar" amount="50.0" />
-
+			
 			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />
 			<resource type="Tofu" amount="50.0" />
 			<resource type="Roasted Peanut" amount="50.0" />
 			<resource type="White Bread" amount="50.0" />
@@ -461,8 +478,8 @@
 			<resource type="food" amount="4970.0" />
 			<resource type="grey water" amount="400.0" />
 			<resource type="black water" amount="100.0" />
-			<resource type="carbon dioxide" amount="3000.0" />
-			<resource type="Fertilizer" amount="50.0" />
+			<resource type="carbon dioxide" amount="30.0" />
+			<resource type="fertilizer" amount="50.0" />
 
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
@@ -470,29 +487,39 @@
 			<resource type="Carrot" amount="50.0" />
 			<resource type="Celery" amount="50.0" />
 			<resource type="Corn" amount="50.0" />
+			
 			<resource type="Cranberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Garlic" amount="50.0" />
 			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+			
 			<resource type="Green Onion" amount="50.0" />
 			<resource type="Kidney Bean" amount="50.0" />
 			<resource type="Lettuce" amount="50.0" />
 			<resource type="Peanut" amount="50.0" />
 			<resource type="Peas" amount="50.0" />
+			
 			<resource type="Potato" amount="50.0" />
 			<resource type="Quinoa" amount="50.0" />
 			<resource type="Rice" amount="50.0" />
 			<resource type="Soybean" amount="50.0" />
 			<resource type="Strawberry" amount="50.0" />
+			
 			<resource type="Sugarcane" amount="50.0" />
 			<resource type="Swiss Chard" amount="50.0" />
 			<resource type="Taro" amount="50.0" />
 			<resource type="Tomato" amount="50.0" />
+			
 			<resource type="Wheat" amount="50.0" />
 			<resource type="White Rice" amount="50.0" />
 			<resource type="White Onion" amount="50.0" />
 			<resource type="Yam" amount="50.0" />
+			
+			<resource type="morel mushroom" amount="50.0" />
+			<resource type="radish" amount="50.0" />	
+			<resource type="red beet" amount="50.0" />
+			<resource type="sweet potato" amount="50.0" />
 
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
@@ -552,8 +579,9 @@
 			<resource type="Epsom Salt" amount="50.0" />
 			<resource type="Table Salt" amount="50.0" />
 			<resource type="Sugar" amount="50.0" />
-
+		
 			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />			
 			<resource type="Tofu" amount="50.0" />
 			<resource type="Roasted Peanut" amount="50.0" />
 			<resource type="White Bread" amount="50.0" />
@@ -771,8 +799,8 @@
 			<resource type="food" amount="9940.0" />
 			<resource type="grey water" amount="1000.0" />
 			<resource type="black water" amount="250.0" />
-			<resource type="carbon dioxide" amount="5000.0" />
-			<resource type="Fertilizer" amount="50.0" />
+			<resource type="carbon dioxide" amount="50.0" />
+			<resource type="fertilizer" amount="50.0" />
 
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
@@ -780,29 +808,39 @@
 			<resource type="Carrot" amount="50.0" />
 			<resource type="Celery" amount="50.0" />
 			<resource type="Corn" amount="50.0" />
+			
 			<resource type="Cranberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Garlic" amount="50.0" />
 			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+			
 			<resource type="Green Onion" amount="50.0" />
 			<resource type="Kidney Bean" amount="50.0" />
 			<resource type="Lettuce" amount="50.0" />
 			<resource type="Peanut" amount="50.0" />
 			<resource type="Peas" amount="50.0" />
+			
 			<resource type="Potato" amount="50.0" />
 			<resource type="Quinoa" amount="50.0" />
 			<resource type="Rice" amount="50.0" />
 			<resource type="Soybean" amount="50.0" />
 			<resource type="Strawberry" amount="50.0" />
+			
 			<resource type="Sugarcane" amount="50.0" />
 			<resource type="Swiss Chard" amount="50.0" />
 			<resource type="Taro" amount="50.0" />
 			<resource type="Tomato" amount="50.0" />
+			
 			<resource type="Wheat" amount="50.0" />
 			<resource type="White Rice" amount="50.0" />
 			<resource type="White Onion" amount="50.0" />
 			<resource type="Yam" amount="50.0" />
+			
+			<resource type="morel mushroom" amount="50.0" />
+			<resource type="radish" amount="50.0" />	
+			<resource type="red beet" amount="50.0" />
+			<resource type="sweet potato" amount="50.0" />
 
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
@@ -862,8 +900,9 @@
 			<resource type="Epsom Salt" amount="50.0" />
 			<resource type="Table Salt" amount="50.0" />
 			<resource type="Sugar" amount="50.0" />
-
+			
 			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />
 			<resource type="Tofu" amount="50.0" />
 			<resource type="Roasted Peanut" amount="50.0" />
 			<resource type="White Bread" amount="50.0" />

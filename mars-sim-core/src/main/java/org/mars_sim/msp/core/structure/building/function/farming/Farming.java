@@ -86,6 +86,7 @@ implements Serializable {
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.01;
 	private static final double CROP_WASTE_PER_SQM_PER_SOL = .01; // .01 kg
 
+	/** The original list of crop types from CropConfig*/
     private static List<CropType> cropTypeList;
 
 	private static ItemResource LED_Item;
@@ -260,6 +261,7 @@ implements Serializable {
 		CropType lastCT = null;
 		CropType last2CT = null;
 		boolean compareVP = false;
+		
 
 		int size = plantedCropList.size();
 		if (size > 2) {
@@ -287,7 +289,7 @@ implements Serializable {
 				if (last2CT == lastCT) {
 					// since the secondCrop has already been chosen twice,
 					// should not choose the same crop type again
-					//compareVP = false;
+					//compareVP = false;					
 					chosen = no_1_crop;
 				}
 
@@ -298,7 +300,7 @@ implements Serializable {
 		}
 
 		else if (size == 1) {
-			lastCT = plantedCropList.get(size-1);
+			lastCT = plantedCropList.get(0);
 
 			if (lastCT != null) {
 				// if highestCrop has already been selected for planting last time,
@@ -308,7 +310,7 @@ implements Serializable {
 		}
 
 		else {
-
+			 //plantedCropList has 2 crops or no crops
 		}
 
 		if (compareVP){
@@ -328,10 +330,23 @@ implements Serializable {
 		}
 		else
 			chosen = no_1_crop;
-
+	
+		while (plantedCropList.contains(chosen)) {
+			chosen = getRandomCropType();
+		}
+			
 		return chosen;
 	}
 
+	/**
+	 * Picks a crop type randomly
+	 * @return crop type
+	 */
+	public CropType getRandomCropType() {
+		int s = cropTypeList.size();
+		return cropTypeList.get(s-1);		
+	}
+	
 	// 2015-03-02 Added	getCropValue()
     public double getCropValue(AmountResource resource) {
     	double cropValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
@@ -439,7 +454,7 @@ implements Serializable {
 
     	String tissueName = cropType.getName() + " " + TISSUE_CULTURE;
     	//String name = Conversion.capitalize(cropType.getName()) + " " + TISSUE_CULTURE;
-    	AmountResource tissueAR = AmountResource.findAmountResource(tissueName);
+    	AmountResource tissueAR = ResourceUtil.findAmountResource(tissueName);
 
     	boolean available = false;
 
@@ -633,7 +648,8 @@ implements Serializable {
     /**
      * Adds work time to the crops current phase.
      * @param workTime - Work time to be added (millisols)
-     * @param needyCrop
+     * @param h - an instance of TendGreenhouse
+     * @param unit - a person or bot
      * @return workTime remaining after working on crop (millisols)
      * @throws Exception if error adding work.
      */
@@ -646,13 +662,19 @@ implements Serializable {
         while (((needyCrop = getNeedyCrop(lastCrop, unit)) != null)
         		&& (workTimeRemaining > .00001D)) {
 
-        	if (lastCrop.getCropType() != needyCrop.getCropType()) {
-        		// 2016-11-29 update the name of the crop being worked on in the task description
-        		h.setCrop(needyCrop);
-        		lastCrop = needyCrop;
+        	if (lastCrop != null)
+        		logger.info("inside while loop. lastCrop is " + lastCrop.getCropType());
+            workTimeRemaining = needyCrop.addWork(unit, workTimeRemaining);
+            
+        	//if (!lastCrop.getCropType().equals(needyCrop.getCropType())) {
+        	if (lastCrop != null) {
+	           	if (lastCrop.getCropType() != needyCrop.getCropType()) {	
+	        		// 2016-11-29 update the name of the crop being worked on in the task description
+	        		h.setCrop(needyCrop);
+	        		lastCrop = needyCrop;
+	        	}
         	}
 
-            workTimeRemaining = needyCrop.addWork(workTimeRemaining);
         }
 
         return workTimeRemaining;
@@ -660,6 +682,8 @@ implements Serializable {
 
     /**
      * Gets a crop that needs planting, tending, or harvesting.
+     * @param lastCrop
+     * @param unit a person or a bot
      * @return crop or null if none found.
      */
     public Crop getNeedyCrop(Crop lastCrop, Unit unit) {
@@ -679,17 +703,22 @@ implements Serializable {
 	            	//	updateAssignmentMap(unit);
 	            	//	return c;
 	            	//}
-	                else
-	                	needyCrops.add(c);
             	}
+                else
+                	needyCrops.add(c);
             }
         }
 
-        if (needyCrops.size() > 0) {
+        if (needyCrops.size() == 1)
+        	result = needyCrops.get(0);
+
+        else if (needyCrops.size() > 1) {
         	result = needyCrops.get(RandomUtil.getRandomInt(0, needyCrops.size() - 1));
     		//updateCropAssignment(unit, result);
         }
 
+        //if (result == null) logger.info("getNeedyCrop() is null");
+        
         return result;
     }
 /*
@@ -777,7 +806,7 @@ implements Serializable {
 
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
-        int numNewCrops = 0;
+        int numCrops2Plant = 0;
         while (i.hasNext()) {
             Crop crop = i.next();
             crop.timePassing(time * productionLevel);
@@ -785,12 +814,12 @@ implements Serializable {
             if (crop.getPhaseType() == PhaseType.FINISHED) {
                 remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
                 i.remove();
-                numNewCrops++;
+                numCrops2Plant++;
              }
         }
 
         // Add any new crops.
-        for (int x = 0; x < numNewCrops; x++) {
+        for (int x = 0; x < numCrops2Plant; x++) {
            	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
         	CropType cropType = null;
         	int size = cropListInQueue.size();
@@ -899,8 +928,8 @@ implements Serializable {
 
         // Add power required to sustain growing or harvest-ready crops.
         for (Crop crop : crops) {
-            if ((crop.getPhaseNum() > 2 && crop.getPhaseNum() < crop.getPhases().size() - 1)
-            		|| crop.getPhaseNum() == 2)
+            if ((crop.getCurrentPhaseNum() > 2 && crop.getCurrentPhaseNum() < crop.getPhases().size() - 1)
+            		|| crop.getCurrentPhaseNum() == 2)
 				powerRequired += powerSustainingCrop;
         }
 
