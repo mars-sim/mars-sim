@@ -529,6 +529,7 @@ implements Serializable {
      * Store an amount of a resource.
      * @param resource the resource.
      * @param amount the amount (kg).
+     * @param useContainedUnits
      */
     public void storeAmountResource(AmountResource resource, double amount,
             boolean useContainedUnits) {
@@ -1212,7 +1213,7 @@ implements Serializable {
     /**
      * Initializes the amount resource capacity cache.
      */
-    private synchronized void initializeAmountResourceCapacityCache() {
+    public synchronized void initializeAmountResourceCapacityCache() {
 
         Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
         amountResourceCapacityCache = new HashMap<AmountResource, Double>();
@@ -1649,7 +1650,7 @@ implements Serializable {
      * @param allowDirty true if cache value can be dirty.
      * @return total amount resources stored cache value.
      */
-    private double getTotalAmountResourcesStoredCache(boolean allowDirty) {
+    public double getTotalAmountResourcesStoredCache(boolean allowDirty) {
 
         // Update total amount resources stored cache if it is dirty.
         if (!allowDirty && totalAmountResourcesStoredCacheDirty) {
