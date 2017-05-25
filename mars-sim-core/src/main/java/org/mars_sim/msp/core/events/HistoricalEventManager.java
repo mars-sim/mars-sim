@@ -104,36 +104,25 @@ public class HistoricalEventManager implements Serializable {
 			removeEvents(events.size() - excess, excess);
 		}
 
-/*		
-		MasterClock masterClock = Simulation.instance().getMasterClock();
-		if (masterClock != null) {
-			if (marsClock == null) 
-				marsClock = masterClock.getMarsClock();
-			 timestamp =  (MarsClock) marsClock.clone();
-			// Note: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
-			 if (timestamp == null)
-				 throw new IllegalStateException("timestamp is null");
-			newEvent.setTimestamp(timestamp);
-		}
-
-*/		
 		// Note : the elaborate if-else conditions below is for passing the maven test
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-		else {
-			if (marsClock == null) 
-				marsClock = masterClock.getMarsClock();
-			timestamp =  (MarsClock) marsClock.clone();
-			// Note: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
-			 if (timestamp == null)
-				 throw new IllegalStateException("timestamp is null");
-			newEvent.setTimestamp(timestamp);
-		}
+		
+		if (marsClock == null) 
+			marsClock = masterClock.getMarsClock();
+		
+		timestamp =  (MarsClock) marsClock.clone();
+		// Note: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
+		 if (timestamp == null)
+			 throw new IllegalStateException("timestamp is null");
+		 
+		newEvent.setTimestamp(timestamp);
 
 		events.add(0, newEvent);
 
 		Iterator<HistoricalEventListener> iter = listeners.iterator();
-		while (iter.hasNext()) iter.next().eventAdded(0, newEvent);
+		while (iter.hasNext()) 
+			iter.next().eventAdded(0, newEvent);
 
 	}
 

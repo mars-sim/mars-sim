@@ -176,7 +176,7 @@ public class OGGSoundClip {
 			//outputLine.open();
 			// Adjust the volume on the output line.
 			if(outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-			    // If inside this if, the Master_Gain must be supported. Yes?
+			    // If inside this if, the Master_Gain must be supported. Yes? // In ubuntu linux 17.04, it is not supported
 				control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 			    // This line throws an exception. "Master_Gain not supported"
 				//control.setValue( 100.0F );

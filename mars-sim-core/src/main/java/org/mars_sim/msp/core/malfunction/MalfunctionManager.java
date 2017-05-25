@@ -360,7 +360,7 @@ implements Serializable {
 		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		Malfunction malfunction = factory.getMalfunction(scope);
 		if (malfunction != null) {
-			addMalfunction(malfunction);
+			addMalfunction(malfunction, true);
 			numberMalfunctions++;
 		}
 	}
@@ -369,7 +369,7 @@ implements Serializable {
 	 * Adds a malfunction to the unit.
 	 * @param malfunction the malfunction to add.
 	 */
-	void addMalfunction(Malfunction malfunction) {
+	void addMalfunction(Malfunction malfunction, boolean registerEvent) {
 		if (malfunction == null) throw new IllegalArgumentException("malfunction is null");
 		else {
 			malfunctions.add(malfunction);
@@ -381,9 +381,11 @@ implements Serializable {
 				e.printStackTrace(System.err);
 			}
 
-			HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-
+			if (registerEvent) {
+				HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
+				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			}
+			
 			issueMedicalComplaints(malfunction);
 		}
 	}
