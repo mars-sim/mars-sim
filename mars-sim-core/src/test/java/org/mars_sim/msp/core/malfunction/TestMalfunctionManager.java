@@ -23,9 +23,9 @@ public class TestMalfunctionManager extends TestCase {
 		Malfunction malfunction1 = new MockMalfunction("test malfunction1", 10, 0D, 100D, 50D);
 		Malfunction malfunction2 = new MockMalfunction("test malfunction2", 50, 0D, 100D, 50D);
 		Malfunction malfunction3 = new MockMalfunction("test malfunction3", 90, 0D, 100D, 50D);
-		manager.addMalfunction(malfunction1);
-		manager.addMalfunction(malfunction2);
-		manager.addMalfunction(malfunction3);
+		manager.addMalfunction(malfunction1, false);
+		manager.addMalfunction(malfunction2, false);
+		manager.addMalfunction(malfunction3, false);
 		List<Malfunction> sorted = manager.getEVAMalfunctions();
 		assertEquals("Size of sorted malfunctions is correct.", 3, sorted.size(), 0D);
 		assertEquals("First malfunction is malfunction3", malfunction3, sorted.get(0));

@@ -259,6 +259,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 				switch (columnIndex) {
 				case TIMESTAMP : {
 					result = event.getTimestamp();
+					if (result == null) // at the start of the sim, MarsClock is not ready
+						result = "0015-Adir-01 000.000";
 					//System.out.println("getValueAt() : timestamp is " + result);
 				} break;
 

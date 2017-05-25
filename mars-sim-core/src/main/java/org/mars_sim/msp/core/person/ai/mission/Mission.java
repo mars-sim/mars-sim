@@ -675,12 +675,17 @@ implements Serializable {
 				//|| reason.equals(SUCCESSFULLY_DISEMBARKED)
 				//|| reason.equals(USER_ABORTED_MISSION)) {
 			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
-	        logger.info(startingMember.getName() + " ended the '" + missionName + "' at "  + startingMember.getSettlement() + ". Reason : " + reason);
+			
+			if (startingMember.getSettlement() != null)
+				logger.info(startingMember.getName() + " ended the '" + missionName + "' at "  + startingMember.getSettlement() + ". Reason : " + reason);
+			else
+		        logger.info(startingMember.getName() + " ended the '" + missionName + ". Reason : " + reason);
+
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");
 
-			if (members != null) {
+			if (members != null || !members.isEmpty()) {
 				logger.info("Mission members removed : " + members);
 			    Object[] p = members.toArray();
                 for (Object aP : p) {
