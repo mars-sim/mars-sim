@@ -25,6 +25,7 @@ import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -747,7 +748,7 @@ public class BuildingConfig implements Serializable {
 
 			for (Element inputElement : inputNodes) {
 				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
-				AmountResource resource = AmountResource.findAmountResource(resourceName);
+				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
 				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
 				process.addMaxInputResourceRate(resource, rate, ambient);
@@ -757,7 +758,7 @@ public class BuildingConfig implements Serializable {
 			List<Element> outputNodes = processElement.getChildren(OUTPUT);
 			for (Element outputElement : outputNodes) {
 				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
-				AmountResource resource = AmountResource.findAmountResource(resourceName);
+				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
 				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
 				process.addMaxOutputResourceRate(resource, rate, ambient);
@@ -794,7 +795,7 @@ public class BuildingConfig implements Serializable {
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
 		for (Element resourceStorageElement : resourceStorageNodes) {
 			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
-            AmountResource resource = AmountResource.findAmountResource(resourceName);
+            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 			Double capacity = new Double(resourceStorageElement.getAttributeValue(CAPACITY));
 			capacities.put(resource, capacity);
 		}
@@ -838,7 +839,7 @@ public class BuildingConfig implements Serializable {
 		for (Element resourceInitialElement : resourceInitialNodes) {
 			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
 			//System.out.println("getInitialStorage() : resourceName : " + resourceName);
-            AmountResource resource = AmountResource.findAmountResource(resourceName);
+            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 			Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
 			//System.out.println("getInitialStorage() : amount : " + amount);
 			resourceMap.put(resource, amount);

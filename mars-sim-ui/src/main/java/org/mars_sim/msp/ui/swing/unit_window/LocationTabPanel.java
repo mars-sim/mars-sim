@@ -802,8 +802,12 @@ implements ActionListener {
     		else {
 
 	    		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	    			// case A
-	    			loc = AT + p.getBuildingLocation().getNickName() + IN + topContainerCache;
+	    			if (p.getBuildingLocation() != null)
+		    			// case A1
+	    				loc = AT + p.getBuildingLocation().getNickName() + IN + topContainerCache;
+	    			else
+		    			// case A2
+	    				loc = IN + topContainerCache;
 	    		}
 
 	    		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
@@ -815,16 +819,22 @@ implements ActionListener {
 	            			Settlement settlement = (Settlement) vehicle.getContainerUnit();
 	            			//System.out.println(p + " is in " + settlement.getName());
 
-	            			// case D
 	    					//loc = " in a vehicle parked within the premise of a settlement";
-	    					loc = IN + containerCache + PARKED + WITHIN_THE_VINCINITY_OF + settlement;
+	            			if (settlement != null)
+		            			// case D
+	            				loc = IN + containerCache + PARKED + WITHIN_THE_VINCINITY_OF + settlement;
 	    				}
 	    				else {
-	    					// case C
 	        				// vehicle.getSettlement() <==> getTopContainerUnit()
 	         				// e.g. " in LUV1 inside Garage 1 in Alpha Base;
 	        				// vehicle = containerCache
-	               			loc = IN + vehicle + INSIDE + p.getBuildingLocation() + IN + vehicle.getSettlement();
+	    					if (p.getBuildingLocation() != null)
+		    					// case C1 : the person/vehicle is stil inside a building.  
+	    						loc = IN + vehicle + INSIDE + p.getBuildingLocation() + IN + vehicle.getSettlement();
+	    					else
+		    					// case C2 : the person/vehicle is outside of a building.
+	    						loc = IN + vehicle + IN + vehicle.getSettlement();
+
 	    				}
 
 	    			} else {
@@ -873,7 +883,8 @@ implements ActionListener {
 	           			loc = IN + containerCache + INSIDE + r.getVehicle().getBuildingLocation();// " inside a garage";
 	    			else {
 	         			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
-	        	     	// Note: a vehicle's container unit may be null if it's outside a settlement
+/*
+	         			// Note: a vehicle's container unit may be null if it's outside a settlement
 	        			Settlement settlement = (Settlement) vehicle.getContainerUnit();
 
 	        			if (settlement == null)
@@ -883,7 +894,42 @@ implements ActionListener {
 	    					// case D
 	    					//loc = " in a vehicle parked within the premise of a settlement";
 	    					loc = IN + containerCache + PARKED + WITHIN_THE_VINCINITY_OF + settlement;
+*/	        			
+	        			
+		    			if (vehicle.getSettlement() != null) {
+		    				Building building = BuildingManager.getBuilding(vehicle);
+
+		    				if (building == null) {
+		            			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+		            			//System.out.println(p + " is in " + settlement.getName());
+
+		    					//loc = " in a vehicle parked within the premise of a settlement";
+		            			if (settlement != null)
+			            			// case E
+		            				loc = IN + containerCache + PARKED + WITHIN_THE_VINCINITY_OF + settlement;
+		    				}
+		    				
+		    				else {
+		        				// vehicle.getSettlement() <==> getTopContainerUnit()
+		         				// e.g. " in LUV1 inside Garage 1 in Alpha Base;
+		        				// vehicle = containerCache
+		    					if (r.getBuildingLocation() != null)
+			    					// case D1 : the person/vehicle is stil inside a building.  
+		    						loc = IN + vehicle + INSIDE + r.getBuildingLocation() + IN + vehicle.getSettlement();
+		    					else
+			    					// case D2 : the person/vehicle is outside of a building.
+		    						loc = IN + vehicle + IN + vehicle.getSettlement();
+		    				}
+
+		    			} else {
+		        			// case E
+		        			loc = IN + containerCache + GONE + OUTSIDE_ON_A_MISSION;
+		    			}
+	        			
+	        			
 	    			}
+	     			
+	     			
 	    		}
 
 	    		else if (r.getLocationSituation() == LocationSituation.OUTSIDE) {

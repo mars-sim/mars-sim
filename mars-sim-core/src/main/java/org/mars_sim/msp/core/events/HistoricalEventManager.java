@@ -44,7 +44,6 @@ public class HistoricalEventManager implements Serializable {
 	private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();
 	
 	private MarsClock marsClock;
-	private MasterClock masterClock;
 
 	
 	/**
@@ -88,7 +87,7 @@ public class HistoricalEventManager implements Serializable {
 	// include any kind of events
 	public void registerNewEvent(HistoricalEvent newEvent) {
 
-		MarsClock timestamp;
+		//MarsClock timestamp;
 
 		// TODO: for debugging the NullPointerException when calling registerNewEvent()
         if (newEvent == null) {
@@ -105,13 +104,11 @@ public class HistoricalEventManager implements Serializable {
 		}
 
 		// Note : the elaborate if-else conditions below is for passing the maven test
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-		
+
 		if (marsClock == null) 
-			marsClock = masterClock.getMarsClock();
-		
-		timestamp =  (MarsClock) marsClock.clone();
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	
+		MarsClock timestamp =  (MarsClock) marsClock.clone();
 		// Note: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
 		 if (timestamp == null)
 			 throw new IllegalStateException("timestamp is null");
