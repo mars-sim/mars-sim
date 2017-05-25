@@ -32,7 +32,7 @@
 			edible-biomass : [ gram / m^2 / day ]
 			edible-water-content : in proportion of 1 (1 is 100%)
 			inedible-biomass :  [ gram / m^2 / day ]
-			daily-PAR : [ mol / m^2 / day ]
+			daily-PAR : [ mol / m^2 / day ]; Note: not umol / m^2 / s
 -->
 
 		<!-- https://www.researchgate.net/publication/262910301_Phenological_growth_stages_of_edible_asparagus_Asparagus_officinalis_Codification_and_description_according_to_the_BBCH_scale -->
@@ -66,23 +66,25 @@
 	    	daily-PAR="17.28"
 	    	/>
 
-		<crop name="Carrot"
-	    	growing-time="74.83"
-	    	crop-category="roots"
-	    	edible-biomass="40"
-	    	edible-water-content=".88"
-	    	inedible-biomass="59.87"
-	    	daily-PAR="32.4"
+		<crop name="Carrot"	growing-time="74.83" crop-category="roots" life-cycle="biennial" 
+	    	edible-biomass="40"	edible-water-content=".88" inedible-biomass="59.87" daily-PAR="32.4"
 	    	/>
 
-		<crop name="Celery"
-	    	growing-time="75.0"
-	    	crop-category="stems"
-	    	edible-biomass="103.27"
-	    	edible-water-content=".90"
-	    	inedible-biomass="11.47"
-	    	daily-PAR="17.28"
-	    	/>
+		<!--
+		https://www.revistas.ufg.br/pat/article/download/42449/22580
+		31 T to 120 T/ha
+		
+		http://smallfarms.oregonstate.edu/sites/default/files/growth_stage_descriptions_online_2014-08-25.pdf
+		stages: seedling emergence, leaving, root development, harvest
+		
+		-->
+		
+		<crop name="Celery" growing-time="75.0" crop-category="stems"
+	    	edible-biomass="103.27" edible-water-content=".90" inedible-biomass="11.47" daily-PAR="17.28" />
+	    	
+	    <!-- Celery Sampling & Growth Stages at http://agvita.com.au/pdf/sampling/Celery_GS_V2.pdf
+	    
+		-->
 
 	  <crop name="Corn" growing-time="65" crop-category="grains"
 	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="37.0" daily-PAR="34.56" />
@@ -152,6 +154,7 @@
 	    <crop name="Garlic"
 	        growing-time="85"
 	    	crop-category="bulbs"
+	    	life-cycle="biennial"
 	    	edible-biomass="9.41"
 	    	edible-water-content=".59"
 	    	inedible-biomass="0.5"
@@ -167,6 +170,7 @@
 	    		800/85 = 9.41 g/m2/d
 
 	    		79.7g/136g = 58.6% H20 from http://nutritiondata.self.com/facts/vegetables-and-vegetable-products/2446/2
+	    		
 	    		-->
 
 
@@ -214,7 +218,11 @@
 	     	daily-PAR="17.28"
 	    	/>
 	   	<!-- 1. Harvest between 70-90 days
-	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ -->
+	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ 
+	   			
+		scallions, leeks, spring onions
+	   			
+	   			-->
 
 
 	    <crop name="Kidney bean"
@@ -332,7 +340,21 @@
 	    	/>
 
 	    	<!-- A Simulation Model for Potato Growth, http://pdf.usaid.gov/pdf_docs/PNABU293.pdf
-	    	A Model to Simulate Sweet Potato Growth, http://www.idosi.org/wasj/wasj4(4)/14.pdf
+
+			White Sweet Potato tubers contains root cells and grow on rhizomes, Potato, Solanum tuberosum, 
+			are in the Solanaceae or nightshade Family, is not related to the sweet potato, 
+			
+			Potato is more related to the tomato, pepper and eggplant than Sweet Potato. 
+			
+			Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons. 
+			The tubers form at the distal end of the stolon and/or along the stolon itself. 
+			Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant. 
+	
+			To recap, sweet potato is a root tuber, potato is a stem tuber. 
+			
+			Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight. 
+			Root tubers do not have these attributes. Both are considered vegetables.
+
 	    	-->
 
 	     <crop name="Quinoa"
@@ -377,7 +399,11 @@
 	    	inedible-biomass="38"
 	     	daily-PAR="34.56"
 	    	/>
-		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf -->
+		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf 
+		
+		http://ricepedia.org/rice-as-a-plant/growth-phases
+		
+		-->
 
 
 	    <crop name="Sesame"
@@ -445,6 +471,23 @@
 	     	daily-PAR="34.56"
 	    	/>
 
+		<!--
+		
+    	A Model to Simulate Sweet Potato Growth at http://www.idosi.org/wasj/wasj4(4)/14.pdf	    	
+
+		https://ask.extension.org/questions/216966
+		Sweet Potato tubers only contain root cells and grow on rhizomes. 
+		In order to grow a new sweet potato plant, part of the root cap must be present to have Sweet potatoes
+		Sweet Potato are commonly misnamed yams in the United States.  
+		
+		Potato is not related to the Sweet potato because Potato tubers consist of the enlarged or thickened portions of underground stems commonly called stolons. 
+		The tubers form at the distal end of the stolon and/or along the stolon itself. 
+		Tubers have all the characterists of normal stems, including nodes or eyes. A branch or stem can grow from the node to make a new plant. 
+
+		To recap, sweet potato is a root tuber, potato is a stem tuber. 
+		Stem tubers have apical bud, nodes and internodes, scaly leaves and auxiliary buds, and the ability to develop chlorophyll when exposed to sunlight. 
+		Root tubers do not have these attributes. Both are considered vegetables.
+		-->
 
 		<crop name="Swiss Chard" growing-time="65.0" crop-category="leaves"
 	    	edible-biomass="71.06" edible-water-content=".92" inedible-biomass="37.69" daily-PAR="17.28" />
@@ -460,7 +503,7 @@
 		 previously edible-biomass="87.50" edible-water-content=".92" inedible-biomass="37.69"
 		-->
 
-	    <crop name="Taro" growing-time="200.0" crop-category="corms"
+	    <crop name="Taro" growing-time="200.0" crop-category="corms" life-cycle="perennial"
 	    	edible-biomass="4.7" edible-water-content=".706" inedible-biomass=".05" daily-PAR="34.56" />
 
 	<!--    Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
@@ -504,7 +547,7 @@
 		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 
 
-	    <crop name="White Onion" growing-time="150.0" crop-category="bulbs"
+	    <crop name="White Onion" growing-time="150.0" crop-category="bulbs" life-cycle="biennial"
 	    	edible-biomass="18.33" edible-water-content=".89" inedible-biomass=".08" daily-PAR="17.28"
 	    	/>
 	    	<!-- 1. Onions are a cold-season crop
@@ -707,7 +750,7 @@
 	grains ( rice, quinoa, wheat)
 	grasses
 	fungi
-	spices
+	spices / herbs
 
 16. Tissue Culture – Technology Harnessed for Potato Seed Production
 	http://keaneanjournalofscience.in/?p=131
@@ -810,6 +853,26 @@
 	- Principal growth stage 9: Senescence
 
 29. non-edible source of oil, https://i0.wp.com/naturegoingsmart.com/wp-content/uploads/2016/02/Tab-1-1.png
+
+30. http://extension.illinois.edu/bulbs/bulbbasics.cfm
+
+	Corms vs. Bulbs :
+	
+	Bulbs can be broken down into five types of storage structures. 
+	These include: true bulbs, corms, tubers, tuberous roots and rhizomes. 
+	A sixth category of fleshy roots has been added here for the purpose of showing the structure. 
+	e.g. Daylilies and peonies, are popular bulb plants with gardeners.
+	
+	A corm is a swollen stem base that is modified into a mass of storage tissue. 
+	A corm does not have visible storage rings when cut in half. This distinguishes it from a true bulb.
+	The corm contains a basal plate (bottom of bulb from which roots develop),thin tunic and a growing point. 
+	e.g. Plants that develop from corms include gladiolus, crocus, and autumn crocus.
+	
+31. Using Growing Degree Days to Predict Plant Stages
+	http://msuextension.org/publications/AgandNaturalResources/MT200103AG.pdf	
+	
+	e.g. Barley, Wheat, Oat, Canary Seed, Flax, Canola, Mustard, Chick Pea, Lentil, Pea, Sunflower
+	
 -->
 
 </crop-configuration>

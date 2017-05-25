@@ -28,7 +28,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final double INCUBATION_PERIOD  = 2D;
+	public static final double INCUBATION_PERIOD  = 10D;
 	// Element names
 	// 2015-12-04 Added a number of elements below
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
@@ -42,6 +42,7 @@ implements Serializable {
 	private static final String NAME = "name";
 	private static final String GROWING_TIME = "growing-time";
 	private static final String CROP_CATEGORY = "crop-category";
+	private static final String LIFE_CYCLE = "life-cycle";
 	//private static final String PPF = "ppf";
 	//private static final String PHOTOPERIOD = "photoperiod";
 	private static final String EDIBLE_BIOMASS = "edible-biomass";
@@ -97,6 +98,9 @@ implements Serializable {
 				// Get crop category
 				String cropCategory = crop.getAttributeValue(CROP_CATEGORY);
 
+				// Get crop category
+				String lifeCycle = crop.getAttributeValue(LIFE_CYCLE);
+				
 				// 2016-07-01 Added checking against the crop category enum
 				boolean known = false;
 				CropCategoryType cat = null;
@@ -141,114 +145,9 @@ implements Serializable {
 				//double harvestIndex = Double.parseDouble(harvestIndexStr);
 
 				// 2016-06-29 Set up the default growth phases of a crop
-				Map<Integer, Phase> phases = new HashMap<>();
+				Map<Integer, Phase> phases = setupPhases(cat);
 
-				if (cat == CropCategoryType.BULBS) {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.CLOVE_SPROUTING, 1D, 5D));
-					phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 15D));
-					phases.put(4, new Phase(PhaseType.LEAFING, 1D, 25D));
-					phases.put(5, new Phase(PhaseType.BULB_INITIATION, 1D, 25D));
-					phases.put(6, new Phase(PhaseType.MATURATION, 1D, 30D));
-					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else if (cat == CropCategoryType.CORMS) {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.BUD_SPROUTING, 1D, 20D));
-					phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 20D));
-					phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 15D));
-					phases.put(5, new Phase(PhaseType.REPLACEMENT_CORMS_DEVELOPMENT, 1D, 35D));
-					phases.put(6, new Phase(PhaseType.ANTHESIS, 1D, 10D));
-					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else if (cat == CropCategoryType.FRUITS) {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-					phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 35D));
-					phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 25D));
-					phases.put(5, new Phase(PhaseType.FRUITING, 1D, 35D));
-					phases.put(6, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(7, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else if (cat == CropCategoryType.GRAINS) {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 15D));
-					phases.put(3, new Phase(PhaseType.TILLERING, 1D, 20D));
-					phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 15D));
-					phases.put(5, new Phase(PhaseType.FLOWERING, 1D, 20D));
-					phases.put(6, new Phase(PhaseType.MILK_DEVELOPMENT, 1D, 5D));
-					phases.put(7, new Phase(PhaseType.DOUGH_DEVELOPING, 1D, 10D));
-					phases.put(8, new Phase(PhaseType.MATURATION, 1D, 15D));
-					phases.put(9, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(10, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else if (cat == CropCategoryType.GRASSES) {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 15D));
-					phases.put(3, new Phase(PhaseType.TILLERING, 1D, 20D));
-					phases.put(4, new Phase(PhaseType.GRAND_GROWTH, 1D, 15D));
-					phases.put(5, new Phase(PhaseType.MATURATION, 1D, 15D));
-					phases.put(6, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(7, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else if (cat == CropCategoryType.LEAVES) {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-					phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 5D));
-					phases.put(4, new Phase(PhaseType.HEAD_DEVELOPMENT, 1D, 40D));
-					phases.put(5, new Phase(PhaseType.FIFTY_PERCENT_HEAD_SIZE_REACHED, 1D, 50D));
-					phases.put(6, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(7, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else if (cat == CropCategoryType.LEGUMES) {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-					phases.put(3, new Phase(PhaseType.LEAFING, 1D, 35D));
-					phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 20D));
-					phases.put(5, new Phase(PhaseType.SEED_FILL, 1D, 15D));
-					phases.put(6, new Phase(PhaseType.POD_MATURING, 1D, 25D));
-					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else if (cat == CropCategoryType.TUBERS) {
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 14D));
-					phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 5D));
-					phases.put(4, new Phase(PhaseType.TUBER_INITIATION, 1D, 14D));
-					phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 40D));
-					phases.put(6, new Phase(PhaseType.MATURATION, 1D, 27D));
-					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				} else {
-
-					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-					phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0));
-					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-					phases.put(3, new Phase(PhaseType.GROWING, 1D, 95D));
-					phases.put(4, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(5, new Phase(PhaseType.FINISHED, 0.1, 0));
-
-				}
-
-				CropType cropType = new CropType(name, growingTime * 1000D, cat,
+				CropType cropType = new CropType(name, growingTime * 1000D, cat, lifeCycle,
 							edibleBiomass, edibleWaterContent, inedibleBiomass,
 							dailyPAR, phases);
 
@@ -264,6 +163,164 @@ implements Serializable {
 		return cropList;
 	}
 
+	
+	/**
+	 * Sets up phenological stages of a crop type
+	 * @param cat
+	 * @return phase map
+	 */
+	public Map<Integer, Phase> setupPhases(CropCategoryType cat) {
+	
+		// 2016-06-29 Set up the default growth phases of a crop
+		Map<Integer, Phase> phases = new HashMap<>();
+
+		if (cat == CropCategoryType.BULBS) {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.CLOVE_SPROUTING, 1D, 5D));
+			phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 15D));
+			phases.put(4, new Phase(PhaseType.LEAFING, 1D, 25D));
+			phases.put(5, new Phase(PhaseType.BULB_INITIATION, 1D, 25D));
+			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 29D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.CORMS) {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.BUD_SPROUTING, 1D, 20D));
+			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 20D));
+			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 15D));
+			phases.put(5, new Phase(PhaseType.REPLACEMENT_CORMS_DEVELOPMENT, 1D, 35D));
+			phases.put(6, new Phase(PhaseType.ANTHESIS, 1D, 9D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.FRUITS) {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 35D));
+			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 25D));
+			phases.put(5, new Phase(PhaseType.FRUITING, 1D, 34D));
+			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.GRAINS) {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 10D));
+			phases.put(3, new Phase(PhaseType.TILLERING, 1D, 20D));
+			phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 15D));
+			phases.put(5, new Phase(PhaseType.FLOWERING, 1D, 20D));
+			phases.put(6, new Phase(PhaseType.MILK_DEVELOPMENT, 1D, 10D));
+			phases.put(7, new Phase(PhaseType.DOUGH_DEVELOPING, 1D, 10D));
+			phases.put(8, new Phase(PhaseType.MATURATION, 1D, 14D));
+			phases.put(9, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(10, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.GRASSES) {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+			phases.put(3, new Phase(PhaseType.TILLERING, 1D, 30D));
+			phases.put(4, new Phase(PhaseType.GRAND_GROWTH, 1D, 35D));
+			phases.put(5, new Phase(PhaseType.MATURATION, 1D, 29D));
+			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.LEAVES) {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+			phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 5D));
+			phases.put(4, new Phase(PhaseType.HEAD_DEVELOPMENT, 1D, 40D));
+			phases.put(5, new Phase(PhaseType.FIFTY_PERCENT_HEAD_SIZE_REACHED, 1D, 49D));
+			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.LEGUMES) {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+			phases.put(3, new Phase(PhaseType.LEAFING, 1D, 35D));
+			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 20D));
+			phases.put(5, new Phase(PhaseType.SEED_FILL, 1D, 15D));
+			phases.put(6, new Phase(PhaseType.POD_MATURING, 1D, 24D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.TUBERS) {
+			
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
+			phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 10D));
+			phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 10D));
+			phases.put(4, new Phase(PhaseType.TUBER_INITIATION, 1D, 15D));
+			phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 40D));
+			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 24D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.ROOTS) {
+
+			// roots : carrot, radish, ginger
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 5D));
+			phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 40D));					
+			phases.put(4, new Phase(PhaseType.ROOT_DEVELOPMENT, 1D, 54D));
+			phases.put(5, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(6, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.STEMS) {
+			
+			// Stems e.g celery
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(2, new Phase(PhaseType.EARLY_VEGETATIVE, 1D, 15D));
+			phases.put(3, new Phase(PhaseType.MID_VEGETATIVE, 1D, 15D));
+			phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 39D));
+			phases.put(5, new Phase(PhaseType.EARLY_BULKING_UP, 1D, 10D));
+			phases.put(6, new Phase(PhaseType.MID_BULKING_UP, 1D, 10D));
+			phases.put(7, new Phase(PhaseType.LATE_BULKING_UP, 1D, 9D));
+			phases.put(8, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(9, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else if (cat == CropCategoryType.SPICES) {
+			
+			// spices e.g. green onion 
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 10D));
+			phases.put(3, new Phase(PhaseType.LEAFING, 1D, 55D));
+			phases.put(4, new Phase(PhaseType.MATURATION, 1D, 34D));
+			phases.put(5, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(6, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		} else {
+
+			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+			phases.put(3, new Phase(PhaseType.GROWING, 1D, 94D));
+			phases.put(4, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(5, new Phase(PhaseType.FINISHED, 0.5, 0));
+
+		}
+		
+		return phases;
+		
+	}
+	
+	
 	/**
 	 * Gets the carbon doxide consumption rate.
 	 * @return carbon doxide rate (kg/sol)

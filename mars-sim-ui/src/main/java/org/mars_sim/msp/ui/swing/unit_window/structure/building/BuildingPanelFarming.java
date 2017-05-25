@@ -748,21 +748,20 @@ implements Serializable, MouseListener {
 
 			Crop crop = crops.get(row);
 			//String phase = crop.getPhase();
-			PhaseType phaseType = crop.getPhaseType();
+			PhaseType currentPhase = crop.getPhaseType();
 			// 2014-10-10 Added the crop's category
 			String category = crop.getCropType().getCropCategoryType().getName();
 
 			if (column == 0) {
-				double condition = crop.getCondition();
+				double condition = crop.getHealthCondition();
 				if (condition > ((double) 2 / (double) 3)) return greenDot;
 				else if (condition > ((double) 1 / (double) 3)) return yellowDot;
 				else return redDot;
 			}
 			else if (column == 1) return Conversion.capitalize(crop.getCropType().getName());
-			else if (column == 2) return phaseType.getName();
+			else if (column == 2) return currentPhase.getName();
 			else if (column == 3) {
-				int growth = 0;
-				double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
+				double growth = 0;
 				//if (phaseType == PhaseType.GERMINATION || phaseType == PhaseType.SPROUTING) {
 				//	growth = (int) (growingCompleted * 100D);
 				//}
@@ -770,12 +769,17 @@ implements Serializable, MouseListener {
 				//	growth = (int) (growingCompleted * 100D);
 				//}
 				//else
-				if (phaseType == PhaseType.HARVESTING)
-					growth = (int) (growingCompleted * 100D);
-				else if (phaseType == PhaseType.FINISHED)
+				if (currentPhase == PhaseType.HARVESTING) {
+					double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
+					growth = Math.round(growingCompleted * 1000D)/10D;
+				}
+				else if (currentPhase == PhaseType.FINISHED) {
 					growth = 100;
-				else
-					growth = (int) (growingCompleted * 100D);
+				}
+				else {
+					double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
+					growth = Math.round(growingCompleted * 1000D)/10D;
+				}
 
 				return String.valueOf(growth) + "%";
 			}

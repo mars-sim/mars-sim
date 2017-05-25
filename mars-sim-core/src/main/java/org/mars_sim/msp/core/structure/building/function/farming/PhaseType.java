@@ -38,7 +38,7 @@ public enum PhaseType {
 	//PLANTING("Planting"),
 	BUD_SPROUTING("Bud Sprouting"),
 	VEGETATIVE_DEVELOPMENT("Vegetative Development"),
-	FLOWERING("FLowering"),
+	FLOWERING("Flowering"),
 	REPLACEMENT_CORMS_DEVELOPMENT("Replacement Corms Development"),
 	ANTHESIS("Anthesis"),
 	//HARVESTING("Harvesting");
@@ -102,16 +102,50 @@ public enum PhaseType {
 	//FINISHED("Finished"),
 
 	/* For Tubers */
+	// e.g.  potato and sweet potato
 	//INCUBATION("Incubation"),
 	//PLANTING("Planting"),
 	SPROUTING("Sprouting"),
 	LEAF_DEVELOPMENT("Leaf Development"),
 	TUBER_INITIATION("Tuber Initiation"),
-	TUBER_FILLING("Tuber Filling");
+	TUBER_FILLING("Tuber Filling"),
 	//MATURATION("Maturation"),
 	//HARVESTING("Harvesting");
 	//FINISHED("Finished"),
 
+	/* For Roots */
+	// e.g. carrot, radish, ginger, red beet
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	//SPROUTING("Sprouting"),
+	//LEAF_DEVELOPMENT("Leaf Development"),
+	ROOT_DEVELOPMENT("Root Development"),
+	//HARVESTING("Harvesting");
+	//FINISHED("Finished"),
+	
+	/* For Stems */
+	// e.g celery
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	EARLY_VEGETATIVE("Early Vegatative"),
+	MID_VEGETATIVE("Mid Vegatative"),
+	//STEM_ELONGATION("Stem Elongation"),
+	EARLY_BULKING_UP("Early Bulking Up"),
+	MID_BULKING_UP("Mid Bulking Up"),
+	LATE_BULKING_UP("Late Bulking Up");
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	
+	/* For Spics */
+	//  e.g. green onion 
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	//GERMINATION("Germination"),
+	//LEAF_DEVELOPMENT("Leaf Development"),
+	//MATURATION("Maturation"),
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	
 	private String name;
 
 	private PhaseType(String name) {

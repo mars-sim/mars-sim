@@ -199,7 +199,7 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double tendingPhase(double time) {
-
+    	//logger.info("calling tendingPhase()");
         double workTime = 0, remainingTime = 0;
 
         // Check if greenhouse has malfunction.
@@ -223,10 +223,10 @@ implements Serializable {
 */
     	//logger.info("3: needyCrop is " + needyCrop.getCropType().getName());
 
-        double factor = 2D;
+        double factor = .3D;
 
 		if (person != null) {
-	        workTime = time * factor;
+	        workTime = time;
 		}
 
 		else if (robot != null) {
@@ -249,10 +249,12 @@ implements Serializable {
 
 		if (person != null) {
 	        workTime = greenhouse.addWork(workTime, this, person);
+        	//logger.info(person + " is tending " + farmBuilding.getNickName() + " in " + person.getSettlement());
 		}
 
 		else {
 	        workTime = greenhouse.addWork(workTime, this, robot);
+        	//logger.info(robot + " is tending " + farmBuilding.getNickName() + " in " + robot.getSettlement());
 		}
 
         // Add experience

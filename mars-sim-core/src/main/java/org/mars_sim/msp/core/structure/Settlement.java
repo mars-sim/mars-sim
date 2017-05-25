@@ -303,8 +303,23 @@ implements Serializable, LifeSupportType, Objective {
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 
+		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
+		
+		// 2017-05-24 initialize inventory of this building for resource storage 
+		Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
+		Iterator<AmountResource> i3 = resources.iterator();
+		while (i3.hasNext()) {
+			AmountResource ar = i3.next();	
+			double max = getInventory().getTotalAmountResourcesStoredCache(false);
+			//logger.info("max is " + max);
+			getInventory().addAmountResourceTypeCapacity(ar, max);	
+			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
+			if (resourceCapacity >= 0)
+				getInventory().storeAmountResource(ar, 0, true);
+		}
+		
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
 		// Initialize building connector manager.
@@ -332,7 +347,8 @@ implements Serializable, LifeSupportType, Objective {
 		else
 			setObjective(ObjectiveType.CROP_FARM);
 
-		logger.info("Since " + this + " is based on template '" + template + "', set its development objective to " + objectiveType.toString());
+		logger.info("Set " + this + "'s development objective to " + objectiveType.toString() + ", based on the " + template + " template");
+		
 
 	}
 
