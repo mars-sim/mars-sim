@@ -146,18 +146,22 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
-	            result *= 2D;
+	            result *= 1.25D;
+	        }
+	        
+	        // Modify if lab experimentation is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Lab Experimentation")) {
+	            result *= 1.25D;
 	        }
 
             // 2015-06-07 Added Preference modifier
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
-            if (result < 0) result = 0;
-
-
         }
 
+        if (result < 0) result = 0;
+        
         return result;
     }
 

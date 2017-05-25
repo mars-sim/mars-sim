@@ -90,11 +90,11 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 	            if (result > 0)
 	            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
-                if (result < 0) result = 0;
-
 	        }
         }
 
+        if (result < 0) result = 0;
+        
         return result;
     }
 
