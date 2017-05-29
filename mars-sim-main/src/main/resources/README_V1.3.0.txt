@@ -25,7 +25,7 @@ http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ** Command-Line Arguments Summary **
 
-> java -jar mars-sim-main-[version/build].jar
+> java -jar mars-sim-[version/build].jar
                     (Note : start a new sim)
    or
 
@@ -56,7 +56,7 @@ http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 A. Graphic Mode
 
-- Double-click on 'mars-sim-main-[version/build].jar' to begin
+- Double-click on 'mars-sim-[version/build].jar' to begin
 a new simulation in GUI mode as the jar file is executable
 in most operating systems.
 
@@ -156,7 +156,7 @@ If you want to load a previously saved simulation in graphic mode,
 
 Alternatively, you may type in a command line :
 
-> java -jar mars-sim-main-[version/build].jar 3 load
+> java -jar mars-sim-[version/build].jar 3 load
 
 This will load the FileChooser and open up \.mars-sim\saved\
 
@@ -168,7 +168,7 @@ as an argument ase default.sim is located at \.mars-sim\saved\
 
   OR
 
-> java -jar mars-sim-main-[version/build].jar 3 load 123.sim
+> java -jar mars-sim-[version/build].jar 3 load 123.sim
 
 This will load '123.sim', instead of the default saved sim.
 
@@ -182,7 +182,7 @@ B. Headless Mode
 
 To load the default saved sim without the graphic interface, type :
 
-> java -jar mars-sim-main-[version/build].jar 3 headless load
+> java -jar mars-sim-[version/build].jar 3 headless load
 
 Note 1 : the order of the arguments is not important
 
@@ -192,7 +192,7 @@ as an argument ase default.sim is located at \.mars-sim\saved\
 
   OR
 
-> java -jar mars-sim-main-[version/build].jar 3 headless load 123.sim
+> java -jar mars-sim-[version/build].jar 3 headless load 123.sim
 
 This will load '123.sim', instead of the default saved sim.
 

@@ -275,7 +275,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>tilesfx</artifactId>
-			<version>1.4.2</version>
+			<version>1.4.3</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa : 1018 KB -->
 		<dependency>
