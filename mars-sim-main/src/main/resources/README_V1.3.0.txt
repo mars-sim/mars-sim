@@ -11,16 +11,14 @@ https://github.com/mars-sim/mars-sim
 
 - 500 MB to 1.5 GB free RAM dedicated for running mars-sim
 
-- 64-bit Oracle Java 8 (JRE or JDK 8u71 and higher) OR OpenJDK 8u71 with OpenJFX in linux
+- 64-bit Oracle Java 8 (JRE or JDK) 8u77 and higher 
+  or OpenJDK with OpenJFX
 
 ---------------------------------------------------------------------
 
 ** Installation **
 
-- This Java application requires the latest 64-bit Java Runtime Environment (JRE),
-OpenJDK 8 with OpenJFX, or Java SE Development Kit (JDK) version 8.
-
-- The latest JVM can be freely downloaded from Oracle at:
+- The latest Oracle Java VM can be freely downloaded from 
 http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ---------------------------------------------------------------------
@@ -39,18 +37,18 @@ http://www.oracle.com/technetwork/java/javase/downloads/index.html
     new             start a new sim (by default)
                     (Note : Whenever arg 'load' is not provided for,
                             'new' will be automatically appended)
-    headless        run in console mode and without an user interface (UI)
+    headless        run in console mode without an user interface (UI)
     0               256MB Min, 1024MB Max (by default)
     1               256MB Min, 512MB Max
     2               256MB Min, 768MB Max
     3               256MB Min, 1024MB Max
     4               256MB Min, 1536MB Max
     5               256MB Min, 2048MB Max
-    load            open the File Chooser at the \.mars-sim\saved\ and wait for
-                    user to choose a saved sim
+    load            open the File Chooser at the \.mars-sim\saved\ 
+    				and wait for user to choose a saved sim
     load 123.sim    load the sim with filename '123.sim'
-                    (Note : '123.sim' must be located at the same folder
-                            as the jarfile)
+                    (Note : '123.sim' must be located at the same 
+                     		folder as the jarfile)
 
 ---------------------------------------------------------------------
 
@@ -58,24 +56,24 @@ http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 A. Graphic Mode
 
--  Double-click on 'mars-sim-main-[version/build].jar' to begin
-a new simulation in GUI mode since the jar file is executable
+- Double-click on 'mars-sim-main-[version/build].jar' to begin
+a new simulation in GUI mode as the jar file is executable
 in most operating systems.
 
-- in the Main Menu, choose 'New Sim' to start a new simulation.
+- Choose 'New Sim' to start a new simulation in the Main Menu.
 
-- Alternatively, one may start the simulation manually from a terminal
-or command prompt which will display mars-sim's internal logging
- statements while running mars-sim.
+Alternatively, one may start mars-sim from the command line. 
 
-- To start the graphic mode via a terminal, go to the directory
-containing the jar file and type :
+- Go to the directory containing the jar file and type :
 
 > java -jar mars-sim-main-[version/build].jar
 
 	OR
 
 > java -jar mars-sim-main-[version/build].jar new
+
+This gives users the advantage of seeing mars-sim's internal logging
+statements while running mars-sim.
 
 Note a : replacing [version/build] with the current version/build.
 
@@ -93,10 +91,10 @@ following attribute value in simulation.xml :
 
 B. Headless Mode
 
-- mars-sim is designed with a level of autonomy capable of running the
-entire simulation on its own. Therefore, you may prefer to run it
-in a terminal for hours/days in the least intrusive manner with lowest
-CPU resources in headless mode. Type in the terminal as follows :
+- mars-sim is designed with a high level of autonomy. It's capable
+of running the entire simulation on its own. Therefore, one may 
+prefer to run it in a terminal for hours/days in the least 
+intrusive manner utilizing minimal CPU resources. Type :
 
 > java -jar mars-sim-main-[version/build].jar 2 headless new
 
@@ -147,58 +145,61 @@ numeral argument after the jar file as shown below :
 
 A. Graphic Mode
 
-- If you want to load a previously saved simulation in graphic mode,
+If you want to load a previously saved simulation in graphic mode,
 
--- Double-click the jar file to start
+- Double-click the jar file to start
 
--- Choose 'Load Sim' in the Main Menu
+- Choose 'Load Sim' in the Main Menu
 
--- Select the default.sim or or a *.sim in the FileChooser
+- Select the default.sim or or a *.sim in the FileChooser
 
 
-- Alternatively, you may use the terminal to type :
+Alternatively, you may type in a command line :
 
 > java -jar mars-sim-main-[version/build].jar 3 load
 
-- This will load the FileChooser and open up \.mars-sim\saved\
+This will load the FileChooser and open up \.mars-sim\saved\
 
-Note 1 : the order of the arguments is not important.
+Note 1 : the order of the arguments is NOT important
 
-Note 2 : do NOT type 'default.sim' as an argument since default.sim
-is located at \.mars-sim\saved\
+Note 2 : by default, it is assumed the user is interested in
+loading the default saved sim file. Do NOT type 'default.sim'
+as an argument ase default.sim is located at \.mars-sim\saved\
 
-	OR
+  OR
 
 > java -jar mars-sim-main-[version/build].jar 3 load 123.sim
 
-- This will load '123.sim', instead of the default saved sim.
+This will load '123.sim', instead of the default saved sim.
 
-Note 3 : the order of the arguments is not important.
+Note 3 : the order of the arguments is NOT important
 
 Note 4 : '123.sim' must be present in the same directory
-where the jar file is at.
+where the jar file is at
 
 
 B. Headless Mode
 
-- To load the default saved sim without the GUI interface, type :
+To load the default saved sim without the graphic interface, type :
 
 > java -jar mars-sim-main-[version/build].jar 3 headless load
 
-Note 1 : the order of the arguments is not important.
+Note 1 : the order of the arguments is not important
 
 Note 2 : by default, it is assumed the user is interested in
 loading the default saved sim file. Do NOT type 'default.sim'
-as an argument since default.sim is located at \.mars-sim\saved\
+as an argument ase default.sim is located at \.mars-sim\saved\
 
-- To load a particular saved sim without the GUI interface, type :
+  OR
 
 > java -jar mars-sim-main-[version/build].jar 3 headless load 123.sim
 
-Note 3 : the order of the arguments is not important.
+This will load '123.sim', instead of the default saved sim.
+
+Note 3 : the order of the arguments is NOT important
 
 Note 4 : '123.sim' must be present in the same directory
-where the jar file is at.
+where the jar file is at
 
 
 ---------------------------------------------------------------------

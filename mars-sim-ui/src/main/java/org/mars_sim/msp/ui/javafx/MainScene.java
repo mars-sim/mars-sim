@@ -91,6 +91,7 @@ import javafx.scene.input.ScrollEvent;
 import java.awt.Toolkit;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -114,6 +115,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
+import org.mars_sim.msp.ui.javafx.demo.DragDrop;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
@@ -232,7 +234,7 @@ public class MainScene {
 	private Pane root; ;
 	private StackPane mainAnchorPane, //monPane,
 					mapStackPane, minimapStackPane,
-					speedPane, soundPane, calendarPane,
+					speedPane, soundPane, calendarPane, farmPane,
 					settlementBox, chatBoxPane, pausePane,
 					asPane, sPane;
 
@@ -245,7 +247,7 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
-	private IconNode soundIcon, marsNetIcon, speedIcon;
+	private IconNode soundIcon, marsNetIcon, speedIcon, farmIcon;
 	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
 	private Label lastSaveLabel, TPSLabel, upTimeLabel, noteLabel, benchmarkLabel; //monthLabel, yearLabel, LSLabel
 	private Text LSText, monthText, yearText, northText, southText;
@@ -260,8 +262,8 @@ public class MainScene {
 	//private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; //calendarButton,
 	private static JFXSlider zoomSlider, soundSlider; //timeSlider,
-	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn; // miniMapBtn, mapBtn,
-	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
+	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn, farmBtn; // miniMapBtn, mapBtn,
+	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup, farmPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 
 	//private DndTabPane dndTabPane;
@@ -803,6 +805,8 @@ public class MainScene {
 
         createSpeedPanel();
         createSoundPopup();
+        
+        createFarmPopup();
 
         // Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
@@ -835,7 +839,8 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 3.0);
 	        AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 	        AnchorPane.setTopAnchor(soundBtn, 3.0);
-        	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
+	        AnchorPane.setTopAnchor(farmBtn, 3.0);
+	        AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
 		else if (OS.contains("linux")) {
@@ -843,6 +848,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 	        AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 	        AnchorPane.setTopAnchor(soundBtn, 0.0);
+	        AnchorPane.setTopAnchor(farmBtn, 0.0);
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
@@ -851,6 +857,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 	        AnchorPane.setTopAnchor(lastSaveLabel, 0.0);
 	        AnchorPane.setTopAnchor(soundBtn, 0.0);
+	        AnchorPane.setTopAnchor(farmBtn, 0.0);
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
@@ -858,15 +865,16 @@ public class MainScene {
         AnchorPane.setRightAnchor(speedBtn, 5.0);
         AnchorPane.setRightAnchor(marsNetBtn, 45.0);
         AnchorPane.setRightAnchor(soundBtn, 85.0);
-        AnchorPane.setRightAnchor(marsTimeButton, 125.0);
-        AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 125);
-        AnchorPane.setRightAnchor(lastSaveLabel,  marsTimeButton.getMinWidth() +  marsTimeButton.getMinWidth() + 125);
+        AnchorPane.setRightAnchor(farmBtn, 125.0);
+        AnchorPane.setRightAnchor(marsTimeButton, 165.0);
+        AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 165);
+        AnchorPane.setRightAnchor(lastSaveLabel,  marsTimeButton.getMinWidth() +  marsTimeButton.getMinWidth() + 165);
 
         anchorPane.getChildren().addAll(
         		jfxTabPane,
         		marsNetBtn, speedBtn,
         		lastSaveLabel,
-        		earthTimeButton, marsTimeButton, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
+        		earthTimeButton, marsTimeButton, soundBtn, farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 
 		root.getChildren().addAll(anchorPane);
@@ -890,7 +898,6 @@ public class MainScene {
 		mapAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 
 		mapStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
-
 
 		return scene;
 	}
@@ -973,6 +980,8 @@ public class MainScene {
 	}
 
 
+	
+	
     /**
      * Creates and returns the panel for simulation speed and time info
      */
@@ -1500,6 +1509,57 @@ public class MainScene {
         soundPane.getChildren().addAll(soundVBox);
 
 	}
+
+    public void createFarmPopup() {
+		//logger.info("MainScene's createFarmPopup() is on " + Thread.currentThread().getName());
+
+		farmBtn = new JFXButton();
+		farmBtn.getStyleClass().add("button-raised");
+		farmIcon = new IconNode(FontAwesome.LEAF);
+		farmIcon.setIconSize(20);
+		//soundIcon.setFill(Color.YELLOW);
+		//soundIcon.setStroke(Color.WHITE);
+
+		farmBtn.setMaxSize(20, 20);
+		farmBtn.setGraphic(farmIcon);
+		setQuickToolTip(farmBtn, "Click to open Farming Panel");
+
+		farmBtn.setOnAction(e -> {
+            if (farmPopup.isShowing()) {
+            	farmPopup.hide();//close();
+            }
+            else {
+            	farmPopup.show(farmBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
+            }
+		});
+
+		Accordion acc = new Accordion();
+		ObservableList<Settlement> towns = sim.getUnitManager().getSettlementOList();
+		int num = towns.size();
+		List<TitledPane> titledPanes = new ArrayList<>();
+		List<Pane> panes = new ArrayList<>();
+		
+		for (Settlement s : towns) {
+		
+			DragDrop dd = new DragDrop();
+			StackPane p = dd.createDragDropBox();
+			panes.add(p);
+			TitledPane tp = new TitledPane(s.getName(), p);
+			titledPanes.add(tp);
+			
+			p.getStyleClass().add("jfx-popup-container");
+			p.setAlignment(Pos.CENTER);
+			p.setPrefHeight(75);
+			p.setPrefWidth(250);
+
+			acc.getPanes().add(tp);
+		}
+		
+		farmPane = new StackPane(acc);
+
+		farmPopup = new JFXPopup(farmPane);
+		
+    }
 
 
 	public void createMarsTimeBar() {
@@ -2611,6 +2671,8 @@ public class MainScene {
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.YELLOW);
 			soundBtn.setGraphic(soundIcon);
+			farmIcon.setFill(Color.YELLOW);
+			farmBtn.setGraphic(farmIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_orange.css").toExternalForm());
 		}
 
@@ -2621,6 +2683,8 @@ public class MainScene {
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.LAVENDER);
 			soundBtn.setGraphic(soundIcon);
+			farmIcon.setFill(Color.LAVENDER);
+			farmBtn.setGraphic(farmIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
 		}
 

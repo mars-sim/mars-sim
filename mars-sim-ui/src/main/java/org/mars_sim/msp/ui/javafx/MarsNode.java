@@ -71,7 +71,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
-import org.mars_sim.msp.ui.javafx.demo.DragDrop3;
+import org.mars_sim.msp.ui.javafx.demo.DragDrop;
 import org.mars_sim.msp.ui.javafx.demo.PannableView;
 import org.mars_sim.msp.ui.javafx.demo.Story;
 /*
@@ -209,7 +209,7 @@ public class MarsNode {
 
 
 	public void createDragDrop() {
-		DragDrop3 dd = new DragDrop3();
+		DragDrop dd = new DragDrop();
 		StackPane pane = dd.createDragDropBox();
 
 		//FXInternalWindow window = createFXInternalWindow("Drag and Drop", pane, 100, 200, false);

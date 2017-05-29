@@ -662,12 +662,11 @@ implements Serializable {
         while (((needyCrop = getNeedyCrop(lastCrop, unit)) != null)
         		&& (workTimeRemaining > .00001D)) {
 
-        	if (lastCrop != null)
-        		logger.info("inside while loop. lastCrop is " + lastCrop.getCropType());
             workTimeRemaining = needyCrop.addWork(unit, workTimeRemaining);
             
         	//if (!lastCrop.getCropType().equals(needyCrop.getCropType())) {
         	if (lastCrop != null) {
+            	//	logger.info("inside while loop. lastCrop is " + lastCrop.getCropType());
 	           	if (lastCrop.getCropType() != needyCrop.getCropType()) {	
 	        		// 2016-11-29 update the name of the crop being worked on in the task description
 	        		h.setCrop(needyCrop);

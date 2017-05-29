@@ -215,6 +215,12 @@ public class Crop implements Serializable {
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
 
+		phases = cropType.getPhases();
+
+		for (Phase p : phases.values()) {
+			p.setHarvestFactor(1);
+		}
+		
 		cropName = cropType.getName();
 		tissue = cropName + " " + TISSUE_CULTURE;
 
@@ -262,12 +268,6 @@ public class Crop implements Serializable {
 		// growingDay in sols
 		double growingDay = growingTime/1000D;
 		maxHarvest = dailyMaxHarvest * growingDay;
-
-		phases = cropType.getPhases();
-
-		for (Phase p : phases.values()) {
-			p.setHarvestFactor(1);
-		}
 
 		if (isNewCrop) {
 			
@@ -394,8 +394,7 @@ public class Crop implements Serializable {
 	 * @return true if more work needed.
 	 */
 	public boolean requiresWork() {
-		boolean result = false;
-		int phaseNum = getCurrentPhaseNum();
+		//int phaseNum = getCurrentPhaseNum();
 /*
 		if (phaseType == PhaseType.INCUBATION
 				|| phaseType == PhaseType.PLANTING
@@ -403,13 +402,13 @@ public class Crop implements Serializable {
 			result = true;
 
 		else {
-*/			if (phases.get(phaseNum).getWorkRequired() * 1000D > currentPhaseWorkCompleted)
-				result = true;
+*/
+		if (phases.get(getCurrentPhaseNum()).getWorkRequired() * 1000D >= currentPhaseWorkCompleted)
+				return true;
 			else
-				result = false;
+				return false;
 //		}
 
-		return result;
 	}
 
 	/**
