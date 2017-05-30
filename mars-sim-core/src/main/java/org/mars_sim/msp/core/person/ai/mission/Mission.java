@@ -685,12 +685,14 @@ implements Serializable {
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");
 
-			if (members != null || !members.isEmpty()) {
-				logger.info("Mission members removed : " + members);
-			    Object[] p = members.toArray();
-                for (Object aP : p) {
-                    removeMember((MissionMember) aP);
-                }
+			if (members != null) {
+				if (!members.isEmpty()) {	
+					logger.info("Mission members removed : " + members);
+				    Object[] p = members.toArray();
+	                for (Object aP : p) {
+	                    removeMember((MissionMember) aP);
+	                }
+				}
 			}
 
 			//logger.info(description + " ending at the " + phase + " phase due to " + reason);

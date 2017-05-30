@@ -21,9 +21,6 @@ import javafx.scene.layout.VBox;
 	 */
 	public class DragDrop {
 
-		public DragDrop() {
-		}
-
 	    public StackPane createDragDropBox() {
 
 	    	StackPane pane = new StackPane();
@@ -62,14 +59,14 @@ import javafx.scene.layout.VBox;
 	        return pane;
 	    }
 
-	    void insertImage(String s, HBox hb){
+	    private void insertImage(String s, HBox hb){
 
 	    	Image i = new Image(getClass().getResourceAsStream("/icons/farming/" + s));
 	    	insertImage(i, hb);
 	    }
 
 
-	    void insertImage(Image i, HBox hb){
+	    private void insertImage(Image i, HBox hb){
 
 	        ImageView iv = new ImageView();
 	        iv.setImage(i);
@@ -84,7 +81,7 @@ import javafx.scene.layout.VBox;
 	     * Sets up the image view as the source
 	     * @param source
 	     */
-	    void setupGestureSource(final ImageView source){
+	    private void setupGestureSource(final ImageView source){
 
 	        source.setOnDragDetected(new EventHandler <MouseEvent>() {
 	           @Override
@@ -110,7 +107,7 @@ import javafx.scene.layout.VBox;
 	     * Sets up the HBox to accept the image view
 	     * @param targetBox
 	     */
-	    void setupGestureTarget(final HBox targetBox){
+	    private void setupGestureTarget(final HBox targetBox){
 
 	        targetBox.setOnDragOver(new EventHandler <DragEvent>() {
 	            @Override

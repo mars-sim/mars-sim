@@ -182,7 +182,7 @@ implements Serializable {
 			phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 15D));
 			phases.put(4, new Phase(PhaseType.LEAFING, 1D, 25D));
 			phases.put(5, new Phase(PhaseType.BULB_INITIATION, 1D, 25D));
-			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 29D));
+			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 28D));
 			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
 
@@ -193,7 +193,7 @@ implements Serializable {
 			phases.put(2, new Phase(PhaseType.BUD_SPROUTING, 1D, 20D));
 			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 20D));
 			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 15D));
-			phases.put(5, new Phase(PhaseType.REPLACEMENT_CORMS_DEVELOPMENT, 1D, 35D));
+			phases.put(5, new Phase(PhaseType.REPLACEMENT_CORMS_DEVELOPMENT, 1D, 34D));
 			phases.put(6, new Phase(PhaseType.ANTHESIS, 1D, 9D));
 			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
@@ -203,7 +203,7 @@ implements Serializable {
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 35D));
+			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 34D));
 			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 25D));
 			phases.put(5, new Phase(PhaseType.FRUITING, 1D, 34D));
 			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
@@ -213,7 +213,7 @@ implements Serializable {
 
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
-			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 10D));
+			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 9D));
 			phases.put(3, new Phase(PhaseType.TILLERING, 1D, 20D));
 			phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 15D));
 			phases.put(5, new Phase(PhaseType.FLOWERING, 1D, 20D));
@@ -228,9 +228,9 @@ implements Serializable {
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.TILLERING, 1D, 30D));
+			phases.put(3, new Phase(PhaseType.TILLERING, 1D, 39D));
 			phases.put(4, new Phase(PhaseType.GRAND_GROWTH, 1D, 35D));
-			phases.put(5, new Phase(PhaseType.MATURATION, 1D, 29D));
+			phases.put(5, new Phase(PhaseType.MATURATION, 1D, 19D));
 			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(7, new Phase(PhaseType.FINISHED, 0.5, 0));
 
@@ -240,7 +240,7 @@ implements Serializable {
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
 			phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 5D));
-			phases.put(4, new Phase(PhaseType.HEAD_DEVELOPMENT, 1D, 40D));
+			phases.put(4, new Phase(PhaseType.HEAD_DEVELOPMENT, 1D, 39D));
 			phases.put(5, new Phase(PhaseType.FIFTY_PERCENT_HEAD_SIZE_REACHED, 1D, 49D));
 			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(7, new Phase(PhaseType.FINISHED, 0.5, 0));
@@ -250,7 +250,7 @@ implements Serializable {
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.LEAFING, 1D, 35D));
+			phases.put(3, new Phase(PhaseType.LEAFING, 1D, 34D));
 			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 20D));
 			phases.put(5, new Phase(PhaseType.SEED_FILL, 1D, 15D));
 			phases.put(6, new Phase(PhaseType.POD_MATURING, 1D, 24D));
@@ -264,7 +264,7 @@ implements Serializable {
 			phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 10D));
 			phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 10D));
 			phases.put(4, new Phase(PhaseType.TUBER_INITIATION, 1D, 15D));
-			phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 40D));
+			phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 39D));
 			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 24D));
 			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
@@ -273,9 +273,9 @@ implements Serializable {
 
 			// roots : carrot, radish, ginger
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
-			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 1D));
 			phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 40D));					
+			phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 39D));					
 			phases.put(4, new Phase(PhaseType.ROOT_DEVELOPMENT, 1D, 54D));
 			phases.put(5, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(6, new Phase(PhaseType.FINISHED, 0.5, 0));
@@ -284,10 +284,10 @@ implements Serializable {
 			
 			// Stems e.g celery
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
-			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 1D));
 			phases.put(2, new Phase(PhaseType.EARLY_VEGETATIVE, 1D, 15D));
 			phases.put(3, new Phase(PhaseType.MID_VEGETATIVE, 1D, 15D));
-			phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 39D));
+			phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 38D));
 			phases.put(5, new Phase(PhaseType.EARLY_BULKING_UP, 1D, 10D));
 			phases.put(6, new Phase(PhaseType.MID_BULKING_UP, 1D, 10D));
 			phases.put(7, new Phase(PhaseType.LATE_BULKING_UP, 1D, 9D));
@@ -298,19 +298,19 @@ implements Serializable {
 			
 			// spices e.g. green onion 
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
-			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 10D));
 			phases.put(3, new Phase(PhaseType.LEAFING, 1D, 55D));
-			phases.put(4, new Phase(PhaseType.MATURATION, 1D, 34D));
+			phases.put(4, new Phase(PhaseType.MATURATION, 1D, 33D));
 			phases.put(5, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(6, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else {
 
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
-			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0D));
+			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.GROWING, 1D, 94D));
+			phases.put(3, new Phase(PhaseType.GROWING, 1D, 93D));
 			phases.put(4, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(5, new Phase(PhaseType.FINISHED, 0.5, 0));
 

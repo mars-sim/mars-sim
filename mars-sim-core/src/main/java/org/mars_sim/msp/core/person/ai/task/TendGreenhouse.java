@@ -296,7 +296,7 @@ implements Serializable {
 
     }
 
-    public void setCrop(Crop needyCrop) {
+    public void setCropDescription(Crop needyCrop) {
         setDescription(Msg.getString("Task.description.tendGreenhouse.tend", Conversion.capitalize(needyCrop.getCropType().getName())));
 
     }
@@ -453,16 +453,16 @@ implements Serializable {
 		if (type == null) {
 			// Obtain a needy crop to work on
 			if (person != null) {
-				type = greenhouse.getNeedyCrop(null, person).getCropType();
+				type = greenhouse.getNeedyCrop(null).getCropType();
 			}
 
 			else {
-				type = greenhouse.getNeedyCrop(null, robot).getCropType();
+				type = greenhouse.getNeedyCrop(null).getCropType();
 			}
 		}
 
 
-		if (type != null) {
+		else { //if (type != null) {
 	      	//System.out.println("type is " + type);
 			boolean isDone = greenhouse.checkBotanyLab(type);
 			//System.out.println("isDone is " + isDone);
