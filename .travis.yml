@@ -1,9 +1,13 @@
 language: java
 sudo: false
 script: 
-  mvn test -B
+  - "mvn test -B"
+  - "mvn --show-version --errors --batch-mode clean verify"
 jdk:
   - oraclejdk8
 branches:
   only:
   - master
+cache:
+    directories:
+    - $HOME/.m2
