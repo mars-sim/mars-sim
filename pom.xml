@@ -148,7 +148,7 @@
 		<module>mars-sim-ui</module>
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module>
-		<module>mars-sim-network</module>
+		<!--module>mars-sim-network</module -->
 		<!--module>mars-sim-service</module-->
 	</modules>
 	<!-- ************************************************************************************************* -->
