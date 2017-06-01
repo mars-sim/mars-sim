@@ -137,7 +137,7 @@ public enum PhaseType {
 	//PLANTING("Planting"),
 	
 	/* For Spics */
-	//  e.g. green onion 
+	//  e.g. None
 	//INCUBATION("Incubation"),
 	//PLANTING("Planting"),
 	//GERMINATION("Germination"),

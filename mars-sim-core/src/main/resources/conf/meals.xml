@@ -26,7 +26,7 @@
 
 		<main-dish id="1" name="Steamed Brown Rice" oil="0.05" salt="0.01" category="meal">
 			<ingredient id="0" name="Brown Rice" proportion="0.4"/>
-			<ingredient id="1" name="Green Onion" proportion="0.2"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.2"/>
 			<ingredient id="2" name="Celery" proportion="0.2"/>
 		</main-dish>
 
@@ -48,7 +48,7 @@
 		<main-dish id="4" name="Salsa Potato Salad" oil="0.05" salt="0.01" category="meal">
 			<ingredient id="0" name="Potato" proportion="0.4"/>
 			<ingredient id="1" name="Lettuce" proportion="0.2"/>
-			<ingredient id="2" name="Green Onion" proportion="0.09"/>
+			<ingredient id="2" name="Spring Onion" proportion="0.09"/>
 			<ingredient id="3" name="Tomato" proportion="0.1"/>
 			<ingredient id="4" name="Rice Vinegar" proportion="0.01"/>
 		</main-dish>
@@ -56,7 +56,7 @@
 		<main-dish id="5" name="Bean Sprout Garlic Stir Fry" oil="0.1" salt="0.01" category="meal">
 			<ingredient id="0" name="Soy Sprout" proportion="0.5"/>
 			<ingredient id="1" name="Garlic" proportion="0.2"/>
-			<ingredient id="2" name="Green Onion" proportion="0.05"/>
+			<ingredient id="2" name="Spring Onion" proportion="0.05"/>
 			<ingredient id="3" name="Ginger" proportion="0.04"/>
 			<ingredient id="4" name="Rice Vinegar" proportion="0.01"/>
 		</main-dish>
@@ -145,22 +145,22 @@
 
 		<main-dish id="17" name="Yam Chips" oil="0.15" salt="0.01" category="meal">
 			<ingredient id="0" name="Yam" proportion="0.475"/>
-			<ingredient id="1" name="Green Onion" proportion="0.025"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
 		</main-dish>
 
 		<main-dish id="18" name="Baked Potatoes" oil="0.05" salt="0.01" category="meal">
-			<ingredient id="0" name="potato" proportion="0.45"/>
-			<ingredient id="1" name="Green Onion" proportion="0.05"/>
+			<ingredient id="0" name="Potato" proportion="0.475"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
 		</main-dish>
 
 		<main-dish id="19" name="Taro Chips" oil="0.15" salt="0.01" category="meal">
 			<ingredient id="0" name="Taro" proportion="0.475"/>
-			<ingredient id="1" name="Green Onion" proportion="0.025"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
 		</main-dish>
 
 		<main-dish id="20" name="Sweet Potato Tots" oil="0.15" salt="0.01" category="meal">
 			<ingredient id="0" name="Sweet Potato" proportion="0.475"/>
-			<ingredient id="1" name="Green Onion" proportion="0.025"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
 		</main-dish>
 
 		<main-dish id="21" name="Roasted Beet Salad With Pea Shoots" oil="0.02" salt="0.005" category="meal">
@@ -192,7 +192,7 @@
 			<ingredient id="0" name="Tofu" proportion="0.20"/>
 			<ingredient id="1" name="Water" proportion="0.25"/>
 			<ingredient id="2" name="Sesame" proportion="0.015"/>
-			<ingredient id="3" name="Green Onion" proportion="0.025"/>
+			<ingredient id="3" name="Spring Onion" proportion="0.025"/>
 			<ingredient id="4" name="Soy Sauce" proportion="0.010"/>
 		</main-dish>
 

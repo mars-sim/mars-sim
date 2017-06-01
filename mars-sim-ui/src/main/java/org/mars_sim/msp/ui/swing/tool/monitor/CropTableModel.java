@@ -83,10 +83,10 @@ extends UnitTableModel {
 	private final static int LEGUMES = 11;
 	private final static int ROOTS = 12;
 	private final static int SEEDS = 13;
-	private final static int SPICES = 14;
+	//private final static int SPICES = 14;
 
-	private final static int STEMS = 15;
-	private final static int TUBERS = 16;
+	private final static int STEMS = 14;
+	private final static int TUBERS = 15;
 
 /*
 	enum CropsEnum {
@@ -154,8 +154,8 @@ extends UnitTableModel {
 		columnTypes[ROOTS] = Integer.class;
 		columnNames[SEEDS] = "Seeds";
 		columnTypes[SEEDS] = Integer.class;
-		columnNames[SPICES] = "Spices";
-		columnTypes[SPICES] = Integer.class;
+		//columnNames[SPICES] = "Spices";
+		//columnTypes[SPICES] = Integer.class;
 
 		columnNames[STEMS] = "Stems";
 		columnTypes[STEMS] = Integer.class;
@@ -393,9 +393,9 @@ extends UnitTableModel {
 					result = getValueAtColumn(rowIndex, "Seeds");
 				} break;
 
-				case SPICES : {
-					result = getValueAtColumn(rowIndex, "Spices");
-				} break;
+				//case SPICES : {
+				//	result = getValueAtColumn(rowIndex, "Spices");
+				//} break;
 
 
 

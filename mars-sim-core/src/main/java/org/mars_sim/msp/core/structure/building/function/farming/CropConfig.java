@@ -293,7 +293,7 @@ implements Serializable {
 			phases.put(7, new Phase(PhaseType.LATE_BULKING_UP, 1D, 9D));
 			phases.put(8, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(9, new Phase(PhaseType.FINISHED, 0.5, 0));
-
+/*
 		} else if (cat == CropCategoryType.SPICES) {
 			
 			// spices e.g. green onion 
@@ -304,7 +304,7 @@ implements Serializable {
 			phases.put(4, new Phase(PhaseType.MATURATION, 1D, 33D));
 			phases.put(5, new Phase(PhaseType.HARVESTING, 0.5, 1D));
 			phases.put(6, new Phase(PhaseType.FINISHED, 0.5, 0));
-
+*/
 		} else {
 
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));

@@ -266,6 +266,7 @@ public class MainScene {
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup, farmPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 
+	private CheckBox muteBox;
 	//private DndTabPane dndTabPane;
 	private ESCHandler esc = null;
 
@@ -614,11 +615,13 @@ public class MainScene {
         		menuBar.getMuteItem().setSelected(false);
         		soundPlayer.setMute(true);
         		soundSlider.setValue(0);
+		        muteBox.setSelected(true);
         	}
         	else {
         		menuBar.getMuteItem().setSelected(true);
         		soundPlayer.setMute(false);
         		soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+		        muteBox.setSelected(false);
         	}
 
 		});
@@ -1433,7 +1436,7 @@ public class MainScene {
 		Label volumelabel = createBlendLabel("Volume");
 		volumelabel.setPadding(new Insets(0,0,5,0));
 
-        CheckBox muteBox = new CheckBox("mute");
+        muteBox = new CheckBox("mute");
         muteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
     			+ "-fx-font: bold 9pt 'Corbel';"
 				+ "-fx-text-fill: #654b00;");
@@ -1444,10 +1447,12 @@ public class MainScene {
         		// mute it
 		        sliderCache = soundSlider.getValue();
 		        soundSlider.setValue(0);
+        		menuBar.getMuteItem().setSelected(false);
 			}
 			else {
 				// unmute it
 				soundSlider.setValue(sliderCache);
+        		menuBar.getMuteItem().setSelected(true);
 			}
         });
 
@@ -1463,11 +1468,13 @@ public class MainScene {
 	            	if (sliderValue <= 0) {
 				        soundPlayer.setMute(true);
 				        muteBox.setSelected(true);
+		        		menuBar.getMuteItem().setSelected(false);
 					}
 					else {
 						soundPlayer.setMute(false);
 						soundPlayer.setVolume((float) convertSlider2Volume(sliderValue));
 				        muteBox.setSelected(false);
+		        		menuBar.getMuteItem().setSelected(true);
 					}
             	}
             }

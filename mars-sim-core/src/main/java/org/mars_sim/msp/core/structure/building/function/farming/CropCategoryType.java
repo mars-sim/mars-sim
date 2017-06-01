@@ -25,7 +25,7 @@ public enum CropCategoryType {
 	LEGUMES("legumes"),
 	ROOTS("roots"),
 	SEEDS("seeds"),
-	SPICES("spices"),
+	//SPICES("spices"),
 	
 	STEMS("stems"),
 	TUBERS("tubers");

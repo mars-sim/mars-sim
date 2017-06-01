@@ -209,9 +209,9 @@
 	    	daily-PAR="25.92"
 			/>
 
-	    <crop name="Green Onion"
+	    <crop name="Spring Onion"
 	    	growing-time="70.0"
-	    	crop-category="spices"
+	    	crop-category="bulbs"
 	    	edible-biomass="81.82"
 	    	edible-water-content=".89"
 	    	inedible-biomass="10.0"
@@ -220,7 +220,7 @@
 	   	<!-- 1. Harvest between 70-90 days
 	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ 
 	   			
-		scallions, leeks, spring onions
+		scallions, leeks, spring onions, green onion
 	   			
 	   			-->
 
@@ -735,7 +735,7 @@
 
 	for root/tuber/corm, see https://en.wikipedia.org/wiki/List_of_root_vegetables
 
-	In mars-sim, we have 14 categories:
+	In mars-sim, we have 13 categories:
 
 	roots
 	tubers
@@ -750,7 +750,7 @@
 	grains ( rice, quinoa, wheat)
 	grasses
 	fungi
-	spices / herbs
+	(may be in future : spices / herbs)
 
 16. Tissue Culture – Technology Harnessed for Potato Seed Production
 	http://keaneanjournalofscience.in/?p=131

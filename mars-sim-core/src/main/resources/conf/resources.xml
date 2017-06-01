@@ -114,7 +114,7 @@
 	<resource name="garlic" type="crop" phase="solid" edible="true"></resource>
 	<resource name="ginger" type="crop" phase="solid" edible="true"></resource>
 	<resource name="green bell pepper" type="crop" phase="solid" edible="true"></resource>
-	<resource name="green onion" type="crop" phase="solid" edible="true"></resource>
+	<resource name="spring onion" type="crop" phase="solid" edible="true"></resource>
 	<resource name="kidney bean" type="crop" phase="solid" edible="true"></resource>
 	<resource name="lettuce" type="crop" phase="solid" edible="true"></resource>
 	<resource name="morel mushroom" type="crop" phase="solid" edible="true"></resource>

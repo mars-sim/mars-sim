@@ -292,7 +292,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="Wheat" capacity="100.0" />
 				<resource-storage resource="Cabbage" capacity="100.0" />
 				<resource-storage resource="Carrot" capacity="100.0" />
-				<resource-storage resource="Green Onion" capacity="100.0" />
+				<resource-storage resource="Spring Onion" capacity="100.0" />
 				<resource-storage resource="Peanut" capacity="100.0" />
 				<resource-storage resource="Potato" capacity="100.0" />
 				<resource-storage resource="Sesame" capacity="100.0" />
@@ -1025,7 +1025,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="Wheat" capacity="100.0" />
 				<resource-storage resource="Cabbage" capacity="100.0" />
 				<resource-storage resource="Carrot" capacity="100.0" />
-				<resource-storage resource="Green Onion" capacity="100.0" />
+				<resource-storage resource="Spring Onion" capacity="100.0" />
 				<resource-storage resource="Peanut" capacity="100.0" />
 				<resource-storage resource="Potato" capacity="100.0" />
 				<resource-storage resource="Sesame" capacity="100.0" />
@@ -2064,7 +2064,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="Wheat" capacity="100.0" />
 				<resource-storage resource="Cabbage" capacity="100.0" />
 				<resource-storage resource="Carrot" capacity="100.0" />
-				<resource-storage resource="Green Onion" capacity="100.0" />
+				<resource-storage resource="Spring Onion" capacity="100.0" />
 				<resource-storage resource="Peanut" capacity="100.0" />
 				<resource-storage resource="Potato" capacity="100.0" />
 				<resource-storage resource="Sesame" capacity="100.0" />
@@ -2133,7 +2133,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="Wheat" amount="50.0" />
 				<resource-initial resource="Cabbage" amount="50.0" />
 				<resource-initial resource="Carrot" amount="50.0" />
-				<resource-initial resource="Green Onion" amount="50.0" />
+				<resource-initial resource="Spring Onion" amount="50.0" />
 				<resource-initial resource="Peanut" amount="50.0" />
 				<resource-initial resource="Potato" amount="50.0" />
 				<resource-initial resource="Sesame" amount="50.0" />

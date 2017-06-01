@@ -126,7 +126,7 @@
 			<resource type="garlic tissue culture" amount="0.1" />
 			<resource type="ginger tissue culture" amount="0.1" />
 			<resource type="green bell pepper tissue culture" amount="0.1" />
-			<resource type="green onion tissue culture" amount="0.1" />
+			<resource type="Spring Onion tissue culture" amount="0.1" />
 			<resource type="kidney bean tissue culture" amount="0.1" />
 			<resource type="lettuce tissue culture" amount="0.1" />
 			<resource type="morel mushroom tissue culture" amount="0.1" />
@@ -271,7 +271,7 @@
 			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
 			
-			<resource type="Green Onion" amount="50.0" />
+			<resource type="Spring Onion" amount="50.0" />
 			<resource type="Kidney Bean" amount="50.0" />
 			<resource type="Lettuce" amount="50.0" />
 			<resource type="Peanut" amount="50.0" />
@@ -314,7 +314,7 @@
 			<resource type="garlic tissue culture" amount="0.2" />
 			<resource type="ginger tissue culture" amount="0.2" />
 			<resource type="green bell pepper tissue culture" amount="0.2" />
-			<resource type="green onion tissue culture" amount="0.2" />
+			<resource type="Spring Onion tissue culture" amount="0.2" />
 			<resource type="kidney bean tissue culture" amount="0.2" />
 			<resource type="lettuce tissue culture" amount="0.2" />
 			<resource type="morel mushroom tissue culture" amount="0.2" />
@@ -494,7 +494,7 @@
 			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
 			
-			<resource type="Green Onion" amount="50.0" />
+			<resource type="Spring Onion" amount="50.0" />
 			<resource type="Kidney Bean" amount="50.0" />
 			<resource type="Lettuce" amount="50.0" />
 			<resource type="Peanut" amount="50.0" />
@@ -535,7 +535,7 @@
 			<resource type="garlic tissue culture" amount="0.3" />
 			<resource type="ginger tissue culture" amount="0.3" />
 			<resource type="green bell pepper tissue culture" amount="0.3" />
-			<resource type="green onion tissue culture" amount="0.3" />
+			<resource type="Spring Onion tissue culture" amount="0.3" />
 			<resource type="kidney bean tissue culture" amount="0.3" />
 			<resource type="lettuce tissue culture" amount="0.3" />
 			<resource type="morel mushroom tissue culture" amount="0.3" />
@@ -815,7 +815,7 @@
 			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
 			
-			<resource type="Green Onion" amount="50.0" />
+			<resource type="Spring Onion" amount="50.0" />
 			<resource type="Kidney Bean" amount="50.0" />
 			<resource type="Lettuce" amount="50.0" />
 			<resource type="Peanut" amount="50.0" />
@@ -856,7 +856,7 @@
 			<resource type="garlic tissue culture" amount="0.4" />
 			<resource type="ginger tissue culture" amount="0.4" />
 			<resource type="green bell pepper tissue culture" amount="0.4" />
-			<resource type="green onion tissue culture" amount="0.4" />
+			<resource type="Spring Onion tissue culture" amount="0.4" />
 			<resource type="kidney bean tissue culture" amount="0.4" />
 			<resource type="lettuce tissue culture" amount="0.4" />
 			<resource type="morel mushroom tissue culture" amount="0.4" />
