@@ -62,7 +62,7 @@ implements MonitorModel, UnitListener {
 		this.name = name;
 		this.countingMsgKey = countingMsgKey;
 		this.units = new ConcurrentLinkedQueue<Unit>();
-		getRowCount();
+		//getRowCount();
 		this.columnNames = names;
 		this.columnTypes = types;
 	}

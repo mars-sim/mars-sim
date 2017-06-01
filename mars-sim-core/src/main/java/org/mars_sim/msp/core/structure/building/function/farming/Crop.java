@@ -305,7 +305,7 @@ public class Crop implements Serializable {
 
 		else {
 			// At the start of the sim, set up a crop's "initial" percentage of growth randomly
-			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime); // for testing only : growingTimeCompleted = growingTime - 3000 + RandomUtil.getRandomDouble(3000D); or = growingTime * .975;
+			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .95); // for testing only : growingTimeCompleted = growingTime - 3000 + RandomUtil.getRandomDouble(3000D); or = growingTime * .975;
 
 			fractionalGrowingTimeCompleted = growingTimeCompleted / growingTime;
 /*

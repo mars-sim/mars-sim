@@ -230,9 +230,7 @@ extends MonitorTab {
                  * contents in wider than the cell
                  */
                 public String getToolTipText(MouseEvent e) {
-
                 	// TODO: create tooltip text for greenhouse crop
-
                     return getCellText(e);
                 };
             };
@@ -431,7 +429,6 @@ extends MonitorTab {
      * @param e MouseEvent triggering tool tip.
      * @return Tooltip text.
      */
-
     private String getCellText(MouseEvent e) {
         Point p = e.getPoint();
         int column = table.columnAtPoint(p);
@@ -440,7 +437,18 @@ extends MonitorTab {
         if ((column >= 0) && (row >= 0)) {
             Object cell = table.getValueAt(row, column);
             if (cell != null) {
-                result = cell.toString();
+            	// TODO: below is NOT working 
+/*            	
+            	MonitorModel target = (sortedModel != null ? sortedModel : getModel());
+                if (target instanceof CropTableModel) {
+                	System.out.println("It's CropTableModel");
+                	CropTableModel model = (CropTableModel) (table.getModel());
+                	result = model.getToolTip(row, column);
+                }
+                
+                else
+*/                	
+                	result = cell.toString();
             }
         }
         return result;

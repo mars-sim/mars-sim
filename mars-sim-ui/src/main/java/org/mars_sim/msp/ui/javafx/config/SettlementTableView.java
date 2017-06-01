@@ -331,15 +331,15 @@ public class SettlementTableView {
 			texts.add(info.latitude);
 			texts.add(info.longitude);
 						
-            Map<Integer, AutoFillTextBox> dataRow = new HashMap<>();
+            Map<Integer, AutoFillTextBox<?>> dataRow = new HashMap<>();
 
-			List<AutoFillTextBox> boxes = new ArrayList<>();
+			List<AutoFillTextBox<?>> boxes = new ArrayList<>();
 			for (int j = 0; j < NUM_COLUMNS; j++) {
-				AutoFillTextBox b = null;		
+				AutoFillTextBox<?> b = null;		
 				if (j==4)
-					b = new AutoFillTextBox(createAutoCompleteData());
+					b = new AutoFillTextBox<>(createAutoCompleteData());
 				else
-					b = new AutoFillTextBox();
+					b = new AutoFillTextBox<>();
 				b.setFilterMode(false);
 				b.getTextbox().setText(texts.get(j));
 				boxes.add(b);				

@@ -47,7 +47,7 @@ public class AutoFillTextBoxDemo extends Application {
         HBox hbox = new HBox();
         hbox.setSpacing(10);
         //CustomControl
-        final AutoFillTextBox box = new AutoFillTextBox(data);
+        final AutoFillTextBox<String> box = new AutoFillTextBox<String>(data);
         //Label
         Label l = new Label("AutoFillTextBox: ");
         l.translateYProperty().set(5);

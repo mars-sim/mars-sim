@@ -14,14 +14,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <packaging>jar</packaging>
 	<build>
 		<plugins>
+		<!--  for compiling with Java 8
+			see http://www.mojohaus.org/webstart/webstart-maven-plugin/upgrade.html
+			see http://stackoverflow.com/questions/31209479/maven-webstart-and-java-8-headaches
+			see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-from-building-a-zip-file  -->
+					
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
 				<version>1.0-beta-8</version>
-<!--  for compiling with Java 8
-
-see http://stackoverflow.com/questions/31209479/maven-webstart-and-java-8-headaches
-see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-from-building-a-zip-file  -->
 
 				<dependencies>
                     <dependency>
@@ -29,8 +30,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
                         <artifactId>webstart-pack200-impl</artifactId>
                         <version>1.0-beta-6</version>
 					</dependency>
-<!--  see http://www.mojohaus.org/webstart/webstart-maven-plugin/upgrade.html
-
+<!--  
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>keytool-api-1.7</artifactId>
@@ -65,6 +65,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 					</jnlp>
 				</configuration>
 			</plugin>
+			
 			<plugin>
         		<groupId>org.apache.maven.plugins</groupId>
         		<artifactId>maven-jar-plugin</artifactId>

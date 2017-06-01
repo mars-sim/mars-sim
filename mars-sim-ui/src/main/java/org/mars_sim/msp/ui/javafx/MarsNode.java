@@ -144,7 +144,7 @@ public class MarsNode {
 		TextArea ta = cb.getTextArea();
 		ta.setTooltip(new Tooltip ("Voice chatters from settlement's Comm Nets"));
 
- 		AutoFillTextBox autoFillTextBox = cb.getAutoFillTextBox();
+ 		//AutoFillTextBox<?> autoFillTextBox = cb.getAutoFillTextBox();
   		//autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
   		//autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel");
 
@@ -155,7 +155,7 @@ public class MarsNode {
 		ta.appendText("Safe Net : a small dust storm is being built up within 20 km of Alpha Base"
     		  + System.lineSeparator());
 
-		StackPane pane = new StackPane(cb);
+		//StackPane pane = new StackPane(cb);
 
 		//FXInternalWindow window = createFXInternalWindow("Comm Radio", pane, 350, 200, false);
 		//window.setMinWidth(350);

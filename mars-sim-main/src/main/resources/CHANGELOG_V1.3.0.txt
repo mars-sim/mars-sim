@@ -2,6 +2,46 @@ Mars Simulation Project v3.1.0
 Copyright (C) 2017 Scott Davis
 https://mars-sim.github.io/
 
+
+-----------------------------------------------------------------------------------------
+
+## v3.1.0-Preview 8 (build 40__) - 2017-06-__
+
+### MINIMUM REQUIREMENTS :
+
+1. Dual Core Pentium/Celeron 1.5GHz or above
+
+2. 500 MB to 1.5 GB free RAM dedicated for running mars-sim
+
+3. 64-bit Oracle Java 8 (JRE or JDK 8u77 and higher) OR OpenJDK with OpenJFX
+
+4. 128 MB free disk space
+
+### KNOWN LIMITATIONS :
+
+1. In MacOS, Settlement Map toggle button cannot bring up the Map. Known JavaFX
+   WebEngine bug in displaying certain fonts in Help Browser.
+
+2. In Linux, the text fields does not allow text input.
+
+3. Not compatible with 32-bit Java 8.
+
+
+### CORE ENGINE IMPROVEMENTS :
+
+1. Refine phenological/growing stage for each category of crop
+
+
+### UI IMPROVEMENT :
+
+1. 
+
+
+### FIXES :
+
+1. Correct crop harvesting issues
+
+
 -----------------------------------------------------------------------------------------
 
 ## v3.1.0-Preview 7 (build 3973) - 2017-05-08

@@ -143,7 +143,7 @@ extends UnitTableModel {
 
 		if (rowIndex < getUnitNumber()) {
 			Settlement settle = (Settlement)getUnit(rowIndex);
-			BuildingManager bMgr = settle.getBuildingManager();
+			//BuildingManager bMgr = settle.getBuildingManager();
 			Map<AmountResource, Integer> resourceMap = resourceCache.get(settle);
 
 			try {

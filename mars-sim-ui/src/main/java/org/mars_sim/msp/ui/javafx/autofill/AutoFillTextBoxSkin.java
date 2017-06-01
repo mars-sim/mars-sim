@@ -44,7 +44,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
     //This is Textbox where user types
     private TextField textbox;
     //This is the main Control of AutoFillTextBox
-    private AutoFillTextBox autofillTextbox;
+    private AutoFillTextBox<?> autofillTextbox;
 
     //This is the ObservableData where the matching words are saved
     private ObservableList data;
@@ -65,8 +65,8 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
      * @param text AutoTextBox ****************************
      */
     @SuppressWarnings({ "restriction", "unchecked" })
-	public AutoFillTextBoxSkin(AutoFillTextBox text) {
-        super(text);
+	public AutoFillTextBoxSkin(AutoFillTextBox<T> text) {
+        super((AutoFillTextBox<T>) text);
 
         //variable Assignment
         autofillTextbox = text;
@@ -79,7 +79,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
             listview.setItems(text.getData());
         }
         
-        listview.itemsProperty().addListener(new ChangeListener() {
+        listview.itemsProperty().addListener(new ChangeListener<Object>() {
 
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {
@@ -176,9 +176,9 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
         textbox.setOnKeyPressed(this);
         textbox.textProperty().addListener(this);
 
-        textbox.focusedProperty().addListener(new ChangeListener() {
+        textbox.focusedProperty().addListener(new ChangeListener<Object>() {
             @Override
-            public void changed(ObservableValue ov, Object t, Object t1) {
+            public void changed(ObservableValue<?> ov, Object t, Object t1) {
                 textbox.end();
             }
 

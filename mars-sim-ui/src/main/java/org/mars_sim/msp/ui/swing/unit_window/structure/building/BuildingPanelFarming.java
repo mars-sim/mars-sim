@@ -101,7 +101,7 @@ implements Serializable, MouseListener {
 	private int deletingCropIndex;
 
 	//private String[] tooltipArray;
-	private ArrayList tooltipArray;
+	private ArrayList<String> tooltipArray;
 	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 	//private String deletingCrop = "";
 
@@ -339,7 +339,7 @@ implements Serializable, MouseListener {
 		comboBoxModel = new DefaultComboBoxModel<CropType>();
 
 		//tooltipArray = new String[cropCache.size()];
-		tooltipArray = new ArrayList();
+		tooltipArray = new ArrayList<>();
 
 		Iterator<CropType> i = cropCache.iterator();
 		int j = 0;
@@ -795,8 +795,9 @@ implements Serializable, MouseListener {
 	}
 
 
+	@SuppressWarnings("serial")
 	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
-	    ArrayList tooltips;
+	    ArrayList<String> tooltips;
 
 	    @Override
 	    public Component getListCellRendererComponent(JList list, Object value,
@@ -814,7 +815,7 @@ implements Serializable, MouseListener {
 	        return comp;
 	    }
 
-	    public void setTooltips(ArrayList tooltipArray) {
+	    public void setTooltips(ArrayList<String> tooltipArray) {
 	        this.tooltips = tooltipArray;
 
 	    }

@@ -212,6 +212,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 
 		public void run() {
+			foodList = FoodUtil.getFoodList();
 			if (event.getTarget() == null) fireTableDataChanged();
 			else {
 				int rowIndex = foodList.indexOf(event.getTarget());

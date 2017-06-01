@@ -20,7 +20,7 @@ import javafx.util.Duration;
  * layout animator makes the transition by sliding each item into its final
  * place.
  */
-public class LayoutAnimator implements ChangeListener, ListChangeListener<Node> {
+public class LayoutAnimator implements ChangeListener<Object>, ListChangeListener<Node> {
 
   private Map<Node, Transition> nodesInTransition;
 

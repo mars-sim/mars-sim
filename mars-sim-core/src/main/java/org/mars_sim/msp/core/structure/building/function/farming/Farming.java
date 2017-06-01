@@ -613,14 +613,6 @@ implements Serializable {
     }
 
     /**
-     * Gets the farm's current crops.
-     * @return collection of crops
-     */
-    public List<Crop> getCrops() {
-        return crops;
-    }
-
-    /**
      * Checks if farm currently requires work.
      * @return true if farm requires work
      */
@@ -659,7 +651,7 @@ implements Serializable {
         	
         	if (needyCropCache != null && needyCrop != null) {
             	//	logger.info("inside while loop. lastCrop is " + lastCrop.getCropType());
-	           	if (needyCropCache != needyCrop) {	
+	           	if (needyCropCache.equals(needyCrop)) {	
 	        		// 2016-11-29 update the name of the crop being worked on in the task description
 	        		h.setCropDescription(needyCrop);
 	        	}
@@ -1068,6 +1060,23 @@ implements Serializable {
 		return 0;
 	}
 
+    /**
+     * Gets the farm's current crops.
+     * @return collection of crops
+     */
+    public List<Crop> getCrops() {
+        return crops;
+    }
+
+    /**
+     * Gets the names of the current crops.
+     * @return list of crop names
+     */
+	public List<String> getPlantedCrops() {
+		return plantedCrops;
+	}
+
+	
     @Override
     public void destroy() {
         super.destroy();

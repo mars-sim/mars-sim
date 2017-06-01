@@ -56,12 +56,20 @@
 	    <version>2.0.6</version>
 	</dependency>  -->
 
-	<!-- Loaded from SF's mars-sim repo -->
+	<!-- Loaded from SF's mars-sim repo 
+		 Used by RelationshipManager, CreditManager 		-->
 	<dependency>
 		<groupId>com.phoenixst</groupId>
 		<artifactId>plexus-core</artifactId>
 		<version>0.9</version>
 	</dependency>
+	<!-- https://github.com/codehaus-plexus/plexus-utils
+	<dependency>
+	    <groupId>org.codehaus.plexus</groupId>
+	    <artifactId>plexus-utils</artifactId>
+	    <version>3.0.24</version>
+	</dependency>	
+	-->
 	<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 1.4 MB-->
 	<dependency>
 		<groupId>com.google.guava</groupId>
