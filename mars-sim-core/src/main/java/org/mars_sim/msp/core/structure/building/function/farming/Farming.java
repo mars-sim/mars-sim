@@ -649,6 +649,11 @@ implements Serializable {
             // Get a new needy crop
         	needyCrop = getNeedyCrop(needyCropCache);
         	
+        	if (needyCropCache != null && needyCrop != null && needyCropCache.equals(needyCrop)) {	
+        		// 2016-11-29 update the name of the crop being worked on in the task description
+        		h.setCropDescription(needyCrop);
+        	}
+/*
         	if (needyCropCache != null && needyCrop != null) {
             	//	logger.info("inside while loop. lastCrop is " + lastCrop.getCropType());
 	           	if (needyCropCache.equals(needyCrop)) {	
@@ -656,8 +661,7 @@ implements Serializable {
 	        		h.setCropDescription(needyCrop);
 	        	}
         	}
-
-
+*/
         }
 
         return workTimeRemaining;

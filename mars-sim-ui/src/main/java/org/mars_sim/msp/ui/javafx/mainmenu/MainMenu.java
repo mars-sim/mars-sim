@@ -11,105 +11,38 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
-
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.StackPane;
-import javafx.scene.CacheHint;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.Background;
 import javafx.animation.FadeTransition;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
-import javafx.scene.shape.Rectangle;
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
-import javafx.animation.RotateTransition;
-import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.concurrent.Service;
 import javafx.event.EventHandler;
-import javafx.scene.AmbientLight;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ProgressIndicator;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 
-import org.controlsfx.control.MaskerPane;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.OrbitInfo;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
-import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX.SimulationTask;
-import org.mars_sim.msp.ui.javafx.config.StarfieldFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
 
@@ -170,8 +103,7 @@ public class MainMenu {
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
 	@SuppressWarnings("restriction")
-	public
-	void initMainMenu(Stage stage) {
+	public void initMainMenu(Stage stage) {
 	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName());
 		this.stage = stage;
 
@@ -637,7 +569,7 @@ public class MainMenu {
 		alert.initOwner(stage);
 		alert.setTitle("Confirmation for Exit");//("Confirmation Dialog");
 		alert.setHeaderText("Leaving mars-sim ?");
-		//alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.setContentText("Note: Yes to exit mars-sim");
 		ButtonType buttonTypeYes = new ButtonType("Yes");
 		ButtonType buttonTypeNo = new ButtonType("No");

@@ -104,7 +104,7 @@ public class MenuApp extends Application {
     private void addGlobe() {
     	spinningGlobe = new SpinningGlobe(mainMenu);
         Parent globe = spinningGlobe.createDraggingGlobe();   
-        globe.setTranslateX(WIDTH/3 - SpinningGlobe.WIDTH/2);
+        globe.setTranslateX(WIDTH/3D - SpinningGlobe.WIDTH/2D);
         globe.setTranslateY(50);
  
         root.getChildren().add(globe);	

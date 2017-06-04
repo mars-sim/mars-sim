@@ -59,7 +59,7 @@ implements ClockListener {
 	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
-	private static final double PERIOD_IN_MILLISOLS = 200D / MarsClock.SECONDS_IN_MILLISOL;
+	private static final double PERIOD_IN_MILLISOLS = 15_000D / MarsClock.SECONDS_IN_MILLISOL;
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
@@ -125,6 +125,7 @@ implements ClockListener {
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 
+		//logger.info("PERIOD_IN_MILLISOLS : " + PERIOD_IN_MILLISOLS);
 		SwingUtilities.invokeLater(() -> {
 			initLayers(desktop);
 		});
@@ -155,11 +156,11 @@ implements ClockListener {
 		mapLayers.add(new BackgroundTileMapLayer(this));
 		mapLayers.add(new StructureMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
-		mapLayers.add(new DayNightMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
-
+		mapLayers.add(new DayNightMapLayer(this));
+		
 		//SwingUtilities.invokeLater(() -> {
 			if (desktop.getMainScene() == null)
 				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
@@ -1044,7 +1045,7 @@ implements ClockListener {
 		if (timeCache > PERIOD_IN_MILLISOLS) {
 			//System.out.println("calling SettlementMapPanel's clockPulse()");
 			// Repaint map panel
-			//repaint();
+			repaint();
 			timeCache = 0;
 		}
 	}

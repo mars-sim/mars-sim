@@ -1,13 +1,19 @@
 language: java
-sudo: false
+
 script: 
-  - "mvn test -B"
-  - "mvn --show-version --errors --batch-mode clean verify"
+
+- "mvn test -B"
+
+- "mvn --show-version --errors --batch-mode clean verify"
+
+mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
 jdk:
   - oraclejdk8
-branches:
-  only:
-  - master
+  
 cache:
     directories:
-    - $HOME/.m2
+    - $HOME/.m2  
+    
+after_success:
+  - mvn coveralls:report    

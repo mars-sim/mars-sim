@@ -7,22 +7,17 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -36,10 +31,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropCategoryType;
-import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
-import org.mars_sim.msp.core.structure.building.function.farming.Phase;
 
 
 /**
@@ -102,8 +95,8 @@ extends UnitTableModel {
 */
 
 
-	String name = null;
-	int numHouse = 0;
+	private String name = null;
+	private int numHouse = 0;
 
 
 	//private List<CropCategoryType> cropCategoryTypes = new ArrayList<CropCategoryType>(Arrays.asList(CropCategoryType.values()));
@@ -656,7 +649,7 @@ extends UnitTableModel {
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
-		logger.info("addUnit() : just entered in " + newUnit);
+		//logger.info("addUnit() : just entered in " + newUnit);
 		if (cropCatMap == null)
 			cropCatMap = new ConcurrentHashMap<Building, List<Integer>>();
 		// if cropCache does not a record of the settlement
@@ -762,19 +755,15 @@ extends UnitTableModel {
 			 Unit unit = event.getUnit();
 			 UnitManagerEventType eventType = event.getEventType();
 			 if (unit instanceof Settlement) {
-				 if (eventType == UnitManagerEventType.ADD_UNIT) {
-					 if (!containsUnit(unit)) {
-						addUnit(unit);
-						//updateBuildings();
-						//logger.info(unit + " has just entered");
-					 }
+				 if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
+					addUnit(unit);
+					//updateBuildings();
+					//logger.info(unit + " has just entered");
 				 }
-				 else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-					 if (containsUnit(unit)) {
-						removeUnit(unit);
-						//updateBuildings();
-						//logger.info(unit + " has just entered");
-					 }
+				 else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
+					removeUnit(unit);
+					//updateBuildings();
+					//logger.info(unit + " has just entered");
 				 }
 			 }
 		 }
