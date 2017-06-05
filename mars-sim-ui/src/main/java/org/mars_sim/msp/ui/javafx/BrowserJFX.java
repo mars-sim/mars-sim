@@ -150,18 +150,19 @@ public class BrowserJFX {
 
     private MainScene mainScene;
     private MainDesktopPane desktop;
-    private WebView view = new WebView();
-    private WebEngine engine = view.getEngine();
-    private WebHistory history = engine.getHistory();
+    private WebView view;// = new WebView();
+    private WebEngine engine;// = view.getEngine();
+    private WebHistory history;// = engine.getHistory();
     private GuideWindow ourGuide;
 
-	private ObservableList<WebHistory.Entry> entryList = history.getEntries();
-	private SingleSelectionModel<String> ssm = comboBox.getSelectionModel();
+	private ObservableList<WebHistory.Entry> entryList;// = history.getEntries();
+	private SingleSelectionModel<String> ssm;// = comboBox.getSelectionModel();
 
 
 	// see http://www.java2s.com/Tutorials/Java/JavaFX/1500__JavaFX_WebEngine.htm
 
-    public BrowserJFX(MainDesktopPane desktop) {
+    @SuppressWarnings("restriction")
+	public BrowserJFX(MainDesktopPane desktop) {
     	this.desktop = desktop;
     	mainScene = desktop.getMainScene();
 		if (ourGuide == null)
@@ -169,11 +170,11 @@ public class BrowserJFX {
 
         Platform.runLater(() -> {
 
-            //view = new WebView();
-            //engine = view.getEngine();
-            //history = engine.getHistory();
-            //entryList = history.getEntries();
-            //ssm = comboBox.getSelectionModel();
+            view = new WebView();
+            engine = view.getEngine();
+            history = engine.getHistory();
+            entryList = history.getEntries();
+            ssm = comboBox.getSelectionModel();
         	logger.info("Web Engine supported : " + engine.getUserAgent());
         	// For JDK 131, it prints the following :
         	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
@@ -346,14 +347,18 @@ public class BrowserJFX {
             tf.setPrefHeight(WIDTH);
             //tf.setMinWidth(1024);
             //tf.setPrefWidth(1024);
-            tf.prefWidthProperty().bind(mainScene.getScene().widthProperty()
+            
+            if (mainScene != null) {
+            	tf.prefWidthProperty().bind(mainScene.getScene().widthProperty()
             		.subtract(comboBox.widthProperty())
             		.subtract(reloadButton.widthProperty())
             		.subtract(backButton.widthProperty())
             		.subtract(forwardButton.widthProperty())
             		);
-
-
+            }
+            else
+                tf.setPrefWidth(900);
+            	
             tf.setOnKeyPressed((KeyEvent ke) -> {
                 KeyCode key = ke.getCode();
                 if(key == KeyCode.ENTER){
