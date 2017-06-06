@@ -456,7 +456,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>1.4.0</version>
+			<version>1.5.0</version>
 		</dependency>
 <!-- The following artifacts are Needed by jfoenix
 		fontawesomefx 8.0.10 : 84 KB
@@ -640,7 +640,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 		<!-- https://github.com/mikera/swing-console
 			https://mvnrepository.com/artifact/net.mikera/swing-console : 5 KB -->
-
+		
 	</dependencies>
 	<repositories>
 	    <repository>
@@ -707,11 +707,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!-->repository>
+		<!--repository>
 			<id>jme3-repo</id>
 			<name>JME3 maven repo</name>
 			<url>http://updates.jmonkeyengine.org/maven/</url>
 		</repository-->
+<!--
 		<repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
@@ -724,5 +725,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	            <enabled>true</enabled>
 	        </snapshots>
 	    </repository>
+-->	    
+            
 	</repositories>
 </project>
