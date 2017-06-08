@@ -192,6 +192,8 @@ implements Serializable {
 			
 			while (flag) {
 				ct = getRandomCropType();
+				if (ct == null)
+					break;
 				flag = containCrop(ct.getName());
 			}
 			
@@ -327,7 +329,10 @@ implements Serializable {
 	 * @return crop type
 	 */
 	public CropType getRandomCropType() {
-		return cropTypeList.get(RandomUtil.getRandomInt(0, size-1));		
+		if (size > 2)
+			return cropTypeList.get(RandomUtil.getRandomInt(0, size-1));
+		else
+			return null;
 	}
 	
 	// 2015-03-02 Added	getCropValue()

@@ -368,85 +368,83 @@ public class TabPanelDashboard extends TabPanel {
 	// 2016-10-31 Added update()
 	@Override
 	public void update() {
-
-		if (settlement.getObjective() != null) {
-			Platform.runLater(() -> {
+		Platform.runLater(() -> {
+			if (settlement.getObjective() != null) {
 				objLabel.setText("Current Choice : " + settlement.getObjective().toString());
 				//System.out.println(settlement + "'s objective is " + settlement.getObjective().toString());
-			});
-		}
-
-		int theme = MainScene.getTheme();
-		if (themeCache != theme) {
-			themeCache = theme;
-			if (theme == 6) {
-				String cssFile = "/fxui/css/snowBlue.css";
-				String color = "-fx-border-style: 2px; " + "-fx-background-color: white;" + "-fx-border-color: white;"
-						+ "-fx-background-radius: 2px;";
-				stack.getStylesheets().clear();
-				buttonBox.getStylesheets().clear();
-				headerBox.getStylesheets().clear();
-				commitPane.getStylesheets().clear();
-				objBox.getStylesheets().clear();
-				hbox1.getStylesheets().clear();
-				hbox0.getStylesheets().clear();
-				optionBox.getStylesheets().clear();
-				headerLabel.getStylesheets().clear();
-				objLabel.getStylesheets().clear();
-				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-				objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-				//headerLabel.setId("rich-blue");
-				//objLabel.setId("rich-blue");
-				headerLabel.getStyleClass().add("label-medium");
-				objLabel.getStyleClass().add("label-medium");
-				commitButton.setColor(Color.web("#34495e")); // navy blue
-				stack.setStyle(color);
-				buttonBox.setStyle(color);
-				commitPane.setStyle(color);
-				headerBox.setStyle(color);
-				objBox.setStyle(color);
-				hbox1.setStyle(color);
-				hbox0.setStyle(color);
-				optionBox.setStyle(color);
-				//String cssFile ="/fxui/css/snowBlue.css";
-				//commitButton.getStylesheets().clear();
-				//commitButton.getStyleClass().add("button-broadcast");
-				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-			} else if (theme == 0 || theme == 7) {
-				String cssFile = "/fxui/css/nimrodskin.css";
-				String color = "-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
-						+ "-fx-background-radius: 2px;";
-				stack.getStylesheets().clear();
-				buttonBox.getStylesheets().clear();
-				headerBox.getStylesheets().clear();
-				commitPane.getStylesheets().clear();
-				objBox.getStylesheets().clear();
-				hbox1.getStylesheets().clear();
-				hbox0.getStylesheets().clear();
-				optionBox.getStylesheets().clear();
-				headerLabel.getStylesheets().clear();
-				objLabel.getStylesheets().clear();
-				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-				objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-				//headerLabel.setId("rich-orange");
-				//objLabel.setId("rich-orange");
-				headerLabel.getStyleClass().add("label-medium");
-				objLabel.getStyleClass().add("label-medium");
-				commitButton.setColor(Color.web("#b85c01")); // orange
-				stack.setStyle(color);
-				buttonBox.setStyle(color);
-				commitPane.setStyle(color);
-				headerBox.setStyle(color);
-				objBox.setStyle(color);
-				hbox1.setStyle(color);
-				hbox0.setStyle(color);
-				optionBox.setStyle(color);
-				//String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
-				//commitButton.getStyleClass().add("button-broadcast");
-				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 			}
-		}
-
+	
+			int theme = MainScene.getTheme();
+			if (themeCache != theme) {
+				themeCache = theme;
+				if (theme == 6) {
+					String cssFile = "/fxui/css/snowBlue.css";
+					String color = "-fx-border-style: 2px; " + "-fx-background-color: white;" + "-fx-border-color: white;"
+							+ "-fx-background-radius: 2px;";
+					stack.getStylesheets().clear();
+					buttonBox.getStylesheets().clear();
+					headerBox.getStylesheets().clear();
+					commitPane.getStylesheets().clear();
+					objBox.getStylesheets().clear();
+					hbox1.getStylesheets().clear();
+					hbox0.getStylesheets().clear();
+					optionBox.getStylesheets().clear();
+					headerLabel.getStylesheets().clear();
+					objLabel.getStylesheets().clear();
+					headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+					objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+					//headerLabel.setId("rich-blue");
+					//objLabel.setId("rich-blue");
+					headerLabel.getStyleClass().add("label-medium");
+					objLabel.getStyleClass().add("label-medium");
+					commitButton.setColor(Color.web("#34495e")); // navy blue
+					stack.setStyle(color);
+					buttonBox.setStyle(color);
+					commitPane.setStyle(color);
+					headerBox.setStyle(color);
+					objBox.setStyle(color);
+					hbox1.setStyle(color);
+					hbox0.setStyle(color);
+					optionBox.setStyle(color);
+					//String cssFile ="/fxui/css/snowBlue.css";
+					//commitButton.getStylesheets().clear();
+					//commitButton.getStyleClass().add("button-broadcast");
+					//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+				} else if (theme == 0 || theme == 7) {
+					String cssFile = "/fxui/css/nimrodskin.css";
+					String color = "-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+							+ "-fx-background-radius: 2px;";
+					stack.getStylesheets().clear();
+					buttonBox.getStylesheets().clear();
+					headerBox.getStylesheets().clear();
+					commitPane.getStylesheets().clear();
+					objBox.getStylesheets().clear();
+					hbox1.getStylesheets().clear();
+					hbox0.getStylesheets().clear();
+					optionBox.getStylesheets().clear();
+					headerLabel.getStylesheets().clear();
+					objLabel.getStylesheets().clear();
+					headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+					objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+					//headerLabel.setId("rich-orange");
+					//objLabel.setId("rich-orange");
+					headerLabel.getStyleClass().add("label-medium");
+					objLabel.getStyleClass().add("label-medium");
+					commitButton.setColor(Color.web("#b85c01")); // orange
+					stack.setStyle(color);
+					buttonBox.setStyle(color);
+					commitPane.setStyle(color);
+					headerBox.setStyle(color);
+					objBox.setStyle(color);
+					hbox1.setStyle(color);
+					hbox0.setStyle(color);
+					optionBox.setStyle(color);
+					//String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
+					//commitButton.getStyleClass().add("button-broadcast");
+					//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+				}
+			}
+		});
 	}
 
 	/**

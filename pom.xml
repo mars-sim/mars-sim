@@ -148,7 +148,7 @@
 		<module>mars-sim-ui</module>
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module>
-		<!--module>mars-sim-network</module -->
+		<module>mars-sim-network</module>
 		<!--module>mars-sim-service</module-->
 	</modules>
 	<!-- ************************************************************************************************* -->
@@ -226,7 +226,7 @@
 					<dependencies>
 						<dependency>
 							<groupId>org.apache.maven.wagon</groupId>
-							<artifactId></artifactId>
+							<artifactId>wagon-ssh</artifactId>
 							<version>2.12</version>
 						</dependency>
 					</dependencies>
