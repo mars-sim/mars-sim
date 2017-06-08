@@ -157,7 +157,8 @@ public class BrowserJFX {
 
 	private ObservableList<WebHistory.Entry> entryList;// = history.getEntries();
 	private SingleSelectionModel<String> ssm;// = comboBox.getSelectionModel();
-
+	private BorderPane borderPane;
+	
 
 	// see http://www.java2s.com/Tutorials/Java/JavaFX/1500__JavaFX_WebEngine.htm
 
@@ -165,237 +166,248 @@ public class BrowserJFX {
 	public BrowserJFX(MainDesktopPane desktop) {
     	this.desktop = desktop;
     	mainScene = desktop.getMainScene();
-		if (ourGuide == null)
-			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-
-        Platform.runLater(() -> {
-
-            view = new WebView();
-            engine = view.getEngine();
-            history = engine.getHistory();
-            entryList = history.getEntries();
-            ssm = comboBox.getSelectionModel();
-        	logger.info("Web Engine supported : " + engine.getUserAgent());
-        	// For JDK 131, it prints the following :
-        	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
-
-        	highlight();
-            // 2017-04-27 Disable context menu (copy option)
-            view.setContextMenuEnabled(false);
-
-/*
-            // 2017-04-27 Add the use of WebEventDispatcher
-            WebEventDispatcher webEventDispatcher = new WebEventDispatcher(view.getEventDispatcher());
-
-			// features NOT used for now
-            engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
-
-                @Override
-                public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-                    if(newValue.equals(State.SUCCEEDED)){
-                        // dispatch all events
-                        view.setEventDispatcher(webEventDispatcher);
-                    }
-                }
-
-            });
-*/
-/*			// features NOT used for now
-            engine.setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
-
-                @Override
-                public WebEngine call(PopupFeatures p) {
-                    Stage stage = new Stage(StageStyle.UTILITY);
-                    WebView wv2 = new WebView();
-                    stage.setScene(new Scene(wv2));
-                    stage.show();
-                    return wv2.getEngine();
-                }
-            });
-
-			// features NOT used for now
-            // 2017-04-27 Add ListChangeListener to disable mouse scroll
-            view.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
-
-            	@Override
-            	public void onChanged(ListChangeListener.Change<? extends Node> c) {
-                    pLimit = view.localToScene(view.getWidth(), view.getHeight());
-                    view.lookupAll(".scroll-bar")
-                    		.stream()
-                            .map(s -> (ScrollBar)s)
-                            .forEach(s -> {
-                                if(s.getOrientation().equals(Orientation.VERTICAL)){
-                                    width = s.getBoundsInLocal().getWidth();
-                                }
-                                if(s.getOrientation().equals(Orientation.HORIZONTAL)){
-                                    height = s.getBoundsInLocal().getHeight();
-                                }
-                            });
-                    // dispatch all events
-                    webEventDispatcher.setLimit(pLimit.subtract(width, height));
-                }
-            });
-*/
-
-
-            comboBox.setPromptText("History");
-            //comboBox.setPadding(new Insets(3, 3, 3, 3));
-            comboBox.setMaxHeight(WIDTH);
-            comboBox.setMinHeight(WIDTH);
-            comboBox.setPrefHeight(WIDTH);
-            comboBox.setMaxWidth(WIDTH);
-            comboBox.setMinWidth(WIDTH);
-            comboBox.setPrefWidth(WIDTH);
-            comboBox.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent ev) {
-                	//System.out.println("reload");
-                	//System.out.println("i : " + history.getCurrentIndex());
-                    //int offset = ssm.getSelectedIndex() - history.getCurrentIndex();
-                    history.go(ssm.getSelectedIndex());
-                    readURLCombo();
-                	//System.out.println("i : " + history.getCurrentIndex());
-    		    	//System.out.println("textInputCache : " + textInputCache);
-                	//System.out.println();
-                }
-            });
-
-        	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
-            reloadButton.setMinWidth(WIDTH+5);
-            reloadButton.setTooltip(new Tooltip("Reload this page"));
-            reloadButton.setOnAction(e -> {
-        		goLoad(tf.getText().trim());
-		    	//System.out.println("textInputCache : " + textInputCache);
-            	//System.out.println();
-            });
-
-            //backButton.setPadding(new Insets(0, 3, 0, 3));
-            backButton.setMinWidth(WIDTH+5);
-            backButton.setTooltip(new Tooltip("Go back"));
-            backButton.setOnAction(e -> {
-            	//System.out.println("backward");
-            	//System.out.println("i : " + history.getCurrentIndex());
-            	engine.executeScript("history.back()");
-		    	int i = history.getCurrentIndex();
-		    	//ssm.select(i); // question : will it load the url the 2nd time ?
-            	//System.out.println("i : " + history.getCurrentIndex());
-		    	if (i > 0)
-		    		textInputCache = entryList.get(i-1).getUrl();
-		    	//System.out.println("textInputCache : " + textInputCache);
-            	showFormattedURL();
-            	//System.out.println("i : " + history.getCurrentIndex());
-            	//System.out.println();
-            });
-
-            //forwardButton.setPadding(new Insets(0, 3, 0, 3));
-            forwardButton.setMinWidth(WIDTH+5);
-            forwardButton.setTooltip(new Tooltip("Go forward"));
-            forwardButton.setOnAction(e -> {
-            	//System.out.println("forward");
-            	//System.out.println("i : " + history.getCurrentIndex());
-                engine.executeScript("history.forward()");
-                int i = history.getCurrentIndex();
-            	int size = entryList.size();
-                //ssm.select(i);
-            	//System.out.println("i : " + history.getCurrentIndex());
-		    	if (i + 1 < size && size > 1)
-		    		textInputCache = entryList.get(i+1).getUrl();
-		    	//System.out.println("textInputCache : " + textInputCache);
-                showFormattedURL();
-            	//System.out.println("i : " + history.getCurrentIndex());
-            	//System.out.println();
+    	
+    	if (mainScene == null && ourGuide == null) {
+    		ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+	        Platform.runLater(() -> {
+	        	createGUI();
+	            initJFX();
 	        });
+    	}
+    	else {
+    		createGUI();
+            initJFX();
+    	}
+        
 
+        
+        if (mainScene == null)
+        	panel = initJPanel();
 
-            //Google.setOnAction(e -> webEngine.load("http://www.google.com"));
-            //Yahoo.setOnAction(e -> webEngine.load("http://www.yahoo.com"));
-            //Bing.setOnAction(e -> webEngine.load("http://www.bing.com"));
-            //Facebook.setOnAction(e -> webEngine.load("http://www.facebook.com"));
-            //Twitter.setOnAction(e -> webEngine.load("http://www.twitter.com"));
-            //YouTube.setOnAction(e -> webEngine.load("http://www.youtube.com"));
-
-            entryList.addListener((Change<? extends Entry> c) -> {
-                c.next();
-                for (Entry e : c.getRemoved()) {
-                    comboBox.getItems().remove(e.getUrl());
-                    showFormattedURL();
-                }
-                for (Entry e : c.getAddedSubList()) {
-                	String fullURL = e.getUrl();
-                	String updateURL = fullURL;
-                	if (fullURL.contains(DOCS_HELP_DIR)) {
-                		isLocalHtml = true;
-                		int i = fullURL.indexOf("docs")-1;
-                		updateURL = fullURL.substring(i, fullURL.length());
-                	}
-                	else {
-                	}
-
-                    comboBox.getItems().add(updateURL);
-
-                    tf.setText(updateURL);
-            		statusBarURLText = updateURL;
-            		statusBarLbl.setText(updateURL);
-
-                }
-            });
-
-            //tf.setPadding(new Insets(0, 3, 0, 3));
-            tf.setPromptText("URL Address");
-            tf.setMaxHeight(WIDTH);
-            tf.setMinHeight(WIDTH);
-            tf.setPrefHeight(WIDTH);
-            //tf.setMinWidth(1024);
-            //tf.setPrefWidth(1024);
-            
-            if (mainScene != null) {
-            	tf.prefWidthProperty().bind(mainScene.getScene().widthProperty()
-            		.subtract(comboBox.widthProperty())
-            		.subtract(reloadButton.widthProperty())
-            		.subtract(backButton.widthProperty())
-            		.subtract(forwardButton.widthProperty())
-            		);
-            }
-            else
-                tf.setPrefWidth(900);
-            	
-            tf.setOnKeyPressed((KeyEvent ke) -> {
-                KeyCode key = ke.getCode();
-                if(key == KeyCode.ENTER){
-            		goLoad(tf.getText().trim());
-                    //engine.load("http://" + tf.getText());
-                }
-            });
-
-/*
-            VBox statusBar = new VBox();
-            progressBar.setPreferredSize(new Dimension(150, 18));
-            progressBar.setStringPainted(true);
-            statusBar.getChildren().add(progressBar);
-            //sp.getChildren().addAll(comboBox, Google, Yahoo, Bing, Facebook, Twitter, YouTube);
-            //ap.setTop(sp);
-*/
-            bar.getChildren().addAll(comboBox, tf, backButton, reloadButton, forwardButton);
-            vbox.getChildren().addAll(topButtonBar, bar);
-
-        	//history.go(0);
-        	updateButtons();
-        });
-
-        initJFX();
-        panel = initJPanel();
-
-        //SwingUtilities.invokeLater(()-> {
-        //    btnGo.doClick(); // not useful
-        //});
     }
 
+    public void createGUI() {
+
+        view = new WebView();
+        engine = view.getEngine();
+        history = engine.getHistory();
+        entryList = history.getEntries();
+        ssm = comboBox.getSelectionModel();
+    	logger.info("Web Engine supported : " + engine.getUserAgent());
+    	// For JDK 131, it prints the following :
+    	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
+    	highlight();
+        // 2017-04-27 Disable context menu (copy option)
+        view.setContextMenuEnabled(false);
+
+/*
+        // 2017-04-27 Add the use of WebEventDispatcher
+        WebEventDispatcher webEventDispatcher = new WebEventDispatcher(view.getEventDispatcher());
+
+		// features NOT used for now
+        engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+
+            @Override
+            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+                if(newValue.equals(State.SUCCEEDED)){
+                    // dispatch all events
+                    view.setEventDispatcher(webEventDispatcher);
+                }
+            }
+
+        });
+*/
+/*			// features NOT used for now
+        engine.setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
+
+            @Override
+            public WebEngine call(PopupFeatures p) {
+                Stage stage = new Stage(StageStyle.UTILITY);
+                WebView wv2 = new WebView();
+                stage.setScene(new Scene(wv2));
+                stage.show();
+                return wv2.getEngine();
+            }
+        });
+
+		// features NOT used for now
+        // 2017-04-27 Add ListChangeListener to disable mouse scroll
+        view.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
+
+        	@Override
+        	public void onChanged(ListChangeListener.Change<? extends Node> c) {
+                pLimit = view.localToScene(view.getWidth(), view.getHeight());
+                view.lookupAll(".scroll-bar")
+                		.stream()
+                        .map(s -> (ScrollBar)s)
+                        .forEach(s -> {
+                            if(s.getOrientation().equals(Orientation.VERTICAL)){
+                                width = s.getBoundsInLocal().getWidth();
+                            }
+                            if(s.getOrientation().equals(Orientation.HORIZONTAL)){
+                                height = s.getBoundsInLocal().getHeight();
+                            }
+                        });
+                // dispatch all events
+                webEventDispatcher.setLimit(pLimit.subtract(width, height));
+            }
+        });
+*/
+
+
+        comboBox.setPromptText("History");
+        //comboBox.setPadding(new Insets(3, 3, 3, 3));
+        comboBox.setMaxHeight(WIDTH);
+        comboBox.setMinHeight(WIDTH);
+        comboBox.setPrefHeight(WIDTH);
+        comboBox.setMaxWidth(WIDTH);
+        comboBox.setMinWidth(WIDTH);
+        comboBox.setPrefWidth(WIDTH);
+        comboBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent ev) {
+            	//System.out.println("current index : " + history.getCurrentIndex());
+            	//System.out.println("selected index : " + ssm.getSelectedIndex());
+                int offset = ssm.getSelectedIndex() - history.getCurrentIndex();
+                history.go(offset);//ssm.getSelectedIndex());
+                readURLCombo();
+            }
+        });
+
+    	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
+        reloadButton.setMinWidth(WIDTH+5);
+        reloadButton.setTooltip(new Tooltip("Reload this page"));
+        reloadButton.setOnAction(e -> {
+    		goLoad(tf.getText().trim());
+	    	//System.out.println("textInputCache : " + textInputCache);
+        	//System.out.println();
+        });
+
+        //backButton.setPadding(new Insets(0, 3, 0, 3));
+        backButton.setMinWidth(WIDTH+5);
+        backButton.setTooltip(new Tooltip("Go back"));
+        backButton.setOnAction(e -> {
+        	//System.out.println("backward");
+        	//System.out.println("i : " + history.getCurrentIndex());
+        	engine.executeScript("history.back()");
+	    	int i = history.getCurrentIndex();
+	    	//ssm.select(i); // question : will it load the url the 2nd time ?
+        	//System.out.println("i : " + history.getCurrentIndex());
+	    	if (i > 0)
+	    		textInputCache = entryList.get(i-1).getUrl();
+	    	//System.out.println("textInputCache : " + textInputCache);
+        	showFormattedURL();
+        	//System.out.println("i : " + history.getCurrentIndex());
+        	//System.out.println();
+        });
+
+        //forwardButton.setPadding(new Insets(0, 3, 0, 3));
+        forwardButton.setMinWidth(WIDTH+5);
+        forwardButton.setTooltip(new Tooltip("Go forward"));
+        forwardButton.setOnAction(e -> {
+        	//System.out.println("forward");
+        	//System.out.println("i : " + history.getCurrentIndex());
+            engine.executeScript("history.forward()");
+            int i = history.getCurrentIndex();
+        	int size = entryList.size();
+            //ssm.select(i);
+        	//System.out.println("i : " + history.getCurrentIndex());
+	    	if (i + 1 < size && size > 1)
+	    		textInputCache = entryList.get(i+1).getUrl();
+	    	//System.out.println("textInputCache : " + textInputCache);
+            showFormattedURL();
+        	//System.out.println("i : " + history.getCurrentIndex());
+        	//System.out.println();
+        });
+
+
+        //Google.setOnAction(e -> webEngine.load("http://www.google.com"));
+        //Yahoo.setOnAction(e -> webEngine.load("http://www.yahoo.com"));
+        //Bing.setOnAction(e -> webEngine.load("http://www.bing.com"));
+        //Facebook.setOnAction(e -> webEngine.load("http://www.facebook.com"));
+        //Twitter.setOnAction(e -> webEngine.load("http://www.twitter.com"));
+        //YouTube.setOnAction(e -> webEngine.load("http://www.youtube.com"));
+
+        entryList.addListener((Change<? extends Entry> c) -> {
+            c.next();
+            for (Entry e : c.getRemoved()) {
+                comboBox.getItems().remove(e.getUrl());
+                showFormattedURL();
+            }
+            for (Entry e : c.getAddedSubList()) {
+            	String fullURL = e.getUrl();
+            	String updateURL = fullURL;
+            	if (fullURL.contains(DOCS_HELP_DIR)) {
+            		isLocalHtml = true;
+            		int i = fullURL.indexOf("docs")-1;
+            		updateURL = fullURL.substring(i, fullURL.length());
+            	}
+            	else {
+            	}
+
+                comboBox.getItems().add(updateURL);
+
+                tf.setText(updateURL);
+        		statusBarURLText = updateURL;
+        		statusBarLbl.setText(updateURL);
+
+            }
+        });
+
+        //tf.setPadding(new Insets(0, 3, 0, 3));
+        tf.setPromptText("URL Address");
+        tf.setMaxHeight(WIDTH);
+        tf.setMinHeight(WIDTH);
+        tf.setPrefHeight(WIDTH);
+        //tf.setMinWidth(1024);
+        //tf.setPrefWidth(1024);
+        
+        if (mainScene != null) {
+        	tf.prefWidthProperty().bind(mainScene.getStage().widthProperty()//getScene().widthProperty()
+        		.subtract(comboBox.widthProperty())
+        		.subtract(reloadButton.widthProperty())
+        		.subtract(backButton.widthProperty())
+        		.subtract(forwardButton.widthProperty())
+        		);
+        }
+        else
+            tf.setPrefWidth(900);
+        	
+        tf.setOnKeyPressed((KeyEvent ke) -> {
+            KeyCode key = ke.getCode();
+            if(key == KeyCode.ENTER){
+        		goLoad(tf.getText().trim());
+                //engine.load("http://" + tf.getText());
+            }
+        });
+
+/*
+        VBox statusBar = new VBox();
+        progressBar.setPreferredSize(new Dimension(150, 18));
+        progressBar.setStringPainted(true);
+        statusBar.getChildren().add(progressBar);
+        //sp.getChildren().addAll(comboBox, Google, Yahoo, Bing, Facebook, Twitter, YouTube);
+        //ap.setTop(sp);
+*/
+        bar.getChildren().addAll(comboBox, tf, backButton, reloadButton, forwardButton);
+        vbox.getChildren().addAll(topButtonBar, bar);
+
+    	//history.go(0);
+    	updateButtons();
+    	
+    }
+    
     public void readURLCombo() {
     	String content = (String) ssm.getSelectedItem();
     	if (content.contains(DOCS_HELP_DIR) && content.contains(".html")) {
-			if (ourGuide == null)
+        	if (mainScene == null && ourGuide == null) {
 				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-			content = ourGuide.getFullURL((String) ssm.getSelectedItem());
+				content = ourGuide.getFullURL((String) ssm.getSelectedItem());
+        	}
+        	else {
+				content = getFullURL((String) ssm.getSelectedItem());
+        	}
+
     	}
         textInputCache = content;
         showFormattedURL();
@@ -404,14 +416,43 @@ public class BrowserJFX {
     public void goLoad(String input) {
 
 		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
-			if (ourGuide == null)
+	    	if (mainScene == null && ourGuide == null) {
 				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-			ourGuide.setURL(input); //$NON-NLS-1$
+				ourGuide.setURL(input);
+	    	}
+	    	else {
+	    		setURL(input);
+	    	}
+	    	
 		}
 		else {
         	fireButtonGo(input);
 		}
     }
+    
+	/**
+	 * Gets the full URL string for internal html files.
+	 */
+	// 2017-04-28 Added displaying the hyperlink's path and html filename.
+	public String getFullURL(String fileloc) {
+		return getClass().getResource(fileloc).toExternalForm();
+	}
+	
+	/**
+	 * Set a display URL
+	 */
+	// 2016-06-07 Added displaying the hyperlink's path and html filename.
+	public void setURL(String fileloc) {
+		//goToURL(getClass().getResource(fileloc));
+		//browser.getStatusBarLabel().setText(fileloc);
+		String fullLink = getClass().getResource(fileloc).toExternalForm();
+		//Platform.runLater(()-> {
+			setTextInputCache(fullLink);
+			inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
+			showFormattedURL();
+			fireButtonGo(fullLink);
+		//});
+	}    
 
 /*
     public void goURL() {
@@ -427,7 +468,8 @@ public class BrowserJFX {
     }
 */
 
-    public void fireButtonGo(String input) {
+    @SuppressWarnings("restriction")
+	public void fireButtonGo(String input) {
 		if (input != null && !input.isEmpty()) {
 			// if the address bar is not empty
 			Platform.runLater(() -> {
@@ -618,7 +660,7 @@ public class BrowserJFX {
 
     	//java.net.CookieHandler.setDefault(null);
 
-        Platform.runLater(() -> {
+        //Platform.runLater(() -> {
 
                 WebViewHyperlinkListener eventPrintingListener = event -> {
 
@@ -835,12 +877,13 @@ public class BrowserJFX {
                         }
                 );
 
-                BorderPane borderPane = new BorderPane();
-
+                borderPane = new BorderPane();
                 borderPane.setTop(vbox);
                 borderPane.setCenter(view);
-                jfxPanel.setScene(new Scene(borderPane));
-        });
+                
+                if (mainScene == null)
+                	jfxPanel.setScene(new Scene(borderPane));
+        //});
     }
 
     /*
@@ -1141,6 +1184,11 @@ public class BrowserJFX {
     	textInputCache = value;
     }
 
+    public BorderPane getBorderPane() {
+    	return borderPane;
+    }
+    
+    
     public void destroy() {
         jfxPanel = null;
         panel = null;

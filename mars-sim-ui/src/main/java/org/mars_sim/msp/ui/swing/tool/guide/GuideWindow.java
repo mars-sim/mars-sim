@@ -171,6 +171,7 @@ ComponentListener {
 	 * Set a display URL
 	 */
 	// 2016-06-07 Added displaying the hyperlink's path and html filename.
+	@SuppressWarnings("restriction")
 	public void setURL(String fileloc) {
 		//goToURL(getClass().getResource(fileloc));
 		//browser.getStatusBarLabel().setText(fileloc);

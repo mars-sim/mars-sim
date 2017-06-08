@@ -1951,24 +1951,6 @@ public class MainScene {
 		});
 	}
 
-	public void addNavWin() {
-		System.out.println("addNavWin()");
-		//desktop.closeToolWindow(NavigatorWindow.NAME);
-		SwingUtilities.invokeLater(() -> desktop.recreateNavWin());
-		//SwingUtilities.invokeLater(() -> desktop.openToolWindow(NavigatorWindow.NAME));
-		//navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
-		//System.out.println("navWin : " + navWin.hashCode());
-		//minimapNode.setContent(navWin);
-		//minimapNode.setStyle("-fx-background-color: black; ");
-/*
-		minimapNode = new SwingNode();
-		minimapStackPane = new StackPane(minimapNode);
-		minimapNode.setContent(navWin);
-		minimapStackPane.setStyle("-fx-background-color: black; ");
-		minimapNode.setStyle("-fx-background-color: black; ");
-*/
-	}
-
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
@@ -2121,12 +2103,16 @@ public class MainScene {
 		//desktop.openToolWindow(ScienceWindow.NAME);
 */
 
+        
 		// set up help tab
-		GuideWindow guideWin = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-		guideNode = new SwingNode();
-		guideNode.setContent(guideWin);
-		StackPane guidePane = new StackPane(guideNode);
-		Tab guideTab = new Tab();
+		//GuideWindow guideWin = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+		//guideNode = new SwingNode();
+		//guideNode.setContent(guideWin);
+		
+        BrowserJFX helpBrowser = desktop.getBrowserJFX();
+        //StackPane guidePane = new StackPane(guideNode);
+        StackPane guidePane = new StackPane(helpBrowser.getBorderPane());
+        Tab guideTab = new Tab();
 		guideTab.setText("Help");
 		guideTab.setContent(guidePane);
 

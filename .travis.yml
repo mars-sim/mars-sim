@@ -1,6 +1,6 @@
 language: java
 
-script: 
+script:
 
 - "mvn test -B"
 
@@ -13,7 +13,7 @@ jdk:
   
 cache:
     directories:
-    - $HOME/.m2  
+    - $HOME/.m2
     
 after_success:
-  - mvn coveralls:report    
+  - mvn coveralls:report
