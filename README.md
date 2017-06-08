@@ -3,6 +3,7 @@
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/12771/badge.svg"/>
 </a>
+[![Dependency Status](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9/badge.svg?style=flat)](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9)
 
 # mars-sim
 
