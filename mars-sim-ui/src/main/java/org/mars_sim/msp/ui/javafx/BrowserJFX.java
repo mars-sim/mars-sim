@@ -13,17 +13,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ListChangeListener.Change;
-import javafx.concurrent.Worker;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -32,21 +28,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.util.Callback;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebHistory;
 import javafx.scene.Cursor;
-//import javafx.scene.text.Text;
-import javafx.scene.Node;
 import netscape.javascript.JSObject;
-//import javax.swing.*;
-//import javax.swing.event.HyperlinkEvent;
 
 import org.codefx.libfx.control.webview.WebViewHyperlinkListener;
 import org.codefx.libfx.control.webview.WebViews;
@@ -55,30 +43,25 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.net.MalformedURLException;
 import java.net.URL;
-//import java.util.EventListener;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent.EventType;
 
 import static javafx.concurrent.Worker.State.FAILED;
 import static javafx.concurrent.Worker.State;
 
+@SuppressWarnings("restriction")
 public class BrowserJFX {
 
     /** initialized logger for this class. */
@@ -123,8 +106,8 @@ public class BrowserJFX {
 
 
 	private boolean isLocalHtml = true;
-	private Point2D pLimit;
-	private double width, height;
+	//private Point2D pLimit;
+	//private double width, height;
     public volatile String textInputCache, addressURLText, statusBarURLText, inputCache;
 
     private JFXPanel jfxPanel = new JFXPanel();
@@ -158,7 +141,6 @@ public class BrowserJFX {
 	private ObservableList<WebHistory.Entry> entryList;// = history.getEntries();
 	private SingleSelectionModel<String> ssm;// = comboBox.getSelectionModel();
 	private BorderPane borderPane;
-	
 
 	// see http://www.java2s.com/Tutorials/Java/JavaFX/1500__JavaFX_WebEngine.htm
 
@@ -178,9 +160,7 @@ public class BrowserJFX {
     		createGUI();
             initJFX();
     	}
-        
-
-        
+          
         if (mainScene == null)
         	panel = initJPanel();
 
@@ -1193,10 +1173,6 @@ public class BrowserJFX {
         jfxPanel = null;
         panel = null;
         statusBarLbl = null;
-        //btnGo = null;
-        //btnForward = null;
-        //btnBack = null;
-        //urlTF = null;
         progressBar = null;
         mainScene = null;
         desktop = null;
@@ -1204,6 +1180,17 @@ public class BrowserJFX {
         engine = null;
         history = null;
         entryList = null;
+        reloadButton = null;
+        backButton = null;
+        forwardButton = null;
+        tf = null;
+        comboBox = null;
+        bar = null;
+        vbox = null;
+        topButtonBar = null;
+        ourGuide = null;
+    	ssm = null;
+    	borderPane = null;
     }
 
 }

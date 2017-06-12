@@ -4,7 +4,8 @@
        src="https://scan.coverity.com/projects/12771/badge.svg"/>
 </a>
 [![Dependency Status](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9/badge.svg?style=flat)](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9)
-
+[![License](https://img.shields.io/badge/license-LGPL%202.1-blue.svg)](http://www.gnu.org/licenses/lgpl-2.0.html)
+[![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 # mars-sim
 
 The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars in a virtual environment. Each agent has various human-like characteristics, capable of making distinct decisions on a virtual Mars and interacting with one another on the surface of Mars.
@@ -51,8 +52,8 @@ See our new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 
 ## Supported Platforms
 * Windows
-* MacOS (known bug when clicking on the tabs)
-* Linux (unwanted black shadow artifact on the spinning 3D Mars Globe)
+* MacOS (known bugs in displaying the Settlement Map)
+* Linux (cannot input text in text fields)
 
 ## Java environment Setup
 * Windows

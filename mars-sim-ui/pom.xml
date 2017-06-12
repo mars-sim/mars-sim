@@ -640,7 +640,23 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 		<!-- https://github.com/mikera/swing-console
 			https://mvnrepository.com/artifact/net.mikera/swing-console : 5 KB -->
-		
+<!-- 			
+	<dependency>
+		<groupId>org.lwjgl</groupId>
+		<artifactId>lwjgl</artifactId>
+		<version>${lwjgl.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.lwjgl</groupId>
+		<artifactId>lwjgl-glfw</artifactId>
+		<version>${lwjgl.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.lwjgl</groupId>
+		<artifactId>lwjgl-opengl</artifactId>
+		<version>${lwjgl.version}</version>
+	</dependency>
+-->
 	</dependencies>
 	<repositories>
 	    <repository>

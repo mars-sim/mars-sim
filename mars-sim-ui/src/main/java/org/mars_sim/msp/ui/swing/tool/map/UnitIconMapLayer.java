@@ -47,7 +47,7 @@ public class UnitIconMapLayer extends UnitMapLayer {
         	Icon displayIcon = null;
         	if (TopoMarsMap.TYPE.equals(mapType)) displayIcon = displayInfo.getTopoMapIcon(unit);
         	else displayIcon = displayInfo.getSurfMapIcon(unit);
-        	displayIcon.paintIcon(displayComponent, g, locX, locY);
+        	if (g != null) displayIcon.paintIcon(displayComponent, g, locX, locY);
         }
 	}
 	

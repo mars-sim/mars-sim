@@ -30,13 +30,15 @@
 		<version>${junit.version}</version>
 		<scope>test</scope>
 	</dependency>
+<!-- 	
 	<dependency>
 		<groupId>org.assertj</groupId>
 		<artifactId>assertj-core</artifactId>
-		<!-- use 2.7.0 for Java 7 projects -->
+		 use 2.7.0 for Java 7 projects 
 		<version>3.7.0</version>
 		<scope>test</scope>
 	</dependency>
+ -->
     <!--  https://mvnrepository.com/artifact/org.jdom/jdom/1.1.3 : 230 KB -->
 	<dependency>
     	<groupId>org.jdom</groupId>
@@ -84,12 +86,27 @@
 		<classifier>no_aop</classifier>
 	</dependency>
 
-	<!-- https://mvnrepository.com/artifact/commons-collections/commons-collections. JAR size : 630 KB -->
+	<!-- OLD Group/Artifact https://mvnrepository.com/artifact/commons-collections/commons-collections. JAR size : 630 KB
 	<dependency>
 	    <groupId>commons-collections</groupId>
 	    <artifactId>commons-collections</artifactId>
 	    <version>3.2.2</version>
+	</dependency-->
+	
+	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 : 965 KB
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-collections4</artifactId>
+	    <version>4.1</version>
 	</dependency>
+ -->
+	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 : 469 KB 
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-lang3</artifactId>
+	    <version>3.5</version>	    
+	</dependency>
+-->	
 	<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json : 122 KB
 		https://jsonp.java.net/
 		http://docs.oracle.com/javaee/7/tutorial/jsonp.htm -->
