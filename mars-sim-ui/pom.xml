@@ -12,7 +12,9 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
-
+	<properties>
+		<junit.version>4.12</junit.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

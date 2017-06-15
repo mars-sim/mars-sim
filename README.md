@@ -3,7 +3,7 @@
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/12771/badge.svg"/>
 </a>
-[![Dependency Status](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5936417e98442b00398eb873)
+[![Dependency Status](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5936417e98442b00398eb873?child=summary#tab-dependencies)
 [![License](https://img.shields.io/badge/license-LGPL%202.0-blue.svg)](http://www.gnu.org/licenses/lgpl-2.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 # mars-sim

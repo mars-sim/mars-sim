@@ -11,6 +11,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-main</artifactId>
 	<name>mars-sim-main</name>
+	<properties>
+		<junit.version>4.12</junit.version>
+	</properties>	
  	<packaging>jar</packaging>
 	<build>
 		<plugins>
@@ -22,7 +25,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
-				<version>1.0-beta-8</version>
+				<version>1.0-beta-7</version>
 
 				<dependencies>
                     <dependency>

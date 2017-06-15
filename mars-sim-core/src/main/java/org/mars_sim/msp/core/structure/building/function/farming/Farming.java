@@ -165,7 +165,7 @@ implements Serializable {
 
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
-        	CropType cropType = getNewCrop(true);
+        	CropType cropType = getNewCrop(true, false);
         	if (cropType == null) break;// for avoiding NullPointerException during maven test
         	Crop crop = plantACrop(cropType, true, 0);
             crops.add(crop);
@@ -184,23 +184,38 @@ implements Serializable {
 	 * @param isStartup - is it at the start of the sim
 	 * @return crop type
 	 */
-	public CropType getNewCrop(boolean isStartup) {
+	public CropType getNewCrop(boolean isStartup, boolean noCorn) {
+		CropType ct = null;
+		boolean flag = true;
+		
 		// TODO: at the start of the sim, choose only from a list of staple food crop 
 		if (isStartup) {
-			CropType ct = null;
-			boolean flag = true;
-			
 			while (flag) {
 				ct = getRandomCropType();
+				if (noCorn && ct.getName().equalsIgnoreCase("corn")) {
+					ct = getNewCrop(isStartup, noCorn);
+				}				
+	
 				if (ct == null)
 					break;
 				flag = containCrop(ct.getName());
 			}
-			
-			return ct;
 		}
-		else
-			return selectNewCrop();
+		
+		else {
+			while (flag) {
+				ct = selectNewCrop();
+				if (noCorn && ct.getName().equalsIgnoreCase("corn")) {
+					ct = getNewCrop(isStartup, noCorn);
+				}				
+	
+				if (ct == null)
+					break;
+				flag = containCrop(ct.getName());
+			}
+		}
+		
+		return ct;
 	}
 
 
@@ -337,8 +352,7 @@ implements Serializable {
 	
 	// 2015-03-02 Added	getCropValue()
     public double getCropValue(AmountResource resource) {
-    	double cropValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
-    	return cropValue;
+    	return settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
     }
 
     /**
@@ -799,6 +813,9 @@ implements Serializable {
 
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
+        
+
+        List<String> harvestedCrops = null;
         int numCrops2Plant = 0;
         while (i.hasNext()) {
             Crop crop = i.next();
@@ -806,6 +823,9 @@ implements Serializable {
             // Remove old crops.
             if (crop.getPhaseType() == PhaseType.FINISHED) {
                 remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
+                if (harvestedCrops == null)
+                	harvestedCrops = new ArrayList<>();
+                harvestedCrops.add(crop.getCropType().getName());
                 i.remove();
                 plantedCrops.remove(crop.getCropType().getName());
                 numCrops2Plant++;
@@ -824,14 +844,37 @@ implements Serializable {
         			CropType c = j.next();
         			cropType = c;
         			cropInQueue = cropType.getName();
-        			j.remove();
-        			break; // remove the first entry only
+        			
+        			Iterator<String> k = harvestedCrops.iterator();
+            		while (k.hasNext()) {
+            			String s = k.next();
+            			// if the harvest crops contain corn, one cannot plant corn again 
+            			// since corn depletes nitrogen quickly in the soil. 
+            			if (s.equalsIgnoreCase("corn") && !c.getName().equalsIgnoreCase("corn")) {
+                			j.remove();
+                			break;
+            			}
+            		}
         		}
           	} 
           	
-          	else
-        		cropType = getNewCrop(false);
-
+          	else {
+    			Iterator<String> k = harvestedCrops.iterator();
+        		while (k.hasNext()) {
+        			String s = k.next();
+        			// if the harvest crops contain corn, one cannot plant corn again 
+        			// since corn depletes nitrogen quickly in the soil. 
+        			if (s.equalsIgnoreCase("corn")) {
+                		cropType = getNewCrop(false, true);
+            			break;
+        			}
+        			else {
+                		cropType = getNewCrop(false, false);
+            			break;       				
+        			}
+        		}
+          	}
+          	
             //System.out.println("Farming timePassing() : calling plantACrop()");
           	Crop crop = plantACrop(cropType, false, 0);
             crops.add(crop);

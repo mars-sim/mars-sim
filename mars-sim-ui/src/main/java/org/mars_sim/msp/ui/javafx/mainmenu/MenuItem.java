@@ -28,7 +28,7 @@ import javafx.scene.text.Text;
 public class MenuItem extends Pane {
     private Text text;
 
-    private Effect shadow = new DropShadow(10, Color.LIGHTGOLDENRODYELLOW);//.ORANGE);//.DARKRED);//.DARKGOLDENROD);//.ANTIQUEWHITE);//.CORAL);
+    private Effect shadow = new DropShadow(20, Color.DARKGOLDENROD);//WHITESMOKE);//.ORANGE);//.TRANSPARENT);//.LIGHTGOLDENRODYELLOW);//.ORANGE);//.DARKRED);//.DARKGOLDENROD);//.ANTIQUEWHITE);//.CORAL);
     private Effect blur = new BoxBlur(1, 1, 1);
 /*
     private LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, new Stop[] {
@@ -45,8 +45,8 @@ public class MenuItem extends Pane {
                 220, 50,
                 0, 50
         );
-        bg.setStroke(Color.color(1, 1, 1, 0.75));
-        bg.setEffect(new GaussianBlur());
+        bg.setStroke(Color.color(1, 1, 1, 0.1));//75));
+        //bg.setEffect(new GaussianBlur());
         bg.fillProperty().bind(
                 Bindings.when(pressedProperty())
                         .then(Color.color(1, 1, 1, 0.35))//Color.color(139D/255D, 69D/255D, 19D/255D, 0.35))
@@ -57,7 +57,7 @@ public class MenuItem extends Pane {
         text.setTranslateX((18 - n) * 6.5);
         text.setTranslateY(34);
         text.setFont(Font.loadFont(MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), 22));
-        text.setFill(Color.DARKGOLDENROD);//.LIGHTGOLDENRODYELLOW);//.CORAL);//.WHITE);
+        text.setFill(Color.LIGHTGOLDENRODYELLOW);//.CORAL);//.WHITE);
         text.effectProperty().bind(
                 Bindings.when(hoverProperty())
                         .then(shadow)

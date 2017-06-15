@@ -86,7 +86,7 @@
 	    
 		-->
 
-	  <crop name="Corn" growing-time="65" crop-category="grains"
+	  <crop name="Corn" growing-time="65" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="37.0" daily-PAR="34.56" />
 
 		<!--
@@ -419,14 +419,8 @@
 	    	7.2 Metric Ton/hectare -->
 
 
-	     <crop name="Soybean"
-	        growing-time="93"
-	    	crop-category="legumes"
-	    	edible-biomass="10"
-	    	edible-water-content=".10"
-	    	inedible-biomass="13"
-	    	daily-PAR="34.56"
-	    	/>
+	     <crop name="Soybean" growing-time="93" crop-category="legumes" life-cycle="annual" 
+	    	edible-biomass="10" edible-water-content=".10" inedible-biomass="13" daily-PAR="34.56" />
 
 	   	<crop name="Strawberry"
 	        growing-time="45"
