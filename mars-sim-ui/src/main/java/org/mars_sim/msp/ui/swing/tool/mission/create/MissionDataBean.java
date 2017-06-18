@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.*;
@@ -31,18 +30,18 @@ import java.util.*;
 class MissionDataBean {
 
 	// Mission type strings.
-	final static String TRAVEL_MISSION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
-	final static String EXPLORATION_MISSION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
-	final static String ICE_MISSION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
-	final static String REGOLITH_MISSION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
-	final static String RESCUE_MISSION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
-	final static String TRADE_MISSION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
-	final static String MINING_MISSION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
-    final static String CONSTRUCTION_MISSION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
-    final static String AREOLOGY_FIELD_MISSION = Msg.getString("Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
-    final static String BIOLOGY_FIELD_MISSION = Msg.getString("Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
-    final static String SALVAGE_MISSION = Msg.getString("Mission.description.salvageBuilding"); //$NON-NLS-1$
-    final static String EMERGENCY_SUPPLY_MISSION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
+	protected final static String TRAVEL_MISSION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
+	protected final static String EXPLORATION_MISSION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
+	protected final static String ICE_MISSION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
+	protected final static String REGOLITH_MISSION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
+	protected final static String RESCUE_MISSION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
+	protected final static String TRADE_MISSION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
+	protected final static String MINING_MISSION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
+    protected final static String CONSTRUCTION_MISSION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
+    protected final static String AREOLOGY_FIELD_MISSION = Msg.getString("Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
+    protected final static String BIOLOGY_FIELD_MISSION = Msg.getString("Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
+    protected final static String SALVAGE_MISSION = Msg.getString("Mission.description.salvageBuilding"); //$NON-NLS-1$
+    protected final static String EMERGENCY_SUPPLY_MISSION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
 	// Data members.
 	private String type;
@@ -79,7 +78,7 @@ class MissionDataBean {
 	/**
 	 * Creates a mission from the mission data.
 	 */
-	void createMission() {
+    protected void createMission() {
 
 	    Mission mission = null;
 	    if (TRAVEL_MISSION.equals(type)) {
@@ -145,7 +144,7 @@ class MissionDataBean {
 	 * Gets mission types.
 	 * @return array of mission type strings.
 	 */
-	static String[] getMissionTypes() {
+    protected static String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION,
 				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION,
                 MINING_MISSION, CONSTRUCTION_MISSION, SALVAGE_MISSION, EMERGENCY_SUPPLY_MISSION };
@@ -157,7 +156,7 @@ class MissionDataBean {
 	 * @param missionType the mission type.
 	 * @return the mission description.
 	 */
-	static String getMissionDescription(String missionType) {
+    protected static String getMissionDescription(String missionType) {
 		String result = "";
 		if (missionType.equals(TRAVEL_MISSION)) {
 		    result = TravelToSettlement.DEFAULT_DESCRIPTION;
@@ -202,7 +201,7 @@ class MissionDataBean {
 	 * Gets the mission type.
 	 * @return type.
 	 */
-	String getType() {
+    protected String getType() {
 		return type;
 	}
 
@@ -210,7 +209,7 @@ class MissionDataBean {
 	 * Sets the mission type.
 	 * @param type the mission type.
 	 */
-	void setType(String type) {
+    protected void setType(String type) {
 		this.type = type;
 	}
 
@@ -218,7 +217,7 @@ class MissionDataBean {
 	 * Gets the mission description.
 	 * @return description.
 	 */
-	String getDescription() {
+    protected String getDescription() {
 		return description;
 	}
 
@@ -226,7 +225,7 @@ class MissionDataBean {
 	 * Sets the mission description.
 	 * @param description the mission description.
 	 */
-	void setDescription(String description) {
+    protected void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -234,7 +233,7 @@ class MissionDataBean {
 	 * Gets the starting settlement.
 	 * @return settlement.
 	 */
-	Settlement getStartingSettlement() {
+    protected Settlement getStartingSettlement() {
 		return startingSettlement;
 	}
 
@@ -242,7 +241,7 @@ class MissionDataBean {
 	 * Sets the starting settlement.
 	 * @param startingSettlement starting settlement.
 	 */
-	void setStartingSettlement(Settlement startingSettlement) {
+    protected void setStartingSettlement(Settlement startingSettlement) {
 		this.startingSettlement = startingSettlement;
 	}
 
@@ -250,7 +249,7 @@ class MissionDataBean {
 	 * Gets the rover.
 	 * @return rover.
 	 */
-	Rover getRover() {
+    protected Rover getRover() {
 		return rover;
 	}
 
@@ -258,7 +257,7 @@ class MissionDataBean {
 	 * Sets the rover.
 	 * @param rover the rover.
 	 */
-	void setRover(Rover rover) {
+    protected void setRover(Rover rover) {
 		this.rover = rover;
 	}
 
@@ -266,30 +265,30 @@ class MissionDataBean {
 	 * Gets the mission members.
 	 * @return the members.
 	 */
-	Collection<Person> getMembers() {
+    protected Collection<Person> getMembers() {
 		return members;
 
 	}
 
-	Collection<MissionMember> getMixedMembers() {
+    protected Collection<MissionMember> getMixedMembers() {
 		return mixedMembers;
 	}
 	/**
 	 * Sets the mission members.
 	 * @param members the members.
 	 */
-	void setMembers(Collection<Person> members) {
+    protected void setMembers(Collection<Person> members) {
 		this.members = members;
 	}
 
-	void setMixedMembers(Collection<MissionMember> mixedMembers) {
+    protected void setMixedMembers(Collection<MissionMember> mixedMembers) {
 		this.mixedMembers = mixedMembers;
 	}
 	/**
 	 * Gets the destination settlement.
 	 * @return destination settlement.
 	 */
-	Settlement getDestinationSettlement() {
+    protected Settlement getDestinationSettlement() {
 		return destinationSettlement;
 	}
 
@@ -297,7 +296,7 @@ class MissionDataBean {
 	 * Sets the destination settlement.
 	 * @param destinationSettlement the destination settlement.
 	 */
-	void setDestinationSettlement(Settlement destinationSettlement) {
+    protected void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
 	}
 
@@ -305,7 +304,7 @@ class MissionDataBean {
 	 * Gets the rescue rover.
 	 * @return the rescue rover.
 	 */
-	Rover getRescueRover() {
+    protected Rover getRescueRover() {
 		return rescueRover;
 	}
 
@@ -313,7 +312,7 @@ class MissionDataBean {
 	 * Sets the rescue rover.
 	 * @param rescueRover the rescue rover.
 	 */
-	void setRescueRover(Rover rescueRover) {
+    protected void setRescueRover(Rover rescueRover) {
 		this.rescueRover = rescueRover;
 	}
 
@@ -321,7 +320,7 @@ class MissionDataBean {
 	 * Gets the ice collection site.
 	 * @return ice collection site.
 	 */
-	Coordinates getIceCollectionSite() {
+    protected Coordinates getIceCollectionSite() {
 		return iceCollectionSite;
 	}
 
@@ -329,7 +328,7 @@ class MissionDataBean {
 	 * Sets the ice collection site.
 	 * @param iceCollectionSite the ice collection site.
 	 */
-	void setIceCollectionSite(Coordinates iceCollectionSite) {
+    protected void setIceCollectionSite(Coordinates iceCollectionSite) {
 		this.iceCollectionSite = iceCollectionSite;
 	}
 
@@ -337,7 +336,7 @@ class MissionDataBean {
 	 * Gets the regolith collection site.
 	 * @return regolith collection site.
 	 */
-	Coordinates getRegolithCollectionSite() {
+    protected Coordinates getRegolithCollectionSite() {
 		return regolithCollectionSite;
 	}
 
@@ -345,7 +344,7 @@ class MissionDataBean {
 	 * Sets the regolith collection site.
 	 * @param regolithCollectionSite the regolith collection site.
 	 */
-	void setRegolithCollectionSite(Coordinates regolithCollectionSite) {
+    protected void setRegolithCollectionSite(Coordinates regolithCollectionSite) {
 		this.regolithCollectionSite = regolithCollectionSite;
 	}
 
@@ -353,7 +352,7 @@ class MissionDataBean {
 	 * Gets the exploration sites.
 	 * @return exploration sites.
 	 */
-	Coordinates[] getExplorationSites() {
+    protected Coordinates[] getExplorationSites() {
 		return explorationSites;
 	}
 
@@ -361,7 +360,7 @@ class MissionDataBean {
 	 * Sets the exploration sites.
 	 * @param explorationSites the exploration sites.
 	 */
-	void setExplorationSites(Coordinates[] explorationSites) {
+    protected void setExplorationSites(Coordinates[] explorationSites) {
 		this.explorationSites = explorationSites;
 	}
 
@@ -369,7 +368,7 @@ class MissionDataBean {
 	 * Gets the sell goods.
 	 * @return map of goods and integer amounts.
 	 */
-	Map<Good, Integer> getSellGoods() {
+    protected Map<Good, Integer> getSellGoods() {
 		return sellGoods;
 	}
 
@@ -377,7 +376,7 @@ class MissionDataBean {
 	 * Sets the sell goods.
 	 * @param sellGoods map of goods and integer amounts.
 	 */
-	void setSellGoods(Map<Good, Integer> sellGoods) {
+    protected void setSellGoods(Map<Good, Integer> sellGoods) {
 		this.sellGoods = sellGoods;
 	}
 
@@ -385,7 +384,7 @@ class MissionDataBean {
 	 * Gets the buy goods.
 	 * @return map of goods and integer amounts.
 	 */
-	Map<Good, Integer> getBuyGoods() {
+    protected Map<Good, Integer> getBuyGoods() {
 		return buyGoods;
 	}
 
@@ -393,7 +392,7 @@ class MissionDataBean {
 	 * Sets the buy goods.
 	 * @param sellGoods map of goods and integer amounts.
 	 */
-	void setBuyGoods(Map<Good, Integer> buyGoods) {
+	protected void setBuyGoods(Map<Good, Integer> buyGoods) {
 		this.buyGoods = buyGoods;
 	}
 
@@ -401,7 +400,7 @@ class MissionDataBean {
 	 * Gets the light utility vehicle.
 	 * @return light utility vehicle
 	 */
-	LightUtilityVehicle getLUV() {
+	protected LightUtilityVehicle getLUV() {
 		return luv;
 	}
 
@@ -409,7 +408,7 @@ class MissionDataBean {
 	 * Sets the light utility vehicle
 	 * @param luv the light utility vehicle
 	 */
-	void setLUV(LightUtilityVehicle luv) {
+	protected void setLUV(LightUtilityVehicle luv) {
 		this.luv = luv;
 	}
 
@@ -417,7 +416,7 @@ class MissionDataBean {
 	 * Gets the mining site.
 	 * @return mining site.
 	 */
-	ExploredLocation getMiningSite() {
+	protected ExploredLocation getMiningSite() {
 		return miningSite;
 	}
 
@@ -425,7 +424,7 @@ class MissionDataBean {
 	 * Sets the mining site.
 	 * @param miningSite the mining site.
 	 */
-	void setMiningSite(ExploredLocation miningSite) {
+	protected void setMiningSite(ExploredLocation miningSite) {
 		this.miningSite = miningSite;
 	}
 
@@ -433,7 +432,7 @@ class MissionDataBean {
      * Gets the salvage settlement.
      * @return settlement.
      */
-    Settlement getSalvageSettlement() {
+	protected Settlement getSalvageSettlement() {
         return salvageSettlement;
     }
 
@@ -441,7 +440,7 @@ class MissionDataBean {
      * Sets the salvage settlement.
      * @param salvageSettlement the salvage settlement.
      */
-    void setSalvageSettlement(Settlement salvageSettlement) {
+	protected void setSalvageSettlement(Settlement salvageSettlement) {
         this.salvageSettlement = salvageSettlement;
     }
 
@@ -449,7 +448,7 @@ class MissionDataBean {
      * Gets the salvage site.
      * @return salvage site.
      */
-    ConstructionSite getSalvageSite() {
+	protected ConstructionSite getSalvageSite() {
         return salvageSite;
     }
 
@@ -457,7 +456,7 @@ class MissionDataBean {
      * Sets the salvage site.
      * @param salvageSite the salvage site.
      */
-    void setSalvageSite(ConstructionSite salvageSite) {
+    protected void setSalvageSite(ConstructionSite salvageSite) {
         this.salvageSite = salvageSite;
     }
 
@@ -465,7 +464,7 @@ class MissionDataBean {
      * Gets the salvage building.
      * @return salvage building.
      */
-    Building getSalvageBuilding() {
+    protected Building getSalvageBuilding() {
         return salvageBuilding;
     }
 
@@ -473,7 +472,7 @@ class MissionDataBean {
      * Sets the salvage building.
      * @param salvageBuilding the salvage building.
      */
-    void setSalvageBuilding(Building salvageBuilding) {
+    protected void setSalvageBuilding(Building salvageBuilding) {
         this.salvageBuilding = salvageBuilding;
     }
 
@@ -481,7 +480,7 @@ class MissionDataBean {
      * Gets the salvage vehicles.
      * @return list of ground vehicles.
      */
-    List<GroundVehicle> getSalvageVehicles() {
+    protected List<GroundVehicle> getSalvageVehicles() {
         return salvageVehicles;
     }
 
@@ -489,7 +488,7 @@ class MissionDataBean {
      * Sets the salvage vehicles.
      * @param salvageVehicles list of ground vehicles.
      */
-    void setSalvageVehicles(List<GroundVehicle> salvageVehicles) {
+    protected void setSalvageVehicles(List<GroundVehicle> salvageVehicles) {
         this.salvageVehicles = salvageVehicles;
     }
 
@@ -497,7 +496,7 @@ class MissionDataBean {
      * Gets the construction settlement.
      * @return settlement.
      */
-    Settlement getConstructionSettlement() {
+    protected Settlement getConstructionSettlement() {
         return constructionSettlement;
     }
 
@@ -505,7 +504,7 @@ class MissionDataBean {
      * Sets the construction settlement.
      * @param constructionSettlement the construction settlement.
      */
-    void setConstructionSettlement(Settlement constructionSettlement) {
+    protected void setConstructionSettlement(Settlement constructionSettlement) {
         this.constructionSettlement = constructionSettlement;
     }
 
@@ -513,7 +512,7 @@ class MissionDataBean {
      * Gets the construction site.
      * @return construction site.
      */
-    ConstructionSite getConstructionSite() {
+    protected ConstructionSite getConstructionSite() {
         return constructionSite;
     }
 
@@ -521,7 +520,7 @@ class MissionDataBean {
      * Sets the construction site.
      * @param constructionSite the construction site.
      */
-    void setConstructionSite(ConstructionSite constructionSite) {
+    protected void setConstructionSite(ConstructionSite constructionSite) {
         this.constructionSite = constructionSite;
     }
 
@@ -529,7 +528,7 @@ class MissionDataBean {
      * Gets the construction stage info.
      * @return construction stage info.
      */
-    ConstructionStageInfo getConstructionStageInfo() {
+    protected ConstructionStageInfo getConstructionStageInfo() {
         return constructionStageInfo;
     }
 
@@ -537,7 +536,7 @@ class MissionDataBean {
      * Sets the construction stage info.
      * @param constructionStageInfo the construction stage info.
      */
-    void setConstructionStageInfo(ConstructionStageInfo constructionStageInfo) {
+    protected void setConstructionStageInfo(ConstructionStageInfo constructionStageInfo) {
         this.constructionStageInfo = constructionStageInfo;
     }
 
@@ -545,7 +544,7 @@ class MissionDataBean {
      * Gets the construction site X location.
      * @return X location (meters).
      */
-    double getConstructionSiteXLocation() {
+    protected double getConstructionSiteXLocation() {
         return constructionSiteXLoc;
     }
 
@@ -553,7 +552,7 @@ class MissionDataBean {
      * Sets the construction site X location.
      * @param constructionSiteXLoc X location (meters).
      */
-    void setConstructionSiteXLocation(double constructionSiteXLoc) {
+    protected void setConstructionSiteXLocation(double constructionSiteXLoc) {
         this.constructionSiteXLoc = constructionSiteXLoc;
     }
 
@@ -561,7 +560,7 @@ class MissionDataBean {
      * Gets the construction site Y location.
      * @return Y location (meters).
      */
-    double getConstructionSiteYLocation() {
+    protected double getConstructionSiteYLocation() {
         return constructionSiteYLoc;
     }
 
@@ -569,7 +568,7 @@ class MissionDataBean {
      * Sets the construction site Y location.
      * @param constructionSiteYLoc Y Location (meters).
      */
-    void setConstructionSiteYLocation(double constructionSiteYLoc) {
+    protected void setConstructionSiteYLocation(double constructionSiteYLoc) {
         this.constructionSiteYLoc = constructionSiteYLoc;
     }
 
@@ -577,7 +576,7 @@ class MissionDataBean {
      * Gets the construction site facing.
      * @return the construction site facing (degrees clockwise from North).
      */
-    double getConstructionSiteFacing() {
+    protected double getConstructionSiteFacing() {
         return constructionSiteFacing;
     }
 
@@ -585,7 +584,7 @@ class MissionDataBean {
      * Sets the construction site facing.
      * @param constructionSiteFacing facing (degrees clockwise from North).
      */
-    void setConstructionSiteFacing(double constructionSiteFacing) {
+    protected void setConstructionSiteFacing(double constructionSiteFacing) {
         this.constructionSiteFacing = constructionSiteFacing;
     }
 
@@ -593,7 +592,7 @@ class MissionDataBean {
      * Gets the construction vehicles.
      * @return list of ground vehicles.
      */
-    List<GroundVehicle> getConstructionVehicles() {
+    protected List<GroundVehicle> getConstructionVehicles() {
         return constructionVehicles;
     }
 
@@ -601,7 +600,7 @@ class MissionDataBean {
      * Sets the construction vehicles.
      * @param constructionVehicles list of ground vehicles.
      */
-    void setConstructionVehicles(List<GroundVehicle> constructionVehicles) {
+    protected void setConstructionVehicles(List<GroundVehicle> constructionVehicles) {
         this.constructionVehicles = constructionVehicles;
     }
 
@@ -609,7 +608,7 @@ class MissionDataBean {
      * Gets the field site.
      * @return field site location.
      */
-    Coordinates getFieldSite() {
+    protected Coordinates getFieldSite() {
         return fieldSite;
     }
 
@@ -617,7 +616,7 @@ class MissionDataBean {
      * Sets the field site.
      * @param fieldSite the field site location.
      */
-    void setFieldSite(Coordinates fieldSite) {
+    protected void setFieldSite(Coordinates fieldSite) {
         this.fieldSite = fieldSite;
     }
 
@@ -625,7 +624,7 @@ class MissionDataBean {
      * Gets the lead researcher for the mission.
      * @return lead researcher.
      */
-    Person getLeadResearcher() {
+    protected Person getLeadResearcher() {
         return leadResearcher;
     }
 
@@ -633,7 +632,7 @@ class MissionDataBean {
      * Sets the lead researcher for the mission.
      * @param leadResearcher the lead researcher.
      */
-    void setLeadResearcher(Person leadResearcher) {
+    protected void setLeadResearcher(Person leadResearcher) {
         this.leadResearcher = leadResearcher;
     }
 
@@ -641,7 +640,7 @@ class MissionDataBean {
      * Gets the scientific study.
      * @return the scientific study.
      */
-    ScientificStudy getStudy() {
+    protected ScientificStudy getStudy() {
         return study;
     }
 
@@ -649,7 +648,7 @@ class MissionDataBean {
      * Sets the scientific study.
      * @param study the scientific study.
      */
-    void setScientificStudy(ScientificStudy study) {
+    protected void setScientificStudy(ScientificStudy study) {
         this.study = study;
     }
 
@@ -657,7 +656,7 @@ class MissionDataBean {
      * Gets the emergency resources map.
      * @return map of resources and amounts (kg).
      */
-    Map<Good, Integer> getEmergencyGoods() {
+    protected Map<Good, Integer> getEmergencyGoods() {
         return emergencyGoods;
     }
 
@@ -665,7 +664,7 @@ class MissionDataBean {
      * Sets the emergency resources.
      * @param emergencyResources map of resources and amounts (kg).
      */
-    void setEmergencyGoods(Map<Good, Integer> emergencyGoods) {
+    protected void setEmergencyGoods(Map<Good, Integer> emergencyGoods) {
         this.emergencyGoods = emergencyGoods;
     }
 }

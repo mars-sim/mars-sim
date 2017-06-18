@@ -39,11 +39,11 @@ import javafx.scene.Node;
 
 public class Globe {
 
-    double ONE_FRAME = 1.0 / 24.0;
-    double DELTA_MULTIPLIER = 200.0;
-    double CONTROL_MULTIPLIER = 0.1;
-    double SHIFT_MULTIPLIER = 0.1;
-    double ALT_MULTIPLIER = 0.5;
+	protected double ONE_FRAME = 1.0 / 24.0;
+	protected double DELTA_MULTIPLIER = 200.0;
+	protected double CONTROL_MULTIPLIER = 0.1;
+	protected double SHIFT_MULTIPLIER = 0.1;
+	protected double ALT_MULTIPLIER = 0.5;
 
     // Earth
     //Image sImage = new Image(this.getClass().getResource("/maps/earth-s.jpg").toExternalForm());
@@ -64,9 +64,9 @@ public class Globe {
     //Image siImage = new Image(this.getClass().getResource("/maps/Mars_Clouds.jpg").toExternalForm()); //.toString());
 
     // Mars 2k maps
-    Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
-    Image dImage = new Image(this.getClass().getResource("/maps/Mars-Shaded-names-2k.jpg").toExternalForm());
-    Image nImage = new Image(this.getClass().getResource("/maps/MarsNormalMap-2K.png").toExternalForm()); //.toString());
+	protected Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
+	protected Image dImage = new Image(this.getClass().getResource("/maps/Mars-Shaded-names-2k.jpg").toExternalForm());
+	protected Image nImage = new Image(this.getClass().getResource("/maps/MarsNormalMap-2K.png").toExternalForm()); //.toString());
 
     //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.png").toExternalForm()); //.toString());
     //Image siImage = new Image(this.getClass().getResource("/maps/names-2k-grey.png").toExternalForm()); //.toString());
@@ -89,28 +89,28 @@ public class Globe {
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
     private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
-    final Group root = new Group();
-    final Group axisGroup = new Group();
+    private final Group root = new Group();
+    private final Group axisGroup = new Group();
 
-    final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final double cameraDistance = 1450;//450;
+    private final PerspectiveCamera camera = new PerspectiveCamera(true);
+    private final double cameraDistance = 1450;//450;
 
-    final Xform world = new Xform();
-    final Xform cameraXform = new Xform();
-    final Xform cameraXform2 = new Xform();
-    final Xform cameraXform3 = new Xform();
-    final Xform sphereGroup = new Xform();
+    private final Xform world = new Xform();
+    private final Xform cameraXform = new Xform();
+    private final Xform cameraXform2 = new Xform();
+    private final Xform cameraXform3 = new Xform();
+    private final Xform sphereGroup = new Xform();
 
     private Timeline timeline;
 
-    boolean timelinePlaying = false;
+    private boolean timelinePlaying = false;
 
-    double mousePosX;
-    double mousePosY;
-    double mouseOldX;
-    double mouseOldY;
-    double mouseDeltaX;
-    double mouseDeltaY;
+    private double mousePosX;
+    private double mousePosY;
+    private double mouseOldX;
+    private double mouseOldY;
+    private double mouseDeltaX;
+    private double mouseDeltaY;
 
 
 	public Globe() {
@@ -174,7 +174,7 @@ public class Globe {
         world.getChildren().addAll(sphereGroup);//, ambientXform);
     }
 
-    void handleMouse(Scene scene) {//, final Node root) {
+    protected void handleMouse(Scene scene) {//, final Node root) {
         scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent me) {
                 mousePosX = me.getSceneX();
@@ -223,7 +223,7 @@ public class Globe {
         });
     }
 
-    void handleKeyboard(Scene scene) {//, final Node root) {
+    protected void handleKeyboard(Scene scene) {//, final Node root) {
         final boolean moveCamera = true;
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
