@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -75,7 +74,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
- * f The Settlement class represents a settlement unit on virtual Mars. It
+ * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
 public class Settlement
@@ -87,7 +86,7 @@ implements Serializable, LifeSupportType, Objective {
 	/* default logger. */
 	private static Logger logger = Logger.getLogger(Settlement.class.getName());
 	/** Normal air pressure (Pa) */
-	private static final double NORMAL_AIR_PRESSURE = 101325D;
+	private static final double NORMAL_AIR_PRESSURE = 101_325D;
 	/** Normal temperature (celsius) */
 	private static final double NORMAL_TEMP = 22.5D;
 	// maximum & minimal acceptable temperature for living space (arbitrary)
@@ -169,8 +168,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	private boolean[] exposed = {false, false, false};
 
-	private ObjectiveType objectiveType;
-
 	private String sponsor;
 
 	private String objectiveName;
@@ -178,16 +175,27 @@ implements Serializable, LifeSupportType, Objective {
 	private String template;
 
 	private String name;
-	//private ObservableList<String> objectivesOList;
-	private final String[] objectiveArray = new String[]{
+	
+	private ObjectiveType objectiveType;
+
+	private final static String[] objectiveArray = new String[]{
 			Msg.getString("ObjectiveType.crop"),
 			Msg.getString("ObjectiveType.manu"),
 			Msg.getString("ObjectiveType.research"),
 			Msg.getString("ObjectiveType.transportation"),
 			Msg.getString("ObjectiveType.trade"),
-			Msg.getString("ObjectiveType.freeMarket")
+			Msg.getString("ObjectiveType.tourism")
 			};
 
+	private final static ObjectiveType[] objectives = new ObjectiveType[]{
+			ObjectiveType.CROP_FARM,
+			ObjectiveType.MANUFACTURING,
+			ObjectiveType.RESEARCH_CENTER,
+			ObjectiveType.TRANSPORTATION_HUB,
+			ObjectiveType.TRADE_TOWN,
+			ObjectiveType.TOURISM
+			};
+	
 	//private int[] resourceArray = new int[9];
 	//private int[] solArray = new int[30];
 	//private double[] samplePointArray = new double[(int)1000/RECORDING_FREQUENCY];
@@ -3255,6 +3263,10 @@ implements Serializable, LifeSupportType, Objective {
 		return objectiveArray;
 	}
 
+	public ObjectiveType[] getObjectives() {
+		return objectives;
+	}
+	
 	public String getSponsor() {
 		return sponsor;
 	}

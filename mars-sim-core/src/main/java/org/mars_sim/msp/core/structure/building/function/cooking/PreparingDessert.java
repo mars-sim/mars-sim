@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -96,12 +97,12 @@ implements Serializable {
 
     public static AmountResource [] availableDessertsAR =
     	{
-	    	AmountResource.findAmountResource("soymilk"),
-			AmountResource.findAmountResource("sugarcane juice"),
-			AmountResource.findAmountResource("strawberry"),
-			AmountResource.findAmountResource("granola bar"),
-			AmountResource.findAmountResource("blueberry muffin"),
-			AmountResource.findAmountResource("cranberry juice")
+	    	ResourceUtil.findAmountResource("soymilk"),
+	    	ResourceUtil.findAmountResource("sugarcane juice"),
+	    	ResourceUtil.findAmountResource("strawberry"),
+	    	ResourceUtil.findAmountResource("granola bar"),
+	    	ResourceUtil.findAmountResource("blueberry muffin"),
+	    	ResourceUtil.findAmountResource("cranberry juice")
 		};
 
 	// TODO: get the real world figure on each serving
@@ -169,10 +170,10 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
-		greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
-		waterAR = AmountResource.findAmountResource(WATER);
-        foodWasteAR = AmountResource.findAmountResource(FOOD_WASTE);
-        NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);
+		greyWaterAR = ResourceUtil.findAmountResource(GREY_WATER);
+		waterAR = ResourceUtil.findAmountResource(WATER);
+        foodWasteAR = ResourceUtil.findAmountResource(FOOD_WASTE);
+        NaClOAR = ResourceUtil.findAmountResource(SODIUM_HYPOCHLORITE);
     }
 
     public Inventory getInventory() {
@@ -823,10 +824,18 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
+        person = null;
+        robot = null;
+    	currentTime = null;
         building = null;
         inv = null;
         settlement = null;
         //servingsOfDessertList.clear();
         servingsOfDessert = null;
+        waterAR = null;
+        greyWaterAR = null;
+        foodWasteAR = null;
+        NaClOAR = null;
+        availableDessertsAR = null;
     }
 }

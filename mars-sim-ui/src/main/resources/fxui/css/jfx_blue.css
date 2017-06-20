@@ -15,6 +15,20 @@
     -fx-stroke-width: 3pt;
 }
 
+#commit-button {
+    -fx-background-color:
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(#395cab, #223768);
+    -fx-background-radius: 10;
+    -fx-background-insets: 0,5,0,5,0;
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 5 5 5 5;
+}
+
 /*
 .tab-pane > .tab-header-area > .headers-region > .tab:top {
     -fx-border-color: #a3a7a8;

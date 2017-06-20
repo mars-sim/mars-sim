@@ -188,7 +188,6 @@ implements Serializable {
 	 * Prepares the task for recording in the task schedule
 	 */
 	// 2015-10-22 Added recordTask()
-	@SuppressWarnings("null")
 	public void recordTask() {
 		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
