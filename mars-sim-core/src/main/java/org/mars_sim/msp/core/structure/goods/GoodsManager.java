@@ -1006,7 +1006,7 @@ public class GoodsManager implements Serializable {
 
         String r = resource.getName().toLowerCase();
 
-        if (r.equals(AmountResource.TABLE_SALT)) {
+        if (r.equals(ResourceUtil.TABLE_SALT)) {
             // Assuming a person takes 2.5 meals per sol
             demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
         }

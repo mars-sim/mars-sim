@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * Provides configuration information about greenhouse crops. Uses a DOM document to get the information.

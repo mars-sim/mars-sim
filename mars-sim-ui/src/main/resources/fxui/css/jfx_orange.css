@@ -17,6 +17,20 @@
     -fx-stroke-width: 3pt;
 }
 
+#commit-button {
+    -fx-background-color:
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 10;
+    -fx-background-insets: 0,5,0,5,0;
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 5 5 5 5;
+}
 
 .jfx-tab-pane {
 /*	-fx-padding: 0px 5px -2px 5px;
@@ -30,5 +44,4 @@
 /* -fx-border-color:red; */
 	-fx-text-fill: #333333; /* 333333 is grey */
 }
-
 

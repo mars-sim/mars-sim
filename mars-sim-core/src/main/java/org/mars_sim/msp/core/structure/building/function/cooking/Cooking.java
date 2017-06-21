@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -184,12 +185,12 @@ implements Serializable {
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven test
 
-        tableSaltAR = AmountResource.findAmountResource(TABLE_SALT);
-        foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        foodWasteAR = AmountResource.findAmountResource(FOOD_WASTE);
-        greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
-        NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);
-        waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+        tableSaltAR = ResourceUtil.findAmountResource(TABLE_SALT);
+        foodAR = ResourceUtil.findAmountResource(LifeSupportType.FOOD);
+        foodWasteAR = ResourceUtil.findAmountResource(FOOD_WASTE);
+        greyWaterAR = ResourceUtil.findAmountResource(GREY_WATER);
+        NaClOAR = ResourceUtil.findAmountResource(SODIUM_HYPOCHLORITE);
+        waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
 
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
@@ -204,10 +205,10 @@ implements Serializable {
 
     	if (oilMenuAR == null) {
 	        oilMenuAR = new CopyOnWriteArrayList<AmountResource>();
-	        oilMenuAR.add(AmountResource.findAmountResource(SOYBEAN_OIL));
-	        oilMenuAR.add(AmountResource.findAmountResource(GARLIC_OIL));
-	        oilMenuAR.add(AmountResource.findAmountResource(SESAME_OIL));
-	        oilMenuAR.add(AmountResource.findAmountResource(PEANUT_OIL));
+	        oilMenuAR.add(ResourceUtil.findAmountResource(SOYBEAN_OIL));
+	        oilMenuAR.add(ResourceUtil.findAmountResource(GARLIC_OIL));
+	        oilMenuAR.add(ResourceUtil.findAmountResource(SESAME_OIL));
+	        oilMenuAR.add(ResourceUtil.findAmountResource(PEANUT_OIL));
     	}
     }
 
@@ -778,7 +779,7 @@ implements Serializable {
      * Gets the amount of the food item in the whole settlement.
      * @return foodAvailable
     public double getAmountAvailable(AmountResource ar) {
-	    //AmountResource foodAR = AmountResource.findAmountResource(name);
+	    //AmountResource foodAR = ResourceUtil.findAmountResource(name);
 		//double foodAvailable = inv.getAmountResourceStored(foodAR, false);
 		//return foodAvailable;
 		//return inv.getAmountResourceStored(foodAR, false);
@@ -1005,7 +1006,7 @@ implements Serializable {
 
      //2014-11-21 Added getFreshFoodAR()
     public AmountResource getFreshFoodAR(String foodGroup) {
-        AmountResource freshFoodAR = AmountResource.findAmountResource(foodGroup);
+        AmountResource freshFoodAR = ResourceUtil.findAmountResource(foodGroup);
         return freshFoodAR;
     }
     */

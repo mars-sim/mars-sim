@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObjectiveType.java
- * @version 3.08 2016-01-16
+ * @version 3.1.0 2017-06-20
  * @author Manny Kung
  */
 
@@ -20,19 +20,23 @@ public enum ObjectiveType {
 	TOURISM				(Msg.getString("ObjectiveType.tourism")), //$NON-NLS-1$
 	;
 
-	private String objectiveName;
+	private String name;
 
 	/** hidden constructor. */
-	private ObjectiveType(String objectiveName) {
-		this.objectiveName = objectiveName;
+	private ObjectiveType(String name) {
+		this.name = name;
 	}
 	
-	public final String getObjectiveName() {
-		return this.objectiveName;
+	public final String getName() {
+		return this.name;
 	}
 
 	@Override
 	public final String toString() {
-		return getObjectiveName();
+		return getName();
+	}
+	
+	public static ObjectiveType getType(String s) {
+		return valueOf(s.toUpperCase().replace(" ", "_"));
 	}
 }

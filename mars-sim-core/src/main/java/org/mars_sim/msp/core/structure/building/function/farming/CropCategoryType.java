@@ -7,9 +7,6 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.util.logging.Logger;
-import org.mars_sim.msp.core.robot.RobotType;
-
 public enum CropCategoryType {
 	
 	BULBS("bulbs"),
@@ -40,6 +37,11 @@ public enum CropCategoryType {
 	public String getName() {
 		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
+	}
+
+	@Override
+	public final String toString() {
+		return getName();
 	}
 	
 	public static CropCategoryType getType(String s) {
