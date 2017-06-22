@@ -37,6 +37,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>mars-sim-network</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.codecentric.centerdevice/javafxsvg/1.2.1 : 5KB 
+ 		     Requiring batik-transcoder and xmlgraphics-commons -->
+		<dependency>
+			<groupId>de.codecentric.centerdevice</groupId>
+			<artifactId>javafxsvg</artifactId>
+			<version>1.2.1</version>
+		</dependency>
 		<!--dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreesvg</artifactId>
@@ -92,7 +99,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.7</version>
+			<version>1.9</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-util : 115 KB
 		     Note : batik-util 1.8 is required only by batik-transcoder 1.9 -->
@@ -121,12 +128,41 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>batik-rasterizer</artifactId>
             <version>1.9</version>
         </dependency-->
-        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-codec -->
-       <!--dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-codec
+		<dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-codec</artifactId>
             <version>1.9</version>
-        </dependency-->
+        </dependency>
+        -->
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim 
+			 Needed by afester's svg class -->
+		<dependency>
+		    <groupId>org.apache.xmlgraphics</groupId>
+		    <artifactId>batik-anim</artifactId>
+		    <version>1.9</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svg-dom
+			 Needed by afester's svg class -->
+		<dependency>
+		  <groupId>org.apache.xmlgraphics</groupId>
+		  <artifactId>batik-svg-dom</artifactId>
+		  <version>1.9</version>
+		</dependency>	
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-dom/1.9 : 167 KB
+		<dependency>
+		  <groupId>org.apache.xmlgraphics</groupId>
+		  <artifactId>batik-dom</artifactId>
+		  <version>1.9</version>
+		</dependency>
+		 -->
+		<!-- https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless : 20 KB
+			 Needed by afester's svg class -->
+		<dependency>
+		    <groupId>org.fxmisc.flowless</groupId>
+		    <artifactId>flowless</artifactId>
+		    <version>0.5.2</version>
+		</dependency>
 
 		<!-- May switch to using SVG Salamander, an small fast and light-weight SVG engine
 			https://github.com/blackears/svgSalamander/wiki -->
@@ -179,6 +215,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>1.7.25</version>
 		</dependency>
 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core : 1.1 MB
+		     Needed by afester's svg class -->
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>2.8.2</version>
+		</dependency>
+
 <!-- load nimrodlf 1.2d from mars-sim's maven-repo
 		<dependency>
 			<groupId>com.nilo.plaf.nimrod</groupId>
@@ -261,11 +305,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>balloontip</artifactId>
 			<version>1.2.4.1</version>
 		</dependency>
-		<!-->dependency>
+		<!-- https://mvnrepository.com/artifact/org.reactfx/reactfx/2.0-M5 : 418 KB 
+		     Needed by https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless/0.5.2 -->
+		<dependency>
 			<groupId>org.reactfx</groupId>
 			<artifactId>reactfx</artifactId>
 			<version>2.0-M5</version>
-		</dependency-->
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries : 409 KB
 		<dependency>
@@ -286,13 +332,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>7.9</version>
 		</dependency>
 		<!-- https://bitbucket.org/hansolo/enzo/wiki/Home
-		https://bintray.com/hansolo/Enzo/Enzo_All_In_One/Enzo-0.3.6 : 2.39MB -->
+		https://bintray.com/hansolo/Enzo/Enzo_All_In_One/Enzo-0.3.6 : 2.39MB 
 		<dependency>
 		    <groupId>eu.hansolo.enzo</groupId>
 		    <artifactId>Enzo</artifactId>
 		    <version>0.3.6</version>
 		</dependency>
-
+		-->
 		<!-- for enzo's funmenu -->
 		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-core : 5 KB -->
 		<dependency>

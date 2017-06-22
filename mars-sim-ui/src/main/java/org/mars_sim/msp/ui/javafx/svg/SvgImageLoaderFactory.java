@@ -8,8 +8,9 @@ import com.sun.javafx.iio.ImageLoader;
 import com.sun.javafx.iio.ImageLoaderFactory;
 import com.sun.javafx.iio.ImageStorage;
 
+// see https://stackoverflow.com/questions/12436274/svg-image-in-javafx-2-2
 
-// see https://github.com/codecentric/javafxsvg
+// from https://github.com/codecentric/javafxsvg
 // https://blog.codecentric.de/en/2015/03/adding-custom-image-renderer-javafx-8/
 
 @SuppressWarnings("restriction")

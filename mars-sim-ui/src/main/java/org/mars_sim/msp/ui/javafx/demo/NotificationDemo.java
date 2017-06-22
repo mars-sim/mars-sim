@@ -21,7 +21,7 @@ package org.mars_sim.msp.ui.javafx.demo;
  * User: hansolo
  * Date: 01.07.13
  * Time: 07:10
- */
+ *
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -96,3 +96,4 @@ public class NotificationDemo extends Application {
         launch(args);
     }
 }
+*/

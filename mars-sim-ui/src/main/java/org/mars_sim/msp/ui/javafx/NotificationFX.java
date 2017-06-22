@@ -1,5 +1,5 @@
 package org.mars_sim.msp.ui.javafx;
-
+/*
 import eu.hansolo.enzo.notification.Notification;
 import javafx.scene.image.Image;
 
@@ -19,15 +19,16 @@ public class NotificationFX extends Notification {
         //this.IMAGE   = IMAGE;
     }
 
-    /**
+    **
      * Show a Notification with the given parameters on the screen
      * @param TITLE
      * @param MESSAGE
      * @param IMAGE
-    
+    *
     @Override
 	public void notify(final String TITLE, final String MESSAGE, final Image IMAGE) {
         super.Notifier.INSTANCE.notify(TITLE, MESSAGE, IMAGE);
     }
-	*/ 
+	 
 }
+*/
