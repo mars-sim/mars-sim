@@ -16,6 +16,7 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -45,6 +46,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+import com.jfoenix.controls.JFXButton;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.net.MalformedURLException;
@@ -52,6 +55,7 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -157,6 +161,7 @@ public class BrowserJFX {
 	        });
     	}
     	else {
+    		createTopButtonBar();
     		createGUI();
             initJFX();
     	}
@@ -166,6 +171,76 @@ public class BrowserJFX {
 
     }
 
+    public void createTopButtonBar() {
+
+    	String guideURL, aboutURL, tutorialURL, shortcutsURL, wikiURL, projectsiteURL;
+    	
+		shortcutsURL = getClass().getResource(Msg.getString("doc.shortcuts")).toExternalForm(); //$NON-NLS-1$
+		guideURL = getClass().getResource(Msg.getString("doc.guide")).toExternalForm(); //$NON-NLS-1$
+		aboutURL = getClass().getResource(Msg.getString("doc.about")).toExternalForm(); //$NON-NLS-1$
+		tutorialURL = getClass().getResource(Msg.getString("doc.tutorial")).toExternalForm(); //$NON-NLS-1$
+		projectsiteURL = Msg.getString("url.projectsite"); //$NON-NLS-1$
+		wikiURL = Msg.getString("url.wiki"); //$NON-NLS-1$
+		
+    	JFXButton b0 = new JFXButton(Msg.getString("GuideWindow.button.about")); //$NON-NLS-1$
+    	b0.setPadding(new Insets(5,15,5,15));
+    	b0.setMinWidth(WIDTH+5);
+    	b0.setTooltip(new Tooltip("About mars-sim"));
+    	b0.setOnAction(e -> {
+    		fireURL(aboutURL);
+        });
+
+    	JFXButton b1 = new JFXButton(Msg.getString("GuideWindow.button.tutorial")); //$NON-NLS-1$
+    	b1.setPadding(new Insets(5,15,5,15));
+    	b1.setMinWidth(WIDTH+5);
+    	b1.setTooltip(new Tooltip("Tutorial"));
+    	b1.setOnAction(e -> {
+    		fireURL(tutorialURL);
+        });
+    	
+    	JFXButton b2 = new JFXButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
+    	b2.setPadding(new Insets(5,15,5,15));
+    	b2.setMinWidth(WIDTH+5);
+    	b2.setTooltip(new Tooltip("User Guide"));
+    	b2.setOnAction(e -> {
+    		fireURL(guideURL);
+        });
+    	
+    	JFXButton b3 = new JFXButton(Msg.getString("GuideWindow.button.shortcuts")); //$NON-NLS-1$
+    	b3.setPadding(new Insets(5,15,5,15));
+    	b3.setMinWidth(WIDTH+5);
+    	b3.setTooltip(new Tooltip("Shortcut Map"));
+    	b3.setOnAction(e -> {
+    		fireURL(shortcutsURL);
+        });
+    	
+    	JFXButton b4 = new JFXButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
+    	b4.setPadding(new Insets(5,15,5,15));
+    	b4.setMinWidth(WIDTH+5);
+    	b4.setTooltip(new Tooltip("GitHub's Project Site"));
+    	b4.setOnAction(e -> {
+    		fireURL(projectsiteURL);
+        });
+    	
+    	JFXButton b5 = new JFXButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
+    	b5.setPadding(new Insets(5,15,5,15));
+    	b5.setMinWidth(WIDTH+5);
+    	b5.setTooltip(new Tooltip("GitHub Wikis"));
+    	b5.setOnAction(e -> {
+			fireURL(wikiURL);
+        });
+    	
+    	topButtonBar.setPadding(new Insets(5,5,5,5));
+    	topButtonBar.getChildren().addAll(b0, b1, b2, b3, b4, b5);
+    }
+    
+    public void fireURL(String input) {
+		setTextInputCache(input);
+		inputURLType(input);
+		showFormattedURL();
+		fireButtonGo(input);
+    }
+    
     public void createGUI() {
 
         view = new WebView();
