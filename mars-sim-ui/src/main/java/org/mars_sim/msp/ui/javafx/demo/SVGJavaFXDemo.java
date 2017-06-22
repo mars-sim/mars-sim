@@ -1,7 +1,7 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
 //using FranzXaver's SvgLoader from https://github.com/afester/FranzXaver
-
+/*
 import afester.javafx.svg.SvgLoader;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -56,3 +56,4 @@ public class SVGJavaFXDemo extends Application {
         primaryStage.show();
     }
 }
+*/
