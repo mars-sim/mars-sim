@@ -19,6 +19,9 @@ import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -29,21 +32,27 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
+
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
 
 
 /*
@@ -589,6 +598,42 @@ public class MainMenu {
 	   	}
    	}
     
+/*
+	public boolean exitDialog() {
+		Boolean result = false;
+		Label l = new Label("Leaving mars-sim ?");
+		HBox hb = new HBox();
+		JFXButton b0 = new JFXButton("Yes");
+		JFXButton b1 = new JFXButton("No");
+		//b0.setPadding(new Insets(2, 2, 2, 2));
+		hb.getChildren().addAll(b0, b1);
+		HBox.setMargin(b0, new Insets(3,3,3,3));
+		HBox.setMargin(b1, new Insets(3,3,3,3));
+		VBox vb = new VBox();
+		vb.setPadding(new Insets(5, 5, 5, 5));
+		vb.getChildren().addAll(l, hb);
+		StackPane sp = new StackPane(vb);
+		StackPane.setMargin(vb, new Insets(10,10,10,10));
+		JFXDialog dialog = new JFXDialog();
+		dialog.setDialogContainer();
+		dialog.setContent(sp);
+		dialog.show();
+		
+		b0.setOnAction(e -> {
+	   		if (mainMenu.getMultiplayerMode() != null)
+	   			if (mainMenu.getMultiplayerMode().getChoiceDialog() != null)
+	   				mainMenu.getMultiplayerMode().getChoiceDialog().close();
+			Platform.exit();
+    		System.exit(0);
+		});
+
+		b1.setOnAction(e -> {
+	   	    e.consume();
+		});
+		
+		return result;
+	}
+*/	
 	public void destroy() {
 		root = null;
 		screen = null;

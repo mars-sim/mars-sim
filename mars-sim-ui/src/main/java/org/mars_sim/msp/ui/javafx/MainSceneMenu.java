@@ -324,7 +324,8 @@ public class MainSceneMenu extends MenuBar  {
         	   public void handle(ActionEvent e) {
         		   //mainScene.exitSimulation();
         		   //mainScene.getStage().close();
-        		   mainScene.alertOnExit();
+        		   if (!mainScene.isShowingDialog)
+        			   mainScene.dialogOnExit();
         	   }
         	});
 

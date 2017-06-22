@@ -14,6 +14,7 @@ import com.jfoenix.controls.JFXBadge;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
@@ -147,6 +148,7 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
  * The MainScene class is the primary Stage for MSP. It is the container for
  * housing desktop swing node, javaFX UI, pull-down menu and icons for tools.
  */
+@SuppressWarnings("restriction")
 public class MainScene {
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
@@ -209,6 +211,7 @@ public class MainScene {
 	public static int WIN_WIDTH = 230;
 
 	public static boolean menuBarVisible = false;
+	static boolean isShowingDialog = false;
 
 	private int solElapsedCache = 0;
 
@@ -231,7 +234,7 @@ public class MainScene {
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
-	private Pane root; ;
+	private Pane root;
 	private StackPane mainAnchorPane, //monPane,
 					mapStackPane, minimapStackPane,
 					speedPane, soundPane, calendarPane, farmPane,
@@ -324,14 +327,16 @@ public class MainScene {
 		stage.setResizable(true);
 		stage.setMinWidth(sceneWidth.get());//1024);
 		stage.setMinHeight(sceneHeight.get());//480);
-		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in macOS) to toggle between (1) full screen mode and (2) window mode");
+		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in macOS) to toggle between either the Full Screen mode and the Window mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
-			boolean result = alertOnExit();
-			if (!result)
-				e.consume();
+			if (!isShowingDialog) {
+				boolean result = dialogOnExit();
+				if (!result)
+					e.consume();
+			}
 		});
 
 		// Detect if a user hits ESC
@@ -643,7 +648,8 @@ public class MainScene {
 	    Nodes.addInputMap(root, ctrlE);
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)), e -> {
-			alertOnExit();
+			if (!isShowingDialog)
+				dialogOnExit();
 		});
 	    Nodes.addInputMap(root, ctrlX);
 
@@ -687,7 +693,7 @@ public class MainScene {
 		blend.setBottomInput(ds);
 
 		DropShadow ds1 = new DropShadow();
-		ds1.setColor(Color.web("#d68268"));//f13a00"));
+		ds1.setColor(Color.web("#d68268")); //#d68268 is pinkish orange//f13a00"));
 		ds1.setRadius(20);
 		ds1.setSpread(0.2);
 
@@ -695,13 +701,13 @@ public class MainScene {
 		blend2.setMode(BlendMode.MULTIPLY);
 
 		InnerShadow is = new InnerShadow();
-		is.setColor(Color.web("#feeb42"));
+		is.setColor(Color.web("#feeb42")); // #feeb42 is mid-pale yellow
 		is.setRadius(9);
 		is.setChoke(0.8);
 		blend2.setBottomInput(is);
 
 		InnerShadow is1 = new InnerShadow();
-		is1.setColor(Color.web("#f13a00"));
+		is1.setColor(Color.web("#278206")); // # f13a00 is bright red // 278206 is dark green
 		is1.setRadius(5);
 		is1.setChoke(0.4);
 		blend2.setTopInput(is1);
@@ -733,7 +739,7 @@ public class MainScene {
 
 	public Label createBlendLabel(String s) {
         Label header_label = new Label(s);
-        header_label.setEffect(blend);
+        //header_label.setEffect(blend);
         header_label.setStyle("-fx-text-fill: black;"
         			+ "-fx-font-size: 13px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
@@ -744,7 +750,7 @@ public class MainScene {
 
 	public Text createBlendText(String s) {
 		Text text = new Text(s);
-        text.setEffect(blend);
+        //text.setEffect(blend);
         text.setStyle("-fx-text-fill: black;"
         			+ "-fx-font-size: 11px;"
         		    //+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
@@ -2991,11 +2997,11 @@ public class MainScene {
 
 		if (L_s > 68 && L_s < 72) {
 			noteLabel.setText(NOTE_MARS + APHELION);
-			noteLabel.setEffect(blend);
+			//noteLabel.setEffect(blend);
 		}
 		else if (L_s > 248 && L_s < 252) {
 			noteLabel.setText(NOTE_MARS + PERIHELION);
-			noteLabel.setEffect(blend);
+			//noteLabel.setEffect(blend);
 		}
 		else
 			noteLabel.setEffect(null);
@@ -3363,7 +3369,7 @@ public class MainScene {
 	/**
 	 * Creates an Alert Dialog to confirm ending or exiting the simulation or
 	 * MSP
-	 */
+
 	public boolean alertOnExit() {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -3395,7 +3401,59 @@ public class MainScene {
 			return false;
 		}
 	}
+	 */
+	
+	public boolean dialogOnExit() {
+		isShowingDialog = true;
+		Boolean result = false;
+		Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
+		l.setPadding(new Insets(10, 10, 10, 10));
+		l.setFont(Font.font(null, FontWeight.BOLD, 14));
+		HBox hb = new HBox();
+		JFXButton b0 = new JFXButton("Save & Exit");
+		b0.setStyle("-fx-background-color: white;");
+		JFXButton b1 = new JFXButton("Exit");
+		b1.setStyle("-fx-background-color: white;");
+		JFXButton b2 = new JFXButton("Back");
+		b2.setStyle("-fx-background-color: white;");
+		//b0.setPadding(new Insets(2, 2, 2, 2));
+		hb.getChildren().addAll(b0, b1, b2);
+		HBox.setMargin(b0, new Insets(3,3,3,3));
+		HBox.setMargin(b1, new Insets(3,3,3,3));
+		HBox.setMargin(b2, new Insets(3,3,3,3));
+		VBox vb = new VBox();
+		vb.setPadding(new Insets(5, 5, 5, 5));
+		vb.getChildren().addAll(l, hb);
+		StackPane sp = new StackPane(vb);
+		sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
+		StackPane.setMargin(vb, new Insets(10,10,10,10));
+		JFXDialog dialog = new JFXDialog();
+		dialog.setDialogContainer(mainAnchorPane);
+		dialog.setContent(sp);
+		dialog.show();
 
+		b0.setOnAction(e -> {
+			dialog.close();
+			saveOnExit();
+		});
+
+		b1.setOnAction(e -> {
+			dialog.close();
+			endSim();
+			exitSimulation();
+			Platform.exit();
+			System.exit(0);
+		});
+		
+		b2.setOnAction(e -> {
+			dialog.close();
+			isShowingDialog = false;
+			e.consume();
+		});
+		
+		return result;
+	}
+	
 	/**
 	 * Initiates the process of saving a simulation.
 	 */
