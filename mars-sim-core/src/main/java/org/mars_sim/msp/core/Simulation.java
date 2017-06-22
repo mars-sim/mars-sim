@@ -919,7 +919,7 @@ implements ClockListener, Serializable {
 			// For headless
 			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.saveSimulation(AUTOSAVE_AS_DEFAULT, null)));
+						ae -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null)));
 			//autosaveTimer = FxTimer.runLater(
     		//		java.time.Duration.ofMinutes(60 * autosave_minute),
     		//        () -> masterClock.saveSimulation(null));

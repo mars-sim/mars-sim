@@ -3148,11 +3148,11 @@ public class MainScene {
 		// 2015-01-25 Added autosave
 		if (type == Simulation.AUTOSAVE) {
 			dir = Simulation.AUTOSAVE_DIR;
-			masterClock.saveSimulation(Simulation.AUTOSAVE, null);
+			masterClock.setSaveSim(Simulation.AUTOSAVE, null);
 
 		} else if (type == Simulation.SAVE_DEFAULT) {
 			dir = Simulation.DEFAULT_DIR;
-			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
+			masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
 
 		} else if (type == Simulation.SAVE_AS) {
 			//masterClock.setPaused(true);
@@ -3183,7 +3183,7 @@ public class MainScene {
 		            @Override
 		            protected Void call() throws Exception {
 		        		try {
-		    				masterClock.saveSimulation(Simulation.SAVE_AS, fileLocn);
+		    				masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
 
 		        			while (masterClock.isSavingSimulation())
 		        				TimeUnit.MILLISECONDS.sleep(200L);
@@ -3462,13 +3462,13 @@ public class MainScene {
 		showWaitStage(SAVING);
 		desktop.getTimeWindow().enablePauseButton(false);
 		// Save the simulation as default.sim
-		masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
+		masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
 
         Task task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
         		try {
-        			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
+        			masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
 
         			while (masterClock.isSavingSimulation())
         				TimeUnit.MILLISECONDS.sleep(200L);

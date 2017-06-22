@@ -335,7 +335,7 @@ public class MasterClock implements Serializable { // Runnable,
      * Sets the save simulation flag and the file to save to.
      * @param file save to file or null if default file.
      */
-    public void saveSimulation(int type, File file) {
+    public void setSaveSim(int type, File file) {
         saveType = type;
         //System.out.println("file is "+ file);
         this.file = file;

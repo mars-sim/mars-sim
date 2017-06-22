@@ -51,7 +51,7 @@ public class MarsBootstrap {
 				
 				try {
 					log.info("Background save");
-					simulation.saveSimulation(saveFile, false);
+					simulation.saveSimulation(Simulation.SAVE_DEFAULT, saveFile);
 				} catch (IOException e) {
 					log.error("Problem saving simulation to " + savePath, e);
 				}
