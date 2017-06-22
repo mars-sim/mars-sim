@@ -1,8 +1,13 @@
 language: java
+dist: trusty
 script:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 jdk:
 - oraclejdk8
+addons:
+apt:
+packages:
+- oracle-java8-installer
 cache:
 directories:
 - $HOME/.m2
