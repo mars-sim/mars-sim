@@ -78,6 +78,7 @@ import javafx.scene.control.ButtonType;
 /**
  * The MultiplayerClient class allows the computer to take on the client role.
  */
+@SuppressWarnings("restriction")
 public class MultiplayerClient implements UnitListener, HistoricalEventListener, UnitManagerListener {
 
 	/** default logger. */
@@ -270,9 +271,9 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		});
 
 		// Add corner icon.
-		stage.getIcons().add(new Image(this.getClass().getResource("/icons/client48.png").toString()));
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/network/client48.png").toString()));
 		// Add Stage icon
-		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/network256.png").toString()));
+		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/network/network256.png").toString()));
 		// dialog.initOwner(mainMenu.getStage());
 		dialog.setTitle("Mars Simulation Project");
 		dialog.setHeaderText("Multiplayer Client");
@@ -352,7 +353,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		// Get the Stage.
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
 		// Add corner icon.
-		stage.getIcons().add(new Image(this.getClass().getResource("/icons/login32.png").toString()));
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/network/login32.png").toString()));
 	   	stage.setOnCloseRequest(e -> {
 				boolean isExit = mainMenu.exitDialog(stage);//getScreensSwitcher().exitDialog(stage);
 				if (!isExit) {
@@ -363,7 +364,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 				}
 		});
 		// Add Stage icon
-		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/login256.png").toString()));
+		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/network/login256.png").toString()));
 		// dialog.initOwner(mainMenu.getStage());
 		dialog.setTitle("Mars Simulation Project");
 		dialog.setHeaderText("Log in");
@@ -631,7 +632,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		// hb3.setSpacing(10.0);
 
 		Scene scene = new Scene(b);
-		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toString()));
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/network/lander_hab64.png").toString()));
 		stage.setScene(scene);
 		stage.show();
 	}

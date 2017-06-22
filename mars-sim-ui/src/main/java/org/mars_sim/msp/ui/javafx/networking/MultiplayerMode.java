@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MultiplayerServerClient.java
- * @version 3.08 2015-04-20
+ * @version 3.1.0 2017-06-22
  * @author Manny Kung
  */
 
@@ -106,9 +106,9 @@ public class MultiplayerMode {
 		// Get the Stage.
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
 		// Add corner icon.
-		stage.getIcons().add(new Image(this.getClass().getResource("/icons/server48.png").toString()));
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/network/server48.png").toString()));
 		// Add Stage icon
-		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/server256.png").toString()));
+		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/network/server256.png").toString()));
 		dialog.initModality(Modality.NONE);
 		dialog.setTitle("Mars Simulation Project");
 		dialog.setHeaderText("Multiplayer Setup");
