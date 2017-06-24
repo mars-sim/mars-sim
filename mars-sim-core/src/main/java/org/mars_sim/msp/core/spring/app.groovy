@@ -3,7 +3,7 @@
  * @version 3.1.0 2016-06-21
  * @author Manny Kung
  */
-
+/*
 @RestController
 class FirstSpringRun {
 
@@ -42,3 +42,4 @@ class FirstSpringRun {
     }
 
 }
+*/

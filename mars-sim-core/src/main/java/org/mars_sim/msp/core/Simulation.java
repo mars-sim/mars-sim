@@ -16,7 +16,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -67,7 +66,7 @@ implements ClockListener, Serializable {
 	public static final int OTHER = 0; // load other file
 	public static final int SAVE_DEFAULT = 1; // save as default.sim
 	public static final int SAVE_AS = 2; // save with other name
-	public static final int AUTOSAVE_AS_DEFAULT = 3; // save as default.sim
+    private static final int AUTOSAVE_AS_DEFAULT = 3; // save as default.sim
 	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
     /** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
@@ -76,21 +75,21 @@ implements ClockListener, Serializable {
     /** Version string. */
     public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
     /** Build string. */
-    public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
+    private final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
     /** Java version string. */
-    public final static String JAVA_TAG = System.getProperty("java.version");//VersionInfo.getRuntimeVersion(); //e.g. "8.0.121-b13 (abcdefg)"; com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
+    private final static String JAVA_TAG = System.getProperty("java.version");//VersionInfo.getRuntimeVersion(); //e.g. "8.0.121-b13 (abcdefg)"; com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
     /** Java version string. */
     public final static String JAVA_VERSION = (JAVA_TAG.contains("(") ? JAVA_TAG.substring(0, JAVA_TAG.indexOf("(")-1) : JAVA_TAG);
     /** Vendor string. */
     //public final static String VENDOR = System.getProperty("java.vendor");
     /** Vendor string. */
-    public final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+    private final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
     /** Default save filename. */
-    public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
+    private final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
     /** Default temp filename. */
-    public final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
+    private final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
     /** Default save filename extension. */
-    public final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
+    private final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
 
     /** Save directory. */
     public final static String DEFAULT_DIR =
@@ -132,7 +131,7 @@ implements ClockListener, Serializable {
 
     private boolean initialSimulationCreated = false;
 
-	public static int autosave_minute;// = 15;
+    private static int autosave_minute;// = 15;
 
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild;// = "unknown";
@@ -199,9 +198,6 @@ implements ClockListener, Serializable {
      * Initializes an inner static helper class for Bill Pugh Singleton Pattern
      * Note: as soon as the instance() method is called the first time, the class is loaded into memory and an instance gets created.
      * Advantage: it supports multiple threads calling instance() simultaneously with no synchronized keyword needed (which slows down the VM)
-     * {@link SingletonHelper} is loaded on the first execution of
-     * {@link Singleton#instance()} or the first access to
-     * {@link SingletonHelper#INSTANCE}, not before.
      */
     private static class SingletonHelper{
     	private static final Simulation INSTANCE = new Simulation();
@@ -248,7 +244,6 @@ implements ClockListener, Serializable {
 
     /**
      * Creates a new simulation instance.
-     * @throws Exception if new simulation could not be created.
      */
     public static void createNewSimulation() {
         //logger.info("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
@@ -289,19 +284,17 @@ implements ClockListener, Serializable {
 
     /**
      * Initialize transient data in the simulation.
-     * @throws Exception if transient data could not be loaded.
      */
-    public void initializeTransientData() {
+    private void initializeTransientData() {
        //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
        eventManager = new HistoricalEventManager();
     }
 
     /**
      * Initialize intransient data in the simulation.
-     * @throws Exception if intransient data could not be loaded.
      */
     // 2015-02-04 Added threading
-    public void initializeIntransientData() {
+    private void initializeIntransientData() {
         //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
         //if (eventManager == null)
         //	eventManager = new HistoricalEventManager();
@@ -405,7 +398,6 @@ implements ClockListener, Serializable {
     /**
      * Loads a simulation instance from a save file.
      * @param file the file to be loaded from.
-     * @throws Exception if simulation could not be loaded.
      */
     public void loadSimulation(final File file) {
         //logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
@@ -590,7 +582,6 @@ implements ClockListener, Serializable {
     /**
      * Saves a simulation instance to a save file.
      * @param file the file to be saved to.
-     * @throws Exception if simulation could not be saved.
      */
     public synchronized void saveSimulation(int type, File file) throws IOException {
         logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
@@ -779,7 +770,7 @@ implements ClockListener, Serializable {
     /*
      * Stops and removes the master clock and pauses the simulation
      */
-    public void halt() {
+    private void halt() {
         if (masterClock != null) {
             masterClock.stop();
             masterClock.setPaused(true);
@@ -904,7 +895,7 @@ implements ClockListener, Serializable {
 	//2015-01-07 Added startAutosaveTimer()
     //2016-04-28 Relocated the autosave timer from MainMenu to here
 	@SuppressWarnings("restriction")
-	public void startAutosaveTimer(boolean autosaveDefault) {
+    private void startAutosaveTimer(boolean autosaveDefault) {
         //logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
 		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
 		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock,
@@ -1081,7 +1072,7 @@ implements ClockListener, Serializable {
 
     /**
      * Sets if simulation was loaded with GUI.
-     * @param true if GUI is in use.
+     * @param value is true if GUI is in use.
      */
     // 2014-12-26 Added setUseGUI()
     public static void setUseGUI(boolean value) {
