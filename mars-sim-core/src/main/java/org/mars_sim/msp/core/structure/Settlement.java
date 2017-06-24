@@ -1384,10 +1384,10 @@ implements Serializable, LifeSupportType, Objective {
     /**
      * Gets a collection of people who are available for social conversation in the same/another building
      * in the same/another settlement
-     * @param Person initiator the initiator of this conversation
-     * @param boolean checkIdle true if the invitee is idling/relaxing (false if the invitee is in a chat)
-     * @param boolean sameBuilding true if the invitee is at the same building as the initiator (false if it doesn't matter)
-     * @param boolean allSettlement true if the collection includes all settlements (false if only the initiator's settlement)
+     * @param initiator the initiator of this conversation
+     * @param checkIdle true if the invitee is idling/relaxing (false if the invitee is in a chat)
+     * @param sameBuilding true if the invitee is at the same building as the initiator (false if it doesn't matter)
+     * @param allSettlements true if the collection includes all settlements (false if only the initiator's settlement)
      * @return person a collection of invitee(s)
      */
     // 2016-03-01 Added getChattingPeople()
@@ -1773,7 +1773,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Checks if the settlement has a particular person
-	 * @param a person
+	 * @param aPerson
 	 * @return boolean
 	 */
 	//2015-12-01 Added hasPerson()
@@ -1895,7 +1895,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Returns a list of persons with a given name (first or last)
-	 * @param a person's first/last name
+	 * @param aName a person's first/last name
 	 * @return a list of persons
 	 */
 	//2015-12-21 Added returnPersonList()
@@ -1913,9 +1913,9 @@ implements Serializable, LifeSupportType, Objective {
 
 		String initial = null;
 		boolean hasASpace = aName.contains(" ");
-		int found = 0;
+		//int found = 0;
 		int s_Index = 0;
-		int dead = 0;
+		//int dead = 0;
 
 		int len = aName.length();
 		boolean hasInitial = len > 3 && hasASpace;
@@ -2097,7 +2097,7 @@ implements Serializable, LifeSupportType, Objective {
 */
 	/**
 	 * Returns a list of robots containing a particular name
-	 * @param a bot's name
+	 * @param aName bot's name
 	 * @return a list of robots
 	 *
 	 */
@@ -2471,8 +2471,7 @@ implements Serializable, LifeSupportType, Objective {
 	/**
 	 * Sets the FoodProduction override flag.
 	 *
-	 * @param FoodProduction
-	 *            override for FoodProduction.
+	 * @param foodProductionOverride override for FoodProduction.
 	 */
 	public void setFoodProductionOverride(boolean foodProductionOverride) {
 		this.foodProductionOverride = foodProductionOverride;
@@ -2666,7 +2665,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Checks if a particular work shift has been saturated
-	 * @param ShiftType
+	 * @param st The ShiftType
 	 * @param inclusiveChecking
 	 * @return true/false
 	 */
@@ -2807,8 +2806,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Finds an empty work shift in a settlement
-	 * @param population. If it wasn't known, use -1 to obtain the latest figure
-	 * @return shiftype
+	 * @param pop If it wasn't known, use -1 to obtain the latest figure
+	 * @return The ShifType
 	 */
 	// 2015-11-01 Edited getAEmptyWorkShift
 	public ShiftType getAEmptyWorkShift(int pop) {
@@ -3183,7 +3182,7 @@ implements Serializable, LifeSupportType, Objective {
 		goodsManager.setResearchFactor(1);
 		goodsManager.setTransportationFactor(1);
 		goodsManager.setTradeFactor(1);
-		goodsManager.setFreeMarketFactor(1);
+		//goodsManager.setFreeMarketFactor(1);
 
 		if (objectiveType == ObjectiveType.CROP_FARM) {
 			goodsManager.setCropFarmFactor(1.5);
@@ -3282,7 +3281,6 @@ implements Serializable, LifeSupportType, Objective {
 
     /**
      * Gets the number of crops that currently need work this Sol.
-     * @param settlement the settlement.
      * @return number of crops.
      */
     // 2016-10-28 Modified, added caching and relocated from TendGreenhouse
