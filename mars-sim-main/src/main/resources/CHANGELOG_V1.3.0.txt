@@ -17,6 +17,7 @@ https://mars-sim.github.io/
 
 4. 128 MB free disk space
 
+
 ### KNOWN LIMITATIONS :
 
 1. In MacOS, Settlement Map toggle button cannot bring up the Map. Known JavaFX
@@ -31,15 +32,25 @@ https://mars-sim.github.io/
 
 1. Refine phenological/growing stage for each category of crop
 
+2. Since Corn depletes nitrogen in the soil more quickly than other crops, it makes
+   sense to disallow growing Corn consecutively in the same greenhouse.
+
+3. Rename Green Onion to Spring Onion. Remove Spices as a Crop Category.
+
 
 ### UI IMPROVEMENT :
 
-1. 
+1. Switch to using only JavaFX UI elements on Help Browser.
+
+2. Add animated Main Menu items
 
 
 ### FIXES :
 
 1. Correct crop harvesting issues
+
+2. Fix crash if dragging the globe in the Minimap too fast
+
 
 
 -----------------------------------------------------------------------------------------

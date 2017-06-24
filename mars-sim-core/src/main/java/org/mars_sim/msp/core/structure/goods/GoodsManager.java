@@ -672,9 +672,9 @@ public class GoodsManager implements Serializable {
     	trade_factor = value * trade_factor;
     }
 
-    public void setFreeMarketFactor(double value) {
-    	freeMarket_factor = value * freeMarket_factor;
-    }
+    //public void setFreeMarketFactor(double value) {
+    //	freeMarket_factor = value * freeMarket_factor;
+    //}
 
     public void setTourismFactor(double value) {
     	tourism_factor = value * tourism_factor;
