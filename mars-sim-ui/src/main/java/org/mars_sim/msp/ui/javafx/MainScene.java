@@ -311,10 +311,8 @@ public class MainScene {
 
 	/**
 	 * Constructor for MainScene
-	 *
-	 * @param stage
 	 */
-	public MainScene() {//Stage stage) {
+	public MainScene() {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		stage = new Stage();
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -333,10 +331,9 @@ public class MainScene {
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
 			if (!isShowingDialog) {
-				boolean result = dialogOnExit();
-				if (!result)
-					e.consume();
+				dialogOnExit();
 			}
+			e.consume();
 		});
 
 		// Detect if a user hits ESC
@@ -462,7 +459,7 @@ public class MainScene {
 
 	/**
  	 * Pauses sim and opens the construction wizard
-	 * @param constructionManager
+	 * @param mission
 	 */
 	// 2015-12-16 Added openConstructionWizard()
 	public void openConstructionWizard(BuildingConstructionMission mission) { // ConstructionManager constructionManager,
@@ -2542,7 +2539,7 @@ public class MainScene {
 
 	/**
 	 * Sets the look and feel of the UI
-	 * @param nativeLookAndFeel true if native look and feel should be used.
+	 * @param choice
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
 	public void setLookAndFeel(int choice) {
@@ -3100,8 +3097,7 @@ public class MainScene {
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
 	 *
-	 * @param useDefault
-	 *            Should the user be allowed to override location?
+	 * @param type
 	 */
 	public void saveSimulation(int type) {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
@@ -3402,10 +3398,13 @@ public class MainScene {
 		}
 	}
 	 */
-	
-	public boolean dialogOnExit() {
+
+	/**
+	 * Open the exit dialog box
+	 */
+	public void dialogOnExit() {
+		jfxTabPane.getSelectionModel().select(mainTab);
 		isShowingDialog = true;
-		Boolean result = false;
 		Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
 		l.setPadding(new Insets(10, 10, 10, 10));
 		l.setFont(Font.font(null, FontWeight.BOLD, 14));
@@ -3450,8 +3449,7 @@ public class MainScene {
 			isShowingDialog = false;
 			e.consume();
 		});
-		
-		return result;
+
 	}
 	
 	/**
@@ -3756,7 +3754,7 @@ public class MainScene {
 
 
 	// 2016-10-01 Added mainSceneExecutor for executing wait stages
-    public void startMainSceneExecutor() {
+    private void startMainSceneExecutor() {
         //logger.info("Simulation's startSimExecutor() is on " + Thread.currentThread().getName() + " Thread");
     	// INFO: Simulation's startSimExecutor() is on JavaFX-Launcher Thread
     	mainSceneExecutor = Executors.newSingleThreadExecutor();
@@ -3805,23 +3803,22 @@ public class MainScene {
 */
 	/**
 	 * Sets up the JavaFX's tooltip
-	 * @param node
-	 * @param tooltip's hint text
+	 * @param n Node
+	 * @param s tooltip's hint text
 	 */
 	public void setQuickToolTip(Node n, String s) {
 		Tooltip tt = new Tooltip(s);
 		tt.getStyleClass().add("ttip");
 
 		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
-
 		    @Override
 		    public void handle(MouseEvent event) {
 		        Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); //I position the tooltip at bottom right of the node (see below for explanation)
 		        tt.show(n, p.getX(), p.getY());
 		    }
 		});
-		n.setOnMouseExited(new EventHandler<MouseEvent>() {
 
+		n.setOnMouseExited(new EventHandler<MouseEvent>() {
 		    @Override
 		    public void handle(MouseEvent event) {
 		        tt.hide();
@@ -3830,11 +3827,11 @@ public class MainScene {
 
 	}
 
-	public double convertSlider2Volume(double y) {
+	private double convertSlider2Volume(double y) {
 		return .05*y + .5;
 	}
 
-	public double convertVolume2Slider(double x) {
+	private double convertVolume2Slider(double x) {
 		return 20D*(x - .5);
 	}
 
