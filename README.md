@@ -70,4 +70,5 @@ See setting up development environment at https://github.com/mars-sim/mars-sim/w
 
 ## Download 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
+
 See recent builds at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
