@@ -6,12 +6,10 @@
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 
 # mars-sim
-
 The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars in a virtual environment. Each agent has various human-like characteristics, capable of making distinct decisions on a virtual Mars and interacting with one another on the surface of Mars.
 
 
 ## Modeling and Simulation
-
 mars-sim uses both discrete event modeling and Agent-based Modeling and Simulation in modeling the everyday decision of a settler in mars-sim.
 
 mars-sim is a semi-social and professional simulation that portrays the interaction between the settlers and their environment. Each settler has well defined job type, job role, technical skills, personality, natural attributes, task preferences and relationship with one another as they strive on Mars.
@@ -20,14 +18,12 @@ Player may create numerous settlements spreading across the surface of Mars. Eac
 
 
 ## Tasks and Missions
-
 Settlers spend much of their time learning to "live off the land". They engage in maintenance, ensuring life support resources are well balanced, growing crops in greenhouses, and manufacturing needed parts and equipment in workshops.
 
 Settlers will also go out on rover missions to explore and study surrounding landscapes, prospect and mine minerals, and trade with neighboring settlements. They may even decide to move from one settlment to another.
 
 
 ## Summary
-
 Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents, equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together, improve their survival skills and balance individual vs. settlement needs.
 
 
@@ -36,8 +32,7 @@ For a general description of this project, see our project website at at https:/
 
 
 ## Feedback/Comments
-
-We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel free to provide your comments at our facebook community at https://www.facebook.com/groups/125541663548/. Note: see also old/archived discussions at https://sourceforge.net/p/mars-sim/discussion/
+We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel free to provide your comments at our facebook community at https://www.facebook.com/groups/125541663548/. See also old/archived discussions at https://sourceforge.net/p/mars-sim/discussion/
 
 
 ## Issues/Tickets
@@ -46,7 +41,7 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 
 
 ## Wiki
-See our new wiki pages at https://github.com/mars-sim/mars-sim/wiki
+* Check out new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 
 
 ## Supported Platforms
@@ -54,14 +49,16 @@ See our new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 * MacOS (known bugs in displaying the Settlement Map)
 * Linux (cannot input text in text fields)
 
+
 ## Java environment Setup
 * Windows
   - Edit the `JAVA_HOME` and `PATH` in System's Environment Variables in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_131` or `C:\Program Files\Java\jdk1.8.0_131`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`          
 
+
 ## Development Prerequisites
-See setting up development environment at https://github.com/mars-sim/mars-sim/wiki/Development-Environment
+* Set up the development environment at https://github.com/mars-sim/mars-sim/wiki/Development-Environment
 
 
 ## Official Codebase
@@ -70,5 +67,4 @@ See setting up development environment at https://github.com/mars-sim/mars-sim/w
 
 ## Download 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
-
-See recent builds at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
+* Check out recent builds at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
