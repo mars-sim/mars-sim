@@ -74,7 +74,8 @@ public class CropType implements Serializable, Comparable<CropType> {
 			double edibleBiomass,
 			double edibleWaterContent, 
 			double inedibleBiomass,
-			double dailyPAR, Map<Integer, Phase> phases) {
+			double dailyPAR, 
+			Map<Integer, Phase> phases) {
 
 		this.name = name;
 		this.growingTime = growingTime;

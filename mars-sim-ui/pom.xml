@@ -704,7 +704,24 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<artifactId>lwjgl-opengl</artifactId>
 		<version>${lwjgl.version}</version>
 	</dependency>
--->
+
+	// https://github.com/brandonborkholder/glg2d
+	<dependency>
+		<groupId>org.jogamp.glg2d</groupId>
+		<artifactId>glg2d</artifactId>
+		<version>0.3-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.jogamp.gluegen</groupId>
+	    <artifactId>gluegen-rt-main</artifactId>
+	    <version>2.3.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.jogamp.jogl</groupId>
+	    <artifactId>jogl-all-main</artifactId>
+	    <version>2.3.2</version>
+	</dependency>
+-->	
 	</dependencies>
 	<repositories>
 	    <repository>
@@ -767,6 +784,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<releases>
 				<enabled>true</enabled>
 			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>glg2d-repo</id>
+			<url>http://brandonborkholder.github.com/glg2d/maven2/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>

@@ -181,7 +181,6 @@ implements Serializable {
 
     }
 
-	@SuppressWarnings("unused")
 	public void init_case_1_step_1(int constructionSkill) {
 		// a settler initiates this mission
 		//System.out.println("init_1a");

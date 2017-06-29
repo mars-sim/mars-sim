@@ -875,16 +875,17 @@ public class Crop implements Serializable {
 		double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)]  * [Wm^-2]
 
-		double delta_PAR_sunlight = uPAR / 1_000_000D * time * MarsClock.SECONDS_IN_MILLISOL ; // in mol / m^2 within this period of time
+		double PAR_interval = uPAR / 1_000_000D * time * MarsClock.SECONDS_IN_MILLISOL ; // in mol / m^2 within this period of time
 		// [mol /m^2] = [umol /m^2 /s] / u  * [millisols] * [s /millisols]
 
 		// 1 u = 1 micro = 1/1_000_000
 		// Note : daily-PAR has the unit of [mol /m^2 /day]
 	    // Gauge if there is enough sunlight
 	    double progress = cumulativeDailyPAR / dailyPARRequired; //[max is 1]
+	    
 	    double clock = currentMillisols / 1000D; //[max is 1]
 /*		logger.info("uPAR : "+ fmt.format(uPAR)
-				+ "\tdelta_PAR_sunlight : " + fmt.format(delta_PAR_sunlight)
+				+ "\tPAR_interval : " + fmt.format(PAR_interval)
 				+ "\tprogress : "+ fmt.format(progress)
 				+ "\truler : " + fmt.format(clock));
 */
@@ -902,7 +903,7 @@ public class Crop implements Serializable {
 	    	// TODO: also compare also how much more sunlight will still be available
 	    	if (uPAR > 40) { // if sunlight is available
 				turnOffLighting();
-	    		cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_sunlight ;
+	    		cumulativeDailyPAR = cumulativeDailyPAR + PAR_interval ;
 
 /*			    logger.info(cropType.getName()
 			    		+ "\tcumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR)
@@ -912,8 +913,9 @@ public class Crop implements Serializable {
 
 	    	else { //if no sunlight, turn on artificial lighting
 	    		//double conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_IN_MILLISOL  ;
-	    		double PAR_outstanding_persqm_daily = dailyPARRequired - cumulativeDailyPAR; // in mol / m^2 /day
-				double delta_PAR_outstanding = PAR_outstanding_persqm_daily * (time / 1000D) * growingArea;
+	    		// DLI is Daily Light Integral is the unit for for cumulative light -- the accumulation of all the PAR received during a day.
+	    		double DLI = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]	    		
+				double delta_PAR_outstanding = DLI * (time / 1000D) * growingArea;
 				// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] / [millisols /day] * m^2
 				double delta_kW = delta_PAR_outstanding / time / conversion_factor ;
 				// [kW] =  [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols]  = [W /u] * u * k/10e-3 = [kW];  since 1 u = 10e-6
@@ -938,7 +940,7 @@ public class Crop implements Serializable {
 				// Note: do NOT include any losses below
 		    	double delta_PAR_supplied = supplykW * time  * conversion_factor / growingArea; // in mol / m2
 				// [ mol / m^2]  = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols] /  [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
-			    cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_supplied + delta_PAR_sunlight;
+			    cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_supplied + PAR_interval;
 				// [mol /m^2 /d]
 /*			    logger.info(cropType.getName()
 			    		+ "\tPAR_outstanding_persqm_daily : " + fmt.format(PAR_outstanding_persqm_daily)
