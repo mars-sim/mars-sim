@@ -10,7 +10,7 @@ The Mars Simulation Project is a Java based open source project that simulates t
 
 
 ## Modeling and Simulation
-mars-sim uses both discrete event modeling and Agent-based Modeling and Simulation in modeling the everyday decision of a settler in mars-sim.
+mars-sim uses both Discrete Event Simulation and Agent-based Modeling and Simulation in guiding everyday decisions of a settler agent in mars-sim.
 
 mars-sim is a semi-social and professional simulation that portrays the interaction between the settlers and their environment. Each settler has well defined job type, job role, technical skills, personality, natural attributes, task preferences and relationship with one another as they strive on Mars.
 
