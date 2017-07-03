@@ -13,11 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -37,7 +35,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 
 
 /**
- * The Crop class is a food crop grown on a farm.
+ * The Crop class describes the behavior of one particular crop growing on a greenhouse.
  */
 public class Crop implements Serializable {
 
