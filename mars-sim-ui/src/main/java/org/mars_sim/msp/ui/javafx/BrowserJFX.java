@@ -48,6 +48,9 @@ import org.w3c.dom.Text;
 
 import com.jfoenix.controls.JFXButton;
 
+import de.jensd.fx.fontawesome.AwesomeDude;
+import de.jensd.fx.fontawesome.AwesomeIcon;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.net.MalformedURLException;
@@ -331,6 +334,8 @@ public class BrowserJFX {
 
     	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
         reloadButton.setMinWidth(WIDTH+5);
+        reloadButton.getStyleClass().add("menu-button");
+        AwesomeDude.setIcon(reloadButton, AwesomeIcon.ARROW_CIRCLE_O_RIGHT, "12.0");
         reloadButton.setTooltip(new Tooltip("Reload this page"));
         reloadButton.setOnAction(e -> {
     		goLoad(tf.getText().trim());
@@ -340,6 +345,8 @@ public class BrowserJFX {
 
         //backButton.setPadding(new Insets(0, 3, 0, 3));
         backButton.setMinWidth(WIDTH+5);
+        backButton.getStyleClass().add("menu-button");
+        AwesomeDude.setIcon(backButton, AwesomeIcon.BACKWARD, "12.0");
         backButton.setTooltip(new Tooltip("Go back"));
         backButton.setOnAction(e -> {
         	//System.out.println("backward");
@@ -358,6 +365,8 @@ public class BrowserJFX {
 
         //forwardButton.setPadding(new Insets(0, 3, 0, 3));
         forwardButton.setMinWidth(WIDTH+5);
+        forwardButton.getStyleClass().add("menu-button");
+        AwesomeDude.setIcon(forwardButton, AwesomeIcon.FORWARD, "12.0");
         forwardButton.setTooltip(new Tooltip("Go forward"));
         forwardButton.setOnAction(e -> {
         	//System.out.println("forward");

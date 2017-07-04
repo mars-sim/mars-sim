@@ -24,6 +24,8 @@ import com.jfoenix.controls.JFXToggleButton;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 
+import de.jensd.fx.fontawesome.AwesomeDude;
+
 import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.NotificationPane;
 import org.fxmisc.wellbehaved.event.InputMap;
@@ -997,6 +999,8 @@ public class MainScene {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());
 
 		speedBtn = new JFXButton();
+		//speedBtn.setStyle(value);
+		//speedBtn.getStyleClass().add("menu-button");//"button-raised");
 		speedIcon = new IconNode(FontAwesome.CLOCK_O);
 		speedIcon.setIconSize(20);
 		//speedIcon.setFill(Color.YELLOW);
@@ -1377,7 +1381,7 @@ public class MainScene {
 		//logger.info("MainScene's createSoundPopup() is on " + Thread.currentThread().getName());
 
 		soundBtn = new JFXButton();
-		soundBtn.getStyleClass().add("button-raised");
+		//soundBtn.getStyleClass().add("menu-button");//"button-raised");
 		//Icon icon = new Icon("MUSIC");
 		//icon.setCursor(Cursor.HAND);
 		//icon.setStyle("-fx-background-color: orange;");
@@ -1524,7 +1528,7 @@ public class MainScene {
 		//logger.info("MainScene's createFarmPopup() is on " + Thread.currentThread().getName());
 
 		farmBtn = new JFXButton();
-		farmBtn.getStyleClass().add("button-raised");
+		//farmBtn.getStyleClass().add("menu-button");//"button-raised");
 		farmIcon = new IconNode(FontAwesome.LEAF);
 		farmIcon.setIconSize(20);
 		//soundIcon.setFill(Color.YELLOW);
@@ -1804,7 +1808,7 @@ public class MainScene {
 
 		// Set up a settlement view zoom bar
 		zoomSlider = new JFXSlider();
-		//zoomSlider.getStyleClass().add("jfx-slider");
+		zoomSlider.getStyleClass().add("jfx-slider");
 		//zoom.setMinHeight(100);
 		//zoom.setMaxHeight(200);
 		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
@@ -1884,6 +1888,13 @@ public class MainScene {
 		JFXCheckBox box4 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.robots"));
 		JFXCheckBox box5 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.vehicles"));
 
+		box0.getStyleClass().add("jfx-check-box");
+		box1.getStyleClass().add("jfx-check-box");
+		box2.getStyleClass().add("jfx-check-box");
+		box3.getStyleClass().add("jfx-check-box");
+		box4.getStyleClass().add("jfx-check-box");
+		box5.getStyleClass().add("jfx-check-box");
+		
 		mapLabelBox.getChildren().addAll(box0, box1, box2, box3, box4, box5);
 
 		box0.setSelected(mapPanel.isDaylightTrackingOn());
@@ -2745,6 +2756,7 @@ public class MainScene {
     //2015-11-11 Added createFlyout()
     public JFXPopup createFlyout() {
      	marsNetBtn = new JFXButton();
+     	//marsNetBtn.getStyleClass().add("menu-button");//"button-raised");
 		marsNetIcon = new IconNode(FontAwesome.COMMENTING_O);
 		marsNetIcon.setIconSize(20);
 		//marsNetIcon.setStroke(Color.WHITE);

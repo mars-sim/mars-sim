@@ -114,6 +114,27 @@
     -fx-padding: 5 5 5 5;
 }
 
+#menu-button{
+    -fx-font-size: 1.0em;
+    -fx-background-color: transparent;
+    -fx-graphic-text-gap: 2px;
+    -icons-color: #f8c202;
+    -fx-text-fill: #f8c202;
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.4) , 6, 0.0 , 0 , 2 );
+}
+ 
+.menu-button:pressed:hover{
+    -jfx-mask-type: CIRCLE;
+    -icons-color: black; 
+    -fx-text-fill: black; 
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+}
+ 
+.menu-button:hover{
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+}
+
+
 .text-area {
 /*	-fx-font: 10pt 'Corbel';				*/
     -fx-font-size       : 0.80em;
@@ -273,36 +294,33 @@
 
 .jfx-slider {
   	-fx-background-color: transparent; /* only this setting works. other color settings on jfx-slider don't */
+	-fx-indicator-position: right;
   	-fx-snap-to-ticks : true;
     -fx-font-size: 14px;
-    -fx-text-fill: white;
+    -fx-text-fill: #f8c202;
 }
 
-.jfx-slider .svg-slider .thumb{
-	-fx-background-color: #f8c202;
+.jfx-slider .thumb{
 	-fx-stroke : black;
 	-fx-fill : black;
 }
+
 .jfx-slider:disabled {
 	-fx-opacity: 0.4;
 }
 
-.jfx-slider-style {
-	-fx-background-color: #f8c202;
-	-fx-indicator-position: right;
-}
 
-.jfx-slider-style > .thumb {
+.jfx-slider > .thumb {
 	-fx-background-color: #f8c202;
 }
 
-.jfx-slider-style .track {
-	-fx-background-color: #f8c202;
+.jfx-slider > .track {
+	-fx-background-color: gray;
 	-fx-pref-height: 5px;
 	-fx-pref-width: 5px;
 }
 
-.jfx-slider-style .sliderValue {
+.jfx-slider > .sliderValue {
 	-fx-stroke: #f8c202; /* 00cc66 is mid green */
 	-fx-font-size: 12.0;
 }
@@ -324,31 +342,23 @@
 * JFX Check Box                                                                *
 *                                                                              *
 *******************************************************************************/
-.check-box {
-    -fx-font-size: 12;
-    -fx-font-weight: italic;
-    -fx-text-fill: yellow;
-    -fx-checked-color: yellow;
-    -fx-unchecked-color: gray;
-}
 
-.jfx-check-box-all-colored > .box {
+.jfx-check-box > .box {
     -jfx-checked-color: gray;
     -jfx-unchecked-color: gray;
     -fx-text-fill: yellow;
+	-jfx-background-color: transparent; 
 }
 
-.jfx-check-box-text-colored {
-    -fx-text-fill: yellow;
-}
 
 .jfx-check-box {
     -jfx-checked-color: gray;
     -jfx-unchecked-color: gray;
+    -fx-text-fill: yellow;
+	-fx-background-color: transparent;  
     -fx-font-weight: BOLD;
     -fx-font-size: 12;
     -fx-font-weight: italic;
-    -fx-text-fill: yellow;
 }
 
 /*******************************************************************************/
