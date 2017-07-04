@@ -15,7 +15,7 @@
  */
 
 package org.mars_sim.msp.ui.javafx;
-
+/*
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -51,11 +51,11 @@ import org.kordamp.ikonli.fontawesome.FontAwesome;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 
-/**
+**
  * User: hansolo
  * Date: 22.08.16
  * Time: 08:22
- */
+ *
 @DefaultProperty("children")
 public class SubmitButton extends Region {
     public enum Status { NONE, IN_PROGRESS, SUCCESS, FAIL, FINISHED }
@@ -444,3 +444,4 @@ public class SubmitButton extends Region {
         pane.setBorder(new Border(new BorderStroke(borderPaint, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(borderWidth / PREFERRED_WIDTH * size))));
     }
 }
+*/

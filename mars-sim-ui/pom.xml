@@ -340,43 +340,43 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 		-->
 		<!-- for enzo's funmenu -->
-		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-core : 5 KB -->
+		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-core : 5 KB 
 		<dependency>
 			<groupId>org.kordamp.ikonli</groupId>
 			<artifactId>ikonli-core</artifactId>
 			<version>1.9.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-material-pack : 298 KB -->
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-material-pack : 298 KB 
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-material-pack</artifactId>
 		    <version>1.9.0</version>
-		</dependency>
-		<!--  https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-materialdesign-pack : 679 KB -->
+		</dependency-->
+		<!--  https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-materialdesign-pack : 679 KB 
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-materialdesign-pack</artifactId>
 		    <version>1.9.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-javafx : 9 KB -->
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-javafx : 9 KB 
 	    <dependency>
 	        <groupId>org.kordamp.ikonli</groupId>
 	        <artifactId>ikonli-javafx</artifactId>
 	        <version>1.9.0</version>
-	    </dependency>
+	    </dependency-->
 <!-- for enzo's FunMenu and SubmitButton-->
-	<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-fontawesome-pack : 631 KB -->
+	<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-fontawesome-pack : 631 KB 
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-fontawesome-pack</artifactId>
 		    <version>1.9.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-weathericons-pack : 229 KB -->
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-weathericons-pack : 229 KB 
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-weathericons-pack</artifactId>
 		    <version>1.9.0</version>
-		</dependency>
+		</dependency-->
 
 
 		<!-- https://mvnrepository.com/artifact/de.jonato/jfxc : 40KB
@@ -510,11 +510,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		fontawesomefx 8.0.10 : 84 KB
 		datafx : 261 B
 		flow : 97 KB
-		core : 37 KB -->
+		core : 37 KB 
+		me.tatarka.retrolambda 3.6.1 : -->
 		<dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</artifactId>
-		    <version>8.0.10</version>
+		    <version>8.0.13</version>
 		</dependency>
 		<dependency>
 		    <groupId>io.datafx</groupId>

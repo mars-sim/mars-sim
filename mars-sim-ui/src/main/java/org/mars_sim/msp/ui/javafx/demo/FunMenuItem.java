@@ -15,7 +15,7 @@
  */
 
 package org.mars_sim.msp.ui.javafx.demo;
-
+/*
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
@@ -35,11 +35,11 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.List;
 
 
-/**
+**
  * User: hansolo
  * Date: 14.08.16
  * Time: 11:24
- */
+ *
 @DefaultProperty("children")
 public class FunMenuItem extends StackPane {
     private static final double                                PREFERRED_WIDTH  = 48;
@@ -134,3 +134,4 @@ public class FunMenuItem extends StackPane {
         if (width > 0 && height > 0) { icon.setIconSize((int) (size * 0.75)); }
     }
 }
+*/

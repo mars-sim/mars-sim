@@ -15,7 +15,7 @@
  */
 
 package org.mars_sim.msp.ui.javafx.demo;
-
+/*
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -43,11 +43,11 @@ import org.kordamp.ikonli.Ikon;
 import java.util.List;
 
 
-/**
+**
  * User: hansolo
  * Date: 13.08.16
  * Time: 12:15
- */
+ *
 @DefaultProperty("children")
 public class FunMenu extends Region {
     private static final double                            PREFERRED_WIDTH       = 400;
@@ -346,3 +346,4 @@ public class FunMenu extends Region {
         }
     }
 }
+*/

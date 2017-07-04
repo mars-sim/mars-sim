@@ -15,7 +15,7 @@
  */
 
 package org.mars_sim.msp.ui.javafx.demo;
-
+/*
 import org.mars_sim.msp.ui.javafx.SubmitButton;
 
 import javafx.animation.AnimationTimer;
@@ -27,11 +27,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.Scene;
 
 
-/**
+**
  * User: hansolo
  * Date: 22.08.16
  * Time: 08:23
- */
+ *
 public class SubmitButtonDemo extends Application {
     private SubmitButton   button;
     private double         progress;
@@ -121,3 +121,4 @@ public class SubmitButtonDemo extends Application {
         launch(args);
     }
 }
+*/

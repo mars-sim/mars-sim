@@ -15,7 +15,7 @@
  */
 
 package org.mars_sim.msp.ui.javafx.demo;
-
+/*
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -31,11 +31,11 @@ import org.kordamp.ikonli.material.Material;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 
 
-/**
+**
  * User: hansolo
  * Date: 13.08.16
  * Time: 12:30
- */
+ *
 public class FunMenuDemo extends Application {
     private FunMenu funMenu;
 
@@ -77,3 +77,4 @@ public class FunMenuDemo extends Application {
         launch(args);
     }
 }
+*/
