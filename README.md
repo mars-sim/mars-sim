@@ -10,9 +10,11 @@ The Mars Simulation Project is a Java based open source project that simulates t
 
 
 ## Modeling and Simulation
-mars-sim uses both Discrete Event Simulation and Agent-based Modeling and Simulation in guiding everyday decisions of a settler agent in mars-sim.
+mars-sim is a semi-social and professional simulation that portrays the interaction between the settlers and their environment. 
 
-mars-sim is a semi-social and professional simulation that portrays the interaction between the settlers and their environment. Each settler has well defined job type, job role, technical skills, personality, natural attributes, task preferences and relationship with one another as they strive on Mars.
+Both the paradigm of Discrete Event Simulation and the Agent-based Modeling are implemented in guiding the everyday decisions of the settler agents in mars-sim.
+
+Each settler has well defined job type, job role, technical skills, personality, natural attributes, task preferences and relationship with one another as they strive on Mars. 
 
 Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial landing base; a mining depot near sites with high mineral concentration; or a full blown, self-contained colony hosting higher functions with 48+ settlers having an elected mayor. In terms of economic development, each settlement sets the Value Points (VP) of each resource, based on its supply and demand.
 
@@ -50,15 +52,15 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 * Linux (cannot input text in text fields)
 
 
+## Development Prerequisites
+If you would like to contribute to the project, see our [developer wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment). We will help you and answer your questions in our new [Gitter chatroom](https://gitter.im/mokun/mars-sim). 
+
+
 ## Java environment Setup
 * Windows
   - Edit the `JAVA_HOME` and `PATH` in System's Environment Variables in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_131` or `C:\Program Files\Java\jdk1.8.0_131`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`          
-
-
-## Development Prerequisites
-* Set up the development environment at https://github.com/mars-sim/mars-sim/wiki/Development-Environment
 
 
 ## Official Codebase
@@ -68,3 +70,7 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 ## Download 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 * Check out recent builds at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
+
+
+## License
+This project is licensed under the terms of the GPL v2.0 license.
