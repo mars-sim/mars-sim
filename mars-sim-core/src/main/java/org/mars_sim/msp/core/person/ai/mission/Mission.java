@@ -51,7 +51,7 @@ implements Serializable {
 
 	public static String SUCCESSFULLY_ENDED_CONSTRUCTION = "Mission accomplished and all members successfully ended construction";
 	public static String SUCCESSFULLY_DISEMBARKED = "Mission accomplished and all members successfully disembarked";
-	public static String USER_ABORTED_MISSION = "MIssion aborted by user";
+	public static String USER_ABORTED_MISSION = "Mission aborted by user";
 	public static String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction";
 	public static String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
 	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
@@ -317,6 +317,7 @@ implements Serializable {
             if (member instanceof Person) {
             	Person person = (Person) member;
             	person.getMind().stopMission();//setMission(null);
+            	member.setMission(null);
 
             	ShiftType shift = null;
             	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
@@ -662,6 +663,50 @@ implements Serializable {
 		fireMissionUpdate(MissionEventType.CAPACITY_EVENT, newCapacity);
 	}
 
+	
+	/**
+	 * End the mission collection phase at the current site.
+	 */
+	private void endCollectionPhase() {
+		if (this instanceof CollectResourcesMission) 
+			((CollectResourcesMission) this).endCollectingAtSite();
+	}
+	
+	/**
+	 * Have the mission return home and end collection phase if necessary.
+	 */
+	private void returnHome() {
+		if (this instanceof TravelMission) {
+			TravelMission travelMission = (TravelMission) this;
+			int offset = 2;
+			if (travelMission.getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
+			travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
+			travelMission.updateTravelDestination();
+			endCollectionPhase();
+		}
+	}
+	
+	/**
+	 * Go to the nearest settlement and end collection phase if necessary.
+	 */
+	private void goToNearestSettlement() {
+		if (this instanceof VehicleMission) {
+			VehicleMission vehicleMission = (VehicleMission) this;
+			try {
+				Settlement nearestSettlement = vehicleMission.findClosestSettlement();
+				if (nearestSettlement != null) {
+					vehicleMission.clearRemainingNavpoints();
+		    		vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement, 
+		    				nearestSettlement.getName()));
+		    		vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
+		    		vehicleMission.updateTravelDestination();
+		    		endCollectionPhase();
+				}
+			}
+			catch (Exception e) {}
+		}
+	}
+	
 	/**
 	 * Finalizes the mission.
 	 * String reason Reason for ending mission.
@@ -670,7 +715,12 @@ implements Serializable {
 	public void endMission(String reason) {
 		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
 
-		if (!done) {
+		if (!(this instanceof RescueSalvageVehicle)) {
+			returnHome();
+			goToNearestSettlement();
+		}
+		
+		if (!done) {// && !reason.equals(USER_ABORTED_MISSION) ) {
 				//& reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
 				//|| reason.equals(SUCCESSFULLY_DISEMBARKED)
 				//|| reason.equals(USER_ABORTED_MISSION)) {
@@ -698,7 +748,7 @@ implements Serializable {
 			//logger.info(description + " ending at the " + phase + " phase due to " + reason);
 		}
 		else
-	        logger.info("Calling endMission() : done is true. Mission info : " + startingMember.getName() + " initiated '" + missionName + "' at "  + startingMember.getSettlement() + ". Reason : " + reason);
+	        logger.info("Calling endMission() to the '" + missionName + " initiated by " + startingMember.getName() + ". Reason : '" + reason + "'"); // "' at "  + startingMember.getSettlement() + 
 	}
 
 	/**

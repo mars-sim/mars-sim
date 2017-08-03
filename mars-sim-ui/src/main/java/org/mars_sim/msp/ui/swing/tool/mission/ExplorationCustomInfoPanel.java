@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * A panel for displaying exploration mission information.
@@ -143,7 +144,7 @@ extends MissionCustomInfoPanel {
 			JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 10));
 			add(namePanel);
 
-			JLabel nameLabel = new JLabel(siteName, SwingConstants.LEFT);
+			JLabel nameLabel = new JLabel(Conversion.capitalize(siteName), SwingConstants.LEFT);
 			namePanel.add(nameLabel);
 
 			JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 1, 10));

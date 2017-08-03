@@ -48,8 +48,8 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            	//|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
 	        // Get all studies in the peer review phase.
 	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
@@ -68,7 +68,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 	                    if (job != null) {
 	                        ScienceType jobScience = ScienceType.getJobScience(job);
 	                        if (study.getScience().equals(jobScience)) {
-	                            result += 50D * person.getSettlement().getGoodsManager().getResearchFactor();;
+	                            result += 50D * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();;
 	                        }
 	                    }
 	                }

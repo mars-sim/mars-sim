@@ -314,27 +314,42 @@ implements Serializable {
             setPhase(VehicleMission.TRAVELLING);
             setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
-        } else if (TRAVELLING.equals(getPhase())) {
-            if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+        } 
+        
+        else if (TRAVELLING.equals(getPhase())) {
+
+        	if (getCurrentNavpoint() == null)
+        		// go back home 
+        		logger.info("getCurrentNavpoint() == null");
+        		
+        	else if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
                 setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                         getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
-            } else {
+            } 
+        	
+        	else {
                 setPhase(COLLECT_RESOURCES);
                 setPhaseDescription(Msg.getString("Mission.phase.collectResources.description",
                         getCurrentNavpoint().getDescription())); //$NON-NLS-1$
                 collectionSiteStartTime = (MarsClock) Simulation.instance()
                         .getMasterClock().getMarsClock().clone();
             }
-        } else if (COLLECT_RESOURCES.equals(getPhase())) {
+        	
+        } 
+        
+        else if (COLLECT_RESOURCES.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
             setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
-        } else if (DISEMBARKING.equals(getPhase()))
+        } 
+        
+        else if (DISEMBARKING.equals(getPhase()))
         	endMission(SUCCESSFULLY_DISEMBARKED);
     }
 
+	
     @Override
     protected void performPhase(MissionMember member) {
         super.performPhase(member);
@@ -344,7 +359,7 @@ implements Serializable {
     }
 
     public void endCollectingAtSite() {
-        logger.info("Collecting phase ended due to external trigger.");
+        //logger.info("Collecting phase ended due to external trigger.");
         endCollectingSite = true;
 
         // End each member's collection task.

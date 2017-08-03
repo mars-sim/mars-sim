@@ -53,7 +53,8 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 	        // Add probability for researcher's primary study (if any).
 	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
@@ -119,7 +120,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
 	            result *= job.getStartTaskProbabilityModifier(CompileScientificStudyResults.class)
-	            		* person.getSettlement().getGoodsManager().getResearchFactor();
+	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        }
 
 	        // Modify if research is the person's favorite activity.

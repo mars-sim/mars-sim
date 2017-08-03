@@ -198,76 +198,16 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		SpringUtilities.makeCompactGrid(topPane,
 		                                3, 2, //rows, cols
 		                                10, 2,        //initX, initY
-		                                25, 2);       //xPad, yPad
-		// Create the member panel.
-		Box memberPane = new CustomBox();
-		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(memberPane);
+		                                25, 1);       //xPad, yPad
 
-		// Create the member number label.
-		memberNumLabel = new JLabel(Msg.getString("MainDetailPanel.missionMembersMinMax","","","", JLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		memberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		memberPane.add(memberNumLabel);
 
-		// Create member bottom panel.
-		JPanel memberBottomPane = new JPanel(new BorderLayout(0, 0));
-		memberBottomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		memberPane.add(memberBottomPane);
-
-		// Prepare member list panel
-		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
-		memberListPane.setPreferredSize(new Dimension(100, 150));
-		memberBottomPane.add(memberListPane, BorderLayout.CENTER);
-
-		// Create scroll panel for member list.
-		JScrollPane memberScrollPane = new JScrollPane();
-		//memberScrollPane.setPreferredSize(new Dimension(300, 250));
-		memberListPane.add(memberScrollPane, BorderLayout.CENTER);
-
-		// Create member table model.
-		memberTableModel = new MemberTableModel();
-
-		// Create member table.
-		//memberTable = new JTable(memberTableModel);
-		memberTable = new ZebraJTable(memberTableModel);
-		//memberTable.setPreferredSize(new Dimension(300, 250));
-		memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-		memberTable.setRowSelectionAllowed(true);
-		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		memberTable.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						if (e.getValueIsAdjusting()) {
-							// Open window for selected person.
-							int index = memberTable.getSelectedRow();
-
-							MissionMember member = memberTableModel.getMemberAtIndex(index);
-							Person person = null;
-							Robot robot = null;
-							if (member instanceof Person) {
-								person = (Person) memberTableModel.getMemberAtIndex(index);
-								if (person != null)
-									getDesktop().openUnitWindow(person, false);
-
-							}
-							else if (member instanceof Robot) {
-								robot = (Robot) memberTableModel.getMemberAtIndex(index);
-								if (robot != null)
-									getDesktop().openUnitWindow(robot, false);
-							}
-
-						}
-					}
-				});
-		memberScrollPane.setViewportView(memberTable);
 
 		// Create the travel panel.
 		Box travelBox = new CustomBox();
 		travelBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 		// 2017-05-03 Prepare SpringLayout
 		JPanel travelPane = new JPanel(new SpringLayout());
-		travelPane.setSize(new Dimension(200, 250));
+		travelPane.setSize(new Dimension(200, 300));
 		//travelPane.setBorder(new MarsPanelBorder());
 		travelBox.add(travelPane);
 		mainPane.add(travelBox);
@@ -338,7 +278,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		//vehicleStatusLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel0);
 
-		vehicleStatusLabel = new JLabel("Not Applicable", JLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
+		vehicleStatusLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
 		//vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		JPanel wrapper01 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper01.add(vehicleStatusLabel);
@@ -381,9 +321,72 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// 2017-05-03 Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(travelPane,
 		                                5, 2, //rows, cols
-		                                10, 5,        //initX, initY
+		                                10, 2,        //initX, initY
 		                                5, 1);       //xPad, yPad
 
+		// Create the member panel.
+		Box memberPane = new CustomBox();
+		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		mainPane.add(memberPane);
+
+		// Create the member number label.
+		memberNumLabel = new JLabel(Msg.getString("MainDetailPanel.missionMembersMinMax","","","", JLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		memberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		memberPane.add(memberNumLabel);
+
+		// Create member bottom panel.
+		JPanel memberBottomPane = new JPanel(new BorderLayout(0, 0));
+		memberBottomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		memberPane.add(memberBottomPane);
+
+		// Prepare member list panel
+		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
+		memberListPane.setPreferredSize(new Dimension(100, 150));
+		memberBottomPane.add(memberListPane, BorderLayout.CENTER);
+
+		// Create scroll panel for member list.
+		JScrollPane memberScrollPane = new JScrollPane();
+		//memberScrollPane.setPreferredSize(new Dimension(300, 250));
+		memberListPane.add(memberScrollPane, BorderLayout.CENTER);
+
+		// Create member table model.
+		memberTableModel = new MemberTableModel();
+
+		// Create member table.
+		//memberTable = new JTable(memberTableModel);
+		memberTable = new ZebraJTable(memberTableModel);
+		//memberTable.setPreferredSize(new Dimension(300, 250));
+		memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+		memberTable.setRowSelectionAllowed(true);
+		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		memberTable.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
+						if (e.getValueIsAdjusting()) {
+							// Open window for selected person.
+							int index = memberTable.getSelectedRow();
+
+							MissionMember member = memberTableModel.getMemberAtIndex(index);
+							Person person = null;
+							Robot robot = null;
+							if (member instanceof Person) {
+								person = (Person) memberTableModel.getMemberAtIndex(index);
+								if (person != null)
+									getDesktop().openUnitWindow(person, false);
+
+							}
+							else if (member instanceof Robot) {
+								robot = (Robot) memberTableModel.getMemberAtIndex(index);
+								if (robot != null)
+									getDesktop().openUnitWindow(robot, false);
+							}
+
+						}
+					}
+				});
+		memberScrollPane.setViewportView(memberTable);
+		
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
 		missionCustomPane = new JPanel(customPanelLayout);

@@ -355,9 +355,19 @@ extends Mission {
      * @throws MissionException if error determining distance.
      */
     public final double getCurrentLegRemainingDistance() {
-        if (travelStatus.equals(TRAVEL_TO_NAVPOINT))
-            return getCurrentMissionLocation().getDistance(
+        if (travelStatus.equals(TRAVEL_TO_NAVPOINT)) {
+        	
+        	if (getNextNavpoint() == null) {
+        		int offset = 2;
+        		if (getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
+        		setNextNavpointIndex(getNumberOfNavpoints() - offset);
+        		updateTravelDestination();
+        	}
+        	
+        	return getCurrentMissionLocation().getDistance(
                     getNextNavpoint().getLocation());
+        }
+        
         else
             return 0D;
     }

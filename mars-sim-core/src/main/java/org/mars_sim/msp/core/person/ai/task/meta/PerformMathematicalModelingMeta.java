@@ -57,12 +57,9 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-	            result = -50D;
-	            return 0;
+		        // the bonus for being inside a vehicle
+	            result = 10D;
 	        }
-	        else
-	        // the penalty for performing experiment inside a vehicle
-	        	result = -20D;
         }
         
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
@@ -145,7 +142,8 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	        // Job modifier.
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(PerformMathematicalModeling.class);
+	            result *= job.getStartTaskProbabilityModifier(PerformMathematicalModeling.class)
+	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        }
 
 	        // Modify if lab experimentation is the person's favorite activity.

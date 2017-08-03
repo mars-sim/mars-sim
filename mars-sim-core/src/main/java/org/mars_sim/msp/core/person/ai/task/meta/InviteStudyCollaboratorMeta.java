@@ -49,7 +49,8 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
 	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
@@ -85,7 +86,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 	                        // Job modifier.
 	                        if (job != null) {
 	                            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class)
-	                            		* person.getSettlement().getGoodsManager().getResearchFactor();
+	                            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	                        }
 
 

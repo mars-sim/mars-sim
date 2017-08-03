@@ -115,7 +115,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
 	    
-	    setModal(true);
+	    //setModal(true);
 	    setVisible(true);
 	}
 	

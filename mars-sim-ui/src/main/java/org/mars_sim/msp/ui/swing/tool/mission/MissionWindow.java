@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -23,7 +24,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.NavPoint;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -111,6 +118,7 @@ extends ToolWindow {
 		// Create the edit mission button.
 		final JButton editButton = new JButton("Modify Mission");
 		editButton.setEnabled(false);
+/*
 		editButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -127,12 +135,14 @@ extends ToolWindow {
 				}
 			}
 		);
+*/
 		buttonPane.add(editButton);
 
-		// Create the end mission button.
-		final JButton endButton = new JButton("Abort Mission");
-		endButton.setEnabled(false);
-		endButton.addActionListener(
+		// Create the abort mission button.
+		final JButton abortButton = new JButton("Abort Mission");
+		abortButton.setEnabled(false);
+/*		
+		abortButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// End the mission.
@@ -143,10 +153,11 @@ extends ToolWindow {
 		missionList.addListSelectionListener(
 				new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
-						endButton.setEnabled(missionList.getSelectedValue() != null);
+						abortButton.setEnabled(missionList.getSelectedValue() != null);
 					}
 				});
-		buttonPane.add(endButton);
+*/
+		buttonPane.add(abortButton);
 
 		setSize(new Dimension(640, 640));
 		setMaximizable(true);
@@ -230,7 +241,6 @@ extends ToolWindow {
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;
 	}
-
 
 	/**
 	 * Prepares tool window for deletion.

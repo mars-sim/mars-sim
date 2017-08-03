@@ -351,7 +351,10 @@ implements UnitListener {
 					// will recursively call endMission() with a brand new "reason"
 					determineEmergencyDestination(startingMember);
 				}
+				
+				super.endMission(reason);
 
+/*				
 				if (EMBARKING.equals(getPhase())) {
 		            setPhaseEnded(true);
 				}
@@ -361,14 +364,15 @@ implements UnitListener {
 				}
 
 				else if (DISEMBARKING.equals(getPhase())) {
-					logger.info("Can't be aborted. This mission is at the very last phase of the mission. Members are unloading resources and being disembarked. Please be patient!");
+					logger.info("Can't be aborted. This mission is at the very last phase of the mission. "
+							+ "Members are unloading resources and being disembarked. Please be patient!");
 				}
 
-				else {
-		            setPhaseEnded(true);
-					super.endMission(reason);
-				}
-
+				//else {
+		        //    setPhaseEnded(true);
+				//	super.endMission(reason);
+				//}
+*/
 			}
 
 			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES_TO_CONTINUE)

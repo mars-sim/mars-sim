@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -60,7 +61,7 @@ implements UnitListener {
 		// Create collection title label.
 		String resourceString = resource.getName().substring(0, 1).toUpperCase() + 
 				resource.getName().substring(1);
-		JLabel collectionTitleLabel = new JLabel(Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected", resourceString)); //$NON-NLS-1$
+		JLabel collectionTitleLabel = new JLabel(Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected", Conversion.capitalize(resourceString))); //$NON-NLS-1$
 		contentPanel.add(collectionTitleLabel);
 
 		// Create collection value label.
