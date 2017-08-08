@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -89,9 +90,9 @@ implements Serializable {
 	/** External flag for ending exploration at the current site. */
 	private boolean endExploringSite;
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource foodAR = ResourceUtil.foodAR;
     /**
      * Constructor.
      * @param startingPerson the person starting the mission.
@@ -733,7 +734,7 @@ implements Serializable {
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);
         if (useBuffer)
-            timeLimit /= Rover.getErrorMargin();
+            timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
 
         return timeLimit;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.07 2015-01-09
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 
@@ -50,7 +50,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	/** The amount of work time to perform maintenance (millisols) */
     public static final double MAINTENANCE_WORK_TIME = 500D;
 
-	private static double life_support_range_error_margin;
+	//private static double life_support_range_error_margin;
 
 	// Data members
 	/** The rover's capacity for crew members. */
@@ -91,7 +91,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         // Use GroundVehicle constructor
         super(name, description, settlement, MAINTENANCE_WORK_TIME);
 
-        life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
+        //life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
 
 		// Get vehicle configuration.
 		config = SimulationConfig.instance().getVehicleConfiguration();
@@ -472,7 +472,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double foodConsumptionRate = config.getFoodConsumptionRate();
     	double foodCapacity = getInventory().getAmountResourceCapacity(foodAR, false);
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
-    	double foodRange = distancePerSol * foodSols / life_support_range_error_margin;
+    	double foodRange = distancePerSol * foodSols / Vehicle.getLifeSupportRangeErrorMargin();
     	if (foodRange < range) range = foodRange;
 
     	/*
@@ -491,7 +491,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double waterConsumptionRate = config.getWaterConsumptionRate();
     	double waterCapacity = getInventory().getAmountResourceCapacity(waterAR, false);
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
-    	double waterRange = distancePerSol * waterSols / life_support_range_error_margin;
+    	double waterRange = distancePerSol * waterSols / Vehicle.getLifeSupportRangeErrorMargin();
     	if (waterRange < range) range = waterRange;
 
     	// Check oxygen capacity as range limit.
@@ -499,7 +499,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double oxygenConsumptionRate = config.getNominalO2ConsumptionRate();
     	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygenAR, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
-    	double oxygenRange = distancePerSol * oxygenSols / life_support_range_error_margin;
+    	double oxygenRange = distancePerSol * oxygenSols / Vehicle.getLifeSupportRangeErrorMargin();
     	if (oxygenRange < range) range = oxygenRange;
 
     	return range;
@@ -546,9 +546,9 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		return null;
 	}
 
-	public static double getErrorMargin() {
-		return life_support_range_error_margin;
-	}
+	//public static double getLifeSupportRangeErrorMargin() {
+	//	return life_support_range_error_margin;
+	//}
 
     @Override
     public void destroy() {

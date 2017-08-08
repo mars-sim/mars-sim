@@ -352,6 +352,7 @@ implements UnitListener {
 					determineEmergencyDestination(startingMember);
 				}
 				
+				setPhaseEnded(true);
 				super.endMission(reason);
 
 /*				

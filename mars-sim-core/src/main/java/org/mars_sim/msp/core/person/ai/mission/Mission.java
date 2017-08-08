@@ -56,7 +56,7 @@ implements Serializable {
 	public static String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
 	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
 	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
-	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found.";
+	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
 
 
 	// Data members

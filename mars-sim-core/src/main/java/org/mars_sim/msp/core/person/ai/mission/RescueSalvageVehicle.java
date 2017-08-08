@@ -446,21 +446,21 @@ implements Serializable {
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
-            oxygenAmount *= Rover.getErrorMargin();
+            oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
         result.put(oxygenAR, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
-            waterAmount *= Rover.getErrorMargin();
+            waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
         result.put(waterAR, waterAmount);
 
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
-            foodAmount *= Rover.getErrorMargin();
+            foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
         result.put(foodAR, foodAmount);
 

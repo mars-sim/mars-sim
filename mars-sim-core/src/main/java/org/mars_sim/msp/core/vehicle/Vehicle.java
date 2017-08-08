@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.08 2015-03-05
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 
@@ -62,43 +62,44 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     // The error margin for determining vehicle range. (actual distance / safe distance)
     private static double fuel_range_error_margin;
+	private static double life_support_range_error_margin;
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
 
     // Data members
-    protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
-    private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
-    private VehicleOperator vehicleOperator; // The operator of the vehicle
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
     private double fuelEfficiency; // The fuel efficiency of the vehicle. (km/kg)
-    private boolean isReservedMission = false; // True if vehicle is currently reserved for a mission and cannot be taken by another
-    private boolean distanceMark = false; // True if vehicle is due for maintenance.
-    private ArrayList<Coordinates> trail; // A collection of locations that make up the vehicle's trail.
-    private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
-    private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
-    private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
-    private String status; // The vehicle's status.
-    private boolean isSalvaged; // True if vehicle is salvaged.
-    private SalvageInfo salvageInfo; // The vehicle's salvage info.
+
     private double width; // Width of vehicle (meters).
     private double length; // Length of vehicle (meters).
     private double xLocParked; // Parked X location (meters) from center of settlement.
     private double yLocParked; // Parked Y location (meters) from center of settlement.
     private double facingParked; // Parked facing (degrees clockwise from North).
+    
+    private boolean isReservedMission = false; // True if vehicle is currently reserved for a mission and cannot be taken by another
+    private boolean distanceMark = false; // True if vehicle is due for maintenance.
+    private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
+    private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
+    private boolean isSalvaged; // True if vehicle is salvaged.
+
+    private ArrayList<Coordinates> trail; // A collection of locations that make up the vehicle's trail.
     private List<Point2D> operatorActivitySpots; // List of operator activity spots.
     private List<Point2D> passengerActivitySpots; // List of passenger activity spots
-
+    
+    private String status; // The vehicle's status.
     private String vehicleType;
-
     private String typeOfDessertLoaded;
 
-    // Get vehicle configuration.
+    protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
+    private Direction direction; // Direction vehicle is traveling in
+    private VehicleOperator vehicleOperator; // The operator of the vehicle
+    private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
+    private SalvageInfo salvageInfo; // The vehicle's salvage info.
     private VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-
     private Settlement associatedSettlement;
 
     /**
@@ -114,6 +115,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
 
+        life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
         //2016-11-21 Added associatedSettlement
@@ -173,6 +175,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
 
+        life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
         //2016-11-21 Added associatedSettlement
@@ -510,7 +513,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public double getRange() {
     	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType(), false);
-        return fuelCapacity * fuelEfficiency / fuel_range_error_margin;
+        return fuelCapacity * fuelEfficiency / fuel_range_error_margin;      
     }
 
     /**
@@ -866,6 +869,11 @@ public abstract class Vehicle extends Unit implements Serializable,
 
 	public static double getErrorMargin() {
 		return fuel_range_error_margin;
+	}
+	
+	
+	public static double getLifeSupportRangeErrorMargin() {
+		return life_support_range_error_margin;
 	}
 
     //2016-11-21 Added getAssociatedSettlement()

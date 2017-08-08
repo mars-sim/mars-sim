@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 
@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -89,9 +90,9 @@ extends RoverMission {
 	private Map<AmountResource, Double> totalExcavatedMinerals;
 	private LightUtilityVehicle luv;
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource foodAR = ResourceUtil.foodAR;
 
     /**
      * Constructor
@@ -919,7 +920,7 @@ extends RoverMission {
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);
         if (useBuffer) {
-            timeLimit /= Rover.getErrorMargin();
+            timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
         }
 
         return timeLimit;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.07 2014-09-10
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -718,21 +718,21 @@ public final class TradeUtil {
 
 		// Get oxygen amount.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
-				Rover.getErrorMargin();
+				Vehicle.getLifeSupportRangeErrorMargin();
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		Good oxygenGood = GoodsUtil.getResourceGood(oxygenAR);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
-				Rover.getErrorMargin();
+				Vehicle.getLifeSupportRangeErrorMargin();
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		Good waterGood = GoodsUtil.getResourceGood(waterAR);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
-				Rover.getErrorMargin();
+				Vehicle.getLifeSupportRangeErrorMargin();
 		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		Good foodGood = GoodsUtil.getResourceGood(foodAR);
 		neededResources.put(foodGood, (int) foodAmount);

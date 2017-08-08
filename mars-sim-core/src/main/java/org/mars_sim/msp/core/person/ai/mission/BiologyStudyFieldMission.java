@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission to do biology research at a remote field location for a
@@ -295,7 +296,7 @@ implements Serializable {
 
 		// Convert timeLimit into millisols and use error margin.
 		timeLimit = (timeLimit * 1000D);
-		if (useBuffer) timeLimit /= Rover.getErrorMargin();
+		if (useBuffer) timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
 
 		return timeLimit;
 	}

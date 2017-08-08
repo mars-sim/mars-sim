@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The CollectResourcesMission class is a mission to travel in a rover to several random locations around a settlement
@@ -825,7 +826,7 @@ implements Serializable {
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);
         if (useBuffer)
-            timeLimit /= Rover.getErrorMargin();
+            timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
 
         return timeLimit;
     }

@@ -65,7 +65,7 @@ extends VehicleMission {
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 
 	// Static members
-    public static final int MIN_STAYING_MEMBERS = 2;
+    public static final int MIN_STAYING_MEMBERS = 1;
     public static final int MIN_GOING_MEMBERS = 2;
 
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
@@ -791,21 +791,21 @@ extends VehicleMission {
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
-			oxygenAmount *= Rover.getErrorMargin();
+			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		result.put(oxygenAR, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
-			waterAmount *= Rover.getErrorMargin();
+			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		result.put(waterAR, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
 				* timeSols * crewNum; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
-			foodAmount *= Rover.getErrorMargin();
+			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		result.put(foodAR, foodAmount);
 
