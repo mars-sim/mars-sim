@@ -147,7 +147,7 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>2.4.11</version>
-     </dependency>
+	</dependency>
 <!--
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -169,11 +169,18 @@
 		  <artifactId>spring-boot-cli</artifactId>
 		  <version>${springboot.version}</version>
 	  </dependency>
+
+    <dependency>
+        <groupId>edu.rice.pcdp</groupId>
+        <artifactId>pcdp-core</artifactId>
+        <version>0.0.4-SNAPSHOT</version>
+    </dependency>
 -->
   </dependencies>
+<!--
   	<dependencyManagement>
 	     <dependencies>
-<!--
+
 	        <dependency>
      Import dependency management from Spring Boot
 	            <groupId>org.springframework.boot</groupId>
@@ -182,8 +189,24 @@
 	            <type>pom</type>
 	            <scope>import</scope>
 	        </dependency>
- -->
+
+ 
 	    </dependencies>
 	</dependencyManagement>
-
+ -->	
+	<repositories>
+<!--
+	    <repository>
+	        <id>pcdp-repo</id>
+	        <url>https://raw.github.com/habanero-maven/hjlib-maven-repo/mvn-repo-pcdp-0.0.4-SNAPSHOT/</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	            <updatePolicy>always</updatePolicy>
+	        </snapshots>
+	        <releases>
+                <enabled>true</enabled>
+            </releases>        
+	    </repository>
+ -->	    
+	</repositories>
 </project>

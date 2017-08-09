@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MiningSitePanel.java
- * @version 3.08 2015-07-01
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 
@@ -62,6 +62,7 @@ public class MiningSitePanel extends WizardPanel {
 	
 	/** Range modifier. */
 	private final static double RANGE_MODIFIER = .95D;
+	private final static double MAX_RANGE = 2500D;
 	
 	/** Click range. */
 	private final static double CLICK_RANGE = 50D;
@@ -302,7 +303,12 @@ public class MiningSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		return (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
+		//return (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
+		
+		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER ;
+		if (range > MAX_RANGE)
+			range = MAX_RANGE;
+		return range / 2D;
 	}
 	
 	/**

@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
@@ -72,7 +73,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
-    private double fuelEfficiency; // The fuel efficiency of the vehicle. (km/kg)
+    private double drivetrainEfficiency; // The fuel efficiency of the vehicle. (km/kg)
 
     private double width; // Width of vehicle (meters).
     private double length; // Length of vehicle (meters).
@@ -145,7 +146,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    setBaseMass(config.getEmptyMass(vehicleType));
 
 	    // Set the fuel efficiency of the vehicle.
-	    fuelEfficiency = config.getFuelEfficiency(getDescription());
+	    drivetrainEfficiency = config.getDrivetrainEfficiency(getDescription());
 
 	    // Set initial parked location and facing at settlement.
 	    determinedSettlementParkedLocationAndFacing();
@@ -189,7 +190,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    trail = new ArrayList<Coordinates>();
 	    setBaseSpeed(baseSpeed);
 	    setBaseMass(baseMass);
-	    this.fuelEfficiency = fuelEfficiency;
+	    this.drivetrainEfficiency = fuelEfficiency;
 	    status = PARKED;
 	    isSalvaged = false;
 	    salvageInfo = null;
@@ -513,15 +514,15 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public double getRange() {
     	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType(), false);
-        return fuelCapacity * fuelEfficiency / fuel_range_error_margin;      
+        return fuelCapacity * drivetrainEfficiency * GoodsManager.SOFC_CONVERSION_EFFICIENCY / fuel_range_error_margin;      
     }
 
     /**
-     * Gets the fuel efficiency of the vehicle.
-     * @return fuel efficiency (km/kg)
+     * Gets the drivetrain efficiency of the vehicle.
+     * @return drivetrain efficiency (km/kg)
      */
-    public double getFuelEfficiency() {
-    	return fuelEfficiency;
+    public double getDrivetrainEfficiency() {
+    	return drivetrainEfficiency;
     }
 
     /** Returns total distance traveled by vehicle (in km.)

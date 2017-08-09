@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 3.07 2015-01-04
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -36,7 +36,7 @@ implements Serializable {
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String DESCRIPTION = "description";
-	private static final String FUEL_EFFICIENCY = "fuel-efficiency";
+	private static final String DRIVETRAIN_EFFICIENCY = "drivetrain-efficiency";
 	private static final String BASE_SPEED = "base-speed";
 	private static final String EMPTY_MASS = "empty-mass";
 	private static final String CREW_SIZE = "crew-size";
@@ -103,7 +103,7 @@ implements Serializable {
 				if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
 					v.description = vehicleElement.getChildText(DESCRIPTION);
 				}
-				v.fuelEff = Double.parseDouble(vehicleElement.getChild(FUEL_EFFICIENCY).getAttributeValue(VALUE));
+				v.drivetrainEff = Double.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
 				v.baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
 				v.emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
 				v.crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
@@ -263,14 +263,14 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the vehicle's fuel efficiency.
+	 * Gets the vehicle's drivetrain efficiency.
 	 * @param vehicleType the vehicle type
-	 * @return fuel efficiency in km/kg.
+	 * @return drivetrain efficiency in km/kg.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getFuelEfficiency(String vehicleType) {
+	public double getDrivetrainEfficiency(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType.toLowerCase()).fuelEff;
+		return map.get(vehicleType.toLowerCase()).drivetrainEff;
 	}
 
 	/**
@@ -595,7 +595,7 @@ implements Serializable {
 
 		private String description;
 		private double width,length;
-		private double fuelEff,baseSpeed,emptyMass;
+		private double drivetrainEff,baseSpeed,emptyMass;
 		private int crewSize;
 		private double totalCapacity;
 		private Map<String,Double> cargoCapacity;
@@ -639,9 +639,9 @@ implements Serializable {
 		public final double getLength() {
 			return length;
 		}
-		/** @return the fuelEff */
-		public final double getFuelEff() {
-			return fuelEff;
+		/** @return the driveTrainEff */
+		public final double getDriveTrainEff() {
+			return drivetrainEff;
 		}
 		/** @return the baseSpeed */
 		public final double getBaseSpeed() {

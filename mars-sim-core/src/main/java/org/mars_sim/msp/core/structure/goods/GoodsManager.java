@@ -101,6 +101,8 @@ public class GoodsManager implements Serializable {
     /** Initialized logger. */
     private static Logger logger = Logger.getLogger(GoodsManager.class.getName());
 
+    public static final double SOFC_CONVERSION_EFFICIENCY = .57D;
+    
     // TODO Mission types should be an enum.
     private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
     private static final String EXPLORATION_MISSION = "exploration";
@@ -2564,8 +2566,8 @@ public class GoodsManager implements Serializable {
         double range = 0D;
 
         double fuelCapacity = v.getCargoCapacity("methane");
-        double fuelEfficiency = v.getFuelEff();
-        range = fuelCapacity * fuelEfficiency / 1.5D;
+        double fuelEfficiency = v.getDriveTrainEff();
+        range = fuelCapacity * fuelEfficiency * SOFC_CONVERSION_EFFICIENCY / 1.5D;   
 
         double baseSpeed = v.getBaseSpeed();
         double distancePerSol = baseSpeed / 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;

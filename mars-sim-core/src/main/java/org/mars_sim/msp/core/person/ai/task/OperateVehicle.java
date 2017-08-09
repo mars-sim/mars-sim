@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -256,7 +257,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double distanceTraveled = secondsTime * ((vehicle.getSpeed() / 60D) / 60D);
 
         // Consume fuel for distance traveled.
-        double fuelConsumed = distanceTraveled / vehicle.getFuelEfficiency();
+        double fuelConsumed = distanceTraveled / vehicle.getDrivetrainEfficiency() / GoodsManager.SOFC_CONVERSION_EFFICIENCY;
         Inventory vInv = vehicle.getInventory();
         AmountResource fuelType = vehicle.getFuelType();
         double remainingFuel = vInv.getAmountResourceStored(fuelType, false);

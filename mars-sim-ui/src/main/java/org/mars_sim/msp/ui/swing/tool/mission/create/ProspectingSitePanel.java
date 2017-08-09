@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProspectingSitePanel.java
- * @version 3.08 2015-07-01
+ * @version 3.1.0 2017-08-08
  * @author Scott Davis
  */
 
@@ -31,6 +31,7 @@ class ProspectingSitePanel extends WizardPanel {
 	
 	// Range modifier.
 	private final static double RANGE_MODIFIER = .95D;
+	private final static double MAX_RANGE = 2500D;
 	
 	// Data members.
 	private MapPanel mapPane;
@@ -134,7 +135,11 @@ class ProspectingSitePanel extends WizardPanel {
 	 */
 	void updatePanel() {
 		try {
-			double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
+			//double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
+			double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+			if (range > MAX_RANGE)
+				range = MAX_RANGE;
+			range = range / 2D;
 			pixelRange = convertRadiusToMapPixels(range);
 			ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
 			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));

@@ -707,9 +707,9 @@ public final class TradeUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelType());
-		double efficiency = rover.getFuelEfficiency();
+		double efficiency = rover.getDrivetrainEfficiency();
 		neededResources.put(fuelGood,
-				(int) VehicleMission.getFuelNeededForTrip(distance, efficiency, true));
+				(int) VehicleMission.getFuelNeededForTrip(distance, efficiency * GoodsManager.SOFC_CONVERSION_EFFICIENCY, true));
 
 		// Get estimated trip time.
 		double averageSpeed = rover.getBaseSpeed() / 2D;

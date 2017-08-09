@@ -38,6 +38,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	
 	/** Range modifier. */
 	private final static double RANGE_MODIFIER = .95D;
+	private final static double MAX_RANGE = 2500D;
 
 	// Data members.
 	private MapPanel mapPane;
@@ -267,13 +268,17 @@ class ExplorationSitesPanel extends WizardPanel {
 	 * @return rover range.
 	 */
 	private double getRange() {
-		try {
+		//try {
 			// Use range modifier.
-			return getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
-		}
-		catch (Exception e) {
-			return 0D;
-		}
+			double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+			if (range > MAX_RANGE)
+				range = MAX_RANGE;
+			return range;
+		//}
+		//catch (Exception e) {
+		//	return 0D;
+		//}
+
 	}
 	
 	/**
@@ -513,6 +518,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), getCenterCoords(), 
 				        SurfMarsMap.TYPE);
 				int radiusPixels = convertDistanceToMapPixels(getRadius());
+
 				ellipseLayer.setEllipseDetails(prevNavpoint, nextNavpoint, radiusPixels);
 				ellipseLayer.setDisplayEllipse(true);
 				mapPane.repaint();

@@ -450,7 +450,7 @@ public class HelpGenerator {
 			}
 			helpFileTableRow(content,new String[] {"Crew Size",Integer.toString(v.getCrewSize())});
 			helpFileTableRow(content,new String[] {"Empty Mass",Double.toString(v.getEmptyMass())});
-			helpFileTableRow(content,new String[] {"Fuel Efficiency",Double.toString(v.getFuelEff())});
+			helpFileTableRow(content,new String[] {"Fuel Efficiency",Double.toString(v.getDriveTrainEff())});
 			if (v.hasLab()) {
 				helpFileTableRow(content,new String[] {"Lab Tech Level",Integer.toString(v.getLabTechLevel())});
 				helpFileTableRow(content,new String[] {"Lab Specialties",v.getLabTechSpecialties().toString()});

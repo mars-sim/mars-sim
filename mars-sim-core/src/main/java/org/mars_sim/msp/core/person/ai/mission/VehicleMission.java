@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
@@ -746,7 +747,7 @@ implements UnitListener {
 		Map<Resource, Number> result = new HashMap<Resource, Number>();
 		if (vehicle != null) {
 			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance,
-					vehicle.getFuelEfficiency(), useBuffer));
+					vehicle.getDrivetrainEfficiency() * GoodsManager.SOFC_CONVERSION_EFFICIENCY, useBuffer));
 		}
 		return result;
 	}

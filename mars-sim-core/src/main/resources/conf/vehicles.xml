@@ -12,67 +12,78 @@ http://www.nasa.gov/pdf/464826main_SEV_Concept_FactSheet.pdf
 3. Surface Mobility Technology Development: Pressurized Mars Rovers
 http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=pdf
 
+4. For methane gas, 
+
+Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg
+
+Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L
+ 
+Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
+ 
+5. Assume Solid Oxide Fuel Cell (SOFC) has 57% efficiency. see https://www.sciencedaily.com/releases/2012/05/120531165720.htm
+ 
  -->
+ 
 
 <vehicle-configuration>
 
 	<vehicle type="Explorer Rover" width="3.5" length="8.0">
 		<description>A rover for collecting rock samples from remote sites and ice prospecting.</description>
 
-		<!-- The fuel efficiency of the rover (km/kg) (required) -->
-		<!-- Default: 2.0 -->
-		<fuel-efficiency value="2.0" />
+		<!-- The drivetrain efficiency of the rover (km/kg) (required) -->
+		<!-- Default: varied according to the type of vehicle -->
+		<drivetrain-efficiency value="60.0" />
 
 		<!-- Base speed of rover (km/hr) (required) -->
-		<!-- Default: 30.0 -->
-		<base-speed value="30.0" />
+		<!-- Default: varies according to the type of vehicle -->
+		<base-speed value="50.0" />
 
 		<!-- Empty mass of rover (kg) (required) -->
-		<!-- Default: 10000.0 -->
+		<!-- Default: varies according to the type of vehicle  -->
 		<empty-mass value="10000.0" />
 
 		<!-- The crew size of an rover -->
-		<!-- Default: 4 -->
+		<!-- Default: varies according to the type of vehicle -->
 		<crew-size value="4" />
 
 		<!-- Cargo capacity list -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
-		<!-- Default: 5800.0 -->
+		<!-- Default: varies according to the type of vehicle -->
 		<cargo total-capacity="5800.0">
 
 			<!-- The methane cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 1600.0 -->
-			<capacity resource="methane" value="1600.0" />
+			<!-- Default: varies according to the type of vehicle -->
+			<capacity resource="methane" value="300.0" />
 
 			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 140.0 -->
+			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="oxygen" value="140.0" />
 
 			<!-- The water cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 560.0 -->
+			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="water" value="560.0" />
 
 			<!-- The food cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 210.0 -->
+			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="food" value="210.0" />
 
 			<!-- The dessert cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 50.0 -->
+			<!-- Default: varies according to the type of vehicle -->
 			<capacity resource="dessert" value="50.0" />
 
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 2000.0 -->
+			<!-- Default: varies according to the type of vehicle -->
 			<!-- <capacity resource="Rock Samples" value="2000.0" /> -->
 
 			<!-- The ice cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 2000.0 -->
+			<!-- Default: varies according to the type of vehicle -->
 			<!-- <capacity resource="Ice" value="2000.0" /> -->
 
 <!--
@@ -120,12 +131,12 @@ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=p
 	<!-- Transport rover -->
 	<vehicle type="Transport Rover" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another.</description>
-		<fuel-efficiency value="2.0" />
-		<base-speed value="30.0" />
+		<drivetrain-efficiency value="50.0" />
+		<base-speed value="40.0" />
 		<empty-mass value="10000.0" />
 		<crew-size value="8" />
 		<cargo total-capacity="7300.0">
-			<capacity resource="methane" value="2000.0" />
+			<capacity resource="methane" value="600.0" />
 			<capacity resource="oxygen" value="350.0" />
 			<capacity resource="water" value="1400.0" />
 			<capacity resource="food" value="525.0" />
@@ -158,12 +169,12 @@ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=p
 	<!-- Cargo rover -->
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another.</description>
-		<fuel-efficiency value="2.0" />
-		<base-speed value="30.0" />
+		<drivetrain-efficiency value="40.0" />
+		<base-speed value="40.0" />
 		<empty-mass value="10000.0" />
 		<crew-size value="2" />
 		<cargo total-capacity="10300.0">
-			<capacity resource="methane" value="2000.0" />
+			<capacity resource="methane" value="600.0" />
 			<capacity resource="oxygen" value="350.0" />
 			<capacity resource="water" value="1400.0" />
 			<capacity resource="food" value="525.0" />
@@ -190,7 +201,7 @@ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=p
 	<!-- Light Utility Vehicle -->
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
-		<fuel-efficiency value="0.0" />
+		<drivetrain-efficiency value="0.0" />
 		<base-speed value="0.0" />
 		<empty-mass value="300.0" />
 		<crew-size value="1" />
@@ -211,7 +222,7 @@ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=p
 	<!-- remote controlled prospecting rover
 	<vehicle type="remote controlled prospector" width="1.5" length="2.5">
 		<description>used for automatic mineral prospecting</description>
-		<fuel-efficiency value="1.0" />
+		<drivetrain-efficiency value="1.0" />
 		<base-speed value="12.0" />
 		<empty-mass value="250.0" />
 		<crew-size value="0" />
@@ -236,7 +247,7 @@ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=p
 			or for delivering payloads to surface
 			locations by hard landing
 		</description>
-		<fuel-efficiency value="1.0"/>
+		<drivetrain-efficiency value="1.0"/>
 		<base-speed value="10.0" />
 		<empty-mass value="200.0"/>
 		<crew-size value="0"/>
