@@ -53,9 +53,11 @@ public class HelpGenerator {
 
 	// Eclipse's htmls at
 	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\src\main\resources\docs\help
+	// or D:\Data\git\mars-sim\mars-sim-ui\src\main\resources\docs\help
 	//
 	// newly generated htmls at
 	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\target\classes\docs\help
+	// or D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help
 
 */
 

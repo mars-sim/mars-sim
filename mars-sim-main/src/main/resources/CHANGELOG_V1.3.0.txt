@@ -5,7 +5,7 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 8 (build 40__) - 2017-06-__
+## v3.1.0-Preview 8 (build 4076) - 2017-08-09
 
 ### MINIMUM REQUIREMENTS :
 
@@ -15,7 +15,7 @@ https://mars-sim.github.io/
 
 3. 64-bit Oracle Java 8 (JRE or JDK 8u77 and higher) OR OpenJDK with OpenJFX
 
-4. 128 MB free disk space
+4. 140 MB free disk space
 
 
 ### KNOWN LIMITATIONS :
@@ -23,14 +23,14 @@ https://mars-sim.github.io/
 1. In MacOS, Settlement Map toggle button cannot bring up the Map. Known JavaFX
    WebEngine bug in displaying certain fonts in Help Browser.
 
-2. In Linux, the text fields does not allow text input.
+2. In Linux, textfields do not allow text input.
 
 3. Not compatible with 32-bit Java 8.
 
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Refine phenological/growing stage for each category of crop
+1. Refine phenological/growing stage for each category of crop.
 
 2. Since Corn depletes nitrogen in the soil more quickly than other crops, it makes
    sense to disallow growing Corn consecutively in the same greenhouse.
@@ -42,15 +42,16 @@ https://mars-sim.github.io/
 
 1. Switch to using only JavaFX UI elements on Help Browser.
 
-2. Add animated Main Menu items
+2. Add animated Main Menu items.
 
 
 ### FIXES :
 
-1. Correct crop harvesting issues
+1. Correct crop harvesting issues.
 
-2. Fix crash if dragging the globe in the Minimap too fast
+2. Fix crash if dragging the globe in the Minimap too fast.
 
+3. Temporarily disable the "Edit Mission" and "Abort Mission" Buttons in Mission Tool.
 
 
 -----------------------------------------------------------------------------------------

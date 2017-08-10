@@ -239,7 +239,7 @@ public class MainScene {
 	private Pane root;
 	private StackPane mainAnchorPane, //monPane,
 					mapStackPane, minimapStackPane,
-					speedPane, soundPane, calendarPane, farmPane,
+					speedPane, soundPane, calendarPane,// farmPane,
 					settlementBox, chatBoxPane, pausePane,
 					asPane, sPane;
 
@@ -252,7 +252,7 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
-	private IconNode soundIcon, marsNetIcon, speedIcon, farmIcon;
+	private IconNode soundIcon, marsNetIcon, speedIcon;//, farmIcon;
 	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
 	private Label lastSaveLabel, TPSLabel, upTimeLabel, noteLabel, benchmarkLabel; //monthLabel, yearLabel, LSLabel
 	private Text LSText, monthText, yearText, northText, southText;
@@ -267,8 +267,8 @@ public class MainScene {
 	//private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; //calendarButton,
 	private static JFXSlider zoomSlider, soundSlider; //timeSlider,
-	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn, farmBtn; // miniMapBtn, mapBtn,
-	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup, farmPopup;// marsTimePopup;
+	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;//, farmBtn; // miniMapBtn, mapBtn,
+	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;//, farmPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 
 	private CheckBox muteBox;
@@ -814,7 +814,7 @@ public class MainScene {
         createSpeedPanel();
         createSoundPopup();
         
-        createFarmPopup();
+        //createFarmPopup();
 
         // Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
@@ -847,7 +847,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 3.0);
 	        AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 	        AnchorPane.setTopAnchor(soundBtn, 3.0);
-	        AnchorPane.setTopAnchor(farmBtn, 3.0);
+	        //AnchorPane.setTopAnchor(farmBtn, 3.0);
 	        AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
@@ -856,7 +856,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 	        AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 	        AnchorPane.setTopAnchor(soundBtn, 0.0);
-	        AnchorPane.setTopAnchor(farmBtn, 0.0);
+	        //AnchorPane.setTopAnchor(farmBtn, 0.0);
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
@@ -865,7 +865,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 	        AnchorPane.setTopAnchor(lastSaveLabel, 0.0);
 	        AnchorPane.setTopAnchor(soundBtn, 0.0);
-	        AnchorPane.setTopAnchor(farmBtn, 0.0);
+	        //AnchorPane.setTopAnchor(farmBtn, 0.0);
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
@@ -873,7 +873,7 @@ public class MainScene {
         AnchorPane.setRightAnchor(speedBtn, 5.0);
         AnchorPane.setRightAnchor(marsNetBtn, 45.0);
         AnchorPane.setRightAnchor(soundBtn, 85.0);
-        AnchorPane.setRightAnchor(farmBtn, 125.0);
+        //AnchorPane.setRightAnchor(farmBtn, 125.0);
         AnchorPane.setRightAnchor(marsTimeButton, 165.0);
         AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 165);
         AnchorPane.setRightAnchor(lastSaveLabel,  marsTimeButton.getMinWidth() +  marsTimeButton.getMinWidth() + 165);
@@ -882,7 +882,7 @@ public class MainScene {
         		jfxTabPane,
         		marsNetBtn, speedBtn,
         		lastSaveLabel,
-        		earthTimeButton, marsTimeButton, soundBtn, farmBtn);//badgeIcon,borderPane, timeBar, snackbar
+        		earthTimeButton, marsTimeButton, soundBtn);//, farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 
 		root.getChildren().addAll(anchorPane);
@@ -1524,6 +1524,7 @@ public class MainScene {
 
 	}
 
+/*	
     public void createFarmPopup() {
 		//logger.info("MainScene's createFarmPopup() is on " + Thread.currentThread().getName());
 
@@ -1574,7 +1575,7 @@ public class MainScene {
 		farmPopup = new JFXPopup(farmPane);
 		
     }
-
+*/
 
 	public void createMarsTimeBar() {
 		marsTimeButton = new Button();
@@ -2678,8 +2679,8 @@ public class MainScene {
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.YELLOW);
 			soundBtn.setGraphic(soundIcon);
-			farmIcon.setFill(Color.YELLOW);
-			farmBtn.setGraphic(farmIcon);
+			//farmIcon.setFill(Color.YELLOW);
+			//farmBtn.setGraphic(farmIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_orange.css").toExternalForm());
 		}
 
@@ -2690,8 +2691,8 @@ public class MainScene {
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.LAVENDER);
 			soundBtn.setGraphic(soundIcon);
-			farmIcon.setFill(Color.LAVENDER);
-			farmBtn.setGraphic(farmIcon);
+			//farmIcon.setFill(Color.LAVENDER);
+			//farmBtn.setGraphic(farmIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
 		}
 
