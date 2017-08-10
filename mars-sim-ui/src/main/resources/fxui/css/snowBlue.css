@@ -389,8 +389,6 @@
 	-fx-background: transparent;
     -fx-background-color: #065185;
     -fx-text-fill: #7ebcea;
-    -fx-cell-size: 1.66667em;
-    -fx-pref-height: 25;
 }
 
 .jfx-combo-box .text-field {
