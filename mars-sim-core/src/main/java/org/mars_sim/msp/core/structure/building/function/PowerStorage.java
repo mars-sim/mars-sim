@@ -49,7 +49,7 @@ implements Serializable {
 	/** The health of the battery */
 	private double batteryHealth = 1D; 	
 	/** max energy storage capacity in kWh */
-	private double maxCapacity; // Note: in kilo watt-hour, not Watt-hour
+	private double currentMaxCapacity; // Note: in kilo watt-hour, not Watt-hour
 	/** energy last stored in the battery */
 	private double kWattHoursCache;
 	/** energy currently stored in the battery */
@@ -85,14 +85,14 @@ implements Serializable {
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 		MAX_KW_HR_NAMEPLATE = config.getPowerStorageCapacity(building.getBuildingType());
+		
+		currentMaxCapacity = MAX_KW_HR_NAMEPLATE;
 
-		maxCapacity = MAX_KW_HR_NAMEPLATE;
-
-		ampHoursRating = 1000D * maxCapacity/SECONDARY_LINE_VOLTAGE; 
+		ampHoursRating = 1000D * currentMaxCapacity/SECONDARY_LINE_VOLTAGE; 
 
 		// 2017-01-03 at the start of sim, set to a random value		
-		kWattHoursStored = RandomUtil.getRandomInt(1, (int)MAX_KW_HR_NAMEPLATE);		
-		//System.out.println("kWattHoursStored is " + kWattHoursStored);
+		kWattHoursStored = RandomUtil.getRandomDouble(MAX_KW_HR_NAMEPLATE);		
+		//logger.info("initial kWattHoursStored is " + kWattHoursStored);
 		
 		// update batteryVoltage
 		updateVoltage();
@@ -122,7 +122,7 @@ implements Serializable {
 			Building building = iStore.next();
 			PowerStorage store = (PowerStorage) building.getFunction(PowerStorage.FUNCTION);
 			double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-			supply += store.maxCapacity * wearModifier;
+			supply += store.currentMaxCapacity * wearModifier;
 		}
 
 		double existingPowerStorageValue = demand / (supply + 1D);
@@ -147,14 +147,14 @@ implements Serializable {
 			startCycle = true;
 		}
 		
-		else if (kWh < maxCapacity / 5D) {
+		else if (kWh < currentMaxCapacity / 5D) {
 		int rand = RandomUtil.getRandomInt(3);		
 		if (rand == 0)
 			startCycle = true;
 		}
 
-		else if (kWh > maxCapacity) {
-			kWh = maxCapacity;			
+		else if (kWh > currentMaxCapacity) {
+			kWh = currentMaxCapacity;			
 		}
 		
 		kWattHoursCache = kWattHoursStored;
@@ -174,13 +174,13 @@ implements Serializable {
 		if (batteryHealth > 1)
 			batteryHealth = 1;
 		//System.out.println("battery_health is " + battery_health);
-    	maxCapacity = maxCapacity * batteryHealth;
-    	if (maxCapacity > MAX_KW_HR_NAMEPLATE)
-    		maxCapacity = MAX_KW_HR_NAMEPLATE;
-		ampHoursRating = 1000D * maxCapacity/SECONDARY_LINE_VOLTAGE; 
-		if (kWattHoursStored > maxCapacity) {
-			kWattHoursCache = kWattHoursStored;
-			kWattHoursStored = maxCapacity;		
+    	currentMaxCapacity = currentMaxCapacity * batteryHealth;
+    	if (currentMaxCapacity > MAX_KW_HR_NAMEPLATE)
+    		currentMaxCapacity = MAX_KW_HR_NAMEPLATE;
+		ampHoursRating = 1000D * currentMaxCapacity/SECONDARY_LINE_VOLTAGE; 
+		if (kWattHoursStored > currentMaxCapacity) {
+			kWattHoursStored = currentMaxCapacity;		
+			kWattHoursCache = kWattHoursStored; 
 		}
 		updateVoltage();
 
@@ -208,7 +208,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return maxCapacity / 5D;
+		return currentMaxCapacity / 5D;
 	}
 
 	@Override
@@ -240,11 +240,12 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the building's energy storage capacity.
+	 * Gets the building's current max storage capacity
+	 * (Note : this accounts for the battery degradation over time)
 	 * @return capacity (kW hr).
 	 */
-	public double getEnergyStorageCapacity() {
-		return maxCapacity;
+	public double getCurrentMaxCapacity() {
+		return currentMaxCapacity;
 	}
 
 	/**
@@ -254,7 +255,6 @@ implements Serializable {
 	public double getkWattHourStored() {
 		return kWattHoursStored;
 	}
-	
 	
 	public double getAmpHourRating() {
 		return ampHoursRating;

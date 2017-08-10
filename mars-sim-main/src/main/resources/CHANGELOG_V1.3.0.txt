@@ -5,13 +5,12 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 8 (build 4077) - 2017-08-09
+## v3.1.0-Preview 8 (build 4082) - 2017-08-10
 
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, Settlement Map toggle button cannot bring up the Map. Known JavaFX
-   WebEngine bug in displaying certain fonts in Help Browser.
+1. In MacOS, JavaFX WebEngine's bug creates garbled characters in Help Browser.
 
 2. In Linux, textfields do not allow text input.
 

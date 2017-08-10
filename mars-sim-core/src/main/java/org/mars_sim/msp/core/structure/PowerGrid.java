@@ -417,7 +417,7 @@ implements Serializable {
 		while (iStore.hasNext()) {
 			Building building = iStore.next();
 			PowerStorage store = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
-			tempPowerStorageCapacity += store.getEnergyStorageCapacity();
+			tempPowerStorageCapacity += store.getCurrentMaxCapacity();
 		}
 		setStoredPowerCapacity(tempPowerStorageCapacity);
 
@@ -468,19 +468,24 @@ implements Serializable {
 			Building building = i.next();
 			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
 			double kWhStored = storage.getkWattHourStored();
-			double remainingCapacity = storage.getEnergyStorageCapacity() - kWhStored;
+			double max = storage.getCurrentMaxCapacity();
+			double remainingCapacity = max - kWhStored;
 			double voltage = storage.getBatteryVoltage();
 			//if (kWhStored == 0) {
 			//	logger.info("The grid battery is depleted at " + building.getNickName() + " in " + settlement.getName());					
 			//}
 
-			if (remainingCapacity > 0D) {
+			//logger.info("The grid battery at " + building.getNickName() + " in " + settlement.getName() + " is currently at " + Math.round(kWhStored * 100D)/100D + " kWh");
+
+			if (remainingCapacity > max * .01) {
 				// TODO: need to come up with a better battery model with charge capacity parameters from https://www.mathworks.com/help/physmod/elec/ref/genericbattery.html?requestedDomain=www.mathworks.com
 				double Ah = storage.getAmpHourRating();
 				double hr = time * HOURS_PER_MILLISOL;
 				// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C charging rate
 				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
 				double chargeRate = 3D - 2.9D * voltage / PowerStorage.BATTERY_MAX_VOLTAGE ;
+				//logger.info("chargeRate is " + Math.round(chargeRate*100D)/100D);
+				
 				// make minimum charging rate as 0.1C;
 				double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
 				double energyToStore = ampere /1000D * (PowerStorage.SECONDARY_LINE_VOLTAGE - voltage);
@@ -490,24 +495,25 @@ implements Serializable {
 				//		+ "    energyToStore : " + Math.round(energyToStore * 100D)/100D
 				//		+ " in " + building.getNickName());
 				
-				//double amp = excessEnergy/PowerStorage.SECONDARY_LINE_VOLTAGE;
-				//double percent_charged = Ah * PSUEDO_CHARGING_RATE * time;
-				//double energyToStore = excessEnergy * percent_charged;
-	
-				if (remainingCapacity < energyToStore) {
+				if (energyToStore > remainingCapacity) {
 					// if the max cap of this building's battery has been reached, look for another building's battery to store the excess energy					
 					energyToStore = remainingCapacity;
-					logger.info("The grid battery is now fully charged at " + Math.round(kWhStored * 100D)/100D + " kWh at " + building.getNickName() + " in " + settlement.getName());
+					//logger.info("The grid battery is now fully charged at " + Math.round(kWhStored * 100D)/100D + " kWh at " + building.getNickName() + " in " + settlement.getName());
 				}
-				else { // remainingCapacity >= energyToStore
-					;
-				}				
+			
 				// the excessEnergy will be split into many chunks and stored at an array of batteries across the settlement
 				excessEnergy = excessEnergy - energyToStore;
 				// TODO: calculate how much power can be rejected via radiators 
 				// raise settlement temperature (or capture the excess power as heat)
 				// or turn down some modules in the power plant to conserve resources
 				storage.setEnergyStored(kWhStored + energyToStore);
+				
+				kWhStored = storage.getkWattHourStored();
+				max = storage.getCurrentMaxCapacity();
+				remainingCapacity = max - kWhStored;
+				
+				if (remainingCapacity <= max * .01)
+					logger.info("The grid battery at " + building.getNickName() + " in " + settlement.getName() + " is now FULLY RECHARGED at " + Math.round(kWhStored * 100D)/100D + " kWh");
 /*		
 				if (totalEnergyStored + energyToStore < energyStorageCapacity)
 					totalEnergyStored = totalEnergyStored + energyToStore;

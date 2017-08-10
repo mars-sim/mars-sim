@@ -50,7 +50,7 @@ extends BuildingFunctionPanel {
 		DecimalFormat formatter = new DecimalFormat("0.0");
 
 		// Create capacity label.
-		capacityCache = storage.getEnergyStorageCapacity();
+		capacityCache = storage.getCurrentMaxCapacity();
 		capacityLabel = new JLabel("Energy Capacity : " + formatter.format(capacityCache) + 
 				" kWh", JLabel.CENTER);
 		add(capacityLabel);
@@ -68,7 +68,7 @@ extends BuildingFunctionPanel {
 		DecimalFormat formatter = new DecimalFormat("0.0");
 
 		// Update capacity label if necessary.
-		double newCapacity = storage.getEnergyStorageCapacity();
+		double newCapacity = storage.getCurrentMaxCapacity();
 		if (capacityCache != newCapacity) {
 			capacityCache = newCapacity;
 			capacityLabel.setText("Energy Capacity : " + formatter.format(capacityCache) + 
