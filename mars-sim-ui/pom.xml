@@ -99,7 +99,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.9.1</version>
+			<version>1.9</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-util : 115 KB
 		     Note : batik-util 1.8 is required only by batik-transcoder 1.9 -->
@@ -140,14 +140,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>
 		    <artifactId>batik-anim</artifactId>
-		    <version>1.9.1</version>
+		    <version>1.9</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svg-dom
 			 Needed by afester's svg class -->
 		<dependency>
 		  <groupId>org.apache.xmlgraphics</groupId>
 		  <artifactId>batik-svg-dom</artifactId>
-		  <version>1.9.1</version>
+		  <version>1.9</version>
 		</dependency>	
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-dom/1.9 : 167 KB
 		<dependency>
