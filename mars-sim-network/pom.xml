@@ -25,7 +25,7 @@
 	<dependency>
 	    <groupId>org.threeten</groupId>
 	    <artifactId>threeten-extra</artifactId>
-	    <version>1.1</version>
+	    <version>1.2</version>
 	</dependency>
   </dependencies>
 </project>

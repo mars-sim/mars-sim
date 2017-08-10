@@ -99,7 +99,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.9</version>
+			<version>1.9.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-util : 115 KB
 		     Note : batik-util 1.8 is required only by batik-transcoder 1.9 -->
@@ -140,14 +140,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>
 		    <artifactId>batik-anim</artifactId>
-		    <version>1.9</version>
+		    <version>1.9.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svg-dom
 			 Needed by afester's svg class -->
 		<dependency>
 		  <groupId>org.apache.xmlgraphics</groupId>
 		  <artifactId>batik-svg-dom</artifactId>
-		  <version>1.9</version>
+		  <version>1.9.1</version>
 		</dependency>	
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-dom/1.9 : 167 KB
 		<dependency>
@@ -253,7 +253,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.40.12</version>
+			<version>8.40.13</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->
@@ -304,13 +304,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>net.java.balloontip</groupId>
 			<artifactId>balloontip</artifactId>
 			<version>1.2.4.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.reactfx/reactfx/2.0-M5 : 418 KB 
-		     Needed by https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless/0.5.2 -->
-		<dependency>
-			<groupId>org.reactfx</groupId>
-			<artifactId>reactfx</artifactId>
-			<version>2.0-M5</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries : 409 KB
@@ -500,11 +493,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>0.1.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix : 1.6 MB -->
+		<!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix : 1.7 MB -->
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>1.5.0</version>
+			<version>1.7.0</version>
 		</dependency>
 <!-- The following artifacts are Needed by jfoenix
 		fontawesomefx 8.0.10 : 84 KB
@@ -520,17 +513,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>datafx</artifactId>
-		    <version>8.0.1</version>
+		    <version>8.0.7</version>
 		</dependency>
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>flow</artifactId>
-		    <version>8.0.1</version>
+		    <version>8.0.7</version>
 		</dependency>
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>core</artifactId>
-		    <version>8.0.1</version>
+		    <version>8.0.7</version>
 		</dependency>
 		<!-- https://github.com/orfjackal/retrolambda
 			 https://mvnrepository.com/artifact/net.orfjackal.retrolambda/retrolambda : 47 KB -->
@@ -544,7 +537,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>me.tatarka</groupId>
 		    <artifactId>gradle-retrolambda</artifactId>
-		    <version>3.6.1</version>
+		    <version>3.7.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.glassfish.hk2.external/javax.inject : 12 KB-->
 		<!-- <dependency>
