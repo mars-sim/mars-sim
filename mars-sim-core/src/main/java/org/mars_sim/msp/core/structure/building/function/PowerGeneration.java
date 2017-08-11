@@ -180,13 +180,6 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 		for (PowerSource source : powerSources) {
-			if (source instanceof FuelPowerSource) {
-				FuelPowerSource fuelSource = (FuelPowerSource) source;
-				if (fuelSource.isToggleON()) {
-					fuelSource.consumeFuel(time, getBuilding().getSettlementInventory());
-				}
-			}
-
 			if (source instanceof SolarPowerSource) {
 				SolarPowerSource solarPowerSource = (SolarPowerSource) source;
 				//System.out.println("solarPowerSource.getMaxPower() is "+ solarPowerSource.getMaxPower());
@@ -198,6 +191,14 @@ implements Serializable {
 				solarPowerSource.setEfficiency(new_eff);
 				//System.out.println("new_eff is " + new_eff);
 			}
+			
+			else if (source instanceof FuelPowerSource) {
+				FuelPowerSource fuelSource = (FuelPowerSource) source;
+				if (fuelSource.isToggleON()) {
+					fuelSource.consumeFuel(time, getBuilding().getSettlementInventory());
+				}
+			}
+
 		}
 	}
 

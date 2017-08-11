@@ -715,10 +715,10 @@ implements Serializable {
 	public void endMission(String reason) {
 		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
 
-		if (!(this instanceof RescueSalvageVehicle)) {
-			returnHome();
-			goToNearestSettlement();
-		}
+		//if (!(this instanceof RescueSalvageVehicle)) {
+		//	returnHome();
+		//	goToNearestSettlement();
+		//}
 		
 		if (!done) {// && !reason.equals(USER_ABORTED_MISSION) ) {
 				//& reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
