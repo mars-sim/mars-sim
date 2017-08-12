@@ -8,19 +8,15 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URL;
 import java.text.DecimalFormat;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -43,7 +39,6 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 //import org.mars_sim.msp.ui.swing.tool.MarsViewer;
-import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -67,6 +62,7 @@ extends TabPanel {
 	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
 	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
 
+	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
 	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, DRY
 
 
@@ -74,7 +70,7 @@ extends TabPanel {
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
 	// 2014-11-11 Added new panels and labels
-	private JPanel bottomPanel;
+	//private JPanel bottomPanel;
 	private JTextField airDensityTF, pressureTF, solarIrradianceTF, windSpeedTF, windDirTF, opticalDepthTF, zenithAngleTF, solarDeclinationTF;
 	//private JLabel airDensityLabel, airPressureLabel, solarIrradianceLabel, windSpeedLabel, windDirLabel, opticalDepthLabel, zenithAngleLabel, solarDeclinationLabel;
 
@@ -179,21 +175,25 @@ extends TabPanel {
 
         // Create location panel
         JPanel locationPanel = new JPanel(new GridLayout(1, 2)); //new BorderLayout(0,0));
-        locationPanel.setBorder(new MarsPanelBorder());
-        locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
+        //locationPanel.setBorder(new MarsPanelBorder());
+        locationPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
         locationPanel.add(locationLabelPanel);
         locationPanel.add(locationCoordsPanel);
 
 
-        JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
-		mainPanel.setBorder(new MarsPanelBorder());
-        mainPanel.add(locationPanel, BorderLayout.NORTH);
-
-        centerContentPanel.add(mainPanel, BorderLayout.NORTH);
+        JPanel leftPanel = new JPanel(new BorderLayout(0, 0));
+		//mainPanel.setBorder(new MarsPanelBorder());
+        leftPanel.add(locationPanel, BorderLayout.NORTH);
+        
+        centerContentPanel.setBorder(new MarsPanelBorder());
+        centerContentPanel.add(leftPanel, BorderLayout.WEST);
 
       	// Create weatherPanel and imgPanel.
         JPanel weatherPanel = new JPanel(new BorderLayout(0, 0));//new GridLayout(2, 1));//new FlowLayout(FlowLayout.CENTER));
+        locationPanel.setBorder(new EmptyBorder(25, 15, 15, 15));
+        leftPanel.add(weatherPanel, BorderLayout.CENTER);
 
+        /*
        	// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		weatherPanel.add(buttonPane);//, BorderLayout.NORTH);
@@ -209,153 +209,154 @@ extends TabPanel {
 				}
 			});
 		buttonPane.add(stormButton);
-
+*/
     	JPanel imgPanel = new JPanel(new FlowLayout());
         weatherLabel = new JLabel();
     	imgPanel.add(weatherLabel, JLabel.CENTER);
-    	weatherPanel.add(imgPanel, BorderLayout.CENTER);
+    	weatherPanel.add(imgPanel, BorderLayout.NORTH);
     	// TODO: calculate the average, high and low temperature during the day to determine
     	// if it is hot, sunny, dusty, stormy...
     	// Sets up if else clause to choose the proper weather image
     	setImage(SUNNY);
-        mainPanel.add(weatherPanel, BorderLayout.CENTER);
-
-        bottomPanel = new JPanel(new BorderLayout(0, 0));//new FlowLayout());//new GridLayout(3, 1));//new BorderLayout(0, 0));
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        JPanel tPanel = new JPanel(new FlowLayout());
-        bottomPanel.add(tPanel, BorderLayout.NORTH);
+    	
+    	// Prepare temperature panel
+        JPanel temperaturePanel = new JPanel(new FlowLayout());
+        weatherPanel.add(temperaturePanel, BorderLayout.CENTER);
 
         // Prepare temperature label
         temperatureValueLabel = new JLabel(getTemperatureString(getTemperature()), JLabel.CENTER);
         temperatureValueLabel.setOpaque(false);
         temperatureValueLabel.setFont(new Font("Serif", Font.BOLD, 28));
         temperatureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        tPanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
+        temperaturePanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
+
+        JPanel rightPanel = new JPanel(new BorderLayout(30, 30));//new FlowLayout());//new GridLayout(3, 1));//new BorderLayout(0, 0));
+        centerContentPanel.add(rightPanel, BorderLayout.CENTER);
 
         // Create spring layout dataPanel
-        JPanel dataPanel = new JPanel(new SpringLayout());//GridLayout(10, 2));
-        bottomPanel.add(dataPanel, BorderLayout.CENTER);
+        JPanel springPanel = new JPanel(new SpringLayout());//GridLayout(10, 2));
+        rightPanel.add(springPanel, BorderLayout.NORTH);
 
         // Prepare air pressure label
         JLabel airPressureLabel = new JLabel(Msg.getString("TabPanelWeather.airPressure.label"), JLabel.RIGHT);
         airPressureLabel.setOpaque(false);
         airPressureLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataPanel.add(airPressureLabel);
+        springPanel.add(airPressureLabel);
 
-		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
         pressureTF = new JTextField();
         pressureTF.setEditable(false);
-        pressureTF.setColumns(20);
+        pressureTF.setColumns(8);
         pressureTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper1.add(pressureTF);//, BorderLayout.CENTER);
-        dataPanel.add(wrapper1);
+        springPanel.add(wrapper1);
 
         // Prepare air density label
         JLabel airDensityLabel = new JLabel(Msg.getString("TabPanelWeather.airDensity.label"), JLabel.RIGHT);
         airDensityLabel.setOpaque(false);
         airDensityLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataPanel.add(airDensityLabel);
+        springPanel.add(airDensityLabel);
 
-		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
         airDensityTF = new JTextField();
         airDensityTF.setEditable(false);
-        airDensityTF.setColumns(20);
+        airDensityTF.setColumns(8);
         airDensityTF.setOpaque(false);
         airDensityTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //airDensityValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper2.add(airDensityTF);//, BorderLayout.CENTER);
-        dataPanel.add(wrapper2);
+        springPanel.add(wrapper2);
 
         JLabel windSpeedLabel = new JLabel(Msg.getString("TabPanelWeather.windspeed.label"), JLabel.RIGHT);
         windSpeedLabel.setOpaque(false);
         windSpeedLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataPanel.add(windSpeedLabel);
+        springPanel.add(windSpeedLabel);
 
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-        windSpeedTF = new JTextField();
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
+        windSpeedTF = new JTextField(getWindSpeedString(0.0));
         windSpeedTF.setEditable(false);
-        windSpeedTF.setColumns(20);
+        windSpeedTF.setColumns(8);
         windSpeedTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper3.add(windSpeedTF);
-        dataPanel.add(wrapper3);
+        springPanel.add(wrapper3);
 
         JLabel windDirLabel = new JLabel(Msg.getString("TabPanelWeather.windDirection.label"), JLabel.RIGHT);
         windDirLabel.setOpaque(false);
         windDirLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataPanel.add(windDirLabel);
+        springPanel.add(windDirLabel);
 
-		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
         windDirTF = new JTextField();
         windDirTF.setEditable(false);
-        windDirTF.setColumns(20);
+        windDirTF.setColumns(8);
         windDirTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper4.add(windDirTF);
-        dataPanel.add(wrapper4);
+        springPanel.add(wrapper4);
 
         JLabel solarIrradianceLabel = new JLabel(Msg.getString("TabPanelWeather.solarIrradiance.label"), JLabel.RIGHT);
         solarIrradianceLabel.setOpaque(false);
         solarIrradianceLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataPanel.add(solarIrradianceLabel);
+        springPanel.add(solarIrradianceLabel);
 
-		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-        solarIrradianceCache = getSolarIrradiance();
-        solarIrradianceTF = new JTextField(getSolarIrradianceString(solarIrradianceCache));
+		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
+        //solarIrradianceCache = getSolarIrradiance();
+        solarIrradianceTF = new JTextField(getSolarIrradianceString(0.0));
         solarIrradianceTF.setEditable(false);
-        solarIrradianceTF.setColumns(20);
+        solarIrradianceTF.setColumns(8);
         solarIrradianceTF.setOpaque(false);
         solarIrradianceTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper5.add(solarIrradianceTF);
-        dataPanel.add(wrapper5);
+        springPanel.add(wrapper5);
 
         JLabel opticalDepthLabel = new JLabel(Msg.getString("TabPanelWeather.opticalDepth.label"), JLabel.RIGHT);
         opticalDepthLabel.setOpaque(false);
         opticalDepthLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataPanel.add(opticalDepthLabel);
+        springPanel.add(opticalDepthLabel);
 
-		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
         opticalDepthTF = new JTextField();
         opticalDepthTF.setEditable(false);
-        opticalDepthTF.setColumns(20);
+        opticalDepthTF.setColumns(8);
+        //opticalDepthTF.setPreferredSize(new Dimension(60, 24));
         opticalDepthTF.setOpaque(false);
         opticalDepthTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper6.add(opticalDepthTF);
-        dataPanel.add(wrapper6);
+        springPanel.add(wrapper6);
 
         JLabel zenithAngleLabel = new JLabel(Msg.getString("TabPanelWeather.zenithAngle.label"), JLabel.RIGHT);
         zenithAngleLabel.setOpaque(false);
         zenithAngleLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //zenithAngleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataPanel.add(zenithAngleLabel);
+        //zenithAngleLabel.setVerticalAlignment(SwingConstants.TOP);
+        springPanel.add(zenithAngleLabel);
 
-		JPanel wrapper7 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper7 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
         zenithAngleTF = new JTextField();
         zenithAngleTF.setEditable(false);
-        zenithAngleTF.setColumns(20);
+        zenithAngleTF.setColumns(8);
         zenithAngleTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //zenithAngleValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper7.add(zenithAngleTF);
-        dataPanel.add(wrapper7);
+        springPanel.add(wrapper7);
 
         JLabel solarDeclinationLabel = new JLabel(Msg.getString("TabPanelWeather.solarDeclination.label"), JLabel.RIGHT);
         solarDeclinationLabel.setOpaque(false);
         solarDeclinationLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         //solarDeclinationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataPanel.add(solarDeclinationLabel);
+        springPanel.add(solarDeclinationLabel);
 
-		JPanel wrapper8 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper8 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
 		solarDeclinationTF = new JTextField();
         solarDeclinationTF.setEditable(false);
-        solarDeclinationTF.setColumns(20);
+        solarDeclinationTF.setColumns(8);
         solarDeclinationTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //solarDeclinationValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper8.add(solarDeclinationTF);
-        dataPanel.add(wrapper8);
+        springPanel.add(wrapper8);
 
 		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(dataPanel,
+		SpringUtilities.makeCompactGrid(springPanel,
 		                                8, 2, //rows, cols
-		                                30, 10,        //initX, initY
+		                                10, 10,        //initX, initY
 		                                10, 10);       //xPad, yPad
 
 /*
@@ -457,7 +458,7 @@ extends TabPanel {
      }
 
     public String getZenithAngleString(double value) {
-     	return fmt2.format(value/ Math.PI*180D) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+     	return fmt2.format(value * RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
     }
 
     public double getSolarDeclination() {

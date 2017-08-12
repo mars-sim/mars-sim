@@ -108,7 +108,7 @@ implements Serializable {
 				angle = angle - HALF_PI;
 				area = STEERABLE_ARRAY_AREA * ((1 - NUM_LAYERS) / HALF_PI * angle + NUM_LAYERS);
 			}
-			logger.info("area : " + area);
+			//logger.info("area : " + area);
 		}
 		
 		double available = surface.getSolarIrradiance(location) /1000D * efficiency_solar_panel * area; // add noise with * (.99 + RandomUtil.getRandomDouble(.2));

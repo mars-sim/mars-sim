@@ -261,7 +261,7 @@ extends TabPanel {
 		SpringUtilities.makeCompactGrid(heatInfoPanel,
 		                                5, 2, //rows, cols
 		                                80, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		                                10, 1);       //xPad, yPad
 	}
 
 
