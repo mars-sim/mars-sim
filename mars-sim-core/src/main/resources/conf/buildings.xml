@@ -23,7 +23,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- maintenance-time: in millisols (old default : 50 millisols). -->
 	<!-- room-temperature: in deg Celsius (old default : 22.5D). -->
 	<building type="Lander Hab" width="9.0" length="9.0" base-level="0"
-		wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
+		wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" >
 		<description> The Lander Hab is the initial habitat for a crew of four.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
 	 		to jump start a settlement. It's commonly used as a central hub providing four connection points
@@ -33,7 +33,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
 		<!-- base-power-down-power: the baseline power (kW) required by this building in 'power down' mode. -->
 		<!-- There can be additional power requirements by the building's functions. -->
-		<power-required base-power="15.0" base-power-down-power="1.5" />
+		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 
 		<!-- The functions the building is capable of performing/fulfilling. -->
@@ -99,7 +99,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
@@ -326,6 +326,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="oxygen" amount="500.0" />
 				<resource-initial resource="food" amount="300.0" />
 				
+				<resource-initial resource="solid waste" amount="0.0" />
+				<resource-initial resource="food waste" amount="0.0" />
+				
 				<!-- <resource-initial resource="regolith" amount="500.0" /-->
 
 			</storage>
@@ -335,8 +338,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Heat Source -->
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="15.0" />
+				<heat-source type="Electric Heating Source" capacity="30.0" />
 			</thermal-generation>
 
 			<waste-disposal tech-level="1" capacity="2">
@@ -357,14 +360,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0"
-		wear-lifetime="3340000" maintenance-time="50" room-temperature= "24">
+		wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
 		<description> The Inflatable Greenhouse is essentially a flexible air bladder
 		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
 		for growing a limited number of crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
 		has an aluminized Mylar reflector curtain. It also houses one workbench with instruments for botany research.
 		</description>
 
-		<power-required base-power="10.0" base-power-down-power="1.0"/>
+		<power-required base-power="2.0" base-power-down-power=".2"/>
 
 		<functions>
 			<!-- The building is capable of growing plant crops. -->
@@ -383,7 +386,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="3" power-required="6.0" />
+			<life-support capacity="3" power-required="0.3" />
 
 			<power-storage capacity="40.0" />
 
@@ -437,8 +440,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="35.0" />
 			</thermal-generation>
 
 		</functions>
@@ -446,13 +449,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="Large Greenhouse" width="12.0" length="18.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
 		<description>
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
 			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a botany research lab with instruments. It has a spacious interior
 			for high volume crop cultivation and has a high resource storage capability.
 		</description>
-		<power-required base-power="20.0" base-power-down-power="2.0" />
+		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 		<functions>
 			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="225.0">
@@ -470,7 +473,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="10" power-required="20.0" />
+			<life-support capacity="10" power-required="1.0" />
 
 			<power-storage capacity="80.0" />
 
@@ -530,15 +533,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="30.0" />
+				<heat-source type="Solar Heating Source" capacity="25.0" />
+				<heat-source type="Electric Heating Source" capacity="45.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 <!--
 	<building type="Large Algae Greenhouse" width="12.0" length="18.0"
-				wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
+				wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0" >
 		<description> A Large Algae Greenhouse is a spacious greenhouse
 			equipped with algae ponds and a biology lab. The availability of algae
 			ensure the continuous supply of nutritious food source that is
@@ -549,7 +552,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<farming crops="0" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="200.0" />
-			<life-support capacity="10" power-required="20.0" />
+			<life-support capacity="10" power-required="1.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="BIOLOGY" />
 			</research>
@@ -588,14 +591,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 	-->
 
 	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" >
 		<description> The starting ERV base was sent ahead of the arrival
 			of the human crew. It supplies the settlement with tanks of hydrogen that can be
 			converted into CH4 and H2O via Sabatier Process. It can perform Water Electrolysis
@@ -612,13 +615,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="Hydrogen" rate="3.2" ambient="false" />
+					<input resource="hydrogen" rate="3.2" ambient="false" />
 					<output resource="methane" rate="7.2" ambient="false" />
 					<output resource="water" rate="16.0" ambient="false" />
 				</process>
 				<process name="Water Electrolysis" power-required="4.0" default="off">
 					<input resource="water" rate=".1" ambient="false" />
-					<output resource="Hydrogen" rate=".011" ambient="false" />
+					<output resource="hydrogen" rate=".011" ambient="false" />
 					<output resource="oxygen" rate=".089" ambient="false" />
 				</process>
 				<process name="CO2 Reduction" power-required="2.0" default="off">
@@ -628,23 +631,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 			</resource-processing>
 			<storage stock-capacity="200000">
-				<resource-storage resource="Hydrogen" capacity="6000.0" />
+				<resource-storage resource="hydrogen" capacity="6000.0" />
 				<resource-storage resource="methane" capacity="21000.0" />
 				<resource-storage resource="oxygen" capacity="74000.0" />
 				<resource-storage resource="water" capacity="9000.0" />
 
-				<resource-initial resource="Hydrogen" amount="6000.0" />
+				<resource-initial resource="hydrogen" amount="6000.0" />
 			</storage>
 		</functions>
 	</building>
 
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" >
 		<description> The Earth Return Vehicle (ERV) is a flight ready space vehicle. If not used
 			for the return trip, it can be retrofitted for critical resource processing functions as
 			it carried similar equipment package as those found in Starting ERV Base.
 		</description>
-		<power-required base-power="8.0" base-power-down-power="0.8"/>
+		<power-required base-power="2.0" base-power-down-power="0.2"/>
 
 		<functions>
 			<earth-return crew-capacity="4" />
@@ -654,13 +657,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="Hydrogen" rate="3.2" ambient="false" />
+					<input resource="hydrogen" rate="3.2" ambient="false" />
 					<output resource="methane" rate="7.2" ambient="false" />
 					<output resource="water" rate="16.0" ambient="false" />
 				</process>
 				<process name="Water Electrolysis" power-required="4.0" default="off">
 					<input resource="water" rate=".1" ambient="false" />
-					<output resource="Hydrogen" rate=".011" ambient="false" />
+					<output resource="hydrogen" rate=".011" ambient="false" />
 					<output resource="oxygen" rate=".089" ambient="false" />
 				</process>
 				<process name="CO2 Reduction" power-required="2.0" default="off">
@@ -670,7 +673,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 			</resource-processing>
 			<storage stock-capacity="200000">
-				<resource-storage resource="Hydrogen" capacity="6000.0" />
+				<resource-storage resource="hydrogen" capacity="6000.0" />
 				<resource-storage resource="methane" capacity="21000.0" />
 				<resource-storage resource="oxygen" capacity="74000.0" />
 				<resource-storage resource="water" capacity="9000.0" />
@@ -685,24 +688,30 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
-		<description>The MD1 Nuclear Reactor is a compact, reliable and self-contained
-		 	150kW nuclear reactor coupled with a Stirling engine built for the Martian
-		 	environment. It is a type of Advanced Stirling Radioisotope Generator (ASRG).
-		</description>
+		<description>The MD1 is the first Mars-qualified Kilopower Nuclear System. 
+		It comprises an array of four separate 10 kWe modules, each having a reactor 
+		core using depleted uranium as fuel source. It uses Stirling converters for 
+		generating power via mechanical movement of pistons inside as passive sodium 
+		heat pipes transport thermal energy between the core containment can (hot end)
+		and the vacuum chambers (cold end). A cicular radiator panel is mounted on 
+		top for heat dissipation. </description>
 
-		<!--  http://www.space.com/7107-nasa-steps-closer-nuclear-power-moon-base.html -->
+		<!--	Nuclear Systems Kilopower Project
+				http://hdl.handle.net/2060/20160012354
+				http://hdl.handle.net/2060/20170002010
+				https://ntrs.nasa.gov/search.jsp?R=20150011642&hterms=Kilopower&qs=N%3D0%26Ntk%3DAll%26Ntt%3DKilopower%26Ntx%3Dmode%2520matchallpartial
+		-->
 
-		<power-required base-power="1.0" base-power-down-power="0.1" />
+		<power-required base-power="0.3" base-power-down-power="0.03" />
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="100.0" />
+				<power-source type="Standard Power Source" power="40.0" />
 			</power-generation>
 
 			<power-storage capacity="40.0" />
-
 			<!--thermal-generation>
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation-->
 		</functions>
 	</building>
@@ -710,15 +719,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" >
 		<description>
-			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 600kW
+			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 100kW
 			nuclear fission power plant. It contains components of a heat source,
 			power conversion, heat rejection, power conditioning and distribution system.
 		</description>
-		<power-required base-power="10.0" base-power-down-power="0.1"/>
+		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="300.0" />
+				<power-source type="Standard Power Source" power="100.0" />
 			</power-generation>
 
 			<power-storage capacity="120.0" />
@@ -730,24 +739,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Atmospheric Processor is an uninhabitable, resource-processing
 		building providing water recyling, air processing and waste incineration functions
 		for the settlement.
 		</description>
-		<power-required base-power="20.0" base-power-down-power="2.0"/>
+		<power-required base-power="3.0" base-power-down-power="0.3"/>
 
 		<functions>
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="5.0" default="on">
 					<input resource="carbon dioxide" rate="48.0" ambient="true" />
-					<input resource="Hydrogen" rate="8.0" ambient="false" />
+					<input resource="hydrogen" rate="8.0" ambient="false" />
 					<output resource="methane" rate="18.0" ambient="false" />
 					<output resource="water" rate="40.0" ambient="false" />
 				</process>
 				<process name="Water Electrolysis" power-required="4.0" default="off">
 					<input resource="water" rate="1.0" ambient="false" />
-					<output resource="Hydrogen" rate=".11" ambient="false" />
+					<output resource="hydrogen" rate=".11" ambient="false" />
 					<output resource="oxygen" rate=".89" ambient="false" />
 				</process>
 				<process name="CO2 Reduction" power-required="2.0" default="off">
@@ -783,7 +792,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</resource-processing>
 
 			<storage stock-capacity="300000">
-				<resource-storage resource="Hydrogen" capacity="10000.0" />
+				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="methane" capacity="10000.0" />
 				<resource-storage resource="oxygen" capacity="10000.0" />
 				<resource-storage resource="water" capacity="40000.0" />
@@ -794,21 +803,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="solid waste" capacity="2000.0" />
 				<resource-storage resource="toxic waste" capacity="2000.0" />
 
-				<resource-initial resource="Hydrogen" amount="10000.0" />
+				<resource-initial resource="hydrogen" amount="10000.0" />
 			</storage>
 		</functions>
 	</building>
 
 	<building type="Residential Quarters" width="7.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Residential Quarters is the first full living accommodation building
 			that is configured to house as many as twelve beds. It also provides storage space
 			for critical amount resources. It is furnised with a solar panel rooftop.
 		</description>
-		<power-required base-power="20.0" base-power-down-power="2.0" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<life-support capacity="12" power-required="24.0" />
+			<life-support capacity="12" power-required="1.2" />
 			<living-accommodations beds="12">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.2" />
@@ -853,24 +862,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="toilet tissue" amount="100.0" />
 				<resource-initial resource="paper" amount="100.0" />
 				<resource-initial resource="napkin" amount="100.0" />
+				
+				<resource-initial resource="food waste" amount="0.0" />
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 
 		</functions>
 	</building>
 
 	<building type="Lounge" width="7.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Lounge is a rest and relaxation living space furnished
 			with dining tables and chairs for serving almost three dozens of people at a time.
 			It has a well furnished kitchen supporting a lot of food processing activities and
 			plenty of resource storage space. It also has a small gym room with exercise equipment.
 		</description>
-		<power-required base-power="30.0" base-power-down-power="3.0" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<cooking capacity="4">
@@ -942,7 +953,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</food-production>
 
-			<life-support capacity="40" power-required="40.0" />
+			<life-support capacity="40" power-required="4.0" />
 
 			<recreation population-support="25">
 				<activity>
@@ -1054,25 +1065,27 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="toilet tissue" amount="100.0" />
 				<resource-initial resource="paper" amount="100.0" />
 				<resource-initial resource="napkin" amount="100.0" />
+				
+				<resource-initial resource="food waste" amount="0.0" />				
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Infirmary" width="7.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description>
 			The Infirmary is the first medical facility equipped to provide more adequate
 			medical care for settlers. It houses one workbench with equipment for medical research.
 		</description>
-		<power-required base-power="10.0" base-power-down-power="1.0" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="10" power-required="20.0" />
+			<life-support capacity="10" power-required="1.0" />
 			<medical-care tech-level="5" beds="8">
 				<activity>
 					<activity-spot xloc="1.8" yloc="2.4" />
@@ -1101,20 +1114,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Command and Control" width="7.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description>
 			The Command and Control is a communication facility with networking
 			capability for high speed communications, central EVA operations
 			and colony-width connectivity.
 		</description>
-		<power-required base-power="30.0" base-power-down-power="3.0" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
 			<administration population-support="25">
@@ -1143,7 +1156,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
   			<EVA airlock-capacity="8" xloc="-3.0" yloc="2.3" interior-xloc="-2.5" interior-yloc="2.3"
 			exterior-xloc="-4.5" exterior-yloc="2.3" />
 -->
-			<life-support capacity="10" power-required="20.0" />
+			<life-support capacity="10" power-required="1.0" />
 			<management population-support="25">
 				<activity>
 					<activity-spot xloc="1.32" yloc="0.92" />
@@ -1169,22 +1182,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Laboratory" width="7.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Laboratory is a modest facility furnished with workbench,
 		instruments, computers and tablets and peer collaboration communication
 		suites of equipment that enables making scientific inquiries on the frontier of Mars.
 		</description>
-		<power-required base-power="30.0" base-power-down-power="3.0" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<life-support capacity="10" power-required="20.0" />
+			<life-support capacity="10" power-required="1.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
@@ -1222,17 +1235,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Garage" width="12.0" length="16.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Garage is an enclosed maintenance facility for
 			building, repairing and modifying Martian rovers and vehicles
 		</description>
-		<power-required base-power="10.0" base-power-down-power="1.0" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0"
@@ -1249,7 +1262,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-.75" yloc="1.0" />
 				</activity>
 			</ground-vehicle-maintenance>
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -1266,22 +1279,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="1000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="35.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Workshop" width="7.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" >
 		<description> The Workshop is practically a machine shop furnished with
 			3-D printers and additive manufacturing machinaries for processing resources,
 			snythesizing parts and items for use.
 		</description>
-		<power-required base-power="20.0" base-power-down-power="2.0" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<manufacture tech-level="4" concurrent-processes="4">
 				<activity>
 					<activity-spot xloc=".6" yloc="2.9" />
@@ -1327,7 +1340,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1338,7 +1351,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			generation of electricity. It makes use of the freely available carbon dioxide
 			in the Martian atmosphere and creates non-polluting by-products.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.0" />
+		<power-required base-power="0.5" base-power-down-power="0.05" />
 
 		<functions>
 			<power-generation>
@@ -1353,16 +1366,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
-		<description>  The Wind Turbine power generator provides a completely non-polluting
-		form of renewable energy and requires more mechanical maintenance due to dust cumulation.
-		It is an integral part of a modular distributed renewable energy generation system complimenting
-			the nuclear power generators for the power grid.
+		<description> The veritcal axis wind turbine is constructed with strong, lightweight 
+		material and is gigantic. It is made possible due to Mars' low gravity and wind load.
 		</description>
+		<!-- http://colonizeantarctica.blogspot.com/2008/01/vertical-axis-wind-turbines.html -->
+
 		<power-required base-power="0.1" base-power-down-power="0.0" />
+
 
 		<functions>
 			<power-generation>
-				<power-source type="Wind Power Source" power="5.0" />
+				<power-source type="Wind Power Source" power="10.0" />
 			</power-generation>
 		</functions>
 	</building>
@@ -1377,7 +1391,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Solar Power Source" power="40.0" />
+				<power-source type="Solar Power Source" power="20.0" />
 			</power-generation>
 		</functions>
 	</building>
@@ -1393,7 +1407,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Solar Thermal Power Source" power="40.0" />
+				<power-source type="Solar Thermal Power Source" power="20.0" />
 			</power-generation>
 		</functions>
 	</building>
@@ -1541,14 +1555,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Manufacturing Shed" width="5.0" length="5.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Manufacturing Shed is a small brick manufacturing
 			building for forming, cutting, coating and glazing bricks for construction projects.
 		</description>
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<life-support capacity="2" power-required="4.0" />
+			<life-support capacity="2" power-required="0.2" />
 			<manufacture tech-level="3" concurrent-processes="2">
 				<activity>
 					<activity-spot xloc=".95" yloc="1.05" />
@@ -1577,13 +1591,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Bunkhouse" width="5.0" length="5.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Bunkhouse is a spartan living quarters with
 			two beds. It is a retractable housing custom-tailored for
 			temporary mining outpost operation.
@@ -1591,7 +1605,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="2" power-required="4.0" />
+			<life-support capacity="2" power-required="0.2" />
 			<living-accommodations beds="2">
 				<activity>
 					<activity-spot xloc="1.35" yloc="-1.35" />
@@ -1611,7 +1625,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="50000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1629,7 +1643,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="Hydrogen" rate="3.2" ambient="false" />
+					<input resource="hydrogen" rate="3.2" ambient="false" />
 					<output resource="methane" rate="7.2" ambient="false" />
 					<output resource="water" rate="16.0" ambient="false" />
 				</process>
@@ -1645,7 +1659,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			stored excess power during non-peak hours and released power during peak power
 			usage.
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<power-required base-power="0.5" base-power-down-power="0.05" />
 
 		<functions>
 			<!-- power storage capacity in the energy unit of kW hr. -->
@@ -1654,12 +1668,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Astronomy Observatory" width="7.0" length="7.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Astronomy Observatory is a small self-contained observatory building
 			furnished with an optical telescope, research workbenches and laboratory equipment
 			as well as a built-in EVA airlock for ingress and egress.
 		</description>
-		<power-required base-power="10.0" base-power-down-power="1.0" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
 			<astronomical-observation tech-level="2" capacity="1" power-required="4.0">
@@ -1669,7 +1683,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</astronomical-observation>
 			<EVA airlock-capacity="1" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
 			exterior-xloc="0.0" exterior-yloc="4.5" />
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="PHYSICS" />
@@ -1690,24 +1704,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="10000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<!-- A lander hab refitted for storage. -->
 	<building type="Storage Hab" width="9.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Storage Hab is a Lander Hab refitted storage
 			building with ample storage space. It has built-in PV panels
 			as backup power source.
 		</description>
-		<power-required base-power="5.0" base-power-down-power="0.5" />
+		<power-required base-power="1.0" base-power-down-power="0.1" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -1731,23 +1745,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Research Hab" width="9.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Research Hab is a Lander Hab refitted laboratory
 			building for scientific research. It can be custom-tailored with computer
 			systems for	up to four research subjects and has built-in solar panels.
 		</description>
-		<power-required base-power="10.0" base-power-down-power="1.0" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -1775,23 +1789,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="50000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 	</functions>
 	</building>
 
 	<building type="Residential Hab" width="9.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Residential Hab is a Lander Hab refitted residential
 			quarters for living accommodation of up to 8 persons. It uses solar
 			panels as backup power source.
 		</description>
-		<power-required base-power="15.0" base-power-down-power="1.5" />
+		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="8" power-required="16.0" />
+			<life-support capacity="8" power-required="0.8" />
 			<living-accommodations beds="5">
 				<activity>
 					<activity-spot xloc="1.13" yloc="2.67" />
@@ -1814,24 +1828,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="50000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<!-- A lander hab refitted as a medical facility. -->
 	<building type="Medical Hab" width="9.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Medical Hab is a Lander Hab refitted medical facility
 		 for providing medical basic care. It also has medical research workbench and
 		 uses solar	panels as backup power source.
 		</description>
-		<power-required base-power="15.0" base-power-down-power="1.5" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<medical-care tech-level="4" beds="4">
 				<activity>
 					<activity-spot xloc="3.04" yloc="-1.3" />
@@ -1856,23 +1870,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="50000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Machinery Hab" width="9.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Machinery Hab is a Lander Hab refitted manufacturing workshop
 		 	for making items and synthesizing resource. It provides storage space for
 		 	housing commonly used resources.
 		</description>
-		<power-required base-power="20.0" base-power-down-power="2.0" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<manufacture tech-level="3" concurrent-processes="3">
 				<activity>
 					<activity-spot xloc="2.16" yloc="1.45" />
@@ -1905,18 +1919,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Outpost Hub" width="10.0" length="10.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Outpost Hub is a vaulted brick building that acts
 			as the main hub of a trading or mining outpost. Like its cousin
 			Lander Hab, it hosts a suite of functions to its inhabitants.
 		</description>
-		<power-required base-power="10.0" base-power-down-power="1.0" />
+		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
 			<administration population-support="2">
@@ -1956,7 +1970,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</food-production>
 
-			<life-support capacity="6" power-required="12.0" />
+			<life-support capacity="6" power-required="0.6" />
 
 			<manufacture tech-level="4" concurrent-processes="1">
 				<activity>
@@ -2109,7 +2123,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- The initial resources in the building. -->
 
-				<resource-initial resource="Solid Waste" amount="0.0" />
+				<resource-initial resource="solid waste" amount="0.0" />
+				<resource-initial resource="food waste" amount="0.0" />
 
 				<resource-initial resource="water" amount="1000.0" />
 				<resource-initial resource="oxygen" amount="500.0" />
@@ -2168,20 +2183,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Storage Shed" width="5.0" length="5.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Storage Shed is a small brick building for
 			storing resources for the settlement.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 
 		<functions>
-			<life-support capacity="2" power-required="4.0" />
+			<life-support capacity="2" power-required="0.2" />
 			<robotic-station slots="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -2202,6 +2217,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="500.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
+				<resource-initial resource="food waste" amount="0.0" />
 			</storage>
 
 		</functions>
@@ -2209,12 +2225,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It has equipment for
 			building, repairing and modifying rovers and vehicles.
 		</description>
-		<power-required base-power="15.0" base-power-down-power="1.5" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
 			<EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5"
@@ -2229,7 +2245,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.0" yloc="-6.25" />
 				</activity>
 			</ground-vehicle-maintenance>
-			<life-support capacity="4" power-required="8.0" />
+			<life-support capacity="4" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -2246,21 +2262,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="35.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Mining Lab" width="5.0" length="5.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
 		</description>
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<life-support capacity="2" power-required="4.0" />
+			<life-support capacity="2" power-required="0.2" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
@@ -2282,18 +2298,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="10000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
 	<building type="Inground Greenhouse" width="5.0" length="10.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
 		<description> The Inground Greenhouse is a semi underground structure with a
 			vaulted fiber glass roof which is less susceptible to meteor damage.
 			It grows crops as food for the settlement.
 		</description>
-		<power-required base-power="5.0" base-power-down-power="0.5" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<farming crops="4" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="100.0">
@@ -2306,7 +2322,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="3" power-required="6.0" />
+			<life-support capacity="3" power-required="0.3" />
 
 			<power-storage capacity="40.0" />
 
@@ -2359,8 +2375,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating Source" capacity="35.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2368,16 +2384,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
 	<building type="Hallway" width="2.0" length="-1.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Hallway is a pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.0" />
+		<power-required base-power="0.05" base-power-down-power="0.0" />
 
 		<functions>
 			<building-connection />
-			<life-support capacity="1" power-required=".5" />
+			<life-support capacity="1" power-required="0.1" />
 			<robotic-station slots="1">
 				<activity>
 					<activity-spot xloc="0.5" yloc="0.0" />
@@ -2388,16 +2404,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
 	<building type="Tunnel" width="3.0" length="-1.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Tunnel is an underground pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.0" />
+		<power-required base-power="0.05" base-power-down-power="0.0" />
 
 		<functions>
 			<building-connection />
-			<life-support capacity="1" power-required=".2" />
+			<life-support capacity="1" power-required="0.1" />
 			<robotic-station slots="1">
 				<activity>
 					<activity-spot xloc="1.0" yloc="0.0" />
