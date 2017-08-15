@@ -11,9 +11,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -93,7 +95,9 @@ implements Serializable {
 
         // Check that destination location is within destination building.
         if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-        	logger.warning(person + " is unable to walk to the destination in " + person.getBuildingLocation() + " at "+ person.getSettlement());
+        	 LogConsolidated.log(logger, Level.WARNING, 3000, logger.getName(), 
+        			 person + " is unable to walk to the destination in " + person.getBuildingLocation() 
+        			 + " at "+ person.getSettlement(), null);
         	//throw new IllegalStateException(
             //        "Given destination walking location not within destination building.");
         	//
@@ -124,8 +128,9 @@ implements Serializable {
 
         // If no valid walking path is found, end task.
         if (walkingPath == null) {
-            logger.severe(person.getName() + " unable to walk from " + startBuilding.getNickName() + " to " +
-                    destinationBuilding.getNickName() + ".  Unable to find valid interior path.");
+        	 LogConsolidated.log(logger, Level.WARNING, 2000, logger.getName(), 
+        			 person.getName() + " unable to walk from " + startBuilding.getNickName() + " to " +
+                    destinationBuilding.getNickName() + ".  Unable to find valid interior path.", null);
             endTask();
         }
 
@@ -153,8 +158,11 @@ implements Serializable {
 
         // Check that destination location is within destination building.
         if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-            throw new IllegalStateException(
-                    "Given destination walking location not within destination building.");
+        	LogConsolidated.log(logger, Level.WARNING, 3000, logger.getName(), 
+    			 robot + " is unable to walk to the destination in " + robot.getBuildingLocation() 
+    			 + " at "+ robot.getSettlement(), null);
+            //throw new IllegalStateException(
+            //       "Given destination walking location not within destination building.");
         }
 
         // Check that the robot is currently inside a building.
@@ -181,8 +189,9 @@ implements Serializable {
 
         // If no valid walking path is found, end task.
         if (walkingPath == null) {
-            logger.severe(robot.getName() + " unable to walk from " + startBuilding.getNickName() + " to " +
-                    destinationBuilding.getNickName() + ".  Unable to find valid interior path.");
+         	 LogConsolidated.log(logger, Level.WARNING, 2000, logger.getName(), 
+         			 robot.getName() + " unable to walk from " + startBuilding.getNickName() + " to " +
+                    destinationBuilding.getNickName() + ".  Unable to find valid interior path.", null);
             endTask();
         }
 
@@ -197,10 +206,12 @@ implements Serializable {
         if (getPhase() == null) {
 
         	if (person != null) {
-                logger.severe(person.getName() + " at " + person.getBuildingLocation() + " : Task phase is null");
+        		 LogConsolidated.log(logger, Level.SEVERE, 2000, logger.getName(), 
+        				 person.getName() + " at " + person.getBuildingLocation() + " : Task phase is null", null);
         	}
         	else if (robot != null) {
-                logger.severe(robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null");
+        		 LogConsolidated.log(logger, Level.SEVERE, 2000, logger.getName(), 
+        				 robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null", null);
         	}
         	//endTask();
             throw new IllegalArgumentException("Task phase is null");
@@ -229,7 +240,8 @@ implements Serializable {
             if (!checkRemainingPathLocations()) {
             	// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
             	// Flooding with the following statement in stacktrace
-            	logger.severe(person.getName() + " unable to continue walking due to missing path objects.");
+            	 LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+            			 person.getName() + " unable to continue walking due to missing path objects.", null);
                 //endTask();
                 return time/2D;
             }
@@ -240,7 +252,8 @@ implements Serializable {
             if (!checkRemainingPathLocations()) {
             	// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
             	// Flooding with the following statement in stacktrace
-                logger.severe(robot.getName() + " unable to continue walking due to missing path objects.");
+            	 LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+            			 robot.getName() + " unable to continue walking due to missing path objects.", null);
                 //endTask();
                 return time/2D;
             }

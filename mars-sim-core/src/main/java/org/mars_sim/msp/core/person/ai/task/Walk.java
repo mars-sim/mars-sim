@@ -13,11 +13,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -356,7 +358,8 @@ implements Serializable {
 
         // End task if all steps cannot be walked.
         if (!canWalkAllSteps(person, walkingSteps)) {
-            logger.severe(person.getName() + " could not find valid walking steps to " + interiorObject);
+        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+        			person.getName() + " could not find valid walking steps to " + interiorObject, null);
             endTask();
         }
 
@@ -384,7 +387,8 @@ implements Serializable {
 
         // End task if all steps cannot be walked.
         if (!canWalkAllSteps(robot, walkingSteps)) {
-            logger.severe(robot.getName() + " could not find valid walking steps to " + interiorObject);
+        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(),
+        			robot.getName() + " could not find valid walking steps to " + interiorObject, null);
             endTask();
         }
 
@@ -639,7 +643,8 @@ implements Serializable {
                     Airlock airlock = step.airlock;
                     if (!ExitAirlock.canExitAirlock(person, airlock)) {
                         //result = false;
-                        logger.severe(person + " cannot exit airlock at " + airlock.getEntityName());
+                    	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(),
+                    			person + " cannot exit airlock at " + airlock.getEntityName(), null);
                         return false;
                     }
                 }
@@ -1033,8 +1038,9 @@ implements Serializable {
                     addSubTask(new ExitAirlock(person, airlock));
                 }
                 else {
-                    logger.severe(person.getName() + " unable to physically exit the airlock of " +
-                            airlock.getEntityName() + ". Calling endTask()");
+                	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+                			person.getName() + " unable to physically exit the airlock of " +
+                            airlock.getEntityName() + ". Calling endTask()", null);
                     endTask();
                 }
             }
@@ -1118,8 +1124,9 @@ implements Serializable {
                 }
                 else {
                     endTask();
-                    logger.severe(person.getName() + " is OUTSIDE, unable to physically enter the airlock of " +
-                            airlock.getEntityName());
+                    LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+                    		person.getName() + " is OUTSIDE, unable to physically enter the airlock of " +
+                            airlock.getEntityName(), null);
                 }
             }
 
@@ -1150,8 +1157,9 @@ implements Serializable {
                 }
                 else {
                     endTask();
-                    logger.severe(robot.getName() + " is OUTSIDE, unable to physically enter the airlock of " +
-                            airlock.getEntityName());
+                    LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+                    		robot.getName() + " is OUTSIDE, unable to physically enter the airlock of " +
+                            airlock.getEntityName(), null);
                 }
             }
         }

@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
@@ -416,13 +418,15 @@ public class RadiationExposure implements Serializable {
 
     		if (totalExposure > 0) {
 	    		if (person.getSettlement() != null)
-	    			logger.info(person.getName() + " was exposed to " + exposure
+				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), 
+				    		person.getName() + " was exposed to " + exposure
     	    			+ " mSv dose of radiation" //in body region " + i
-    	    			+ " during an EVA operation near " + person.getSettlement());
+    	    			+ " during an EVA operation near " + person.getSettlement(), null);
 	    		else if (person.getMind().getMission() != null)
-	    			logger.info(person.getName() + " was exposed to " + exposure
+	    			LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), 
+	    					person.getName() + " was exposed to " + exposure
     	    			+ " mSv dose of radiation" // in body region " + i
-    	    			+ " during " + person.getMind().getMission().getName());
+    	    			+ " during " + person.getMind().getMission().getName(), null);
 
     	    	person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
 

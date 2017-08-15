@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -473,7 +474,7 @@ implements Serializable {
 			s_inv.addAmountDemandTotalRequest(tissueAR);
 
 	    	if (amountStored < 0.0000000001) {
-	    		logger.warning("No more " + tissueName);
+	    		LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), "No more " + tissueName, null);
 	    		percent = 0;
 	    	}
 

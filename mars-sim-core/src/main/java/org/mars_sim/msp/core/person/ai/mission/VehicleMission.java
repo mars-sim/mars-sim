@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -820,7 +822,7 @@ implements UnitListener {
 
 				    	if (!logCache[0].equals(newLog)) {
 					    	logCache[0] = newLog;
-							logger.severe(logCache[0]);
+						    LogConsolidated.log(logger, Level.INFO, 5000, logger.getName(), newLog, null);
 				    	}
 
 				        result = false;
@@ -838,7 +840,7 @@ implements UnitListener {
 
 				    	if (!logCache[1].equals(newLog)) {
 					    	logCache[1] = newLog;
-							logger.severe(logCache[1]);
+						    LogConsolidated.log(logger, Level.INFO, 5000, logger.getName(), newLog, null);
 				    	}
 
 						result = false;
@@ -870,7 +872,8 @@ implements UnitListener {
 			double distance = getCurrentMissionLocation().getDistance(
 					newDestination.getCoordinates());
 			if (hasEnoughResources(getResourcesNeededForTrip(false, distance))
-					&& !hasEmergencyAllCrew()) {
+					|| hasEmergencyAllCrew()) {
+					//&& !hasEmergencyAllCrew()) {
 
 				// Check if closest settlement is already the next navpoint.
 				boolean sameDestination = false;
@@ -880,9 +883,9 @@ implements UnitListener {
 				}
 
 				if (!sameDestination) {
-					logger.severe(vehicle.getName()
-							+ " setting emergency destination to "
-							+ newDestination.getName() + ".");
+					logger.severe(vehicle.getName() + ", " + distance + " km away from its departed settlement, "
+							+ "is setting its emergency destination to "
+							+ newDestination.getName());// + ", " + distance + " km away.");
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(

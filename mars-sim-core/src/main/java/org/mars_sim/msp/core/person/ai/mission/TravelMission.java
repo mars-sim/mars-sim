@@ -9,7 +9,10 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -25,6 +28,9 @@ extends Mission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(TravelMission.class.getName());
 
 	// Travel Mission status
 	public final static String AT_NAVPOINT = "At a navpoint";
@@ -143,8 +149,11 @@ extends Mission {
         if (navPoint != null) {
             navPoints.add(navPoint);
             fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
-        } else
-            throw new IllegalArgumentException("navPoint is null");
+        } else {
+        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+        			"navPoint is null", null);
+            //throw new IllegalArgumentException("navPoint is null");
+        }
     }
 
     /**
@@ -157,8 +166,11 @@ extends Mission {
         if ((navPoint != null) && (index >= 0)) {
             navPoints.set(index, navPoint);
             fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
-        } else
-            throw new IllegalArgumentException("navPoint is null");
+        } else {
+        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+        			"navPoint is null", null);
+            //throw new IllegalArgumentException("navPoint is null");
+        }
     }
 
     /**
@@ -212,8 +224,12 @@ extends Mission {
         if (newNavIndex < getNumberOfNavpoints()) {
             navIndex = newNavIndex;
         } else
-            throw new IllegalStateException(getPhase() + " : newNavIndex: "
-                    + newNavIndex + " is outOfBounds.");
+        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+        			getPhase() + " : newNavIndex: "
+                    + newNavIndex + " is outOfBounds.", null);
+            //throw new IllegalStateException(getPhase() + " : newNavIndex: "
+                    //+ newNavIndex + " is outOfBounds.");
+        	
     }
 
     /**
@@ -225,9 +241,15 @@ extends Mission {
     public final NavPoint getNavpoint(int index) {
         if ((index >= 0) && (index < getNumberOfNavpoints()))
             return navPoints.get(index);
-        else
-            throw new IllegalArgumentException("index: " + index
-                    + " out of bounds.");
+        else {
+        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+        			"index: " + index
+                    + " out of bounds.", null);
+            //throw new IllegalArgumentException("index: " + index
+            //        + " out of bounds.");
+        	
+        	return null;
+        }
     }
 
     /**
