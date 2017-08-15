@@ -880,6 +880,7 @@ implements UnitListener {
 				NavPoint nextNav = getNextNavpoint();
 				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 					sameDestination = true;
+					returnHome();
 				}
 
 				if (!sameDestination) {
@@ -1114,6 +1115,7 @@ implements UnitListener {
 
 		return result;
 	}
+
 
 	@Override
 	public void destroy() {

@@ -54,9 +54,8 @@ public class EatMealMeta implements MetaTask, Serializable {
             double hungerFactor = hunger;
             double energyFactor = (2525D - energy) / 100D;
             result = (hungerFactor + energyFactor) / 2D;
-            if (result < 0D) {
-            	return result;
-            }
+            if (result <= 0D)
+            	return 0;
         }
 
         if (result > 0D) {
@@ -87,9 +86,9 @@ public class EatMealMeta implements MetaTask, Serializable {
 
             }
             
-            else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            	; //add modifier
-            }
+            //else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            //	; //add modifier
+            //}
             
             else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
             	return 0;

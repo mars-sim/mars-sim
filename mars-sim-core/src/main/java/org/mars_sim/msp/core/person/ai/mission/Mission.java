@@ -667,15 +667,15 @@ implements Serializable {
 	/**
 	 * End the mission collection phase at the current site.
 	 */
-	private void endCollectionPhase() {
+	protected void endCollectionPhase() {
 		if (this instanceof CollectResourcesMission) 
 			((CollectResourcesMission) this).endCollectingAtSite();
 	}
 	
 	/**
 	 * Have the mission return home and end collection phase if necessary.
-	 */
-	private void returnHome() {
+	*/
+	protected void returnHome() {
 		if (this instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) this;
 			int offset = 2;
@@ -685,6 +685,7 @@ implements Serializable {
 			endCollectionPhase();
 		}
 	}
+
 	
 	/**
 	 * Go to the nearest settlement and end collection phase if necessary.

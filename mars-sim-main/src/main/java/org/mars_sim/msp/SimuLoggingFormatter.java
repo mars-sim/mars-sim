@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimuLoggingFormatter.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-08-14
  * @author Sebastien Venot
  * $LastChangedDate$
  * $LastChangedRevision$
@@ -9,10 +9,7 @@
 package org.mars_sim.msp;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 

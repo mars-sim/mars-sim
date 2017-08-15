@@ -728,12 +728,13 @@ public class EatMeal extends Task implements Serializable {
 
         // Throw away napkin waste if one was used.
         if (hasNapkin) {
-            if (inv == null) {
+        	if (inv == null) {
                 Unit containerUnit = person.getTopContainerUnit();
                 if (containerUnit != null)
                     inv = containerUnit.getInventory();
-                Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv);
-            }
+        	}
+        	
+            Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv);
         }
     }
 

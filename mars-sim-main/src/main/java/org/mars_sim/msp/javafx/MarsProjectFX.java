@@ -246,7 +246,7 @@ public class MarsProjectFX extends Application  {
     /*
      * Default Constructor
      */
-    public MarsProjectFX() {
+    //public MarsProjectFX() {
 	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
     	//marsProjectFX = this;
 /*
@@ -262,7 +262,7 @@ public class MarsProjectFX extends Application  {
 
         System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
 */
-    }
+    //}
 
 	/*
      * Initiates any tasks or methods on a JavaFX-Launcher Thread
@@ -339,7 +339,7 @@ public class MarsProjectFX extends Application  {
 
 
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!minor.equals("8") || Double.parseDouble(build) < 77.0) {
+    	if (!"8".equals(minor) || Double.parseDouble(build) < 77.0) {
     		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
     		//System.out.println("Note: mars-sim requires at least Java 8.0.71. Terminating...");
     		exitWithError("Note: mars-sim requires at least Java 8.0.77. Terminated.");

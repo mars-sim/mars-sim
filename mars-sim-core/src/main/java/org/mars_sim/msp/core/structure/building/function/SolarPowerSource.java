@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarPowerSource.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-08-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.OrbitInfo;

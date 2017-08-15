@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * LogConsolidated.java
+ * @version 3.1.0 2017-08-14
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.core;
 
 import java.util.HashMap;
@@ -40,7 +47,7 @@ public class LogConsolidated {
      */
     public static void log(Logger logger, Level level, long timeBetweenLogs, String sourceName, String message, Throwable t) {
     	
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+		String className = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 		
         //if (logger.isEnabledFor(level)) {
             String uniqueIdentifier = getFileAndLine();
@@ -56,13 +63,13 @@ public class LogConsolidated {
                         //    log(logger, level, sourceName + " : " + message, t);
                     	//}
                     	//else
-                    		log(logger, level, "[x" + lastTimeAndCount.count + "] " + sourceName + " : " +  message, t);
+                    		log(logger, level, "[x" + lastTimeAndCount.count + "] " + className + " : " +  message, t);
                     }
                 }
             } 
             
             else {
-            	log(logger, level, "[x1] " + sourceName + " : " + message, t);
+            	log(logger, level, "[x1] " + className + " : " + message, t);
             }
             
             lastLoggedTime.put(uniqueIdentifier, new TimeAndCount());
@@ -103,8 +110,8 @@ public class LogConsolidated {
     }
 
     private static class TimeAndCount {
-        long time;
-        int count;
+        protected long time;
+        protected int count;
         TimeAndCount() {
             this.time = System.currentTimeMillis();
             this.count = 1;

@@ -11,8 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyVetoException;
-import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -20,26 +18,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
-
-import javafx.application.Platform;
 
 /**
  * Window for the mission tool.
@@ -59,7 +44,7 @@ extends ToolWindow {
 	private MainScene ms;
 	private CreateMissionWizard createMissionWizard;
 	private EditMissionDialog editMissionDialog;
-	private Mission mission;
+	//private Mission mission;
 
 	/**
 	 * Constructor.
@@ -210,7 +195,7 @@ extends ToolWindow {
 	/**
 	 * Open wizard to edit a mission.
 	 * @param mission the mission to edit.
-	 */
+
 	private void editMission(Mission mission) {
 
 		if (ms != null)  {
@@ -224,20 +209,21 @@ extends ToolWindow {
 		} else
 
 			editMissionDialog = new EditMissionDialog(desktop, mission, this);
-
-
 	}
-
+*/
+	
 	/**
 	 * Ends the mission.
 	 * @param mission the mission to end.
-	 */
+
 	private void endMission(Mission mission) {
 		//logger.info("End mission: " + mission.getName());
 		mission.endMission(Mission.USER_ABORTED_MISSION);
 		repaint();
 	}
-
+	
+*/
+	
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;
 	}
