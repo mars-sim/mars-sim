@@ -42,6 +42,9 @@ public class EatMealMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
+        
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+        	return 0;
 
         double hunger = person.getPhysicalCondition().getHunger();
         double energy = person.getPhysicalCondition().getEnergy();
@@ -50,12 +53,10 @@ public class EatMealMeta implements MetaTask, Serializable {
         if ((hunger > 250D) || (energy < 2525D)) {
             double hungerFactor = hunger;
             double energyFactor = (2525D - energy) / 100D;
-            double avgFactor = (hungerFactor + energyFactor) / 2D;
-            if (avgFactor < 0D) {
-                avgFactor = 0D;
+            result = (hungerFactor + energyFactor) / 2D;
+            if (result < 0D) {
+            	return result;
             }
-
-            result = avgFactor;
         }
 
         if (result > 0D) {
@@ -68,11 +69,10 @@ public class EatMealMeta implements MetaTask, Serializable {
                     // Increase probability to eat meal if a cooked meal is available.
                     result *= 2D;
                 }
-                else {
+                else { //no kitchen has available meals
                     // If no cooked meal, check if preserved food is available to eat.
                     if (!EatMeal.isPreservedFoodAvailable(person)) {
                         // If no preserved food, person can't eat a meal.
-                        //result = 0D;
                         return 0;
                     }
                 }
@@ -85,21 +85,23 @@ public class EatMealMeta implements MetaTask, Serializable {
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
                 }
 
-                // 2015-06-07 Added Preference modifier
-                if (result > 0D) {
-                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-                }
-
-                if (result < 0) result = 0;
-
+            }
+            
+            else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            	; //add modifier
+            }
+            
+            else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+            	return 0;
+            }
+            
+            // 2015-06-07 Added Preference modifier
+            if (result > 0D) {
+                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
 
-            else if (!EatMeal.isPreservedFoodAvailable(person)) {
+            if (result < 0) return 0;
 
-                // If no preserved food available, cannot eat a meal.
-                //result = 0D;
-                return 0;
-            }
 	    }
 
 

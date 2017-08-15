@@ -343,6 +343,8 @@ implements Serializable {
 		                logger.log(Level.SEVERE, name + " is under insufficient air pressure.");
 		            if (requireTemperature(support, min_temperature, max_temperature))
 		                logger.log(Level.SEVERE, name + " cannot survive long at this extreme temperature.");
+		            
+		            //TODO: how to run to another building/location
 		        }
 		        catch (Exception e) {
 	                e.printStackTrace();

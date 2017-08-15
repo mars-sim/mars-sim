@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -132,13 +134,14 @@ implements Serializable {
 	        	}
 */
 
-				String newLog = "Warning: cannot cook meals in "
+				String newLog = "cannot cook meals in "
 	            		+ person.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 
 				if (!logCache[2].equals(newLog)) {
 					logCache[2] = newLog;
-					logger.info(logCache[2]);
+					//logger.info(newLog);
+				    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), newLog, null);
 				}
 /*
 	            // 2015-01-15 Added solElapsed
@@ -168,7 +171,8 @@ implements Serializable {
 
 		    	if (!logCache[0].equals(newLog)) {
 			    	logCache[0] = newLog;
-					logger.info(logCache[0]);
+					//logger.info(newLog);
+				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
 		    	}
 
 		    }
@@ -221,13 +225,14 @@ implements Serializable {
 	            		+ " because none of the ingredients of any meals are available ");
 */
 
-				String newLog = "Warning: cannot cook meals in "
+				String newLog = "cannot cook meals in "
 	            		+ robot.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 
 				if (!logCache[3].equals(newLog)) {
 					logCache[3] = newLog;
-					logger.info(logCache[3]);
+					//logger.info(newLog);
+				    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), newLog, null);
 				}
 
 	            // 2015-01-15 Added solElapsed
@@ -258,7 +263,8 @@ implements Serializable {
 
 				if (!logCache[1].equals(newLog)) {
 					logCache[1] = newLog;
-					logger.info(logCache[1]);
+					//logger.info(newLog);
+				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
 				}
 
 		    }

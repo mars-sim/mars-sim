@@ -11,11 +11,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
@@ -303,7 +305,8 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
-        logger.info(person.getName() + " collected " + Math.round(regolithCollected*10D)/10D + " kg of regolith in a DigLocalRegolith task.");
+        LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), " collected " + Math.round(regolithCollected*10D)/10D + " kg of regolith in a DigLocalRegolith task.", null);
+        //logger.info(person.getName() + " collected " + Math.round(regolithCollected*10D)/10D + " kg of regolith in a DigLocalRegolith task.");
 
         // Add experience points
         addExperience(time);

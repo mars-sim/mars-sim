@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -35,6 +36,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
     /* default logger.*/
 	private static Logger logger = Logger.getLogger(Storage.class.getName());
+	//private static org.apache.log4j.Logger log4j = LogManager.getLogger(Storage.class);
 
 	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
 	//private static int count = 0;
@@ -266,7 +268,9 @@ implements Serializable {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
 				result = false;
-			    logger.info(ar.getName() + " storage is full!");
+			    //logger.info("Can't store more '" + ar.getName() + "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.");
+			    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), "can't store more '" + ar.getName() 
+			    	+ "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.", null);
 			}
 			else {
 				inv.storeAmountResource(ar, amount, true);
@@ -299,7 +303,7 @@ implements Serializable {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
 				result = false;
-			    //logger.info(name + " storage is full!");
+			    logger.info("Can't store more '" + name + "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.");
 			}
 			else {
 				inv.storeAmountResource(ar, amount, true);

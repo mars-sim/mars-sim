@@ -33,7 +33,7 @@
 
 <!-- Wastes -->
 	<resource name="compost" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="crop Waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="crop waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
 
 	<resource name="electronic waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
 	<resource name="food waste" phase="solid">Organic waste from leftover or expired food. </resource>

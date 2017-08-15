@@ -108,11 +108,52 @@
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="fertilizer" amount="10.0" />
 
+			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />
+			
 			<!-- Crop -->
 			<!-- No starting crops for this template. -->
+			<resource type="Blueberry" amount="0.0" />
+			<resource type="Cabbage" amount="0.0" />
+			<resource type="Carrot" amount="0.0" />
+			<resource type="Celery" amount="0.0" />
+			<resource type="Corn" amount="0.0" />
+			
+			<resource type="Cranberry" amount="0.0" />
+			<resource type="Cucumber" amount="0.0" />
+			<resource type="Garlic" amount="0.0" />
+			<resource type="Ginger" amount="0.0" />
+			<resource type="Green Bell Pepper" amount="0.0" />
+			
+			<resource type="Spring Onion" amount="0.0" />
+			<resource type="Kidney Bean" amount="0.0" />
+			<resource type="Lettuce" amount="0.0" />
+			<resource type="Peanut" amount="0.0" />
+			<resource type="Peas" amount="0.0" />
+			
+			<resource type="Potato" amount="0.0" />
+			<resource type="Quinoa" amount="0.0" />
+			<resource type="Rice" amount="0.0" />		
+			<resource type="Soybean" amount="0.0" />
+			<resource type="Strawberry" amount="0.0" />
+			
+			<resource type="Sugarcane" amount="0.0" />		
+			<resource type="Swiss Chard" amount="0.0" />
+			<resource type="Taro" amount="0.0" />
+			<resource type="Tomato" amount="0.0" />
+			
+			<resource type="Wheat" amount="0.0" />
+			<resource type="White Rice" amount="0.0" />
+			<resource type="White Onion" amount="0.0" />
+			<resource type="Yam" amount="0.0" />
 
-			<resource type="Mustard Seed" amount="50.0" />
-			<resource type="Sesame Seed" amount="50.0" />
+			<resource type="morel mushroom" amount="0.0" />
+			<resource type="radish" amount="0.0" />	
+			<resource type="red beet" amount="0.0" />
+			<resource type="sweet potato" amount="0.0" />
+			
+			<resource type="Mustard Seed" amount="0.0" />
+			<resource type="Sesame Seed" amount="0.0" />
 			
 
 			<!-- Food Crop Tissue Culture
@@ -172,10 +213,6 @@
 			<resource type="Table Salt" amount="50.0" />
 			<resource type="Sugar" amount="50.0" />
 
-			<!-- Food Derived Items -->
-			<!-- No food derived items in this template. -->
-			<resource type="mustard" amount="50.0" />
-			
 			<!-- Part packages (see part_packages.xml) -->
 			<!-- name: the part package name. -->
 			<!-- number: the number of packages. -->
@@ -301,6 +338,7 @@
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 			
+			<!-- Food Derived Items -->
 			<resource type="mustard" amount="50.0" />
 
 			<!-- Food Crop Tissue Culture

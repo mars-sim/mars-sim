@@ -66,13 +66,18 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	/** The vehicle the rover is currently towing. */
 	private Vehicle towedVehicle;
 
-	public static AmountResource methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource("methane");
-	public static AmountResource regolithAR = ResourceUtil.regolithAR;//AmountResource.findAmountResource("regolith");
-	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;//AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-    public static AmountResource waterAR = ResourceUtil.waterAR;//AmountResource.findAmountResource(LifeSupportType.WATER);
-    public static AmountResource foodAR = ResourceUtil.foodAR;//AmountResource.findAmountResource(LifeSupportType.FOOD);
-    public static AmountResource iceAR = ResourceUtil.iceAR;//AmountResource.findAmountResource("ice");
-    public static AmountResource rockSamplesAR = ResourceUtil.rockSamplesAR;//AmountResource.findAmountResource("rock samples");
+	public static AmountResource methaneAR = ResourceUtil.methaneAR;
+	public static AmountResource regolithAR = ResourceUtil.regolithAR;
+	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+    public static AmountResource waterAR = ResourceUtil.waterAR;
+    public static AmountResource foodAR = ResourceUtil.foodAR;
+    public static AmountResource iceAR = ResourceUtil.iceAR;
+    public static AmountResource rockSamplesAR = ResourceUtil.rockSamplesAR;
+
+    public static AmountResource eWasteAR = ResourceUtil.eWasteAR;  
+    public static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
+    public static AmountResource solidWasteAR = ResourceUtil.solidWasteAR;
+    public static AmountResource toxicWasteAR = ResourceUtil.toxicWasteAR;
 
     private static VehicleConfig config;// = SimulationConfig.instance().getVehicleConfiguration();
 
@@ -113,15 +118,13 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(config.getTotalCapacity(description));
 		// Set inventory resource capacities.
-		//AmountResource methane = AmountResource.findAmountResource("methane");
 		inv.addAmountResourceTypeCapacity(methaneAR, config.getCargoCapacity(description, "methane"));
-		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		inv.addAmountResourceTypeCapacity(oxygenAR, config.getCargoCapacity(description, LifeSupportType.OXYGEN));
-		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		inv.addAmountResourceTypeCapacity(waterAR, config.getCargoCapacity(description, LifeSupportType.WATER));
-		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		inv.addAmountResourceTypeCapacity(foodAR, config.getCargoCapacity(description, LifeSupportType.FOOD));
-
+		inv.addAmountResourceTypeCapacity(rockSamplesAR, config.getCargoCapacity(description, "rock samples"));
+		inv.addAmountResourceTypeCapacity(iceAR, config.getCargoCapacity(description, "ice"));
+		
 		// TODO: can I call .addAmountResourceTypeCapacity() later after the chosen dessert is known?
 		// In RoverMission.java's getResourcesNeededForTrip() we add the storage space for the desserts
     	// getRover().getSettlementInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
@@ -130,20 +133,12 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		//AmountResource dessert = AmountResource.findAmountResource(dessertName);
 		//inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, dessertName));
 
-		//AmountResource solidWaste = AmountResource.findAmountResource("solid waste");
-		//inv.addAmountResourceTypeCapacity(solidWaste, config.getCargoCapacity(description, "solid waste"));
+		//inv.addAmountResourceTypeCapacity(eWasteAR, config.getCargoCapacity(description, "electronic waste"));
+		inv.addAmountResourceTypeCapacity(foodWasteAR, config.getCargoCapacity(description, "food waste"));
+		inv.addAmountResourceTypeCapacity(solidWasteAR, config.getCargoCapacity(description, "solid waste"));
+		inv.addAmountResourceTypeCapacity(toxicWasteAR, config.getCargoCapacity(description, "toxic waste"));
+		
 
-/*
-		AmountResource foodWaste = AmountResource.findAmountResource("food waste");
-		inv.addAmountResourceTypeCapacity(foodWaste, config.getCargoCapacity(description, "food waste"));
-		AmountResource toxicWaste = AmountResource.findAmountResource("toxic waste");
-		inv.addAmountResourceTypeCapacity(toxicWaste, config.getCargoCapacity(description, "toxic waste"));
-*/
-
-		//AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-		inv.addAmountResourceTypeCapacity(rockSamplesAR, config.getCargoCapacity(description, "rock samples"));
-		//AmountResource ice = AmountResource.findAmountResource("ice");
-		inv.addAmountResourceTypeCapacity(iceAR, config.getCargoCapacity(description, "ice"));
 
 		// Construct sick bay.
 		if (config.hasSickbay(description)) {

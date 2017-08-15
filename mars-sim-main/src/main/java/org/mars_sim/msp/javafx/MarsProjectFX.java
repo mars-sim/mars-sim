@@ -25,7 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -228,7 +228,7 @@ public class MarsProjectFX extends Application  {
     /** true if help documents should be generated from config xml files. */
     private boolean generateHTML = false, helpPage = false;
 
-    private boolean isDone;
+    //private boolean isDone;
 
     private String loadFileString;
 
@@ -238,7 +238,7 @@ public class MarsProjectFX extends Application  {
 
     //private ExecutorService worker;
 
-    private MarsProjectFX marsProjectFX;
+    //private MarsProjectFX marsProjectFX;
 
     private static Simulation sim = Simulation.instance();
     //private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -248,7 +248,7 @@ public class MarsProjectFX extends Application  {
      */
     public MarsProjectFX() {
 	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
-    	marsProjectFX = this;
+    	//marsProjectFX = this;
 /*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
         System.out.println(javaCompiler.toString());
@@ -281,7 +281,8 @@ public class MarsProjectFX extends Application  {
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
 
-    	logger.info(Simulation.title);
+    	//logger.info(Simulation.title);
+    	LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), Simulation.title, null);
 
         //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
 
@@ -338,10 +339,10 @@ public class MarsProjectFX extends Application  {
 
 
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!minor.equals("8") || Double.parseDouble(build) < 71.0) {
-    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.71. Terminating...");
+    	if (!minor.equals("8") || Double.parseDouble(build) < 77.0) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
     		//System.out.println("Note: mars-sim requires at least Java 8.0.71. Terminating...");
-    		exitWithError("Note: mars-sim requires at least Java 8.0.71. Terminated.");
+    		exitWithError("Note: mars-sim requires at least Java 8.0.77. Terminated.");
     		//Platform.exit();
 	        //System.exit(1);
     	}

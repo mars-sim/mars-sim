@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -103,7 +105,7 @@ implements Serializable {
 
 		    	if (!logCache[0].equals(newLog)) {
 			    	logCache[0] = newLog;
-					logger.info(logCache[0]);
+				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
 		    	}
 
 	        }
@@ -145,7 +147,7 @@ implements Serializable {
 		        addPhase(PREPARING_DESSERT);
 		        setPhase(PREPARING_DESSERT);
 
-/*				// Note: still too repetitive for reporting what a chefbot does.
+				// Note: still too repetitive for reporting what a chefbot does.
 		        String jobName = RobotJob.getName(robot.getRobotType());
 
 		    	String newLog = jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
@@ -153,9 +155,9 @@ implements Serializable {
 
 		    	if (!logCache[1].equals(newLog)) {
 			    	logCache[1] = newLog;
-					logger.info(logCache[1]);
+				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
 		    	}
-*/
+
 	        }
 	        else {
 	            // No dessert available or enough has been prepared for now.

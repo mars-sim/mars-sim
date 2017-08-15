@@ -178,9 +178,6 @@ implements Repair, Serializable {
 
    public static boolean requiresEVA(Robot robot, Malfunctionable entity) {
 
-	   return false;
-
-/*
 	   boolean result = false;
 
         if (entity instanceof Vehicle) {
@@ -204,7 +201,6 @@ implements Repair, Serializable {
 
         return result;
 
-*/
     }
 
 
@@ -546,11 +542,11 @@ implements Repair, Serializable {
         }
         else if (malfunctionable instanceof Rover) {
 
-	        if (person != null) {
+	        //if (person != null) {
 	            // Walk to malfunctioning rover.
 	            walkToRandomLocInRover((Rover) malfunctionable, true);
 	            isWalk = true;
-        	}
+        	//}
         }
 
         if (!isWalk) {

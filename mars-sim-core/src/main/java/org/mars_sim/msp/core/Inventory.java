@@ -1840,6 +1840,10 @@ implements Serializable {
         return result;
     }
 
+    public Unit getOwner() {
+    	return owner;
+    }
+    
     /**
      * Prepare object for garbage collection.
      */

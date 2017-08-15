@@ -1169,20 +1169,19 @@ public class MainScene {
 																32,64,128,256,512);
 		else if (default_ratio == 32)
 			items = FXCollections.observableArrayList(1,2,4,8,16,
-																32,64,128,256,512,
-																1024);
+																32,64,128,256,512);//,1024);
 		else if (default_ratio == 64)
 			items = FXCollections.observableArrayList(1,2,4,8,16,
 																32,64,128,256,512,
-																1024, 2048);
+																1024);//, 2048);
 		else if (default_ratio == 128)
 			items = FXCollections.observableArrayList(1,2,4,8,16,
 																32,64,128,256,512,
-																1024,2048,4096);//,8192);
+																1024,2048);//,4096,8192);
 		else //if (default_ratio == 256)
 			items = FXCollections.observableArrayList(1,2,4,8,16,
 																32,64,128,256,512,
-																1024,2048,4096,8192);
+																1024,2048,4096);//,8192);
 
         spinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<>(items));
         spinner.setMaxSize(95, 15);

@@ -80,6 +80,7 @@ implements Serializable {
 	 */
 	public VehicleConfig(Document vehicleDoc) {
 		this.vehicleDoc = vehicleDoc;
+		parseIfNeccessary();
 	}
 
 	/**
@@ -238,7 +239,7 @@ implements Serializable {
 	 * @throws Exception if error retrieving vehicle types.
 	 */
 	public Set<String> getVehicleTypes() {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.keySet();
 	}
 
@@ -248,7 +249,7 @@ implements Serializable {
 	 * @return width (meters).
 	 */
 	public double getWidth(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).width;
 	}
 
@@ -258,7 +259,7 @@ implements Serializable {
 	 * @return length (meters).
 	 */
 	public double getLength(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).length;
 	}
 
@@ -269,7 +270,7 @@ implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public double getDrivetrainEfficiency(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).drivetrainEff;
 	}
 
@@ -279,7 +280,7 @@ implements Serializable {
 	 * @return base speed in km/hr.
 	 */
 	public double getBaseSpeed(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).baseSpeed;
 	}
 
@@ -289,7 +290,7 @@ implements Serializable {
 	 * @return empty mass in kg.
 	 */
 	public double getEmptyMass(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).emptyMass;
 	}
 
@@ -299,7 +300,7 @@ implements Serializable {
 	 * @return crew size
 	 */
 	public int getCrewSize(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).crewSize;
 	}
 
@@ -309,7 +310,7 @@ implements Serializable {
 	 * @return total cargo capacity
 	 */
 	public double getTotalCapacity(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).totalCapacity;
 	}
 
@@ -320,7 +321,7 @@ implements Serializable {
 	 * @return vehicle capacity for resource might be <code>null</code>
 	 */
 	public Double getCargoCapacity(String vehicleType, String resource) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		//2015-01-05 Changed to resource.toLowerCase()
 		Double value = map.get(vehicleType.toLowerCase()).cargoCapacity.get(resource.toLowerCase());
 		if (value == null) return 0d;
@@ -333,7 +334,7 @@ implements Serializable {
 	 * @return true if sickbay
 	 */
 	public boolean hasSickbay(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).hasSickbay;
 	}
 
@@ -343,7 +344,7 @@ implements Serializable {
 	 * @return tech level or -1 if no sickbay.
 	 */
 	public int getSickbayTechLevel(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).sickbayTechLevel;
 	}
 
@@ -353,7 +354,7 @@ implements Serializable {
 	 * @return number of sickbay beds or -1 if no sickbay.
 	 */
 	public int getSickbayBeds(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).sickbayBeds;
 	}
 
@@ -363,7 +364,7 @@ implements Serializable {
 	 * @return true if lab
 	 */
 	public boolean hasLab(String vehicleType) {	
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).hasLab;
 	}	
 
@@ -373,7 +374,7 @@ implements Serializable {
 	 * @return lab tech level or -1 if no lab.
 	 */
 	public int getLabTechLevel(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).labTechLevel;
 	}
 
@@ -383,7 +384,7 @@ implements Serializable {
 	 * @return list of lab tech specialty strings.
 	 */
 	public List<ScienceType> getLabTechSpecialties(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).labTechSpecialties;
 	}
 
@@ -393,7 +394,7 @@ implements Serializable {
 	 * @return true if can attach parts.
 	 */
 	public boolean hasPartAttachments(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).hasPartAttachments;
 	}
 
@@ -403,7 +404,7 @@ implements Serializable {
 	 * @return number of part attachment slots.
 	 */
 	public int getPartAttachmentSlotNumber(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).attachmentSlots;
 	}
 
@@ -413,17 +414,17 @@ implements Serializable {
 	 * @return collection of parts that are attachable.
 	 */
 	public Collection<Part> getAttachableParts(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).attachableParts;
 	}
 
 	public String getDescription(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).description;
 	}
 
 	public VehicleDescription getVehicleDescription(String vehicleType) {
-		parseIfNeccessary();
+		//parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase());
 	}
 	
@@ -433,7 +434,7 @@ implements Serializable {
 	 * @return relative X location (meters from vehicle center).
 	 */
 	public double getAirlockXLocation(String vehicleType) {
-	    parseIfNeccessary();
+	    //parseIfNeccessary();
         return map.get(vehicleType.toLowerCase()).getAirlockXLoc();
 	}
 	
@@ -443,7 +444,7 @@ implements Serializable {
      * @return relative Y location (meters from vehicle center).
      */
     public double getAirlockYLocation(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         return map.get(vehicleType.toLowerCase()).getAirlockYLoc();
     }
     
@@ -453,7 +454,7 @@ implements Serializable {
      * @return relative X location (meters from vehicle center).
      */
     public double getAirlockInteriorXLocation(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         return map.get(vehicleType.toLowerCase()).getAirlockInteriorXLoc();
     }
     
@@ -463,7 +464,7 @@ implements Serializable {
      * @return relative Y location (meters from vehicle center).
      */
     public double getAirlockInteriorYLocation(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         return map.get(vehicleType.toLowerCase()).getAirlockInteriorYLoc();
     }
     
@@ -473,7 +474,7 @@ implements Serializable {
      * @return relative X location (meters from vehicle center).
      */
     public double getAirlockExteriorXLocation(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         return map.get(vehicleType.toLowerCase()).getAirlockExteriorXLoc();
     }
     
@@ -483,7 +484,7 @@ implements Serializable {
      * @return relative Y location (meters from vehicle center).
      */
     public double getAirlockExteriorYLocation(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         return map.get(vehicleType.toLowerCase()).getAirlockExteriorYLoc();
     }
     
@@ -493,7 +494,7 @@ implements Serializable {
      * @return list of activity spots and Point2D objects.
      */
     public List<Point2D> getOperatorActivitySpots(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
         List<Point2D> result = vehicle.getOperatorActivitySpots();
         if (result == null) {
@@ -509,7 +510,7 @@ implements Serializable {
      * @return list of activity spots and Point2D objects.
      */
     public List<Point2D> getPassengerActivitySpots(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
         List<Point2D> result = vehicle.getPassengerActivitySpots();
         if (result == null) {
@@ -525,7 +526,7 @@ implements Serializable {
      * @return list of activity spots and Point2D objects.
      */
     public List<Point2D> getSickBayActivitySpots(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
         List<Point2D> result = vehicle.getSickBayActivitySpots();
         if (result == null) {
@@ -541,7 +542,7 @@ implements Serializable {
      * @return list of activity spots and Point2D objects.
      */
     public List<Point2D> getLabActivitySpots(String vehicleType) {
-        parseIfNeccessary();
+        //parseIfNeccessary();
         VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
         List<Point2D> result = vehicle.getLabActivitySpots();
         if (result == null) {

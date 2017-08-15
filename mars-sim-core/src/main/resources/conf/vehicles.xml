@@ -52,27 +52,22 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 		<cargo total-capacity="5800.0">
 
 			<!-- The methane cargo capacity of the rover (kg) -->
-			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle -->
 			<capacity resource="methane" value="300.0" />
 
 			<!-- The oxygen cargo capacity of the rover (kg) -->
-			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="oxygen" value="140.0" />
 
 			<!-- The water cargo capacity of the rover (kg) -->
-			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="water" value="560.0" />
 
 			<!-- The food cargo capacity of the rover (kg) -->
-			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="food" value="210.0" />
 
 			<!-- The dessert cargo capacity of the rover (kg) -->
-			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle -->
 			<capacity resource="dessert" value="50.0" />
 
@@ -86,13 +81,22 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- <capacity resource="Ice" value="2000.0" /> -->
 
+			<!-- The food waste capacity of the rover (kg) -->
+			<!-- Default: varies according to the type of vehicle  -->
+			<capacity resource="food waste" value="120.0" />
+			
+			<!-- The solid waste capacity of the rover (kg) -->
+			<!-- Default: varies according to the type of vehicle  -->
+			<capacity resource="solid waste" value="80.0" />	
+
+			<!-- The toxic waste capacity of the rover (kg) -->
+			<!-- Default: varies according to the type of vehicle  -->
+			<capacity resource="toxic waste" value="20.0" />	
+			
 <!--
-			<capacity resource="solid waste" value="100.0" />
 			<capacity resource="grey water" value="100.0" />
 			<capacity resource="black water" value="100.0" />
-			<capacity resource="food waste" value="100.0" />
-			<capacity resource="toxic waste" value="100.0" />
--->
+-->			
 		</cargo>
 
 		<!-- Sickbay -->
@@ -142,13 +146,10 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<capacity resource="food" value="525.0" />
 			<capacity resource="dessert" value="50.0" />
 
-<!--
-			<capacity resource="solid waste" value="100.0" />
-			<capacity resource="grey water" value="100.0" />
-			<capacity resource="black water" value="100.0" />
-			<capacity resource="food waste" value="100.0" />
-			<capacity resource="toxic waste" value="100.0" />
--->
+			<capacity resource="food waste" value="240.0" />
+			<capacity resource="solid waste" value="160.0" />
+			<capacity resource="toxic waste" value="40.0" />	
+			
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75"
@@ -180,13 +181,9 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<capacity resource="food" value="525.0" />
 			<capacity resource="dessert" value="100.0" />
 
-<!--
-			<capacity resource="solid waste" value="100.0" />
-			<capacity resource="grey water" value="100.0" />
-			<capacity resource="black water" value="100.0" />
-			<capacity resource="food waste" value="100.0" />
-			<capacity resource="toxic waste" value="100.0" />
--->
+			<capacity resource="food waste" value="60.0" />
+			<capacity resource="solid waste" value="4.0" />
+			<capacity resource="toxic waste" value="10.0" />	
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0"

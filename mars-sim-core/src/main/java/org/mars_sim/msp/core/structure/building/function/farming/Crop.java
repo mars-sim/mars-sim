@@ -13,9 +13,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -44,6 +46,7 @@ public class Crop implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
+	//private static org.apache.log4j.Logger log4j = LogManager.getLogger(Crop.class);
 
 	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
 
@@ -611,10 +614,16 @@ public class Crop implements Serializable {
 						// thus no crop waste
 						generateCropWaste(modifiedHarvest);
 	
-					logger.info(unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
-							+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
-							+ " at " + settlement.getName());
+					//logger.info(unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
+					//		+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
+					//		+ " at " + settlement.getName());
 					
+				    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), 
+				    		unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
+							+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
+							+ " at " + settlement.getName()
+							, null);
+				    
 					remainingWorkTime = 0D;
 
 				}

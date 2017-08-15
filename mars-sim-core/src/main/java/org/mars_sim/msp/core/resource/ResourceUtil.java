@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.resource;
 
-import java.io.IOException;
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,13 +47,20 @@ public class ResourceUtil implements Serializable {
 
     public static final String HYDROGEN = "hydrogen";
     public static final String METHANE = "methane";
+    public static final String SOIL = "soil";
     public static final String ICE = "ice";
+    public static final String COMPOST = "compost";
+    
     public static final String REGOLITH = "regolith";
     public static final String ROCK_SAMLES = "rock samples";
     public static final String SAND = "sand";
 
+    public static final String ELECTRONIC_WASTE = "electronic waste";
+    public static final String CROP_WASTE = "crop waste";
     public static final String FOOD_WASTE = "food waste";
     public static final String SOLID_WASTE = "solid waste";
+    public static final String TOXIC_WASTE = "toxic waste";
+
     public static final String GREY_WATER = "grey water";
     public static final String BLACK_WATER = "black water";
     public static final String TABLE_SALT = "table salt";
@@ -63,8 +68,8 @@ public class ResourceUtil implements Serializable {
     public static final String NAPKIN = "napkin";
 
     public static final String FERTILIZER = "fertilizer";
-    public static final String SOIL = "soil";
-    public static final String CROP_WASTE = "crop waste";
+
+
     public static final String TOILET_TISSUE = "toilet tissue";
 
 	// Data members.
@@ -88,24 +93,31 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource carbonDioxideAR;
 
 	public static AmountResource hydrogenAR;
+	public static AmountResource methaneAR;
 
+    public static AmountResource soilAR;
+    public static AmountResource iceAR;
+    public static AmountResource compostAR;
+    
+	public static AmountResource regolithAR;
+	
     public static AmountResource tableSaltAR;
     public static AmountResource NaClOAR;
     public static AmountResource greyWaterAR;
     public static AmountResource blackWaterAR;
 
+    public static AmountResource eWasteAR;    
     public static AmountResource foodWasteAR;
     public static AmountResource solidWasteAR;
+    public static AmountResource toxicWasteAR;
+    
     public static AmountResource napkinAR;
 
-	public static AmountResource methaneAR;
-	public static AmountResource regolithAR;
-    public static AmountResource iceAR;
     public static AmountResource rockSamplesAR;
 	public static AmountResource sandAR;
 
     public static AmountResource fertilizerAR;
-    public static AmountResource soilAR;
+
     public static AmountResource cropWasteAR;
     public static AmountResource toiletTissueAR;
 
@@ -184,10 +196,14 @@ public class ResourceUtil implements Serializable {
     	methaneAR = findAmountResource(METHANE);			// 8
         soilAR = findAmountResource(SOIL);				// 11
         iceAR = findAmountResource(ICE);					// 12
+        compostAR = findAmountResource(COMPOST);			// 13
 
+        
         cropWasteAR = findAmountResource(CROP_WASTE);	// 14
+        eWasteAR = findAmountResource(ELECTRONIC_WASTE);	// 15
         foodWasteAR = findAmountResource(FOOD_WASTE);			// 16
         solidWasteAR = findAmountResource(SOLID_WASTE);		// 17
+        toxicWasteAR = findAmountResource(TOXIC_WASTE);		// 18
 
         greyWaterAR = findAmountResource(GREY_WATER);			// 19
         blackWaterAR = findAmountResource(BLACK_WATER);			// 20
@@ -195,10 +211,11 @@ public class ResourceUtil implements Serializable {
         tableSaltAR = findAmountResource(TABLE_SALT); 		// 23
 
         fertilizerAR = findAmountResource(FERTILIZER);  // 142
+        
     	regolithAR = findAmountResource(REGOLITH);		// 153
+    	
         rockSamplesAR = findAmountResource(ROCK_SAMLES);	// 154
       	sandAR = findAmountResource(SAND);		// 155
-
 
         NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE);	// 156
         napkinAR = findAmountResource(NAPKIN);				// 161
