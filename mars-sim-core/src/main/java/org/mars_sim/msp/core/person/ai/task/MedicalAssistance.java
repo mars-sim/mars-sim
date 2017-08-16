@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.person.medical.Treatment;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -52,10 +53,11 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MedicalAssistance.class.getName());
 
+    private static final String sourceName = logger.getName();
+    
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.medicalAssistance"); //$NON-NLS-1$
@@ -86,7 +88,7 @@ implements Serializable {
 	public MedicalAssistance(Person person) {
 		super(NAME, person, true, true, STRESS_MODIFIER, true, 0D);
 
-        toxicWasteAR = AmountResource.findAmountResource(TOXIC_WASTE);
+        toxicWasteAR = ResourceUtil.toxicWasteAR;//AmountResource.findAmountResource(TOXIC_WASTE);
 
 		// Get a local medical aid that needs work.
 		List<MedicalAid> localAids = getNeedyMedicalAids(person);

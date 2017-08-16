@@ -49,6 +49,8 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CookMeal.class.getName());
 
+    private static String sourceName = logger.getName();
+    
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.cookMeal"); //$NON-NLS-1$
@@ -76,7 +78,7 @@ implements Serializable {
 	//private int solElapsedCache;
 
 	/** Log cache array for storing previous log statements */
-	private static String[] logCache = new String[]{"", "", "", ""};
+	//private static String[] logCache = new String[]{"", "", "", ""};
 
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
@@ -92,6 +94,8 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
         // Initialize data members
         setDescription(Msg.getString("Task.description.cookMeal.detail",
                 getTypeOfMeal())); //$NON-NLS-1$
@@ -138,11 +142,11 @@ implements Serializable {
 	            		+ person.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 
-				if (!logCache[2].equals(newLog)) {
-					logCache[2] = newLog;
+				//if (!logCache[2].equals(newLog)) {
+				//	logCache[2] = newLog;
 					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), newLog, null);
-				}
+				    LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, newLog, null);
+				//}
 /*
 	            // 2015-01-15 Added solElapsed
 	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -169,11 +173,11 @@ implements Serializable {
 				    	                " in " + person.getSettlement();
 
 
-		    	if (!logCache[0].equals(newLog)) {
-			    	logCache[0] = newLog;
+		    	//if (!logCache[0].equals(newLog)) {
+			    //	logCache[0] = newLog;
 					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
-		    	}
+				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+		    	//}
 
 		    }
 	    }
@@ -229,11 +233,11 @@ implements Serializable {
 	            		+ robot.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 
-				if (!logCache[3].equals(newLog)) {
-					logCache[3] = newLog;
+				//if (!logCache[3].equals(newLog)) {
+				//	logCache[3] = newLog;
 					//logger.info(newLog);
 				    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), newLog, null);
-				}
+				//}
 
 	            // 2015-01-15 Added solElapsed
 /*
@@ -261,11 +265,11 @@ implements Serializable {
 				String newLog = jobName + " " + robot.getName() + " made meal at " + kitchen.getBuilding().getNickName() +
     	                " in " + robot.getSettlement();
 
-				if (!logCache[1].equals(newLog)) {
-					logCache[1] = newLog;
+				//if (!logCache[1].equals(newLog)) {
+				//	logCache[1] = newLog;
 					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
-				}
+				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+				//}
 
 		    }
 	    }

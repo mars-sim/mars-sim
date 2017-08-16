@@ -62,6 +62,8 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(Cooking.class.getName());
+    
+    private static String sourceName = logger.getName();
 
     private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
 
@@ -78,12 +80,12 @@ implements Serializable {
     public static double UP = 0.01;
     public static double DOWN = 0.007;
 
-    public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
-    public static final String FOOD_WASTE = "food waste";
-    public static final String GREY_WATER = "grey water";
-    public static final String TABLE_SALT = "table salt";
-    public static final String SOLID_WASTE = "solid waste";
-    public static final String NAPKIN = "napkin";
+    //public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
+    //public static final String FOOD_WASTE = "food waste";
+    //public static final String GREY_WATER = "grey water";
+    //public static final String TABLE_SALT = "table salt";
+    //public static final String SOLID_WASTE = "solid waste";
+    //public static final String NAPKIN = "napkin";
 
     public static final String SOYBEAN_OIL = "soybean oil";
     public static final String GARLIC_OIL = "garlic oil";
@@ -148,6 +150,8 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
         // 2014-12-30 Changed inv to include the whole settlement
         //inv = getBuilding().getSettlementInventory();
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
@@ -185,12 +189,12 @@ implements Serializable {
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven test
 
-        tableSaltAR = ResourceUtil.findAmountResource(TABLE_SALT);
-        foodAR = ResourceUtil.findAmountResource(LifeSupportType.FOOD);
-        foodWasteAR = ResourceUtil.findAmountResource(FOOD_WASTE);
-        greyWaterAR = ResourceUtil.findAmountResource(GREY_WATER);
-        NaClOAR = ResourceUtil.findAmountResource(SODIUM_HYPOCHLORITE);
-        waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+        tableSaltAR = ResourceUtil.tableSaltAR;//.findAmountResource(TABLE_SALT);
+        foodAR = ResourceUtil.foodAR;//.findAmountResource(LifeSupportType.FOOD);
+        foodWasteAR = ResourceUtil.foodWasteAR;//.findAmountResource(FOOD_WASTE);
+        greyWaterAR = ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);
+        NaClOAR = ResourceUtil.NaClOAR;//.findAmountResource(SODIUM_HYPOCHLORITE);
+        waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
 
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
@@ -205,10 +209,10 @@ implements Serializable {
 
     	if (oilMenuAR == null) {
 	        oilMenuAR = new CopyOnWriteArrayList<AmountResource>();
-	        oilMenuAR.add(ResourceUtil.findAmountResource(SOYBEAN_OIL));
-	        oilMenuAR.add(ResourceUtil.findAmountResource(GARLIC_OIL));
-	        oilMenuAR.add(ResourceUtil.findAmountResource(SESAME_OIL));
-	        oilMenuAR.add(ResourceUtil.findAmountResource(PEANUT_OIL));
+	        oilMenuAR.add(ResourceUtil.soybeanOilAR);
+	        oilMenuAR.add(ResourceUtil.garlicOilAR);
+	        oilMenuAR.add(ResourceUtil.sesameOilAR);
+	        oilMenuAR.add(ResourceUtil.peanutOilAR);
     	}
     }
 
@@ -963,7 +967,7 @@ implements Serializable {
 
 	    retrieveAnIngredientFromMap(usage, waterAR, true);
 		double wasteWaterAmount = usage * .75;
-		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv);
+		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + " -> consumeWater()");
     }
 
 
@@ -1162,7 +1166,7 @@ implements Serializable {
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, tableSaltAR, true); //TABLE_SALT, true);//
-		Storage.storeAnResource(dryMassPerServing, foodAR, inv); //LifeSupportType.FOOD, inv);//AmountResource.
+		Storage.storeAnResource(dryMassPerServing, foodAR, inv, sourceName + "->preserveFood()");
  	}
 
     /**

@@ -326,7 +326,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="water" amount="1000.0" />
 				<resource-initial resource="oxygen" amount="500.0" />
 				<resource-initial resource="food" amount="300.0" />
-				
+
+				<resource-initial resource="grey water" amount="1.0" />				
 				<resource-initial resource="solid waste" amount="0.0" />
 				<resource-initial resource="food waste" amount="0.0" />
 				

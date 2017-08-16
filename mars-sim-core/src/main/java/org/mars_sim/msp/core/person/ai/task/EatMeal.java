@@ -48,10 +48,11 @@ public class EatMeal extends Task implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
+    private static final String sourceName = logger.getName();
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.eatMeal"); //$NON-NLS-1$
@@ -364,7 +365,7 @@ public class EatMeal extends Task implements Serializable {
                     //if (inv == null) 
                     	//logger.info("preserved food gone bad, turn into food waste");
                     // Throw food out.
-                    Storage.storeAnResource(foodAmount, ResourceUtil.foodWasteAR, inv);
+                    Storage.storeAnResource(foodAmount, ResourceUtil.foodWasteAR, inv, sourceName + "->eatPreservedFood()");
                 }
                 else {
                     // Consume preserved food.

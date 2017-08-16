@@ -71,11 +71,13 @@ implements Serializable {
     /** default logger. */
 	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
+    private static final String sourceName = logger.getName();
+    
     private static final BuildingFunction FARMING_FUNCTION = BuildingFunction.FARMING;
     private static final BuildingFunction RESEARCH_FUNCTION = BuildingFunction.RESEARCH;
 
 	public static final String FERTILIZER = "fertilizer";
-	public static final String GREY_WATER = "grey water";
+	//public static final String GREY_WATER = "grey water";
     public static final String SOIL = "soil";
     public static final String CROP_WASTE = "crop waste";
     public static final String TISSUE_CULTURE = "tissue culture";
@@ -1061,7 +1063,8 @@ implements Serializable {
         	// store the tissues
       		Storage.storeAnResource(amountExtracted, tissueAR, s_inv);
 
-    		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
+    		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
+    				+ Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
     					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 
     		isDone = true;

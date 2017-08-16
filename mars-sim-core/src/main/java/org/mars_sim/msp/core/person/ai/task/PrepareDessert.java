@@ -46,7 +46,9 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PrepareDessert.class.getName());
-
+	
+    private static String sourceName = logger.getName();
+    
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessert"); //$NON-NLS-1$
@@ -61,7 +63,7 @@ implements Serializable {
 
 	// Data members
 	/** Log cache array for storing previous log statements */
-	private static String[] logCache = new String[] {"", ""};
+	//private static String[] logCache = new String[] {"", ""};
 
 	/** The kitchen the person is making dessert. */
 	private PreparingDessert kitchen;
@@ -77,6 +79,8 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
         // Get an available dessert preparing kitchen.
         Building kitchenBuilding = getAvailableKitchen(person);
 
@@ -103,10 +107,10 @@ implements Serializable {
 		    	String newLog = jobName + " " + person.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
 		                " at " + person.getSettlement();
 
-		    	if (!logCache[0].equals(newLog)) {
-			    	logCache[0] = newLog;
-				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
-		    	}
+		    	//if (!logCache[0].equals(newLog)) {
+			    //	logCache[0] = newLog;
+				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+		    	//}
 
 	        }
 	        else {
@@ -153,10 +157,10 @@ implements Serializable {
 		    	String newLog = jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
 		                " at " + robot.getSettlement();
 
-		    	if (!logCache[1].equals(newLog)) {
-			    	logCache[1] = newLog;
-				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), newLog, null);
-		    	}
+		    	//if (!logCache[1].equals(newLog)) {
+			    //	logCache[1] = newLog;
+				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+		    	//}
 
 	        }
 	        else {

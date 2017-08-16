@@ -252,9 +252,9 @@ LocalBoundedObject, InsidePathLocation {
 				//b_inv = new Inventory(this);
 				b_inv.addGeneralCapacity(100);
 			} else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
-				b_inv.addGeneralCapacity(10000);
+				b_inv.addGeneralCapacity(1_000_000);
 			else
-				b_inv.addGeneralCapacity(1000);
+				b_inv.addGeneralCapacity(100_000);
 		}
 
 		if (masterClock == null)

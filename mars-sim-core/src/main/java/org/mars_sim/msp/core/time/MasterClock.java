@@ -198,15 +198,13 @@ public class MasterClock implements Serializable { // Runnable,
     	timeRatio = defaultTimeRatio;
         timeBetweenUpdates = (long) default_tbu_ns;
 
-        logger.info("Default Time Ratio : " + (int)defaultTimeRatio + "x");
-        logger.info("Time between Updates : " + default_tbu_ms + " ms");
-        logger.info("Default Ticks Per Second (TPS) : " + Math.round(1_000/default_tbu_ms*10D)/10D + " Hz");
-
-
         // 2015-10-31 Added loading the values below from SimulationConfig
         setNoDelaysPerYield(config.getNoDelaysPerYield());
         setMaxFrameSkips(config.getMaxFrameSkips());
 
+        logger.info("Default Time Ratio is " + (int)defaultTimeRatio + "x");
+        logger.info("Time between Updates is " + Math.round(default_tbu_ms * 1_000D)/1_000D + " ms");
+        logger.info("Default Ticks Per Second (TPS) is " + Math.round(1_000/default_tbu_ms*10D)/10D + " Hz");
         //logger.info("Ticks per sec : " + getPulsesPerSecond());
     }
 

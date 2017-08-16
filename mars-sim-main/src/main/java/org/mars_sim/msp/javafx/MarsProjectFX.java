@@ -741,6 +741,18 @@ public class MarsProjectFX extends Application  {
             System.out.println("Program has ended, please type 'exit' to close the console");
         }
 */
+/*    	
+    	for (String env: args) {
+            String value = System.getenv(env);
+            if (value != null) {
+                System.out.format("%s=%s%n",
+                                  env, value);
+            } else {
+                System.out.format("%s is"
+                    + " not assigned.%n", env);
+            }
+        }
+*/    	
         launch(args);
     }
 

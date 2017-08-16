@@ -37,10 +37,11 @@ implements Serializable {
     /* default logger.*/
 	private static Logger logger = Logger.getLogger(Storage.class.getName());
 	//private static org.apache.log4j.Logger log4j = LogManager.getLogger(Storage.class);
-
+    private static String sourceName = logger.getName();
+    
 	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
 	//private static int count = 0;
-	private double stockCapacity = 0;
+	//private double stockCapacity = 0;
 
 	private Map<AmountResource, Double> storageCapacity;
 
@@ -52,6 +53,8 @@ implements Serializable {
 	public Storage(Building building) {
 		// Use Function constructor.
 		super(FUNCTION, building);
+		
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
     	//count++;
 		//System.out.println("Storage.java : for " + count + " times for " + building );
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -268,8 +271,7 @@ implements Serializable {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
 				result = false;
-			    //logger.info("Can't store more '" + ar.getName() + "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.");
-			    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), "can't store more '" + ar.getName() 
+			    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(AR) Can't store more '" + ar.getName() 
 			    	+ "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.", null);
 			}
 			else {
@@ -285,7 +287,37 @@ implements Serializable {
 		return result;
 	}
 
+	   /**
+     * Stores a resource
+     * @param amount
+     * @param ar
+     * @param inv
+     */
+	// 2015-03-09 Added storeAnResource()
+	public static boolean storeAnResource(double amount, AmountResource ar, Inventory inv, String method) {
+		boolean result = false;
+		try {
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, true);
 
+			if (remainingCapacity < amount) {
+			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+				amount = remainingCapacity;
+				result = false;
+			    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, method + " Can't store more '" + ar.getName() 
+			    	+ "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.", null);
+			}
+			else {
+				inv.storeAmountResource(ar, amount, true);
+				inv.addAmountSupplyAmount(ar, amount);
+				result = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+    		logger.log(Level.SEVERE, "Issues with storeAnResource(ar) on " + ar.getName() + " : " + e.getMessage());
+		}
+
+		return result;
+	}
     /**
      * Stores a resource
      * @param name
@@ -303,7 +335,8 @@ implements Serializable {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
 				result = false;
-			    logger.info("Can't store more '" + name + "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.");
+				LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(Str) Can't store more '" 
+				+ name + "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.", null);
 			}
 			else {
 				inv.storeAmountResource(ar, amount, true);

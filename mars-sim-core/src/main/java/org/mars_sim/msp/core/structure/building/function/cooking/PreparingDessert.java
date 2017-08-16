@@ -49,10 +49,11 @@ implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
     /** default logger. */
     private static Logger logger = Logger.getLogger(PreparingDessert.class.getName());
 
+    private static String sourceName = logger.getName();
+    
     private static final BuildingFunction FUNCTION = BuildingFunction.PREPARING_DESSERT;
 
 	public static final String GREY_WATER = "grey water";
@@ -146,6 +147,8 @@ implements Serializable {
         super(FUNCTION, building);
         this.building = building;
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
         currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
@@ -170,7 +173,7 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
-		greyWaterAR = ResourceUtil.findAmountResource(GREY_WATER);
+		greyWaterAR = ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);
 		waterAR = ResourceUtil.findAmountResource(WATER);
         foodWasteAR = ResourceUtil.findAmountResource(FOOD_WASTE);
         NaClOAR = ResourceUtil.findAmountResource(SODIUM_HYPOCHLORITE);
@@ -648,7 +651,7 @@ implements Serializable {
     		usage = 1 - rand;
     	Storage.retrieveAnResource(usage, waterAR, inv, true);
 		double wasteWaterAmount = usage * .5;
-		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv);
+		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + "->consumeWater");
 
     }
 

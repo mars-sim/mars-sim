@@ -43,11 +43,11 @@ public class Crop implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
 	//private static org.apache.log4j.Logger log4j = LogManager.getLogger(Crop.class);
-
+    private static String sourceName = logger.getName();
+    
 	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
 
 	// 2016-10-12 Added the limiting factor that determines how fast and how much PAR can be absorbed in one frame.
@@ -78,26 +78,26 @@ public class Crop implements Serializable {
 
     public static final String TISSUE_CULTURE = "tissue culture";
 
-    public static final String TABLE_SALT = "table salt";
-	public static final String FERTILIZER = "fertilizer";
-	public static final String GREY_WATER = "grey water";
-    public static final String SOIL = "soil";
-    public static final String CROP_WASTE = "crop waste";
-    public static final String FOOD_WASTE = "food waste";
-    public static final String SOLID_WASTE = "solid waste";
+    //public static final String TABLE_SALT = "table salt";
+	//public static final String FERTILIZER = "fertilizer";
+	//public static final String GREY_WATER = "grey water";
+    //public static final String SOIL = "soil";
+    //public static final String CROP_WASTE = "crop waste";
+    //public static final String FOOD_WASTE = "food waste";
+    //public static final String SOLID_WASTE = "solid waste";
 
-    public static final String NAPKIN = "napkin";
-    public static final String NaClO4 = "sodium hypochlorite";
+    //public static final String NAPKIN = "napkin";
+    //public static final String NaClO4 = "sodium hypochlorite";
 
-	public static final String OXYGEN = "oxygen";
-	public static final String WATER = "water";
-	public static final String FOOD = "food";
-	public static final String CO2 = "carbon dioxide";
+	//public static final String OXYGEN = "oxygen";
+	//public static final String WATER = "water";
+	//public static final String FOOD = "food";
+	//public static final String CO2 = "carbon dioxide";
 
-	public static final String METHANE = "methane";			// 8
-	public static final String ICE = "ice";
-	public static final String REGOLITH = "regolith";
-	public static final String ROCK_SAMPLE = "rock samples";
+	//public static final String METHANE = "methane";			// 8
+	//public static final String ICE = "ice";
+	//public static final String REGOLITH = "regolith";
+	//public static final String ROCK_SAMPLE = "rock samples";
 
 
 	// Data members
@@ -106,9 +106,9 @@ public class Crop implements Serializable {
 	private boolean hasSeed = false;
 	private boolean isSeedPlant = false;
 
-	private int numLampCache;
+	//private int numLampCache;
     /** Current sol since the start of sim. */
-	private int solCache = 1;
+	//private int solCache = 1;
 	/** Current sol of month. */
 	private int currentSol = 1;
 	/** ratio between inedible and edible biomass */
@@ -168,15 +168,15 @@ public class Crop implements Serializable {
 	private AmountResource cropAR, tissueAR;
 
 	//private static AmountResource foodAR = ResourceUtil.findAmountResource(FOOD); // 1 / needed by Farming 
-	private static AmountResource waterAR = ResourceUtil.findAmountResource(WATER); // 2
-	private static AmountResource oxygenAR = ResourceUtil.findAmountResource(OXYGEN); // 3
-	private static AmountResource carbonDioxideAR = ResourceUtil.findAmountResource(CO2); // 4
+	private static AmountResource waterAR = ResourceUtil.waterAR;//.findAmountResource(WATER); // 2
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;//.findAmountResource(OXYGEN); // 3
+	private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//.findAmountResource(CO2); // 4
 
 	//private static AmountResource methaneAR =  ResourceUtil.findAmountResource(METHANE);			// 8
 	//private static AmountResource iceAR =  ResourceUtil.findAmountResource(ICE);					// 12
 	//private static AmountResource foodWasteAR =  ResourceUtil.findAmountResource(FOOD_WASTE);			// 16
 	//private static AmountResource solidWasteAR =  ResourceUtil.findAmountResource(SOLID_WASTE);		// 17
-	private static AmountResource greyWaterAR =  ResourceUtil.findAmountResource(GREY_WATER);			// 19
+	private static AmountResource greyWaterAR =  ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);			// 19
 	//private static AmountResource tableSaltAR =  ResourceUtil.findAmountResource(TABLE_SALT); 		// 23
 
 	//private static AmountResource regolithAR =  ResourceUtil.findAmountResource(REGOLITH);		// 142
@@ -185,8 +185,8 @@ public class Crop implements Serializable {
 	//private static AmountResource NaClO4AR =  ResourceUtil.findAmountResource(NaClO4);	// 145
 	//private static AmountResource napkinAR =  ResourceUtil.findAmountResource(NAPKIN);				// 150
 
-	private static AmountResource cropWasteAR =  ResourceUtil.findAmountResource(CROP_WASTE);
-	private static AmountResource fertilizerAR =  ResourceUtil.findAmountResource(FERTILIZER);
+	private static AmountResource cropWasteAR =  ResourceUtil.cropWasteAR;//.findAmountResource(CROP_WASTE);
+	private static AmountResource fertilizerAR =  ResourceUtil.fertilizerAR;//.findAmountResource(FERTILIZER);
 	//private static AmountResource soilAR =  ResourceUtil.findAmountResource(SOIL);
     
 	private static AmountResource seedAR;
@@ -219,6 +219,8 @@ public class Crop implements Serializable {
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
 		phases = cropType.getPhases();
 
 		for (Phase p : phases.values()) {
@@ -569,9 +571,9 @@ public class Crop implements Serializable {
 				if (lastHarvest > 0) {
 					// Store the crop harvest
 					if (isSeedPlant)
-						Storage.storeAnResource(lastHarvest, seedAR, inv);
+						Storage.storeAnResource(lastHarvest, seedAR, inv, sourceName + "->addWork()");
 					else
-						Storage.storeAnResource(lastHarvest, cropAR, inv);
+						Storage.storeAnResource(lastHarvest, cropAR, inv, sourceName + "->addWork()");
 	
 					logger.info(unit.getName() + " just closed out the harvest of " + capitalizedCropName
 							+ " in " + farmName
@@ -602,13 +604,13 @@ public class Crop implements Serializable {
 					double modifiedHarvest = actualHarvest * workTime / w;
 					// Store the crop harvest
 					if (isSeedPlant)
-						Storage.storeAnResource(modifiedHarvest, seedAR, inv);
+						Storage.storeAnResource(modifiedHarvest, seedAR, inv, sourceName + "->addWork()");
 					else
-						Storage.storeAnResource(modifiedHarvest, cropAR, inv);
+						Storage.storeAnResource(modifiedHarvest, cropAR, inv, sourceName + "->addWork()");
 	
 					// 2017-03-30 Extract Mustard Seed
 					if (hasSeed)
-						Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv);
+						Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv, sourceName + "->addWork()");
 					else
 						//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
 						// thus no crop waste
@@ -618,7 +620,7 @@ public class Crop implements Serializable {
 					//		+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
 					//		+ " at " + settlement.getName());
 					
-				    LogConsolidated.log(logger, Level.INFO, 2000, logger.getName(), 
+				    LogConsolidated.log(logger, Level.INFO, 2000, sourceName, 
 				    		unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
 							+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
 							+ " at " + settlement.getName()
@@ -1088,7 +1090,7 @@ public class Crop implements Serializable {
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
 		// TODO: Modify harvest modifier according to the moisture level
 		double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
-		Storage.storeAnResource(waterReclaimed, waterAR, inv);
+		Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "->calculateHarvestModifier()");
 
 		memory[3] = .5 * waterModifier + .5 * memory[3];
 		if (memory[3] > 1.1)
@@ -1115,7 +1117,7 @@ public class Crop implements Serializable {
 			
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * growingArea * time / 1000D * CO2_GENERATION_RATE;
-			Storage.storeAnResource(co2Amount, carbonDioxideAR, inv);
+			Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "->calculateHarvestModifier()");
 		}
 
 		else {
@@ -1143,7 +1145,7 @@ public class Crop implements Serializable {
 			
 			// Determine the amount of oxygen generated via gas exchange.
 			double oxygenAmount = carbonDioxideUsed * growingArea * time / 1000D * OXYGEN_GENERATION_RATE;
-			Storage.storeAnResource(oxygenAmount, oxygenAR, inv);
+			Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "->calculateHarvestModifier()");
 
 		}
 

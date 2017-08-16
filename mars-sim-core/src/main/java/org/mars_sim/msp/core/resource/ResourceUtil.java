@@ -69,6 +69,10 @@ public class ResourceUtil implements Serializable {
 
     public static final String FERTILIZER = "fertilizer";
 
+    public static final String SOYBEAN_OIL = "soybean oil";
+    public static final String GARLIC_OIL = "garlic oil";
+    public static final String SESAME_OIL = "sesame oil";
+    public static final String PEANUT_OIL = "peanut oil";
 
     public static final String TOILET_TISSUE = "toilet tissue";
 
@@ -121,6 +125,11 @@ public class ResourceUtil implements Serializable {
     public static AmountResource cropWasteAR;
     public static AmountResource toiletTissueAR;
 
+    public static AmountResource soybeanOilAR;
+    public static AmountResource garlicOilAR;
+    public static AmountResource peanutOilAR;
+    public static AmountResource sesameOilAR;
+    
 	private static AmountResource[] ARs = new AmountResource[20];
 	private static int[] ARs_int = new int[20];
 
@@ -221,6 +230,10 @@ public class ResourceUtil implements Serializable {
         napkinAR = findAmountResource(NAPKIN);				// 161
         toiletTissueAR = findAmountResource(TOILET_TISSUE);	// 162
 
+        soybeanOilAR = findAmountResource(SOYBEAN_OIL);
+        garlicOilAR = findAmountResource(GARLIC_OIL);
+        sesameOilAR = findAmountResource(SESAME_OIL);
+        peanutOilAR = findAmountResource(PEANUT_OIL);
     }
 
     public static void printID() {

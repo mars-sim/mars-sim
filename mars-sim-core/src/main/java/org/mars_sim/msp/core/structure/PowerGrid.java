@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -21,6 +22,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -31,12 +33,20 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PowerGrid.class.getName());
-	public static double PSEUDO_PERCENT_VOLTAGE_DROP = .95D;
-	//private static double PSUEDO_CHARGING_RATE = 5D;
+	
+    private static String sourceName = logger.getName();
+    
+    public static double R_LOAD = 200; // assume constant load resistance 
+    
+	public static double percentAverageVoltageDrop = 98D;
+
 	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
+	
+	public double degradationRatePerSol = .0004; 
+	
+	public double systemEfficiency = 1D;
 	
 	// Data members
 	private double powerGenerated;
@@ -55,6 +65,9 @@ implements Serializable {
 	 */
 	public PowerGrid(Settlement settlement) {
 		this.settlement = settlement;
+		
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
 		manager = settlement.getBuildingManager();
 		powerMode = PowerMode.POWER_UP;
 		powerGenerated = 0D;
@@ -190,7 +203,10 @@ implements Serializable {
 		// Determine total power required in the grid.
 		updateTotalRequiredPower();
 
-		// 2016-10-18 Update the power flow
+		// 2017-08-15 Update overal grid efficiency.
+		updateEfficiency(time);
+		
+		// 2016-10-18 Update the power flow.
 		updatePowerFlow(time);
 		
 		// Update the total power storage capacity in the grid.
@@ -198,58 +214,56 @@ implements Serializable {
 
 		// Update the total power stored in the grid.
 		updateTotalStoredEnergy();
-
 	
 		// Update power value.
 		determinePowerValue();
 	}
 
+	public void updateEfficiency(double time) {
+		double d_factor = degradationRatePerSol * time/1000D;
+		systemEfficiency = systemEfficiency - systemEfficiency * d_factor;
+	}
+	
 	/**
 	 * Calculate the flow of power/energy taking place due to the supply and demand of power
 	 * @param time
 	 */
 	public void updatePowerFlow(double time) {		
 		// Check if there is enough power generated to fully supply each building.
-		if (powerRequired < powerGenerated) {
+		if (powerRequired < powerGenerated) { // excess energy to charge grid batteries
 			
 			sufficientPower = true;
 			// Store excess power in power storage buildings.
 			double timeHr = time * HOURS_PER_MILLISOL; //MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
-			double excessEnergy = (powerGenerated - powerRequired) * timeHr;
+			double excessEnergy = (powerGenerated - powerRequired) * timeHr * systemEfficiency;
 			storeExcessPower(excessEnergy, time);
 		}
 		
-		else {
+		else { // insufficient power produced, need to pull energy from batteries to meet the demand
 			
 			sufficientPower = false;
 			double neededPower = powerRequired - powerGenerated;
-			double timeHr = time * HOURS_PER_MILLISOL; //MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
-			double neededEnergy = neededPower * timeHr;		
+			double timeInHour = time * HOURS_PER_MILLISOL; //MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+			double neededEnergy = neededPower * timeInHour / percentAverageVoltageDrop * 100D;
 			// Find available power from power storage buildings.			
-			double availablePowerHr = computeStoredEnergy();
+			//double totalAvailablekWHr = computeTotalStoredEnergy();
+			
 			// NOTE : assume the energy flow is instantaneous and 
-			// the gauge of the cable is very low and 
-			if (availablePowerHr * PSEUDO_PERCENT_VOLTAGE_DROP >= neededEnergy) {
-	
-				double actualNeeded = neededEnergy / PSEUDO_PERCENT_VOLTAGE_DROP;
-				// subtract powerHr from the battery reserve		
-				double retrieved = retrieveStoredEnergy(actualNeeded);
-				
-				if (retrieved >= actualNeeded)
-					sufficientPower = true;
-				else
-					sufficientPower = true;
-				
-			}
+			// the gauge of the cable is very low
+
+			// subtract powerHr from the battery reserve		
+			double retrieved = retrieveStoredEnergy(neededEnergy, time);
 			
-			else {
-				sufficientPower = false;
+			double delta_energy = neededEnergy - retrieved;
+
+			if (retrieved >= 0 && delta_energy == 0) { // if the grid batteries has more than enough
+				sufficientPower = true;
 			}
-			
-			if (!sufficientPower) {
 				
-				neededEnergy = neededEnergy - availablePowerHr;				
-				neededPower = neededEnergy / timeHr;
+			if (!sufficientPower) { // if still not having sufficient power
+				
+				// compute power needed
+				neededPower = delta_energy / timeInHour;
 				
 				//BuildingManager manager = settlement.getBuildingManager();
 				List<Building> buildings = manager.getBuildings();//getACopyOfBuildings();
@@ -461,79 +475,136 @@ implements Serializable {
 	 * @throws BuildingException if error storing excess energy.
 	 */
 	private void storeExcessPower(double excessEnergy, double time) {
-		//System.out.println("time : "+ time);
-		//BuildingManager manager = settlement.getBuildingManager();
+		//double totalDelivered = 0;
+		double excess = excessEnergy;
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
-			double kWhStored = storage.getkWattHourStored();
+			double stored = storage.getkWattHourStored();
 			double max = storage.getCurrentMaxCapacity();
-			double remainingCapacity = max - kWhStored;
-			double voltage = storage.getBatteryVoltage();
+			double remainingCapacity = max - stored;
+			double remainingMax = max * .01;
+			//double voltage = storage.getTerminalVoltage();
 			//if (kWhStored == 0) {
 			//	logger.info("The grid battery is depleted at " + building.getNickName() + " in " + settlement.getName());					
 			//}
 
 			//logger.info("The grid battery at " + building.getNickName() + " in " + settlement.getName() + " is currently at " + Math.round(kWhStored * 100D)/100D + " kWh");
 
-			if (remainingCapacity > max * .01) {
+			if (remainingCapacity > remainingMax && excess > 0) {
 				// TODO: need to come up with a better battery model with charge capacity parameters from https://www.mathworks.com/help/physmod/elec/ref/genericbattery.html?requestedDomain=www.mathworks.com
+
+				// Note: Tesla runs its batteries up to 4C charging rate
+				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
+				
+				double accept = chargeBattery(storage, excess, time);
+				
+				//if (energyToStore > remainingCapacity) {
+					// if the max cap of this building's battery has been reached, look for another building's battery to store the excess energy					
+				//	energyToStore = remainingCapacity;
+					//logger.info("The grid battery is now fully charged at " + Math.round(kWhStored * 100D)/100D + " kWh at " + building.getNickName() + " in " + settlement.getName());
+				//}
+
+				if (accept > 0 && accept <= excess) {
+
+					// update the resultant energy stored in battery
+					stored = stored + accept;
+					// update excess energy 
+					excess = excess - accept;
+
+					// update the energy stored in this battery
+					storage.setEnergyStored(stored);
+					
+					// update the total retrieved energy
+					//totalDelivered = totalDelivered + accept;	
+	
+					remainingCapacity = max - stored;
+					remainingMax = max * .01;
+					
+					if (remainingCapacity <= remainingMax)
+						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+								"The grid battery at " + building.getNickName() + " in " + settlement.getName() 
+								+ " is now FULLY RECHARGED at " + Math.round(stored * 100D)/100D + " kWh", null);
+
+				}
+				
+			}
+
+		}
+		
+	}
+	
+	/**
+	 * Deliver stored energy from a battery
+	 * @param storage PowerStorage
+	 * @param excess energy 
+	 * @param time in millisols
+	 * @return energy to be delivered
+	 */
+	public double chargeBattery(PowerStorage storage, double excess, double time) {
+		double stored = storage.getkWattHourStored();
+		double needed = storage.getCurrentMaxCapacity() - stored;
+		double smallest = 0;
+		if (needed <= 0 || excess <= 0) {
+			return 0;
+		}
+		
+		else {
+			double voltage = storage.getTerminalVoltage();
+			
+			double r_int = storage.getResistance(); // assume the internal resistance of the battery is constant 
+
+			double V_out = voltage * R_LOAD / (R_LOAD + r_int); 
+			
+			if (V_out > 0) {
+				
 				double Ah = storage.getAmpHourRating();
 				double hr = time * HOURS_PER_MILLISOL;
-				// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C charging rate
+				
+				// Note: Tesla runs its batteries up to 4C charging rate
 				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
-				double chargeRate = 3D - 2.9D * voltage / PowerStorage.BATTERY_MAX_VOLTAGE ;
+				
+				double c_Rating = storage.geCRating();
+				
+				//double chargeRate = c_Rating - c_Rating *.99 * voltage / PowerStorage.BATTERY_MAX_VOLTAGE ;
 				//logger.info("chargeRate is " + Math.round(chargeRate*100D)/100D);
+				//double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
 				
-				// make minimum charging rate as 0.1C;
-				double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
-				double energyToStore = ampere /1000D * (PowerStorage.SECONDARY_LINE_VOLTAGE - voltage);
-				//logger.info("Ah : " + Math.round(Ah * 100D)/100D
-				//		+ "    hr : " + Math.round(hr * 10000D)/10000D
-				//		+ "    ampere : " + Math.round(ampere * 100D)/100D
-				//		+ "    energyToStore : " + Math.round(energyToStore * 100D)/100D
-				//		+ " in " + building.getNickName());
-				
-				if (energyToStore > remainingCapacity) {
-					// if the max cap of this building's battery has been reached, look for another building's battery to store the excess energy					
-					energyToStore = remainingCapacity;
-					//logger.info("The grid battery is now fully charged at " + Math.round(kWhStored * 100D)/100D + " kWh at " + building.getNickName() + " in " + settlement.getName());
-				}
+				double ampere = c_Rating * Ah;
+				double possible = ampere / 1000D * V_out * hr;
+							
+				smallest = Math.min(excess, Math.min(possible, needed));	
+/*				
+				logger.info("Charging of "
+						storage.getBuilding().getNickName() 
+						+ "\t    excess : " + Math.round(excess*100D)/100D
+						+ "	   Ah : " + Math.round(Ah * 100D)/100D
+						+ "    hr : " + Math.round(hr * 10000D)/10000D
+						+ "    ampere : " + Math.round(ampere * 100D)/100D
+						+ "    delta : " + Math.round(delta * 100D)/100D
+						+ "    possible : " + Math.round(possible * 100D)/100D
+						+ "    needed : " + Math.round(needed*100D)/100D
+						+ "    stored : " + Math.round(stored*100D)/100D
+						+ "    smallest : " + Math.round(smallest*100D)/100D);
+*/	
+			}
 			
-				// the excessEnergy will be split into many chunks and stored at an array of batteries across the settlement
-				excessEnergy = excessEnergy - energyToStore;
-				// TODO: calculate how much power can be rejected via radiators 
-				// raise settlement temperature (or capture the excess power as heat)
-				// or turn down some modules in the power plant to conserve resources
-				storage.setEnergyStored(kWhStored + energyToStore);
-				
-				kWhStored = storage.getkWattHourStored();
-				max = storage.getCurrentMaxCapacity();
-				remainingCapacity = max - kWhStored;
-				
-				if (remainingCapacity <= max * .01)
-					logger.info("The grid battery at " + building.getNickName() + " in " + settlement.getName() + " is now FULLY RECHARGED at " + Math.round(kWhStored * 100D)/100D + " kWh");
-/*		
-				if (totalEnergyStored + energyToStore < energyStorageCapacity)
-					totalEnergyStored = totalEnergyStored + energyToStore;
-				else
-					totalEnergyStored = energyStorageCapacity;
-*/		
-			}
-
 			else {
-				// if there is no more capacity to store on this building's battery
-				// iterate to the next building
+				return 0;
 			}
-		}
-	}
 
+		}
+		
+		
+		return smallest;
+	}
+	
 	/**
-	 * Retrieves stored energy for the grid.
+	 * Compute total stored energy in the grid.
 	 * @return stored energy retrieved (kW hr).
-	 */
-	private double computeStoredEnergy() {
+	 
+	private double computeTotalStoredEnergy() {
 		double available = 0;
 		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
@@ -546,15 +617,17 @@ implements Serializable {
 		
 		return available;
 	}
-
+*/
+	
 	/**
-	 * Retrieves stored energy for the grid.
+	 * Retrieves stored energy from the grid.
 	 * @param needed the energy needed (kW hr).
-	 * @return energy retrieved (kW hr).
+	 * @return energy to be retrieved (kW hr).
 	 */
 	// 2016-11-13 Added retrieveStoredEnergy()
-	private double retrieveStoredEnergy(double needed) {
+	private double retrieveStoredEnergy(double energyNeeded, double time) {
 		double retrieved = 0;
+		double needed = energyNeeded;
 		List<Building> list = manager.getBuildings(BuildingFunction.POWER_STORAGE);
 		for (Building b : list) {
 			PowerStorage storage = (PowerStorage) b.getFunction(BuildingFunction.POWER_STORAGE);		
@@ -569,31 +642,104 @@ implements Serializable {
 		}
 */
 			if (needed <= 0) {
-				return retrieved;
+				return 0;
 			}
 
-			else if (storage.getkWattHourStored() > 0) {
-				// Check how much energy available
-				double available = storage.getkWattHourStored();				
-				double newAmount = 0;
-
-				if (needed <= available) {
-					newAmount = available - needed;
-					needed = 0;
+			else {
+				
+				double available = dischargeBattery(storage, needed, time);
+				double stored = storage.getkWattHourStored();
+				
+				if (available > 0 && available <= needed) {
+					
+					// update the resultant energy stored in battery
+					stored = stored - available;
+				
+					// update energy needed
+					needed = needed - available ;	
+					
+					// update the energy stored in this battery
+					storage.setEnergyStored(stored);
+					
+					// update the total retrieved energy
+					retrieved = retrieved + available;
+						
 				}
-
-				else { // if (needed > available)
-					newAmount = 0;
-					needed = needed - available;
-				}
-
-				retrieved = retrieved + newAmount;
-				storage.setEnergyStored(newAmount);
+				
 			}
+			
 		}
 
 		return retrieved;
 	}
+	
+	/**
+	 * Deliver stored energy from a battery
+	 * @param storage PowerStorage
+	 * @param needed energy 
+	 * @param time in millisols
+	 * @return energy to be delivered
+	 */
+	public double dischargeBattery(PowerStorage storage, double needed, double time) {
+		double smallest = 0;
+		double possible = 0;
+		double stored = storage.getkWattHourStored();
+		double max = storage.getCurrentMaxCapacity();
+		double state_of_charge = stored/max;
+		if (stored <= 0 || needed <= 0) {
+			return 0;
+		}
+		
+		else {
+			double voltage = storage.getTerminalVoltage();
+			
+			double r_int = storage.getResistance(); // assume the internal resistance of the battery is constant 
+			
+			double fudge_factor = state_of_charge * 5 ;
+			
+			double V_out = voltage * R_LOAD / (R_LOAD + r_int) * fudge_factor; 
+			
+			if (V_out > 0) {
+		
+				double Ah = storage.getAmpHourRating();
+				double hr = time * HOURS_PER_MILLISOL;
+				// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C charging rate
+				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
+				
+				double c_Rating = storage.geCRating();
+				
+				//double chargeRate = c_Rating - c_Rating *.99 * voltage / PowerStorage.BATTERY_MAX_VOLTAGE ;
+				//logger.info("chargeRate is " + Math.round(chargeRate*100D)/100D);
+				//double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
+				
+				double ampere = c_Rating * Ah;
+				possible = ampere / 1000D * V_out * hr;
+				
+				smallest = Math.min(stored, Math.min(possible, needed));	
+/*			
+				logger.info("Discharging of " 
+						+ storage.getBuilding().getNickName() 
+						+ "\t    needed : " + Math.round(needed*100D)/100D
+						+ "    stored : " + Math.round(stored*100D)/100D
+						+ "	   Ah : " + Math.round(Ah * 100D)/100D
+						+ "    hr : " + Math.round(hr * 10000D)/10000D
+						+ "    ampere : " + Math.round(ampere * 100D)/100D
+						+ "    V_out : " + Math.round(V_out * 100D)/100D
+						+ "    possible : " + Math.round(possible * 100D)/100D
+						+ "    smallest : " + Math.round(smallest*100D)/100D);
+*/			
+			}
+			
+			else {
+				return 0;
+			}
+		}
+		
+		//logger.info(energyToDeliver + " / " + totalStored);
+		
+		return smallest;
+	}
+	
 	
 	/**
 	 * Gets the value of electrical power at the settlement.
