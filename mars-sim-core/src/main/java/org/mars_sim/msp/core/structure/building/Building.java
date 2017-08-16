@@ -1182,6 +1182,10 @@ LocalBoundedObject, InsidePathLocation {
 		templateID = id;
 	}
 
+	public Settlement getSettlement(){
+		return manager.getSettlement();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

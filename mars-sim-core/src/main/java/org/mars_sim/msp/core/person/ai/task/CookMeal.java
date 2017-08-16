@@ -145,7 +145,7 @@ implements Serializable {
 				//if (!logCache[2].equals(newLog)) {
 				//	logCache[2] = newLog;
 					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, newLog, null);
+				    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, newLog, null);
 				//}
 /*
 	            // 2015-01-15 Added solElapsed
@@ -176,7 +176,7 @@ implements Serializable {
 		    	//if (!logCache[0].equals(newLog)) {
 			    //	logCache[0] = newLog;
 					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
 		    	//}
 
 		    }
@@ -236,7 +236,7 @@ implements Serializable {
 				//if (!logCache[3].equals(newLog)) {
 				//	logCache[3] = newLog;
 					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.WARNING, 1000, logger.getName(), newLog, null);
+				    LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(), newLog, null);
 				//}
 
 	            // 2015-01-15 Added solElapsed
@@ -268,7 +268,7 @@ implements Serializable {
 				//if (!logCache[1].equals(newLog)) {
 				//	logCache[1] = newLog;
 					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
 				//}
 
 		    }
@@ -356,7 +356,7 @@ implements Serializable {
             }
 
 		     // A robot moves slower than a person and incurs penalty on workTime
-	        workTime = time/2;
+	        workTime = time/3;
     	    // Add this work to the kitchen.
             nameOfMeal = kitchen.addWork(workTime, robot);
 		}
@@ -481,8 +481,9 @@ implements Serializable {
     }
 
     public static boolean isMealTime(Robot robot) {
-        double timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
-		return mealTime(timeDiff);
+        //double timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
+		//return mealTime(timeDiff);
+		return isMealTime(robot.getCoordinates());
     }
 
     public static boolean mealTime(double timeDiff) {

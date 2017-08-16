@@ -15,8 +15,11 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import javax.swing.*;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The BuildingPanelStorage class is a building function panel representing
@@ -58,16 +61,29 @@ extends BuildingFunctionPanel {
 		titlePanel.add(maxCapLabel);
 
 		Map<AmountResource, Double> resourceStorage = storage.getResourceStorageCapacity();
-
+	
 		// Create resource storage panel.
 		JPanel resourceStoragePanel = new JPanel(new GridLayout(resourceStorage.size(), 2, 0, 0));
 		add(resourceStoragePanel, BorderLayout.CENTER);
 		resourceStoragePanel.setOpaque(false);
 		resourceStoragePanel.setBackground(new Color(0,0,0,128));
-
+/*
 		Iterator<AmountResource> i = resourceStorage.keySet().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
+
+			// Create resource label.
+			// 2014-11-20 Capitalized resource names
+			JLabel resourceLabel = new JLabel(Conversion.capitalize(resource.getName()) + ":", JLabel.LEFT);
+			resourceStoragePanel.add(resourceLabel);
+
+			double capacity = resourceStorage.get(resource);
+			JLabel capacityLabel = new JLabel((int) capacity + " kg", JLabel.RIGHT);
+			resourceStoragePanel.add(capacityLabel);
+		}
+*/
+		SortedSet<AmountResource> keys = new TreeSet<AmountResource>(resourceStorage.keySet());
+		for (AmountResource resource : keys) { 
 
 			// Create resource label.
 			// 2014-11-20 Capitalized resource names

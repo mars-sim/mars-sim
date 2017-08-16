@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -59,6 +60,9 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
+    
+    private static String sourceName = logger.getName();
+    
     /** Sleep Habit maximum value. */
     private static int MAX_WEIGHT = 30;
     /** Sleep Habit Map resolution. */
@@ -169,6 +173,8 @@ implements Serializable {
     public PhysicalCondition(Person newPerson) {
         person = newPerson;
     	name = newPerson.getName();
+
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
         alive = true;
 
@@ -335,20 +341,19 @@ implements Serializable {
 		        try {
 		        	//System.out.println("o2_consumption : " + o2_consumption * time / 1000D);
 		            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
-		                logger.log(Level.SEVERE, name + " has insufficient oxygen.");
+		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient oxygen.", null);
 		            if (consumeWater(support, h2o_consumption * (time / 1000D)))
-		                logger.log(Level.SEVERE, name + " has insufficient water.");
-
+		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient water.", null);
 		            if (requireAirPressure(support, minimum_air_pressure))
-		                logger.log(Level.SEVERE, name + " is under insufficient air pressure.");
+		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " is under insufficient air pressure.", null);
 		            if (requireTemperature(support, min_temperature, max_temperature))
-		                logger.log(Level.SEVERE, name + " cannot survive long at this extreme temperature.");
+		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " cannot survive long at this extreme temperature.", null);
 		            
 		            //TODO: how to run to another building/location
 		        }
 		        catch (Exception e) {
 	                e.printStackTrace();
-		            logger.log(Level.SEVERE, name + "'s life support system is failing !");// + e.getMessage());
+		            LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + "'s life support system is failing !", null);
 		        }
 	    	}
 

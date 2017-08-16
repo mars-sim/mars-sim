@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarHeatSource.java
- * @version 3.07 2014-10-17
+ * @version 3.1.0 2017-08-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;

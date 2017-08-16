@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Heating.java
- * @version 3.07 2015-02-20
+ * @version 3.1.0 2018-08-16
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -111,7 +111,7 @@ implements Serializable {
 	private double deltaTemperature;
 	private double currentTemperature;
     //private double heatLossEachEVA;
-	private double storedHeat;
+	//private double storedHeat;
 	//double interval = Simulation.instance().getMasterClock().getTimePulse() ;
 	// 1 hour = 3600 sec , 1 sec = (1/3600) hrs
 	// 1 sol on Mars has 88740 secs
@@ -132,7 +132,7 @@ implements Serializable {
 	private MasterClock masterClock;
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
-	private DecimalFormat fmt = new DecimalFormat("#.#######");
+	//private DecimalFormat fmt = new DecimalFormat("#.#######");
 
 	/**
 	 * Constructor.
@@ -144,8 +144,14 @@ implements Serializable {
 
 		this.building = building;
 
-		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		//powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
+		masterClock = Simulation.instance().getMasterClock();
+		marsClock = masterClock.getMarsClock();
+		weather = Simulation.instance().getMars().getWeather();
+		//coordinates = building.getBuildingManager().getSettlement().getCoordinates();
+		location = building.getLocation();
+		thermalSystem = building.getBuildingManager().getSettlement().getThermalSystem();
+		if (surfaceFeatures == null)
+			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
 		length = getBuilding().getLength();
 		width = getBuilding().getWidth() ;
@@ -177,17 +183,6 @@ implements Serializable {
 		deltaTemperature = 0;
 		//t_factor = vol / R_GAS_CONSTANT / n;
 
-		masterClock = Simulation.instance().getMasterClock();
-		marsClock = masterClock.getMarsClock();
-		weather = Simulation.instance().getMars().getWeather();
-
-		//coordinates = building.getBuildingManager().getSettlement().getCoordinates();
-		location = building.getLocation();
-
-		thermalSystem = building.getBuildingManager().getSettlement().getThermalSystem();
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-
 		emissivityMap = new ConcurrentHashMap<>();
 
 		for (int i = 0; i <=1000; i++) {
@@ -196,7 +191,7 @@ implements Serializable {
 			emissivityMap.put(i, emissivity);
 		}
 
-		}
+	}
 
 
 
@@ -265,12 +260,12 @@ implements Serializable {
 
 
 	/**
-	 * Relate the change in heat to change in temperature
-	 * @return none. save result as deltaTemperature
+	 * Determines the change in temperature 
+	 * @return deltaTemperature
 	 */
 	//2015-02-19 Modified determineDeltaTemperature() to use MILLISOLS_PER_UPDATE
 	public double determineDeltaTemperature(double t, double millisols) {
-		// IT HAS THREE PARTS
+		// THREE-PART CALCULATION
 		double outsideTemperature = 0;
 		outsideTemperature = weather.getTemperature(location);
 		// heatGain and heatLoss are to be converted from kJ to BTU below

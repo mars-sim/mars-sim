@@ -1,20 +1,21 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.08 2015-06-17
+ * @version 3.1.0 2018-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -29,7 +30,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -47,6 +47,8 @@ implements Serializable {
 
 	/** default serial id. */
 	private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
+
+    private static String sourceName = logger.getName();
 
 	/** Task phases. */
 	protected static final TaskPhase WALK_TO_OUTSIDE_SITE = new TaskPhase(Msg.getString(
@@ -89,6 +91,8 @@ implements Serializable {
         this.siteDuration = siteDuration;
         timeOnSite = 0D;
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // Check if person is in a settlement or a rover.
@@ -124,6 +128,8 @@ implements Serializable {
     public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
         super(name, robot, true, false, STRESS_MODIFIER, false, 0D);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
 /*
         // Initialize data members
         this.hasSiteDuration = hasSiteDuration;
@@ -239,7 +245,8 @@ implements Serializable {
                     addSubTask(walkingTask);
                 }
                 else {
-                    logger.severe(person.getName() + " cannot walk to outside site.");
+    	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+    	    				person.getName() + " cannot walk to outside site.", null);
                     endTask();
                 }
             }
@@ -258,7 +265,8 @@ implements Serializable {
                     addSubTask(walkingTask);
                 }
                 else {
-                    logger.severe(robot.getName() + " cannot walk to outside site.");
+    	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName,
+    	    				robot.getName() + " cannot walk to outside site.", null);
                     endTask();
                 }
             }
@@ -292,7 +300,8 @@ implements Serializable {
     	            addSubTask(walkingTask);
     	        }
     	        else {
-    	            logger.severe(person.getName() + " cannot walk back to inside location.");
+    	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName,
+    	    				person.getName() + " cannot walk back to inside location.", null);
     	            endTask();
     	        }
     	    }

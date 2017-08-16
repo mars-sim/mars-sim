@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * StandardPowerSource.java
- * @version 3.07 2014-12-06
+ * FuelPowerSource.java
+ * @version 3.1.0 2018-08-16
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -32,22 +33,23 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
 	/** The work time (millisol) required to toggle this power source on or off. */
-	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
-	public static final double kW_PER_FUEL_CELL_STACK = 5D;
+	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
+	//public static final double kW_PER_FUEL_CELL_STACK = 5D;
 
-	private boolean toggle = false;
-	private boolean installed = false;
-	/** A fuel power source works only with one kind of fuel similar to cars. */
-	private AmountResource resource;
-	private ItemResource cellStack;
-	private Building building;
-
-	private int numFuelCellStackinUse;
+	private boolean toggle = true;
+	//private boolean installed = false;
+	
+	//private int numFuelCellStackinUse;
 
 	private double consumptionSpeed;
 	private double toggleRunningWorkTime;
 	private double _maxPower;
-
+	
+	//private ItemResource cellStack;
+	private Building building;
+	
+	private AmountResource resource;
+	
 	/**
 	 * Constructor.
 	 * @param _maxPower the maximum power (kW) of the power source.
@@ -61,10 +63,10 @@ implements Serializable {
 		consumptionSpeed = _consumptionSpeed;
 		toggle = _toggle;
 		this._maxPower = _maxPower;
-		resource = AmountResource.findAmountResource(fuelType);
+		resource = ResourceUtil.findAmountResource(fuelType);
 		// 2015-09-29 Added "fuel cell stack"
-		cellStack = ItemResource.findItemResource("fuel cell stack");
-		installed = false;
+		//cellStack = ItemResource.findItemResource("fuel cell stack");
+		//installed = false;
 	}
 
 	@Override
@@ -187,7 +189,7 @@ implements Serializable {
 	 @Override
 	 public void destroy() {
 		 super.destroy();
-		 cellStack = null;
+		 //cellStack = null;
 		 building = null;
 		 resource = null;
 	 }

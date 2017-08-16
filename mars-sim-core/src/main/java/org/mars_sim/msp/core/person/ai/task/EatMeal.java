@@ -51,7 +51,7 @@ public class EatMeal extends Task implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
-    private static final String sourceName = logger.getName();
+    private static String sourceName = logger.getName();
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -104,7 +104,8 @@ public class EatMeal extends Task implements Serializable {
     private Inventory inv;
     
     private AmountResource unpreparedDessertAR;
-    //private static AmountResource napkinAR = AmountResource.napkinAR;
+    private static AmountResource napkinAR = ResourceUtil.napkinAR;
+    private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
     //private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
     /**
@@ -115,6 +116,8 @@ public class EatMeal extends Task implements Serializable {
         super(NAME, person, false, false, STRESS_MODIFIER, true, 20D +
                 RandomUtil.getRandomDouble(20D));
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+		
         // Check if person is not in a settlement or vehicle.
         LocationSituation location = person.getLocationSituation();
         if ((location != LocationSituation.IN_SETTLEMENT) && (location != LocationSituation.IN_VEHICLE)) {
@@ -138,7 +141,7 @@ public class EatMeal extends Task implements Serializable {
         if (container != null) {
             inv = container.getInventory();
             if (inv != null)
-            	hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, true);
+            	hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, napkinAR, inv, true);
             else
             	endTask();
         }
@@ -351,12 +354,15 @@ public class EatMeal extends Task implements Serializable {
 
         // Food amount eaten over this period of time.
         double foodAmount = totalfood * mealProportion;
-
-        // Take napkin from inventory if available.
-       // Unit container = person.getTopContainerUnit();
-       // if (container != null) {
-            //Inventory inv = container.getInventory();
-
+        Unit container = person.getTopContainerUnit();
+        if (container != null) {
+        	inv = container.getInventory();
+/*        
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        }
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {;
+        }  
+*/
             // Take preserved food from inventory if it is available.
             if (Storage.retrieveAnResource(foodAmount, ResourceUtil.foodAR, inv, true)) {
 
@@ -365,7 +371,7 @@ public class EatMeal extends Task implements Serializable {
                     //if (inv == null) 
                     	//logger.info("preserved food gone bad, turn into food waste");
                     // Throw food out.
-                    Storage.storeAnResource(foodAmount, ResourceUtil.foodWasteAR, inv, sourceName + "->eatPreservedFood()");
+                    Storage.storeAnResource(foodAmount, foodWasteAR, inv, sourceName + "->eatPreservedFood()");
                 }
                 else {
                     // Consume preserved food.
@@ -386,12 +392,12 @@ public class EatMeal extends Task implements Serializable {
                 // Not enough food available to eat.
                 result = false;
             }
-        //}
-        //else {
+        }
+        else {
             // Person is not inside a container unit, so end task.
-        //     result = false;
-        //    endTask();
-        //}
+             result = false;
+            endTask();
+        }
 
         return result;
     }
@@ -536,7 +542,7 @@ public class EatMeal extends Task implements Serializable {
                         //if (inv == null) 
                         	//logger.info("dessert gone bad, turn into food waste");
                         // Throw dessert resource out.
-                        Storage.storeAnResource(dessertAmount, ResourceUtil.foodWasteAR, inv);
+                        Storage.storeAnResource(dessertAmount, foodWasteAR, inv, sourceName + "->eatPreservedFood()");
                     }
                     else {
                         // Consume unpreserved dessert.

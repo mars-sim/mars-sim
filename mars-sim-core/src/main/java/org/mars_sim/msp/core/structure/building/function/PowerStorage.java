@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2018-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -43,15 +43,11 @@ implements Serializable {
 	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
 	
 	public static final double SECONDARY_LINE_VOLTAGE = 240D;
-
-	public static double MAX_KW_HR_NAMEPLATE;
 	
 	public static final double BATTERY_MAX_VOLTAGE = 375D;
 	
-	public static double percentBatteryDegradationPerSol = .0005;
-	
-	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .001;
-	
+	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .1; // [in %]
+
 	// Tesla Model S has 104 cells per module
 	private static int cellsPerModule = 104; // 3.6 V * 104 = 374.4 V 
 	
@@ -59,6 +55,10 @@ implements Serializable {
 	private int solCache = 1;
 
 	private int numModules = 0;
+
+	public double percentBatteryDegradationPerSol = .05; // [in %]
+	
+	public double max_kWh_nameplate;
 	
 	public double r_cell = 0.06; // [in ohms]
 
@@ -80,14 +80,14 @@ implements Serializable {
 	private double currentMaxCapacity; // [in kilo watt-hour, not Watt-hour]
 	
 	/** energy last stored in the battery */
-	private double kWattHoursCache;
+	private double kWhCache;
 	
 	/** 
 	 * The energy currently stored in the battery 
 	 * The Watt-hour signifies that a battery can supply an amount of watts for an hour
 	 * e.g. a 60 watt-hour battery can power a 60 watt light bulb for an hour
 	 */
-	private double kWattHoursStored; // [in kilo Watt-hour] 
+	private double kWhStored; // [in kilo Watt-hour] 
 
 	/** 
 	 * The rating of the battery in terms of its charging/discharging ability at 
@@ -113,10 +113,17 @@ implements Serializable {
 	
 	private double time;
 	
+	/**
+	 * True if the battery reconditioning is prohibited
+	 */
+	private boolean locked;
+	
 	private static BuildingConfig config;
 	
 	private static MarsClock marsClock;
 	
+	private Building building;
+
 	/**
 	 * Constructor.
 	 * @param building the building with the function.
@@ -125,15 +132,17 @@ implements Serializable {
 	public PowerStorage(Building building) {
 		// Call Function constructor.
 		super(FUNCTION, building);
+		
+		this.building = building;
 
 		config = SimulationConfig.instance().getBuildingConfiguration();
 
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		MAX_KW_HR_NAMEPLATE = config.getPowerStorageCapacity(building.getBuildingType());
+		max_kWh_nameplate = config.getPowerStorageCapacity(building.getBuildingType());
 		
-		currentMaxCapacity = MAX_KW_HR_NAMEPLATE;
+		currentMaxCapacity = max_kWh_nameplate;
 
 		if (currentMaxCapacity == 20)
 			numModules = 19;
@@ -146,20 +155,15 @@ implements Serializable {
 
 		r_total = r_cell * numModules * cellsPerModule;
 		
-		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-				"r_total : " + r_total, null);
-		
 		ampHoursRating = 1000D * currentMaxCapacity/SECONDARY_LINE_VOLTAGE; 
 
 		// 2017-01-03 at the start of sim, set to a random value		
-		kWattHoursStored = RandomUtil.getRandomDouble(MAX_KW_HR_NAMEPLATE);		
+		kWhStored = RandomUtil.getRandomDouble(max_kWh_nameplate);		
 		//logger.info("initial kWattHoursStored is " + kWattHoursStored);
 		
 		// update batteryVoltage
 		updateVoltage();
 		
-		//currentAmpere = wattHourStored / currentVoltage;
-
 	}
 
 	/**
@@ -203,26 +207,34 @@ implements Serializable {
 	 * @param kWh the stored energy (kW hour).
 	 */
 	public void setEnergyStored(double kWh) {
-		
-		kWattHoursCache = kWattHoursStored;
-		kWattHoursStored = kWh;	
-		
-		boolean startReconditioning = true;
-		
-		if (kWh <= 0D) {
-			kWh = 0D;
-			startReconditioning = true;
-		}
-		
-		else if (kWh < currentMaxCapacity / 5D) {
-			int rand = RandomUtil.getRandomInt(3);		
-			if (rand == 0)
-				startReconditioning = true;
-		}
 
-		if (startReconditioning) {
-			startReconditioning = false;
-			reconditionBattery();
+		kWhCache = kWhStored;
+		kWhStored = kWh;	
+		
+		boolean startReconditioning = false;
+		
+		if (!locked) {
+			
+			if (kWh <= 0D) {
+				kWh = 0D;
+				startReconditioning = true;
+			}
+			
+			else if (kWh < currentMaxCapacity / 5D) {
+				
+				int rand = RandomUtil.getRandomInt((int)kWh);		
+				if (rand == 0) {
+					startReconditioning = true;
+					//System.out.println("Start reconditioning. kWh : " + kWh);	
+			        // lock it for the rest of the sol
+			        locked = true;
+				}
+			}
+	
+			if (startReconditioning) {
+				startReconditioning = false;
+				reconditionBattery();
+			}
 		}
 		
 		if (kWh > currentMaxCapacity) {
@@ -240,18 +252,18 @@ implements Serializable {
 			batteryHealth = 1;
 		//System.out.println("battery_health is " + battery_health);
     	currentMaxCapacity = currentMaxCapacity * batteryHealth;
-    	if (currentMaxCapacity > MAX_KW_HR_NAMEPLATE)
-    		currentMaxCapacity = MAX_KW_HR_NAMEPLATE;
+    	if (currentMaxCapacity > max_kWh_nameplate)
+    		currentMaxCapacity = max_kWh_nameplate;
 		ampHoursRating = 1000D * currentMaxCapacity/SECONDARY_LINE_VOLTAGE; 
-		if (kWattHoursStored > currentMaxCapacity) {
-			kWattHoursStored = currentMaxCapacity;		
-			kWattHoursCache = kWattHoursStored; 
+		if (kWhStored > currentMaxCapacity) {
+			kWhStored = currentMaxCapacity;		
+			kWhCache = kWhStored; 
 		}
 	}
 	
 	public void updateVoltage() {
 		//r_total = r_cell * cellsPerModule * numModules;
-    	terminalVoltage = kWattHoursStored / ampHoursRating * 1000D;
+    	terminalVoltage = kWhStored / ampHoursRating * 1000D;
     	if (terminalVoltage > BATTERY_MAX_VOLTAGE)
     		terminalVoltage = BATTERY_MAX_VOLTAGE;
 	}
@@ -263,6 +275,13 @@ implements Serializable {
 
 	public void reconditionBattery() {
 		batteryHealth = batteryHealth * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
+		
+		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+				"the grid battery for "
+				//"r_total is " + Math.round(r_total*10D)/10D 
+				+ building.getNickName() + " in " + building.getSettlement()
+				+ " has just been reconditioned."
+				, null);
 	}
 	
 	@Override
@@ -273,6 +292,7 @@ implements Serializable {
         
         if (solElapsed != solCache) {
         	solCache = solElapsed;
+        	locked = false;
         	updateHealth();
     		diagnoseBattery();
     		updateVoltage();
@@ -298,9 +318,9 @@ implements Serializable {
 	
 	@Override
 	public double getFullPowerRequired() {
-		double delta = kWattHoursStored - kWattHoursCache;
+		double delta = kWhStored - kWhCache;
 		if (delta > 0 && time > 0) {
-			kWattHoursCache = kWattHoursStored;
+			kWhCache = kWhStored;
 			return delta/time/HOURS_PER_MILLISOL; 
 		}
 		else
@@ -326,7 +346,7 @@ implements Serializable {
 	 * @return energy (kW hr).
 	 */
 	public double getkWattHourStored() {
-		return kWattHoursStored;
+		return kWhStored;
 	}
 	
 	public double getAmpHourRating() {

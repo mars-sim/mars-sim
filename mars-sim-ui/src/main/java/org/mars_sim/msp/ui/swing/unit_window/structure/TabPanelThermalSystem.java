@@ -103,6 +103,7 @@ extends TabPanel {
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
 	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
+	private DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 
 	// 2017-02-14 Added the use of uneditable JTextField
 	private JTextField heatGenTF, powerGenTF, electricEffTF, solarEffTF, cellDegradTF;
@@ -194,7 +195,7 @@ extends TabPanel {
 		heatInfoPanel.add(eff_solar_heat_Label);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarEffTF = new JTextField(formatter.format(eff_solar_heat*100D) + PERCENT);
+		solarEffTF = new JTextField(formatter2.format(eff_solar_heat*100D) + PERCENT);
 		solarEffTF.setEditable(false);
 		solarEffTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper4.add(solarEffTF);
@@ -206,7 +207,7 @@ extends TabPanel {
 		heatInfoPanel.add(degradRateLabel);
 
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		cellDegradTF = new JTextField(formatter.format(degradRate*100D) + PERCENT_PER_SOL);
+		cellDegradTF = new JTextField(formatter2.format(degradRate*100D) + PERCENT_PER_SOL);
 		cellDegradTF.setEditable(false);
 		cellDegradTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper5.add(cellDegradTF);
@@ -233,19 +234,19 @@ extends TabPanel {
 		heatTableModel = new HeatTableModel(settlement);
 		// Prepare thermal control table.
 		heatTable = new ZebraJTable(heatTableModel);
-	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
+	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
 
 		heatTable.setCellSelectionEnabled(false);
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		heatTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+		heatTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		heatTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		heatTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-		heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
-		heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
+		heatTable.getColumnModel().getColumn(2).setPreferredWidth(15);
+		//heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
+		//heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
 		// 2014-12-03 Added the two methods below to make all heatTable columns
 		//resizable automatically when its Panel resizes
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// 2015-06-08 Added sorting
 		heatTable.setAutoCreateRowSorter(true);
@@ -289,6 +290,8 @@ extends TabPanel {
 	}
 
 	public double getAverageEfficiencyElectricHeat() {
+		return ElectricHeatSource.getEfficiency();
+/*		
 		double eff_electric_heating = 0;
 		int i = 0;
 		Iterator<Building> iHeat = manager.getBuildingsWithThermal().iterator();
@@ -309,6 +312,7 @@ extends TabPanel {
 		// get the average eff
 		eff_electric_heating = eff_electric_heating / i;
 		return eff_electric_heating;
+*/		
 	}
 
 	/**
@@ -451,7 +455,6 @@ extends TabPanel {
 
 			Building building = buildings.get(row);
 			HeatMode heatMode = building.getHeatMode();
-			//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
 			// if the building has thermal control system, display columns
 			if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
@@ -464,14 +467,15 @@ extends TabPanel {
 					else if (heatMode == HeatMode.HEAT_OFF) {
 						return dotYellow; // TODO: will change to dotBlue
 					}
-					else if (heatMode == HeatMode.OFFLINE) {
-						return dotYellow;
+					else if (heatMode == HeatMode.POWER_UP) {
+						return dotGreen;
 					}
-					//else if (heatMode == HeatMode.NO_POWER) {
-					//	return dotRed;
-					//}
+					else if (heatMode == HeatMode.OFFLINE) {
+						return dotRed;
+					}
 					else return null;
 				}
+				
 				else if (column == 1)
 					return buildings.get(row);
 				else if (column == 2)

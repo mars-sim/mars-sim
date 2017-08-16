@@ -38,7 +38,7 @@ implements Serializable {
 	
     private static String sourceName = logger.getName();
     
-    public static double R_LOAD = 200; // assume constant load resistance 
+    public static double R_LOAD = 1000; // assume constant load resistance 
     
 	public static double percentAverageVoltageDrop = 98D;
 
@@ -483,8 +483,8 @@ implements Serializable {
 			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
 			double stored = storage.getkWattHourStored();
 			double max = storage.getCurrentMaxCapacity();
-			double remainingCapacity = max - stored;
-			double remainingMax = max * .01;
+			double gap = max - stored;
+			double one_percent = max * .01;
 			//double voltage = storage.getTerminalVoltage();
 			//if (kWhStored == 0) {
 			//	logger.info("The grid battery is depleted at " + building.getNickName() + " in " + settlement.getName());					
@@ -492,7 +492,7 @@ implements Serializable {
 
 			//logger.info("The grid battery at " + building.getNickName() + " in " + settlement.getName() + " is currently at " + Math.round(kWhStored * 100D)/100D + " kWh");
 
-			if (remainingCapacity > remainingMax && excess > 0) {
+			if (gap > one_percent && excess > 0) {
 				// TODO: need to come up with a better battery model with charge capacity parameters from https://www.mathworks.com/help/physmod/elec/ref/genericbattery.html?requestedDomain=www.mathworks.com
 
 				// Note: Tesla runs its batteries up to 4C charging rate
@@ -516,16 +516,13 @@ implements Serializable {
 					// update the energy stored in this battery
 					storage.setEnergyStored(stored);
 					
-					// update the total retrieved energy
-					//totalDelivered = totalDelivered + accept;	
-	
-					remainingCapacity = max - stored;
-					remainingMax = max * .01;
+					gap = max - stored;
+					one_percent = max * .01;
 					
-					if (remainingCapacity <= remainingMax)
+					if (gap <= one_percent)
 						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 								"The grid battery at " + building.getNickName() + " in " + settlement.getName() 
-								+ " is now FULLY RECHARGED at " + Math.round(stored * 100D)/100D + " kWh", null);
+								+ " has been charged to 99% (at " + Math.round(stored * 100D)/100D + " kWh)", null);
 
 				}
 				
@@ -551,11 +548,14 @@ implements Serializable {
 		}
 		
 		else {
-			double voltage = storage.getTerminalVoltage();
-			
-			double r_int = storage.getResistance(); // assume the internal resistance of the battery is constant 
-
-			double V_out = voltage * R_LOAD / (R_LOAD + r_int); 
+			double voltage = storage.getTerminalVoltage();	
+			// assume the internal resistance of the battery is constant 
+			double r_int = storage.getResistance();
+			double max = storage.getCurrentMaxCapacity();
+			double state_of_charge = stored/max;
+			// use fudge_factor to dampen the power delivery when the battery is getting depleted
+			double fudge_factor = 4 * (1 - state_of_charge);			
+			double V_out = voltage * R_LOAD / (R_LOAD + r_int);
 			
 			if (V_out > 0) {
 				
@@ -572,7 +572,7 @@ implements Serializable {
 				//double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
 				
 				double ampere = c_Rating * Ah;
-				double possible = ampere / 1000D * V_out * hr;
+				double possible = ampere / 1000D * V_out * hr * fudge_factor; 
 							
 				smallest = Math.min(excess, Math.min(possible, needed));	
 /*				
@@ -684,20 +684,20 @@ implements Serializable {
 		double smallest = 0;
 		double possible = 0;
 		double stored = storage.getkWattHourStored();
-		double max = storage.getCurrentMaxCapacity();
-		double state_of_charge = stored/max;
+
 		if (stored <= 0 || needed <= 0) {
 			return 0;
 		}
 		
 		else {
 			double voltage = storage.getTerminalVoltage();
-			
-			double r_int = storage.getResistance(); // assume the internal resistance of the battery is constant 
-			
-			double fudge_factor = state_of_charge * 5 ;
-			
-			double V_out = voltage * R_LOAD / (R_LOAD + r_int) * fudge_factor; 
+			 // assume the internal resistance of the battery is constant 
+			double r_int = storage.getResistance();
+			double max = storage.getCurrentMaxCapacity();
+			double state_of_charge = stored/max;
+			  // use fudge_factor to dampen the power delivery when the battery is getting depleted
+			double fudge_factor = 3 * state_of_charge ;
+			double V_out = voltage * R_LOAD / (R_LOAD + r_int);
 			
 			if (V_out > 0) {
 		
@@ -713,7 +713,7 @@ implements Serializable {
 				//double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
 				
 				double ampere = c_Rating * Ah;
-				possible = ampere / 1000D * V_out * hr;
+				possible = ampere / 1000D * V_out * hr  * fudge_factor;
 				
 				smallest = Math.min(stored, Math.min(possible, needed));	
 /*			

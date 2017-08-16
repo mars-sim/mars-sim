@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.1.0 2017-01-19
+ * @version 3.1.0 2018-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,8 +16,8 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -48,6 +47,8 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(ExitAirlock.class.getName());
+
+    private static String sourceName = logger.getName();
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -94,6 +95,8 @@ implements Serializable {
     public ExitAirlock(Person person, Airlock airlock) {
         super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
         this.airlock = airlock;
 
         init();
@@ -104,6 +107,8 @@ implements Serializable {
     public ExitAirlock(Robot robot, Airlock airlock) {
         super(NAME, robot, false, false, STRESS_MODIFIER, false, 0D);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
         this.airlock = airlock;
 
         init();
@@ -184,14 +189,16 @@ implements Serializable {
                         //logger.info(person + " grabbed an EVA suit.");
                     }
                     catch (Exception e) {
-                    	logger.log(Level.SEVERE, person + " could not take this EVA suit.", e.getMessage());
+        	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+        	    				person + " could not take this EVA suit." + e.getMessage(), null);
                     }
                 }
             }
 
             // If person still doesn't have an EVA suit, end task.
             if (!hasSuit) {
-                logger.info(person.getName() + " does not have an EVA suit, ExitAirlock ended");
+	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+	    				person.getName() + " does not have an EVA suit, ExitAirlock ended", null);
                 endTask();
                 return 0D;
             }
@@ -260,7 +267,8 @@ implements Serializable {
                     }
                     boolean activationSuccessful = airlock.addCycleTime(activationTime);
                     if (!activationSuccessful) {
-                        logger.severe("Problem with airlock activation: " + person.getName());
+        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+        	    				"Problem with airlock activation: " + person.getName(), null);
                     }
                 }
                 else {
@@ -305,7 +313,8 @@ implements Serializable {
                     }
                     boolean activationSuccessful = airlock.addCycleTime(activationTime);
                     if (!activationSuccessful) {
-                        logger.severe("Problem with airlock activation: " + robot.getName());
+        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+        	    				"Problem with airlock activation: " + robot.getName(), null);
                     }
                 }
                 else {
@@ -384,7 +393,8 @@ implements Serializable {
 		                    }
 		                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
 		                    if (!activationSuccessful) {
-		                        logger.severe("Problem with airlock activation: " + person.getName());
+		        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+		        	    				"Problem with airlock activation: " + person.getName(), null);
 		                    }
 		                }
 		                else {
@@ -464,7 +474,8 @@ implements Serializable {
 		                    }
 		                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
 		                    if (!activationSuccessful) {
-		                        logger.severe("Problem with airlock activation: " + robot.getName());
+		        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+		        	    				"Problem with airlock activation: " + robot.getName(), null);
 		                    }
 		                }
 		                else {
@@ -537,7 +548,8 @@ implements Serializable {
                     }
                     boolean activationSuccessful = airlock.addCycleTime(activationTime);
                     if (!activationSuccessful) {
-                        logger.severe("Problem with airlock activation: " + person.getName());
+        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+        	    				"Problem with airlock activation: " + person.getName(), null);
                     }
                 }
                 else {
@@ -576,7 +588,8 @@ implements Serializable {
                     }
                     boolean activationSuccessful = airlock.addCycleTime(activationTime);
                     if (!activationSuccessful) {
-                        logger.severe("Problem with airlock activation: " + robot.getName());
+        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+        	    				"Problem with airlock activation: " + robot.getName(), null);
                     }
                 }
                 else {
@@ -711,8 +724,9 @@ implements Serializable {
 
 		// Check if person is outside.
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
-            logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " since he/she is already outside.");
+    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+    				person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
+                    " since he/she is already outside.", null);
             return false;
         }
 
@@ -721,10 +735,11 @@ implements Serializable {
 	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since no EVA suit is available.";
 
-	    	if (!logCache[0].equals(newLog)) {
-		    	logCache[0] = newLog;
-				logger.severe(logCache[0]);
-	    	}
+	    	//if (!logCache[0].equals(newLog)) {
+		    //	logCache[0] = newLog;
+			//	logger.severe(logCache[0]);
+	    	//}
+    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
 
             return false;
         }
@@ -738,10 +753,11 @@ implements Serializable {
 	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
 	                " due to crippling performance rating";
 
-	    	if (!logCache[1].equals(newLog)) {
-		    	logCache[1] = newLog;
-				logger.severe(logCache[1]);
-	    	}
+	    	//if (!logCache[1].equals(newLog)) {
+		    //	logCache[1] = newLog;
+			//	logger.severe(logCache[1]);
+	    	//}
+    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
 
             // 2016-02-28 Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
             try {
@@ -753,7 +769,8 @@ implements Serializable {
             	person.getMind().getNewAction(true, false);
 
             } catch (Exception e) {
-                logger.log(Level.WARNING, person + " could not get new action", e);
+        		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+        				person + " could not get new action" + e.getMessage(), null);
                 e.printStackTrace(System.err);
 
             }
@@ -771,8 +788,9 @@ implements Serializable {
 		// Check if robot is outside.
         if (robot.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
-            logger.severe(robot.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " due to already being outside.");
+    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+    				robot.getName() + " cannot exit airlock from " + airlock.getEntityName() +
+                    " due to already being outside.", null);
         }
 
         // Check if EVA suit is available.
@@ -785,8 +803,9 @@ implements Serializable {
         // Check if robot is incapacitated.
         else if (robot.getPerformanceRating() == 0D) {
             result = false;
-            logger.severe(robot.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " due to performance rating is 0 (low battery, malfunctioned, etc.).");
+    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+    		robot.getName() + " cannot exit airlock from " + airlock.getEntityName() +
+                    " due to performance rating is 0 (low battery, malfunctioned, etc.).", null);
         }
 
         return result;
@@ -802,7 +821,8 @@ implements Serializable {
             EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
             if (suit != null) {
                 result = true;
-                //logger.severe(person.getName() + " already has an EVA suit in inventory!");
+        		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName,
+        		person.getName() + " already has an EVA suit in inventory!", null);
             }
         }
         else if (robot != null) {
@@ -910,7 +930,8 @@ implements Serializable {
                 // not calling addSupplyAmount()
             }
             catch (Exception e) {
-                logger.severe(e.getMessage());
+        		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+        				person + " can't feed oxygen to an EVA suit. " + e.getMessage(), null);
             }
 
             // Fill water in suit from entity's inventory.
@@ -930,7 +951,8 @@ implements Serializable {
                 // not calling addSupplyAmount()
             }
             catch (Exception e) {
-                logger.severe(e.getMessage());
+        		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+        				person + " can't feed water to an EVA suit. " + e.getMessage(), null);
             }
     	}
     	else if (robot != null) {
@@ -946,16 +968,18 @@ implements Serializable {
         if (person != null) {
         	  // Clear the person as the airlock operator if task ended prematurely.
             if ((airlock != null) && person.equals(airlock.getOperator())) {
-                logger.severe(person + " ending exiting airlock task prematurely, " +
-                        "clearing as airlock operator for " + airlock.getEntityName());
+        		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+        				person + " ending exiting airlock task prematurely, " +
+                        "clearing as airlock operator for " + airlock.getEntityName(), null);
                 airlock.clearOperator();
             }
         }
         else if (robot != null) {
         	  // Clear the robot as the airlock operator if task ended prematurely.
             if ((airlock != null) && robot.equals(airlock.getOperator())) {
-                logger.severe(robot + " ending exiting airlock task prematurely, " +
-                        "clearing as airlock operator for " + airlock.getEntityName());
+        		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+        				robot + " ending exiting airlock task prematurely, " +
+                        "clearing as airlock operator for " + airlock.getEntityName(), null);
                 airlock.clearOperator();
             }
         }

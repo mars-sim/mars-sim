@@ -109,7 +109,7 @@ implements Serializable {
 
 		    	//if (!logCache[0].equals(newLog)) {
 			    //	logCache[0] = newLog;
-				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
 		    	//}
 
 	        }
@@ -159,7 +159,7 @@ implements Serializable {
 
 		    	//if (!logCache[1].equals(newLog)) {
 			    //	logCache[1] = newLog;
-				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, newLog, null);
+				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
 		    	//}
 
 	        }

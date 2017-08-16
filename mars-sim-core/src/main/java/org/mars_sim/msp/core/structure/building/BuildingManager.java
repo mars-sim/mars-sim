@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -30,18 +28,14 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.mars.Meteorite;
-import org.mars_sim.msp.core.mars.MeteoriteImpact;
-import org.mars_sim.msp.core.mars.MeteoriteImpactImpl;
 import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
@@ -100,29 +94,21 @@ public class BuildingManager implements Serializable {
     private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
 
     // Data members
-    //private boolean flag_buildings_done = false;
-    //private int numBuildingsCache = 0;
-    //private int count = 0;
 	private int solCache = 0;
-    //private double sum = 0;
     private int millisolCache = -5;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-    // 2014-10-29 Added buildingsNickNames
     private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
-    //private List<Resupply> resupplies;
-    //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
+
     private Settlement settlement;
     private MarsClock lastBuildingValuesUpdateTime;
-    // 2014-12-23 Added resupply
+
     private Resupply resupply;
     private Meteorite meteorite;
-    //private MeteoriteImpact meteoriteImpact;
-    //private Injector injector;
 
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;

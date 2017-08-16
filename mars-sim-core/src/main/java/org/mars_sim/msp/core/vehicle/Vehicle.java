@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -620,7 +621,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     }
 
     public Building getGarage(Settlement s) {
-		return s.getBuildingManager().getBuilding(this, s);
+		return BuildingManager.getBuilding(this, s);
     }
 
 

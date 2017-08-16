@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -85,6 +86,9 @@ implements Serializable, LifeSupportType, Objective {
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static Logger logger = Logger.getLogger(Settlement.class.getName());
+	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+
 	/** Normal air pressure (Pa) */
 	private static final double NORMAL_AIR_PRESSURE = 101_325D;
 	/** Normal temperature (celsius) */
@@ -624,7 +628,7 @@ implements Serializable, LifeSupportType, Objective {
 			// TODO: check against indoor air pressure
 			double p = getAirPressure();
 			if (p <= minimum_air_pressure) {// 25331.25)// NORMAL_AIR_PRESSURE) ?
-				logger.severe(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D, null);
 				return false;
 			}
 			// result = false;
@@ -686,7 +690,7 @@ implements Serializable, LifeSupportType, Objective {
 			getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
 		}
         catch (Exception e) {
-            logger.log(Level.SEVERE, name + " - Error in providing O2 needs: " + e.getMessage());
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing O2 needs: " + e.getMessage(), null);
         }
 
 		return oxygenTaken;
@@ -716,7 +720,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		}
 	    catch (Exception e) {
-	        logger.log(Level.SEVERE, name + " - Error in providing H2O needs: " + e.getMessage());
+	    	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing H2O needs: " + e.getMessage(), null);
 	    }
 
 		return waterTaken;

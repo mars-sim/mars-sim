@@ -71,7 +71,7 @@ implements Serializable {
     /** default logger. */
 	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
-    private static final String sourceName = logger.getName();
+    private static String sourceName = logger.getName();
     
     private static final BuildingFunction FARMING_FUNCTION = BuildingFunction.FARMING;
     private static final BuildingFunction RESEARCH_FUNCTION = BuildingFunction.RESEARCH;
@@ -142,6 +142,8 @@ implements Serializable {
         // Use Function constructor.
         super(FARMING_FUNCTION, building);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
 		LED_Item = ItemResource.findItemResource(LED_KIT);
 		HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
@@ -476,7 +478,8 @@ implements Serializable {
 			s_inv.addAmountDemandTotalRequest(tissueAR);
 
 	    	if (amountStored < 0.0000000001) {
-	    		LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), "No more " + tissueName, null);
+	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+	    				"Run out of " + tissueName + " in " + settlement, null);
 	    		percent = 0;
 	    	}
 
@@ -484,13 +487,15 @@ implements Serializable {
 	    		available = true;
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount = amountStored ;
-	    		logger.info(tissueName + " is partially available : " + requestedAmount + " kg");
+	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+	    				tissueName + " is partially available : " + requestedAmount + " kg" + " in " + settlement, null);
 	    	}
 
 	    	else {
 	    		available = true;
 	    		percent = 100D ;
-	    		logger.info(tissueName + " is fully available : " + requestedAmount + " kg");
+	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+	    				tissueName + " is fully available : " + requestedAmount + " kg" + " in " + settlement, null);
 	    	}
 
 	    	if (available) {
@@ -1063,9 +1068,10 @@ implements Serializable {
         	// store the tissues
       		Storage.storeAnResource(amountExtracted, tissueAR, s_inv);
 
-    		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
+			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+					"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
     				+ Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
-    					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
+    				+ lab.getBuilding().getNickName() + " at " + settlement.getName(), null);
 
     		isDone = true;
         }
@@ -1082,8 +1088,10 @@ implements Serializable {
             	// store the tissues
          		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, s_inv);
 
-        		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0 + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
-        					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+						"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0 + " kg " 
+						+ Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
+        				+ lab.getBuilding().getNickName() + " at " + settlement.getName(), null);
 
         		isDone = true;
             }

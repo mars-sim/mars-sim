@@ -91,7 +91,7 @@ public class AmountResourceConfig implements Serializable {
 
 			if (type != null && type.toLowerCase().equals(CROP)) {
 				id++;
-				// Create new tissue culture for each crop.
+				// Create the tissue culture for each crop.
 				arSet.add(new AmountResource(id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
 				// TODO: may set edible to true
 			}

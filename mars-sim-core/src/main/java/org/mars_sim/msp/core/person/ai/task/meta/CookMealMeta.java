@@ -87,7 +87,7 @@ public class CookMealMeta implements MetaTask, Serializable {
                 		//System.out.println("numGoodRecipes : " + numGoodRecipes);
                 }
 
-                if ((numGoodRecipes > 0)) {
+                else {
 
                     result = 300D;
                     // Crowding modifier.
@@ -152,7 +152,8 @@ public class CookMealMeta implements MetaTask, Serializable {
                     // 2015-12-10 Used getNumCookableMeal()
                     int numGoodRecipes = kitchen.getNumCookableMeal();
 
-                    if (numGoodRecipes < 2) {
+                    //if (numGoodRecipes < 2) {
+                    if (numGoodRecipes == 0) {                    	
                     	// Need to reset numGoodRecipes periodically since it's a cache value
                     	// and won't get updated unless a meal is cooked.
                     	// Note: it's reset at least once a day at the end of a sol
@@ -163,7 +164,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 	                	}
                     }
 
-                    if ((numGoodRecipes > 0)) {
+                    else {
 
                         result = 300D;
                         // Crowding modifier.

@@ -13,9 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
@@ -48,8 +51,13 @@ import javafx.util.StringConverter;
 
 public class TableViewCombo {
 
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(TableViewCombo.class.getName());
+	
+    private static String sourceName = logger.getName();
+    
     public static final int NUM_COLUMNS = 7;
-
+    
 	private String[] headers = new String[]{"Settlement","Template","Settlers",
             								"Bots","Sponsor","Latitude","Longitude"};
 
@@ -247,7 +255,9 @@ public class TableViewCombo {
 
 					if (template.equalsIgnoreCase(templates.get(j).getTemplateName())) {
 						if (botNum > bots[j])
-							System.out.println("Warning : in " + name + ", you specify " + botNum + " bots––more than the normal capacity of " + bots[j] + " for " + template);
+							LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, 
+									"In " + name + ", you specify " + botNum + " bots––more than the normal capacity of "
+											+ bots[j] + " for " + template, null);
 						break;
 					}
 	    		}

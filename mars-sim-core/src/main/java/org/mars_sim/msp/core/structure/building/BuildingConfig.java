@@ -956,7 +956,7 @@ public class BuildingConfig implements Serializable {
 			    boolean toggleStafe = Boolean.parseBoolean(powerSourceElement.getAttributeValue(TOGGLE));
 			    String fuelType = powerSourceElement.getAttributeValue(FUEL_TYPE);
 			    double consumptionSpeed = Double.parseDouble(powerSourceElement.getAttributeValue(COMSUMPTION_RATE));
-			    powerSource = new FuelPowerSource(power ,toggleStafe, fuelType, consumptionSpeed);
+			    powerSource = new FuelPowerSource(power, toggleStafe, fuelType, consumptionSpeed);
 			}
             else if (type.equalsIgnoreCase(WIND_POWER_SOURCE)) powerSource = new WindPowerSource(power);
             else if (type.equalsIgnoreCase(AREOTHERMAL_POWER_SOURCE)) powerSource = new AreothermalPowerSource(power);

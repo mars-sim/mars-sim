@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 3.10 2016-10-20
+ * @version 3.1.0 2018-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;

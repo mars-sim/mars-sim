@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * Cooking.java
- * @version 3.07 2014-11-08
+ * BuildingFunction.java
+ * @version 3.1.0 2018-08-16
  * @author stpa				
  */
 package org.mars_sim.msp.core.structure.building.function;

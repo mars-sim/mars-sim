@@ -66,7 +66,7 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
 	private static final String kW = " kW";
-	private static final String kWh = " kWhr";
+	private static final String kWh = " kWh";
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
 
@@ -217,7 +217,7 @@ extends TabPanel {
 		powerInfoPanel.add(degradRateLabel);
 
 		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		degradRateTF = new JTextField(formatter3.format(degradRate*100D) + PERCENT_PER_SOL);
+		degradRateTF = new JTextField(formatter2.format(degradRate*100D) + PERCENT_PER_SOL);
 		degradRateTF.setEditable(false);
 		degradRateTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper6.add(degradRateTF);
@@ -246,18 +246,18 @@ extends TabPanel {
 
 		// Prepare power table.
 		powerTable = new ZebraJTable(powerTableModel);
-	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
+	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
 
 	    powerTable.setCellSelectionEnabled(false);
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		powerTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-		powerTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		powerTable.getColumnModel().getColumn(2).setPreferredWidth(40);
-		powerTable.getColumnModel().getColumn(3).setPreferredWidth(10);
+		powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+		powerTable.getColumnModel().getColumn(1).setPreferredWidth(130);
+		//powerTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+		//powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
 		// 2014-12-03 Added the two methods below to make all heatTable columns
 		//resizable automatically when its Panel resizes
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// 2015-06-08 Added sorting
 		powerTable.setAutoCreateRowSorter(true);
@@ -413,6 +413,9 @@ extends TabPanel {
 				}
 				else if (powerMode == PowerMode.POWER_DOWN) {
 					return dotYellow;
+				}
+				else if (powerMode == PowerMode.POWER_UP) {
+					return dotGreen;
 				}
 				else if (powerMode == PowerMode.NO_POWER) {
 					return dotRed;

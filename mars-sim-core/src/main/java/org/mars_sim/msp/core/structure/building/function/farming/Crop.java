@@ -620,7 +620,7 @@ public class Crop implements Serializable {
 					//		+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
 					//		+ " at " + settlement.getName());
 					
-				    LogConsolidated.log(logger, Level.INFO, 2000, sourceName, 
+				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
 				    		unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
 							+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
 							+ " at " + settlement.getName()

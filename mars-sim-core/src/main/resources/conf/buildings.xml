@@ -1287,8 +1287,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="1000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="20.0" />
-				<heat-source type="Electric Heating Source" capacity="35.0" />
+				<heat-source type="Solar Heating Source" capacity="25.0" />
+				<heat-source type="Electric Heating Source" capacity="45.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2272,8 +2272,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="20.0" />
-				<heat-source type="Electric Heating Source" capacity="35.0" />
+				<heat-source type="Solar Heating Source" capacity="25.0" />
+				<heat-source type="Electric Heating Source" capacity="45.0" />
 			</thermal-generation>
 		</functions>
 	</building>
