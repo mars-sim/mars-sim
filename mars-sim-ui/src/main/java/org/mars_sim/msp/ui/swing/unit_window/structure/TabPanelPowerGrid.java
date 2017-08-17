@@ -12,12 +12,15 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -80,15 +83,14 @@ extends TabPanel {
 	private JLabel energyStorageCapacityLabel;
 	/** The total power stored label. */
 	private JLabel energyStoredLabel;
-	/** Table model for power info. */
-	private PowerTableModel powerTableModel;
-	/** The settlement's power grid. */
-	private PowerGrid powerGrid;
 
 	private JLabel electricEfficiencyLabel;
 
-	// 2015-09-20 Added the use of uneditable JTextField
 	private JTextField powerGeneratedTF, powerUsedTF, energyStorageCapacityTF, energyStoredTF, solarCellEfficiencyTF, degradRateTF ;
+
+	private JScrollPane powerScrollPane;
+	
+	private JCheckBox checkbox;
 
 	// Data cache
 	/** The total power generated cache. */
@@ -106,9 +108,19 @@ extends TabPanel {
 	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
 	private DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 
-	private List<PowerSource> powerSources;
+	/** Table model for power info. */
+	private PowerTableModel powerTableModel;
+	/** The settlement's power grid. */
+	private PowerGrid powerGrid;
+	
 	private BuildingConfig config;
+	
 	private BuildingManager manager;
+	
+	private List<PowerSource> powerSources;
+	
+	private List<Building> buildings;
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -128,7 +140,8 @@ extends TabPanel {
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
 		config = SimulationConfig.instance().getBuildingConfiguration();
-
+		buildings = manager.getBuildingsWithPowerGeneration();
+		
 		// Prepare power grid label panel.
 		JPanel powerGridLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(powerGridLabelPanel);
@@ -223,23 +236,28 @@ extends TabPanel {
 		wrapper6.add(degradRateTF);
 		powerInfoPanel.add(wrapper6);
 
+		// Create override check box panel.
+		JPanel checkboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(checkboxPane, BorderLayout.SOUTH);
+		
+		// Create override check box.
+		checkbox = new JCheckBox(Msg.getString("TabPanelPowerGrid.checkbox.value")); //$NON-NLS-1$
+		checkbox.setToolTipText(Msg.getString("TabPanelPowerGrid.checkbox.tooltip")); //$NON-NLS-1$
+		checkbox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setNonGenerating(checkbox.isSelected());
+			}
+		});
+		checkbox.setSelected(false);
+		checkboxPane.add(checkbox);
+		
 		// Create scroll panel for the outer table panel.
-		JScrollPane powerScrollPane = new JScrollPane();
+		powerScrollPane = new JScrollPane();
 		//powerScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);
 		powerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		// Prepare outer table panel.
-		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		//outerTablePanel.setBorder(new MarsPanelBorder());
-		//powerScrollPane.setViewportView(outerTablePanel);
-
-
-		// Prepare power table panel.
-		//JPanel powerTablePanel = new JPanel(new BorderLayout(0, 0));
-		//outerTablePanel.add(powerTablePanel);
-		// powerScrollPanel.setViewportView(powerTablePanel);
+		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);
 
 		// Prepare power table model.
 		powerTableModel = new PowerTableModel(settlement);
@@ -283,6 +301,30 @@ extends TabPanel {
 
 	}
 
+	
+	/**
+	 * Sets if non-generating buildings should be shown.
+	 * @param value true or false.
+	 */
+	private void setNonGenerating(boolean value) {
+		if (value)
+			buildings = manager.getSortedBuildings();
+		else
+			buildings = manager.getBuildingsWithPowerGeneration();
+		powerTableModel.update();
+	}
+
+	/**
+	 * Gets a list of buildings should be shown.
+	 * @return a list of buildings
+	 */
+	private List<Building> getBuildings() {
+		if (checkbox.isSelected())
+			return manager.getSortedBuildings();
+		else
+			return manager.getBuildingsWithPowerGeneration();
+	}
+	
 	public double getAverageEfficiency() {
 		double eff = 0;
 		int i = 0;
@@ -353,13 +395,12 @@ extends TabPanel {
 	/**
 	 * Internal class used as model for the power table.
 	 */
-	private static class PowerTableModel extends AbstractTableModel {
+	private class PowerTableModel extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		private Settlement settlement;
-		private List<Building> buildings;
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
@@ -368,17 +409,16 @@ extends TabPanel {
 
 		private PowerTableModel(Settlement settlement) {
 			this.settlement = settlement;
-			buildings = settlement.getBuildingManager().getBuildings();//getACopyOfBuildings()
+
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
 
-			buildings = settlement.getBuildingManager().getBuildings();
-			size = buildings.size();
+			//size = getBuildings().size();
 		}
 
 		public int getRowCount() {
-			return size;//buildings.size();
+			return buildings.size();
 		}
 
 		public int getColumnCount() {
@@ -453,19 +493,27 @@ extends TabPanel {
 		}
 
 		public void update() {
+			// Check if building list has changed.
+			List<Building> tempBuildings = getBuildings();
+			if (!tempBuildings.equals(buildings)) {
+				buildings = tempBuildings;
+				powerScrollPane.validate();
+			}
+/*			
 			int newSize = buildings.size();
 			if (size != newSize) {
 				size = newSize;
-				buildings = settlement.getBuildingManager().getACopyOfBuildings();
-				Collections.sort(buildings);
+				buildings = settlement.getBuildingManager().getBuildingsWithPowerGeneration();
+				//Collections.sort(buildings);
 			}
 			else {
 				List<Building> newBuildings = settlement.getBuildingManager().getACopyOfBuildings();
 				if (!buildings.equals(newBuildings)) {
 					buildings = newBuildings;
-					Collections.sort(buildings);
+					//Collections.sort(buildings);
 				}
 			}
+*/			
 			fireTableDataChanged();
 		}
 	}

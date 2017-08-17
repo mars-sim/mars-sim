@@ -2409,6 +2409,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.5" yloc="0.0" />
 				</activity>
 			</robotic-station>
+			<thermal-generation>
+				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Electric Heating Source" capacity="5.0" />
+			</thermal-generation>
 		</functions>
 	</building>
 
@@ -2429,6 +2433,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.0" yloc="0.0" />
 				</activity>
 			</robotic-station>
+			<thermal-generation>
+				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Electric Heating Source" capacity="5.0" />
+			</thermal-generation>
 		</functions>
 	</building>
 

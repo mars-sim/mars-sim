@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
@@ -27,6 +28,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import org.mars_sim.msp.core.AlphanumComparator;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -77,8 +79,7 @@ implements ActionListener {
         this.setBackground(new Color(0,0,0,128));
         
 		Settlement settlement = (Settlement) unit;
-		List<Building> buildings = settlement.getBuildingManager().getBuildings();//getACopyOfBuildings().iterator();.getACopyOfBuildings();
-		Collections.sort(buildings);
+		List<Building> buildings = settlement.getBuildingManager().getSortedBuildings();
 		
 		// 2014-11-07 Set building to the first element on the list 
 		// 2014-11-22 Added if-clause for opening the building panel via the right click popup menu
@@ -237,7 +238,7 @@ implements ActionListener {
 	@Override
 	public void update() {
 		Settlement settlement = (Settlement) unit;
-		List<Building> buildings = settlement.getBuildingManager().getBuildings();
+		List<Building> buildings = settlement.getBuildingManager().getSortedBuildings();
 
 		// Update buildings if necessary.
 		if (!buildingsCache.equals(buildings)) {

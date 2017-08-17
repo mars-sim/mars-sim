@@ -12,9 +12,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,6 +59,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.EVA;
@@ -154,6 +157,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	private double iceProbabilityValue = 0, regolithProbabilityValue = 0;
 
+	private double outside_temperature; 
+	
 	// 2014-11-23 Added foodProductionOverride
 	private boolean foodProductionOverride = false;
 	// private boolean reportSample = true;
@@ -231,6 +236,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	private Weather weather;// = sim.getMars().getWeather();
 
+	private Coordinates location; 
+	
 	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -241,6 +248,8 @@ implements Serializable, LifeSupportType, Objective {
 	// 2016-12-22 Added allAssociatedRobots
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 
+	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
+	
 	// 2017-04-10 WARNING: cannot use static or result in null
 	public AmountResource foodAR = ResourceUtil.foodAR;//findAmountResource(FOOD);			// 1
 	public AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(WATER);		// 2
@@ -251,6 +260,7 @@ implements Serializable, LifeSupportType, Objective {
 	// Constructor 1 called by ConstructionStageTest
 	private Settlement() {
 		super(null, null);
+		location = getCoordinates();
 		unitManager = Simulation.instance().getUnitManager();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
@@ -272,6 +282,7 @@ implements Serializable, LifeSupportType, Objective {
 		super(name, location);
 		this.name = name;
 		this.scenarioID = scenarioID;
+		this.location = location;
 		if (unitManager == null) // for passing maven test
 			unitManager = Simulation.instance().getUnitManager();
 		if (missionManager == null) // for passing maven test
@@ -297,6 +308,7 @@ implements Serializable, LifeSupportType, Objective {
 		this.name = name;
 		this.template = template;
 		this.sponsor = sponsor;
+		this.location = location;
 		this.scenarioID = id;
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
@@ -370,6 +382,55 @@ implements Serializable, LifeSupportType, Objective {
 	public static Settlement createNewSettlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber, int initialNumOfRobots) {
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
+
+	
+	public Map<Building, List<Building>> createAdjacentBuildingMap() {
+		for (Building b : buildingManager.getBuildings()) {
+			List<Building> list = getAdjacentBuildings(b);
+			//if (b == null)
+			//	System.out.println("b = null");
+			
+			adjacentBuildingMap.put(b, list);
+		}
+		
+		return adjacentBuildingMap;
+	}
+	
+	
+	public List<Building> getAdjacentBuildings(Building building) {
+		List<Building> buildings = new ArrayList<>();
+		//List<String> names = new ArrayList<>();
+		Set<BuildingConnector> connectors = getConnectionsToBuilding(building);
+		for (BuildingConnector c : connectors) {
+			Building b1 = c.getBuilding1();
+			Building b2 = c.getBuilding2();
+			//if (b1.equals(building) {
+			if (b1.getNickName().equals(building.getNickName())) {
+				buildings.add(b2);
+				//names.add(b2.getNickName());
+			}
+			else {
+				buildings.add(b1);
+				//names.add(b1.getNickName());
+			}
+		}
+/*		
+		System.out.println("size of " + buildings.size());
+		if (buildings.size() == 0)
+			System.out.println(building.getNickName() + " has no adjacent buildings.");
+		else if (buildings.size() == 1)
+			System.out.println(building.getNickName() + " <=> " + names.get(0));
+		else if (buildings.size() == 2)
+			System.out.println(names.get(0) + " <=> " + building.getNickName() + " <=> " + names.get(1));
+*/
+			return buildings;
+	}
+	
+	
+	public Set<BuildingConnector> getConnectionsToBuilding(Building building)  {
+		return getBuildingConnectorManager().getConnectionsToBuilding(building);
+	}
+	
 
 	/**
 	 * Gets the settlement's meals replenishment rate.
@@ -815,9 +876,12 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param time
 	 *            the amount of time passing (in millisols)
 	 * @throws Exception
-	 *             if error during time passing.
+	 *     error during time passing.
 	 */
 	public void timePassing(double time) {
+		
+		outside_temperature = weather.getTemperature(location);
+				
 		//inv = getInventory();
 /*
         int m = (int) marsClock.getMillisol();
@@ -902,6 +966,10 @@ implements Serializable, LifeSupportType, Objective {
 	    	regolithProbabilityValue = getRegolithProbability();
 	    }
 
+		
+	    if (adjacentBuildingMap.isEmpty()) 
+	    	createAdjacentBuildingMap();
+		
 	}
 
 	public void sampleAllResources() {
@@ -3415,6 +3483,9 @@ implements Serializable, LifeSupportType, Objective {
 		return regolithProbabilityValue;
 	}
 
+	public double getOutsideTemperature() {
+		return outside_temperature;
+	}
 
 	@Override
 	public void destroy() {

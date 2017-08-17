@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.AlphanumComparator;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -150,6 +151,10 @@ public class BuildingManager implements Serializable {
             }
         }
 
+        buildings.stream()
+		.sorted(new AlphanumComparator())
+		.collect(Collectors.toList());
+        
         //logger.info("In " + settlement.getName() + "  # of bldgs : " + buildings.size());
         //flag_buildings_done = true;
         //buildingFunctionsMap = new HashMap<>();//ConcurrentHashMap<BuildingFunction, List<Building>>();
@@ -393,6 +398,17 @@ public class BuildingManager implements Serializable {
     }
 
     /**
+     * Gets a collection of buildings.
+     * @return collection of buildings
+     */
+    public List<Building> getSortedBuildings() {
+        return buildings
+        		.stream()
+				.sorted(new AlphanumComparator())
+				.collect(Collectors.toList());
+    }
+    
+    /**
      * Gets the settlement's collection of buildings (in their nicknames)
      * @return collection of buildings (in their nicknames)
      */
@@ -561,7 +577,9 @@ public class BuildingManager implements Serializable {
 
     	if (buildingFunctionsMap.containsKey(bf)) {
     		//System.out.println("buildingFunctionsMap.get(function)" + buildingFunctionsMap.get(function));
-    		return buildingFunctionsMap.get(bf);
+    		return buildingFunctionsMap.get(bf).stream()
+					.sorted(new AlphanumComparator())
+					.collect(Collectors.toList());
 
             //long end = System.nanoTime();
             //count++;
@@ -585,7 +603,9 @@ public class BuildingManager implements Serializable {
             		list.add(b);
             }
 
-			Collections.sort(list);
+            list = list.stream()
+				.sorted(new AlphanumComparator())
+				.collect(Collectors.toList());
 
     		buildingFunctionsMap.put(bf, list);
     		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");

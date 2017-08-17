@@ -88,10 +88,10 @@ public class LivingAccommodations extends Function implements Serializable {
         // Call Function constructor.
         super(FUNCTION, building);
 
-        this.building = building;
-
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
+        this.building = building;
+    
         //solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);
         toiletTissueAR = ResourceUtil.toiletTissueAR;//AmountResource.findAmountResource(TOILET_TISSUE);
         toxicWasteAR = ResourceUtil.toxicWasteAR;//AmountResource.findAmountResource(TOXIC_WASTE);

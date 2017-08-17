@@ -1,11 +1,12 @@
-package org.mars_sim.msp.core.structure.building.function;
-
 /**
  * Mars Simulation Project
  * ThermalGeneration.java
- * @version 3.07 2014-10-23
+ * @version 3.1.0 2017-08-17
  * @author Manny Kung
  */
+
+package org.mars_sim.msp.core.structure.building.function;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,8 +22,8 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 
 /**
- * The HeatGeneration class handles how the buildings of a settlement
- * generate heat and how the Thermal Control behaves
+ * The ThermalGeneration class handles how the buildings of a settlement
+ * generate and control temperature by heating 
  */
 public class ThermalGeneration
 extends Function
@@ -138,6 +139,7 @@ implements Serializable {
 
 		return result;
 	}
+	
 	/**
 	 * Checks if there is enough heat in the grid for all
 	 * buildings to be set to full heat.

@@ -132,7 +132,7 @@ extends TabPanel {
 		maintenanceListPanel.removeAll();
 
 		// Populate the list.
-		buildingsList = settlement.getBuildingManager().getBuildings();//getACopyOfBuildings()
+		buildingsList = settlement.getBuildingManager().getSortedBuildings();//getACopyOfBuildings()
 		Iterator<Building> i = buildingsList.iterator();
 		while (i.hasNext()) {
 			JPanel panel = new BuildingMaintenancePanel(i.next());
@@ -169,7 +169,7 @@ extends TabPanel {
 	public void update() {
 
 		// Check if building list has changed.
-		List<Building> tempBuildings = ((Settlement) unit).getBuildingManager().getBuildings();
+		List<Building> tempBuildings = ((Settlement) unit).getBuildingManager().getSortedBuildings();
 		if (!tempBuildings.equals(buildingsList)) {
 			// Populate maintenance list.
 			populateMaintenanceList();

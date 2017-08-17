@@ -7,21 +7,29 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The Heating class is a building function for regulating temperature in a settlement..
@@ -32,7 +40,11 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+    /* default logger.*/
+ 	private static Logger logger = Logger.getLogger(LivingAccommodations.class.getName());
 
+	private static String sourceName = logger.getName();
+    
 	/** default logger. */
 	//private static Logger logger = Logger.getLogger(Heating.class.getName());
 	private static final BuildingFunction FUNCTION = BuildingFunction.LIFE_SUPPORT;
@@ -110,6 +122,7 @@ implements Serializable {
 	private double heatRequired;
 	private double deltaTemperature;
 	private double currentTemperature;
+	private double temperature_adjacent1, temperature_adjacent2;
     //private double heatLossEachEVA;
 	//private double storedHeat;
 	//double interval = Simulation.instance().getMasterClock().getTimePulse() ;
@@ -132,8 +145,11 @@ implements Serializable {
 	private MasterClock masterClock;
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
+	private Settlement settlement;
 	//private DecimalFormat fmt = new DecimalFormat("#.#######");
 
+	private List<Building> adjacentBuildings;
+	
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.
@@ -142,8 +158,12 @@ implements Serializable {
 		// Call Function constructor.
 		super(FUNCTION, building);
 
+        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        
 		this.building = building;
-
+		this.settlement = building.getBuildingManager().getSettlement();
+		buildingType =  getBuilding().getBuildingType();
+		
 		masterClock = Simulation.instance().getMasterClock();
 		marsClock = masterClock.getMarsClock();
 		weather = Simulation.instance().getMars().getWeather();
@@ -153,9 +173,14 @@ implements Serializable {
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
-		length = getBuilding().getLength();
+		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
+			length = 3D;
+		}
+		else
+			length = getBuilding().getLength();
+		
 		width = getBuilding().getWidth() ;
-		buildingType =  getBuilding().getBuildingType();
+
 		floorArea = length * width ;
 
 		if (isGreenhouse()) { // greenhouse has a semi-transparent rooftop
@@ -191,7 +216,10 @@ implements Serializable {
 			emissivityMap.put(i, emissivity);
 		}
 
+		
 	}
+
+
 
 
 
@@ -266,8 +294,8 @@ implements Serializable {
 	//2015-02-19 Modified determineDeltaTemperature() to use MILLISOLS_PER_UPDATE
 	public double determineDeltaTemperature(double t, double millisols) {
 		// THREE-PART CALCULATION
-		double outsideTemperature = 0;
-		outsideTemperature = weather.getTemperature(location);
+		double outsideTemperature = settlement.getOutsideTemperature();
+		//outsideTemperature = weather.getTemperature(location);
 		// heatGain and heatLoss are to be converted from kJ to BTU below
 		//
 		// (1) CALCULATE HEAT GAIN
@@ -470,9 +498,41 @@ implements Serializable {
 		// Adjust the current temperature
 		//t = updateTemperature(dt);
 		t += dt;
-		currentTemperature = t;
 
-		// Step 3 of Thermal Control
+		if (t < 12.5 || t > 32.5) { // this temperature range is arbitrary
+			// TODO : determine if someone open a hatch ??
+			
+			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, "Temperature is below 10 C at " + building + " in " + settlement, null);
+
+			if (adjacentBuildings == null) {
+				adjacentBuildings = settlement.getAdjacentBuildings(building);
+			}
+			
+			boolean t1 = false, t2 = false;
+			int size = adjacentBuildings.size();
+			if (size == 1) {
+				t1 = true;
+				temperature_adjacent1 = adjacentBuildings.get(0).getCurrentTemperature();
+			}
+			else if (size == 2) {
+				t2 = true;
+				temperature_adjacent2 = adjacentBuildings.get(1).getCurrentTemperature();
+			}
+			
+			//double diffusion = time * 100D;
+			
+			if (t1 && t2)
+				t = .01 * temperature_adjacent1 + .01 * temperature_adjacent2 + .98 * t;
+			else if (t1)
+				t = .01 * temperature_adjacent1 + .99 * t;
+			else if (t2)
+				t = .01 * temperature_adjacent2 + .99 * t;	
+			
+		}
+		
+		currentTemperature = t;
+		
+			// Step 3 of Thermal Control
 		// Turn heat source off if reaching pre-setting temperature
 		setNewHeatMode(t);
 
@@ -495,17 +555,6 @@ implements Serializable {
 		return 0;
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		building = null;
-	 	thermalSystem = null;
-		building = null;
-		weather = null;
-		location = null;
-	}
-
 	/**
 	 * Gets the heat this building currently requires for full-power mode.
 	 * @return heat in kJ/s.
@@ -515,6 +564,7 @@ implements Serializable {
 		if (heatGeneratedCache != heatGenerated) {
 			heatGeneratedCache = heatGenerated;
 		}
+
 		// Determine heat required for each function.
 		//TODO: should I add power requirement inside
 		// thermal generation function instead?
@@ -548,4 +598,16 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		building = null;
+	 	thermalSystem = null;
+		building = null;
+		weather = null;
+		location = null;
+	}
+
 }
