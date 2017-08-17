@@ -478,7 +478,7 @@ extends TabPanel {
 			HeatMode heatMode = building.getHeatMode();
 
 			// if the building has thermal control system, display columns
-			if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+			//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 
 				if (column == 0) {
 					if (heatMode == HeatMode.ONLINE) {
@@ -528,7 +528,6 @@ extends TabPanel {
 					catch (Exception e) {}
 					return generatedCapacity;
 				}
-			}
 			return null;
 		}
 

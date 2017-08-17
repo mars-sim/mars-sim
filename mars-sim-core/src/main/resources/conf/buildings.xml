@@ -600,7 +600,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	-->
 
 	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" >
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
 		<description> The starting ERV base was sent ahead of the arrival
 			of the human crew. It supplies the settlement with tanks of hydrogen that can be
 			converted into CH4 and H2O via Sabatier Process. It can perform Water Electrolysis
@@ -644,7 +644,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" >
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
 		<description> The Earth Return Vehicle (ERV) is a flight ready space vehicle. If not used
 			for the return trip, it can be retrofitted for critical resource processing functions as
 			it carried similar equipment package as those found in Starting ERV Base.
@@ -741,7 +741,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="0">
 		<description> The Atmospheric Processor is an uninhabitable, resource-processing
 		building providing water recyling, air processing and waste incineration functions
 		for the settlement.

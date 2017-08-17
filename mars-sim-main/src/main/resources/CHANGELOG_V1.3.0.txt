@@ -5,6 +5,49 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
+## v3.1.0-Preview 9 (build 4___) - 2017-0_-__
+
+
+### KNOWN LIMITATIONS :
+
+1. In MacOS, JavaFX WebEngine's bug creates garbled characters in Help Browser.
+
+2. In Linux, textfields do not allow text input.
+
+3. Not compatible with 32-bit Java 8.
+
+
+### CORE ENGINE IMPROVEMENTS :
+
+1. Add checkbox to include non-power and non-heat generating buildings in Power/Thermal 
+   Tab Panels.
+
+2. Include gas diffusion laws and heat flow between adjacent buildings.
+
+3. Improve grid battery charging/discharging model. 
+ 
+4. Tweak amount of power output from various types of power source.
+
+
+### UI IMPROVEMENT :
+
+1. Switch to using only JavaFX UI elements on Help Browser.
+
+2. Add animated Main Menu items.
+
+3. Create an EXE installation package specifically for installing mars-sim in windows OS 
+with Inno Script Studio.
+
+
+### FIXES :
+
+1. Correct temperature anomaly. 
+
+2. Fix calculation for power output from solar panels.
+
+
+-----------------------------------------------------------------------------------------
+
 ## v3.1.0-Preview 8 (build 4082) - 2017-08-10
 
 
