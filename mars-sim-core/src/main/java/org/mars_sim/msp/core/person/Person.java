@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -33,25 +32,15 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
-import org.mars_sim.msp.core.reportingAuthority.AdvancingSpaceKnowledge;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.DeterminingHabitability;
-import org.mars_sim.msp.core.reportingAuthority.DevelopingAdvancedTechnology;
-import org.mars_sim.msp.core.reportingAuthority.DevelopingSpaceActivity;
 import org.mars_sim.msp.core.reportingAuthority.ESAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.FindingLife;
-import org.mars_sim.msp.core.reportingAuthority.ProspectingMineral;
 import org.mars_sim.msp.core.reportingAuthority.ISROMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.JAXAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.reportingAuthority.ResearchingHealthHazard;
-import org.mars_sim.msp.core.reportingAuthority.ResearchingSpaceApplication;
-import org.mars_sim.msp.core.reportingAuthority.SettlingMars;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -83,8 +72,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private final static double BASE_CAPACITY = 60D;
 
 	private final static String HEIGHT = "Height";
-
 	private final static String WEIGHT = "Weight";
+	
+	private final static double AVERAGE_TALL_HEIGHT = 176.5;
+	private final static double AVERAGE_SHORT_HEIGHT = 162.5;
+	private final static double AVERAGE_HEIGHT = 169.5;//(AVERAGE_TALL_HEIGHT + AVERAGE_SHORT_HEIGHT)/2D;
+	
+	private final static double AVERAGE_HIGH_WEIGHT = 68.5;
+	private final static double AVERAGE_LOW_WEIGHT = 57.2;
+	private final static double AVERAGE_WEIGHT = 62.85 ; //(AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
+	
 	// Data members
 	private boolean bornOnMars;
 	/** True if person is declared dead and buried. */
@@ -94,7 +91,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	private int solCache = 1;
 
-	private int[] emotional_states;
+	//private int[] emotional_states;
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */
@@ -131,8 +128,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private PhysicalCondition health;
 	private Cooking kitchenWithMeal;
 	private PreparingDessert kitchenWithDessert;
-	private PersonConfig config;// =
-								// SimulationConfig.instance().getPersonConfiguration();
+	private PersonConfig config; // SimulationConfig.instance().getPersonConfiguration();
 	private Favorite favorite;
 	private TaskSchedule taskSchedule;
 	private JobHistory jobHistory;
@@ -221,6 +217,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return new PersonBuilderImpl(name, settlement);
 	}
 
+	/**
+	 * Initialize field data, class and maps
+	 */
 	public void initialize() {
 
 		sim = Simulation.instance();
@@ -266,6 +265,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		support = getLifeSupportType();
 	}
 
+	/**
+	 * Compute a person's chromosome map
+	 */
 	// 2016-01-13 Added setupChromosomeMap()
 	public void setupChromosomeMap() {
 		paternal_chromosome = new HashMap<>();
@@ -281,13 +283,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			setupHeight();
 			setupWeight();
 			// Personality traits: id 40 - 59
-			setupTrait();
+			setupAttributeTrait();
 		}
 
 	}
 
+	/**
+	 * Compute a person's attributes and its chromosome
+	 */
 	// 2016-01-12 Added setupTrait()
-	public void setupTrait() {
+	public void setupAttributeTrait() {
 		// TODO: set up a set of genes that was passed onto this person from two
 		// hypothetical parents
 		int ID = 40;
@@ -304,6 +309,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	}
 
+	/**
+	 * Compute a person's blood type and its chromosome
+	 */
 	// 2016-01-12 Added setupBloodType()
 	public void setupBloodType() {
 		int ID = 1;
@@ -363,6 +371,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	}
 
+	/**
+	 * Compute a person's height and its chromosome
+	 */
 	// 2016-01-12 Added setupHeight()
 	public void setupHeight() {
 		int ID = 20;
@@ -376,8 +387,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// TODO: look for a gender-correlated curve
 
 		// 2017-04-11 Attempt to compute height with gaussian curve
-		double dad_height = 176.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(22);
-		double mom_height = 162.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15);
+		double dad_height = AVERAGE_TALL_HEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(22);
+		double mom_height = AVERAGE_SHORT_HEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15);
 
 		Gene dad_height_G = new Gene(this, ID, HEIGHT, true, dominant, null, dad_height);
 		paternal_chromosome.put(ID, dad_height_G);
@@ -386,17 +397,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		maternal_chromosome.put(ID, mom_height_G);
 
 		double genetic_factor = .65;
-		double average = (176.5 + 162.6)/2D;
-		double sex_factor = (176.5 - average)/average; // for male
+		double sex_factor = (AVERAGE_TALL_HEIGHT - AVERAGE_HEIGHT)/AVERAGE_HEIGHT; 
 		// 2017-04-11 Add Add arbitrary (US-based) sex and genetic factor
 		if (gender == PersonGender.MALE)
-			height = Math.round((genetic_factor * dad_height + (1-genetic_factor) * mom_height)*100D)/200D * (1 + sex_factor);
+			height = Math.round((genetic_factor * dad_height + (1-genetic_factor) * mom_height * (1 + sex_factor))*100D)/100D;
 		else
-			height = Math.round(((1-genetic_factor) * dad_height + genetic_factor * mom_height)*100D)/200D * (1 - sex_factor);
+			height = Math.round(((1-genetic_factor) * dad_height + genetic_factor * mom_height * (1 - sex_factor))*100D)/100D;
 
 
 	}
 
+
+	/**
+	 * Compute a person's weight and its chromosome
+	 */
 	// 2016-01-12 Added setupWeight()
 	public void setupWeight() {
 		int ID = 21;
@@ -410,8 +424,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// TODO: look for a gender-correlated curve
 
 		// 2017-04-11 Attempt to compute height with gaussian curve
-		double dad_weight = 68.5 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(10);
-		double mom_weight = 57.2 + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15) ;
+		double dad_weight = AVERAGE_HIGH_WEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(10);
+		double mom_weight = AVERAGE_LOW_WEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15) ;
 
 		Gene dad_weight_G = new Gene(this, ID, WEIGHT, true, dominant, null, dad_weight);
 		paternal_chromosome.put(ID, dad_weight_G);
@@ -420,13 +434,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		maternal_chromosome.put(ID, mom_weight_G);
 
 		double genetic_factor = .65;
-		double average = (68.5 + 57.2)/2D;
-		double sex_factor = (68.5 - average)/average; // for male
+		double sex_factor = (AVERAGE_HIGH_WEIGHT - AVERAGE_WEIGHT)/AVERAGE_WEIGHT; // for male
+		double height_factor = height/AVERAGE_HEIGHT;
 		// 2017-04-11 Add arbitrary (US-based) sex and genetic factor
 		if (gender == PersonGender.MALE)
-			weight = Math.round((genetic_factor * dad_weight + (1-genetic_factor) * mom_weight)*100D)/200D * (1 + sex_factor);
+			weight = Math.round(height_factor*(genetic_factor * dad_weight + (1-genetic_factor) * mom_weight * (1 + sex_factor))*100D)/100D;
 		else
-			weight = Math.round(((1-genetic_factor) * dad_weight + genetic_factor * mom_weight)*100D)/200D * (1 - sex_factor);
+			weight = Math.round(height_factor*((1-genetic_factor) * dad_weight + genetic_factor * mom_weight * (1 - sex_factor))*100D)/100D;
 
 		setBaseMass(weight);
 
@@ -698,17 +712,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 	}
 
-	/**
-	 * Get vehicle person is in, null if person is not in vehicle
-	 *
-	 * @return the person's vehicle
-	 */
-	public Vehicle getVehicle() {
-		if (getLocationSituation() == LocationSituation.IN_VEHICLE)
-			return (Vehicle) getContainerUnit();
-		else
-			return null;
-	}
 
 	/**
 	 * Sets the unit's container unit. Overridden from Unit class.
@@ -1290,9 +1293,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	// 2015-12-12 Added setEmotionalStates()
-	public void setEmotionalStates(int[] states) {
-		emotional_states = states;
-	}
+	//public void setEmotionalStates(int[] states) {
+	//	emotional_states = states;
+	//}
 
 	public Building getQuarters() {
 		return quarters;
@@ -1343,6 +1346,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.vehicle = vehicle;
 	}
 
+	/**
+	 * Get vehicle person is in, null if person is not in vehicle
+	 * @return the person's vehicle
+	 */
+	public Vehicle getVehicle() {
+		if (getLocationSituation() == LocationSituation.IN_VEHICLE)
+			return (Vehicle) getContainerUnit();
+		else
+			return null;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
