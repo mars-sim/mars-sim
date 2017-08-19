@@ -22,6 +22,18 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+
+// see discussions on Airlocks for Mars Colony at 
+// https://forum.nasaspaceflight.com/index.php?topic=42098.0
+
+// Astronauts aboard the International Space Station preparing for extra-vehicular activity (EVA) 
+// "camp out" at low atmospheric pressure, 10.2 psi (0.70 bar), spending eight sleeping hours 
+// in the Quest airlock chamber before their spacewalk. During the EVA they breathe 100% oxygen 
+// in their spacesuits, which operate at 4.3 psi (0.30 bar),[71] although research has examined 
+// the possibility of using 100% O2 at 9.5 psi (0.66 bar) in the suits to lessen the pressure 
+// reduction, and hence the risk of DCS.[72]
+// see https://en.wikipedia.org/wiki/Decompression_sickness
+
 /**
  * The Airlock class represents an airlock to a vehicle or structure.
  */
@@ -34,7 +46,7 @@ public abstract class Airlock implements Serializable {
     private static Logger logger = Logger.getLogger(Airlock.class.getName());
 
     /** Pressurize/depressurize time (millisols). */
-    public static final double CYCLE_TIME = 5D;
+    public static final double CYCLE_TIME = 5D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
 
     // TODO Airlock states should be an enum.
     public static final String PRESSURIZED = "pressurized";
@@ -169,7 +181,13 @@ public abstract class Airlock implements Serializable {
      * @return true if airlock successfully activated.
      */
     public boolean activateAirlock(Unit operator) {
-
+    	Person p = null;
+    	Robot r = null;
+    	if (operator instanceof Person)
+    		p = (Person) operator;
+    	else
+    		r = (Robot) operator;
+    	
         boolean result = false;
 
         if (!activated) {

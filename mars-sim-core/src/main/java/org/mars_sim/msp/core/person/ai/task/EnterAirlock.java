@@ -72,8 +72,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D interiorAirlockPos = null;
 
-	private AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//.findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
 
     /**
      * Constructor.

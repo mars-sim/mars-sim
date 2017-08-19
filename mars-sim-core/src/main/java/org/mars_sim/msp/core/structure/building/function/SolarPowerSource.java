@@ -40,12 +40,10 @@ implements Serializable {
 	 	100*(1-.04/100)^(365*10) = 23.21% */
 	public static double DEGRADATION_RATE_PER_SOL = .0004; // assuming it is a constant through its mission
 	
-	
 
 	/*
-	 * The Solar Photovoltaic Array and the Solar Thermal Array has n number of layers of solar panels 
-	 * that can be oriented toward the sun at the same time if the sun is at an oblique angle in order to
-	 * extract more sunlight
+	 * The number of layers/panels that can be mechanically steered 
+	 * toward the sun to maximum the solar irradiance
 	 */
 	public static double NUM_LAYERS = 4D;		// in square feet
 	public static double STEERABLE_ARRAY_AREA = 50D;		// in square feet
@@ -54,7 +52,16 @@ implements Serializable {
 	public static double PI = Math.PI;
 	public static double HALF_PI = PI / 2D;
 
-	/** The solar Panel is made of triple-junction solar cells with theoretical max eff of 68% */
+	// Notes :
+	// 1. The solar Panel is made of triple-junction solar cells with theoretical max eff of 68%  
+	// 2. the flat-plate single junction has max theoretical efficiency at 29%
+	// 3. The modern Shockley and Queisser (SQ) Limit calculation is a maximum efficiency of 33.16% for any 
+	// type of single junction solar cell. 
+	// see http://www.solarcellcentral.com/limits_page.html
+
+	/*
+	 * The theoretical max efficiency of the triple-junction solar cells 
+	 */
 	private double efficiency_solar_panel = .68;
 
 	private Coordinates location ;

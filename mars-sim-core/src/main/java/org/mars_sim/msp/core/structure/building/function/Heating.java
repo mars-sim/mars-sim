@@ -14,19 +14,15 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,17 +52,16 @@ implements Serializable {
 	// Revised ver at https://www.researchgate.net/publication/7890528_Engineering_concepts_for_inflatable_Mars_surface_greenhouses
 
 	// Data members
+	private static final double DEFAULT_ROOM_TEMPERATURE = 22.5;
 	private static final double BTU_PER_HOUR_PER_kW = 3412.14; // 1 kW = 3412.14 BTU/hr
 	private static final double C_TO_K = 273.15;
-	//2015-02-19 Added MILLISOLS_PER_UPDATE
 	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
 	private static final double TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE = .55 ;
 	private static final double EMISSIVITY_DAY = 0.8 ;
 	private static final double EMISSIVITY_NIGHT = 1.0 ;
 	private static final double EMISSIVITY_INSULATED = 0.05 ;
 	private static final double STEFAN_BOLTZMANN_CONSTANT = 0.0000000567 ; // in W / (m^2 K^4)
-	//private static final double ROOM_TEMPERATURE = 22.5D;
-    //public static final double GREENHOUSE_TEMPERATURE = 24D;
+
     // Thermostat's temperature allowance
     private static final double T_UPPER_SENSITIVITY = 1D;
     private static final double T_LOWER_SENSITIVITY = 1D;
@@ -78,17 +73,23 @@ implements Serializable {
 	// 1 kilopascal = 0.00986923267 atm
 	// 1 cubic ft = L * 0.035315
     // A full scale pressurized Mars rover prototype may have an airlock volume of 5.7 m^3
-    private double VOLUME_OF_AIRLOCK =  3 * 3 * 2; //in m^3
-	// Molar mass of CO2 = 44.0095 g/mol
+	/** The average volume of a airlock [m^3] */	
+    private double VOLUME_OF_AIRLOCK =  3 * 2 * 2; //in m^3
+
+    // Molar mass of CO2 = 44.0095 g/mol
     // average density of air : 0.020 kg/m3
 	//double n = weather.getAirDensity(coordinates) * vol / 44D;
 	//private double n_CO2 = .02D * VOLUME_OF_AIRLOCK / 44*1000;
 	// 1 cubic feet of air has a total weight of 38.76 g
 	//private double n_air = 1D;
 	//private double n_sum = n_CO2 + n_air;
-	private double C_p = 1.0015; // specific heat capacity of air at 250K
-	private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
-	private double energy_factor = C_p * VOLUME_OF_AIRLOCK * dryAirDensity /1000; // for airlock heat loss
+    
+	/** specific heat capacity of air at 300K [kJ/kg*K]*/	 
+	private double C_p = 1.005;  
+	/** Density of dry breathable air [kg/m3] */	
+	private double dryAirDensity = 1.275D; //
+	/** Factor for calculating airlock heat loss during EVA egress */
+	private double energy_factor = C_p * VOLUME_OF_AIRLOCK * dryAirDensity /1000; 
 	//private double t_factor =  vol / n;
     private double width;
 	private double length;
@@ -97,7 +98,7 @@ implements Serializable {
 	private double hullArea; // underbody and sidewall
 	private double transmittance;
 	private double heat_gain_from_HPS = Crop.LOSS_AS_HEAT_HPS;
-	//private double baseHeatRequirement;
+
 	private double basePowerDownHeatRequirement = 0;
 	private double meter2Feet = 10.764;
 	//private static int count;
@@ -146,6 +147,7 @@ implements Serializable {
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
 	private Settlement settlement;
+	private BuildingManager manager;
 	//private DecimalFormat fmt = new DecimalFormat("#.#######");
 
 	private List<Building> adjacentBuildings;
@@ -161,25 +163,23 @@ implements Serializable {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
 		this.building = building;
-		this.settlement = building.getBuildingManager().getSettlement();
-		buildingType =  getBuilding().getBuildingType();
+		this.manager = building.getBuildingManager();
+		this.settlement = manager.getSettlement();
+
+		buildingType =  building.getBuildingType();
 		
 		masterClock = Simulation.instance().getMasterClock();
 		marsClock = masterClock.getMarsClock();
 		weather = Simulation.instance().getMars().getWeather();
 		//coordinates = building.getBuildingManager().getSettlement().getCoordinates();
 		location = building.getLocation();
-		thermalSystem = building.getBuildingManager().getSettlement().getThermalSystem();
+		thermalSystem = settlement.getThermalSystem();
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
-		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
-			length = 3D;
-		}
-		else
-			length = getBuilding().getLength();
-		
-		width = getBuilding().getWidth() ;
+
+		length = building.getLength();
+		width = building.getWidth() ;
 
 		floorArea = length * width ;
 
@@ -192,6 +192,10 @@ implements Serializable {
 			transmittance = 0.05; // very little solar irradiance transmit energy into the building, compared to transparent rooftop
 		}
 
+		//if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
+		//	System.out.println(building.getNickName() + "'s length is " + length);
+		//}
+		
 		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
 
 		U_value_area_ceiling = U_value * floorArea * meter2Feet;
@@ -246,7 +250,7 @@ implements Serializable {
     */
 	//2014-10-17  Added getCurrentTemperature()
     public double getCurrentTemperature() {
-            return currentTemperature;
+    	return currentTemperature;
     }
 
 
@@ -305,32 +309,31 @@ implements Serializable {
 			// HeatGenerated in kW
 			// Note: 1 kW = 3412.14 BTU/hr
 			if (thermalSystem == null)
-				thermalSystem = building.getBuildingManager().getSettlement().getThermalSystem();
+				thermalSystem = settlement.getThermalSystem();
 			heatGenerated =  thermalSystem.getGeneratedHeat();
 		}
+		int num = building.numOfPeopleInAirLock();
 		// each person emits about 350 BTU/hr
 		double heatGainFromOccupants = HEAT_DISSIPATED_PER_PERSON * building.getInhabitants().size() ;
+		// the energy required to heat up the in-rush of the new martian air
+		double heatGainFromEVAHeater = Building.kW_EVA_HEATER * num /2D; 
 		heatGain = BTU_PER_HOUR_PER_kW * heatGenerated
 				+ heatGainFromOccupants
-				+ HEAT_GAIN_FROM_EQUIPMENT ; // in BTU/hr
-
+				+ HEAT_GAIN_FROM_EQUIPMENT // in BTU/hr
+				+ heatGainFromEVAHeater;
 
 		// (2) CALCULATE HEAT LOSS
 		double energyExpendedToHeatAirlockMartianAir = 0;
-		if (building.getFunction(BuildingFunction.EVA) != null) {
-			int num = building.numOfPeopleInAirLock();
+		//if (building.getFunction(BuildingFunction.EVA) != null) {
 			if (num > 0) {
-				energyExpendedToHeatAirlockMartianAir = energy_factor * (22.5D - outsideTemperature) * 2D - num ;
-				// Multiplied by two in order to account for
+				energyExpendedToHeatAirlockMartianAir = energy_factor * (DEFAULT_ROOM_TEMPERATURE - outsideTemperature) * num /2D;
+				//(1) Divide by two since half of the time during EVA ingree 
 				//(1) the energy loss due to the original room-temperature air gushing out
-				//(2) the energy required to heat up the in-rush of the new martian air
-				// Note : Assuming EVA heater requires 1kW of power for heating up the air for each person in an airlock during egress and ingress.
-				//System.out.println("energyExpendedToHeatAirlockMartianAir in kW : " + energyExpendedToHeatAirlockMartianAir);
-				//System.out.println("energyExpendedToHeatAirlockMartianAir in BTU : " + BTU_PER_HOUR_PER_kW * energyExpendedToHeatAirlockMartianAir);
+				// Note : Assuming EVA heater requires 1kW of power for heating up the air for each person in an airlock during EVA ingress.
 				// e.g. kW : 0.323
 				// e.g. BTU : 1101.4
 			}
-		}
+		//}
 		double diffTinF =  (t - outsideTemperature) * 1.8; //1.8 =  9D / 5D;
 		double heatLoss = diffTinF * (
 						//U_value_area_ceiling * 2D

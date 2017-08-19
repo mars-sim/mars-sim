@@ -746,6 +746,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		building providing water recyling, air processing and waste incineration functions
 		for the settlement.
 		</description>
+		
+		<!-- see water tank calculation on Mars 
+		    at https://www.physicsforums.com/threads/pressure-a-water-tank-on-mars.242305/ -->
+		
 		<power-required base-power="3.0" base-power-down-power="0.3"/>
 
 		<functions>

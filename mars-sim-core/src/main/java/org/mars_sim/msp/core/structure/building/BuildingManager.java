@@ -1902,15 +1902,16 @@ public class BuildingManager implements Serializable {
     // 2015-12-30 Added getNextInhabitableID()
     public int getNextInhabitableID() {
 
-        int nextNum = -1;
+        int max = -1;
         for (Building b : buildings) {
         	if (b.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
                 int id = b.getInhabitableID();
-                if (id > nextNum)
-                	nextNum++;
+                max = Math.max(id, max);
+                //if (id > nextNum)
+                //	nextNum++;
             }
         }
-        return nextNum + 1;
+        return max + 1;
     }
 
     /**
@@ -1921,16 +1922,19 @@ public class BuildingManager implements Serializable {
     // 2015-12-13 Added getNextBuildingTypeID()
     public int getNextBuildingTypeID(String buildingType) {
 
-        int largestTypeID = 0;
+        int largest = 0;
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
-            Building building = i.next();
-            String type = building.getBuildingType();
-            if (buildingType.equals(type))
-            	largestTypeID++;
+            Building b = i.next();
+            String type = b.getBuildingType();
+            if (buildingType.equals(type)) {
+            	int id = b.getTemplateID();
+            	largest = Math.max(id, largest);
+            	//largest++;
+            }
         }
 
-        return largestTypeID + 1;
+        return largest + 1;
     }
 
     /**

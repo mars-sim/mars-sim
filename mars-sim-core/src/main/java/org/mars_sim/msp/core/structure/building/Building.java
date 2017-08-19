@@ -90,6 +90,7 @@ LocalBoundedObject, InsidePathLocation {
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
 
+	public static final double kW_EVA_HEATER = .5D; // 500 W heater for us during EVA ingress
 	// Assuming 20% chance for each person to witness or be conscious of the meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 	// The influx of meteorites entering Mars atmosphere can be estimated as
@@ -245,13 +246,14 @@ LocalBoundedObject, InsidePathLocation {
 		if (b_inv == null) {
 			b_inv = super.getInventory(); // it's already been created in its super class
 
-			if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
-				//b_inv = new Inventory(this);
-				b_inv.addGeneralCapacity(100);
-			} else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
-				b_inv.addGeneralCapacity(1_000_000);
-			else
-				b_inv.addGeneralCapacity(100_000);
+		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
+			//b_inv = new Inventory(this);
+			b_inv.addGeneralCapacity(100);
+		} 
+		else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
+			b_inv.addGeneralCapacity(1_000_000);
+		else
+			b_inv.addGeneralCapacity(100_000);
 		}
 
 		if (masterClock == null)
@@ -260,14 +262,18 @@ LocalBoundedObject, InsidePathLocation {
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.ONLINE;
 
+		//if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
+		//	System.out.println(nickName + "'s length is " + length);
+		//}
 
 		// Get building's dimensions.
 		if (width != -1D) {
 			this.width = width;
-			}
+		}
 		else {
 			this.width = buildingConfig.getWidth(buildingType);
-			}
+		}
+		
 		if (this.width <= 0D) {
 			throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + buildingType);
 		}
@@ -278,10 +284,11 @@ LocalBoundedObject, InsidePathLocation {
 		else {
 			this.length = buildingConfig.getLength(buildingType);
 		}
+		
 		if (this.length <= 0D) {
 			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
 		}
-
+		
 		floorArea = length * width;
 
 		baseLevel = buildingConfig.getBaseLevel(buildingType);
@@ -353,7 +360,6 @@ LocalBoundedObject, InsidePathLocation {
 		return manager.getSettlement().getInventory();
 	}
 
-
 	/**
      * Gets the description of a building.
      * @return String description
@@ -362,6 +368,7 @@ LocalBoundedObject, InsidePathLocation {
     public String getDescription() {
             return description;
     }
+
 	/**
 	 * Sets building nickname
 	 * @return none
@@ -651,12 +658,13 @@ LocalBoundedObject, InsidePathLocation {
 		this.buildingType = type;
 		//System.out.println("new buildingType is " + this.buildingType);
 	}
-	@Override
+
+	
 	public double getWidth() {
 		return width;
 	}
 
-	@Override
+
 	public double getLength() {
 		return length;
 	}
@@ -765,7 +773,7 @@ LocalBoundedObject, InsidePathLocation {
 		double result = 0;
 
 		if (furnace != null && furnace.getHeating() != null )
-			furnace.getHeating().getFullHeatRequired();
+			result = furnace.getHeating().getFullHeatRequired();
 
 		result += powerNeededForEVAheater;
 
@@ -784,7 +792,7 @@ LocalBoundedObject, InsidePathLocation {
 	public double getPoweredDownHeatRequired() {
 		double result = 0;
 		if (furnace != null && furnace.getHeating() != null)
-			furnace.getHeating().getPoweredDownHeatRequired();
+			result = furnace.getHeating().getPoweredDownHeatRequired();
 		return result;
 	}
 
@@ -827,12 +835,12 @@ LocalBoundedObject, InsidePathLocation {
 
 	public int numOfPeopleInAirLock() {
         int num = 0;
-		//if (getFunction(BuildingFunction.EVA) != null) {
+		if (getFunction(BuildingFunction.EVA) != null) {
 			//EVA eva = (EVA) getFunction(BuildingFunction.EVA);
 	        num = ((EVA) getFunction(BuildingFunction.EVA)).getAirlock().getOccupants().size();
 			//if (num > 0) System.out.println("num is " + num);
-		//}
-	        powerNeededForEVAheater = num * 1D; // set to 1kW for each person
+	        powerNeededForEVAheater = num * kW_EVA_HEATER * .5D; // assume half of people are doing EVA ingress statistically
+		}
         return num;
 /*
         List<Building> evaBuildings = manager.getBuildings(BuildingFunction.EVA);

@@ -8,12 +8,14 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.awt.geom.Point2D;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -32,6 +34,8 @@ public class BuildingAirlock extends Airlock {
     private static final long serialVersionUID = 1L;
 
     private static Logger logger = Logger.getLogger(BuildingAirlock.class.getName());
+	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     // Data members.
     private Building building; // The building this airlock is for.
@@ -70,15 +74,16 @@ public class BuildingAirlock extends Airlock {
 
         if (inAirlock(person)) {
 
-            if (PRESSURIZED.equals(getState())) {
+            if (PRESSURIZED.equals(getState())) { // check if the airlock has been pressurized
                 if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
-                    // Exit person to inside building.
-                	logger.fine(person + " is currently OUTSIDE. About to call storeUnit() to be added to " + building.getBuildingManager().getSettlement());
+                	//logger.fine(
+                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
+                			+ " is coming thru an airlock in " + building + " from OUTSIDE of " 
+                			+ building.getBuildingManager().getSettlement(), null);
                 	inv.storeUnit(person);
-                    //logger.fine(person + " is about to exit airlock and officially belongs into " + building);
-                    //logger.fine(person + " entering " + building + " via airlock.");
-                    logger.fine(person + " is about to be added to " + building);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
+                    
+                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), true);
 
                 }
                 else {
@@ -87,13 +92,16 @@ public class BuildingAirlock extends Airlock {
                             " from an airlock but is not outside.");
                 }
             }
-            else if (DEPRESSURIZED.equals(getState())) {
+            else if (DEPRESSURIZED.equals(getState())) { // check if the airlock has been pressurized
                 if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
-                    // Exit person to outside building.
-                  	logger.fine(person + " is currently IN_SETTLEMENT. About to call retrieveUnit() to be removed from " + building.getBuildingManager().getSettlement());
+                   	//logger.fine(
+                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
+                			+ " is leaving thru an airlock in " + building + " to the OUTSIDE of " 
+                			+ building.getBuildingManager().getSettlement(), null);
                     inv.retrieveUnit(person);
-                    //logger.fine(person + " exiting " + building + " via airlock.");
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
+
+                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), false);
 
                 }
                 else {
@@ -115,19 +123,19 @@ public class BuildingAirlock extends Airlock {
         Inventory inv = building.getSettlementInventory();
 
         if (inAirlock(robot)) {
-
+        	
+        	// NOTE : robot is currently NOT allowed to leave the settlement
+        	//return;
+        	
             if (PRESSURIZED.equals(getState())) {
                 if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
-                    // Exit robot to inside building.
-                    //logger.fine(robot + " exiting " + building + " via airlock.");
-                	logger.fine(robot + " is currently OUTSIDE. About to call storeUnit() to be added to " + building.getBuildingManager().getSettlement());
-                    inv.storeUnit(robot);
-                    logger.fine(robot + " is about to be added to " + building);
-                    //logger.fine(robot + " is about to be added to " + building);
+                  	//logger.fine(
+                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, robot 
+                			+ " is coming thru an airlock in " + building + " from OUTSIDE of " 
+                			+ building.getBuildingManager().getSettlement(), null);              	 
+                  	inv.storeUnit(robot);
                 	BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, building);
-                    //logger.fine(robot + " is about to exit airlock and officially belongs into " + building);
-
-                }
+               }
                 else {
                 	//if (LocationSituation.BURIED != robot.getLocationSituation()) {
                     throw new IllegalStateException(robot + " is entering " + getEntityName() +
@@ -136,16 +144,13 @@ public class BuildingAirlock extends Airlock {
             }
             else if (DEPRESSURIZED.equals(getState())) {
                 if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
-                    // Exit robot to outside building.
-                    //logger.fine(robot + " exiting " + building + " via airlock.");
-                	logger.fine(robot + " is currently IN_SETTLEMENT. About to call retrieveUnit() to be removed from " + building.getBuildingManager().getSettlement());
-                	logger.fine(robot + " is about to exit the airlock door and leave " + building + " and going outside");
-                    inv.retrieveUnit(robot);
-                    logger.fine(robot + " is about to be removed from " + building);
-                	BuildingManager.removePersonOrRobotFromBuilding(robot, building);
+                   	//logger.fine(
+                   	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, robot 
+                   					+ " is leaving thru an airlock in " + building + " to the OUTSIDE of " 
+                   					+ building.getBuildingManager().getSettlement(), null);
+                	inv.retrieveUnit(robot);
+                 	BuildingManager.removePersonOrRobotFromBuilding(robot, building);
 
-                	// robot is NOT allowed to leave the settlement
-                	//return;
                 }
                 else {
                 	//if (LocationSituation.BURIED != robot.getLocationSituation()) {
