@@ -1,6 +1,7 @@
 package org.mars_sim.msp.core;
 
 import java.text.DecimalFormat;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.mars.Mars;
 
@@ -10,7 +11,9 @@ import junit.framework.TestCase;
  * Unit test suite for the Coordinates class.
  */
 public class TestCoordinates extends TestCase {
-
+	/* default logger. */
+	private static Logger logger = Logger.getLogger(TestCoordinates.class.getName());
+	
     private static final double ERROR_MARGIN_KM = .000000001D;
     private static final double ERROR_MARGIN_RAD = .00001D;
     
@@ -334,6 +337,8 @@ public class TestCoordinates extends TestCase {
         String lonString1 = loc1.getFormattedLongitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
+        System.out.println("0" + decimalPoint + "0 " + Msg.getString("direction.degreeSign") + "E");
+        System.out.println(lonString1);
         assertEquals("0" + decimalPoint + "0 " + Msg.getString("direction.degreeSign") + "E", lonString1);
     }
     
@@ -346,6 +351,8 @@ public class TestCoordinates extends TestCase {
         String latString1 = loc1.getFormattedLatitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
+        System.out.println("90"+ decimalPoint + "0 " + Msg.getString("direction.degreeSign") + "N");
+        System.out.println(latString1);
         assertEquals("90"+ decimalPoint + "0 " + Msg.getString("direction.degreeSign") + "N", latString1);
     }
 }

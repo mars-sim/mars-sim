@@ -563,6 +563,41 @@ public class BuildingManager implements Serializable {
         return result;
     }
 
+    /**
+     * Gets the buildings in a settlement that has a given function.
+     * @param building function {@link BuildingFunction} the function of the building.
+     * @return list of buildings.
+     */
+    public List<Building> getSortedBuildings(BuildingFunction bf) {
+ 
+    	if (buildingFunctionsMap.containsKey(bf)) {
+    		//System.out.println("buildingFunctionsMap.get(function)" + buildingFunctionsMap.get(function));
+    		return buildingFunctionsMap.get(bf).stream()
+					.sorted(new AlphanumComparator())
+					.collect(Collectors.toList());
+
+    	}
+
+    	else {
+          	List<Building> list = new ArrayList<Building>();
+
+            for (Building b : buildings) {
+            	if (b.hasFunction(bf))
+            		list.add(b);
+            }
+
+            list = list.stream()
+				.sorted(new AlphanumComparator())
+				.collect(Collectors.toList());
+
+    		buildingFunctionsMap.put(bf, list);
+    		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
+
+    		return list;
+    	}
+
+    }
+    
 
     /**
      * Gets the buildings in a settlement that has a given function.
@@ -577,9 +612,7 @@ public class BuildingManager implements Serializable {
 
     	if (buildingFunctionsMap.containsKey(bf)) {
     		//System.out.println("buildingFunctionsMap.get(function)" + buildingFunctionsMap.get(function));
-    		return buildingFunctionsMap.get(bf).stream()
-					.sorted(new AlphanumComparator())
-					.collect(Collectors.toList());
+    		return buildingFunctionsMap.get(bf);
 
             //long end = System.nanoTime();
             //count++;
@@ -602,10 +635,6 @@ public class BuildingManager implements Serializable {
             	if (b.hasFunction(bf))
             		list.add(b);
             }
-
-            list = list.stream()
-				.sorted(new AlphanumComparator())
-				.collect(Collectors.toList());
 
     		buildingFunctionsMap.put(bf, list);
     		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");

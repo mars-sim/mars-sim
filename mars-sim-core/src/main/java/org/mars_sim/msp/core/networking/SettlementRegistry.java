@@ -99,7 +99,12 @@ public class SettlementRegistry implements Serializable{
 
   public static double convertLatLong2Double(String str) {
 	double num = 0;
+	
+	
+	//char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
+	
 	str = str.replace(",", ".");
+	
 	num = Double.parseDouble(str.substring(0, str.length() - 1));
 	num = Math.round(num*10.0)/10.0;
 	String dir = str.substring(str.length() - 1, str.length());

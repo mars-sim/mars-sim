@@ -1139,6 +1139,9 @@ public class ScenarioConfigEditorFX {
 
 		// TODO: incorporate checking for user locale and its decimal separation symbol (. or ,)
 
+		// TODO: use decimal separator as defined by user locale 
+		//char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
+		
 		try {
 			boolean repeated = false;
 			int size = getRowCount();

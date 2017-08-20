@@ -151,6 +151,7 @@ extends TabPanel {
 		// Prepare heat generated label.
 		heatGenCache = thermalSystem.getGeneratedHeat();
 		heatGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatGen"), JLabel.RIGHT); //$NON-NLS-1$
+		heatGenLabel.setToolTipText(Msg.getString("TabPanelThermalSystem.totalHeatGen.tooltip")); //$NON-NLS-1$
 		heatInfoPanel.add(heatGenLabel);
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -163,6 +164,7 @@ extends TabPanel {
 		// Prepare power generated label.
 		powerGenCache = thermalSystem.getGeneratedPower();
 		powerGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalPowerGen"), JLabel.RIGHT); //$NON-NLS-1$
+		powerGenLabel.setToolTipText(Msg.getString("TabPanelThermalSystem.totalPowerGen.tooltip")); //$NON-NLS-1$
 		heatInfoPanel.add(powerGenLabel);
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -174,6 +176,7 @@ extends TabPanel {
 
 		double eff_electric_Heating = getAverageEfficiencyElectricHeat();
 		eff_electric_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
+		eff_electric_heat_Label.setToolTipText(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency.tooltip")); //$NON-NLS-1$
 		heatInfoPanel.add(eff_electric_heat_Label);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -185,6 +188,7 @@ extends TabPanel {
 
 		double eff_solar_heat =  getAverageEfficiencySolarHeating();
 		eff_solar_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
+		eff_solar_heat_Label.setToolTipText(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency.tooltip")); //$NON-NLS-1$		
 		heatInfoPanel.add(eff_solar_heat_Label);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -197,6 +201,7 @@ extends TabPanel {
 		// Prepare degradation rate label.
 		double degradRate = SolarHeatSource.DEGRADATION_RATE_PER_SOL;
 		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelThermalSystem.degradRate"), JLabel.RIGHT); //$NON-NLS-1$
+		degradRateLabel.setToolTipText(Msg.getString("TabPanelThermalSystem.degradRate.tooltip")); //$NON-NLS-1$	
 		heatInfoPanel.add(degradRateLabel);
 
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));

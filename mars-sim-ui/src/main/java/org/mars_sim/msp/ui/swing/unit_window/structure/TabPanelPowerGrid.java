@@ -165,6 +165,7 @@ extends TabPanel {
 		// Prepare power generated label.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
 		powerGeneratedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerGenerated"), JLabel.RIGHT); //$NON-NLS-1$
+		powerGeneratedLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalPowerGenerated.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(powerGeneratedLabel);
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -177,6 +178,7 @@ extends TabPanel {
 		// Prepare power used label.
 		powerUsedCache = powerGrid.getRequiredPower();
 		powerUsedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerUsed"), JLabel.RIGHT); //$NON-NLS-1$
+		powerUsedLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(powerUsedLabel);
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -188,7 +190,8 @@ extends TabPanel {
 
 		// Prepare power storage capacity label.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
-		energyStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.powerStorageCapacity"), JLabel.RIGHT); //$NON-NLS-1$
+		energyStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.energyStorageCapacity"), JLabel.RIGHT); //$NON-NLS-1$
+		energyStorageCapacityLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(energyStorageCapacityLabel);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -200,7 +203,8 @@ extends TabPanel {
 
 		// Prepare power stored label.
 		energyStoredCache = powerGrid.getStoredEnergy();
-		energyStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored"), JLabel.RIGHT); //$NON-NLS-1$
+		energyStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalEnergyStored"), JLabel.RIGHT); //$NON-NLS-1$
+		energyStoredLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalEnergyStored.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(energyStoredLabel);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -212,9 +216,10 @@ extends TabPanel {
 
 		// 2015-05-08 Added eff_electric_label
 		solarCellEfficiencyCache = getAverageEfficiency();
-		electricEfficiencyLabel = new JLabel(Msg.getString("TabPanelPowerGrid.solarPanelEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
-		electricEfficiencyLabel.setToolTipText("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a single junction solar cell is only 33.7%. "
-				+ "For a tandem structure or multi-junction p-n cells, the limit can be as high as ~68% for unconcentrated sunlight.</p></html>");
+		electricEfficiencyLabel = new JLabel(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
+		electricEfficiencyLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
+		//		("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a single junction solar cell is only 33.7%. "
+		//		+ "For a tandem structure or multi-junction p-n cells, the limit can be as high as ~68% for unconcentrated sunlight.</p></html>");
 		powerInfoPanel.add(electricEfficiencyLabel);
 
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -225,12 +230,13 @@ extends TabPanel {
 		powerInfoPanel.add(wrapper5);
 
 		// 2015-05-08 Added degradation rate label.
-		double degradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
-		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelPowerGrid.degradRate"), JLabel.RIGHT); //$NON-NLS-1$
-		powerInfoPanel.add(degradRateLabel);
+		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
+		JLabel solarPowerDegradRateLabel = new JLabel(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"), JLabel.RIGHT); //$NON-NLS-1$
+		solarPowerDegradRateLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
+		powerInfoPanel.add(solarPowerDegradRateLabel);
 
 		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		degradRateTF = new JTextField(formatter2.format(degradRate*100D) + PERCENT_PER_SOL);
+		degradRateTF = new JTextField(formatter2.format(solarPowerDegradRate*100D) + PERCENT_PER_SOL);
 		degradRateTF.setEditable(false);
 		degradRateTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper6.add(degradRateTF);
