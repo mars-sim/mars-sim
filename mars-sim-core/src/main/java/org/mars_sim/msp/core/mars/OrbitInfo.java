@@ -1,20 +1,17 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 3.08 2014-04-03
+ * @version 3.1.0 2018-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.MoreMath;
 
 /**
  * The OrbitInfo class keeps track of the orbital position of Mars
@@ -45,7 +42,7 @@ implements Serializable {
 	public static final double SOLAR_DAY = 88775.244D;
 	/** The area of Mars' orbit in au squared. */
 	private static final double ORBIT_AREA = 9.5340749D;
-
+	/** Half of PI. */
 	private static final double HALF_PI = Math.PI / 2D;
 	
 	// Data members
@@ -56,35 +53,42 @@ implements Serializable {
 	/** The distance from the Sun to Mars (in au). */
 	private double instantaneousSunMarsDistance = 1.3817913894302327;
 
-	/** The areocentric longitude (or the orbital position of Mars).
-	 *  0 corresponding to Mars' Northern Spring Equinox.
+	/** 
+	 * The areocentric longitude (or the orbital position of Mars).
+	 * Note : the value of 0 corresponding to Mars' Northern Spring Equinox.
 	 */
 	private double L_s = 252.5849107170493; // L_s = 252.58 (which corresponds to Earth date 2043-Sep-30) was arbitrarily chosen for mars-sim at the start of the sim
+
 	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly measured in terms of the areocentric longitude L_s,
-	//as referred to the planet's vernal equinox (the ascending node of the apparent seasonal motion of the Sun on the planet's equator).
-	//
+	// as referred to the planet's vernal equinox (the ascending node of the apparent seasonal motion of the Sun on the planet's equator).
+
 	// Note 2: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
 	// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
 	// The areocentric longitude at perihelion, L_s = 251 + 0.0064891 * (yr - 2000),
-	private double L_s_perihelion = 251D + 0.0064891 * (2043- 2000);
-	private double L_s_aphelion = L_s_perihelion - 180D;
-	private double sineSolarDeclinationAngle;
-
-	// indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
+	
+	/** The areocentric longitude of Mars at perihelion.*/	
+	private double L_s_perihelion;// = 251D + 0.0064891 * (2043- 2000);
+	/** The areocentric longitude of Mars at aphelion.*/
+	private double L_s_aphelion;// = L_s_perihelion - 180D;
+	
+	// Note 3 : L_s_perihelion indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
 	// as related to the occasional onset of global dust storms within the advance of this season.
 	// see http://www.giss.nasa.gov/tools/mars24/help/notes.html
-
-	//private Map<Coordinates, Double> cosineSolarZenithAngleMap;
-
+	
+	/** The Sine of the solar declination angle.*/
+	private double sineSolarDeclinationAngle;
+	/** The cache value of the cos zenith angele. */
+	private double cos_zenith_cache = 0;
+	
 	/** The solar zenith angle z */
 	//private double solarZenithAngle;
 
 	/** The point on the surface of Mars perpendicular to the Sun as Mars rotates. */
 	private Coordinates sunDirection;
+	
 	private Simulation sim = Simulation.instance();
 	private MarsClock marsClock;
-	private EarthClock earthClock;// = sim.getMasterClock().getEarthClock();
-	//private cosineSolarZenithAngleMapCacheTime;
+	private EarthClock earthClock;
 
 	/** Constructs an {@link OrbitInfo} object */
 	public OrbitInfo() {
@@ -94,14 +98,7 @@ implements Serializable {
 		theta = 0D;
 		instantaneousSunMarsDistance = 1.665732D;
 		sunDirection = new Coordinates((Math.PI / 2D) + TILT, Math.PI);
-		//L_s_perihelion = 251D + 0.00645 * ( Simulation.instance().getMasterClock().getEarthClock().getYear() - 2000);
-		//L_s_aphelion = L_s_perihelion - 180D;
 
-		//if (cosineSolarZenithAngleMap == null) {
-        //	cosineSolarZenithAngleMap = new ConcurrentHashMap<>();
-        //}
-		
-		
 	}
 	
 
@@ -110,7 +107,6 @@ implements Serializable {
 	 * @param millisols time added (millisols)
 	 */
 	public void addTime(double millisols) {
-
 		// Convert millisols into seconds.
 		double seconds = MarsClock.convertMillisolsToSeconds(millisols);
 
@@ -140,13 +136,9 @@ implements Serializable {
 
 		// Determine new radius
 		instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
-		//instantaneousSunMarsDistance = INSTANTANEOUS_RADIUS_NUMERATOR / (1 + (ECCENTRICITY * Math.cos((L_s-248D) * DEGREE_TO_RADIAN)));
-		//System.out.println("instantaneousSunMarsDistance is " + instantaneousSunMarsDistance);
-
+	
 		// Recompute the areocentric longitude of Mars
 		computeL_s();
-
-		// Determine Sun direction
 
 		// Determine Sun theta
 		double sunTheta = sunDirection.getTheta();
@@ -155,31 +147,11 @@ implements Serializable {
 
 		while (sunTheta < 0D) sunTheta += 2D * Math.PI;
 		sunDirection.setTheta(sunTheta);
-		//System.out.println("sunTheta is " + sunTheta);
 
 		// Determine Sun phi
 		double sunPhi = (Math.PI / 2D) + (Math.sin(theta + (Math.PI / 2D)) * TILT);
 		
-/*		
-		final long start = System.nanoTime();
-		double sunPhi = (HALF_PI) + (MoreMath.sin(theta + (HALF_PI)) * TILT);
-		final long end = System.nanoTime();
-		final float result0 = end - start;
-		//System.out.println("Time taken by MoreMath.sin() " + (end - start)/1.0e9 + " seconds");
-		System.out.print("Time taken by MoreMath.sin() " + result0 + " nano seconds       ");
-		
-		final long start1 = System.nanoTime();
-		double sunPhi1 = (HALF_PI) + (Math.sin(theta + (HALF_PI)) * TILT);
-		final long end1 = System.nanoTime();
-		final float result1 = end1 - start1;
-		//System.out.println("Time taken by Math.sin() " + (end1 - start1)/1.0e9 + " seconds");
-		System.out.println("Time taken by Math.sin() " + result1 + " nano seconds");
-*/		
-		
-		
-		
 		sunDirection.setPhi(sunPhi);
-		//System.out.println("sunPhi is " + sunPhi);
 
 		computeSineSolarDeclinationAngle();
 
@@ -189,11 +161,16 @@ implements Serializable {
 		if (earthClock == null)
 			earthClock = sim.getMasterClock().getEarthClock();
 		
-		L_s_perihelion = 251D + 0.00645 * (earthClock.getYear() - 2000);
-		L_s_aphelion = L_s_perihelion - 180D;
+		L_s_perihelion = 251D + .0064891 * (earthClock.getYear() - 2000);
+		
 		return L_s_perihelion;
 	}
 
+	public double computeAphelion() {
+		L_s_aphelion = computePerihelion() - 180D;
+		return L_s_perihelion;
+	}
+	
 	/**
 	 * Returns the theta angle of Mars's orbit.
 	 * Angle is clockwise starting at aphelion.
@@ -231,6 +208,15 @@ implements Serializable {
 		//return a;
 	}
 
+	public boolean isSunRising(Coordinates location) {
+		boolean result = true;
+		double cos_zenith = getCosineSolarZenithAngle(location);
+		if (cos_zenith_cache > cos_zenith)
+			result = false;
+		cos_zenith_cache = cos_zenith;
+		return result;
+	}
+	
 	/**
 	 * Gets the solar zenith angle from a given coordinate
 	 * @param location
@@ -398,8 +384,12 @@ implements Serializable {
 		return sineSolarDeclinationAngle ;
 	}
 
+	/**
+	 * Compute the sine of the solar declination angle of a given areocentric longitude.
+	 */
 	public void computeSineSolarDeclinationAngle() {
 		sineSolarDeclinationAngle = Math.sin (TILT) * Math.sin (L_s * DEGREE_TO_RADIAN) ;
+		//return sineSolarDeclinationAngle;
 	}
 
 	/**

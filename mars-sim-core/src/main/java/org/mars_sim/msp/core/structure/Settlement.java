@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.10 2016-10-20
+ * @version 3.10 2017-08-19
  * @author Scott Davis
  */
 

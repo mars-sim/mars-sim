@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGrid.java
- * @version 3.1.0 2016-10-19
+ * @version 3.1.0 2018-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;

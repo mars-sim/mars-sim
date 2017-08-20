@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSourceMeta.java
- * @version 3.08 2015-06-15
+ * @version 3.10 2017-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Meta task for the ToggleFuelPowerSource task.
@@ -30,7 +31,6 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.toggleFuelPowerSource"); //$NON-NLS-1$
@@ -49,40 +49,42 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
     	double result = 0D;
-
-    	boolean[] exposed = new boolean[]{false, false, false};
-
-        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
-        // and if he has to do a EVA to repair a broken vehicle.
-
-        if (person.getSettlement() != null) {
-        	//2016-10-04 Checked for radiation events
-    		exposed = person.getSettlement().getExposed();
-        }
-
-		if (exposed[2]) {
-			// SEP can give lethal dose of radiation, out won't go outside
-            return 0;
-		}
-
-
+    	
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        	
+	    	Settlement settlement = person.getSettlement();
+	    	
+	    	boolean[] exposed = new boolean[]{false, false, false};
+	
+	        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
+	        // and if he has to do a EVA to repair a broken vehicle.
+	
+	        if (settlement != null) {
+	        	//2016-10-04 Checked for radiation events
+	    		exposed = person.getSettlement().getExposed();
+	        }
+	
+			if (exposed[2]) {
+				// SEP can give lethal dose of radiation, out won't go outside
+	            return 0;
+			}
 
             // Check if an airlock is available
             if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
                 return 0;
             }
 
-            // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-                if (!surface.inDarkPolarRegion(person.getCoordinates()))
-                    return 0;
-            }
+            //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+            //double millisols = clock.getMillisol();
+            
+            // Check if it is getting dark
+            //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            //if (surface.getSolarIrradiance(person.getCoordinates()) < 60D && millisols > 500) {
+            //    if (!surface.inDarkPolarRegion(person.getCoordinates()))
+            //       return 0;
+            //}
 
-            boolean isEVA = false;
-
-            Settlement settlement = person.getSettlement();
+            boolean isEVA = false;        
 
             try {
                 Building building = ToggleFuelPowerSource.getFuelPowerSourceBuilding(person);

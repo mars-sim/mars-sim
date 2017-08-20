@@ -28,6 +28,8 @@ https://github.com/mars-sim/mars-sim
  
 4. Tweak amount of power output from various types of power source.
 
+5. Add tracking/displaying various properties of gases in each building.
+
 
 ### UI IMPROVEMENT :
 
@@ -45,6 +47,7 @@ with Inno Script Studio.
 
 2. Fix calculation for power output from solar panels.
 
+3. Fix short height and under-weigh issue. 
 
 -----------------------------------------------------------------------------------------
 

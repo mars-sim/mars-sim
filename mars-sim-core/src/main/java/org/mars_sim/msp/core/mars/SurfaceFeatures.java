@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.08 2015-07-01
+ * @version 3.1.0 2018-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -208,6 +208,7 @@ public class SurfaceFeatures implements Serializable {
         	solarIrradianceMapCache.clear();
             solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
         }
+        
         // If location is not in cache, calculate solar irradiance.
         if (!solarIrradianceMapCache.containsKey(location)) {
             if (mars == null) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.07 2014-09-22
+ * @version 3.10 2017-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -51,7 +52,6 @@ implements Serializable {
             "Task.description.toggleFuelPowerSource.on"); //$NON-NLS-1$
     private static final String NAME_OFF = Msg.getString(
             "Task.description.toggleFuelPowerSource.off"); //$NON-NLS-1$
-
     /** Task phases. */
     private static final TaskPhase TOGGLE_POWER_SOURCE = new TaskPhase(Msg.getString(
             "Task.phase.togglePowerSource")); //$NON-NLS-1$
@@ -77,11 +77,24 @@ implements Serializable {
         building = getFuelPowerSourceBuilding(person);
         if (building != null) {
             powerSource = getFuelPowerSource(building);
-            toggleOn = !powerSource.isToggleON();
+            
+            MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+            double millisols = clock.getMillisol();
+            boolean isOn = powerSource.isToggleON();
+            
+            boolean isSunRising = Simulation.instance().getMars().getOrbitInfo().isSunRising(person.getSettlement().getCoordinates());
+            
+            if (!isSunRising && isOn)
+                // if the sky is getting dark soon, should let it STAY ON since solar panel will no longer be supplying power soon.
+            	endTask();
+            	
+            toggleOn = !isOn;
+            
             if (!toggleOn) {
                 setName(NAME_OFF);
                 setDescription(NAME_OFF);
             }
+            
             isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
 
             // If habitable building, add person to building.
