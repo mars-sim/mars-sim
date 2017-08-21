@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -197,10 +196,12 @@ public class BuildingManager implements Serializable {
      * @param buildingTemplates the settlement's building templates.
      * @throws Exception if buildings cannot be constructed.
      */
-    public BuildingManager(Settlement settlement, boolean dummy)  {
-        //logger.info("'s constructor 2 for " + settlement.getName() + " is on " + Thread.currentThread().getName());
+    public BuildingManager(Settlement settlement, boolean isTest)  {
         this.settlement = settlement;
-
+        
+    	if (isTest)
+        	logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on " + Thread.currentThread().getName());
+        
         buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
         // Construct all buildings in the settlement.
@@ -431,7 +432,7 @@ public class BuildingManager implements Serializable {
     	List<Building> buildingsWithRoboticStation =
             	buildings.stream()
         		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-    	        .filter(s -> buildingConfig.hasRoboticStation(s.getBuildingType()) == true)
+    	        .filter(s -> buildingConfig.hasRoboticStation(s.getBuildingType()))
     	        .collect(Collectors.toList());
 
     	return buildingsWithRoboticStation;
@@ -452,7 +453,7 @@ public class BuildingManager implements Serializable {
     	List<Building> buildingsWithLifeSupport =
             	buildings.stream()
         		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-    	        .filter(s -> buildingConfig.hasLifeSupport(s.getBuildingType()) == true)
+    	        .filter(s -> buildingConfig.hasLifeSupport(s.getBuildingType()))
     	        .collect(Collectors.toList());
 
     	return buildingsWithLifeSupport;
@@ -474,7 +475,7 @@ public class BuildingManager implements Serializable {
     	List<Building> buildingsWithPower =
             	buildings.stream()
         		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-    	        .filter(s -> buildingConfig.hasPowerGeneration(s.getBuildingType()) == true)
+    	        .filter(s -> buildingConfig.hasPowerGeneration(s.getBuildingType()))
     	        .collect(Collectors.toList());
 
     	return buildingsWithPower;
@@ -495,7 +496,7 @@ public class BuildingManager implements Serializable {
     	List<Building> buildingsWithThermal =
         	buildings.stream()
     		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-    	        .filter(s -> buildingConfig.hasThermalGeneration(s.getBuildingType()) == true)
+    	        .filter(s -> buildingConfig.hasThermalGeneration(s.getBuildingType()))
     	        .collect(Collectors.toList());
 
     	//List<Building> buildings = getBuildings();
@@ -579,17 +580,12 @@ public class BuildingManager implements Serializable {
     	}
 
     	else {
-          	List<Building> list = new ArrayList<Building>();
-
-            for (Building b : buildings) {
-            	if (b.hasFunction(bf))
-            		list.add(b);
-            }
-
-            list = list.stream()
-				.sorted(new AlphanumComparator())
-				.collect(Collectors.toList());
-
+    		List<Building> list = buildings
+    				.stream()
+    				.filter(b -> b.hasFunction(bf))
+    				.sorted(new AlphanumComparator())
+    				.collect(Collectors.toList());
+    		
     		buildingFunctionsMap.put(bf, list);
     		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
 
@@ -629,6 +625,7 @@ public class BuildingManager implements Serializable {
     	}
 
     	else {
+/*    		
           	List<Building> list = new ArrayList<Building>();
 
             for (Building b : buildings) {
@@ -638,7 +635,15 @@ public class BuildingManager implements Serializable {
 
     		buildingFunctionsMap.put(bf, list);
     		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
-
+*/
+    		List<Building> list = buildings
+    				.stream()
+    				.filter(b -> b.hasFunction(bf))
+    				.collect(Collectors.toList());
+    		
+    		buildingFunctionsMap.put(bf, list);
+    		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
+    		
  /*
             long end = System.nanoTime();
             count++;
@@ -653,54 +658,7 @@ public class BuildingManager implements Serializable {
     		return list;
     	}
 
-/*
-    	int numBuildings = getBuildingNum();
-        if (numBuildingsCache != numBuildings) {
-            numBuildingsCache = numBuildings;
-            for (Building b : buildings) {
-            	if (b.hasFunction(function))
-            		list.add(b);
-            }
-    		buildingFunctionsMap.put(function, list);
-    		return list;
-        }
-*/
-		//return list;
 
-/*
- *
- *         	//Using Lambda Expression with internal iterator
-        	buildings.forEach(b -> {
-            	if (b.hasFunction(function))
-            		list.add(b);
-    		});
-
-    	Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            if (building.hasFunction(function)) {
-                functionBuildings.add(building);
-            }
-        }
-*/
-/*
-        for (Building b : buildings) {
-        	if (b.hasFunction(function))
-        		functionBuildings.add(b);
-        }
-*/
-/*
-		//List<Building> buildings = getACopyOfBuildings();
-    	List<Building> list =
-    		buildings.stream()
-    	        //.filter(s -> s.hasFunction(function) == true)
-    	        .filter(s -> buildingConfig.hasFunction(function) == true)
-    	        .collect(Collectors.toList());
-		//return list;
-*/
-
-
-		//return list;
     }
 
     /**
@@ -708,8 +666,15 @@ public class BuildingManager implements Serializable {
      * @param functions the array of required functions {@link BuildingFunctions}.
      * @return list of buildings.
      */
-    public List<Building> getBuildings(BuildingFunction[] functions) {
+    public List<Building> getBuildings(BuildingFunction f1, BuildingFunction f2) {	
 
+ 		return buildings
+				.stream()
+				.filter(b-> b.hasFunction(f1) && b.hasFunction(f2))
+				.collect(Collectors.toList());
+			
+    	
+ /*		
         List<Building> functionBuildings = new ArrayList<Building>();
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
@@ -725,6 +690,7 @@ public class BuildingManager implements Serializable {
             }
         }
         return functionBuildings;
+*/	
     }
 
     /**
@@ -736,18 +702,25 @@ public class BuildingManager implements Serializable {
     // Called by Resupply.java and BuildingConstructionMission.java
     // for putting new building next to the same building "type".
     public List<Building> getBuildingsOfSameType(String buildingType) {
-        List<Building> typeOfBuildings = new ArrayList<Building>();
+    	
+ 		return buildings
+				.stream()
+				.filter(b-> b.getBuildingType().equals(buildingType))
+				.collect(Collectors.toList());
+
+  /*
+    	List<Building> typeOfBuildings = new ArrayList<Building>();
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
             // WARNING: do NOT change getName() below to getNickName()
             // It is for comparing buildingType
-            if (building.getName().equalsIgnoreCase(buildingType)){
+            if (building.getBuildingType().equalsIgnoreCase(buildingType)){
             	typeOfBuildings.add(building);
-                	//System.out.println("BuildingManager.java : getBuildingsOfSameType() : buildingType is " +buildingType);
             }
         }
         return typeOfBuildings;
+   */     
     }
 
     /**
@@ -774,7 +747,7 @@ public class BuildingManager implements Serializable {
         // check for the passing of each day
         int solElapsed = marsClock.getSolElapsedFromStart();
 
-        if (solElapsed != solCache) {
+        if (solCache != solElapsed) {
         	solCache = solElapsed;
 
         	// Update the impact probability for each settlement based on the size and speed of the new meteorite
@@ -867,12 +840,10 @@ public class BuildingManager implements Serializable {
                 //System.out.println("BuildingManager : " + unit.getName() + " is being added to " + building.getNickName());
             }
 */
-            Building building = getLeastCrowdedBuildings(
-            					settlement.getBuildingManager().getBuildings(
-            						new BuildingFunction[] {
-            							BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT }))
-    										.stream()
-    										.findAny().orElse(null);
+            Building building = getLeastCrowdedBuildings(settlement.getBuildingManager()
+            					.getBuildings(BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT))
+    							.stream()
+    							.findAny().orElse(null);
 
             if (building != null) {
         		addPersonOrRobotToBuildingRandomLocation(person, building);
@@ -1003,9 +974,7 @@ public class BuildingManager implements Serializable {
                     destination = validBuildings1.get(rand);
                     //System.out.println("BuildingManager : " + unit.getName() + " is added to " + destination.getNickName() + " in " + settlement);
                 }
-                else {
 
-                }
                 //System.out.println("BuildingManager : " + unit.getName() + " is being added");// to " + destination.getNickName() + " in " + settlement);
                 addPersonOrRobotToBuildingRandomLocation(robot, destination);
                 //throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
@@ -1183,7 +1152,7 @@ public class BuildingManager implements Serializable {
 		// 2016-12-08 Using Java 8 stream
 		return buildings
 				.stream()
-				.filter(b-> LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, b) == true)
+				.filter(b-> LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, b))
 				.findFirst().orElse(null);//get();
 /*
         Building result = null;

@@ -511,9 +511,35 @@ LocalBoundedObject, InsidePathLocation {
 	}
 
 	/**
-	 * Checks if a building has a particular function.
+	 * Checks if this building has the given functions (more than one).
 	 * @param function the name of the function.
-	 * @return true if function.
+	 * @return true if it does.
+	 */
+	public boolean hasFunction(BuildingFunction[] bfs) {
+		boolean result = false;
+        for (Function f : functions) {
+        	for (BuildingFunction bf : bfs) {
+	        	if (f.getFunction() == bf) {
+	        		result = result && true;
+	        	}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Checks if this building has the given functions (more than one).
+	 * @param function the enum name of the functions.
+	 * @return true if it it does.
+	 */
+	public boolean hasFunction(BuildingFunction bf1, BuildingFunction bf2) {
+		return hasFunction(new BuildingFunction[] {bf1, bf2});
+	}
+	
+	/**
+	 * Checks if this building has a particular function.
+	 * @param function the enum name of the function.
+	 * @return true if it does.
 	 */
 	public boolean hasFunction(BuildingFunction functionType) {
 		boolean result = false;
@@ -522,8 +548,6 @@ LocalBoundedObject, InsidePathLocation {
         		return true;
         	}
 		}
-
-
 
 /*
 		functions.stream()
