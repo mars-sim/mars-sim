@@ -861,7 +861,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="food waste" capacity="500.0" />
 				<resource-storage resource="toxic waste" capacity="500.0" />
 				
-				<resource-storage resource="grey water" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="5000.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
 				<resource-storage resource="food" capacity="500.0" />

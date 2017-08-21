@@ -24,10 +24,8 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-//import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -101,12 +99,12 @@ public class EatMeal extends Task implements Serializable {
     private PreparedDessert nameOfDessert;
     private Cooking kitchen;
     private PreparingDessert dessertKitchen;
-    private Inventory inv;
+    //private Inventory inv;
     
     private AmountResource unpreparedDessertAR;
     private static AmountResource napkinAR = ResourceUtil.napkinAR;
     private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
-    //private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+    private static AmountResource foodAR = ResourceUtil.foodAR;
 
     /**
      * Constructor.
@@ -139,7 +137,7 @@ public class EatMeal extends Task implements Serializable {
         // Take napkin from inventory if available.
         Unit container = person.getTopContainerUnit();
         if (container != null) {
-            inv = container.getInventory();
+        	Inventory inv = container.getInventory();
             if (inv != null)
             	hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, napkinAR, inv, true);
             else
@@ -356,15 +354,10 @@ public class EatMeal extends Task implements Serializable {
         double foodAmount = totalfood * mealProportion;
         Unit container = person.getTopContainerUnit();
         if (container != null) {
-        	inv = container.getInventory();
-/*        
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {;
-        }  
-*/
+        	Inventory inv = container.getInventory();
+
             // Take preserved food from inventory if it is available.
-            if (Storage.retrieveAnResource(foodAmount, ResourceUtil.foodAR, inv, true)) {
+            if (Storage.retrieveAnResource(foodAmount, foodAR, inv, true)) {
 
                 // Check if preserved food has gone bad.
                 if (RandomUtil.lessThanRandPercent(PRESERVED_FOOD_BAD_CHANCE)) {
@@ -527,10 +520,9 @@ public class EatMeal extends Task implements Serializable {
 
             // Dessert amount eaten over this period of time.
             double dessertAmount = totalDessert * dessertProportion;
-            //Unit containerUnit = person.getTopContainerUnit();
-            //if (containerUnit != null) {
-            //if (inv != null) {
-                //Inventory inv = containerUnit.getInventory();
+            Unit containerUnit = person.getTopContainerUnit();
+            if (containerUnit != null) {
+                Inventory inv = containerUnit.getInventory();
                 // Take dessert resource from inventory if it is available.
                 if (Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true)) {
 
@@ -555,7 +547,7 @@ public class EatMeal extends Task implements Serializable {
                     // Not enough dessert resource available to eat.
                     result = false;
                 }
-            //}
+            }
             //else {
                 // Person is not inside a container unit, so end task.
             //    result = false;
@@ -575,9 +567,9 @@ public class EatMeal extends Task implements Serializable {
 
         List<AmountResource> result = new ArrayList<AmountResource>();
 
-        //Unit containerUnit = person.getTopContainerUnit();
-        //if (containerUnit != null) {
-            //Inventory inv = containerUnit.getInventory();
+        Unit containerUnit = person.getTopContainerUnit();
+        if (containerUnit != null) {
+            Inventory inv = containerUnit.getInventory();
 /*
 
             int size = ARs.length;
@@ -595,7 +587,7 @@ public class EatMeal extends Task implements Serializable {
                     result.add(ar);
                 }
         	}
-        //}
+        }
 
         return result;
     }
@@ -709,7 +701,7 @@ public class EatMeal extends Task implements Serializable {
                 Inventory inv = containerUnit.getInventory();
                 //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
                 //double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
-                result = Storage.retrieveAnResource(totalfood, ResourceUtil.foodAR, inv, false);
+                result = Storage.retrieveAnResource(totalfood, foodAR, inv, false);
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -735,13 +727,11 @@ public class EatMeal extends Task implements Serializable {
 
         // Throw away napkin waste if one was used.
         if (hasNapkin) {
-        	if (inv == null) {
-                Unit containerUnit = person.getTopContainerUnit();
-                if (containerUnit != null)
-                    inv = containerUnit.getInventory();
+        	Unit containerUnit = person.getTopContainerUnit();
+        	if (containerUnit != null) {
+        		Inventory inv = containerUnit.getInventory();
+        		Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv);
         	}
-        	
-            Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv);
         }
     }
 

@@ -3308,7 +3308,8 @@ public class DefaultGraph
                 this.filter = filter;
                 // Add this cursor to those that receive notifications
                 // from the graph.
-                cursors.add( this );
+                if (cursors != null)
+                	cursors.add( this );
             }
 
             public final boolean hasNext()

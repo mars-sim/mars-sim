@@ -327,7 +327,6 @@ implements Serializable, LifeSupportType, Objective {
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 
-		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 		

@@ -37,7 +37,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>mars-sim-network</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/de.codecentric.centerdevice/javafxsvg/1.2.1 : 5KB 
+		<!-- 	https://mvnrepository.com/artifact/de.codecentric.centerdevice/javafxsvg/1.2.1 : 5KB 
+				https://github.com/codecentric/javafxsvg
  		     Requiring batik-transcoder and xmlgraphics-commons -->
 		<dependency>
 			<groupId>de.codecentric.centerdevice</groupId>

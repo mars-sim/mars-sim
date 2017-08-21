@@ -48,7 +48,6 @@ public class LivingAccommodations extends Function implements Serializable {
     //public final static String TOILET_TISSUE = "toilet tissue";
     //public final static String TOXIC_WASTE = "toxic waste";
 
-
     private static final BuildingFunction FUNCTION = BuildingFunction.LIVING_ACCOMODATIONS;
 
     private int beds; // max # of beds
@@ -260,7 +259,10 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     public void timePassing(double time) {
     	//inv = building.getSettlementInventory();
-        generateWaste(time);
+    	inv = building.getBuildingManager().getSettlement().getInventory();
+    	int rand = RandomUtil.getRandomInt(10);
+    	if (rand == 0)
+    		generateWaste(time);
     }
 
     /**

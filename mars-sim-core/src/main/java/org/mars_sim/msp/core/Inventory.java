@@ -104,9 +104,6 @@ implements Serializable {
     public Inventory(Unit owner) {
         // Set owning unit.
         this.owner = owner;
-    	//count++;
-		//System.out.println(" calling Inventory.java " + count + " times");
-
     }
 
   	// 2015-01-15 Added getAmountSupplyRequest()

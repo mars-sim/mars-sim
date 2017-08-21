@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,6 +40,8 @@ import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
+
 
 /**
  * Loads the simulation configuration XML files as DOM documents.
@@ -675,11 +678,39 @@ public class SimulationConfig implements Serializable {
 		return quotationConfig;
 	}
 
+	
 	/**
 	 * Parses an XML file into a DOM document.
 	 * @param filename the path of the file.
 	 * @param useDTD true if the XML DTD should be used.
 	 * @return DOM document
+	 * @throws Exception if XML could not be parsed or file could not be found.
+
+	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
+		SAXBuilder builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
+	
+		File xmlFile = new File(filename);
+		Document document = null;
+		//System.out.println("Parsing FILE: "+ xmlFile.getAbsolutePath()); 
+		try {
+
+			document = builder.build(xmlFile);
+
+		} catch (IOException | JDOMException e) {
+           System.out.println(e.getMessage());
+		}
+	       
+		return result;
+	}
+	 */
+	
+	/**
+	 * Parses an XML file into a DOM document.
+	 * @param filename the path of the file.
+	 * @param useDTD true if the XML DTD should be used.
+	 * @return DOM document
+	 * @throws IOException 
+	 * @throws JDOMException 
 	 * @throws Exception if XML could not be parsed or file could not be found.
 	 */
 	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws IOException, JDOMException {
@@ -691,9 +722,10 @@ public class SimulationConfig implements Serializable {
 		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
 		Document result = saxBuilder.build(reader);
 		stream.close();
+	       
 		return result;
 	}
-
+	
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Private Methods
 	 * ---------------------------------------------------------------------------------------------------- */
