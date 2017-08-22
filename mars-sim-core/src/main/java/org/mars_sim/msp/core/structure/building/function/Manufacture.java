@@ -82,7 +82,7 @@ implements Serializable {
 
     private Building building;
     private Settlement settlement;
-    private Inventory s_inv, b_inv;
+    private Inventory inv;// b_inv;
     private ItemResource printerItem;
     
 	private static BuildingConfig buildingConfig;
@@ -100,8 +100,9 @@ implements Serializable {
         BuildingManager buildingManager = getBuilding().getBuildingManager();
         settlement = buildingManager.getSettlement();
 
-        s_inv = building.getSettlementInventory();
-        b_inv = building.getBuildingInventory();
+        inv = building.getSettlementInventory();
+        //s_inv = building.getSettlementInventory();
+        //b_inv = building.getBuildingInventory();
 
         printerItem = ItemResource.findItemResource(LASER_SINTERING_3D_PRINTER);
 
@@ -271,14 +272,17 @@ implements Serializable {
         for (ManufactureProcessItem item : process.getInfo().getInputList()) {
             if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
-                s_inv.retrieveAmountResource(resource, item.getAmount());
+                //s_inv
+                inv.retrieveAmountResource(resource, item.getAmount());
 
 				// 2015-02-13 addAmountDemand()
-				s_inv.addAmountDemand(resource, item.getAmount());
+				//s_inv.
+				inv.addAmountDemand(resource, item.getAmount());
             }
             else if (Type.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
-                s_inv.retrieveItemResources(part, (int) item.getAmount());
+                //s_inv
+                inv.retrieveItemResources(part, (int) item.getAmount());
             }
             else throw new IllegalStateException(
                     "Manufacture process input: " +
@@ -329,7 +333,8 @@ implements Serializable {
         //Inventory inv = getBuilding().getSettlementInventory();
         Unit salvagedUnit = process.getSalvagedUnit();
         if (salvagedUnit != null) {
-            s_inv.retrieveUnit(salvagedUnit);
+            //s_inv
+            inv.retrieveUnit(salvagedUnit);
         }
         else throw new IllegalStateException("Salvaged unit is null");
 
@@ -486,7 +491,7 @@ implements Serializable {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
-                        double capacity = s_inv.getAmountResourceRemainingCapacity(resource, true, false);
+                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) {
                             double overAmount = item.getAmount() - capacity;
                             logger.fine("Not enough storage capacity to store " + overAmount + " of " +
@@ -494,17 +499,17 @@ implements Serializable {
                                     settlement.getName());
                             amount = capacity;
                         }
-                        s_inv.storeAmountResource(resource, amount, true);
+                        inv.storeAmountResource(resource, amount, true);
                         // 2015-01-15 Add addSupplyAmount()
-                        s_inv.addAmountSupplyAmount(resource, amount);
+                        inv.addAmountSupplyAmount(resource, amount);
                     }
                     else if (Type.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
-                        double capacity = s_inv.getGeneralCapacity();
+                        double capacity = inv.getGeneralCapacity();
                         if (mass <= capacity) {
-                            s_inv.storeItemResources(part, (int) item.getAmount());
+                            inv.storeItemResources(part, (int) item.getAmount());
                         }
                     }
                     else if (Type.EQUIPMENT.equals(item.getType())) {
@@ -514,7 +519,7 @@ implements Serializable {
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
                             equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
-                            s_inv.storeUnit(equipment);
+                            inv.storeUnit(equipment);
                         }
                     }
                     else if (Type.VEHICLE.equals(item.getType())) {
@@ -553,7 +558,7 @@ implements Serializable {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
-                        double capacity = s_inv.getAmountResourceRemainingCapacity(resource, true, false);
+                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) {
                             double overAmount = item.getAmount() - capacity;
                             logger.severe("Not enough storage capacity to store " + overAmount + " of " +
@@ -561,15 +566,15 @@ implements Serializable {
                                     settlement.getName());
                             amount = capacity;
                         }
-                        s_inv.storeAmountResource(resource, amount, true);
+                        inv.storeAmountResource(resource, amount, true);
                     }
                     else if (Type.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
-                        double capacity = s_inv.getGeneralCapacity();
+                        double capacity = inv.getGeneralCapacity();
                         if (mass <= capacity) {
-                            s_inv.storeItemResources(part, (int) item.getAmount());
+                            inv.storeItemResources(part, (int) item.getAmount());
                         }
                     }
                     else if (Type.EQUIPMENT.equals(item.getType())) {
@@ -579,7 +584,7 @@ implements Serializable {
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
                             equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
-                            s_inv.storeUnit(equipment);
+                            inv.storeUnit(equipment);
                         }
                     }
                     else if (Type.VEHICLE.equals(item.getType())) {
@@ -663,8 +668,8 @@ implements Serializable {
                     partsSalvaged.put(part, totalNumber);
 
                     double mass = totalNumber * part.getMassPerItem();
-                    double capacity = s_inv.getGeneralCapacity();
-                    if (mass <= capacity) s_inv.storeItemResources(part, totalNumber);
+                    double capacity = inv.getGeneralCapacity();
+                    if (mass <= capacity) inv.storeItemResources(part, totalNumber);
 
                     if (goodsManager == null)
                         goodsManager = settlement.getGoodsManager();
@@ -729,7 +734,7 @@ implements Serializable {
         int solElapsed = marsClock.getSolElapsedFromStart();
         if (solElapsed != solCache) {
             solCache = solElapsed;
-            supportingProcesses = b_inv.getItemResourceNum(printerItem);
+            supportingProcesses = inv.getItemResourceNum(printerItem); // b_inv
             if (supportingProcesses < maxProcesses) {
                 distributePrinters();
             } else {
@@ -744,19 +749,19 @@ implements Serializable {
     // 2016-10-11 Created distributePrinters()
     public void distributePrinters() {
 
-        int s_available = s_inv.getItemResourceNum(printerItem);
+        int s_available = inv.getItemResourceNum(printerItem);
         int s_needed = settlement.getSumOfManuProcesses();
         int surplus = s_available - s_needed;
         int b_needed = maxProcesses;
 
         if (surplus > 0 ) {
             if (surplus >= b_needed) {
-                s_inv.retrieveItemResources(printerItem, b_needed);
-                b_inv.storeItemResources(printerItem, b_needed);
+                inv.retrieveItemResources(printerItem, b_needed);
+                //b_inv.storeItemResources(printerItem, b_needed);
                 settlement.addManuProcesses(b_needed);
             } else {
-                s_inv.retrieveItemResources(printerItem, surplus);
-                b_inv.storeItemResources(printerItem, surplus);
+                inv.retrieveItemResources(printerItem, surplus);
+                //b_inv.storeItemResources(printerItem, surplus);
                 settlement.addManuProcesses(surplus);
             }
         }

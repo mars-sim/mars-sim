@@ -69,13 +69,11 @@ public class LivingAccommodations extends Function implements Serializable {
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 
-    public static AmountResource blackWaterAR;
-    public static AmountResource greyWaterAR;
-    public static AmountResource waterAR;
-    public static AmountResource toiletTissueAR;
-    public static AmountResource toxicWasteAR;
-    //public static AmountResource solidWasteAR;
-    //public static AmountResource napkinAR;
+    //public static AmountResource blackWaterAR;// = ResourceUtil.blackWaterAR;
+    //public static AmountResource greyWaterAR;// = ResourceUtil.greyWaterAR;
+    //public static AmountResource waterAR;// = ResourceUtil.waterAR;
+    //public static AmountResource toiletTissueAR;// = ResourceUtil.toiletTissueAR;
+    //public static AmountResource toxicWasteAR;// = ResourceUtil.toxicWasteAR;
 
 
     /**
@@ -90,14 +88,11 @@ public class LivingAccommodations extends Function implements Serializable {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
         this.building = building;
-    
-        //solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);
-        toiletTissueAR = ResourceUtil.toiletTissueAR;//AmountResource.findAmountResource(TOILET_TISSUE);
-        toxicWasteAR = ResourceUtil.toxicWasteAR;//AmountResource.findAmountResource(TOXIC_WASTE);
-        waterAR = ResourceUtil.waterAR;//AmountResource.findAmountResource(WATER);
-        greyWaterAR = ResourceUtil.greyWaterAR;
-    	blackWaterAR = ResourceUtil.blackWaterAR;//AmountResource.findAmountResource(BLACK_WATER);
-        //NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);
+        this.settlement = building.getBuildingManager().getSettlement();
+        this.inv = settlement.getInventory();
+        //inv = building.getBuildingManager().getSettlement().getInventory();
+        //inv = building.getSettlementInventory();
+        
 
         BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
         beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
@@ -111,10 +106,6 @@ public class LivingAccommodations extends Function implements Serializable {
         // Load activity spots
         loadActivitySpots(buildingConfig.getLivingAccommodationsActivitySpots(building.getBuildingType()));
 
-        settlement = building.getBuildingManager().getSettlement();
-        
-        inv = building.getBuildingManager().getSettlement().getInventory();
-        //inv = building.getSettlementInventory();
     }
 
     /**
@@ -259,10 +250,12 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     public void timePassing(double time) {
     	//inv = building.getSettlementInventory();
-    	inv = building.getBuildingManager().getSettlement().getInventory();
+    	//inv = building.getBuildingManager().getSettlement().getInventory();
     	int rand = RandomUtil.getRandomInt(10);
-    	if (rand == 0)
+    	if (rand == 0) {
+    		Inventory inv = settlement.getInventory();
     		generateWaste(time);
+    	}
     }
 
     /**
@@ -286,25 +279,25 @@ public class LivingAccommodations extends Function implements Serializable {
         //double waterProduced = wasteWaterProduced * time * numBed * absentee_factor;
         double wasteWaterProduced = usage * WASH_AND_WASTE_WATER_RATIO;
         // Remove wash water from settlement.
-        Storage.retrieveAnResource(waterUsed * random_factor, waterAR, inv, true);
+        Storage.retrieveAnResource(waterUsed * random_factor, ResourceUtil.waterAR, inv, true);
 
         // Grey water is produced by wash water.
         double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
         // Black water is only produced by waste water.
         double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
         //System.out.print("gw");
-        Storage.storeAnResource(greyWaterProduced, greyWaterAR, inv, sourceName + " -> generateWaste()");
+        Storage.storeAnResource(greyWaterProduced, ResourceUtil.greyWaterAR, inv, sourceName + " -> generateWaste()");
         //System.out.print("bw");
-        Storage.storeAnResource(blackWaterProduced, blackWaterAR, inv, sourceName + " -> generateWaste()");
+        Storage.storeAnResource(blackWaterProduced, ResourceUtil.blackWaterAR, inv, sourceName + " -> generateWaste()");
 
     	// Use toilet paper and generate toxic waste (used toilet paper).
         double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
         //double toiletPaperUsageSettlement = toiletPaperUsagePerMillisol * time * beds;//settlement.getCurrentPopulationNum();
         double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed;//toiletPaperUsageSettlement * buildingProportionCap;
         //System.out.print("tt");
-        Storage.retrieveAnResource(toiletPaperUsageBuilding * random_factor, toiletTissueAR, inv, true);
+        Storage.retrieveAnResource(toiletPaperUsageBuilding * random_factor, ResourceUtil.toiletTissueAR, inv, true);
     	//System.out.println("LivingAcc : toxicWasteAR is " + toxicWasteAR);
-        Storage.storeAnResource(toiletPaperUsageBuilding, toxicWasteAR, inv, sourceName + " -> generateWaste()");
+        Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv, sourceName + " -> generateWaste()");
         //System.out.print("tw");
     }
 

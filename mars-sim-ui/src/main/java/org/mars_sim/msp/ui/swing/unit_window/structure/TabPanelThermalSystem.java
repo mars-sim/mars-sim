@@ -92,7 +92,7 @@ extends TabPanel {
 	private JTextField heatGenTF, powerGenTF, electricEffTF, solarEffTF, cellDegradTF;
 	
 
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
+	private DecimalFormat formatter = new DecimalFormat(Msg.getString("decimalFormat1"));//TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
 	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
 	private DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 	
@@ -317,7 +317,7 @@ extends TabPanel {
 				if (heatSource instanceof SolarHeatSource) {
 					i++;
 					SolarHeatSource solarHeatSource = (SolarHeatSource) heatSource;
-					eff_solar_heat += solarHeatSource.getEfficiency();
+					eff_solar_heat += solarHeatSource.getEfficiencySolarHeat();
 				}
 			}
 		}
@@ -327,8 +327,8 @@ extends TabPanel {
 	}
 
 	public double getAverageEfficiencyElectricHeat() {
-		return ElectricHeatSource.getEfficiency();
-/*		
+		//return ElectricHeatSource.getEfficiency();
+		
 		double eff_electric_heating = 0;
 		int i = 0;
 		Iterator<Building> iHeat = manager.getBuildingsWithThermal().iterator();
@@ -336,6 +336,7 @@ extends TabPanel {
 			Building building = iHeat.next();
 			heatSources = config.getHeatSources(building.getBuildingType());
 			//for (HeatSource source : heatSources)
+			//for (int j; j < size; j++) {
 			Iterator<HeatSource> j = heatSources.iterator();
 			while (j.hasNext()) {
 				HeatSource heatSource = j.next();
@@ -349,7 +350,7 @@ extends TabPanel {
 		// get the average eff
 		eff_electric_heating = eff_electric_heating / i;
 		return eff_electric_heating;
-*/		
+		
 	}
 
 	/**
@@ -369,12 +370,12 @@ extends TabPanel {
 				);
 		}
 
-		double power = thermalSystem.getGeneratedPower();
+		double power = thermalSystem.getGeneratedPower(); 
 		if (powerGenCache != power) {
 			powerGenCache = power;
 			powerGenTF.setText(
 				//Msg.getString("TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
-				formatter.format(powerGenCache) + kW
+				formatter.format(power) + kW
 				);
 		}
 
@@ -486,14 +487,11 @@ extends TabPanel {
 			//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 
 				if (column == 0) {
-					if (heatMode == HeatMode.ONLINE) {
+					if (heatMode == HeatMode.ONLINE || heatMode == HeatMode.HALF_HEAT) {
 						return dotGreen;
 					}
-					else if (heatMode == HeatMode.HEAT_OFF) {
+					else if (heatMode == HeatMode.HEAT_OFF || heatMode == HeatMode.POWER_UP) {
 						return dotYellow; // TODO: will change to dotBlue
-					}
-					else if (heatMode == HeatMode.POWER_UP) {
-						return dotGreen;
 					}
 					else if (heatMode == HeatMode.OFFLINE) {
 						return dotRed;
@@ -506,12 +504,12 @@ extends TabPanel {
 					// return temperature of the building;
 					return building.getCurrentTemperature();
 				else if (column == 3) {
-					double generated = 0D;
-					if (heatMode == HeatMode.ONLINE) {
+					double generated = 0.0;
+					if (heatMode == HeatMode.ONLINE || heatMode == HeatMode.HALF_HEAT) {
 						try {
 							ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 							if (heater != null) {
-								generated = heater.getGeneratedHeat();
+								generated = heater.getGeneratedHeat() + heater.getGeneratedPower();
 								return generated;
 							}
 							else
@@ -520,11 +518,11 @@ extends TabPanel {
 						catch (Exception e) {}
 					}
 					else if (heatMode == HeatMode.HEAT_OFF) {
-						return generated;
+						return 0.0;
 					}
 				}
 				else if (column == 4) {
-					double generatedCapacity = 0D;
+					double generatedCapacity = 0.0;
 					try {
 						ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 						// 2014-10-25  Changed to calling getGeneratedCapacity()

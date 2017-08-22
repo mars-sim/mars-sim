@@ -41,18 +41,19 @@ implements Serializable {
 	private static final BuildingFunction FUNCTION = BuildingFunction.THERMAL_GENERATION;
 
 	// Data members.
-	private List<HeatSource> heatSources;
-	private Building building;
-
-	// 2014-11-02 Created heatGenerated and heatGeneratedCache
 	private double heatGenerated;
 	private double heatGeneratedCache;
+	private double powerGenerated;
+	private double powerGeneratedCache;
+	
 	private boolean sufficientHeat;
 
-	// 2014-10-25 Added heatSource
-	private HeatSource heatSource;
 	private Heating heating;
-
+	private Building building;
+	private HeatSource heatSource;
+	
+	private List<HeatSource> heatSources;
+	
 	/**
 	 * Constructor
 	 */
@@ -125,7 +126,7 @@ implements Serializable {
 		Iterator<HeatSource> j = heatSources.iterator();
 		while (j.hasNext()) {
 			HeatSource source = j.next();
-			result += source.getAverageHeat(settlement);
+/*
 			if (source instanceof ElectricHeatSource) {
 				result += source.getMaxHeat();
 			}
@@ -135,6 +136,9 @@ implements Serializable {
 			else if (source instanceof FuelHeatSource) {
 				result += source.getMaxHeat();
 			}
+			else
+*/				
+				result += source.getMaxHeat();//.getAverageHeat(settlement);
 		}
 
 		return result;
@@ -161,7 +165,7 @@ implements Serializable {
 		double result = 0D;
 		Iterator<HeatSource> i = heatSources.iterator();
 		while (i.hasNext()) {
-			result += i.next().getCurrentHeat(getBuilding());
+			result += i.next().getMaxHeat();//.getCurrentHeat(getBuilding());
 		}
 		//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
 		return result;
@@ -177,38 +181,71 @@ implements Serializable {
 		if (heatGeneratedCache != heatGenerated) {
 			// if heatGeneratedCache is different from the its last value
 			heatGeneratedCache = heatGenerated;
-			//logger.info("heatGenerated is " + heatGenerated);
-			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
 		}
 		return heatGenerated; // = 0.0 if heatMode == HeatMode.POWER_DOWN
 	}
 
+	public double getGeneratedPower() {
+		if (powerGeneratedCache != powerGenerated) {
+			powerGeneratedCache = powerGenerated;
+		}
+		return powerGenerated; 
+	}
+	
 	/**
 	 * Calculate the total amount of heat that this building is CURRENTLY producing
 	 * @return heat generated in kW
 	 */
 	// 2014-11-02 Created calculateGeneratedHeat()
-	public void calculateGeneratedHeat() {
+	public double calculateGeneratedHeat() {
 
 		double result = 0D;
 		HeatMode heatMode = building.getHeatMode();
 
 		// Building should only produce heat if it has no current malfunctions.
-		if (!getBuilding().getMalfunctionManager().hasMalfunction()
-				&& heatMode == HeatMode.ONLINE) {
-			// No heat if heatMode = HeatMode.POWER_DOWN
-			Iterator<HeatSource> i = heatSources.iterator();
-			while (i.hasNext()) {
-				/// 2014-10-27 mkung: for testing
-				//HeatSource heatSource = i.next();
-			    //System.out.println(heatSource.toString());
-			    ///
-				result += i.next().getCurrentHeat(getBuilding());
+		//if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+			
+			if (heatMode == HeatMode.ONLINE) {
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					while (i.hasNext()) {
+						HeatSource heatSource = i.next();
+					    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+					    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+					    	result += heatSource.getCurrentHeat(getBuilding());
+					    }
+					    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+					    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+					    	result += heatSource.getCurrentHeat(getBuilding());
+					    }
+					    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+					    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+					    	result += heatSource.getCurrentHeat(getBuilding());
+					    }
+					}
+				}
 			}
-		}
+			else if (heatMode == HeatMode.HALF_HEAT) {
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    	result = result + heatSource.getCurrentHeat(getBuilding())/2D;
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    	result = result + heatSource.getCurrentPower(getBuilding())/2D;
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    	result = result + heatSource.getCurrentHeat(getBuilding())/2D;
+				    }
+				}
+			}
+		//}
 
-		// store new result in heatGenerated
-		heatGenerated = result;
+		return result;
 	}
 
 
@@ -222,26 +259,46 @@ implements Serializable {
 		double result = 0D;
 		HeatMode heatMode = building.getHeatMode();
 
-		if (!getBuilding().getMalfunctionManager().hasMalfunction()
-				&& heatMode == HeatMode.HEAT_OFF) {
-			// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
-			Iterator<HeatSource> i = heatSources.iterator();
-			while (i.hasNext()) {
-				HeatSource heatSource = i.next();
-			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-			    	result += heatSource.getCurrentPower(getBuilding());
-			    }
-			    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-			    	result += heatSource.getCurrentPower(getBuilding());
-			    }
-			    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-			    	result += heatSource.getCurrentPower(getBuilding());
-			    }
+		//if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+			if (heatMode == HeatMode.HEAT_OFF) {
+				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    	result += heatSource.getCurrentPower(getBuilding());
+				    }
+				    //else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    //	result += heatSource.getCurrentPower(getBuilding());
+				    //}
+				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    //	result += heatSource.getCurrentPower(getBuilding());
+				    //}
+				}
 			}
-		}
+			else if (heatMode == HeatMode.HALF_HEAT) {
+				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    	result = result + heatSource.getCurrentPower(getBuilding())/2D;
+				    }
+				    //else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    //	result += heatSource.getCurrentPower(getBuilding())/2D;
+				    //}
+				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
+				    //}
+				}
+			}
+		//}
 
 		return result;
 	}
@@ -255,9 +312,7 @@ implements Serializable {
 
 		// 2014-11-02 Added calculateGeneratedHeat()
 		// Set heatGenerated at the building the furnace belongs
-		calculateGeneratedHeat();
-
-		//calculateGeneratedPower();
+		heatGenerated = calculateGeneratedHeat();
 
 		if ( heatGeneratedCache != heatGenerated) {
 			// if heatGeneratedCache is different from the its last value
@@ -265,6 +320,16 @@ implements Serializable {
 			building.setHeatGenerated(heatGenerated);
 		}
 
+		powerGenerated = calculateGeneratedPower();
+
+		if ( powerGeneratedCache != heatGenerated) {
+			// if heatGeneratedCache is different from the its last value
+			powerGeneratedCache = powerGenerated;
+			//building.setPowerGenerated(powerGenerated);
+		}
+		
+		// set new efficiency 
+/*		
 		for (HeatSource source : heatSources)
 			if (source instanceof SolarHeatSource) {
 				SolarHeatSource solarHeatSource = (SolarHeatSource) source;
@@ -297,6 +362,7 @@ implements Serializable {
 				//fuelHeatSource.setEfficiency(5new_eff);
 				//System.out.println("new_eff is " + new_eff);
 			}
+*/
 		
 		heating.timePassing(time);
 	}
@@ -306,16 +372,6 @@ implements Serializable {
 		return heating;
 	}
 
-	/**
-	 * Gets the amount of heat required when function is at full power.
-	 * @return heat (J)
-	 */
-	// 2014-11-02: temporarily set getFullHeatRequired() = heatGenerated
-	// thus getGeneratedHeat() = getFullHeatRequired()
-	// will consolidate them into one in near future
-	public double getFullHeatRequired() {
-		return heatGenerated;
-	}
 
 	/**
 	 * Gets the amount of heat required when function is at power down level.
@@ -368,29 +424,9 @@ implements Serializable {
         return result;
     }
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		Iterator<HeatSource> i = heatSources.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-		heatSources.clear();
-	}
 
 
-	public double getFullPowerRequired() {
 
-		return 0;
-	}
-
-
-	@Override
-	public double getPoweredDownPowerRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 	/**
 	 * Switch on or off the heating system
 	 * @param true if it's on
@@ -433,6 +469,67 @@ implements Serializable {
 	}
 */
 
+	public double getFullPowerRequired() {
+		return getElectricPowerRequired();
+	}
 
+	public double getElectricPowerRequired() {
+		HeatMode heatMode = building.getHeatMode();
+		
+		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+			return 0;
+
+		// add the need of electric heat
+		double result = 0;
+		Iterator<HeatSource> i = heatSources.iterator();
+		while (i.hasNext()) {
+			HeatSource source = i.next();
+			if (source instanceof ElectricHeatSource) {
+				// if it needs to be ON, use getMaxHeat() since it's the max power needed before counting in the heater efficiency 
+				result = result + source.getMaxHeat()/source.getEfficiency(); 
+			}
+		}
+		
+		if (heatMode == HeatMode.HALF_HEAT)
+			return result/2D;
+			
+		return result;
+	}
+
+	@Override
+	public double getPoweredDownPowerRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	/**
+	 * Gets the amount of heat required when function is at full power.
+	 * @return heat (J)
+	 */
+	// 2014-11-02: temporarily set getFullHeatRequired() = heatGenerated
+	// thus getGeneratedHeat() = getFullHeatRequired()
+	// will consolidate them into one in near future
+	//public double getFullHeatRequired() {
+	//	return 0;//heatGenerated;
+	//}
+
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		Iterator<HeatSource> i = heatSources.iterator();
+		while (i.hasNext()) {
+			i.next().destroy();
+		}
+		heatSources.clear();
+	}
 
 }

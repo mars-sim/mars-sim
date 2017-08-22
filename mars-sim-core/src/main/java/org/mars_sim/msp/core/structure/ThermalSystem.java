@@ -133,7 +133,6 @@ implements Serializable {
 	 * @param newGeneratedHeat the new generated heat kW
 	 */
 	private void setGeneratedHeat(double newGeneratedHeat) {
-		// TODO:
 		if (heatGenerated != newGeneratedHeat) {
 			heatGenerated = newGeneratedHeat;
 			settlement.fireUnitUpdate(UnitEventType.GENERATED_HEAT_EVENT);
@@ -366,7 +365,7 @@ implements Serializable {
 		while (iHeat.hasNext()) {
 			Building building = iHeat.next();
 			ThermalGeneration gen = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-			tempPowerGenerated += gen.calculateGeneratedPower();
+			tempPowerGenerated += gen.getGeneratedPower();
 			// logger.info(((Building) gen).getName() + " generated: " + gen.getGeneratedHeat());
 		}
 		setGeneratedPower(tempPowerGenerated);
@@ -375,7 +374,7 @@ implements Serializable {
 			logger.fine(
 				Msg.getString(
 					"ThermalSystem.log.totalPowerGenerated", //$NON-NLS-1$
-					Double.toString(powerGenerated)
+					Double.toString(tempPowerGenerated)
 				)
 			);
 		}
@@ -412,17 +411,13 @@ implements Serializable {
 	 */
 	private void updateTotalRequiredHeat() {
 		double tempHeatRequired = 0D;
-		boolean heatUp = heatMode == HeatMode.POWER_UP;
+		//boolean heatUp = heatMode == HeatMode.POWER_UP;
 		BuildingManager manager = settlement.getBuildingManager();
 		List<Building> buildings = manager.getBuildings();
 		Iterator<Building> iUsed = buildings.iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();
-			if (heatUp) {
-				// 2014-11-02 Comment out setHeatMode() below
-				// TODO: find out any side effect of commenting out this setter
-				//building.setHeatMode(HeatMode.FULL_POWER);
-				//logger.info("updateTotalRequiredHeat() : heatUp is TRUE");
+			if (heatMode == HeatMode.POWER_UP || heatMode == HeatMode.ONLINE) {
 				tempHeatRequired += building.getFullHeatRequired();
 				if(logger.isLoggable(Level.FINE)) {
 					logger.fine(
@@ -430,6 +425,18 @@ implements Serializable {
 							"ThermalSystem.log.buildingFullHeatUsed", //$NON-NLS-1$
 							building.getBuildingType(),
 							Double.toString(building.getFullHeatRequired())
+						)
+					);
+				}
+			}
+			else if (heatMode == HeatMode.HALF_HEAT) {
+				tempHeatRequired = tempHeatRequired + building.getFullHeatRequired()/2D;
+				if(logger.isLoggable(Level.FINE)) {
+					logger.fine(
+						Msg.getString(
+							"ThermalSystem.log.buildingHalfHeatUsed", //$NON-NLS-1$
+							building.getBuildingType(),
+							Double.toString(building.getFullHeatRequired()/2D)
 						)
 					);
 				}
@@ -513,6 +520,7 @@ implements Serializable {
 
 		double used = 0D;
 		if (mode == HeatMode.ONLINE) used = building.getFullHeatRequired();
+		if (mode == HeatMode.HALF_HEAT) used = building.getFullHeatRequired()/2D;
 		else if (mode == HeatMode.HEAT_OFF) used = building.getPoweredDownHeatRequired();
 
 		return generated > used;

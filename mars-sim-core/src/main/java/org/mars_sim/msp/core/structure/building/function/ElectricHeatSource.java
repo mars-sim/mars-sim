@@ -25,8 +25,6 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ElectricHeatSource.class.getName());
 
-	DecimalFormat fmt = new DecimalFormat("#.#######");
-
 	private double maxCapacity;
 	private static double efficiency_electric_heat =.7;
 
@@ -39,8 +37,6 @@ implements Serializable {
 		//count++;
 		//logger.info("constructor : count is " + count);
 		this.maxCapacity = maxHeat;
-		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		//String name = config.getBuildingNames();
 	}
 
 	/**
@@ -49,37 +45,17 @@ implements Serializable {
 	 * @return heat [in Joules]
 	 * Called by ThermalGeneration.java
 	 */
-	public double getCurrentHeat(Building building) {
-		//double HeatGenerated;
-		// TODO: adjust secPerTick according to the MarsClock
-		//double secPerTick;
-		// Note: 1/60/60 =.000277778 hr
-		//double hourPerSec = 0.000277778;
-		//double interval = Simulation.instance().getMasterClock().getTimePulse() ;
-			//logger.info("getCurrentHeat() : TimePulse is " + fmt.format(interval));
-			//System.out.println(fmt.format(interval));
-		//	logger.info(fmt.format(interval));
-		//logger.info("getCurrentHeat() : maxHeat is " +maxHeat);
-
-		// maxCapacity is the capacity of the Electric Furnace [in kW]
-		// HeatGenerated is the Heat Gain of a room [in BTU]
-		// Note: 1 kW = 3413 BTU / hr
-		//HeatGenerated =  maxCapacity * efficiency_electric_heat ;
-
-		//logger.info("getCurrentHeat() : HeatGenerated is "+  fmt.format(HeatGenerated));
-
-		//return HeatGenerated;
-		
-		return maxCapacity * efficiency_electric_heat ;
+	public double getCurrentHeat(Building building) {		
+		return maxCapacity;// * efficiency_electric_heat ;
 	}
-
-	public static double getEfficiency() {
+	
+	public double getEfficiency() {
 		return efficiency_electric_heat;
 	}
 
 
 	public double getAverageHeat(Settlement settlement) {
-		return getMaxHeat();
+		return getMaxHeat()/2D;
 	}
 
 	@Override

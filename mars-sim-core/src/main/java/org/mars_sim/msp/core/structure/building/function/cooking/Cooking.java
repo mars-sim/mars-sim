@@ -121,12 +121,12 @@ implements Serializable {
     private Person person;
     private Robot robot;
 
-    public static AmountResource tableSaltAR;
-    public static AmountResource NaClOAR;
-    public static AmountResource greyWaterAR;
-    public static AmountResource waterAR;
-    public static AmountResource foodWasteAR;
-    public static AmountResource foodAR;
+    //public static AmountResource tableSaltAR;
+    //public static AmountResource NaClOAR;
+    //public AmountResource greyWaterAR;
+    //public static AmountResource waterAR;
+    //public static AmountResource foodWasteAR;
+    //public static AmountResource foodAR;
 
     private Map<AmountResource, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     //private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
@@ -189,12 +189,12 @@ implements Serializable {
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven test
 
-        tableSaltAR = ResourceUtil.tableSaltAR;//.findAmountResource(TABLE_SALT);
-        foodAR = ResourceUtil.foodAR;//.findAmountResource(LifeSupportType.FOOD);
-        foodWasteAR = ResourceUtil.foodWasteAR;//.findAmountResource(FOOD_WASTE);
-        greyWaterAR = ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);
-        NaClOAR = ResourceUtil.NaClOAR;//.findAmountResource(SODIUM_HYPOCHLORITE);
-        waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
+        //tableSaltAR = ResourceUtil.tableSaltAR;//.findAmountResource(TABLE_SALT);
+        //foodAR = ResourceUtil.foodAR;//.findAmountResource(LifeSupportType.FOOD);
+        //foodWasteAR = ResourceUtil.foodWasteAR;//.findAmountResource(FOOD_WASTE);
+        //greyWaterAR = ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);
+        //NaClOAR = ResourceUtil.NaClOAR;//.findAmountResource(SODIUM_HYPOCHLORITE);
+        //waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
 
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
@@ -861,7 +861,7 @@ implements Serializable {
 	    mealQuality = Math.round(( mealQuality + culinarySkillPerf + cleanliness)*10D)/10D;;
 
 	    // consume salt
-	    retrieveAnIngredientFromMap(hotMeal.getSalt(), tableSaltAR, true);
+	    retrieveAnIngredientFromMap(hotMeal.getSalt(), ResourceUtil.tableSaltAR, true);
 
 	    // consume water
 	    consumeWater();
@@ -965,9 +965,9 @@ implements Serializable {
         if (level != 0)
             usage = usage / 1.5D / level;
 
-	    retrieveAnIngredientFromMap(usage, waterAR, true);
+	    retrieveAnIngredientFromMap(usage, ResourceUtil.waterAR, true);
 		double wasteWaterAmount = usage * .75;
-		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + " -> consumeWater()");
+		Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterAR, inv, sourceName + " -> consumeWater()");
     }
 
 
@@ -1069,7 +1069,7 @@ implements Serializable {
                         double quality = meal.getQuality() / 2D + 1D;
                         double num = RandomUtil.getRandomDouble(7 * quality + 1);
                         if (num < 1) {
-                            Storage.storeAnResource(dryMassPerServing, foodWasteAR, inv);
+                            Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteAR, inv);
                             logger.fine(dryMassPerServing  + " kg " + meal.getName()
                                     + " expired, turned bad and discarded at " + getBuilding().getNickName()
                                     + " in " + settlement.getName() );
@@ -1143,8 +1143,8 @@ implements Serializable {
 	 */
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		boolean cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol, NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
-		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*10D, waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+		boolean cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol, ResourceUtil.NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
+		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*10D, ResourceUtil.waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 
 		if (cleaning0)
 			cleanliness = cleanliness + .05;
@@ -1165,8 +1165,8 @@ implements Serializable {
 
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, tableSaltAR, true); //TABLE_SALT, true);//
-		Storage.storeAnResource(dryMassPerServing, foodAR, inv, sourceName + "->preserveFood()");
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltAR, true); //TABLE_SALT, true);//
+		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodAR, inv, sourceName + "->preserveFood()");
  	}
 
     /**

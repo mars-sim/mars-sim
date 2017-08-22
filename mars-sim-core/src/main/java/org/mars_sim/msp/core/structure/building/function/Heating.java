@@ -101,7 +101,7 @@ implements Serializable {
 
 	private double basePowerDownHeatRequirement = 0;
 	private double meter2Feet = 10.764;
-	//private static int count;
+
 	// Specific Heat Capacity = 4.0 for a typical U.S. house
 	private double SHC = 6.0; //in BTU/ sq ft / F
 	private double SHC_area;
@@ -116,12 +116,12 @@ implements Serializable {
     private double q_H_factor = 21.4D/10/2.23694; // 1 m per sec = 2.23694 miles per hours
     private double airChangePerHr = .5;
 	//private double factor_heatLoss; // = U_value * floorArea * meter2Feet ;
-	// 2014-11-02 Added heatGenerated
+
 	private double heatGenerated = 0; // the initial value is zero
 	private double heatGeneratedCache = 0; // the initial value is zero
 	//private double powerRequired;
 	private double heatRequired;
-	private double deltaTemperature;
+
 	private double currentTemperature;
 	private double temperature_adjacent1, temperature_adjacent2;
     //private double heatLossEachEVA;
@@ -148,7 +148,7 @@ implements Serializable {
 	private SurfaceFeatures surfaceFeatures;
 	private Settlement settlement;
 	private BuildingManager manager;
-	//private DecimalFormat fmt = new DecimalFormat("#.#######");
+	private Farming farm;
 
 	private List<Building> adjacentBuildings;
 	
@@ -177,13 +177,13 @@ implements Serializable {
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
-
 		length = building.getLength();
 		width = building.getWidth() ;
 
 		floorArea = length * width ;
 
 		if (isGreenhouse()) { // greenhouse has a semi-transparent rooftop
+			//farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 			hullArea = floorArea + (width + length) * height * 2D ; // ceiling not included since rooftop is transparent
 			transmittance = TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE;
 		}
@@ -192,10 +192,6 @@ implements Serializable {
 			transmittance = 0.05; // very little solar irradiance transmit energy into the building, compared to transparent rooftop
 		}
 
-		//if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
-		//	System.out.println(building.getNickName() + "'s length is " + length);
-		//}
-		
 		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
 
 		U_value_area_ceiling = U_value * floorArea * meter2Feet;
@@ -209,14 +205,15 @@ implements Serializable {
 
 		t_initial = building.getInitialTemperature();
 		currentTemperature = t_initial;
-		deltaTemperature = 0;
+
 		//t_factor = vol / R_GAS_CONSTANT / n;
 
 		emissivityMap = new ConcurrentHashMap<>();
 
-		for (int i = 0; i <=1000; i++) {
-			// assuming the value of emissivity fluctuates as a cosine waveform between 0.8 (day) and 1.0 (night)
-			emissivity = .2D * Math.cos(i/500D* Math.PI) + (EMISSIVITY_NIGHT + EMISSIVITY_DAY)/2D;
+		for (int i = 0; i < 1000; i++) {
+			// assuming the value of emissivity fluctuates as a cosine waveform between 0.8 (day) and 1.0ss (night)
+			emissivity = .1D * Math.cos(i/500D* Math.PI) + (EMISSIVITY_NIGHT + EMISSIVITY_DAY)/2D;
+			//System.out.println( i + " : " + emissivity);
 			emissivityMap.put(i, emissivity);
 		}
 
@@ -233,10 +230,6 @@ implements Serializable {
      */
 	//2015-06-21  Added isGreenhouse()
     public boolean isGreenhouse() {
-		//if (config.hasFarming(buildingType))
-		//if (buildingType.equals("Inflatable Greenhouse")
-		//		|| buildingType.equals("Large Greenhouse")
-		//		||	buildingType.equals("Inground Greenhouse") )
 		if (buildingType.toLowerCase().contains("greenhouse"))
 			return true;
 		else
@@ -260,26 +253,27 @@ implements Serializable {
 	// 2014-11-02 Added checking if PowerMode.POWER_DOWN
 	// TODO: also set up a time sensitivity value
 	public void setNewHeatMode(double t) {
-		//double t_now = currentTemperature; //building.getTemperature();
 		double t_now = t;
-		// if building has no power, power down the heating system
-		if (building.getPowerMode() == PowerMode.POWER_DOWN)
-			building.setHeatMode(HeatMode.HEAT_OFF);
+		if (building.getPowerMode() == PowerMode.FULL_POWER) {
+			// ALLOWED_TEMP is thermostat's allowance temperature setting
+		    // If T_NOW deg above INITIAL_TEMP, turn off furnace
+			if (t_now > (t_initial + T_UPPER_SENSITIVITY )) {
+				building.setHeatMode(HeatMode.HEAT_OFF);
+			}
+			else if (t_now > t_initial) {
+				building.setHeatMode(HeatMode.HALF_HEAT);
+			}
+			else {//if (t_now < (t_initial - T_LOWER_SENSITIVITY)) {
+				building.setHeatMode(HeatMode.ONLINE);
+			} //else ; // do nothing to change the HeatMode
+		}
+		//else if (building.getPowerMode() == PowerMode.POWER_DOWN)
+			// if building has no power, power down the heating system
+		//	building.setHeatMode(HeatMode.HEAT_OFF);
 		// Note: should NOT be OFFLINE since solar heat engine can still be turned ON
 		// if building is under maintenance, use HeatMode.OFFLINE
 		else if (building.getMalfunctionManager().hasMalfunction())
 			building.setHeatMode(HeatMode.OFFLINE);
-		else if (building.getPowerMode() == PowerMode.FULL_POWER) {
-			// ALLOWED_TEMP is thermostat's allowance temperature setting
-		    // If T_NOW deg above INITIAL_TEMP, turn off furnace
-			if (t_now > (t_initial + T_UPPER_SENSITIVITY )) {
-			//if (T_NOW > T_INITIAL ) {
-				building.setHeatMode(HeatMode.HEAT_OFF);
-			// If T_NOW is below INITIAL_TEMP - T_SENSITIVITY , turn on furnace
-			} else if (t_now < (t_initial - T_LOWER_SENSITIVITY)) {
-				building.setHeatMode(HeatMode.ONLINE);
-			} //else ; // do nothing to change the HeatMode
-		}
 
 	}
 
@@ -299,14 +293,12 @@ implements Serializable {
 	public double determineDeltaTemperature(double t, double millisols) {
 		// THREE-PART CALCULATION
 		double outsideTemperature = settlement.getOutsideTemperature();
-		//outsideTemperature = weather.getTemperature(location);
 		// heatGain and heatLoss are to be converted from kJ to BTU below
 		//
 		// (1) CALCULATE HEAT GAIN
 		double heatGain = 0; // in BTU
-		double heatGenerated = 0; //in kJ/s
-		if (building.getHeatMode() == HeatMode.ONLINE) {
-			// HeatGenerated in kW
+		double heatGenerated = 0; //in kW
+		if (building.getHeatMode() == HeatMode.ONLINE || building.getHeatMode() == HeatMode.HALF_HEAT) {
 			// Note: 1 kW = 3412.14 BTU/hr
 			if (thermalSystem == null)
 				thermalSystem = settlement.getThermalSystem();
@@ -324,16 +316,14 @@ implements Serializable {
 
 		// (2) CALCULATE HEAT LOSS
 		double energyExpendedToHeatAirlockMartianAir = 0;
-		//if (building.getFunction(BuildingFunction.EVA) != null) {
-			if (num > 0) {
-				energyExpendedToHeatAirlockMartianAir = energy_factor * (DEFAULT_ROOM_TEMPERATURE - outsideTemperature) * num /2D;
+		if (num > 0)
+			energyExpendedToHeatAirlockMartianAir = energy_factor * (DEFAULT_ROOM_TEMPERATURE - outsideTemperature) * num /2D;
 				//(1) Divide by two since half of the time during EVA ingree 
 				//(1) the energy loss due to the original room-temperature air gushing out
 				// Note : Assuming EVA heater requires 1kW of power for heating up the air for each person in an airlock during EVA ingress.
 				// e.g. kW : 0.323
 				// e.g. BTU : 1101.4
-			}
-		//}
+	
 		double diffTinF =  (t - outsideTemperature) * 1.8; //1.8 =  9D / 5D;
 		double heatLoss = diffTinF * (
 						//U_value_area_ceiling * 2D
@@ -347,34 +337,33 @@ implements Serializable {
 
 		double I = surfaceFeatures.getSolarIrradiance(location);
 		double t_K = t + C_TO_K;
-		double outsideTemperature_K = outsideTemperature + C_TO_K;
+		double outsideT_K = outsideTemperature + C_TO_K;
 		double solarHeatGainLoss =  I * transmittance * floorArea
 				- emissivity * STEFAN_BOLTZMANN_CONSTANT
-				* (Math.pow(t_K, 4) - Math.pow(outsideTemperature_K, 4)) * hullArea;
+				* (Math.pow(t_K, 4) - Math.pow(outsideT_K, 4)) * hullArea;
 
 		solarHeatGainLoss *= BTU_PER_HOUR_PER_kW / 1000D;
-		//if (isGreenhouse()) {
-		//	System.out.println(" solarHeatGainLoss in BTU: " + solarHeatGainLoss
-		//			+ "	  others: " + (heatGain - heatLoss));
-		//}
 
 		// (4) ADD INSULATION BLANKET TO MINIMIZE HEAT LOSS AT NIGHT
 
 		// (5) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
 		// if this building is a greenhouse
 		double lightingPower = 0;
-		Function fct = building.getFunction(BuildingFunction.FARMING);
-		if (fct != null) {
-	        Farming farm = (Farming) fct;
-	        if (farm != null)
-	        	lightingPower = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high prssure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
+		
+		if (farm == null && isGreenhouse()) { // greenhouse has a semi-transparent rooftop
+			farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+        	lightingPower = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high prssure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
+		}
+		
+		if (farm != null) {
+	        lightingPower = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high prssure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
 		}
 
 		// (6) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
 		double changeOfTinF = ( elapsedTimeinHrs * millisols * (solarHeatGainLoss + lightingPower + heatGain - heatLoss) )/ SHC_area ;
 		double changeOfTinC = changeOfTinF * 0.5556; // 0.5556 = 5D / 9D ; // the difference between deg F and deg C . The term -32 got cancelled out
 		//applyHeatBuffer(changeOfTinC);
-		deltaTemperature = changeOfTinC;
+
 		return changeOfTinC;
 	}
 
@@ -502,10 +491,28 @@ implements Serializable {
 		//t = updateTemperature(dt);
 		t += dt;
 
-		if (t < 12.5 || t > 32.5) { // this temperature range is arbitrary
+		//t = ventAirToAdjacentRoom(t);
+		
+		currentTemperature = t;
+		
+		// Step 3 of Thermal Control
+		// Turn heat source off if reaching pre-setting temperature
+		setNewHeatMode(t);
+
+	}
+
+	/**
+	 * Vents air to the adjacent room(s) to help reaching temperature equilibrium
+	 * @param t temperature
+	 * @return temperature
+	 */
+	public double ventAirToAdjacentRoom(double t) {
+		double new_t = 0; 
+		
+		if (t < (t_initial - 3 * T_LOWER_SENSITIVITY ) || t > (t_initial + 3 * T_UPPER_SENSITIVITY )) { // this temperature range is arbitrary
 			// TODO : determine if someone open a hatch ??
 			
-			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, "Temperature is below 10 C at " + building + " in " + settlement, null);
+			//LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, "Temperature is below 10 C at " + building + " in " + settlement, null);
 
 			if (adjacentBuildings == null) {
 				adjacentBuildings = settlement.getAdjacentBuildings(building);
@@ -525,22 +532,17 @@ implements Serializable {
 			//double diffusion = time * 100D;
 			
 			if (t1 && t2)
-				t = .01 * temperature_adjacent1 + .01 * temperature_adjacent2 + .98 * t;
+				new_t = .01 * temperature_adjacent1 + .01 * temperature_adjacent2 + .98 * t;
 			else if (t1)
-				t = .01 * temperature_adjacent1 + .99 * t;
+				new_t = .01 * temperature_adjacent1 + .99 * t;
 			else if (t2)
-				t = .01 * temperature_adjacent2 + .99 * t;	
+				new_t = .01 * temperature_adjacent2 + .99 * t;	
 			
+			//double dt = new_t - t;
 		}
 		
-		currentTemperature = t;
-		
-			// Step 3 of Thermal Control
-		// Turn heat source off if reaching pre-setting temperature
-		setNewHeatMode(t);
-
+		return new_t;
 	}
-
 
 	/**
 	 * Gets the amount of power required when function is at full power.

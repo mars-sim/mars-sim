@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project
+ * M`ars Simulation Project
  * Building.java
  * @version 3.1.0 2016-10-05
  * @author Scott Davis
@@ -151,14 +151,14 @@ LocalBoundedObject, InsidePathLocation {
 	protected BuildingManager manager;
 	protected MalfunctionManager malfunctionManager;
 
-    private Inventory b_inv, s_inv;
+    //private Inventory inv; //b_inv, s_inv;
     private Settlement settlement;
 
 	protected ThermalGeneration furnace;
 	protected LifeSupport lifeSupport;
 	protected RoboticStation roboticStation;
-	//private EVA eva;
-
+	private PowerGeneration powerGen;
+	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
@@ -203,6 +203,11 @@ LocalBoundedObject, InsidePathLocation {
 			if (furnace == null)
 				furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
 
+		// Set the instance of thermal generation function.
+		//if (hasFunction(BuildingFunction.POWER_GENERATION))
+		//	if (powerGen == null)
+		//		powerGen = (PowerGeneration) getFunction(BuildingFunction.POWER_GENERATION);
+
 		// Set the instance of robotic station function.
 		if (hasFunction(BuildingFunction.ROBOTIC_STATION))
 			if (roboticStation == null)
@@ -241,11 +246,13 @@ LocalBoundedObject, InsidePathLocation {
 
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
-		if (s_inv == null)
-			s_inv = settlement.getInventory();
-		if (b_inv == null) {
-			b_inv = super.getInventory(); // it's already been created in its super class
-
+		//if (inv == null)
+		//	inv = settlement.getInventory();
+		//if (s_inv == null)
+		//	s_inv = settlement.getInventory();
+		//if (b_inv == null) {
+		//	b_inv = super.getInventory(); // it's already been created in its super class
+/*
 		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
 			//b_inv = new Inventory(this);
 			b_inv.addGeneralCapacity(100);
@@ -255,7 +262,7 @@ LocalBoundedObject, InsidePathLocation {
 		else
 			b_inv.addGeneralCapacity(100_000);
 		}
-
+*/
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
@@ -339,17 +346,17 @@ LocalBoundedObject, InsidePathLocation {
 	/**
 	 * Gets the building inventory of this building.
 	 * @return inventory
-	 */
-    public Inventory getBuildingInventory() {
-    	return b_inv;
-    }
 
+    public Inventory getBuildingInventory() {
+    	return inv;//b_inv;
+    }
+	 */
 	/**
 	 * Gets the settlement inventory of this building.
 	 * @return inventory
 	 */
 	public Inventory getSettlementInventory() {
-		return s_inv;
+		return settlement.getInventory();//s_inv;
 	}
 
 	/**
@@ -752,9 +759,9 @@ LocalBoundedObject, InsidePathLocation {
 		// Determine power required for each function.
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) result += i.next().getFullPowerRequired();
-
+				
 		//2014-11-02 Added getFullHeatRequired()
-		result = result + getFullHeatRequired();
+		//result = result + getFullHeatRequired();
 
 		return result;
 	}
@@ -803,11 +810,15 @@ LocalBoundedObject, InsidePathLocation {
 
 		return result;
 	}
-	//2014-11-02 Added setHeatGenerated()
+	
 	public void setHeatGenerated(double heatGenerated) {
 		furnace.getHeating().setHeatGenerated(heatGenerated);
 	}
 
+	//public void setPowerGenerated(double powerGenerated) {
+	//	powerGen.setPowerGenerated(powerGenerated);
+	//}
+	
 	/**
 	 * Gets the heat the building requires for power-down mode.
 	 * @return heat in kJ/s.
@@ -1040,8 +1051,8 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
-		s_inv = settlement.getInventory();
-		b_inv = super.getInventory();
+		//s_inv = settlement.getInventory();
+		//b_inv = super.getInventory();
 		// Check for valid argument.
 		if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
 

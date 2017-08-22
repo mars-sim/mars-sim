@@ -481,7 +481,7 @@ extends TabPanel {
 				if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 					try {
 						ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-						generated += heater.calculateGeneratedPower();
+						generated += heater.getGeneratedPower();
 					}
 					catch (Exception e) {}
 				}

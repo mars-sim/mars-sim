@@ -168,7 +168,7 @@ implements Serializable {
 
 		// Note: some buildings don't have thermal generation function
 		if (thermalGeneration != null)
-			result += thermalGeneration.calculateGeneratedPower();
+			result += thermalGeneration.getGeneratedPower();//calculateGeneratedPower();
 
 		return result;
 	}

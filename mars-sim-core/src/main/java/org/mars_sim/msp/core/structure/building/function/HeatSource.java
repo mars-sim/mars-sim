@@ -72,6 +72,12 @@ implements Serializable {
 	public abstract double getAverageHeat(Settlement settlement);
 
 	/**
+	 * Gets the efficiency by the heat source.
+	 * @return efficiency (max is 1)
+	 */
+	public abstract double getEfficiency();
+	
+	/**
      * Gets the maintenance time for this heat source.
      * @return maintenance work time (millisols).
      */

@@ -126,7 +126,7 @@ implements Serializable {
     //private Map<Unit, Crop> cropAssignment = new HashMap<Unit, Crop>();
     //private Map<Unit, ShiftType> shiftAssignment = new HashMap<Unit, ShiftType>();
 
-    private Inventory b_inv, s_inv;
+    private Inventory b_inv, inv;
     private Settlement settlement;
     private Building building;
     private MarsClock marsClock;
@@ -149,8 +149,8 @@ implements Serializable {
 
         this.building = building;
         this.settlement = building.getBuildingManager().getSettlement();
-		this.b_inv = building.getBuildingInventory();
-		this.s_inv = settlement.getInventory();
+		//this.b_inv = building.getBuildingInventory();
+		this.inv = settlement.getInventory();
 		//this.goodsManager = settlement.getGoodsManager();
 
         marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -431,10 +431,10 @@ implements Serializable {
     	double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea *rand;
 
     	// TODO: adjust how much old soil should be turned to crop waste
-    	Storage.storeAnResource(amount, ResourceUtil.cropWasteAR, s_inv);
+    	Storage.storeAnResource(amount, ResourceUtil.cropWasteAR, inv);
 
     	// TODO: adjust how much new soil is needed to replenish the soil bed
-    	Storage.retrieveAnResource(amount, ResourceUtil.soilAR, s_inv, true );
+    	Storage.retrieveAnResource(amount, ResourceUtil.soilAR, inv, true );
 
     }
 
@@ -449,7 +449,7 @@ implements Serializable {
     public void provideFertilizer(double cropArea) {
     	double rand = RandomUtil.getRandomDouble(2);
     	double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
-    	Storage.retrieveAnResource(amount, ResourceUtil.fertilizerAR, s_inv, true);
+    	Storage.retrieveAnResource(amount, ResourceUtil.fertilizerAR, inv, true);
 		//System.out.println("fertilizer used in planting a new crop : " + amount);
     }
 
@@ -474,8 +474,8 @@ implements Serializable {
 
       	try {
 
-	        double amountStored = s_inv.getAmountResourceStored(tissueAR, false);
-			s_inv.addAmountDemandTotalRequest(tissueAR);
+	        double amountStored = inv.getAmountResourceStored(tissueAR, false);
+			inv.addAmountDemandTotalRequest(tissueAR);
 
 	    	if (amountStored < 0.0000000001) {
 	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
@@ -499,10 +499,10 @@ implements Serializable {
 	    	}
 
 	    	if (available) {
-	    		s_inv.retrieveAmountResource(tissueAR, requestedAmount);
+	    		inv.retrieveAmountResource(tissueAR, requestedAmount);
 	    	}
 
-			s_inv.addAmountDemand(tissueAR, requestedAmount);
+			inv.addAmountDemand(tissueAR, requestedAmount);
 
 	    }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
@@ -904,7 +904,7 @@ implements Serializable {
 		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		Storage.storeAnResource(amountCropWaste, ResourceUtil.cropWasteAR, s_inv);
+		Storage.storeAnResource(amountCropWaste, ResourceUtil.cropWasteAR, inv);
 	}
 
 /*
@@ -1059,14 +1059,14 @@ implements Serializable {
 		AmountResource cropAR = AmountResource.findAmountResource(cropName);
 		String tissueName = cropName + " " + TISSUE_CULTURE;
     	AmountResource tissueAR = AmountResource.findAmountResource(tissueName);
-        double amountAvailable = s_inv.getAmountResourceStored(tissueAR, false);
+        double amountAvailable = inv.getAmountResourceStored(tissueAR, false);
         double amountExtracted = 0;
 
         if (amountAvailable > 0 && amountAvailable < 1) {
         	// increase the amount of tissue culture by 10%
         	amountExtracted = amountAvailable * 1.1;
         	// store the tissues
-      		Storage.storeAnResource(amountExtracted, tissueAR, s_inv);
+      		Storage.storeAnResource(amountExtracted, tissueAR, inv);
 
 			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 					"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
@@ -1078,15 +1078,15 @@ implements Serializable {
 
         else if (amountAvailable < 0) {
         	// if no tissue culture is available, go extract some tissues from the crop
-            double amount = s_inv.getAmountResourceStored(cropAR, false);
+            double amount = inv.getAmountResourceStored(cropAR, false);
 
             amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * 10;
 
             if (amount > amountExtracted) {
             	// assume an arbitrary 10% of the mass of crop kg extracted will be developed into tissue culture
-            	Storage.retrieveAnResource(amountExtracted, cropAR, s_inv, true);
+            	Storage.retrieveAnResource(amountExtracted, cropAR, inv, true);
             	// store the tissues
-         		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, s_inv);
+         		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv);
 
 				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 						"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0 + " kg " 
@@ -1149,8 +1149,8 @@ implements Serializable {
     	HPS_Item = null;
 
         marsClock = null;
-        s_inv = null;
-		b_inv = null;
+        inv = null;
+		//b_inv = null;
         settlement = null;
         building = null;
 

@@ -140,10 +140,15 @@ implements Serializable {
 	     return getMaxHeat() * 2D;
 	 }
 
+	@Override
+	public double getEfficiency() {
+		return 1;
+	}
+	
+
 	 @Override
 	 public void destroy() {
 		 super.destroy();
-
 		 resource = null;
 	 }
 }
