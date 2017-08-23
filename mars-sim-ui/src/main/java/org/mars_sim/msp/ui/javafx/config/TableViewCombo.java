@@ -256,7 +256,7 @@ public class TableViewCombo {
 					if (template.equalsIgnoreCase(templates.get(j).getTemplateName())) {
 						if (botNum > bots[j])
 							LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, 
-									"In " + name + ", you specify " + botNum + " bots––more than the normal capacity of "
+									"In " + name + ", you specify " + botNum + " bots–– more than the standard capacity of "
 											+ bots[j] + " for " + template, null);
 						break;
 					}
@@ -279,7 +279,9 @@ public class TableViewCombo {
 
 					if (template.equalsIgnoreCase(templates.get(j).getTemplateName())) {
 						if (popNum > populations[j])
-							System.out.println("Warning : in " + name + ", you specify " + popNum + " settlers––more than the normal capacity of " + populations[j] + " for " + template);
+							LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, 
+									"In " + name + ", you specify " + popNum 
+									+ " settlers–– more than the standard capacity of " + populations[j] + " for " + template, null);
 						break;
 					}
 	    		}

@@ -19,8 +19,9 @@
 	<resource name="oxygen" phase="gas" life-support="true" />
 	<resource name="carbon dioxide" phase="gas" life-support="true"/>
 
-
+	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
+	<resource name="argon" phase="gas"/>
 	<resource name="carbon monoxide" phase="gas" />
 	<resource name="ethylene" phase="gas" />
 	<resource name="hydrogen" phase="gas" />

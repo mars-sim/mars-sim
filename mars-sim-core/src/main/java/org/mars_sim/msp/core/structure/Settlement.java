@@ -143,7 +143,8 @@ implements Serializable, LifeSupportType, Objective {
 	private int sumOfCurrentManuProcesses = 0;
 	private int cropsNeedingTendingCache = 5;
 	private int millisolCache = -5;
-
+	private int numConnectorsCache = 0;
+	
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 
@@ -382,21 +383,40 @@ implements Serializable, LifeSupportType, Objective {
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
 
-	
-	public Map<Building, List<Building>> createAdjacentBuildingMap() {
+	/**
+	 * Create a map of buildings with their lists of building connectors attached to it
+	 * @return a map
+	 */
+	public Map<Building, List<Building>> createBuildingConnectionMap() {
+		adjacentBuildingMap.clear();
 		for (Building b : buildingManager.getBuildings()) {
-			List<Building> list = getAdjacentBuildings(b);
+			List<Building> connectors = createAdjacentBuildingConnectors(b);
 			//if (b == null)
 			//	System.out.println("b = null");
-			
-			adjacentBuildingMap.put(b, list);
+			adjacentBuildingMap.put(b, connectors);
 		}
 		
 		return adjacentBuildingMap;
 	}
 	
+	/**
+	 * Gets a list of building connectors attached to this building
+	 * @param building
+	 * @return
+	 */
+	public List<Building> getBuildingConnectors(Building building) {
+		if (!adjacentBuildingMap.containsKey(building))
+			adjacentBuildingMap = createBuildingConnectionMap();
+
+		return adjacentBuildingMap.get(building);
+	}
 	
-	public List<Building> getAdjacentBuildings(Building building) {
+	/**
+	 * Creates a list of building connectors attached to this building
+	 * @param building
+	 * @return a list of building connectors
+	 */
+	public List<Building> createAdjacentBuildingConnectors(Building building) {
 		List<Building> buildings = new ArrayList<>();
 		//List<String> names = new ArrayList<>();
 		Set<BuildingConnector> connectors = getConnectionsToBuilding(building);
@@ -527,15 +547,15 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public int getNumCurrentPopulation() {
 		int n = 0;
-		//Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
-		//while (i.hasNext()) {
-		//	if (i.next() instanceof Person)
-		//		n++;
-		//}
-		for (Unit u : getInventory().getAllContainedUnits()) {
-			if (u instanceof Person)
+		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
+		while (i.hasNext()) {
+			if (i.next() instanceof Person)
 				n++;
 		}
+		//for (Unit u : getInventory().getAllContainedUnits()) { // why java.lang.NullPointerException when adding a new arriving settlment ?
+		//	if (u instanceof Person)
+		//		n++;
+		//}
 		return n;
 		//return getInhabitants().size();
 	}
@@ -965,9 +985,17 @@ implements Serializable, LifeSupportType, Objective {
 	    	regolithProbabilityValue = getRegolithProbability();
 	    }
 
-		
-	    if (adjacentBuildingMap.isEmpty()) 
-	    	createAdjacentBuildingMap();
+	    if (!adjacentBuildingMap.isEmpty()) {
+			int numConnectors = adjacentBuildingMap.size();
+		    
+		    if (numConnectorsCache != numConnectors) {
+		    	numConnectorsCache = numConnectors;
+		    	createBuildingConnectionMap();
+		    }
+	    }
+	    else {
+	    	createBuildingConnectionMap();
+	    }
 		
 	}
 

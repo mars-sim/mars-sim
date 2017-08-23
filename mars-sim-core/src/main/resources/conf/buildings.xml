@@ -254,6 +254,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="oxygen" capacity="1500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
+				<resource-storage resource="argon" capacity="500.0" />
+				<resource-storage resource="nitrogen" capacity="500.0" />
 
 				<resource-storage resource="ice" capacity="500.0" />
 				<resource-storage resource="regolith" capacity="1500.0" />
@@ -2075,7 +2077,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="oxygen" capacity="1500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
-
+				<resource-storage resource="argon" capacity="500.0" />
+				<resource-storage resource="nitrogen" capacity="500.0" />
+				
 				<resource-storage resource="ice" capacity="500.0" />
 				<resource-storage resource="regolith" capacity="1500.0" />
 

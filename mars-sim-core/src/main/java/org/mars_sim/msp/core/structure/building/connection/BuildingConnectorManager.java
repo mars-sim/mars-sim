@@ -305,6 +305,7 @@ public class BuildingConnectorManager implements Serializable {
             }
         }
 
+        //System.out.println("# of connectors for " + building.getNickName() + " : " + result.size());
         return result;
     }
 

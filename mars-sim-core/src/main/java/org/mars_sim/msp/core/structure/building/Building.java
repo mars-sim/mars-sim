@@ -89,8 +89,10 @@ LocalBoundedObject, InsidePathLocation {
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
-
-	public static final double kW_EVA_HEATER = .5D; // 500 W heater for us during EVA ingress
+	/** The volume of an airlock in cubic meters*/
+	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
+	/** 500 W heater for use during EVA ingress */
+	public static final double kW_EVA_HEATER = .5D; //
 	// Assuming 20% chance for each person to witness or be conscious of the meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 	// The influx of meteorites entering Mars atmosphere can be estimated as
@@ -1224,6 +1226,10 @@ LocalBoundedObject, InsidePathLocation {
 
 	public Settlement getSettlement(){
 		return manager.getSettlement();
+	}
+	
+	public void extractHeat(double heat) {
+		furnace.getHeating().extractHeat(heat);
 	}
 	
 	/**

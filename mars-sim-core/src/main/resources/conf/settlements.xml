@@ -19,14 +19,15 @@
 
 	</mission-control>
 
-	<!-- (NOT IMPLEMENTED YET) Typical atmospheric requirements for a closed-loop habitat  -->
+	<!-- (NOT IMPLEMENTED YET) Typical atmospheric requirements for a closed-loop habitat  
+	     see http://www2.le.ac.uk/offices/safety-services/documents/pdfs/air-monitoring-guide.pdf -->
 	<life-support-requirements>
 
 		<!-- all pressures in kPa-->
 		<total-pressure low="99.9" high="102.7" />
 		<partial-pressure-of-oxygen low="19.5" high="23.1" />
-		<partial-pressure-of-nitrogen low="79" high="79"/>
-		<partial-pressure-of-carbon-dioxide low=".4" high=".4" />
+		<partial-pressure-of-nitrogen low="77" high="79"/>
+		<partial-pressure-of-carbon-dioxide low=".036" high="1.0" />
 		<!-- temperature in degree celsius-->
 		<temperature low="18.3" high="23.9"/>
 		<!-- humidity in %-->
@@ -107,7 +108,8 @@
 			<resource type="black water" amount="25.0" />
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="fertilizer" amount="10.0" />
-
+			<resource type="argon" amount="10.0" />
+			
 			<!-- Food Derived Items -->
 			<resource type="mustard" amount="50.0" />
 			

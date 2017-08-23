@@ -15,7 +15,9 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class BuildingConnector implements Serializable, InsidePathLocation {
 
-    // Comparison to indicate a small but non-zero amount.
+	private static final long serialVersionUID = 1L;
+
+	// Comparison to indicate a small but non-zero amount.
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
     // Data members
@@ -35,8 +37,11 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
      * @param building2HatchYLocation The hatch y location connecting the second building.
      * @param building2HatchFacing The hatch facing (degrees) connecting the second building.
      */
-    public BuildingConnector(Building building1, double building1HatchXLocation,
-            double building1HatchYLocation, double building1HatchFacing, Building building2,
+    public BuildingConnector(
+    		Building building1, 
+    		double building1HatchXLocation,
+            double building1HatchYLocation, double building1HatchFacing, 
+            Building building2,
             double building2HatchXLocation, double building2HatchYLocation,
             double building2HatchFacing) {
 

@@ -92,6 +92,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			<resource name="Nitrite" amount="2.0" />
 			<resource name="Nitrogen" amount="10.0" />
 			<resource name="Ammonia" amount="10.0" />
+			<resource name="argon" amount="1.0" />
 			<resource name="regolith" amount="250.0" />
 		</outputs>
 	</process>
@@ -114,6 +115,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			<resource name="Nitrite" amount="0.2" />
 			<resource name="Nitrogen" amount="1.0" />
 			<resource name="Ammonia" amount="1.0" />
+			<resource name="argon" amount="0.1" />			
 			<resource name="regolith" amount="25.0" />
 		</outputs>
 	</process>

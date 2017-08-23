@@ -328,9 +328,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		logger.info("DesktopPane : updateToolWindow()");
 		JInternalFrame[] frames = this.getAllFrames();
 		for (JInternalFrame f : frames) {
-			//f.updateUI();
+			f.updateUI();
 			//SwingUtilities.updateComponentTreeUI(f);
-			((ToolWindow)f).update();
+			//((ToolWindow)f).update(); //  java.lang.ClassCastException: org.mars_sim.msp.ui.swing.unit_window.structure.SettlementUnitWindow cannot be cast to org.mars_sim.msp.ui.swing.toolWindow.ToolWindow
 		}
 	}
 

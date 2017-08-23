@@ -74,16 +74,20 @@ public class BuildingAirlock extends Airlock {
 
         if (inAirlock(person)) {
 
-            if (PRESSURIZED.equals(getState())) { // check if the airlock has been pressurized
+            if (PRESSURIZED.equals(getState())) { 
+            	// check if the airlock has been sealed from outside and pressurized, ready to 
+            	// open the inner door to release the person into the settlement
                 if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
                 	//logger.fine(
                 	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-                			+ " is coming thru an airlock in " + building + " from OUTSIDE of " 
-                			+ building.getBuildingManager().getSettlement(), null);
+                			+ " has got inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
                     
-                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), true);
+                    // Pump air into the airlock to make it breathable
+                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), true, building);
 
                 }
                 else {
@@ -92,16 +96,22 @@ public class BuildingAirlock extends Airlock {
                             " from an airlock but is not outside.");
                 }
             }
-            else if (DEPRESSURIZED.equals(getState())) { // check if the airlock has been pressurized
+            else if (DEPRESSURIZED.equals(getState())) { 
+            	// check if the airlock has been depressurized, ready to open the outer door to 
+            	// get exposed to the outside air and release the person
                 if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
                    	//logger.fine(
                 	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-                			+ " is leaving thru an airlock in " + building + " to the OUTSIDE of " 
-                			+ building.getBuildingManager().getSettlement(), null);
+                			+ " has got inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
 
-                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), false);
+                    // Upon depressurization, there is heat loss to the Martian air in Heating class
+                    building.getThermalGeneration().getHeating().setAirlockOpen();
+                    // Recapture air from the airlock and store for us
+                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), false, building);
 
                 }
                 else {
@@ -131,8 +141,9 @@ public class BuildingAirlock extends Airlock {
                 if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
                   	//logger.fine(
                 	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, robot 
-                			+ " is coming thru an airlock in " + building + " from OUTSIDE of " 
-                			+ building.getBuildingManager().getSettlement(), null);              	 
+                			+ " has got inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been pressurized and is ready to open the inner door to release the robot. ", null);        	 
                   	inv.storeUnit(robot);
                 	BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, building);
                }
@@ -146,8 +157,9 @@ public class BuildingAirlock extends Airlock {
                 if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
                    	//logger.fine(
                    	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, robot 
-                   					+ " is leaving thru an airlock in " + building + " to the OUTSIDE of " 
-                   					+ building.getBuildingManager().getSettlement(), null);
+                			+ " has got inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been depressurized and is ready to open the outer door to release the robot. ", null);
                 	inv.retrieveUnit(robot);
                  	BuildingManager.removePersonOrRobotFromBuilding(robot, building);
 

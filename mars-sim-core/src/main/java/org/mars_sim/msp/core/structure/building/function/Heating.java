@@ -55,7 +55,6 @@ implements Serializable {
 	private static final double DEFAULT_ROOM_TEMPERATURE = 22.5;
 	private static final double BTU_PER_HOUR_PER_kW = 3412.14; // 1 kW = 3412.14 BTU/hr
 	private static final double C_TO_K = 273.15;
-	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
 	private static final double TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE = .55 ;
 	private static final double EMISSIVITY_DAY = 0.8 ;
 	private static final double EMISSIVITY_NIGHT = 1.0 ;
@@ -65,17 +64,36 @@ implements Serializable {
     // Thermostat's temperature allowance
     private static final double T_UPPER_SENSITIVITY = 1D;
     private static final double T_LOWER_SENSITIVITY = 1D;
-    //private static final int HEAT_CAP = 200;
     private static final double HEAT_GAIN_FROM_EQUIPMENT = 2000D;
     private static final double HEAT_DISSIPATED_PER_PERSON = 350D;
+    //private static final int HEAT_CAP = 200;  
+	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
+	
     //private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
     //private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
 	// 1 kilopascal = 0.00986923267 atm
 	// 1 cubic ft = L * 0.035315
     // A full scale pressurized Mars rover prototype may have an airlock volume of 5.7 m^3
+	
 	/** The average volume of a airlock [m^3] */	
-    private double VOLUME_OF_AIRLOCK =  3 * 2 * 2; //in m^3
-
+    private static double AIRLOCK_VOLUME_IN_CM = Building.AIRLOCK_VOLUME_IN_CM; // = 12 [in m^3]
+    /**  convert meters to feet  */
+	private static double M_TO_FT = 10.764;
+	/**  Specific Heat Capacity = 4.0 for a typical U.S. house */
+	private static double SHC = 6.0; //in BTU/ sq ft / F
+	/**  R-value is a measure of thermal resistance, or ability of heat to transfer from hot to cold, through materials such as insulation */
+	private static double R_value = 30;
+	/** Building Loss Coefficient (BLC) is 1.0 for a typical U.S. house */
+	//private static double BLC = 0.2;
+	
+	private static double U_value = 1/R_value;
+	
+    private static double U_value_area_crack_length, U_value_area_crack_length_for_airlock;
+    
+    private static double q_H_factor = 21.4D/10/2.23694; // 1 m per sec = 2.23694 miles per hours
+    
+    private static double airChangePerHr = .5;
+    
     // Molar mass of CO2 = 44.0095 g/mol
     // average density of air : 0.020 kg/m3
 	//double n = weather.getAirDensity(coordinates) * vol / 44D;
@@ -89,7 +107,7 @@ implements Serializable {
 	/** Density of dry breathable air [kg/m3] */	
 	private double dryAirDensity = 1.275D; //
 	/** Factor for calculating airlock heat loss during EVA egress */
-	private double energy_factor = C_p * VOLUME_OF_AIRLOCK * dryAirDensity /1000; 
+	private double energy_factor_EVA = C_p * AIRLOCK_VOLUME_IN_CM * dryAirDensity /1000; 
 	//private double t_factor =  vol / n;
     private double width;
 	private double length;
@@ -100,31 +118,24 @@ implements Serializable {
 	private double heat_gain_from_HPS = Crop.LOSS_AS_HEAT_HPS;
 
 	private double basePowerDownHeatRequirement = 0;
-	private double meter2Feet = 10.764;
 
-	// Specific Heat Capacity = 4.0 for a typical U.S. house
-	private double SHC = 6.0; //in BTU/ sq ft / F
 	private double SHC_area;
-	// Building Loss Coefficient = 1.0 for a typical U.S. house
-	//private double BLC = 0.2;
-	private double R_value = 30;
-	private double U_value = 1/R_value;
-    private double factor_heatLossFromRoof;
-    private double U_value_area_ceiling;
+
+    private double U_value_area_ceiling_or_floor;
+    
     private double U_value_area_wall;
-    private double U_value_area_crack_length;
-    private double q_H_factor = 21.4D/10/2.23694; // 1 m per sec = 2.23694 miles per hours
-    private double airChangePerHr = .5;
-	//private double factor_heatLoss; // = U_value * floorArea * meter2Feet ;
 
 	private double heatGenerated = 0; // the initial value is zero
 	private double heatGeneratedCache = 0; // the initial value is zero
 	//private double powerRequired;
 	private double heatRequired;
-
+	/** The heat extracted by the ventilation system */
+	private double heatExtracted;
+	/** The current temperature of this building */
 	private double currentTemperature;
-	private double temperature_adjacent1, temperature_adjacent2;
-    //private double heatLossEachEVA;
+	//private double temperature_adjacent1, temperature_adjacent2;
+	//private double heat_dump_adjacent_1, heat_dump_adjacent_2;
+	//private double heatLossEachEVA;
 	//private double storedHeat;
 	//double interval = Simulation.instance().getMasterClock().getTimePulse() ;
 	// 1 hour = 3600 sec , 1 sec = (1/3600) hrs
@@ -133,9 +144,16 @@ implements Serializable {
 	private double elapsedTimeinHrs; // = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
 	private double t_initial;
 	private double emissivity;
-
+	
+	/** */
+	private boolean isGreenhouse = false;
+	/** */
+	private boolean isHallway = false;
+	/** Is the airlock door open */
+	private boolean isAirlockOpen = false;
+	/** */
 	private Map<Integer, Double> emissivityMap;
-
+	/** */
   	private String buildingType;
 
   	//private ThermalGeneration furnace;
@@ -183,6 +201,7 @@ implements Serializable {
 		floorArea = length * width ;
 
 		if (isGreenhouse()) { // greenhouse has a semi-transparent rooftop
+			isGreenhouse = true;
 			//farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 			hullArea = floorArea + (width + length) * height * 2D ; // ceiling not included since rooftop is transparent
 			transmittance = TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE;
@@ -194,14 +213,22 @@ implements Serializable {
 
 		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
 
-		U_value_area_ceiling = U_value * floorArea * meter2Feet;
-		U_value_area_wall = U_value * (width + length) * height * 2D * meter2Feet;
+		U_value_area_ceiling_or_floor = U_value * floorArea * M_TO_FT;
+		U_value_area_wall = U_value * (width + length) * height * 2D * M_TO_FT;
 
-		// assuming airChangePerHr = .5, q_H = 21.4;
-		// assuming two EVA airlock and four windows
-		U_value_area_crack_length = 0.244 * .075 * airChangePerHr * q_H_factor * ( 2 * (2 + 6) + 4 * (2 + 3) );
+		//System.out.println(building.getNickName() + "'s U_value_area_ceiling_or_floor : "+ U_value_area_ceiling_or_floor);
+		//System.out.println(building.getNickName() + "'s U_value_area_wall : "+ U_value_area_wall);
 
-		SHC_area = floorArea * meter2Feet * meter2Feet * SHC ;
+		// assuming airChangePerHr = .5 and q_H = 21.4;
+		U_value_area_crack_length = 0.244 * .075 * airChangePerHr * q_H_factor * (4 * (2 + 3) );
+		// assuming four windows
+		U_value_area_crack_length_for_airlock = 0.244 * .075 * airChangePerHr * q_H_factor * ( 2 * (2 + 6) + 4 * (2 + 3) );
+		//assuming two EVA airlock
+		
+		//System.out.println(building.getNickName() + "'s U_value_area_crack_length : "+ U_value_area_crack_length);
+		//System.out.println(building.getNickName() + "'s U_value_area_crack_length_for_airlock : "+ U_value_area_crack_length_for_airlock);
+
+		SHC_area = floorArea * M_TO_FT * M_TO_FT * SHC ;
 
 		t_initial = building.getInitialTemperature();
 		currentTemperature = t_initial;
@@ -222,7 +249,17 @@ implements Serializable {
 
 
 
-
+	/**
+     * Is this building a hallway or tunnel.
+     * @return true or false
+     */
+	//2015-06-21  Added isGreenhouse()
+    public boolean isHallway() {
+		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel"))
+			return true;
+		else
+			return false;
+    }
 
 	/**
      * Is this building a greenhouse.
@@ -291,45 +328,79 @@ implements Serializable {
 	 */
 	//2015-02-19 Modified determineDeltaTemperature() to use MILLISOLS_PER_UPDATE
 	public double determineDeltaTemperature(double t, double millisols) {
+		HeatMode mode = building.getHeatMode();
+		double time_interval = elapsedTimeinHrs * millisols;
 		// THREE-PART CALCULATION
 		double outsideTemperature = settlement.getOutsideTemperature();
 		// heatGain and heatLoss are to be converted from kJ to BTU below
 		//
 		// (1) CALCULATE HEAT GAIN
 		double heatGain = 0; // in BTU
-		double heatGenerated = 0; //in kW
-		if (building.getHeatMode() == HeatMode.ONLINE || building.getHeatMode() == HeatMode.HALF_HEAT) {
+		double heatPumpedIn = 0; //in kW
+		if (mode == HeatMode.ONLINE || mode == HeatMode.HALF_HEAT) {
 			// Note: 1 kW = 3412.14 BTU/hr
 			if (thermalSystem == null)
 				thermalSystem = settlement.getThermalSystem();
-			heatGenerated =  thermalSystem.getGeneratedHeat();
+			heatPumpedIn =  thermalSystem.getGeneratedHeat();
 		}
-		int num = building.numOfPeopleInAirLock();
+		
+		int num = building.numOfPeopleInAirLock(); // if num > 0, this building has an airlock
+		
 		// each person emits about 350 BTU/hr
 		double heatGainFromOccupants = HEAT_DISSIPATED_PER_PERSON * building.getInhabitants().size() ;
 		// the energy required to heat up the in-rush of the new martian air
-		double heatGainFromEVAHeater = Building.kW_EVA_HEATER * num /2D; 
-		heatGain = BTU_PER_HOUR_PER_kW * heatGenerated
-				+ heatGainFromOccupants
-				+ HEAT_GAIN_FROM_EQUIPMENT // in BTU/hr
-				+ heatGainFromEVAHeater;
+		
+		if (isHallway) {
+			heatGain = BTU_PER_HOUR_PER_kW * heatPumpedIn
+					+ heatGainFromOccupants;
+		}
+		else {
+			double heatGainFromEVAHeater = 0;
+			if (num > 0) heatGainFromEVAHeater = building.getTotalPowerForEVA()/2D; 
+			// divide by 2 since half of the time a person is doing ingress 
+			// Note : Assuming EVA heater requires .5kW of power for heating up the air for each person in an airlock during EVA ingress.
+
+			heatGain = BTU_PER_HOUR_PER_kW * (heatGainFromEVAHeater + heatPumpedIn) 
+					+ heatGainFromOccupants
+					+ HEAT_GAIN_FROM_EQUIPMENT; // in BTU/hr
+		}
 
 		// (2) CALCULATE HEAT LOSS
-		double energyExpendedToHeatAirlockMartianAir = 0;
-		if (num > 0)
-			energyExpendedToHeatAirlockMartianAir = energy_factor * (DEFAULT_ROOM_TEMPERATURE - outsideTemperature) * num /2D;
-				//(1) Divide by two since half of the time during EVA ingree 
-				//(1) the energy loss due to the original room-temperature air gushing out
-				// Note : Assuming EVA heater requires 1kW of power for heating up the air for each person in an airlock during EVA ingress.
-				// e.g. kW : 0.323
-				// e.g. BTU : 1101.4
-	
-		double diffTinF =  (t - outsideTemperature) * 1.8; //1.8 =  9D / 5D;
-		double heatLoss = diffTinF * (
-						//U_value_area_ceiling * 2D
-						//+ U_value_area_wall
-						U_value_area_crack_length * weather.getWindSpeed(location) * 3.28084 // 1 m/s = 3.28084 ft/s
-						+ BTU_PER_HOUR_PER_kW * energyExpendedToHeatAirlockMartianAir);
+		double energyHeatingAirlock = 0;
+		// the energy loss due to gushing out the warm settlement air when airlock is open to the cold Martian air
+		
+		if (num > 0 && isAirlockOpen) {
+			energyHeatingAirlock = energy_factor_EVA * (DEFAULT_ROOM_TEMPERATURE - outsideTemperature) * num ;
+			isAirlockOpen = false;
+		}
+
+
+		double convertCtoF =  (t - outsideTemperature) * 1.8; //1.8 =  9D / 5D;
+		
+		double structuralLoss = 0;
+		
+		if (num > 0) {
+			structuralLoss = convertCtoF * (
+					U_value_area_ceiling_or_floor * 2D
+					+ U_value_area_wall
+					+ U_value_area_crack_length_for_airlock * weather.getWindSpeed(location) * 3.28084);
+					// Note : 1 m/s = 3.28084 ft/s
+		}
+		else {
+			structuralLoss = convertCtoF * (
+						U_value_area_ceiling_or_floor * 2D
+						+ U_value_area_wall
+						+ U_value_area_crack_length * weather.getWindSpeed(location) * 3.28084);
+		}
+		
+		// TODO : Add heat loss due to ventilation between adjacent buildings
+		double ventilationHeatLoss = heatExtracted - heatGainVentilation(t); 
+		// reset heatExtracted to zero
+		heatExtracted = 0;
+		
+		double heatLoss = structuralLoss
+						+ BTU_PER_HOUR_PER_kW * (ventilationHeatLoss + energyHeatingAirlock);
+
 
 		// (3) CALCULATE SOLAR HEAT GAIN/LOSS
 		if (surfaceFeatures == null)
@@ -344,13 +415,13 @@ implements Serializable {
 
 		solarHeatGainLoss *= BTU_PER_HOUR_PER_kW / 1000D;
 
-		// (4) ADD INSULATION BLANKET TO MINIMIZE HEAT LOSS AT NIGHT
+		// (4) TODO : ADD INSULATION BLANKET TO MINIMIZE HEAT LOSS AT NIGHT, especially greenhouses
 
 		// (5) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
 		// if this building is a greenhouse
 		double lightingPower = 0;
 		
-		if (farm == null && isGreenhouse()) { // greenhouse has a semi-transparent rooftop
+		if (farm == null && isGreenhouse) { // greenhouse has a semi-transparent rooftop
 			farm = (Farming) building.getFunction(BuildingFunction.FARMING);
         	lightingPower = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high prssure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
 		}
@@ -359,22 +430,102 @@ implements Serializable {
 	        lightingPower = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high prssure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
 		}
 
+		lightingPower *= BTU_PER_HOUR_PER_kW;
+		
 		// (6) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
-		double changeOfTinF = ( elapsedTimeinHrs * millisols * (solarHeatGainLoss + lightingPower + heatGain - heatLoss) )/ SHC_area ;
-		double changeOfTinC = changeOfTinF * 0.5556; // 0.5556 = 5D / 9D ; // the difference between deg F and deg C . The term -32 got cancelled out
+		double changeOfTinF = time_interval * (solarHeatGainLoss + lightingPower + heatGain - heatLoss) / SHC_area ;
+		double changeOfTinC = changeOfTinF / convertCtoF ; // 5/9 = 1/convertCtoF ; // the difference between deg F and deg C . The term -32 got cancelled out
 		//applyHeatBuffer(changeOfTinC);
 
 		return changeOfTinC;
 	}
 
-	/**
-	 * Gets the temperature change of a building due to heat gain/loss
-	 * @return temperature (degree C)
-	 */
-	//public double getDeltaTemperature() {
-	//    return deltaTemperature;
-	//}
 
+	/**
+	 * Computes heat gain from adjacent room(s) due to air ventilation. This helps the temperature equilibrium
+	 * @param t temperature
+	 * @return temperature
+	 */
+	public double heatGainVentilation(double t) {
+		double total_dump = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
+		
+		if (t < (t_initial - 3 * T_LOWER_SENSITIVITY ) || t > (t_initial + 3 * T_UPPER_SENSITIVITY )) { // this temperature range is arbitrary
+			// TODO : determine if someone opens a hatch ??
+			
+			//LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, "Temperature is below 10 C at " + building + " in " + settlement, null);
+
+			if (adjacentBuildings == null) {
+				adjacentBuildings = settlement.getBuildingConnectors(building);
+			}
+			
+			int size = adjacentBuildings.size();
+			
+			for (int i = 0; i < size; i++) {
+				double t_0 = adjacentBuildings.get(i).getCurrentTemperature();
+				double ratio = t_0 / t;
+				double heat_dump_0 = 0;
+				if (t_0 > t)
+					// heat coming in
+					heat_dump_0 = .05 * ratio;
+				else
+					// heat is leaving
+					heat_dump_0 = -.05 / ratio;
+				
+				total_dump += heat_dump_0;
+			}
+/*			
+			double t_1 = 0, t_2 = 0;
+			
+			//boolean t1 = false, t2 = false;
+			int size = adjacentBuildings.size();
+			if (size == 1) {
+				//t1 = true;
+				t_1 = adjacentBuildings.get(0).getCurrentTemperature();
+				
+				double ratio_1 = t_1 / t;
+				if (t_1 > t)
+					// heat coming in
+					heat_dump_1 = .1 * ratio_1;
+				else
+					// heat is leaving
+					heat_dump_1 = -.1 / ratio_1;	
+				
+				adjacentBuildings.get(0).extractHeat(heat_dump_1);
+				
+				//heat_dump_2 = 0;
+			}
+			
+			else if (size == 2) {
+				//t2 = true;
+				t_1 = adjacentBuildings.get(0).getCurrentTemperature();
+				t_2 = adjacentBuildings.get(1).getCurrentTemperature();
+				
+				double ratio_1 = t_1 / t;
+				double ratio_2 = t_2 / t;
+				if (t_1 > t)
+					// heat coming in
+					heat_dump_1 = .1 * ratio_1;
+				else
+					// heat is leaving
+					heat_dump_1 = -.1 / ratio_1;			
+					
+				if (t_2 > t)
+					// heat coming in
+					heat_dump_2 = .1 * ratio_2;
+				else
+					// heat is leaving
+					heat_dump_2 = -.1 / ratio_2;
+				
+				adjacentBuildings.get(0).extractHeat(heat_dump_1);
+				adjacentBuildings.get(1).extractHeat(heat_dump_2);
+			}
+*/			
+		}
+		
+		return total_dump;
+	}
+
+	
 	/**
 	 * Applies a "mathematical" heat buffer to artificially stabilize temperature fluctuation due to rapid simulation time
 	 * @return temperature (degree C)
@@ -502,49 +653,6 @@ implements Serializable {
 	}
 
 	/**
-	 * Vents air to the adjacent room(s) to help reaching temperature equilibrium
-	 * @param t temperature
-	 * @return temperature
-	 */
-	public double ventAirToAdjacentRoom(double t) {
-		double new_t = 0; 
-		
-		if (t < (t_initial - 3 * T_LOWER_SENSITIVITY ) || t > (t_initial + 3 * T_UPPER_SENSITIVITY )) { // this temperature range is arbitrary
-			// TODO : determine if someone open a hatch ??
-			
-			//LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, "Temperature is below 10 C at " + building + " in " + settlement, null);
-
-			if (adjacentBuildings == null) {
-				adjacentBuildings = settlement.getAdjacentBuildings(building);
-			}
-			
-			boolean t1 = false, t2 = false;
-			int size = adjacentBuildings.size();
-			if (size == 1) {
-				t1 = true;
-				temperature_adjacent1 = adjacentBuildings.get(0).getCurrentTemperature();
-			}
-			else if (size == 2) {
-				t2 = true;
-				temperature_adjacent2 = adjacentBuildings.get(1).getCurrentTemperature();
-			}
-			
-			//double diffusion = time * 100D;
-			
-			if (t1 && t2)
-				new_t = .01 * temperature_adjacent1 + .01 * temperature_adjacent2 + .98 * t;
-			else if (t1)
-				new_t = .01 * temperature_adjacent1 + .99 * t;
-			else if (t2)
-				new_t = .01 * temperature_adjacent2 + .99 * t;	
-			
-			//double dt = new_t - t;
-		}
-		
-		return new_t;
-	}
-
-	/**
 	 * Gets the amount of power required when function is at full power.
 	 * @return power (kW)
 	 */
@@ -597,7 +705,19 @@ implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Sets the heat that has been added or removed from this building
+	 * Note : heat removed if negative. heat added if positive
+	 * @param heat removed or added
+	 */
+	public void extractHeat(double heat) {
+		heatExtracted = heat;
+	}
 
+	public void setAirlockOpen() {
+		isAirlockOpen = true;
+	}
+	
 	@Override
 	public double getMaintenanceTime() {
 		// TODO Auto-generated method stub
