@@ -150,7 +150,7 @@ implements Serializable {
 	/** */
 	private boolean isHallway = false;
 	/** Is the airlock door open */
-	private boolean isAirlockOpen = false;
+	private boolean hasHeatDumpViaAirlockOuterDoor = false;
 	/** */
 	private Map<Integer, Double> emissivityMap;
 	/** */
@@ -211,6 +211,9 @@ implements Serializable {
 			transmittance = 0.05; // very little solar irradiance transmit energy into the building, compared to transparent rooftop
 		}
 
+		if (isHallway())
+			isHallway = true;
+		
 		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
 
 		U_value_area_ceiling_or_floor = U_value * floorArea * M_TO_FT;
@@ -253,24 +256,16 @@ implements Serializable {
      * Is this building a hallway or tunnel.
      * @return true or false
      */
-	//2015-06-21  Added isGreenhouse()
     public boolean isHallway() {
-		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel"))
-			return true;
-		else
-			return false;
+    	return buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel");
     }
 
 	/**
      * Is this building a greenhouse.
      * @return true or false
      */
-	//2015-06-21  Added isGreenhouse()
     public boolean isGreenhouse() {
-		if (buildingType.toLowerCase().contains("greenhouse"))
-			return true;
-		else
-			return false;
+		return buildingType.toLowerCase().contains("greenhouse");
     }
 
 
@@ -278,7 +273,6 @@ implements Serializable {
      * Gets the temperature of a building.
      * @return temperature (deg C)
     */
-	//2014-10-17  Added getCurrentTemperature()
     public double getCurrentTemperature() {
     	return currentTemperature;
     }
@@ -287,7 +281,6 @@ implements Serializable {
 	/** Turn heat source off if reaching pre-setting temperature
 	 * @return none. set heatMode
 	 */
-	// 2014-11-02 Added checking if PowerMode.POWER_DOWN
 	// TODO: also set up a time sensitivity value
 	public void setNewHeatMode(double t) {
 		double t_now = t;
@@ -314,19 +307,10 @@ implements Serializable {
 
 	}
 
-	/**Adjust the current temperature in response to the delta temperature
-	 * @return none. update currentTemperature
-	 */
-	//public void updateTemperature(double dt) {
-	//	currentTemperature += dt;
-	//}
-
-
 	/**
 	 * Determines the change in temperature 
 	 * @return deltaTemperature
 	 */
-	//2015-02-19 Modified determineDeltaTemperature() to use MILLISOLS_PER_UPDATE
 	public double determineDeltaTemperature(double t, double millisols) {
 		HeatMode mode = building.getHeatMode();
 		double time_interval = elapsedTimeinHrs * millisols;
@@ -369,9 +353,9 @@ implements Serializable {
 		double energyHeatingAirlock = 0;
 		// the energy loss due to gushing out the warm settlement air when airlock is open to the cold Martian air
 		
-		if (num > 0 && isAirlockOpen) {
+		if (num > 0 && hasHeatDumpViaAirlockOuterDoor) {
 			energyHeatingAirlock = energy_factor_EVA * (DEFAULT_ROOM_TEMPERATURE - outsideTemperature) * num ;
-			isAirlockOpen = false;
+			hasHeatDumpViaAirlockOuterDoor = false;
 		}
 
 
@@ -449,7 +433,7 @@ implements Serializable {
 	public double heatGainVentilation(double t) {
 		double total_dump = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
 		
-		if (t < (t_initial - 3 * T_LOWER_SENSITIVITY ) || t > (t_initial + 3 * T_UPPER_SENSITIVITY )) { // this temperature range is arbitrary
+		if (t < (t_initial - 4 * T_LOWER_SENSITIVITY ) || t > (t_initial + 4 * T_UPPER_SENSITIVITY )) { // this temperature range is arbitrary
 			// TODO : determine if someone opens a hatch ??
 			
 			//LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, "Temperature is below 10 C at " + building + " in " + settlement, null);
@@ -466,10 +450,10 @@ implements Serializable {
 				double heat_dump_0 = 0;
 				if (t_0 > t)
 					// heat coming in
-					heat_dump_0 = .05 * ratio;
+					heat_dump_0 = .02 * ratio;
 				else
 					// heat is leaving
-					heat_dump_0 = -.05 / ratio;
+					heat_dump_0 = -.02 / ratio;
 				
 				total_dump += heat_dump_0;
 			}
@@ -714,8 +698,12 @@ implements Serializable {
 		heatExtracted = heat;
 	}
 
-	public void setAirlockOpen() {
-		isAirlockOpen = true;
+	/**
+	 * Flags the presence of the heat loss due to opening an airlock outer door
+	 * @param value
+	 */
+	public void flagHeatLostViaAirlockOuterDoor(boolean value) {
+		hasHeatDumpViaAirlockOuterDoor = value;
 	}
 	
 	@Override

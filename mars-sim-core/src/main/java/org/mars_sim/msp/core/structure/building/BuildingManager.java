@@ -1897,7 +1897,6 @@ public class BuildingManager implements Serializable {
      * Gets a unique ID for a new inhabitable building in a settlement (but not unique in a simulation)
      * @return inhabitable ID (starting from 0).
      */
-    // 2015-12-30 Added getNextInhabitableID()
     public int getNextInhabitableID() {
 
         int max = -1;
@@ -1913,11 +1912,29 @@ public class BuildingManager implements Serializable {
     }
 
     /**
+     * Gets the largest inhabitable ID in a settlement
+     * @return inhabitable ID (starting from 0).
+     */
+    public int getLargestInhabitableID() {
+
+        int max = -1;
+        for (Building b : buildings) {
+        	if (b.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                int id = b.getInhabitableID();
+                max = Math.max(id, max);
+                //if (id > nextNum)
+                //	nextNum++;
+            }
+        }
+        return max;
+    }
+    
+    
+    /**
      * Gets an available building type ID for a new building.
      * @param buildingType
      * @return type ID (starting from 1).
      */
-    // 2015-12-13 Added getNextBuildingTypeID()
     public int getNextBuildingTypeID(String buildingType) {
 
         int largest = 0;

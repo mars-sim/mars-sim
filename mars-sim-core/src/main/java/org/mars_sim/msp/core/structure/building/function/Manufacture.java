@@ -85,6 +85,8 @@ implements Serializable {
     private Inventory inv;// b_inv;
     private ItemResource printerItem;
     
+    private MarsClock marsClock;
+
 	private static BuildingConfig buildingConfig;
 	
     /**
@@ -103,6 +105,8 @@ implements Serializable {
         inv = building.getSettlementInventory();
         //s_inv = building.getSettlementInventory();
         //b_inv = building.getBuildingInventory();
+
+        marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         printerItem = ItemResource.findItemResource(LASER_SINTERING_3D_PRINTER);
 
@@ -709,18 +713,6 @@ implements Serializable {
     //	checkNumPrinter = value;
     //}
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
     /**
      * Check once a sol if enough 3D printer(s) are supporting the manufacturing processes
      */
@@ -728,7 +720,7 @@ implements Serializable {
     public void checkPrinters() {
         //System.out.println("Manufacture : checkPrinters()");
 
-        MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        //MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // check for the passing of each day
         int solElapsed = marsClock.getSolElapsedFromStart();
@@ -771,6 +763,19 @@ implements Serializable {
     public int getNumPrinterInUse() {
         return supportingProcesses;
     }
+
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 
     @Override

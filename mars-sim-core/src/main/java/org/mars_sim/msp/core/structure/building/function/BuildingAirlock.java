@@ -77,6 +77,10 @@ public class BuildingAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) { 
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
+            	
+                // Pump air into the airlock to make it breathable
+                building.getSettlement().getCompositionOfAir().pumpOrRecaptureAir(building.getInhabitableID(), true, building);
+                  
                 if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
                 	//logger.fine(
                 	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
@@ -86,8 +90,7 @@ public class BuildingAirlock extends Airlock {
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
                     
-                    // Pump air into the airlock to make it breathable
-                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), true, building);
+
 
                 }
                 else {
@@ -99,6 +102,13 @@ public class BuildingAirlock extends Airlock {
             else if (DEPRESSURIZED.equals(getState())) { 
             	// check if the airlock has been depressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
+            	
+                // Upon depressurization, there is heat loss to the Martian air in Heating class
+                building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
+                
+                // Recapture air from the airlock before depressurizing it
+                building.getSettlement().getCompositionOfAir().pumpOrRecaptureAir(building.getInhabitableID(), false, building);
+                
                 if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
                    	//logger.fine(
                 	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
@@ -108,10 +118,8 @@ public class BuildingAirlock extends Airlock {
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
 
-                    // Upon depressurization, there is heat loss to the Martian air in Heating class
-                    building.getThermalGeneration().getHeating().setAirlockOpen();
                     // Recapture air from the airlock and store for us
-                    building.getSettlement().getCompositionOfAir().pumpOrExtractAir(building.getInhabitableID(), false, building);
+                    building.getSettlement().getCompositionOfAir().pumpOrRecaptureAir(building.getInhabitableID(), true, building);
 
                 }
                 else {

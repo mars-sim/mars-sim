@@ -256,6 +256,8 @@ public abstract class Airlock implements Serializable {
 
                 }
                 outerDoorLocked = true;
+                
+                //operator.getBuildingLocation().getThermalGeneration().getHeating().flagHeatDumpViaAirlockOuterDoor(false);
             }
             else {
                 return false;
@@ -402,7 +404,7 @@ public abstract class Airlock implements Serializable {
                     	 Person person = (Person) occupant;
                      	 logger.finer("Airlock has been " + getState() + ". " + person.getName() + " at " + getEntity() + " is about to call exitAirlock()");
                      }
-
+                
                      exitAirlock(occupant);
                 }
 

@@ -68,12 +68,12 @@ public class CompositionOfAir implements Serializable {
 	//private static final double O2_PERCENT = 0;//20.946;
 	//private static final double H2O_PERCENT = 0;//0.0047;
 
-	private static final double[] STANDARD_GAS_PERCENT = new double[] {.04, .93, 78.084, 20.946, 0.0047};
+	private static final double[] STANDARD_GAS_PERCENT = new double[] {.0407, .934, 78.0043, 20.021, 1}; // assuming having 1% of moisture
 	
 	
 	private static final double CO2_PARTIAL_PRESSURE = 0.000407;
 	private static final double ARGON_PARTIAL_PRESSURE = 0.00934;
-	private static final double N2_PARTIAL_PRESSURE = .78;
+	private static final double N2_PARTIAL_PRESSURE = .780043;
 	private static final double O2_PARTIAL_PRESSURE = .20021;
 	private static final double H2O_PARTIAL_PRESSURE = 0.01;
 	
@@ -86,7 +86,7 @@ public class CompositionOfAir implements Serializable {
 	public static final double CH4_MOLAR_MASS = 16.04276; // [in g/mol] 
 	public static final double H2_MOLAR_MASS = 2.016; // [in g/mol] 
 	
-	private static final int MILLISOLS_PER_UPDATE = 100 ;
+	private static final int MILLISOLS_PER_UPDATE = 50 ;
 	
     public static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; 
     // 1 kilopascal = 0.00986923267 atm
@@ -121,9 +121,8 @@ public class CompositionOfAir implements Serializable {
 	// in Martian atmosphere, nitrogen (~2.7%) , argon (~1.6%) ,  carbon dioxide (~95.3%)
 	
 	// Data members
-	private int numCache;
-	
-	private int solCache = 0;
+	private int numIDsCache;
+	//private int solCache = 0;
 
 	private double [] fixedVolume; // [in liter] note: // 1 Cubic Meter = 1,000 Liters
 	private double [] totalPressure;
@@ -187,26 +186,25 @@ public class CompositionOfAir implements Serializable {
 
 		buildings = buildingManager.getBuildingsWithLifeSupport();
 
-		int num = buildings.size();
-		numCache = num;
+		int numIDs = buildingManager.getLargestInhabitableID() + 1;
+		numIDsCache = numIDs;
 
 		// CO2, H2O, N2, O2, Ar2, He, CH4...
 		// numGases = 5;
 
-		percent = new double[numGases][num];
-		partialPressure = new double[numGases][num];
-		temperature = new double[numGases][num];
-		numMoles = new double[numGases][num];
-		mass = new double[numGases][num];
+		percent = new double[numGases][numIDs];
+		partialPressure = new double[numGases][numIDs];
+		temperature = new double[numGases][numIDs];
+		numMoles = new double[numGases][numIDs];
+		mass = new double[numGases][numIDs];
 		
-		fixedVolume = new double[num];
-		totalPressure = new double[num];
-		totalMoles = new double[num];
-		totalMass = new double[num];
-		//totalPercent = new double[num];
-		
+		fixedVolume = new double[numIDs];
+		totalPressure = new double[numIDs];
+		totalMoles = new double[numIDs];
+		totalMass = new double[numIDs];
+
 		// Part 1 : set up initial conditions at the start of sim
-		for (int id = 0; id< num; id++) {
+		for (int id = 0; id < numIDs; id++) {
 
 			partialPressure [0][id] = CO2_PARTIAL_PRESSURE ;
 			partialPressure [1][id] = ARGON_PARTIAL_PRESSURE;
@@ -263,7 +261,7 @@ public class CompositionOfAir implements Serializable {
 		}
 		
 		// Part 3 : calculate for each building the percent composition
-		for (int id = 0; id< num; id++) {
+		for (int id = 0; id< numIDs; id++) {
 			// calculate for each gas the % composition
 			for (int gas= 0; gas< numGases; gas++) {
 				percent [gas][id] = partialPressure [gas][id] / totalPressure[id] * 100D;
@@ -279,10 +277,10 @@ public class CompositionOfAir implements Serializable {
 	 */
 	public void timePassing(double time) {
 		List<Building> newList = buildingManager.getBuildingsWithLifeSupport();
-		int num = buildings.size();
+		int num = buildingManager.getLargestInhabitableID() + 1;
 		
 		// if adding or subtracting a building form the settlement
-		addAirNewBuilding(newList, num);
+		addAirNew(newList, num);
 		
 		// For each time interval
 		calculateGasExchange(time, newList, num);
@@ -437,7 +435,7 @@ public class CompositionOfAir implements Serializable {
 			double t = C_TO_K  + b.getCurrentTemperature();
 			
 			for (int gas = 0; gas < numGases; gas++) {
-				double pp = percent [gas][id] ;
+				double pt = percent [gas][id] ;
 				
 				double molecularMass = getMolecularMass(gas);
 
@@ -447,14 +445,19 @@ public class CompositionOfAir implements Serializable {
 				//[3] = O2
 				//[4] = H2O
 				
-				// if this gas has % composition BELOW 95% of the standard percentage of air composition
-				if (pp < STANDARD_GAS_PERCENT[gas] * LOWER_THRESHOLD_GAS_COMPOSITION
-						|| pp > STANDARD_GAS_PERCENT[gas] * UPPER_THRESHOLD_GAS_COMPOSITION) {
-					double d_percent = STANDARD_GAS_PERCENT[gas] - pp; // d_percent can be -ve
-					double d_pressure = totalPressure[id] * d_percent/100D; // d_pressure can be -ve
-					double d_nm = d_pressure /R_GAS_CONSTANT /t * fixedVolume [id]; // d_nm can be -ve
-					double d_mass = d_nm * molecularMass * 1.5D; // d_mass can be -ve; add or extract a little more to save the future effort
+				double d_percent = STANDARD_GAS_PERCENT[gas] - pt; // d_percent is +ve if not enough gas ; d_percent is -ve if too much gas is present 
+				double part = d_percent/STANDARD_GAS_PERCENT[gas];
+				// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air composition
+				if (part < LOWER_THRESHOLD_GAS_COMPOSITION
+						|| part > UPPER_THRESHOLD_GAS_COMPOSITION) {
+					//double d_pressure = totalPressure[id] * d_percent/100D; // d_pressure can be -ve
+					//double d_nm = d_pressure /R_GAS_CONSTANT /t * fixedVolume [id]; // d_nm can be -ve
+					double d_nm = totalMoles[id] * d_percent/100D;
+					double d_mass = d_nm * molecularMass; // d_mass can be -ve; 
 					
+					//if (d_mass >= 0)
+					//	d_mass = d_mass * 1.1D; //add or extract a little more to save the future effort
+
 					AmountResource ar = getGasAR(gas);
 					
 					if (d_percent > 0)
@@ -533,16 +536,16 @@ public class CompositionOfAir implements Serializable {
 	/**
 	 * Expands the array to keep track of the gases in the newly added buildings
 	 * @param buildings a list of buildings
-	 * @param num numbers of buildings
+	 * @param numID numbers of buildings
 	 */
-	public void addAirNewBuilding(List<Building> buildings, int num) {
+	public void addAirNew(List<Building> buildings, int numID) {
 		
-		int diff = 	num - numCache; 		
+		int diff = 	numID - numIDsCache; 		
 	
-		if (num != numCache && diff > 0) {
+		if (numID != numIDsCache && diff > 0) {
 			//if a building is added from a settlement	
 
-			numCache = num;
+			numIDsCache = numID;
 			//System.out.println("numBuildings : " + numBuildings + "   numBuildingsCache : " + numBuildingsCache);
 			//System.out.println("percentComposition.length : " + percentComposition.length);
 			//System.out.println("partialPressure[0].length : " + partialPressure[0].length);
@@ -555,12 +558,12 @@ public class CompositionOfAir implements Serializable {
 			double [] new_totalMoles = Arrays.copyOf(totalMoles, totalMoles.length + diff);
 			double [] new_totalMass = Arrays.copyOf(totalMass, totalMass.length + diff);
 			
-			double [][] new_temperature = createANewArray(temperature, num);
-			double [][] new_percent = createANewArray(percent, num);
+			double [][] new_temperature = createGasArray(temperature, numID);
+			double [][] new_percent = createGasArray(percent, numID);
 
-			double [][] new_partialPressure = createANewArray(partialPressure, num);
-			double [][] new_numMoles = createANewArray(numMoles, num);
-			double [][] new_mass = createANewArray(mass, num);
+			double [][] new_partialPressure = createGasArray(partialPressure, numID);
+			double [][] new_numMoles = createGasArray(numMoles, numID);
+			double [][] new_mass = createGasArray(mass, numID);
 
 			//double [][] new_percent = Arrays.copyOf(percentComposition, percentComposition[0].length + diff);
 			//double [][] new_partialPressure = Arrays.copyOf(partialPressure, partialPressure[0].length + diff);
@@ -574,7 +577,7 @@ public class CompositionOfAir implements Serializable {
 
 			//System.out.println("new_partialPressure[0].length : " + new_partialPressure[0].length);
 
-			for (int id = numCache ; id< num; id++) {
+			for (int id = numID ; id< numID; id++) {
 				//System.out.println("j : " + j);
 				new_totalPressure [id] = 1.0;
 
@@ -597,7 +600,7 @@ public class CompositionOfAir implements Serializable {
 			// Assembled a list of new buildings
 			for (Building b: buildings) {
 				int id = b.getInhabitableID();
-				if (id >= numCache)
+				if (id >= numIDsCache)
 					newList.add(b);
 			}
 			
@@ -639,7 +642,7 @@ public class CompositionOfAir implements Serializable {
 			}
 			
 			// Part 3 : calculate for each building the percent composition
-			for (int id = 0; id< num; id++) {
+			for (int id = 0; id< numID; id++) {
 				// calculate for each gas the % composition
 				for (int gas= 0; gas< numGases; gas++) {
 					new_percent [gas][id] = new_partialPressure [gas][id] / new_totalPressure [id] * 100D;
@@ -669,18 +672,24 @@ public class CompositionOfAir implements Serializable {
 			double [] new_totalPressure = new double[numBuildings];
 */
 
-			numCache = num;
+			numIDsCache = numID;
 		}
 
 
 	}
 
-	public double [][] createANewArray(double [][] array, int numBuildings) {
+	/**
+	 * Creates a new array for gases and pad it with zero for the new building
+	 * @param array
+	 * @param numBuildings
+	 * @return
+	 */
+	public double [][] createGasArray(double [][] array, int numBuildings) {
 		double [][] result = new double[numGases][numBuildings];
 
 		for (int j = 0; j< numBuildings; j++) {
 			for (int i= 0; i< numGases; i++) {
-			if (j < numCache) {
+			if (j < numIDsCache) {
 				result[i][j] = array[i][j];
 				}
 			else
@@ -691,20 +700,22 @@ public class CompositionOfAir implements Serializable {
 	}
 
 	/**
-	 * Pumps air to or extract air to a building with this id
+	 * Pumps air to or extract air from a building with this id
 	 * @param id inhabitable id of a building
 	 * @param pump positive if pumped, negative if extracted
 	 * @param b the building
 	 */
-	public void pumpOrExtractAir(int id, boolean pump, Building b) {
-		double moles_to_extract[] = new double[numGases];
-					
+	public void pumpOrRecaptureAir(int id, boolean pump, Building b) {
+		double d_moles[] = new double[numGases];
+		//double t = b.getCurrentTemperature();
+		
 		for (int gas = 0; gas < numGases; gas++) {
-			double pressure = getPartialPressure()[gas][id];
-			double t = getTemperature()[gas][id];
+			//double pressure = getPartialPressure()[gas][id];
+			//double t = getTemperature()[gas][id];
 			// calculate moles on each gas
-			moles_to_extract[gas] = pressure /  R_GAS_CONSTANT / t * AIRLOCK_VOLUME_IN_LITER;
-			pumpOrExtractMoles(gas, id, moles_to_extract[gas], pump, b);
+			d_moles[gas] = numMoles[gas][id] * AIRLOCK_VOLUME_IN_LITER / fixedVolume[id]; //pressure /  R_GAS_CONSTANT / t * AIRLOCK_VOLUME_IN_LITER;
+
+			pumpOrExtractMoles(gas, id, d_moles[gas], pump, b);
 		}
 	}
 	
@@ -717,8 +728,8 @@ public class CompositionOfAir implements Serializable {
 	 * @param b the building
 	 */
 	public void pumpOrExtractMoles(int gas, int id, double d_moles, boolean pump, Building b) {
-		double old_moles = getNumMoles()[gas][id];
-		double old_mass = getMass()[gas][id];		
+		double old_moles = numMoles[gas][id];
+		double old_mass = mass[gas][id];		
 		double new_moles = 0;
 		double new_mass = 0;
 		double molecularMass = getMolecularMass(gas);
@@ -727,17 +738,22 @@ public class CompositionOfAir implements Serializable {
 		
 		AmountResource ar = getGasAR(gas);
 
+		//System.out.println(" # moles of [" + gas + "] to pump or recapture : " + d_moles);
+		//System.out.println(" mass of [" + gas + "] to pump or recapture : " + d_mass);
 		if (pump) {
 			new_moles = old_moles + d_moles;
 			new_mass = old_mass + d_mass;
 			Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
 		}
-		else {
+		else { // recapture
 			new_moles = old_moles - d_moles;
-			new_mass = old_mass + d_mass;
+			new_mass = old_mass - d_mass;
 			Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar , b.getInventory()); 
 			if (new_moles < 0)
 				new_moles = 0;
+			if (new_mass < 0)
+				new_mass = 0;
+			
 		}
 			
 		numMoles[gas][id] = new_moles;
