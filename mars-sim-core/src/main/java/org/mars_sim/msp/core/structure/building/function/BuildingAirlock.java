@@ -83,10 +83,10 @@ public class BuildingAirlock extends Airlock {
                   
                 if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
                 	//logger.fine(
-                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-                			+ " has got inside the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
+                	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
+                	//		+ " has got inside the airlock at " + building + " in " 
+                	//		+ building.getBuildingManager().getSettlement()
+                	//		+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
                     
@@ -111,10 +111,10 @@ public class BuildingAirlock extends Airlock {
                 
                 if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
                    	//logger.fine(
-                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-                			+ " has got inside the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+                	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
+                	//		+ " has got inside the airlock at " + building + " in " 
+                	//		+ building.getBuildingManager().getSettlement()
+                	//		+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
 

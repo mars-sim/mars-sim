@@ -1385,8 +1385,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
-		<description> The veritcal axis wind turbine is constructed with strong, lightweight 
-		material and is gigantic. It is made possible due to Mars' low gravity and wind load.
+		<description> This Wind Farm consists of a total of 9 Vertical Axis Wind Turbine (VAWT) 
+		constructed with strong, lightweight material suited for Mars' low gravity and low 
+		density wind load. Each VAWT provides up to 2 kW of power at the wind speed of 14 m/s
 		</description>
 		<!-- http://colonizeantarctica.blogspot.com/2008/01/vertical-axis-wind-turbines.html -->
 
@@ -1395,7 +1396,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Wind Power Source" power="10.0" />
+				<power-source type="Wind Power Source" power="18.0" />
 			</power-generation>
 		</functions>
 	</building>

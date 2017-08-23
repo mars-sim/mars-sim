@@ -22,8 +22,6 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
-import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The PowerGrid class is a settlement's building power grid.
@@ -515,15 +513,15 @@ implements Serializable {
 
 					// update the energy stored in this battery
 					storage.setEnergyStored(stored);
-					
+/*					
 					gap = max - stored;
 					one_percent = max * .01;
 					
 					if (gap <= one_percent)
-						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+						LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
 								"The grid battery at " + building.getNickName() + " in " + settlement.getName() 
 								+ " has been charged to 99% (at " + Math.round(stored * 100D)/100D + " kWh)", null);
-
+*/
 				}
 				
 			}

@@ -725,6 +725,9 @@ implements Serializable {
 				//& reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
 				//|| reason.equals(SUCCESSFULLY_DISEMBARKED)
 				//|| reason.equals(USER_ABORTED_MISSION)) {
+			
+			// Note : there can be custom reason such as "Equipment EVA Suit 12 cannot be loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
+			
 			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 			
 			if (startingMember.getSettlement() != null)
@@ -740,8 +743,16 @@ implements Serializable {
 				if (!members.isEmpty()) {	
 					logger.info("Mission members removed : " + members);
 				    Object[] p = members.toArray();
-	                for (Object aP : p) {
-	                    removeMember((MissionMember) aP);
+	                for (Object o : p) {
+	                    removeMember((MissionMember) o);
+	                    if (o instanceof Person) {
+	        		        Person person = (Person) o;
+		                    person.getAssociatedSettlement().getInventory().storeUnit(person);
+	        		    }
+	                    else if (o instanceof Robot) {
+	                    	Robot robot = (Robot) o;
+	                    	robot.getAssociatedSettlement().getInventory().storeUnit(robot);
+	        		    }
 	                }
 				}
 			}
