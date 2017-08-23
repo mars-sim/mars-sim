@@ -237,26 +237,27 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		config = SimulationConfig.instance().getPersonConfiguration();
 
 		attributes = new NaturalAttributeManager(this);
-		// 2015-02-27 Added JobHistory
+
 		jobHistory = new JobHistory(this);
 
 		mind = new Mind(this);
 
+		setupChromosomeMap();
+		
 		health = new PhysicalCondition(this);
 
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
-		// 2015-02-27 Added Favorite class
+
 		favorite = new Favorite(this);
-		// 2015-04-28 Added Role class
+
 		role = new Role(this);
-		// 2015-03-19 Added TaskSchedule class
+
 		taskSchedule = new TaskSchedule(this);
-		// 2015-06-07 Added Preference
+
 		preference = new Preference(this);
 
 		assignReportingAuthority();
-		// 2016-01-13 Set up Chromosomes
-		setupChromosomeMap();
+
 		// Put person in proper building.
 		associatedSettlement.getInventory().storeUnit(this);
 		// Note: setAssociatedSettlement(settlement)  will cause suffocation when reloading from a saved sim

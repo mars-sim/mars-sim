@@ -533,21 +533,19 @@ implements Serializable, Comparable<Task> {
 
 	        	Job job = person.getMind().getJob();
 
+	            if ((job != null) && job.isJobRelatedTask(this.getClass())) {
+	                // logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
+	                effectiveStressModifier*= JOB_STRESS_MODIFIER;
+	            }
 
-		            if ((job != null) && job.isJobRelatedTask(this.getClass())) {
-		                // logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
-		                effectiveStressModifier*= JOB_STRESS_MODIFIER;
-		            }
+	            // Reduce stress modifier for person's skill related to the task.
+	            int skill = this.getEffectiveSkillLevel();
+	            effectiveStressModifier-= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
 
-		            // Reduce stress modifier for person's skill related to the task.
-		            int skill = this.getEffectiveSkillLevel();
-		            effectiveStressModifier-= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
-
-		            // If effective stress modifier < 0, set it to 0.
-		            if (effectiveStressModifier < 0D) {
-		                effectiveStressModifier = 0D;
-		            }
-
+	            // If effective stress modifier < 0, set it to 0.
+	            if (effectiveStressModifier < 0D) {
+	                effectiveStressModifier = 0D;
+	            }
 	        }
 
 	        condition.setStress(condition.getStress() + (effectiveStressModifier * time));

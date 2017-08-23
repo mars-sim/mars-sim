@@ -71,7 +71,7 @@ implements Serializable {
 	private static final double MIDNIGHT_SHIFT_MEAL_START = 005D; // avoid conflict with TabPanelCooking when at 0D all yesterday's cookedMeals are removed
 
 	// Time (millisols) duration of meals.
-	private static final double MEALTIME_DURATION = 100D; // 250 milliSol = 6 hours
+	private static final double MEALTIME_DURATION = 75D; // 250 milliSol = 6 hours
 
 	// Data members
 	//private int counter;

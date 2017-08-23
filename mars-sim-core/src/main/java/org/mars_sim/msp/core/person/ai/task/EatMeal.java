@@ -99,12 +99,12 @@ public class EatMeal extends Task implements Serializable {
     private PreparedDessert nameOfDessert;
     private Cooking kitchen;
     private PreparingDessert dessertKitchen;
-    //private Inventory inv;
+    private PhysicalCondition condition;
     
     private AmountResource unpreparedDessertAR;
-    private static AmountResource napkinAR = ResourceUtil.napkinAR;
-    private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
-    private static AmountResource foodAR = ResourceUtil.foodAR;
+    //private static AmountResource napkinAR = ResourceUtil.napkinAR;
+    //private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
+    //private static AmountResource foodAR = ResourceUtil.foodAR;
 
     /**
      * Constructor.
@@ -116,6 +116,8 @@ public class EatMeal extends Task implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 		
+        condition = person.getPhysicalCondition();
+        
         // Check if person is not in a settlement or vehicle.
         LocationSituation location = person.getLocationSituation();
         if ((location != LocationSituation.IN_SETTLEMENT) && (location != LocationSituation.IN_VEHICLE)) {
@@ -139,7 +141,7 @@ public class EatMeal extends Task implements Serializable {
         if (container != null) {
         	Inventory inv = container.getInventory();
             if (inv != null)
-            	hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, napkinAR, inv, true);
+            	hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, true);
             else
             	endTask();
         }
@@ -311,7 +313,7 @@ public class EatMeal extends Task implements Serializable {
         // Proportion of meal being eaten over this time period.
         double mealProportion = eatingTime / mealEatingDuration;
 
-        PhysicalCondition condition = person.getPhysicalCondition();
+        //PhysicalCondition condition = person.getPhysicalCondition();
 
         // Reduce person's hunger by proportion of meal eaten.
         // Entire meal will reduce person's hunger to 0.
@@ -341,7 +343,7 @@ public class EatMeal extends Task implements Serializable {
 
         boolean result = true;
 
-        PhysicalCondition condition = person.getPhysicalCondition();
+        //PhysicalCondition condition = person.getPhysicalCondition();
 
         // Determine total preserved food amount eaten during this meal.
         //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
@@ -357,14 +359,14 @@ public class EatMeal extends Task implements Serializable {
         	Inventory inv = container.getInventory();
 
             // Take preserved food from inventory if it is available.
-            if (Storage.retrieveAnResource(foodAmount, foodAR, inv, true)) {
+            if (Storage.retrieveAnResource(foodAmount, ResourceUtil.foodAR, inv, true)) {
 
                 // Check if preserved food has gone bad.
                 if (RandomUtil.lessThanRandPercent(PRESERVED_FOOD_BAD_CHANCE)) {
                     //if (inv == null) 
                     	//logger.info("preserved food gone bad, turn into food waste");
                     // Throw food out.
-                    Storage.storeAnResource(foodAmount, foodWasteAR, inv, sourceName + "->eatPreservedFood()");
+                    Storage.storeAnResource(foodAmount, ResourceUtil.foodWasteAR, inv, sourceName + "->eatPreservedFood()");
                 }
                 else {
                     // Consume preserved food.
@@ -469,7 +471,7 @@ public class EatMeal extends Task implements Serializable {
         // Proportion of dessert being eaten over this time period.
         double dessertProportion = eatingTime / dessertEatingDuration;
 
-        PhysicalCondition condition = person.getPhysicalCondition();
+        //PhysicalCondition condition = person.getPhysicalCondition();
 
         // Reduce person's stress over time from eating a prepared.
         // This is in addition to normal stress reduction from eating task.
@@ -491,7 +493,7 @@ public class EatMeal extends Task implements Serializable {
 
         boolean result = true;
 
-        PhysicalCondition condition = person.getPhysicalCondition();
+        //PhysicalCondition condition = person.getPhysicalCondition();
 
         // Determine total unprepared dessert amount eaten during this meal.
         //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
@@ -534,7 +536,7 @@ public class EatMeal extends Task implements Serializable {
                         //if (inv == null) 
                         	//logger.info("dessert gone bad, turn into food waste");
                         // Throw dessert resource out.
-                        Storage.storeAnResource(dessertAmount, foodWasteAR, inv, sourceName + "->eatPreservedFood()");
+                        Storage.storeAnResource(dessertAmount, ResourceUtil.foodWasteAR, inv, sourceName + "->eatPreservedFood()");
                     }
                     else {
                         // Consume unpreserved dessert.
@@ -701,7 +703,7 @@ public class EatMeal extends Task implements Serializable {
                 Inventory inv = containerUnit.getInventory();
                 //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
                 //double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
-                result = Storage.retrieveAnResource(totalfood, foodAR, inv, false);
+                result = Storage.retrieveAnResource(totalfood, ResourceUtil.foodAR, inv, false);
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);

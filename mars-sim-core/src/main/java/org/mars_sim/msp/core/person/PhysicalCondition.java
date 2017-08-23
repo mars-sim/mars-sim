@@ -86,6 +86,11 @@ implements Serializable {
     private static final double FATIGUE_PERFORMANCE_MODIFIER = .0001D;
     /** Performance modifier for stress. */
     private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
+    /** Performance modifier for energy. */
+    private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
+  
+    
+    private static final double MAX_DAILY_ENERGY_INTAKE = 10100D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     //private static final String PANIC_ATTACK = "Panic Attack";
@@ -118,25 +123,29 @@ implements Serializable {
 	private int suppressHabit = 0;
 	private int spaceOut = 0;
 
-    /** Person's fatigue level. 0 to infinity */
+    /** Person's fatigue level. (0 to infinity) */
     private double fatigue;
-    /** Person's hunger level. */
+    /** Person's hunger level [in millisols]. */
     private double hunger;
-    /** Person's stress level (0.0 - 100.0). */
+    /** Person's stress level (0.0 % - 100.0 %). */
     private double stress;
     /** Performance factor 0.0 to 1.0. */
     private double performance;
-
+    /** Person's hygiene factor (0.0 - 100.0) */
+    private double hygiene; 
+    /** Person's energy level [in kJ] */
+    private double kJoules;
+    /** Person's energy absorption (0.0 to 1.0) */
+    private double absorption;
+    
     private double inclination_factor;
 
     private double personStarvationTime;
-    // 2015-02-23 Added hygiene
-    private double hygiene; /** Person's hygiene factor (0.0 - 100.0 */
-    // 2015-01-12 Person's energy level
-    private double kJoules;
-
+    
     private double foodDryMassPerServing;
-
+    
+    private double personalMaxEnergy;
+    
     /** True if person is alive. */
     private boolean alive;
 
@@ -144,10 +153,10 @@ implements Serializable {
 
     private boolean isStressedOut = false, isCollapsed = false;
 
+    
     private String name;
 
-    /** List of medication affecting the person. */
-    private List<Medication> medicationList;
+
     /** Injury/Illness effecting person. */
     private HashMap<Complaint, HealthProblem> problems;
     /** Person owning this physical. */
@@ -161,6 +170,9 @@ implements Serializable {
 
 	private MarsClock marsClock;
 
+    /** List of medications affecting the person. */
+    private List<Medication> medicationList;
+    
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
 
@@ -186,6 +198,7 @@ implements Serializable {
 		//oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
 		//carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
 
+
     	radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
 
@@ -196,12 +209,14 @@ implements Serializable {
 
         fatigue = RandomUtil.getRandomRegressionInteger(1000) * .5;
         stress = RandomUtil.getRandomRegressionInteger(100) * .2;
-        hunger = RandomUtil.getRandomRegressionInteger(1000) * .5;
-        kJoules = 500D + RandomUtil.getRandomRegressionInteger(2000);
-
-        // 2015-02-23 Added hygiene (not used yet)
+        hunger = RandomUtil.getRandomRegressionInteger(200);
+        kJoules = 1000D + RandomUtil.getRandomDouble(1000);
         hygiene = RandomUtil.getRandomDouble(100D);
-
+        
+        personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE + RandomUtil.getRandomInt(-50 - newPerson.getAge(), 50 + (int) (newPerson.getBaseMass())) ;
+        
+        absorption = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+        		
         medicationList = new ArrayList<Medication>();
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
@@ -689,15 +704,16 @@ implements Serializable {
         // double FOOD_COMPOSITION_ENERGY_RATIO = 16290;  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
         // double FACTOR = 0.8D;
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
+    	
         // Note: changing this to a more linear addition of energy.
         // We may want to change it back to exponential. - Scott
-        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
+    	
+        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO * absorption;
 //        kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO / kJoules) / ENERGY_FACTOR;
         kJoules += xdelta;
 
-        double dailyEnergyIntake = 10100D;
-        if (kJoules > dailyEnergyIntake) {
-        	kJoules = dailyEnergyIntake;
+        if (kJoules > personalMaxEnergy) {
+        	kJoules = personalMaxEnergy;
         }
         //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
     }
@@ -754,29 +770,29 @@ implements Serializable {
 
     	if (person != null) {
 
-                Complaint starvation = getMedicalManager().getStarvation();
+            Complaint starvation = getMedicalManager().getStarvation();
 
 //                if (hunger > personStarvationTime
 //                		|| ((hunger > 1000D) && (kJoules < 500D))) {
-                if (hunger > personStarvationTime) {
-                    if (!problems.containsKey(starvation)) {
-                        addMedicalComplaint(starvation);
-                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
-                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                    }
+            if (hunger > personStarvationTime) {
+                if (!problems.containsKey(starvation)) {
+                    addMedicalComplaint(starvation);
+                    //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
+                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                 }
+            }
 //                else if (hunger < 1000D
 //                		|| kJoules > 500D ) {
-                else if (hunger < 200D) {
-                    HealthProblem illness = problems.get(starvation);
-                    if (illness != null) {
-                        illness.startRecovery();
-                        //person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                    }
+            else if (hunger < 200D) {
+                HealthProblem illness = problems.get(starvation);
+                if (illness != null) {
+                    illness.startRecovery();
+                    //person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                 }
+            }
 
-                //person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
-        	}
+            //person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+        }
     }
 
 
@@ -1108,6 +1124,14 @@ implements Serializable {
             else if (stress > 70D) {
                 tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER/4;
                 //e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125  or  1.25%  on each frame
+            }
+            
+            // High stress reduces performance.
+            if (kJoules < 200D) {
+                tempPerformance -= (kJoules - 100D) * ENERGY_PERFORMANCE_MODIFIER/2;
+            }
+            else if (kJoules < 400D) {
+                tempPerformance -= (kJoules - 200D) * ENERGY_PERFORMANCE_MODIFIER/4;
             }
         }
 
