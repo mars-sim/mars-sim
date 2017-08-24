@@ -71,7 +71,7 @@ public class Crop implements Serializable {
 	public static final double BALLAST_LOSS_HPS = .1; // for high pressure sodium (HPS_LAMP)
 	public static final double NON_VISIBLE_RADIATION_HPS = .37; // for high pressure sodium (HPS_LAMP)
 	public static final double CONDUCTION_CONVECTION_HPS = .13; // for high pressure sodium (HPS_LAMP)
-	public static final double LOSS_AS_HEAT_HPS = NON_VISIBLE_RADIATION_HPS*.75 + CONDUCTION_CONVECTION_HPS/2D;
+	public static final double LOSS_FACTOR_HPS = NON_VISIBLE_RADIATION_HPS*.75 + CONDUCTION_CONVECTION_HPS/2D;
 	//public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
     private static final double T_TOLERANCE = 3D;
@@ -880,6 +880,8 @@ public class Crop implements Serializable {
 
 	    double currentMillisols = marsClock.getMillisol();
 
+	    //  The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
+	    
 		// 2015-04-09 Add instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)]  * [Wm^-2]
