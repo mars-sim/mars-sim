@@ -33,18 +33,16 @@ implements Serializable {
 	public ElectricHeatSource(double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.ELECTRIC_HEATING, maxHeat);
-		//logger.info("constructor : maxHeat is " + maxHeat);
-		//count++;
-		//logger.info("constructor : count is " + count);
+
 		this.maxCapacity = maxHeat;
 	}
 
 	/**
 	 * Gets the current heat produced by the heat source.
 	 * @param building the building this heat source is for.
-	 * @return heat [in Joules]
-	 * Called by ThermalGeneration.java
+	 * @return heat [in kW]
 	 */
+	// Called by ThermalGeneration.java
 	public double getCurrentHeat(Building building) {		
 		return maxCapacity;// * efficiency_electric_heat ;
 	}
@@ -58,8 +56,20 @@ implements Serializable {
 		return getMaxHeat()/2D;
 	}
 
+
+	@Override
+	public double getCurrentPower(Building building) {
+		// TODO Auto-generated method stub
+		return 0.0;
+	}
+	
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxHeat() * 1D;
 	}
+
+	 @Override
+	 public void destroy() {
+		 super.destroy();
+	 }
 }

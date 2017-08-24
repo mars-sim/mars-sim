@@ -84,14 +84,16 @@ implements Serializable {
 	public abstract double getMaintenanceTime();
 
 	/**
+	 * Gets the current Power produced by the heat source.
+	 * @param building the building this heat source is for.
+	 * @return power (kW)
+	 */
+	public abstract double getCurrentPower(Building building);
+
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		type = null;
-	}
-
-	public double getCurrentPower(Building building) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

@@ -266,7 +266,7 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    	//System.out.println(building.getNickName() + "'s power is " + heatSource.getCurrentPower(getBuilding()));
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
 				    //else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
@@ -322,7 +322,7 @@ implements Serializable {
 
 		powerGenerated = calculateGeneratedPower();
 
-		if ( powerGeneratedCache != heatGenerated) {
+		if ( powerGeneratedCache != powerGenerated) {
 			// if heatGeneratedCache is different from the its last value
 			powerGeneratedCache = powerGenerated;
 			//building.setPowerGenerated(powerGenerated);

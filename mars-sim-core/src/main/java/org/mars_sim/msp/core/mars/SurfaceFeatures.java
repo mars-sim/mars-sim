@@ -249,13 +249,14 @@ public class SurfaceFeatures implements Serializable {
             	// Mar is in the so-called twilight zone
             	// Set it to a maximum of 12 degree below the horizon
             	// indirect sunlight such as diffuse/scattering/reflective sunlight will light up the Martian sky
-            	if (z <= Math.PI/2D + .1 )
+            	if (z <= Math.PI/2D + .1) {
             		// twilight zone is defined as bwtween 0.1 to -0.1 in radians above and below the horizon
-            		G_h = Math.round( (-200*z +100*Math.PI + 20) * 100.00)/100.00; // keep a minimum of G_h at 20 W/m2 if the sun is within the twlight zone
+            		G_h = Math.round( (-200*z +100*Math.PI + 20) * 100.00)/100.00; // keep a minimum of G_h at 20 W/m2 if the sun is within the twilight zone
             	//G_h = Math.round((0.2094 + z)*100D);
             	// This an arbitrary model set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
+            	}
             }
-
+            
             else {
 
                 // Part 2: get the new average solar irradiance as a result of the changing distance between Mars and Sun  with respect to the value of L_s.
@@ -404,7 +405,12 @@ public class SurfaceFeatures implements Serializable {
     	    	// as necessary for night time indication. - Scott
             }
 
+            if (G_h < 0)
+            	G_h = 0;
+            
             solarIrradianceMapCache.put(location, G_h);
+            
+            return G_h;
         }
 
     	return solarIrradianceMapCache.get(location);

@@ -83,7 +83,7 @@ implements Serializable {
 	 * @param building the building this power source is for.
 	 * @return power (kW)
 	 */
-	//@Override
+	@Override
 	public double getCurrentPower(Building building) {
 		BuildingManager manager = building.getBuildingManager();
 		if (location == null)
@@ -147,5 +147,14 @@ implements Serializable {
 	public void removeFromSettlement() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		location = null;
+		surface = null;
+		mars = null;
+		orbitInfo = null;
 	}
 }

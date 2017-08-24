@@ -43,23 +43,11 @@ implements Serializable {
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 		this.maxHeat = maxHeat;
 	}
-
-	public double getCurrentHeat(Building building) {
-		double fractional = getFractionCollected(building) * efficiency_solar_to_heat;
-		double max = maxHeat;		
-		return max * fractional;
-	}
-
-	public double getFractionCollected(Building building) {
+	
+	public double getCollected(Building building) {
 		if (surface == null)
 			surface = Simulation.instance().getMars().getSurfaceFeatures();
 		return surface.getSolarIrradiance(building.getCoordinates()) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * building.getFloorArea() / 1000D ;
-	}
-	
-	public double getCurrentPower(Building building) {
-		double fractional = getFractionCollected(building) * efficiency_solar_to_electricity;
-		double max = maxHeat;		
-		return max * fractional;
 	}
 
 	public double getEfficiencySolarHeat() {
@@ -78,7 +66,20 @@ implements Serializable {
 		efficiency_solar_to_electricity = value;
 	}
 
+	@Override
+	public double getCurrentHeat(Building building) {
+		double collected = getCollected(building) * efficiency_solar_to_heat;
+		return maxHeat * collected;
+	}
 
+	
+	@Override
+	public double getCurrentPower(Building building) {
+		double collected = getCollected(building) * efficiency_solar_to_electricity;
+		//System.out.println(building.getNickName() + "'s maxHeat is " + maxHeat + " collected is " + collected);
+		return maxHeat * collected;
+	}
+	
 	@Override
 	public double getAverageHeat(Settlement settlement) {
 		// NOTE: why divide by 2 ? why settlement ?		
@@ -94,4 +95,11 @@ implements Serializable {
 	public double getEfficiency() {
 		return getEfficiencySolarHeat();
 	}
+	
+	 @Override
+	 public void destroy() {
+		 super.destroy();
+		 surface = null;
+	 }
+	 
 }

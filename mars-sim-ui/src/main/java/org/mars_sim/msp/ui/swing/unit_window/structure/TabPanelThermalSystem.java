@@ -366,7 +366,7 @@ extends TabPanel {
 			heatGenCache = heat;
 			heatGenTF.setText(
 				//Msg.getString("TabPanelThermalSystem.totalHeatGen", //$NON-NLS-1$
-				formatter.format(heatGenCache) + kW
+				formatter2.format(heatGenCache) + kW
 				);
 		}
 
@@ -375,7 +375,7 @@ extends TabPanel {
 			powerGenCache = power;
 			powerGenTF.setText(
 				//Msg.getString("TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
-				formatter.format(power) + kW
+				formatter2.format(power) + kW
 				);
 		}
 

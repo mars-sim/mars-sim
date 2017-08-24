@@ -2417,7 +2417,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
 		</description>
-		<power-required base-power="0.05" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.0" />
 
 		<functions>
 			<building-connection />
@@ -2428,8 +2428,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating Source" capacity="3.0" />
+				<heat-source type="Electric Heating Source" capacity="3.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2441,7 +2441,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
 		</description>
-		<power-required base-power="0.05" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.0" />
 
 		<functions>
 			<building-connection />
@@ -2452,8 +2452,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating Source" capacity="3.0" />
+				<heat-source type="Electric Heating Source" capacity="3.0" />
 			</thermal-generation>
 		</functions>
 	</building>

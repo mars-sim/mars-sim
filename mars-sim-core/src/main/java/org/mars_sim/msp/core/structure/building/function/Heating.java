@@ -214,7 +214,7 @@ implements Serializable {
 		if (isHallway())
 			isHallway = true;
 		
-		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
+		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 1000D * 24D; // / 10D
 
 		U_value_area_ceiling_or_floor = U_value * floorArea * M_TO_FT;
 		U_value_area_wall = U_value * (width + length) * height * 2D * M_TO_FT;
@@ -403,21 +403,22 @@ implements Serializable {
 
 		// (5) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
 		// if this building is a greenhouse
-		double lightingPower = 0;
+		double lightingGain = 0;
 		
 		if (farm == null && isGreenhouse) { // greenhouse has a semi-transparent rooftop
 			farm = (Farming) building.getFunction(BuildingFunction.FARMING);
-        	lightingPower = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high prssure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
+        	lightingGain = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high pressure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
 		}
 		
 		if (farm != null) {
-	        lightingPower = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high prssure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
+	        lightingGain = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high pressure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
 		}
 
-		lightingPower *= BTU_PER_HOUR_PER_kW;
+		lightingGain *= BTU_PER_HOUR_PER_kW;
 		
 		// (6) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
-		double changeOfTinF = time_interval * (solarHeatGainLoss + lightingPower + heatGain - heatLoss) / SHC_area ;
+		double changeOfTinF = time_interval * (solarHeatGainLoss + lightingGain + heatGain - heatLoss) / SHC_area ;
+		//System.out.println(building.getNickName() + "'s changeOfTinF : " + Math.round(changeOfTinF*100D)/100D);
 		double changeOfTinC = changeOfTinF / convertCtoF ; // 5/9 = 1/convertCtoF ; // the difference between deg F and deg C . The term -32 got cancelled out
 		//applyHeatBuffer(changeOfTinC);
 

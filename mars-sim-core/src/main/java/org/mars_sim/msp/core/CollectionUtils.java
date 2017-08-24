@@ -146,19 +146,21 @@ public class CollectionUtils {
 	public static Collection<Settlement> getSettlement(
 		Collection<Unit> units
 	) {
+/*
 		return units
 				.stream()
 				.filter(u-> u instanceof Settlement)
 				.map(u -> (Settlement) u)
 				.collect(Collectors.toList());
-/*
+*/				
+
 		ConcurrentLinkedQueue<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
 		for (Unit unit : units) {
 			if (unit instanceof Settlement)
 				settlements.add((Settlement) unit);
 		}
 		return settlements;
-*/
+
 	}
 
 	public synchronized static void mergeSettlements(Collection<Unit> units,

@@ -99,7 +99,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         }
         
     	if (CookMeal.isMealTime(person.getCoordinates())) {
-    		result *= 3D;
+    		result *= 4D;
     	}
     	else
     		result *= .75D;    

@@ -146,9 +146,16 @@ implements Serializable {
 	}
 	
 
+	@Override
+	public double getCurrentPower(Building building) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 	 @Override
 	 public void destroy() {
 		 super.destroy();
 		 resource = null;
 	 }
+
 }

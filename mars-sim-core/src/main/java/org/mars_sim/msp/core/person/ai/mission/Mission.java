@@ -739,20 +739,25 @@ implements Serializable {
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");
 
+
+			
 			if (members != null) {
 				if (!members.isEmpty()) {	
 					logger.info("Mission members removed : " + members);
-				    Object[] p = members.toArray();
-	                for (Object o : p) {
+	                for (Object o : members.toArray()) {
+	                	performMission((MissionMember) o);
+/*	                	
 	                    removeMember((MissionMember) o);
 	                    if (o instanceof Person) {
 	        		        Person person = (Person) o;
-		                    person.getAssociatedSettlement().getInventory().storeUnit(person);
+	        				performDisembarkToSettlementPhase(person, person.getAssociatedSettlement());
+		                    //person.getAssociatedSettlement().getInventory().storeUnit(person);
 	        		    }
 	                    else if (o instanceof Robot) {
 	                    	Robot robot = (Robot) o;
-	                    	robot.getAssociatedSettlement().getInventory().storeUnit(robot);
+	                    	//robot.getAssociatedSettlement().getInventory().storeUnit(robot);
 	        		    }
+*/	        		    
 	                }
 				}
 			}

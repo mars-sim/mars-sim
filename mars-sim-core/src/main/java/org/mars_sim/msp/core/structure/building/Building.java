@@ -221,8 +221,8 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param id the building's unique ID number.
 	 * @param buildingType the building Type.
 	 * @param nickName the building's nick name.
-	 * @param width the width (meters) of the building or -1 if not set.
-	 * @param length the length (meters) of the building or -1 if not set.
+	 * @param w the width (meters) of the building or -1 if not set.
+	 * @param l the length (meters) of the building or -1 if not set.
 	 * @param xLoc the x location of the building in the settlement.
 	 * @param yLoc the y location of the building in the settlement.
 	 * @param facing the facing of the building (degrees clockwise from North).
@@ -230,7 +230,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * @throws BuildingException if building can not be created.
 	 */
 	//2014-10-27  Changed "name" to "buildingType"
-	public Building(int id, String buildingType, String nickName, double width, double length,
+	public Building(int id, String buildingType, String nickName, double w, double l,
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
 	    //logger.info("Building's constructor 2 is on " + Thread.currentThread().getName() + " Thread");
@@ -271,10 +271,8 @@ LocalBoundedObject, InsidePathLocation {
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.ONLINE;
 
-		//if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
-		//	System.out.println(nickName + "'s length is " + length);
-		//}
 
+/*
 		// Get building's dimensions.
 		if (width != -1D) {
 			this.width = width;
@@ -297,9 +295,31 @@ LocalBoundedObject, InsidePathLocation {
 		if (this.length <= 0D) {
 			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
 		}
+*/
+		
+
+		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel"))	{
+			length = l;
+			width = buildingConfig.getWidth(buildingType);
+		}
+		else {
+			width = buildingConfig.getWidth(buildingType);
+			length = buildingConfig.getLength(buildingType);
+		}
+		
 		
 		floorArea = length * width;
-
+		
+		
+		//if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")		
+		//		|| buildingType.toLowerCase().contains("greenhouse")) {
+		//	System.out.println(nickName);
+		//	System.out.println("length : " + length);
+		//	System.out.println("width : " + width);
+		//	System.out.println("floor : " + floorArea);
+		//}
+			
+			
 		baseLevel = buildingConfig.getBaseLevel(buildingType);
 		description = buildingConfig.getDescription(buildingType);
 
@@ -314,10 +334,13 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set room temperature
 		roomTemperature = buildingConfig.getRoomTemperature(buildingType);
+		//System.out.println("roomTemperature : " + roomTemperature);
+		
 		// TODO: determine the benefit of adding other heat requirements.
 		//baseHeatRequirement = config.getBaseHeatRequirement(buildingType);
 		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(buildingType);
 
+		
 		// Determine total maintenance time.
 		double totalMaintenanceTime = maintenanceTime;
 		Iterator<Function> j = functions.iterator();
