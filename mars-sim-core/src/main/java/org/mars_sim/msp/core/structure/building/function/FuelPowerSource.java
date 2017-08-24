@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FuelPowerSource.java
- * @version 3.1.0 2018-08-16
+ * @version 3.1.0 2018-08-23
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -34,22 +34,32 @@ implements Serializable {
 
 	/** The work time (millisol) required to toggle this power source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
-	//public static final double kW_PER_FUEL_CELL_STACK = 5D;
-
-	private boolean toggle = true;
-	//private boolean installed = false;
 	
+	//public static final double kW_PER_FUEL_CELL_STACK = 5D;
+	
+	public static final double ELECTRICAL_EFFICIENCY = .7125;
+
 	//private int numFuelCellStackinUse;
 
-	private double consumptionSpeed;
+	private double rate;
+	
 	private double toggleRunningWorkTime;
+	
+	private double maxFuel;
+	
+	private double time;
+	
+	private boolean toggle = false;
+	
 	private double _maxPower;
 	
 	//private ItemResource cellStack;
 	private Building building;
-	
-	private AmountResource resource;
-	
+
+	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
+
+	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
+
 	/**
 	 * Constructor.
 	 * @param _maxPower the maximum power (kW) of the power source.
@@ -60,41 +70,89 @@ implements Serializable {
 	public FuelPowerSource(double _maxPower, boolean _toggle, String fuelType,
 			double _consumptionSpeed) {
 		super(PowerSourceType.FUEL_POWER, _maxPower);
-		consumptionSpeed = _consumptionSpeed;
+		rate = _consumptionSpeed;
 		toggle = _toggle;
-		this._maxPower = _maxPower;
-		resource = ResourceUtil.findAmountResource(fuelType);
+		methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource(fuelType);
+		
 		// 2015-09-29 Added "fuel cell stack"
 		//cellStack = ItemResource.findItemResource("fuel cell stack");
 		//installed = false;
 	}
-
-	@Override
-	public double getCurrentPower(Building building) {
-		this.building = building;
+	
 /*
-		// 2015-09-28 Retrieved of 3 fuel cell stacks
-		if (!installed) {
-			double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
-			numFuelCellStackinUse = (int)Math.round(this._maxPower/kW_PER_FUEL_CELL_STACK); //
-			if (numCellStack >= numFuelCellStackinUse) {
-				building.getSettlementInventory().retrieveItemResources(cellStack, numFuelCellStackinUse);
-				installed = true;
-				logger.info("getCurrentPower() : just installed " + numFuelCellStackinUse + " fuel cell stack(s) on the Methane Power Generator Building");
-			}
-		}
+	 Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
+	 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
+	 
+	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
+
+	 Assume electric efficiency at 40%,
+	 356kW needs 16 g/s 
+	 60kW needs 2.6966 g/s or 239.3939 g/millisol or kg/sol
+	 1 kW_e <- 3.9899 g/millisol
+	 
+	 Assume electric efficiency at 100%,
+	 1 kW_e <- 1.5960 g/millisol
+	 
+	 SOFC uses methane with 1100 W-hr/kg, 
+	 This translate to 71.25 % efficiency
+	 
+
 */
-		if (toggle) {
-			double fuelStored = building.getSettlementInventory().getAmountResourceStored(resource, false);
-			if (fuelStored > 0) {
-				return getMaxPower();
-			} else {
-				return 0;
-			}
-		} else {
-			return 0;
-		}
+
+	public double consumeFuel(double time, Inventory inv) {
+
+		double rate_millisol = rate / 1000D;
+		
+		maxFuel = time * rate_millisol;
+		
+		double consumed = 0;
+		
+		double fuelStored = inv.getAmountResourceStored(methaneAR, false);
+		double o2Stored = inv.getAmountResourceStored(oxygenAR, false);
+
+		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
+		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
+
+		inv.retrieveAmountResource(methaneAR, consumed);
+		inv.retrieveAmountResource(oxygenAR, 4D*consumed);
+		
+	    inv.addAmountDemandTotalRequest(methaneAR);
+	   	inv.addAmountDemand(methaneAR, consumed);
+	   	
+	    inv.addAmountDemandTotalRequest(methaneAR);
+	   	inv.addAmountDemand(methaneAR, 4D*consumed);
+	   	
+		return consumed;
 	}
+	
+	 public void setTime(double time) {
+		 this.time = time;
+	 }
+	 
+	 @Override
+	 public double getCurrentPower(Building building) {
+
+		 /*
+			// 2015-09-28 Retrieved of 3 fuel cell stacks
+			if (!installed) {
+				double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
+				numFuelCellStackinUse = (int)Math.round(this._maxPower/kW_PER_FUEL_CELL_STACK); //
+				if (numCellStack >= numFuelCellStackinUse) {
+					building.getSettlementInventory().retrieveItemResources(cellStack, numFuelCellStackinUse);
+					installed = true;
+					logger.info("getCurrentPower() : just installed " + numFuelCellStackinUse + " fuel cell stack(s) on the Methane Power Generator Building");
+				}
+			}
+	*/
+		 
+		 if (toggle) {
+			 double spentFuel = consumeFuel(time, building.getInventory());
+			 return getMaxPower() * spentFuel/maxFuel * ELECTRICAL_EFFICIENCY;
+		 }
+		 
+		 return 0;
+	 }
+	 
 
 	public void toggleON() {
 		toggle = true;
@@ -108,30 +166,13 @@ implements Serializable {
 		return toggle;
 	}
 
-	public void consumeFuel(double time, Inventory inv) {
-
-		double consumptionRateMillisol = consumptionSpeed / 1000D;
-		double consumedFuel = time * consumptionRateMillisol;
-		double fuelStored = inv.getAmountResourceStored(resource, false);
-
-		if (fuelStored < consumedFuel) {
-			consumedFuel = fuelStored;
-		}
-
-		inv.retrieveAmountResource(resource, consumedFuel);
-
-		// 2015-01-09 Added addDemandTotalRequest()
-	    inv.addAmountDemandTotalRequest(resource);
-		// 2015-01-09 addDemandRealUsage()
-	   	inv.addAmountDemand(resource, consumedFuel);
-	}
 
 	/**
 	 * Gets the amount resource used as fuel.
 	 * @return amount resource.
 	 */
 	 public AmountResource getFuelResource() {
-		return resource;
+		return methaneAR;
 	}
 
 	/**
@@ -139,7 +180,7 @@ implements Serializable {
 	 * @return rate (kg/Sol).
 	 */
 	 public double getFuelConsumptionRate() {
-		 return consumptionSpeed;
+		 return rate;
 	 }
 
 	 /**
@@ -191,6 +232,7 @@ implements Serializable {
 		 super.destroy();
 		 //cellStack = null;
 		 building = null;
-		 resource = null;
+		 methaneAR = null;
+		 oxygenAR = null;
 	 }
 }

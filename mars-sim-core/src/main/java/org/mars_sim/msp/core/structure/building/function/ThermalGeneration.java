@@ -45,6 +45,7 @@ implements Serializable {
 	private double heatGeneratedCache;
 	private double powerGenerated;
 	private double powerGeneratedCache;
+	private double time;
 	
 	private boolean sufficientHeat;
 
@@ -220,6 +221,7 @@ implements Serializable {
 					    }
 					    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 					    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+					    	heatSource.setTime(time);
 					    	result += heatSource.getCurrentHeat(getBuilding());
 					    }
 					}
@@ -231,15 +233,19 @@ implements Serializable {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
 				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    	result = result + heatSource.getCurrentHeat(getBuilding())/2D;
+				    	heatSource.toggleHalf();
+				    	result = result + heatSource.getCurrentHeat(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
 				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    	result = result + heatSource.getCurrentPower(getBuilding())/2D;
+				    	heatSource.toggleHalf();
+				    	result = result + heatSource.getCurrentPower(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    	result = result + heatSource.getCurrentHeat(getBuilding())/2D;
+				    	heatSource.setTime(time);
+				    	heatSource.toggleHalf();
+				    	result = result + heatSource.getCurrentHeat(getBuilding());
 				    }
 				}
 			}
@@ -310,6 +316,8 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 
+		this.time = time;
+		
 		// 2014-11-02 Added calculateGeneratedHeat()
 		// Set heatGenerated at the building the furnace belongs
 		heatGenerated = calculateGeneratedHeat();
@@ -525,11 +533,17 @@ implements Serializable {
 	public void destroy() {
 		super.destroy();
 
+		heating = null;
+		building = null;
+		heatSource = null;
+		heatSources = null;
+/*		
 		Iterator<HeatSource> i = heatSources.iterator();
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
 		heatSources.clear();
+*/		
 	}
 
 }

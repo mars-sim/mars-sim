@@ -1,11 +1,11 @@
-package org.mars_sim.msp.core.structure.building.function;
-
 /**
  * Mars Simulation Project
- * SolarHeatSource.java
- * @version 3.07 2014-10-17
+ * HeatSourceType.java
+ * @version 3.1.0 2017-08-24
  * @author Manny Kung
  */
+
+package org.mars_sim.msp.core.structure.building.function;
 
 public enum HeatSourceType {
 

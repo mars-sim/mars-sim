@@ -133,10 +133,9 @@ implements Serializable {
 			} else if (source instanceof SolarPowerSource) {
 				result += source.getMaxPower() / 2D;
 			} else if (source instanceof SolarThermalPowerSource) {
-				result += source.getMaxPower() / 2.5D;
+				result += source.getMaxPower() / 2D;
 			} else if (source instanceof WindPowerSource) {
-				// TODO: Base on current wind speed at settlement.
-				result += source.getMaxPower() / 3D;
+				result += source.getMaxPower() / 2D;
 			} else if (source instanceof AreothermalPowerSource) {
 				double areothermalHeat = Simulation.instance().getMars().getSurfaceFeatures()
 						.getAreothermalPotential(settlement.getCoordinates());
@@ -179,6 +178,7 @@ implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
+/*
 		for (PowerSource source : powerSources) {
 			if (source instanceof SolarPowerSource) {
 				SolarPowerSource solarPowerSource = (SolarPowerSource) source;
@@ -195,11 +195,12 @@ implements Serializable {
 			else if (source instanceof FuelPowerSource) {
 				FuelPowerSource fuelSource = (FuelPowerSource) source;
 				if (fuelSource.isToggleON()) {
-					fuelSource.consumeFuel(time, getBuilding().getSettlementInventory());
+					//fuelSource.consumeFuel(time, getBuilding().getSettlementInventory());
 				}
 			}
 
 		}
+*/		
 	}
 
 	/**
@@ -256,11 +257,16 @@ implements Serializable {
 	public void destroy() {
 		super.destroy();
 
+		powerSources = null;
+		thermalGeneration = null;
+		building = null;
+/*		
 		Iterator<PowerSource> i = powerSources.iterator();
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
 		powerSources.clear();
+*/		
 	}
 
 	@Override

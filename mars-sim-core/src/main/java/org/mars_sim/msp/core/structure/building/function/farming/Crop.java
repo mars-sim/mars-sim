@@ -571,9 +571,9 @@ public class Crop implements Serializable {
 				if (lastHarvest > 0) {
 					// Store the crop harvest
 					if (isSeedPlant)
-						Storage.storeAnResource(lastHarvest, seedAR, inv, sourceName + "->addWork()");
+						Storage.storeAnResource(lastHarvest, seedAR, inv, sourceName + "::addWork");
 					else
-						Storage.storeAnResource(lastHarvest, cropAR, inv, sourceName + "->addWork()");
+						Storage.storeAnResource(lastHarvest, cropAR, inv, sourceName + "::addWork");
 	
 					logger.info(unit.getName() + " just closed out the harvest of " + capitalizedCropName
 							+ " in " + farmName
@@ -604,13 +604,13 @@ public class Crop implements Serializable {
 					double modifiedHarvest = actualHarvest * workTime / w;
 					// Store the crop harvest
 					if (isSeedPlant)
-						Storage.storeAnResource(modifiedHarvest, seedAR, inv, sourceName + "->addWork()");
+						Storage.storeAnResource(modifiedHarvest, seedAR, inv, sourceName + "::addWork");
 					else
-						Storage.storeAnResource(modifiedHarvest, cropAR, inv, sourceName + "->addWork()");
+						Storage.storeAnResource(modifiedHarvest, cropAR, inv, sourceName + "::addWork");
 	
 					// 2017-03-30 Extract Mustard Seed
 					if (hasSeed)
-						Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv, sourceName + "->addWork()");
+						Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv, sourceName + "addWork");
 					else
 						//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
 						// thus no crop waste
@@ -1090,7 +1090,7 @@ public class Crop implements Serializable {
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
 		// TODO: Modify harvest modifier according to the moisture level
 		double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
-		Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "->calculateHarvestModifier()");
+		Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::calculateHarvestModifier");
 
 		memory[3] = .5 * waterModifier + .5 * memory[3];
 		if (memory[3] > 1.1)
@@ -1117,7 +1117,7 @@ public class Crop implements Serializable {
 			
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * growingArea * time / 1000D * CO2_GENERATION_RATE;
-			Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "->calculateHarvestModifier()");
+			Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "::calculateHarvestModifier");
 		}
 
 		else {
@@ -1145,7 +1145,7 @@ public class Crop implements Serializable {
 			
 			// Determine the amount of oxygen generated via gas exchange.
 			double oxygenAmount = carbonDioxideUsed * growingArea * time / 1000D * OXYGEN_GENERATION_RATE;
-			Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "->calculateHarvestModifier()");
+			Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::calculateHarvestModifier");
 
 		}
 

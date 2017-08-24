@@ -68,8 +68,19 @@ implements Serializable {
 	    return getMaxHeat() * 1D;
 	}
 
-	 @Override
-	 public void destroy() {
-		 super.destroy();
-	 }
+	@Override
+	public void setTime(double time) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void toggleHalf() {
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+	}
+
+
 }

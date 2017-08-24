@@ -967,7 +967,7 @@ implements Serializable {
 
 	    retrieveAnIngredientFromMap(usage, ResourceUtil.waterAR, true);
 		double wasteWaterAmount = usage * .75;
-		Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterAR, inv, sourceName + " -> consumeWater()");
+		Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterAR, inv, sourceName + "::consumeWater");
     }
 
 
@@ -1166,7 +1166,7 @@ implements Serializable {
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltAR, true); //TABLE_SALT, true);//
-		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodAR, inv, sourceName + "->preserveFood()");
+		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodAR, inv, sourceName + "::preserveFood");
  	}
 
     /**

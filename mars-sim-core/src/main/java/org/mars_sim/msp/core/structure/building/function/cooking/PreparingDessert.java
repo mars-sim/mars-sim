@@ -651,7 +651,7 @@ implements Serializable {
     		usage = 1 - rand;
     	Storage.retrieveAnResource(usage, waterAR, inv, true);
 		double wasteWaterAmount = usage * .5;
-		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + "->consumeWater");
+		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + "::consumeWater");
 
     }
 

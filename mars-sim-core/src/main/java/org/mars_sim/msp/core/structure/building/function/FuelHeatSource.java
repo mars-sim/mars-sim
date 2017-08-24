@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FuelHeatSource.java
- * @version 3.07 2014-11-02
+ * @version 3.1.0 2018-08-23
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -24,18 +25,27 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(FuelHeatSource.class.getName());
-
+	
 	/** The work time (millisol) required to toggle this heat source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
 
-	private boolean toggle = false;
-	/** A fuelheat source works only with one kind of fuel similar to cars. */
-	private AmountResource resource;
-	private double consumptionSpeed;
+	public static final double THERMAL_EFFICIENCY = .9;
+	
+	private double rate;
+	
 	private double toggleRunningWorkTime;
+	
+	private double maxFuel;
+	
+	private double time;
+	
+	private boolean toggle = false;
+	
+	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
+
+	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
 
 	/**
 	 * Constructor.
@@ -47,49 +57,76 @@ implements Serializable {
 	public FuelHeatSource(double _maxHeat, boolean _toggle, String fuelType,
 			double _consumptionSpeed) {
 		super(HeatSourceType.FUEL_HEATING, _maxHeat);
-		consumptionSpeed = _consumptionSpeed;
+		rate = _consumptionSpeed;
 		toggle = _toggle;
-		resource = AmountResource.findAmountResource(fuelType);
+		methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource(fuelType);
 	}
 
-	@Override
-	public double getCurrentHeat(Building building) {
+/*
+     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
+	 CH4(g) + 2O2(g) --> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
+	 
+ 	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
 
-		if (toggle) {
-			double fuelStored = building.getSettlementInventory().getAmountResourceStored(resource, false);
-			if (fuelStored > 0) {
-				return getMaxHeat();
-			} else {
-				return 0;
-			}
-		} else {
-			return 0;
+	 Assume thermal efficiency at 41%,
+	 364.9 kW needs 16 g/s 
+	 1 kW_t <- 3.8926 g/millisol or 3.8926 kg/sol	 
+	 
+	 Assume thermal efficiency at 100%,
+	 1 kW_t <- 1.5960 g/millisol or kg/sol
+	 
+	 SOFC uses methane with 1100 W-hr/kg, 
+	 This translate to 71.25 % efficiency
+	
+ 	 Use of heat will push it up to 85%
+	 see http://www.nfcrc.uci.edu/3/FUEL_CELL_INFORMATION/FCexplained/FC_benefits.aspx
+	 
+	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html
+	
+*/
+	 
+	 
+	public double consumeFuel(double time, Inventory inv) {
+
+		double rate_millisol = rate / 1000D;
+		
+		maxFuel = time * rate_millisol;
+		//System.out.println("maxFuel : "+maxFuel);
+		double consumed = 0;
+		
+		double fuelStored = inv.getAmountResourceStored(methaneAR, false);
+		double o2Stored = inv.getAmountResourceStored(oxygenAR, false);
+
+		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
+		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
+/*		
+		boolean a = (fuelStored >= maxFuel);
+		boolean b = (o2Stored >= 4D * maxFuel);
+		
+		if (a && b) {
+			consumed = maxFuel;
 		}
-	}
-
-	public void toggleON() {
-		toggle = true;
-	}
-
-	public void toggleOFF() {
-		toggle = false;
-	}
-
-	public boolean isToggleON() {
-		return toggle;
-	}
-
-	public void consumeFuel(double time, Inventory inv) {
-
-		double consumptionRateMillisol = consumptionSpeed / 1000D;
-		double consumedFuel = time * consumptionRateMillisol;
-		double fuelStored = inv.getAmountResourceStored(resource, false);
-
-		if (fuelStored < consumedFuel) {
-			consumedFuel = fuelStored;
+		else if (a && !b) {
+			consumed = o2Stored/4D;
 		}
+		else if (!a && b) {
+			consumed = maxFuel;
+		}	
+		else if (!a && !b) {
+			consumed = Math.min(fuelStored, o2Stored/4D);
+		}				
+*/		
 
-		inv.retrieveAmountResource(resource, consumedFuel);
+		inv.retrieveAmountResource(methaneAR, consumed);
+		inv.retrieveAmountResource(oxygenAR, 4D*consumed);
+		
+	    inv.addAmountDemandTotalRequest(methaneAR);
+	   	inv.addAmountDemand(methaneAR, consumed);
+	   	
+	    inv.addAmountDemandTotalRequest(methaneAR);
+	   	inv.addAmountDemand(methaneAR, 4D*consumed);
+	   	
+		return consumed;
 	}
 
 	/**
@@ -97,7 +134,7 @@ implements Serializable {
 	 * @return amount resource.
 	 */
 	 public AmountResource getFuelResource() {
-		return resource;
+		return methaneAR;
 	}
 
 	/**
@@ -105,23 +142,21 @@ implements Serializable {
 	 * @return rate (kg/Sol).
 	 */
 	 public double getFuelConsumptionRate() {
-		 return consumptionSpeed;
+		 return rate;
 	 }
 
-	 /**
-	  * Adds work time to toggling the heat source on or off.
-	  * @param time the amount (millisols) of time to add.
-	  */
-	 public void addToggleWorkTime(double time) {
-		 toggleRunningWorkTime += time;
-		 if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
-			 toggleRunningWorkTime = 0D;
-			 toggle = !toggle;
-			 if (toggle) logger.info(Msg.getString("FuelHeatSource.log.turnedOn",getType().getString())); //$NON-NLS-1$
-			 else logger.info(Msg.getString("FuelHeatSource.log.turnedOff",getType().getString())); //$NON-NLS-1$
+	 
+	 @Override
+	 public double getCurrentHeat(Building building) {
+
+		 if (toggle) {
+			 double spentFuel = consumeFuel(time, building.getInventory());
+			 return getMaxHeat() * spentFuel/maxFuel * THERMAL_EFFICIENCY;
 		 }
+		 
+		 return 0;
 	 }
-
+		
 	 @Override
 	 public double getAverageHeat(Settlement settlement) {
 		 double fuelHeat = getMaxHeat();
@@ -145,17 +180,55 @@ implements Serializable {
 		return 1;
 	}
 	
-
 	@Override
 	public double getCurrentPower(Building building) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 	
+	/**
+	  * Adds work time to toggling the heat source on or off.
+	  * @param time the amount (millisols) of time to add.
+	  */
+	public void addToggleWorkTime(double time) {
+		 toggleRunningWorkTime += time;
+		 if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
+			 toggleRunningWorkTime = 0D;
+			 toggle = !toggle;
+			 if (toggle) logger.info(Msg.getString("FuelHeatSource.log.turnedOn",getType().getString())); //$NON-NLS-1$
+			 else logger.info(Msg.getString("FuelHeatSource.log.turnedOff",getType().getString())); //$NON-NLS-1$
+		 }
+	}
+
+	public void toggleON() {
+		toggle = true;
+	}
+
+	@Override
+	public void toggleHalf() {
+		time = time/2D;
+		toggle = true;
+	}
+	
+	public void toggleOFF() {
+		toggle = false;
+	}
+
+	public boolean isToggleON() {
+		return toggle;
+	}
+
+	 
+	 @Override
+	 public void setTime(double time) {
+		 this.time = time; // default is  0.12255668934010477 or  0.12255668934010477
+	 }
+	
 	 @Override
 	 public void destroy() {
 		 super.destroy();
-		 resource = null;
+		 methaneAR = null;
+		 oxygenAR = null;		 
 	 }
 
 }

@@ -24,8 +24,8 @@ implements Serializable {
 
 	// Data members
 	private HeatSourceType type;
+	
 	private double maxHeat;
-	//private static int count;
 
 	/**
 	 * Constructor.
@@ -35,9 +35,6 @@ implements Serializable {
 	public HeatSource(HeatSourceType type, double maxHeat) {
 		this.type = type;
 		this.maxHeat = maxHeat;
-		//logger.info("constructor : maxHeat is " + maxHeat);
-		//count++;
-		//logger.info("constructor : count is " + count);
 
 	}
 
@@ -90,10 +87,25 @@ implements Serializable {
 	 */
 	public abstract double getCurrentPower(Building building);
 
+	
+	/**
+	 * Sets the time for burning the fuel
+	 * @param time
+	 */
+	public abstract void setTime(double time);
+	
+	/**
+	 * Toggle on for producing only half the output
+	 */
+	public abstract void toggleHalf();
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		type = null;
 	}
+
+
+
 }

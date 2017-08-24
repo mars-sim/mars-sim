@@ -64,7 +64,7 @@ implements Serializable {
     // Thermostat's temperature allowance
     private static final double T_UPPER_SENSITIVITY = 1D;
     private static final double T_LOWER_SENSITIVITY = 1D;
-    private static final double HEAT_GAIN_FROM_EQUIPMENT = 2000D;
+
     private static final double HEAT_DISSIPATED_PER_PERSON = 350D;
     //private static final int HEAT_CAP = 200;  
 	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
@@ -74,6 +74,8 @@ implements Serializable {
 	// 1 kilopascal = 0.00986923267 atm
 	// 1 cubic ft = L * 0.035315
     // A full scale pressurized Mars rover prototype may have an airlock volume of 5.7 m^3
+	
+	private static final double HEIGHT = 2.5; // in meter
 	
 	/** The average volume of a airlock [m^3] */	
     private static double AIRLOCK_VOLUME_IN_CM = Building.AIRLOCK_VOLUME_IN_CM; // = 12 [in m^3]
@@ -101,20 +103,25 @@ implements Serializable {
 	// 1 cubic feet of air has a total weight of 38.76 g
 	//private double n_air = 1D;
 	//private double n_sum = n_CO2 + n_air;
-    
+    /** the heat gain from equipment in BTU per hour */
+    private double heatGainEqiupment;// = 2000D;
 	/** specific heat capacity of air at 300K [kJ/kg*K]*/	 
 	private double C_p = 1.005;  
 	/** Density of dry breathable air [kg/m3] */	
 	private double dryAirDensity = 1.275D; //
 	/** Factor for calculating airlock heat loss during EVA egress */
 	private double energy_factor_EVA = C_p * AIRLOCK_VOLUME_IN_CM * dryAirDensity /1000; 
-	//private double t_factor =  vol / n;
+
     private double width;
+    
 	private double length;
-	private double height = 2.5; // in meter
+	
 	private double floorArea;
+	
 	private double hullArea; // underbody and sidewall
+	
 	private double transmittance;
+	
 	private double heat_gain_from_HPS = Crop.LOSS_AS_HEAT_HPS;
 
 	private double basePowerDownHeatRequirement = 0;
@@ -126,11 +133,12 @@ implements Serializable {
     private double U_value_area_wall;
 
 	private double heatGenerated = 0; // the initial value is zero
+	
 	private double heatGeneratedCache = 0; // the initial value is zero
 	//private double powerRequired;
 	private double heatRequired;
 	/** The heat extracted by the ventilation system */
-	private double heatExtracted;
+	private double heatExtractedVentilation;
 	/** The current temperature of this building */
 	private double currentTemperature;
 	//private double temperature_adjacent1, temperature_adjacent2;
@@ -200,24 +208,51 @@ implements Serializable {
 
 		floorArea = length * width ;
 
-		if (isGreenhouse()) { // greenhouse has a semi-transparent rooftop
+		if (isHallway()) {
+			isHallway = true;
+			heatGainEqiupment = 40D;
+		}
+		else if (isGreenhouse()) {
 			isGreenhouse = true;
-			//farm = (Farming) building.getFunction(BuildingFunction.FARMING);
-			hullArea = floorArea + (width + length) * height * 2D ; // ceiling not included since rooftop is transparent
+			heatGainEqiupment = 400D;
+		}
+		else if (buildingType.toLowerCase().contains("lander")) {
+			heatGainEqiupment = 2000D;
+		}
+		else if (isHab()) {
+			heatGainEqiupment = 800D;
+		}
+		else if (buildingType.toLowerCase().contains("command")) {
+			heatGainEqiupment = 1500D;
+		}
+		else if (buildingType.toLowerCase().contains("work")||buildingType.toLowerCase().contains("manu")) {
+			heatGainEqiupment = 1500D;
+		}
+		else if (buildingType.toLowerCase().contains("lounge")) {
+			heatGainEqiupment = 2400D;
+		}
+		else if (buildingType.toLowerCase().contains("outpost")) {
+			heatGainEqiupment = 1500D;
+		}
+		else {
+			heatGainEqiupment = 300D;			
+		}
+		
+		if (isGreenhouse) { // greenhouse has a semi-transparent rooftop
+			//farm = (Farming) building.getFunction(BuildingFunction.FARMING); // NullPointerException
+			hullArea = floorArea + (width + length) * HEIGHT * 2D ; // ceiling not included since rooftop is transparent
 			transmittance = TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE;
 		}
 		else {
-			hullArea = 2D * floorArea + (width + length) * height * 2D ; // ceiling included
+			hullArea = 2D * floorArea + (width + length) * HEIGHT * 2D ; // ceiling included
 			transmittance = 0.05; // very little solar irradiance transmit energy into the building, compared to transparent rooftop
 		}
-
-		if (isHallway())
-			isHallway = true;
 		
 		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 1000D * 24D; // / 10D
 
+
 		U_value_area_ceiling_or_floor = U_value * floorArea * M_TO_FT;
-		U_value_area_wall = U_value * (width + length) * height * 2D * M_TO_FT;
+		U_value_area_wall = U_value * (width + length) * HEIGHT * 2D * M_TO_FT;
 
 		//System.out.println(building.getNickName() + "'s U_value_area_ceiling_or_floor : "+ U_value_area_ceiling_or_floor);
 		//System.out.println(building.getNickName() + "'s U_value_area_wall : "+ U_value_area_wall);
@@ -268,6 +303,13 @@ implements Serializable {
 		return buildingType.toLowerCase().contains("greenhouse");
     }
 
+	/**
+     * Is this building a type of (retrofit) hab.
+     * @return true or false
+     */
+    public boolean isHab() {
+		return buildingType.toLowerCase().contains("hab");
+    }
 
     /**
      * Gets the temperature of a building.
@@ -334,20 +376,17 @@ implements Serializable {
 		double heatGainFromOccupants = HEAT_DISSIPATED_PER_PERSON * building.getInhabitants().size() ;
 		// the energy required to heat up the in-rush of the new martian air
 		
-		if (isHallway) {
-			heatGain = BTU_PER_HOUR_PER_kW * heatPumpedIn
-					+ heatGainFromOccupants;
-		}
-		else {
-			double heatGainFromEVAHeater = 0;
-			if (num > 0) heatGainFromEVAHeater = building.getTotalPowerForEVA()/2D; 
-			// divide by 2 since half of the time a person is doing ingress 
-			// Note : Assuming EVA heater requires .5kW of power for heating up the air for each person in an airlock during EVA ingress.
 
-			heatGain = BTU_PER_HOUR_PER_kW * (heatGainFromEVAHeater + heatPumpedIn) 
-					+ heatGainFromOccupants
-					+ HEAT_GAIN_FROM_EQUIPMENT; // in BTU/hr
-		}
+		double heatGainFromEVAHeater = 0;
+		if (num > 0) heatGainFromEVAHeater = building.getTotalPowerForEVA()/2D; 
+		// divide by 2 since half of the time a person is doing ingress 
+		// Note : Assuming EVA heater requires .5kW of power for heating up the air for each person in an airlock during EVA ingress.
+
+		heatGain = BTU_PER_HOUR_PER_kW * (heatGainFromEVAHeater + heatPumpedIn)  // in BTU/hr
+				+ heatGainFromOccupants // in BTU/hr
+				+ heatGainEqiupment; // in BTU/hr
+		if (isGreenhouse) System.out.println(building.getNickName() + "'s heatGain : " + Math.round(heatGain*10_000D)/10_000D);
+
 
 		// (2) CALCULATE HEAT LOSS
 		double energyHeatingAirlock = 0;
@@ -378,12 +417,14 @@ implements Serializable {
 		}
 		
 		// TODO : Add heat loss due to ventilation between adjacent buildings
-		double ventilationHeatLoss = heatExtracted - heatGainVentilation(t); 
+		double ventilationHeatLoss = heatExtractedVentilation + heatGainVentilation(t); 
 		// reset heatExtracted to zero
-		heatExtracted = 0;
+		heatExtractedVentilation = 0;
+		if (isGreenhouse) System.out.println(building.getNickName() + "'s ventilationHeatLoss : " + Math.round(ventilationHeatLoss*10_000D)/10_000D);
 		
 		double heatLoss = structuralLoss
 						+ BTU_PER_HOUR_PER_kW * (ventilationHeatLoss + energyHeatingAirlock);
+		if (isGreenhouse) System.out.println(building.getNickName() + "'s heatLoss : " + Math.round(heatLoss*10_000D)/10_000D);
 
 
 		// (3) CALCULATE SOLAR HEAT GAIN/LOSS
@@ -393,11 +434,12 @@ implements Serializable {
 		double I = surfaceFeatures.getSolarIrradiance(location);
 		double t_K = t + C_TO_K;
 		double outsideT_K = outsideTemperature + C_TO_K;
-		double solarHeatGainLoss =  I * transmittance * floorArea
+		double solarHeat =  I * transmittance * floorArea
 				- emissivity * STEFAN_BOLTZMANN_CONSTANT
 				* (Math.pow(t_K, 4) - Math.pow(outsideT_K, 4)) * hullArea;
 
-		solarHeatGainLoss *= BTU_PER_HOUR_PER_kW / 1000D;
+		solarHeat *= BTU_PER_HOUR_PER_kW / 1000D;
+		if (isGreenhouse) System.out.println(building.getNickName() + "'s solarHeat : " + Math.round(solarHeat*10_000D)/10_000D);
 
 		// (4) TODO : ADD INSULATION BLANKET TO MINIMIZE HEAT LOSS AT NIGHT, especially greenhouses
 
@@ -405,20 +447,17 @@ implements Serializable {
 		// if this building is a greenhouse
 		double lightingGain = 0;
 		
-		if (farm == null && isGreenhouse) { // greenhouse has a semi-transparent rooftop
-			farm = (Farming) building.getFunction(BuildingFunction.FARMING);
-        	lightingGain = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high pressure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
+		if (isGreenhouse) {
+			if (farm == null) { // greenhouse has a semi-transparent rooftop
+				farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+			}
+	
+	        lightingGain = farm.getTotalLightingPower() * heat_gain_from_HPS * BTU_PER_HOUR_PER_kW; // For high pressure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
 		}
-		
-		if (farm != null) {
-	        lightingGain = farm.getTotalLightingPower() * heat_gain_from_HPS; // For high pressure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
-		}
-
-		lightingGain *= BTU_PER_HOUR_PER_kW;
 		
 		// (6) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
-		double changeOfTinF = time_interval * (solarHeatGainLoss + lightingGain + heatGain - heatLoss) / SHC_area ;
-		//System.out.println(building.getNickName() + "'s changeOfTinF : " + Math.round(changeOfTinF*100D)/100D);
+		double changeOfTinF = time_interval * (solarHeat + lightingGain + heatGain - heatLoss) / SHC_area ;
+		if (isGreenhouse) System.out.println(building.getNickName() + "'s changeOfTinF : " + Math.round(changeOfTinF*10_000D)/10_000D);
 		double changeOfTinC = changeOfTinF / convertCtoF ; // 5/9 = 1/convertCtoF ; // the difference between deg F and deg C . The term -32 got cancelled out
 		//applyHeatBuffer(changeOfTinC);
 
@@ -583,12 +622,12 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 
-		if ((int)time >= 1) {
+		//if ((int)time >= 1) {
 			// if time >= 1 millisols, need to call adjustThermalControl() right away to update the temperature
-			adjustThermalControl(time);
-		}
+		//	adjustThermalControl(time);
+		//}
 
-		else {
+		//else {
 			// if time < 1 millisols, may skip calling adjustThermalControl() for several cycle to reduce CPU utilization.
 			if (masterClock == null)
 				masterClock = Simulation.instance().getMasterClock();
@@ -607,7 +646,7 @@ implements Serializable {
 					emissivity = EMISSIVITY_INSULATED;
 				adjustThermalControl(time);
 			}
-		}
+		//}
 	}
 
 	/**
@@ -696,7 +735,7 @@ implements Serializable {
 	 * @param heat removed or added
 	 */
 	public void extractHeat(double heat) {
-		heatExtracted = heat;
+		heatExtractedVentilation = heat;
 	}
 
 	/**
@@ -722,6 +761,14 @@ implements Serializable {
 		building = null;
 		weather = null;
 		location = null;
+		emissivityMap = null;
+		masterClock = null;
+		marsClock = null;
+		surfaceFeatures = null;
+		settlement = null;
+		manager = null;
+		farm = null;
+		adjacentBuildings = null;
 	}
 
 }

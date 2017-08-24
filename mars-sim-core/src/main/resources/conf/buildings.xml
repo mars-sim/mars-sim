@@ -342,7 +342,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Heat Source -->
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
-				<heat-source type="Solar Heating Source" capacity="15.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="15.96" capacity="10.0"/>		
 				<heat-source type="Electric Heating Source" capacity="15.0" />
 			</thermal-generation>
 
@@ -444,15 +446,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="20.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
-					fuel-type="methane"	consumption-rate="1.0" capacity="20.0"/>		
-				<heat-source type="Electric Heating Source" capacity="30.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Fuel Heating Source" toggle="true" 
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />					
+				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
+				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
+				 
+				 Assume thermal efficiency at 41%,
+				 364.9 kW needs 16 g/s 
+				 1 kW_t for 3.8926 g/millisol or 3.8926 kg/sol	 
+				 
+				 Assume thermal efficiency at 100%,
+				 1 kW_t for 1.5960 g/millisol or kg/sol				 
+				 -->			 
+				<heat-source type="Electric Heating Source" capacity="40.0" />
 			</thermal-generation>
-
 		</functions>
 	</building>
-
+<!-- end for inflatable greenhouse -->
 
 	<building type="Large Greenhouse" width="12.0" length="18.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
@@ -540,13 +551,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="30.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true" 
-					fuel-type="methane"	consumption-rate="1.5" capacity="20.0" />
-				<heat-source type="Electric Heating Source" capacity="50.0" />
+					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
+				<heat-source type="Electric Heating Source" capacity="60.0" />
 			</thermal-generation>
 		</functions>
 	</building>
+<!-- end for large greenhouse -->
 
 <!--
 	<building type="Large Algae Greenhouse" width="12.0" length="18.0"
@@ -1298,11 +1310,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="1000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="25.0" />
-				<heat-source type="Electric Heating Source" capacity="25.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Fuel Heating Source" toggle="true" 
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
+				<heat-source type="Electric Heating Source" capacity="40.0" />
 			</thermal-generation>
 		</functions>
 	</building>
+<!-- end for garage-->	
 
 	<building type="Workshop" width="7.0" length="9.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" >
@@ -1374,9 +1389,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with oxygen -->
+				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
+				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ  
+
+				 Assume electric efficiency at 40%,
+				 356kW needs 16 g/s 
+				 60kW needs 2.6966 g/s or 239.3939 g/millisol or kg/sol
+				 1 kW_e for 3.9899 g/millisol
+	 
+	 			 Assume electric efficiency at 100%,
+				 1 kW_e for 9.5758 g/millisol
+				 -->
+				 
 				<power-source type="Fuel Power Source" toggle="false" power="60.0" 
-				fuel-type="methane"	consumption-rate="6.0" />
+				fuel-type="methane"	consumption-rate="95.758" />
 				
 			</power-generation>
 		</functions>
@@ -2207,6 +2233,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="15.96" capacity="10.0"/>		
 				<heat-source type="Electric Heating Source" capacity="10.0" />
 			</thermal-generation>
 		</functions>
@@ -2286,11 +2314,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="25.0" />
-				<heat-source type="Electric Heating Source" capacity="25.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Fuel Heating Source" toggle="true" 
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+				<heat-source type="Electric Heating Source" capacity="50.0" />
 			</thermal-generation>
 		</functions>
 	</building>
+<!-- end for loading dock garage -->
 
 	<building type="Mining Lab" width="5.0" length="5.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
@@ -2399,16 +2430,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="20.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true" 
-					fuel-type="methane"	consumption-rate="1.0" capacity="20.0"/>				
-				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with oxygen -->
-				<heat-source type="Electric Heating Source" capacity="30.0" />
-				
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>				
+				<heat-source type="Electric Heating Source" capacity="40.0" />
 			</thermal-generation>
 		</functions>
 	</building>
-
+<!-- end for inground greenhouse -->
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
 	<building type="Hallway" width="2.0" length="-1.0" base-level="0"

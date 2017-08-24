@@ -303,7 +303,7 @@ implements Serializable {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
 				result = false;
-			    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, method + " Can't store more '" + ar.getName() 
+			    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, method + ". Can't store more '" + ar.getName() 
 			    	+ "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.", null);
 			}
 			else {

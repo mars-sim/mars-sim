@@ -33,6 +33,8 @@ implements Serializable {
 	private SurfaceFeatures surface ;
 	
 	private double maxHeat;
+	
+	private double factor;
 
 	/**
 	 * Constructor.
@@ -69,7 +71,7 @@ implements Serializable {
 	@Override
 	public double getCurrentHeat(Building building) {
 		double collected = getCollected(building) * efficiency_solar_to_heat;
-		return maxHeat * collected;
+		return maxHeat * collected * factor;
 	}
 
 	
@@ -77,7 +79,7 @@ implements Serializable {
 	public double getCurrentPower(Building building) {
 		double collected = getCollected(building) * efficiency_solar_to_electricity;
 		//System.out.println(building.getNickName() + "'s maxHeat is " + maxHeat + " collected is " + collected);
-		return maxHeat * collected;
+		return maxHeat * collected * factor;
 	}
 	
 	@Override
@@ -96,10 +98,22 @@ implements Serializable {
 		return getEfficiencySolarHeat();
 	}
 	
-	 @Override
-	 public void destroy() {
-		 super.destroy();
-		 surface = null;
-	 }
+	@Override
+	public void setTime(double time) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void toggleHalf() {
+		factor = factor/2D;
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		surface = null;
+	}
+
+
 	 
 }

@@ -64,4 +64,20 @@ implements Serializable {
 	public double getMaintenanceTime() {
 	    return getMaxHeat() * 1D;
 	}
+	
+	@Override
+	public void setTime(double time) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void toggleHalf() {
+		//factor = factor/2D;
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+	}
+
 }

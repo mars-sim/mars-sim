@@ -1259,15 +1259,32 @@ LocalBoundedObject, InsidePathLocation {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
+		
+		functions = null;
+		itemMap = null;
+		location = null;
+		manager = null;
+	    settlement = null;
+		furnace = null;
+		lifeSupport = null;
+		roboticStation = null;
+		powerGen = null;
+		marsClock = null;
+		masterClock = null;
+		buildingConfig = null;
+		heatModeCache = null;
+		fmt = null;
 		buildingType = null;
 		manager = null;
 		powerMode = null;
 		heatMode = null;
 		malfunctionManager.destroy();
 		malfunctionManager = null;
+/*		
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
+*/		
 	}
 }
