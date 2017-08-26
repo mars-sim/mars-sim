@@ -25,6 +25,8 @@ implements Serializable {
 
 	private double efficiency_heat = .90;
 
+	private double factor = 1;
+	
 	//private double area = 5 ;
 	//private Coordinates location ;
 	//private SurfaceFeatures surface ;
@@ -40,11 +42,11 @@ implements Serializable {
 	}
 
 	public double getCurrentHeat(Building building) {
-		return getMaxHeat() * efficiency_heat;
+		return getMaxHeat() * factor * efficiency_heat;
 	}
 
 	public double getCurrentPower(Building building) {
-		return getMaxHeat() * efficiency_heat ;
+		return getMaxHeat() * factor * efficiency_heat ;
 	}
 
 	public double getEfficiency() {
@@ -71,8 +73,18 @@ implements Serializable {
 	}
 	
 	@Override
-	public void toggleHalf() {
-		//factor = factor/2D;
+	public void switchHalf() {
+		factor = 1/2D;
+	}
+	
+	@Override
+	public void switchQuarter() {
+		factor = 1/4D;
+	}
+	
+	@Override
+	public void switchFull() {
+		factor = 1D;
 	}
 	
 	@Override

@@ -95,9 +95,20 @@ implements Serializable {
 	public abstract void setTime(double time);
 	
 	/**
-	 * Toggle on for producing only half the output
+	 * Switch to producing the full output
 	 */
-	public abstract void toggleHalf();
+	public abstract void switchFull();
+
+	/**
+	 * Switch to producing only half of the output
+	 */
+	public abstract void switchHalf();
+
+	/**
+	 * Switch to producing only a quarter of the output
+	 */
+	public abstract void switchQuarter();
+	
 	
 	/**
 	 * Prepare object for garbage collection.

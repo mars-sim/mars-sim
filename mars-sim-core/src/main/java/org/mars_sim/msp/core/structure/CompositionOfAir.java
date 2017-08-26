@@ -680,23 +680,23 @@ public class CompositionOfAir implements Serializable {
 
 	/**
 	 * Creates a new array for gases and pad it with zero for the new building
-	 * @param array
+	 * @param oldArray
 	 * @param numBuildings
-	 * @return
+	 * @return new array
 	 */
-	public double [][] createGasArray(double [][] array, int numBuildings) {
-		double [][] result = new double[numGases][numBuildings];
-
-		for (int j = 0; j< numBuildings; j++) {
+	public double [][] createGasArray(double [][] oldArray, int numBuildings) {
+		double [][] newArray = new double[numGases][numBuildings];
+		int size = oldArray[0].length;
+		for (int j = 0; j< size; j++) {
 			for (int i= 0; i< numGases; i++) {
 			if (j < numIDsCache) {
-				result[i][j] = array[i][j];
+				newArray[i][j] = oldArray[i][j];
 				}
 			else
-				result[i][j] = 0;
+				newArray[i][j] = 0;
 			}
 		}
-		return result;
+		return newArray;
 	}
 
 	/**

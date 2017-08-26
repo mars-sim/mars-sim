@@ -41,6 +41,8 @@ implements Serializable {
 	
 	private double time;
 	
+	private double factor = 1;
+	
 	private boolean toggle = false;
 	
 	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
@@ -90,7 +92,7 @@ implements Serializable {
 
 		double rate_millisol = rate / 1000D;
 		
-		maxFuel = time * rate_millisol;
+		maxFuel = factor * time * rate_millisol;
 		//System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
 		
@@ -204,11 +206,7 @@ implements Serializable {
 		toggle = true;
 	}
 
-	@Override
-	public void toggleHalf() {
-		time = time/2D;
-		toggle = true;
-	}
+
 	
 	public void toggleOFF() {
 		toggle = false;
@@ -219,16 +217,36 @@ implements Serializable {
 	}
 
 	 
-	 @Override
-	 public void setTime(double time) {
-		 this.time = time; // default is  0.12255668934010477 or  0.12255668934010477
-	 }
+	@Override
+	public void setTime(double time) {
+		this.time = time; // default is  0.12255668934010477 or  0.12255668934010477
+	}
+	 
+	@Override
+	public void switchHalf() {
+		factor = 1/2D;
+		toggle = true;
+	}
 	
-	 @Override
-	 public void destroy() {
+	@Override
+	public void switchQuarter() {
+		factor = 1/4D;
+		toggle = true;
+	}
+	
+	@Override
+	public void switchFull() {
+		factor = 1D;
+		toggle = true;
+	}
+		
+	@Override
+	public void destroy() {
 		 super.destroy();
 		 methaneAR = null;
 		 oxygenAR = null;		 
-	 }
+	}
+
+
 
 }

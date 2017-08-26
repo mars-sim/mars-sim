@@ -99,11 +99,6 @@ public class BuildingManager implements Serializable {
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-    private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
-    private Map<String, Double> buildingValuesNewCache;
-    private Map<String, Double> buildingValuesOldCache;
-    private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
-
     private Settlement settlement;
     private MarsClock lastBuildingValuesUpdateTime;
 
@@ -114,6 +109,13 @@ public class BuildingManager implements Serializable {
 	private static MasterClock masterClock;
     private static BuildingConfig buildingConfig;
 
+    private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
+    private Map<String, Double> buildingValuesNewCache;
+    private Map<String, Double> buildingValuesOldCache;
+    private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
+    private Map<String, Integer> buildingTypeIDMap;
+
+    
     /**
      * Constructor 1 : construct buildings from settlement config template. Called by Settlement
      * @param settlement the manager's settlement.
@@ -153,6 +155,11 @@ public class BuildingManager implements Serializable {
         buildings.stream()
 		.sorted(new AlphanumComparator())
 		.collect(Collectors.toList());
+
+        buildingTypeIDMap = new HashMap<>();
+        for (Building b : buildings) {
+        	createBuildingTypeIDMap(b);
+        }
         
         //logger.info("In " + settlement.getName() + "  # of bldgs : " + buildings.size());
         //flag_buildings_done = true;
@@ -257,6 +264,9 @@ public class BuildingManager implements Serializable {
             oldBuilding.removeFunctionsFromSettlement();
 
             buildings.remove(oldBuilding);
+            
+            //removeBuildingTypeIDMap(oldBuilding);
+            
             // 2016-10-28 Call to remove all references of this building in all functions
             removeAllFunctionsfromBFMap(oldBuilding);
     		//logger.info("removeBuilding() : " + oldBuilding + " has just been removed");
@@ -335,6 +345,7 @@ public class BuildingManager implements Serializable {
         if (!buildings.contains(newBuilding)) {
 
             buildings.add(newBuilding);
+                   
             // 2016-10-17 Insert this new building into buildingFunctionsMap
             addAllFunctionstoBFMap(newBuilding);
 
@@ -1922,13 +1933,28 @@ public class BuildingManager implements Serializable {
         	if (b.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
                 int id = b.getInhabitableID();
                 max = Math.max(id, max);
-                //if (id > nextNum)
-                //	nextNum++;
             }
         }
         return max;
     }
     
+    /**
+     * Creates a map of building type id
+     * @param b a given building
+     */
+    public void createBuildingTypeIDMap(Building b) {
+    	String buildingType = b.getBuildingType();
+    	String n = b.getNickName();
+    	int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
+
+    	if (buildingTypeIDMap.containsKey(buildingType)) {
+			int old_id = buildingTypeIDMap.get(buildingType);
+			if (old_id < new_id)
+				buildingTypeIDMap.put(buildingType, new_id);
+		}
+		else
+			buildingTypeIDMap.put(buildingType, new_id);
+    }
     
     /**
      * Gets an available building type ID for a new building.
@@ -1936,7 +1962,18 @@ public class BuildingManager implements Serializable {
      * @return type ID (starting from 1).
      */
     public int getNextBuildingTypeID(String buildingType) {
-
+       	int id = 1;
+    		if (buildingTypeIDMap.containsKey(buildingType)) {
+    			id = buildingTypeIDMap.get(buildingType);
+    			buildingTypeIDMap.put(buildingType, id + 1);
+    			return id;
+    		}
+    		else {
+    			buildingTypeIDMap.put(buildingType, id);
+    			return id;
+    		}
+    	
+/*    	
         int largest = 0;
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
@@ -1944,12 +1981,15 @@ public class BuildingManager implements Serializable {
             String type = b.getBuildingType();
             if (buildingType.equals(type)) {
             	int id = b.getTemplateID();
-            	largest = Math.max(id, largest);
-            	//largest++;
+            	//largest = Math.max(id, largest);
+            	if (id > largest)
+            	largest++;
             }
         }
 
         return largest + 1;
+        
+*/
     }
 
     /**

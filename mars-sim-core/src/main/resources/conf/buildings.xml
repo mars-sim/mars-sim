@@ -344,8 +344,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
 				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true"
-					fuel-type="methane"	consumption-rate="15.96" capacity="10.0"/>		
-				<heat-source type="Electric Heating Source" capacity="15.0" />
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
+				<heat-source type="Electric Heating Source" capacity="30.0" />
 			</thermal-generation>
 
 			<waste-disposal tech-level="1" capacity="2">
@@ -364,6 +364,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 
 	</building>
+<!-- end of Lander Hab-->
 
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
@@ -1671,7 +1672,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="50000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Electric Heating Source" capacity="10.0" />
+				<heat-source type="Electric Heating Source" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2234,18 +2235,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true"
-					fuel-type="methane"	consumption-rate="15.96" capacity="10.0"/>		
-				<heat-source type="Electric Heating Source" capacity="10.0" />
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
+				<heat-source type="Electric Heating Source" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
+<!-- end of Outpost Hub  -->
 
 	<building type="Storage Shed" width="5.0" length="5.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Storage Shed is a small brick building for
 			storing resources for the settlement.
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<power-required base-power="1.0" base-power-down-power="0.1" />
 
 		<functions>
 			<life-support capacity="2" power-required="0.2" />
@@ -2271,6 +2273,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<resource-initial resource="food waste" amount="0.0" />
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating Source" capacity="10.0" />
+				<heat-source type="Electric Heating Source" capacity="10.0" />
+			</thermal-generation>
 
 		</functions>
 	</building>
@@ -2316,8 +2322,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true" 
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
-				<heat-source type="Electric Heating Source" capacity="50.0" />
+					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />				
+				<heat-source type="Electric Heating Source" capacity="60.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2457,8 +2463,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="3.0" />
-				<heat-source type="Electric Heating Source" capacity="3.0" />
+				<heat-source type="Solar Heating Source" capacity="1.0" />
+				<heat-source type="Electric Heating Source" capacity="5.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2481,8 +2487,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="3.0" />
-				<heat-source type="Electric Heating Source" capacity="3.0" />
+				<heat-source type="Solar Heating Source" capacity="1.0" />
+				<heat-source type="Electric Heating Source" capacity="5.0" />
 			</thermal-generation>
 		</functions>
 	</building>

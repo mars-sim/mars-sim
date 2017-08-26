@@ -150,11 +150,20 @@ implements Serializable {
 	}
 	
 	@Override
+	public void setTime(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
 	public void destroy() {
 		super.destroy();
 		location = null;
 		surface = null;
 		mars = null;
 		orbitInfo = null;
+		
 	}
+
+
 }

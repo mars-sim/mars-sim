@@ -34,7 +34,7 @@ implements Serializable {
 	
 	private double maxHeat;
 	
-	private double factor;
+	private double factor = 1;
 
 	/**
 	 * Constructor.
@@ -104,8 +104,18 @@ implements Serializable {
 	}
 	
 	@Override
-	public void toggleHalf() {
-		factor = factor/2D;
+	public void switchHalf() {
+		factor = 1/2D;
+	}
+	
+	@Override
+	public void switchQuarter() {
+		factor = 1/4D;
+	}
+	
+	@Override
+	public void switchFull() {
+		factor = 1D;
 	}
 	
 	@Override

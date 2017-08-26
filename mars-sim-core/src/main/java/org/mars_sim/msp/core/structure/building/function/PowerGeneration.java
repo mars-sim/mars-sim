@@ -35,6 +35,8 @@ implements Serializable {
 	private static final BuildingFunction FUNCTION = BuildingFunction.POWER_GENERATION;
 
 	// Data members.
+	private double time;
+	
 	private List<PowerSource> powerSources;
 
 	private ThermalGeneration thermalGeneration;
@@ -155,10 +157,23 @@ implements Serializable {
 
 		// Building should only produce power if it has no current malfunctions.
 		if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+			
 			Iterator<PowerSource> i = powerSources.iterator();
 			while (i.hasNext()) {
-				result += i.next().getCurrentPower(getBuilding());
-			}
+					PowerSource powerSource = i.next();
+				    if (powerSource.getType().equals(PowerSourceType.FUEL_POWER)) {
+				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    	powerSource.setTime(time);
+				    	result += powerSource.getCurrentPower(getBuilding());
+				    }
+				    else
+						result += powerSource.getCurrentPower(getBuilding());
+			}			
+			
+			//Iterator<PowerSource> i = powerSources.iterator();
+			//while (i.hasNext()) {
+			//	result += i.next().getCurrentPower(getBuilding());
+			//}
 		}
 
 		// 2015-05-04 Added the contribution of the solar heat engine (in electricity generation mode)
@@ -178,6 +193,8 @@ implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
+		this.time = time;
+		
 /*
 		for (PowerSource source : powerSources) {
 			if (source instanceof SolarPowerSource) {

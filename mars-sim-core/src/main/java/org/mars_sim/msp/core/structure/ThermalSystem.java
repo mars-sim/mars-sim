@@ -66,7 +66,7 @@ implements Serializable {
 		this.settlement = settlement;
 		this.manager = settlement.getBuildingManager();
 		
-		heatMode = HeatMode.POWER_UP;
+		heatMode = HeatMode.QUARTER_HEAT;
 		heatGenerated = 0D;
 		heatStored = 0D;
 		thermalStorageCapacity = 0D;
@@ -96,7 +96,7 @@ implements Serializable {
 			if (powerGrid == null)
 				powerGrid = settlement.getPowerGrid();
 			if (powerGrid.getPowerMode() == PowerMode.POWER_UP)
-				heatMode = HeatMode.POWER_UP;
+				heatMode = HeatMode.QUARTER_HEAT;
 			//else if (HeatMode.HALF_POWER == newHeatMode) heatMode = HeatMode.HALF_POWER;
 			else if (powerGrid.getPowerMode() == PowerMode.POWER_DOWN)
 				heatMode = HeatMode.OFFLINE;
@@ -422,7 +422,7 @@ implements Serializable {
 		Iterator<Building> iUsed = buildings.iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();
-			if (heatMode == HeatMode.POWER_UP || heatMode == HeatMode.ONLINE) {
+			if (heatMode == HeatMode.FULL_HEAT) {
 				tempHeatRequired += building.getFullHeatRequired();
 				if(logger.isLoggable(Level.FINE)) {
 					logger.fine(
@@ -442,6 +442,18 @@ implements Serializable {
 							"ThermalSystem.log.buildingHalfHeatUsed", //$NON-NLS-1$
 							building.getBuildingType(),
 							Double.toString(building.getFullHeatRequired()/2D)
+						)
+					);
+				}
+			}
+			else if (heatMode == HeatMode.QUARTER_HEAT) {
+				tempHeatRequired += building.getFullHeatRequired()/4D;
+				if(logger.isLoggable(Level.FINE)) {
+					logger.fine(
+						Msg.getString(
+							"ThermalSystem.log.buildingQuarterHeatUsed", //$NON-NLS-1$
+							building.getBuildingType(),
+							Double.toString(building.getFullHeatRequired()/4D)
 						)
 					);
 				}
@@ -524,8 +536,9 @@ implements Serializable {
 		}
 
 		double used = 0D;
-		if (mode == HeatMode.ONLINE) used = building.getFullHeatRequired();
+		if (mode == HeatMode.FULL_HEAT) used = building.getFullHeatRequired();
 		if (mode == HeatMode.HALF_HEAT) used = building.getFullHeatRequired()/2D;
+		if (mode == HeatMode.QUARTER_HEAT) used = building.getFullHeatRequired()/4D;
 		else if (mode == HeatMode.HEAT_OFF) used = building.getPoweredDownHeatRequired();
 
 		return generated > used;

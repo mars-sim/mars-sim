@@ -11,11 +11,11 @@ import org.mars_sim.msp.core.Msg;
 
 public enum HeatMode {
 
-	ONLINE (Msg.getString("HeatMode.online")), //$NON-NLS-1$
+	FULL_HEAT (Msg.getString("HeatMode.fullHeat")), //$NON-NLS-1$
+	QUARTER_HEAT (Msg.getString("HeatMode.quarterHeat")), //$NON-NLS-1$
 	HALF_HEAT (Msg.getString("HeatMode.halfHeat")), //$NON-NLS-1$
 	HEAT_OFF (Msg.getString("HeatMode.heatOff")), //$NON-NLS-1$
-	OFFLINE (Msg.getString("HeatMode.offline")), //$NON-NLS-1$
-	POWER_UP ("Power up"); // meaning "OPERATIONAL"
+	OFFLINE (Msg.getString("HeatMode.offline")); //$NON-NLS-1$
 
 	private String name;
 

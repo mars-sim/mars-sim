@@ -25,16 +25,19 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ElectricHeatSource.class.getName());
 
-	private double maxCapacity;
 	private static double efficiency_electric_heat =.7;
 
+	private double factor = 1;
+	
+	private double max;
+	
 	//private static int count;
 
 	public ElectricHeatSource(double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.ELECTRIC_HEATING, maxHeat);
 
-		this.maxCapacity = maxHeat;
+		this.max = maxHeat;
 	}
 
 	/**
@@ -44,7 +47,7 @@ implements Serializable {
 	 */
 	// Called by ThermalGeneration.java
 	public double getCurrentHeat(Building building) {		
-		return maxCapacity;// * efficiency_electric_heat ;
+		return max * factor * efficiency_electric_heat ;
 	}
 	
 	public double getEfficiency() {
@@ -74,7 +77,18 @@ implements Serializable {
 	}
 	
 	@Override
-	public void toggleHalf() {
+	public void switchHalf() {
+		factor = 1/2D;
+	}
+	
+	@Override
+	public void switchQuarter() {
+		factor = 1/4D;
+	}
+	
+	@Override
+	public void switchFull() {
+		factor = 1D;
 	}
 	
 	@Override

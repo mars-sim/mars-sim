@@ -16,11 +16,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -89,22 +91,32 @@ LocalBoundedObject, InsidePathLocation {
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
+	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+
 	/** The volume of an airlock in cubic meters*/
 	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
 	public static final double kW_EVA_HEATER = .5D; //
 	// Assuming 20% chance for each person to witness or be conscious of the meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
+
 	// The influx of meteorites entering Mars atmosphere can be estimated as
 	// log N = -0.689* log(m) + 4.17
 	// N is the number of meteorites per year having masses greater than m grams incident
 	// on an area of 10^6 km2 (Bland and Smith, 2000).
 	// see initial implementation in MeteoriteImpactImpl class
 
-	// Note: typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
-	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; // typically between 10^-5 (.00001) and 10^-2 (.01) [in meters]
-	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211;// [in meters]
+	/** 
+	 * The thickness of the Aluminum wall of a building in meter.
+	 * Typically between 10^-5 (.00001) and 10^-2 (.01) [in m]
+	 */
+	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; //
+	/** The thickness of the wall of a greenhouse building in meter */
+	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211; 
 
+	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
+	
 	// 2015-03-12 Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
 	/** Default : 3340 Sols (5 orbits). */
 	private int wearLifeTime = 3340000;
@@ -117,7 +129,6 @@ LocalBoundedObject, InsidePathLocation {
     // Data members
     /** an unique template id assigned for the settlement template that this building belong */
 	protected int templateID;
-    // 2015-12-30 Add inhabitable_id for tracking composition of air
 	protected int inhabitableID = -1;
 	protected int baseLevel;
 	private int solCache = 0;
@@ -269,7 +280,7 @@ LocalBoundedObject, InsidePathLocation {
 			masterClock = Simulation.instance().getMasterClock();
 
 		powerMode = PowerMode.FULL_POWER;
-		heatMode = HeatMode.ONLINE;
+		heatMode = HeatMode.FULL_HEAT;
 
 
 /*
@@ -1133,9 +1144,11 @@ LocalBoundedObject, InsidePathLocation {
 			if (probability < 0)
 				probability = 0;
 
+			//if (probability > 0) logger.info("Sensors just picked up the new probability of a meteorite impact for " + nickName 
+			//		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
+			
 			// probability is in percentage unit between 0% and 100%
 			if (RandomUtil.getRandomDouble(100D) <= probability) {
-				System.out.println(this.getNickName() + "'s probability of impact : "+ probability);// + "    rand : "+ rand);
 				isImpactImminent = true;
 	        	// set a time for the impact to happen any time between 0 and 1000 milisols
 				moment_of_impact = RandomUtil.getRandomInt(1000);
@@ -1143,7 +1156,9 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
         if (isImpactImminent) {
-
+        	LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+        			"A meteorite impact for " + nickName 
+					+ " in " + settlement + " is imminent.", null);
         	int now = (int) marsClock.getMillisol();
             // Note: at the fastest sim speed, up to ~5 millisols may be skipped.
         	// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
@@ -1252,7 +1267,11 @@ LocalBoundedObject, InsidePathLocation {
 	}
 	
 	public void extractHeat(double heat) {
-		furnace.getHeating().extractHeat(heat);
+		// Set the instance of thermal generation function.
+		if (furnace == null)
+			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
+
+		furnace.getHeating().setHeatLoss(heat);
 	}
 	
 	/**

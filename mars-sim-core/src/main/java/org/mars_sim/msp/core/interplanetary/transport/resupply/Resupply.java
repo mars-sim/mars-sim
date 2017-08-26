@@ -207,7 +207,6 @@ implements Serializable, Transportable {
                 if (length <= 0D) {
                     length = DEFAULT_VARIABLE_BUILDING_LENGTH;
                 }
-
                 int buildingID = settlement.getBuildingManager().getNextTemplateID();
                 // 2015-12-13 Added buildingTypeID
                 int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(template.getBuildingType());
@@ -217,7 +216,7 @@ implements Serializable, Transportable {
                 //String scenario = template.getScenario();  // Note: scenario is null since template does NOT have a scenario string yet
                 //String buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
                 String buildingNickName = template.getBuildingType() + " " + buildingTypeID;
-
+                //System.out.println("buildingNickName : " + buildingNickName);
                 BuildingTemplate correctedTemplate = new BuildingTemplate(template.getMissionName(), buildingID, scenario, template.getBuildingType(), buildingNickName, width,
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
@@ -794,7 +793,8 @@ implements Serializable, Transportable {
 
                 // TODO : ask for user to define the location for the new building as well
 
-                newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate), buildingID, scenario, buildingType, buildingNickName, width, length, 0, 0, 0);
+                newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate),
+                		buildingID, scenario, buildingType, buildingNickName, width, length, 0, 0, 0);
 
                 logger.info("Positioning " + buildingNickName + " at (0,0)");
             }
@@ -1122,9 +1122,11 @@ implements Serializable, Transportable {
                 //System.out.println("Resupply.java Line 907: scenario is " + scenario);
                 //System.out.println("Resupply.java Line 908: buildingNickName is " + buildingNickName);
 
-                logger.info("Positioning at (" + Math.round(rectCenterX*10D)/10D + ", " + Math.round(rectCenterY*10D)/10D + ") at " + Math.round(rectRotation) + " deg");
+                logger.info("Positioning at (" + Math.round(rectCenterX*10D)/10D + ", " + Math.round(rectCenterY*10D)/10D 
+                		+ ") at " + Math.round(rectRotation) + " deg");
 
-				newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate), buildingID, scenario, newBuildingType, buildingNickName, width, length, rectCenterX,
+				newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate),
+						buildingID, scenario, newBuildingType, buildingNickName, width, length, rectCenterX,
                         rectCenterY, rectRotation);
                 break;
             }
@@ -1211,7 +1213,8 @@ implements Serializable, Transportable {
 
             //System.out.println("Resupply.java Line 1001: scenario is " + scenario);
             //System.out.println("Resupply.java Line 1002: buildingNickName is " + buildingNickName);
-            newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate), buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX,
+            newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate),
+            		buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX,
                     centerY, facingDegrees);
             //logger.info("a new connector Template " + newPosition + " is created in positionConnectorBetweenTwoBuildings()");
         }

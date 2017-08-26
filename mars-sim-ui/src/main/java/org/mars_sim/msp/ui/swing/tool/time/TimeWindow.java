@@ -500,7 +500,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (!northernSeasonCache.equals(northernSeason)) {
 			northernSeasonCache = northernSeason;
 
-			if (marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE) != null) {
+			if (marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE) != null && northernSeasonLabel != null) {
 				northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere", //$NON-NLS-1$
 						northernSeason));
 			}
@@ -554,7 +554,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			if (timeCompressionLabel != null) timeCompressionLabel.setText(s0.toString());
 		}
 
-		SwingUtilities.invokeLater(() -> updateTime(time));
+		//SwingUtilities.invokeLater(() -> updateTime(time));
+		else if (desktop.isToolWindowOpen(TimeWindow.NAME))
+			updateTime(time);
 	}
 
 	/**

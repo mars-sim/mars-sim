@@ -53,4 +53,15 @@ implements Serializable {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public void setTime(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+	}
 }

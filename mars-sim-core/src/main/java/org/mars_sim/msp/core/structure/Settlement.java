@@ -423,6 +423,13 @@ implements Serializable, LifeSupportType, Objective {
 		for (BuildingConnector c : connectors) {
 			Building b1 = c.getBuilding1();
 			Building b2 = c.getBuilding2();
+			if (b1 != building) {
+				buildings.add(b1);
+			}
+			else if (b2 != building) {
+				buildings.add(b2);		
+			}
+/*			
 			//if (b1.equals(building) {
 			if (b1.getNickName().equals(building.getNickName())) {
 				buildings.add(b2);
@@ -432,6 +439,8 @@ implements Serializable, LifeSupportType, Objective {
 				buildings.add(b1);
 				//names.add(b1.getNickName());
 			}
+*/			
+			
 		}
 /*		
 		System.out.println("size of " + buildings.size());

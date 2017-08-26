@@ -487,10 +487,11 @@ extends TabPanel {
 			//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 
 				if (column == 0) {
-					if (heatMode == HeatMode.ONLINE || heatMode == HeatMode.HALF_HEAT) {
+					if (heatMode == HeatMode.FULL_HEAT || heatMode == HeatMode.HALF_HEAT
+							|| heatMode == HeatMode.QUARTER_HEAT) {
 						return dotGreen;
 					}
-					else if (heatMode == HeatMode.HEAT_OFF || heatMode == HeatMode.POWER_UP) {
+					else if (heatMode == HeatMode.HEAT_OFF) {
 						return dotYellow; // TODO: will change to dotBlue
 					}
 					else if (heatMode == HeatMode.OFFLINE) {
@@ -505,7 +506,8 @@ extends TabPanel {
 					return building.getCurrentTemperature();
 				else if (column == 3) {
 					double generated = 0.0;
-					if (heatMode == HeatMode.ONLINE || heatMode == HeatMode.HALF_HEAT) {
+					if (heatMode == HeatMode.FULL_HEAT || heatMode == HeatMode.HALF_HEAT
+							|| heatMode == HeatMode.QUARTER_HEAT) {
 						try {
 							ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 							if (heater != null) {

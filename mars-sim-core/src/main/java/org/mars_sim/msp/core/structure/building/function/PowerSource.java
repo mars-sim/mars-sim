@@ -75,10 +75,15 @@ implements Serializable {
 
 	// 2015-09-28 Added removeFromSettlement() to return the fuel cell stacks to the inventory
 	public abstract void removeFromSettlement();
+	
+	public abstract void setTime(double time);
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		type = null;
 	}
+
+
 }

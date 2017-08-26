@@ -206,25 +206,23 @@ implements Serializable {
 		// Building should only produce heat if it has no current malfunctions.
 		//if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
 			
-			if (heatMode == HeatMode.ONLINE) {
+			if (heatMode == HeatMode.FULL_HEAT) {
 				Iterator<HeatSource> i = heatSources.iterator();
 				while (i.hasNext()) {
-					while (i.hasNext()) {
-						HeatSource heatSource = i.next();
-					    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-					    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-					    	result += heatSource.getCurrentHeat(getBuilding());
-					    }
-					    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-					    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-					    	result += heatSource.getCurrentHeat(getBuilding());
-					    }
-					    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-					    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-					    	heatSource.setTime(time);
-					    	result += heatSource.getCurrentHeat(getBuilding());
-					    }
-					}
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	heatSource.switchFull();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+				    	heatSource.switchFull();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	heatSource.setTime(time);
+				    	heatSource.switchFull();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
 				}
 			}
 			else if (heatMode == HeatMode.HALF_HEAT) {
@@ -232,20 +230,36 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    	heatSource.toggleHalf();
-				    	result = result + heatSource.getCurrentHeat(getBuilding());
+				    	heatSource.switchHalf();
+				    	result +=  heatSource.getCurrentHeat(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    	heatSource.toggleHalf();
-				    	result = result + heatSource.getCurrentPower(getBuilding());
+				    	heatSource.switchHalf();
+				    	result +=  heatSource.getCurrentHeat(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
 				    	heatSource.setTime(time);
-				    	heatSource.toggleHalf();
-				    	result = result + heatSource.getCurrentHeat(getBuilding());
+				    	heatSource.switchHalf();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
+				}
+			}
+			else if (heatMode == HeatMode.QUARTER_HEAT) {
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	heatSource.switchQuarter();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+				    	heatSource.switchQuarter();
+				    	result +=  heatSource.getCurrentHeat(getBuilding());
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	heatSource.setTime(time);
+				    	heatSource.switchQuarter();
+				    	result +=  heatSource.getCurrentHeat(getBuilding());
 				    }
 				}
 			}
@@ -272,15 +286,10 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	//System.out.println(building.getNickName() + "'s power is " + heatSource.getCurrentPower(getBuilding()));
+				    	heatSource.switchFull();
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
-				    //else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    //	result += heatSource.getCurrentPower(getBuilding());
-				    //}
 				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
 				    //	result += heatSource.getCurrentPower(getBuilding());
 				    //}
 				}
@@ -291,15 +300,29 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    	result = result + heatSource.getCurrentPower(getBuilding())/2D;
+				    	heatSource.switchHalf();
+				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
-				    //else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-				    //	result += heatSource.getCurrentPower(getBuilding())/2D;
-				    //}
 				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
+				    //}
+				}
+			}
+			else if (heatMode == HeatMode.QUARTER_HEAT) {
+				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	// Note : May get up to three quarters of power
+				    	// call the 1st time to get half 
+				    	heatSource.switchHalf();
+				    	result += heatSource.getCurrentPower(getBuilding());
+				    	// call the 2nd time to get the remaining quarter
+				    	heatSource.switchQuarter();
+				    	result += heatSource.getCurrentPower(getBuilding());
+				    }
+				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
 				    //}
 				}
