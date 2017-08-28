@@ -70,14 +70,13 @@ implements Serializable {
 
 	@Override
 	public double getCurrentHeat(Building building) {
-		double collected = getCollected(building) * efficiency_solar_to_heat;
+		double collected = getCollected(building);// * efficiency_solar_to_heat;
 		return maxHeat * collected * factor;
 	}
 
-	
 	@Override
 	public double getCurrentPower(Building building) {
-		double collected = getCollected(building) * efficiency_solar_to_electricity;
+		double collected = getCollected(building);// * efficiency_solar_to_electricity;
 		//System.out.println(building.getNickName() + "'s maxHeat is " + maxHeat + " collected is " + collected);
 		return maxHeat * collected * factor;
 	}

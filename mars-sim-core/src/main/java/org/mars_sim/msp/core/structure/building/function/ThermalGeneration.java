@@ -41,17 +41,19 @@ implements Serializable {
 	private static final BuildingFunction FUNCTION = BuildingFunction.THERMAL_GENERATION;
 
 	// Data members.
-	private double heatGenerated;
 	private double heatGeneratedCache;
-	private double powerGenerated;
-	private double powerGeneratedCache;
-	private double time;
 	
+	private double powerGeneratedCache;
+
 	private boolean sufficientHeat;
 
 	private Heating heating;
+	
 	private Building building;
+	
 	private HeatSource heatSource;
+	
+	private PowerMode powerMode;
 	
 	private List<HeatSource> heatSources;
 	
@@ -61,14 +63,16 @@ implements Serializable {
 	public ThermalGeneration(Building building) {
 		// Call Function constructor.
 		super(FUNCTION, building);
+		this.building = building;
+		
 		heating = new Heating(building);
 
 		// Determine heat sources.
 		BuildingConfig config = SimulationConfig.instance()
 				.getBuildingConfiguration();
 		heatSources = config.getHeatSources(building.getBuildingType());
-		this.building = building;
 
+		powerMode = building.getPowerMode();
 	}
 
 	/**
@@ -144,7 +148,7 @@ implements Serializable {
 
 		return result;
 	}
-	
+
 	/**
 	 * Checks if there is enough heat in the grid for all
 	 * buildings to be set to full heat.
@@ -179,26 +183,19 @@ implements Serializable {
 	// get heat from HeatSource.java
 	// 2014-10-24 Modified getGeneratedHeat()
 	public double getGeneratedHeat() {
-		if (heatGeneratedCache != heatGenerated) {
-			// if heatGeneratedCache is different from the its last value
-			heatGeneratedCache = heatGenerated;
-		}
-		return heatGenerated; // = 0.0 if heatMode == HeatMode.POWER_DOWN
+		return heatGeneratedCache; // = 0.0 if heatMode == HeatMode.POWER_DOWN
 	}
 
 	public double getGeneratedPower() {
-		if (powerGeneratedCache != powerGenerated) {
-			powerGeneratedCache = powerGenerated;
-		}
-		return powerGenerated; 
+		return powerGeneratedCache; 
 	}
-	
+
 	/**
 	 * Calculate the total amount of heat that this building is CURRENTLY producing
 	 * @return heat generated in kW
 	 */
 	// 2014-11-02 Created calculateGeneratedHeat()
-	public double calculateGeneratedHeat() {
+	public double calculateGeneratedHeat(double time) {
 
 		double result = 0D;
 		HeatMode heatMode = building.getHeatMode();
@@ -221,6 +218,31 @@ implements Serializable {
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	heatSource.setTime(time);
 				    	heatSource.switchFull();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
+				}
+			}
+			else if (heatMode == HeatMode.THREE_QUARTER_HEAT) {
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	heatSource.switchHalf();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    	heatSource.switchQuarter();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+				    	heatSource.switchHalf();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    	heatSource.switchQuarter();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    }
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	heatSource.setTime(time);
+				    	heatSource.switchHalf();
+				    	result += heatSource.getCurrentHeat(getBuilding());
+				    	heatSource.switchQuarter();
 				    	result += heatSource.getCurrentHeat(getBuilding());
 				    }
 				}
@@ -294,6 +316,20 @@ implements Serializable {
 				    //}
 				}
 			}
+			else if (heatMode == HeatMode.THREE_QUARTER_HEAT) {
+				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
+				Iterator<HeatSource> i = heatSources.iterator();
+				while (i.hasNext()) {
+					HeatSource heatSource = i.next();
+				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+				    	heatSource.switchQuarter();
+				    	result += heatSource.getCurrentPower(getBuilding());
+				    }
+				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
+				    //}
+				}
+			}
 			else if (heatMode == HeatMode.HALF_HEAT) {
 				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
 				Iterator<HeatSource> i = heatSources.iterator();
@@ -314,13 +350,9 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	// Note : May get up to three quarters of power
-				    	// call the 1st time to get half 
-				    	heatSource.switchHalf();
-				    	result += heatSource.getCurrentPower(getBuilding());
-				    	// call the 2nd time to get the remaining quarter
+				    	// Note : May get up to three quarters of power (and one quarter of heat)
 				    	heatSource.switchQuarter();
-				    	result += heatSource.getCurrentPower(getBuilding());
+				    	result += heatSource.getCurrentPower(getBuilding())*3D;
 				    }
 				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
@@ -338,25 +370,27 @@ implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
-
-		this.time = time;
 		
-		// 2014-11-02 Added calculateGeneratedHeat()
+		heating.timePassing(time);
+		
+		double heatGenerated = 0;
+		double powerGenerated = 0;
+		
 		// Set heatGenerated at the building the furnace belongs
-		heatGenerated = calculateGeneratedHeat();
-
-		if ( heatGeneratedCache != heatGenerated) {
-			// if heatGeneratedCache is different from the its last value
+		if (powerMode == PowerMode.FULL_POWER) {
+			
+			heatGenerated = calculateGeneratedHeat(time);
+			
+			powerGenerated = calculateGeneratedPower();
+		}
+		
+		if (heatGeneratedCache != heatGenerated) {
 			heatGeneratedCache = heatGenerated;
 			building.setHeatGenerated(heatGenerated);
 		}
 
-		powerGenerated = calculateGeneratedPower();
-
-		if ( powerGeneratedCache != powerGenerated) {
-			// if heatGeneratedCache is different from the its last value
+		if (powerGeneratedCache != powerGenerated) {
 			powerGeneratedCache = powerGenerated;
-			//building.setPowerGenerated(powerGenerated);
 		}
 		
 		// set new efficiency 
@@ -395,7 +429,7 @@ implements Serializable {
 			}
 */
 		
-		heating.timePassing(time);
+
 	}
 
 

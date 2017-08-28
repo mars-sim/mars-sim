@@ -935,22 +935,22 @@ implements Serializable, LifeSupportType, Objective {
 		// TODO: what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
 		// building and turn the heat off.
-		if (getNumCurrentPopulation() == 0) {
-			zeroPopulationTime += time;
-			if (zeroPopulationTime > 1000D) {
-				if (powerGrid.getPowerMode() != PowerMode.POWER_DOWN)
-					powerGrid.setPowerMode(PowerMode.POWER_DOWN);
-				if (thermalSystem.getHeatMode() != HeatMode.HEAT_OFF)
-					thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
-			}
-		} else {
+		//if (getNumCurrentPopulation() == 0) {
+		//	zeroPopulationTime += time;
+		//	if (zeroPopulationTime > 1000D) {
+		//		if (powerGrid.getPowerMode() != PowerMode.POWER_DOWN)
+		//			powerGrid.setPowerMode(PowerMode.POWER_DOWN);
+		//		if (thermalSystem.getHeatMode() != HeatMode.HEAT_OFF)
+		//			thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
+		//	}
+		//} else {
 			zeroPopulationTime = 0D;
 			if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
 				powerGrid.setPowerMode(PowerMode.POWER_UP);
 			// TODO: check if POWER_UP is necessary
 			// Question: is POWER_UP a prerequisite of FULL_POWER ?
 			// thermalSystem.setHeatMode(HeatMode.POWER_UP);
-		}
+		//}
 
 		powerGrid.timePassing(time);
 

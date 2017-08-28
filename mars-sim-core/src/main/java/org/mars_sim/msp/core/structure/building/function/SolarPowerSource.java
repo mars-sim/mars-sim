@@ -117,7 +117,7 @@ implements Serializable {
 			//logger.info("area : " + area);
 		}
 		
-		double available = surface.getSolarIrradiance(location) /1000D * efficiency_solar_panel * area; // add noise with * (.99 + RandomUtil.getRandomDouble(.2));
+		double available = surface.getSolarIrradiance(location) /1000D * area; // * efficiency_solar_panel // add noise with * (.99 + RandomUtil.getRandomDouble(.2));
 		double capable = getMaxPower();
 		if (available >= capable)
 			return capable;

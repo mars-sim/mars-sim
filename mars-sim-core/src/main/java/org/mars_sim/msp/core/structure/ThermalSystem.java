@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ThermalSystem.java
- * @version 3.07 2015-02-18
+ * @version 3.1.0 2017-08-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure;
@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.structure;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Iterator;
-import java.util.List;
+//import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,9 +19,9 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.HeatMode;
-import org.mars_sim.msp.core.structure.building.function.PowerMode;
-import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+//import org.mars_sim.msp.core.structure.building.function.HeatMode;
+//import org.mars_sim.msp.core.structure.building.function.PowerMode;
+//import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 
 /**
  * The ThermalSystem class is the settlement's Thermal Control, Distribution and Storage Subsystem.
@@ -39,21 +39,24 @@ implements Serializable {
 	DecimalFormat fmt = new DecimalFormat("#.####");
 
 	// Data members
-	private double powerGenerated;
-	private double heatGenerated;
-	private double heatGenerationCapacity;
+	private double powerGeneratedCache;
+	
+	private double heatGeneratedCache;
+	
+	//private double heatGenerationCapacity;
 	private double heatStored;
-	private double thermalStorageCapacity;
+	//private double thermalStorageCapacity;
 	private double heatRequired;
+	
 	private double heatValue;
 
 	private boolean sufficientHeat;
 
-	private HeatMode heatMode;
-	private HeatMode heatModeCache;
+	//private HeatMode heatMode;
+	//private HeatMode heatModeCache;
 
 	private Settlement settlement;
-	private PowerGrid powerGrid;
+	//private PowerGrid powerGrid;
 	private BuildingManager manager;
 	
 	//private ThermalGeneration heater;
@@ -66,28 +69,28 @@ implements Serializable {
 		this.settlement = settlement;
 		this.manager = settlement.getBuildingManager();
 		
-		heatMode = HeatMode.QUARTER_HEAT;
-		heatGenerated = 0D;
+		//heatMode = HeatMode.QUARTER_HEAT;
+		heatGeneratedCache = 0D;
 		heatStored = 0D;
-		thermalStorageCapacity = 0D;
+		//thermalStorageCapacity = 0D;
 		heatRequired = 0D;
 		sufficientHeat = true;
 
-		powerGrid = settlement.getPowerGrid();
+		//powerGrid = settlement.getPowerGrid();
 	}
 
 	/**
 	 * Gets the heat mode.
 	 * @return heat mode
-	 */
+	 
 	public HeatMode getHeatMode() {
 		return heatMode;
 	}
-
+*/
 	/**
 	 * Sets the heat mode.
 	 * @param newHeatMode the new heat mode.
-	 */
+
 	public void setHeatMode(HeatMode newHeatMode) {
 		if (heatMode != newHeatMode) {
 			//if (HeatMode.POWER_UP == newHeatMode) heatMode = HeatMode.POWER_UP;
@@ -103,23 +106,25 @@ implements Serializable {
 			settlement.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
 		}
 	}
-
+	 */
+	
 	/**
 	 * Gets the total max possible generated heat in the heating system.
 	 * @return heat in kW
-	 */
+
 	public double getGeneratedCapacity() {
 		//logger.info("getGeneratedCapacity() : heatGenerated is " + fmt.format(heatGenerationCapacity) );
 		return heatGenerationCapacity;
 	}
-
+	 */
+	
 	/**
 	 * Gets the total max possible generated heat in the heating system.
 	 * @return heat in kW
 	 */
 	public double getGeneratedHeat() {
 		//logger.info("getGeneratedHeat() : heatGenerated is " + fmt.format(heatGenerated) );
-		return heatGenerated;
+		return heatGeneratedCache;
 	}
 
 	/**
@@ -127,7 +132,7 @@ implements Serializable {
 	 * @return heat in kW
 	 */
 	public double getGeneratedPower() {
-		return powerGenerated;
+		return powerGeneratedCache;
 	}
 
 
@@ -136,8 +141,8 @@ implements Serializable {
 	 * @param newGeneratedHeat the new generated heat kW
 	 */
 	private void setGeneratedHeat(double newGeneratedHeat) {
-		if (heatGenerated != newGeneratedHeat) {
-			heatGenerated = newGeneratedHeat;
+		if (heatGeneratedCache != newGeneratedHeat) {
+			heatGeneratedCache = newGeneratedHeat;
 			settlement.fireUnitUpdate(UnitEventType.GENERATED_HEAT_EVENT);
 		}
 	}
@@ -147,8 +152,8 @@ implements Serializable {
 	 * @param newGeneratedHeat the new generated power kW
 	 */
 	private void setGeneratedPower(double newGeneratedPower) {
-		if (powerGenerated != newGeneratedPower) {
-			powerGenerated = newGeneratedPower;
+		if (powerGeneratedCache != newGeneratedPower) {
+			powerGeneratedCache = newGeneratedPower;
 			settlement.fireUnitUpdate(UnitEventType.GENERATED_POWER_EVENT);
 		}
 	}
@@ -156,41 +161,44 @@ implements Serializable {
 	/**
 	 * Gets the stored heat in the heating system.
 	 * @return stored heat in kW
-	 */
+	 
 	public double getStoredHeat() {
 		return heatStored;
 	}
-
+*/
+	
 	/**
 	 * Sets the stored heat in the
 	 * @param newHeatStored the new stored heat (kJ).
-	 */
+	 
 	public void setStoredHeat(double newHeatStored) {
 		if (heatStored != newHeatStored) {
 			heatStored = newHeatStored;
 			settlement.fireUnitUpdate(UnitEventType.STORED_HEAT_EVENT);
 		}
 	}
-
+*/
+	
 	/**
 	 * Gets the stored thermal capacity in the heating system.
 	 * @return stored thermal capacity in kJ.
-	 */
+	 
 	public double getStoredHeatCapacity() {
 		return thermalStorageCapacity;
 	}
-
+*/
 	/**
 	 * Sets the stored thermal capacity in the heating system.
 	 * @param newThermalStorageCapacity the new stored thermal capacity (kJ).
-	 */
+	 
 	public void setStoredHeatCapacity(double newThermalStorageCapacity) {
 		if (thermalStorageCapacity != newThermalStorageCapacity) {
 			thermalStorageCapacity = newThermalStorageCapacity;
 			settlement.fireUnitUpdate(UnitEventType.STORED_HEAT_CAPACITY_EVENT);
 		}
 	}
-
+*/
+	
 	/**
 	 * Gets the heat required from the heating system.
 	 * @return heat in kJ/s
@@ -203,8 +211,7 @@ implements Serializable {
 	/**
 	 * Sets the required heat in the heating system.
 	 * @param newRequiredHeat the new required heat (kJ/s).
-	 */
-
+	
 	private void setRequiredHeat(double newRequiredHeat) {
 		if (heatRequired != newRequiredHeat) {
 			heatRequired = newRequiredHeat;
@@ -212,7 +219,8 @@ implements Serializable {
 
 		}
 	}
-
+ */
+	
 	/**
 	 * Checks if there is enough heat in the grid for all
 	 * buildings to be set to full heat.
@@ -249,7 +257,11 @@ implements Serializable {
 		//updateTotalThermalStorageCapacity();
 
 		// Determine total heat required in the heating system.
-		updateTotalRequiredHeat();
+		//updateTotalRequiredHeat();
+		
+		// Update heat value.
+		determineHeatValue();
+		
 /*
 		// Check if there is enough heat generated to fully supply each building.
 		if (heatRequired <= heatGenerated) {
@@ -321,9 +333,6 @@ implements Serializable {
 
 */
 
-		// Update heat value.
-		determineHeatValue();
-
 	}
 
 	/**
@@ -331,24 +340,24 @@ implements Serializable {
 	 * @throws BuildingException if error determining total heat generated.
 	 */
 	private void updateTotalHeatGenerated() {
-		double tempHeatGenerated = 0D;
+		double heat = 0D;
 
 		// Add the heat generated by all heat generation buildings.
 		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iHeat = manager.getBuildings(BuildingFunction.THERMAL_GENERATION).iterator();
 		while (iHeat.hasNext()) {
-			Building building = iHeat.next();
-			ThermalGeneration gen = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-			tempHeatGenerated += gen.getGeneratedHeat();
+			Building b = iHeat.next();
+			//ThermalGeneration gen = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+			heat += b.getThermalGeneration().getGeneratedHeat();
 			// logger.info(((Building) gen).getName() + " generated: " + gen.getGeneratedHeat());
 		}
-		setGeneratedHeat(tempHeatGenerated);
+		setGeneratedHeat(heat);
 
 		if(logger.isLoggable(Level.FINE)) {
 			logger.fine(
 				Msg.getString(
 					"ThermalSystem.log.totalHeatGenerated", //$NON-NLS-1$
-					Double.toString(heatGenerated)
+					Double.toString(heat)
 				)
 			);
 		}
@@ -364,11 +373,11 @@ implements Serializable {
 
 		// Add the heat generated by all heat generation buildings.
 		//BuildingManager manager = settlement.getBuildingManager();
-		Iterator<Building> iHeat = manager.getBuildings(BuildingFunction.THERMAL_GENERATION).iterator();
-		while (iHeat.hasNext()) {
-			Building building = iHeat.next();
-			ThermalGeneration gen = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-			power += gen.getGeneratedPower();
+		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_GENERATION).iterator();
+		while (i.hasNext()) {
+			Building b = i.next();
+			//ThermalGeneration gen = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+			power += b.getPowerGeneration().getGeneratedPower();
 			//System.out.println(building.getNickName() + "'s power : " + power);
 			// logger.info(((Building) gen).getName() + " generated: " + gen.getGeneratedHeat());
 		}
@@ -410,10 +419,11 @@ implements Serializable {
 		}
 	}
  */
+	
 	/**
 	 * Updates the total heat required in the heating system.
 	 * @throws BuildingException if error determining total heat required.
-	 */
+
 	private void updateTotalRequiredHeat() {
 		double tempHeatRequired = 0D;
 		//boolean heatUp = heatMode == HeatMode.POWER_UP;
@@ -492,7 +502,8 @@ implements Serializable {
 			);
 		}
 	}
-
+*/
+	
 	/**
 	 * Updates the total heat storage capacity in the heating system.
 	 * @throws BuildingException if error determining total thermal storage capacity.
@@ -526,24 +537,29 @@ implements Serializable {
 	 * @param mode {@link HeatMode} the building's heat mode to check.
 	 * @return true if building supplies more heat than it uses.
 	 * throws BuildingException if error in heat generation.
-	 */
+
 	private boolean heatSurplus(Building building, HeatMode mode) {
 		double generated = 0D;
-		if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
-			ThermalGeneration heatGeneration =
-					(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-			generated = heatGeneration.getGeneratedHeat();
-		}
+		//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+		//	ThermalGeneration heatGeneration =
+		//			(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+		//	generated = heatGeneration.getGeneratedHeat();
+		//}
 
+		generated =  building.getThermalGeneration().getGeneratedHeat();
+	
 		double used = 0D;
 		if (mode == HeatMode.FULL_HEAT) used = building.getFullHeatRequired();
-		if (mode == HeatMode.HALF_HEAT) used = building.getFullHeatRequired()/2D;
-		if (mode == HeatMode.QUARTER_HEAT) used = building.getFullHeatRequired()/4D;
+		else if (mode == HeatMode.THREE_QUARTER_HEAT) used = building.getFullHeatRequired()/1.5D;
+		else if (mode == HeatMode.HALF_HEAT) used = building.getFullHeatRequired()/2D;
+		else if (mode == HeatMode.QUARTER_HEAT) used = building.getFullHeatRequired()/4D;
 		else if (mode == HeatMode.HEAT_OFF) used = building.getPoweredDownHeatRequired();
 
 		return generated > used;
+		
 	}
-
+	 */
+	
 	/**
 	 * Stores any excess heat in heat storage buildings if possible.
 	 * @param excessHeat excess heat (in kJ/s).
@@ -599,7 +615,7 @@ implements Serializable {
 	 */
 	private void determineHeatValue() {
 		double demand = heatRequired;
-		double supply = heatGenerated + (heatStored / 2D);
+		double supply = heatGeneratedCache + (heatStored / 2D);
 
 		double newHeatValue = demand / (supply + 1.0D);
 
@@ -613,7 +629,7 @@ implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		heatMode = null;
+		manager = null;
 		settlement = null;
 	}
 }

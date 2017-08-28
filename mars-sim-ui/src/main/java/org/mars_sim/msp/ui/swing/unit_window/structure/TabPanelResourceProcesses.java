@@ -236,7 +236,7 @@ extends TabPanel {
 			add(label);
 
 			// Load green and red dots.
-			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
+			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 
 			if (process.isProcessRunning()) toggleButton.setIcon(dotGreen);

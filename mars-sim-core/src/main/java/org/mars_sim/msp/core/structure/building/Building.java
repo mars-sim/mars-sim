@@ -1,5 +1,5 @@
 /**
- * M`ars Simulation Project
+ * Mars Simulation Project
  * Building.java
  * @version 3.1.0 2016-10-05
  * @author Scott Davis
@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
+import org.mars_sim.msp.core.structure.building.function.Heating;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -150,9 +151,9 @@ LocalBoundedObject, InsidePathLocation {
 	// 2014-10-28  Changed from "name" to "buildingType"
 	protected String buildingType;
 
-	protected String nickName;
+	private String nickName;
 	// 2014-11-27 Added description for each building
-	protected String description;// = "Stay tuned";
+	private String description;// = "Stay tuned";
 
 	//protected Set<Function> functions;
 	protected List<Function> functions;
@@ -167,19 +168,19 @@ LocalBoundedObject, InsidePathLocation {
     //private Inventory inv; //b_inv, s_inv;
     private Settlement settlement;
 
-	protected ThermalGeneration furnace;
-	protected LifeSupport lifeSupport;
-	protected RoboticStation roboticStation;
-	private PowerGeneration powerGen;
+    private ThermalGeneration furnace;
+    private PowerGeneration powerGen;
+    private PowerStorage powerStorage;
+    
+	private LifeSupport lifeSupport;
+	private RoboticStation roboticStation;
+	private Heating heating;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
 
-	protected PowerMode powerMode;
-	//2014-10-23  Modified thermal control parameters in the building */
-	protected HeatMode heatMode;
-	// 2014-11-02 Added HeatModeCache
+	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
 	DecimalFormat fmt = new DecimalFormat("###.####");
@@ -212,15 +213,23 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
 		// Set the instance of thermal generation function.
+		if (hasFunction(BuildingFunction.POWER_GENERATION))
+			if (powerGen == null)
+				powerGen = (PowerGeneration) getFunction(BuildingFunction.POWER_GENERATION);
+		
+		// Set the instance of thermal generation function.
 		if (hasFunction(BuildingFunction.THERMAL_GENERATION))
 			if (furnace == null)
 				furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
-
+					//if (heating == null)
+					//	heating = furnace.getHeating();
+					
 		// Set the instance of thermal generation function.
-		//if (hasFunction(BuildingFunction.POWER_GENERATION))
-		//	if (powerGen == null)
-		//		powerGen = (PowerGeneration) getFunction(BuildingFunction.POWER_GENERATION);
+		if (hasFunction(BuildingFunction.POWER_STORAGE))	    
+			if (powerStorage == null)
+				powerStorage = (PowerStorage) getFunction(BuildingFunction.POWER_STORAGE);
 
+		
 		// Set the instance of robotic station function.
 		if (hasFunction(BuildingFunction.ROBOTIC_STATION))
 			if (roboticStation == null)
@@ -279,8 +288,8 @@ LocalBoundedObject, InsidePathLocation {
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
-		powerMode = PowerMode.FULL_POWER;
-		heatMode = HeatMode.FULL_HEAT;
+		powerModeCache = PowerMode.FULL_POWER;
+		heatModeCache = HeatMode.HALF_HEAT;
 
 
 /*
@@ -445,14 +454,29 @@ LocalBoundedObject, InsidePathLocation {
 		return furnace;
 	}
 
+	public PowerGeneration getPowerGeneration() {
+		if (powerGen == null)
+			powerGen = (PowerGeneration) getFunction(BuildingFunction.POWER_GENERATION);
+	
+		return powerGen;
+	}
+	
+	public PowerStorage getPowerStorage() {
+		if (powerStorage == null)
+			powerStorage = (PowerStorage) getFunction(BuildingFunction.POWER_STORAGE);
+
+		return powerStorage;
+	}
+	
+	
     /**
      * Gets the temperature of a building.
      * @return temperature (deg C)
      */
 	//2014-10-17  Added getTemperature()
     public double getCurrentTemperature() {
-    	if (getThermalGeneration() != null)
-            return getThermalGeneration().getHeating().getCurrentTemperature();
+    	if (heating != null)
+            return heating.getCurrentTemperature();
     	else
     		return roomTemperature;
     }
@@ -796,6 +820,8 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) result += i.next().getFullPowerRequired();
 				
+		result += powerNeededForEVAheater;
+		
 		//2014-11-02 Added getFullHeatRequired()
 		//result = result + getFullHeatRequired();
 
@@ -820,35 +846,37 @@ LocalBoundedObject, InsidePathLocation {
 	 * Gets the building's heat mode.
 	 */
 	public PowerMode getPowerMode() {
-		return powerMode;
+		return powerModeCache;
 	}
 
 	/**
 	 * Sets the building's heat mode.
 	 */
 	public void setPowerMode(PowerMode powerMode) {
-		this.powerMode = powerMode;
+		this.powerModeCache = powerMode;
 	}
 
 	/**
 	 * Gets the heat this building currently requires for full-power mode.
-	 * @return heat in kJ/s.
+	 * @return heat in kW.
 	 */
 	//2014-11-02  Modified getFullHeatRequired()
 	public double getFullHeatRequired()  {
 		//double result = baseHeatRequirement;
 		double result = 0;
 
-		if (furnace != null && furnace.getHeating() != null )
+		if (furnace != null && heating != null )
 			result = furnace.getHeating().getFullHeatRequired();
 
-		result += powerNeededForEVAheater;
+		//result += powerNeededForEVAheater;
 
 		return result;
 	}
 	
 	public void setHeatGenerated(double heatGenerated) {
-		furnace.getHeating().setHeatGenerated(heatGenerated);
+		if (heating == null)
+			heating = furnace.getHeating();
+		heating.setHeatGenerated(heatGenerated);
 	}
 
 	//public void setPowerGenerated(double powerGenerated) {
@@ -862,8 +890,8 @@ LocalBoundedObject, InsidePathLocation {
 	//2014-10-17  Added getPoweredDownHeatRequired()
 	public double getPoweredDownHeatRequired() {
 		double result = 0;
-		if (furnace != null && furnace.getHeating() != null)
-			result = furnace.getHeating().getPoweredDownHeatRequired();
+		if (furnace != null && heating != null)
+			result = heating.getPoweredDownHeatRequired();
 		return result;
 	}
 
@@ -872,7 +900,7 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	//2014-10-17  Added heat mode
 	public HeatMode getHeatMode() {
-		return heatMode;
+		return heatModeCache;
 	}
 
 	/**
@@ -880,10 +908,9 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	//2014-10-17  Added heat mode
 	public void setHeatMode(HeatMode heatMode) {
-		if ( heatModeCache != heatMode) {
+		if (heatModeCache != heatMode) {
 			// if heatModeCache is different from the its last value
 			heatModeCache = heatMode;
-			this.heatMode = heatMode;
 		}
 	}
 
@@ -1103,7 +1130,7 @@ LocalBoundedObject, InsidePathLocation {
 		malfunctionManager.timePassing(time);
 
 		// If powered up, active time passing.
-		if (powerMode == PowerMode.FULL_POWER)
+		if (powerModeCache == PowerMode.FULL_POWER)
 			malfunctionManager.activeTimePassing(time);
 
 		inTransportMode = false;
@@ -1271,7 +1298,7 @@ LocalBoundedObject, InsidePathLocation {
 		if (furnace == null)
 			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
 
-		furnace.getHeating().setHeatLoss(heat);
+		heating.setHeatLoss(heat);
 	}
 	
 	/**
@@ -1295,8 +1322,8 @@ LocalBoundedObject, InsidePathLocation {
 		fmt = null;
 		buildingType = null;
 		manager = null;
-		powerMode = null;
-		heatMode = null;
+		powerModeCache = null;
+		heatModeCache = null;
 		malfunctionManager.destroy();
 		malfunctionManager = null;
 /*		

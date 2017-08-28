@@ -99,6 +99,12 @@ implements Serializable {
 
 */
 
+	/**
+	 * Consumes the fuel
+	 * @param time
+	 * @param inv
+	 * @return the amount of fuel consumed
+	 */
 	public double consumeFuel(double time, Inventory inv) {
 
 		double rate_millisol = rate / 1000D;

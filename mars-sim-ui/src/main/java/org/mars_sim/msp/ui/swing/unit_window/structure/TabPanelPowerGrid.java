@@ -418,7 +418,7 @@ extends TabPanel {
 
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
-			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
+			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
 
 			//size = getBuildings().size();
 		}
@@ -473,15 +473,15 @@ extends TabPanel {
 				double generated = 0D;
 				if (building.hasFunction(BuildingFunction.POWER_GENERATION)) {
 					try {
-						PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-						generated = generator.getGeneratedPower();
+						//PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
+						generated = building.getPowerGeneration().getGeneratedPower();
 					}
 					catch (Exception e) {}
 				}
 				if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 					try {
-						ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-						generated += heater.getGeneratedPower();
+						//ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+						generated += building.getThermalGeneration().getGeneratedPower();
 					}
 					catch (Exception e) {}
 				}

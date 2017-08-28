@@ -795,6 +795,9 @@ implements ClockListener, Serializable {
      */
     @Override
     public void clockPulse(double time) {
+		if (time <= 0.0001)
+			// must reject the spurious data (initial time interval) at the start of the sim
+			return;
 		//logger.info("Simulation's clockPulse() is in " + Thread.currentThread().getName() + " Thread");
 		// it's in pool-4-thread-1 Thread
         UpTimer ut = null;

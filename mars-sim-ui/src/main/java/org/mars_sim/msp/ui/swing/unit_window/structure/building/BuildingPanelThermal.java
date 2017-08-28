@@ -68,17 +68,14 @@ extends BuildingFunctionPanel {
 
 		this.building = building;
 		
-		furnace = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);	
+		furnace = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);	
 			
 		// Check if the building is a heat producer.
 		hasFurnace = building.hasFunction(BuildingFunction.THERMAL_GENERATION);
 
-		// Set the layout
-		if (hasFurnace) setLayout(new GridLayout(3, 1, 0, 0));
-		//else setLayout(new GridLayout(, 1, 0, 0));
-
 		// If heat producer, prepare heat producer label.
 		if (hasFurnace) {
+			 setLayout(new GridLayout(3, 1, 0, 0));
 			
 			// 2014-11-21 Changed font type, size and color and label text
 			JLabel titleLabel = new JLabel(
@@ -123,7 +120,7 @@ extends BuildingFunctionPanel {
 
 			double newProductionCache = furnace.getGeneratedHeat();
 			if (productionCache != newProductionCache) {
-				productionCache = furnace.getGeneratedHeat();
+				productionCache = newProductionCache;
 				productionLabel.setText(Msg.getString("BuildingPanelThermal.heatProduced", formatter.format(productionCache))); //$NON-NLS-1$
 			}
 		}

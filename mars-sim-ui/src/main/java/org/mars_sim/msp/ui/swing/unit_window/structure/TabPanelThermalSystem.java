@@ -437,7 +437,7 @@ extends TabPanel {
 		//private List<Building> buildings = new ArrayList<>();
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
-		private ImageIcon dotGreen;
+		private ImageIcon dotGreen_full, dotGreen_half, dotGreen_quarter, dotGreen_threeQuarter;
 
 		private int size;
 
@@ -447,7 +447,12 @@ extends TabPanel {
 
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
-			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
+			dotGreen_full = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
+			dotGreen_half = ImageLoader.getIcon(Msg.getString("img.dotGreen_half")); //$NON-NLS-1$
+			dotGreen_quarter = ImageLoader.getIcon(Msg.getString("img.dotGreen_quarter")); //$NON-NLS-1$
+			dotGreen_threeQuarter = ImageLoader.getIcon(Msg.getString("img.dotGreen_threeQuarter")); //$NON-NLS-1$
+
+			
 		}
 
 		//2014-11-02 Included only buildings having Thermal control system
@@ -487,12 +492,20 @@ extends TabPanel {
 			//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 
 				if (column == 0) {
-					if (heatMode == HeatMode.FULL_HEAT || heatMode == HeatMode.HALF_HEAT
-							|| heatMode == HeatMode.QUARTER_HEAT) {
-						return dotGreen;
+					if (heatMode == HeatMode.HEAT_OFF) {
+						return dotYellow; 
 					}
-					else if (heatMode == HeatMode.HEAT_OFF) {
-						return dotYellow; // TODO: will change to dotBlue
+					else if (heatMode == HeatMode.QUARTER_HEAT) {
+						return dotGreen_quarter;
+					}
+					else if (heatMode == HeatMode.HALF_HEAT) {
+						return dotGreen_half;
+					}
+					else if (heatMode == HeatMode.THREE_QUARTER_HEAT) {
+						return dotGreen_threeQuarter;
+					}
+					else if (heatMode == HeatMode.FULL_HEAT) {
+						return dotGreen_full;
 					}
 					else if (heatMode == HeatMode.OFFLINE) {
 						return dotRed;
@@ -505,17 +518,19 @@ extends TabPanel {
 					// return temperature of the building;
 					return building.getCurrentTemperature();
 				else if (column == 3) {
-					double generated = 0.0;
-					if (heatMode == HeatMode.FULL_HEAT || heatMode == HeatMode.HALF_HEAT
+					//double generated = 0.0;
+					if (heatMode == HeatMode.FULL_HEAT 
+							|| heatMode == HeatMode.THREE_QUARTER_HEAT
+							|| heatMode == HeatMode.HALF_HEAT
 							|| heatMode == HeatMode.QUARTER_HEAT) {
 						try {
-							ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-							if (heater != null) {
-								generated = heater.getGeneratedHeat() + heater.getGeneratedPower();
-								return generated;
-							}
-							else
-								return generated;
+							//ThermalGeneration heater = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+							//if (heater != null) {
+								return building.getThermalGeneration().getGeneratedHeat();// + heater.getGeneratedPower();
+								//return generated;
+							//}
+							//else
+								//return 0;
 						}
 						catch (Exception e) {}
 					}
@@ -526,9 +541,9 @@ extends TabPanel {
 				else if (column == 4) {
 					double generatedCapacity = 0.0;
 					try {
-						ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+						//ThermalGeneration heater = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 						// 2014-10-25  Changed to calling getGeneratedCapacity()
-						generatedCapacity = heater.getHeatGenerationCapacity();
+						generatedCapacity = building.getThermalGeneration().getHeatGenerationCapacity();
 					}
 					catch (Exception e) {}
 					return generatedCapacity;

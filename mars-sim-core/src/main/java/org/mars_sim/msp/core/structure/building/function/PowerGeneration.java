@@ -37,6 +37,8 @@ implements Serializable {
 	// Data members.
 	private double time;
 	
+	private double powerGeneratedCache;
+	
 	private List<PowerSource> powerSources;
 
 	private ThermalGeneration thermalGeneration;
@@ -148,13 +150,50 @@ implements Serializable {
 		return result;
 	}
 
+
+	/**
+	 * Calculates the amount of electrical power generated.
+	 * @return power generated in kW
+	 */
+	public double calculateGeneratedPower() {
+		double result = 0D;
+
+		// Building should only produce power if it has no current malfunctions.
+		//if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+			
+		Iterator<PowerSource> i = powerSources.iterator();
+		while (i.hasNext()) {
+				PowerSource powerSource = i.next();
+			    if (powerSource.getType().equals(PowerSourceType.FUEL_POWER)) {
+			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+			    	powerSource.setTime(time);
+			    	result += powerSource.getCurrentPower(getBuilding());
+			    }
+			    else
+					result += powerSource.getCurrentPower(getBuilding());
+		}			
+		//}
+
+			
+		// 2015-05-04 Added the contribution of the solar heat engine (in electricity generation mode)
+		if (thermalGeneration == null)
+			thermalGeneration = building.getThermalGeneration();
+
+		// Note: some buildings don't have thermal generation function
+		if (thermalGeneration != null)
+			result += thermalGeneration.getGeneratedPower();//calculateGeneratedPower();
+
+			
+		return result;
+	}
+	
+	
 	/**
 	 * Gets the amount of electrical power generated.
 	 * @return power generated in kW
-	 */
+	 
 	public double getGeneratedPower() {
-		double result = 0D;
-
+	double result = 0D;
 		// Building should only produce power if it has no current malfunctions.
 		if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
 			
@@ -176,17 +215,12 @@ implements Serializable {
 			//}
 		}
 
-		// 2015-05-04 Added the contribution of the solar heat engine (in electricity generation mode)
-		if (thermalGeneration == null)
-			thermalGeneration = building.getThermalGeneration();
 
-		// Note: some buildings don't have thermal generation function
-		if (thermalGeneration != null)
-			result += thermalGeneration.getGeneratedPower();//calculateGeneratedPower();
+		return powerGeneratedCache;
 
-		return result;
 	}
-
+*/
+		
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)
@@ -194,6 +228,12 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 		this.time = time;
+		
+		double powerGenerated = calculateGeneratedPower();
+		
+		if (powerGeneratedCache != powerGenerated) {
+			powerGeneratedCache = powerGenerated;
+		}
 		
 /*
 		for (PowerSource source : powerSources) {
@@ -270,21 +310,6 @@ implements Serializable {
         return result;
     }
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		powerSources = null;
-		thermalGeneration = null;
-		building = null;
-/*		
-		Iterator<PowerSource> i = powerSources.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-		powerSources.clear();
-*/		
-	}
 
 	@Override
 	public double getFullHeatRequired() {
@@ -305,4 +330,25 @@ implements Serializable {
 			i.next().removeFromSettlement();
 		}
 	}
+	
+	public double getGeneratedPower() {
+		return powerGeneratedCache; 
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		powerSources = null;
+		thermalGeneration = null;
+		building = null;
+/*		
+		Iterator<PowerSource> i = powerSources.iterator();
+		while (i.hasNext()) {
+			i.next().destroy();
+		}
+		powerSources.clear();
+*/		
+	}
+	
 }
