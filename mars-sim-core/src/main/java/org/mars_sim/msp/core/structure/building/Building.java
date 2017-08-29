@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.1.0 2016-10-05
+ * @version 3.1.0 2018-08-28
  * @author Scott Davis
  */
 
@@ -175,6 +175,7 @@ LocalBoundedObject, InsidePathLocation {
 	private LifeSupport lifeSupport;
 	private RoboticStation roboticStation;
 	private Heating heating;
+	private EVA eva;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -234,6 +235,11 @@ LocalBoundedObject, InsidePathLocation {
 		if (hasFunction(BuildingFunction.ROBOTIC_STATION))
 			if (roboticStation == null)
 				roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
+		
+		if (hasFunction(BuildingFunction.EVA))
+			if (eva == null)
+				eva = (EVA) getFunction(BuildingFunction.EVA);
+		
 	}
 
 	/** Constructor 2
@@ -878,6 +884,12 @@ LocalBoundedObject, InsidePathLocation {
 			heating = furnace.getHeating();
 		heating.setHeatGenerated(heatGenerated);
 	}
+	
+	public void setPowerRequiredForHeating(double powerReq) {
+		if (heating == null)
+			heating = furnace.getHeating();
+		heating.setPowerRequired(powerReq);
+	}
 
 	//public void setPowerGenerated(double powerGenerated) {
 	//	powerGen.setPowerGenerated(powerGenerated);
@@ -930,50 +942,19 @@ LocalBoundedObject, InsidePathLocation {
         return powerNeededForEVAheater;
     }
 
-
+	/**
+	 * Calculates the number of people in the airlock   
+	 * @return number of people
+	 */
 	public int numOfPeopleInAirLock() {
         int num = 0;
-		if (getFunction(BuildingFunction.EVA) != null) {
-			//EVA eva = (EVA) getFunction(BuildingFunction.EVA);
-	        num = ((EVA) getFunction(BuildingFunction.EVA)).getAirlock().getOccupants().size();
-			//if (num > 0) System.out.println("num is " + num);
+		if (eva == null)
+			eva = (EVA) getFunction(BuildingFunction.EVA);	
+		if (eva != null) {
+	        num = eva.getAirlock().getOccupants().size();
 	        powerNeededForEVAheater = num * kW_EVA_HEATER * .5D; // assume half of people are doing EVA ingress statistically
 		}
         return num;
-/*
-        List<Building> evaBuildings = manager.getBuildings(BuildingFunction.EVA);
-        if (evaBuildings.size() > 0) {
-            Iterator<Building> i = evaBuildings.iterator();
-    		while (i.hasNext()) {
-            	Building building = i.next();
-            	//building.get
-    		}
-        }
-
-
-         		int result = 0;
-		//Collection<Person> people = getInhabitants();
-		// Check all people in settlement.
-		//Iterator<Person> i = people.iterator();
-		Iterator<Person> i = manager.getSettlement().getInhabitants().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
-			//System.out.println(person.getName() + "'s location : " + person.getBuildingLocation().getNickName());
-			//System.out.println("Building location with heating : " + getNickName());
-			if (person.getBuildingLocation().getNickName().equals(getNickName())) {
-				Task task = person.getMind().getTaskManager().getTask();
-				// Add all people maintaining this building.
-				if (task instanceof EnterAirlock || task instanceof ExitAirlock ) {
-					result++;
-					System.out.println(result + " in the airlock : ");
-				}
-			}
-		}
-		if (result > 0)
-			System.out.println("result : "+ result);
-		return result;
-*/
-
 	}
 
 

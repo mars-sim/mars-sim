@@ -10,6 +10,8 @@ package org.mars_sim.msp.core.time;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 
+import javafx.animation.Timeline;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -87,7 +89,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient volatile boolean autosave;
 
 	private long totalPulses = 1,  t2Cache = 0, diffCache = 0;
-	private transient long elapsedlast;
+	private transient long elapsedLast;
 	private transient long elapsedMilliseconds;
 
 	/** Clock listeners. */
@@ -112,6 +114,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient ThreadPoolExecutor clockListenerExecutor;
 
 	private Simulation sim;
+	
 	private SimulationConfig config;
 
     /**
@@ -138,7 +141,7 @@ public class MasterClock implements Serializable { // Runnable,
 
         // Create listener list.
         listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
-        elapsedlast = uptimer.getUptimeMillis();
+        elapsedLast = uptimer.getUptimeMillis();
         elapsedMilliseconds = 0L;
 
         //setupClockListenerTask();
@@ -370,12 +373,13 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Checks if in the process of autosaving a simulation.
      * @return true if autosaving simulation.
-     */
+  
     // 2015-01-08 Added isAutosavingSimulation
     //public boolean isAutosavingSimulation() {
     //    return autosaveSimulation;
     //}
-
+   */
+    
     /**
      * Sets the exit program flag.
      */
@@ -385,25 +389,28 @@ public class MasterClock implements Serializable { // Runnable,
     }
 
     /**
-     * Gets the time pulse length
+     * Computes the time pulse in millisols
      * in other words, the number of realworld seconds that have elapsed since it was last called
      * @return time pulse length in millisols
      * @throws Exception if time pulse length could not be determined.
      */
-    public double getTimePulse() {
-
-        double timePulse;
-        if (timeRatio > 0D) {
-            double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));
-            timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
-        }
-        else {
-            timePulse = 1D;
-        }
-
-        return timePulse;
+    public double computeTimePulseInMillisols() {
+        //if (timeRatio > 0D) {
+            return computeTimePulseInSeconds()/MarsClock.SECONDS_IN_MILLISOL;
+        //}
+        //else {
+        //    return 1D;
+        //}
     }
 
+    /**
+     * Computes the time pulse in seconds. It varies, depending on the time ratio
+     * @return time pulse length in seconds
+     */
+    public double computeTimePulseInSeconds() {
+    	return elapsedMilliseconds * timeRatio / 1000D;
+    }
+    
     /*
      * Gets the total number of pulses since the start of the sim
      */
@@ -529,7 +536,7 @@ public class MasterClock implements Serializable { // Runnable,
 
 		@Override
 		public void run() {
-	        elapsedlast = uptimer.getUptimeMillis();
+	        elapsedLast = uptimer.getUptimeMillis();
 
 	        // 2015-06-26 For variable sleepTime
 			long t1, t2, sleepTime, overSleepTime = 0L, excess = 0L;
@@ -634,50 +641,37 @@ public class MasterClock implements Serializable { // Runnable,
 	    } // end of run
     }
 
-    // 2015-07-03  Relocated codes into statusUpdate()
+    /**
+     * Checks if it is on pause or a saving process has been requested. Keeps track of the time pulse 
+     */
     private void statusUpdate() {
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
-    	// Note: it's s on pool-4-thread-1 Thread
-    	//count++;
-   		//System.out.println("count : " + count);
-
-        //long lastTimeDiff;
 
         if (!isPaused) {
             // Update elapsed milliseconds.
             updateElapsedMilliseconds();
             // Get the time pulse length in millisols.
-            double timePulse = getTimePulse();
+            double timePulse = computeTimePulseInMillisols();
             // Incrementing total time pulse number.
             totalPulses++;
-            //long startTime = System.nanoTime();
-            //System.out.println("resolution : " + (System.nanoTime() - startTime));
-            // Add time pulse length to Earth and Mars clocks.
-            double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
-            // TODO : if null
-            //if (earthTime == null)
-            //	earthTime = Simulation.instance().getMasterClock().getEarthClock();
-            if (keepRunning) {
-            	earthTime.addTime(earthTimeDiff);
-            	if (timePulse > 0)
-            		marsTime.addTime(timePulse);
-            }
-		  	if (!isPaused
-		  			|| !clockListenerExecutor.isTerminating()
-		  			|| !clockListenerExecutor.isTerminated()
-		  			|| !clockListenerExecutor.isShutdown() )
-		  		fireClockPulse(timePulse);
+            //logger.info(timePulse+"");
+            if (timePulse > 0) {
+	            if (keepRunning) {
+	                // Add time pulse length to Earth and Mars clocks.
+	            	earthTime.addTime(computeTimePulseInSeconds());
+	            	marsTime.addTime(timePulse);
+				  	if (!isPaused
+				  			|| !clockListenerExecutor.isTerminating()
+				  			|| !clockListenerExecutor.isTerminated()
+				  			|| !clockListenerExecutor.isShutdown())
+				  		fireClockPulse(timePulse);
+	            }
 
-            //long endTime = System.nanoTime();
-            //lastTimeDiff = (long) ((endTime - startTime) / 1_000_000D);
-            // TODO: how to prevent crashing autosaveTimer ?
-            // will it help by restarting the autosaveTimer ?
-            //Simulation.instance().getAutosaveTimer().playFromStart();
-            //logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
+            }
+            
         }
 
         if (saveType != 0) {
-            // Save the simulation as default.sim
             try {
                 Simulation.instance().saveSimulation(saveType, file);
             } catch (IOException e) {
@@ -708,7 +702,6 @@ public class MasterClock implements Serializable { // Runnable,
 
         // Exit program if exitProgram flag is true.
         if (exitProgram) {
-            //exitProgram = false;
         	if (Simulation.instance().getAutosaveTimer() != null)
         		Simulation.instance().getAutosaveTimer().stop();
             System.exit(0);
@@ -729,7 +722,7 @@ public class MasterClock implements Serializable { // Runnable,
     }
 
     /**
-     * Prepare clocklistener tasks for setting up threads.
+     * Prepares clock listener tasks for setting up threads.
      */
     // 2015-04-02 Added ClockListenerTask
 	public class ClockListenerTask implements Runnable {
@@ -744,7 +737,6 @@ public class MasterClock implements Serializable { // Runnable,
 
 		private ClockListenerTask(ClockListener listener) {
 			//logger.info("MasterClock's ClockListenerTask's constructor is on " + Thread.currentThread().getName() + " Thread");
-			// It's on pool-5-thread-1 Thread
 			this.listener = listener;
 
 		}
@@ -858,8 +850,9 @@ public class MasterClock implements Serializable { // Runnable,
         //logger.info("MasterClock's setPaused() is on " + Thread.currentThread().getName());
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
+        //if (Simulation.instance().getAutosaveTimer() == null)
         if (isPaused)
-			Simulation.instance().getAutosaveTimer().pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
+        	Simulation.instance().getAutosaveTimer().pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
 		else
 			Simulation.instance().getAutosaveTimer().play();
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
@@ -901,31 +894,22 @@ public class MasterClock implements Serializable { // Runnable,
 
     public double getPulsesPerSecond() {
         //System.out.println("pulsespersecond: "+((double) totalPulses / (uptimer.getUptimeMillis()/1000 ) ));
-        return ((double) totalPulses / (uptimer.getUptimeMillis() / 1000D));
+        return totalPulses / uptimer.getUptimeMillis() * 1000D;
     }
 
-    public double getPulses() {
-        //System.out.println("pulsespersecond: "+((double) totalPulses / (uptimer.getUptimeMillis()/1000 ) ));
-        return ((double) totalPulses);
-    }
 
     /**
      * Update the milliseconds elapsed since last time pulse.
      */
     private void updateElapsedMilliseconds() {
     	if (uptimer == null) {
-    		//System.out.println("MasterClock : uptimer == null");
     		uptimer = new UpTimer(this);
     	}
         long tnow = uptimer.getUptimeMillis();
-        elapsedMilliseconds = tnow - elapsedlast;
-        elapsedlast = tnow;
-        //System.out.print ("elapsedMilliseconds : " + elapsedMilliseconds + " ");
+        elapsedMilliseconds = tnow - elapsedLast;
+        elapsedLast = tnow;
     }
 
-    private long getElapsedmillis() {
-        return elapsedMilliseconds;
-    }
 
     public static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
 

@@ -198,6 +198,7 @@ implements Serializable {
 	public double calculateGeneratedHeat(double time) {
 
 		double result = 0D;
+		double powerReq = 0;
 		HeatMode heatMode = building.getHeatMode();
 
 		// Building should only produce heat if it has no current malfunctions.
@@ -213,7 +214,8 @@ implements Serializable {
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
 				    	heatSource.switchFull();
-				    	result += heatSource.getCurrentHeat(getBuilding());
+				    	powerReq = heatSource.getCurrentHeat(getBuilding());
+				    	result += powerReq;
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	heatSource.setTime(time);
@@ -234,9 +236,10 @@ implements Serializable {
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
 				    	heatSource.switchHalf();
-				    	result += heatSource.getCurrentHeat(getBuilding());
+				    	powerReq = heatSource.getCurrentHeat(getBuilding());
 				    	heatSource.switchQuarter();
-				    	result += heatSource.getCurrentHeat(getBuilding());
+				    	powerReq += heatSource.getCurrentHeat(getBuilding());
+				    	result += powerReq;
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	heatSource.setTime(time);
@@ -257,7 +260,8 @@ implements Serializable {
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
 				    	heatSource.switchHalf();
-				    	result +=  heatSource.getCurrentHeat(getBuilding());
+				    	powerReq = heatSource.getCurrentHeat(getBuilding());
+				    	result += powerReq;
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	heatSource.setTime(time);
@@ -276,7 +280,8 @@ implements Serializable {
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
 				    	heatSource.switchQuarter();
-				    	result +=  heatSource.getCurrentHeat(getBuilding());
+				    	powerReq = heatSource.getCurrentHeat(getBuilding());
+				    	result += powerReq;
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	heatSource.setTime(time);
@@ -287,6 +292,8 @@ implements Serializable {
 			}
 		//}
 
+		building.setPowerRequiredForHeating(powerReq);
+			
 		return result;
 	}
 

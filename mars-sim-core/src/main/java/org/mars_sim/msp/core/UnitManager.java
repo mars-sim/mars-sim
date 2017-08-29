@@ -1836,7 +1836,7 @@ public class UnitManager implements Serializable {
 */
 	}
 
-
+/*
 	public class SettlementTask implements Runnable {
 		Settlement s;
 		double time;
@@ -1853,7 +1853,8 @@ public class UnitManager implements Serializable {
 			} //Exception e) {}
 		}
 	}
-
+*/
+	
 /*
 	public class PersonTask implements Runnable {
 		Person p;

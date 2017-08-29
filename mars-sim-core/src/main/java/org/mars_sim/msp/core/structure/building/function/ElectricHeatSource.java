@@ -23,7 +23,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ElectricHeatSource.class.getName());
+	//private static Logger logger = Logger.getLogger(ElectricHeatSource.class.getName());
 
 	private static double efficiency_electric_heat =.7;
 
@@ -47,7 +47,7 @@ implements Serializable {
 	 */
 	// Called by ThermalGeneration.java
 	public double getCurrentHeat(Building building) {		
-		return max * factor * efficiency_electric_heat ;
+		return max * factor;// * efficiency_electric_heat ;
 	}
 	
 	public double getEfficiency() {

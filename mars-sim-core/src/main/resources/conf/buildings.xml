@@ -345,7 +345,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Fuel Heating Source" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
-				<heat-source type="Electric Heating Source" capacity="30.0" />
+				<heat-source type="Electric Heating Source" capacity="20.0" />
 			</thermal-generation>
 
 			<waste-disposal tech-level="1" capacity="2">
@@ -447,7 +447,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true" 
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />					
 				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -460,7 +460,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 Assume thermal efficiency at 100%,
 				 1 kW_t for 1.5960 g/millisol or kg/sol				 
 				 -->			 
-				<heat-source type="Electric Heating Source" capacity="40.0" />
+				<heat-source type="Electric Heating Source" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -552,10 +552,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true" 
 					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
-				<heat-source type="Electric Heating Source" capacity="60.0" />
+				<heat-source type="Electric Heating Source" capacity="50.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1311,10 +1311,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="1000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true" 
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
-				<heat-source type="Electric Heating Source" capacity="40.0" />
+				<heat-source type="Electric Heating Source" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2236,7 +2236,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Fuel Heating Source" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
-				<heat-source type="Electric Heating Source" capacity="30.0" />
+				<heat-source type="Electric Heating Source" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2436,10 +2436,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true" 
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>				
-				<heat-source type="Electric Heating Source" capacity="40.0" />
+				<heat-source type="Electric Heating Source" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>

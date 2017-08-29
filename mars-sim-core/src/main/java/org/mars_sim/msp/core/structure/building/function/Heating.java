@@ -148,6 +148,8 @@ implements Serializable {
 	
 	private double gain_factor_HPS = Crop.LOSS_FACTOR_HPS;
 
+	private double powerRequired = 0;
+	
 	private double basePowerDownHeatRequirement = 0;
 
 	private double SHC_area;
@@ -158,8 +160,7 @@ implements Serializable {
     private double U_value_area_wall;
 
 	private double heatGeneratedCache = 0; // the initial value is zero
-	//private double powerRequired;
-	private double heatRequired;
+
 	/** The heat extracted by the ventilation system */
 	private double heatLossFromVent;
 	/** The current temperature of this building */
@@ -921,9 +922,13 @@ implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
-		return heatRequired;
+		return powerRequired;
 	}
 
+	public void setPowerRequired(double power) {
+		powerRequired = power;
+	}
+	
 	/**
 	 * Gets the amount of power required when function is at power down level.
 	 * @return power (kW)

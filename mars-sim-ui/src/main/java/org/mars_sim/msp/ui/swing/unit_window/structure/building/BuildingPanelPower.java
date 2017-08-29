@@ -36,7 +36,7 @@ extends BuildingFunctionPanel {
 	/** The power status label. */
 	private JLabel powerStatusLabel;
 	/** The power production label. */
-	private JLabel productionLabel;
+	private JLabel powerLabel;
 	/** The power used label. */
 	private JLabel usedLabel;
 	/** Decimal formatter. */
@@ -46,7 +46,7 @@ extends BuildingFunctionPanel {
 	/** The power status cache. */
 	private PowerMode powerStatusCache;
 	/** The power production cache. */
-	private double productionCache;
+	private double powerCache;
 	/** The power used cache. */
 	private double usedCache;
 
@@ -87,12 +87,12 @@ extends BuildingFunctionPanel {
 		// If power producer, prepare power producer label.
 		if (isProducer) {
 			PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-			productionCache = generator.getGeneratedPower();
-			productionLabel = new JLabel(
-				Msg.getString("BuildingPanelPower.powerProduced", formatter.format(productionCache)), //$NON-NLS-1$
+			powerCache = generator.getGeneratedPower();
+			powerLabel = new JLabel(
+				Msg.getString("BuildingPanelPower.powerProduced", formatter.format(powerCache)), //$NON-NLS-1$
 				JLabel.CENTER
 			);
-			add(productionLabel);
+			add(powerLabel);
 		}
 
 		// Prepare power used label.
@@ -114,17 +114,19 @@ extends BuildingFunctionPanel {
 	public void update() {
 
 		// Update power status if necessary.
-		if (!powerStatusCache.equals(building.getPowerMode())) {
-			powerStatusCache = building.getPowerMode();
+		PowerMode mode = building.getPowerMode();
+		if (powerStatusCache != mode) {
+			powerStatusCache = mode;
 			powerStatusLabel.setText(Msg.getString("BuildingPanelPower.powerStatus", powerStatusCache.getName())); //$NON-NLS-1$
 		}
 
 		// Update power production if necessary.
 		if (isProducer) {
-			PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-			if (productionCache != generator.getGeneratedPower()) {
-				productionCache = generator.getGeneratedPower();
-				productionLabel.setText(Msg.getString("BuildingPanelPower.powerProduced", formatter.format(productionCache))); //$NON-NLS-1$
+			PowerGeneration generator = building.getPowerGeneration();//(PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
+			double power = generator.getGeneratedPower();
+			if (powerCache != power) {
+				powerCache = power;
+				powerLabel.setText(Msg.getString("BuildingPanelPower.powerProduced", formatter.format(powerCache))); //$NON-NLS-1$
 			}
 		}
 

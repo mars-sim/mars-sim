@@ -391,8 +391,9 @@ implements Serializable {
 					);
 				}
 			}
-			else {
-				building.setPowerMode(PowerMode.POWER_DOWN);
+		
+			//else {
+				//building.setPowerMode(PowerMode.POWER_DOWN);
 				power += building.getPoweredDownPowerRequired();
 
 				if(logger.isLoggable(Level.FINE)) {
@@ -404,8 +405,10 @@ implements Serializable {
 						)
 					);
 				}
-			}
+			//}
+		
 		}
+		
 		setRequiredPower(power);
 
 		if(logger.isLoggable(Level.FINE)) {
@@ -431,6 +434,7 @@ implements Serializable {
 			//PowerStorage store = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
 			store += b.getPowerStorage().getCurrentMaxCapacity();
 		}
+		
 		setStoredPowerCapacity(store);
 
 		if(logger.isLoggable(Level.FINE)) {
