@@ -1,14 +1,12 @@
 /**
  * Mars Simulation Project
  * DayNightMapLayer.java
- * @version 3.08 2015-06-15
+ * @version 3.1.0 2018-08-16
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;

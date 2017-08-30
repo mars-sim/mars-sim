@@ -522,7 +522,7 @@ implements Serializable {
 		
 		if (isGreenhouse) {
 			if (farm == null) { // greenhouse has a semi-transparent rooftop
-				farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+				farm = building.getFarming();//(Farming) building.getFunction(BuildingFunction.FARMING);
 			}
 	
 	        lightingGain = farm.getTotalLightingPower() * gain_factor_HPS; // For high pressure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)

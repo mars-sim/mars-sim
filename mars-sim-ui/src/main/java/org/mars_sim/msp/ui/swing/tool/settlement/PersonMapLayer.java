@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonMapLayer.java
- * @version 3.07 2015-12-15
+  * @version 3.1.0 2018-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobAssignmentType.java
- * @version 3.08 2015-09-24
+ * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
 

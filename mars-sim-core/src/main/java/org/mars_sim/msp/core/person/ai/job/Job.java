@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Job.java
- * @version 3.1.0 2017-05-02
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;

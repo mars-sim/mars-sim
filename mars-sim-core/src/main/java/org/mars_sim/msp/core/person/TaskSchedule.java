@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskSchedule.java
- * @version 3.08 2015-06-28
+ * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person;
@@ -33,11 +33,8 @@ public class TaskSchedule implements Serializable {
 
     private static Logger logger = Logger.getLogger(TaskSchedule.class.getName());
 
-	/*
-	 * Set the number of Sols to be logged (to limit the memory usage & saved file size)
-	 */
+	/** Set the number of Sols to be logged (to limit the memory usage & saved file size) */
 	public static final int NUM_SOLS = 100;
-
 	public static final int ON_CALL_START = 0;
 	public static final int ON_CALL_END = 999;
 	public static final int A_START = 0;
@@ -54,28 +51,29 @@ public class TaskSchedule implements Serializable {
 	// Data members
 	private int solCache;
 	private int startTime;
+	
 	private String actorName;
 	private String taskName;
 	private String doAction;
 	private String phase;
+	
 	private ShiftType shiftType, shiftTypeCache;
 
 	//private Map <Integer, List<OneTask>> schedules;
 	//private List<OneTask> todaySchedule;
 	private Map <Integer, List<OneActivity>> allActivities;
-	private List<OneActivity> todayActivities;
-
-
 	private Map <String, Integer> taskDescriptions;
 	private Map <String, Integer> taskNames;
 	private Map <String, Integer> taskPhases;
 
-	private MarsClock clock;
+	private List<OneActivity> todayActivities;
+	
+	private static MarsClock clock;
 	private Person person;
 	private Robot robot;
 
 	/**
-	 * Constructor.
+	 * Constructor for TaskSchedule
 	 * @param person
 	 */
 	public TaskSchedule(Person person) {
@@ -94,6 +92,10 @@ public class TaskSchedule implements Serializable {
 			clock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
+	/**
+	 * Constructor for TaskSchedule
+	 * @param robot
+	 */
 	public TaskSchedule(Robot robot) {
 		this.robot = robot;
 		actorName = robot.getName();
@@ -125,9 +127,6 @@ public class TaskSchedule implements Serializable {
     		//2016-09-22 Removed the sol log from LAST_SOL ago
         	if (solElapsed > NUM_SOLS) {
         		int diff = solElapsed - NUM_SOLS;
-        		//schedules.remove(diff);
-        		//if (schedules.containsKey(diff-1))
-        		//	schedules.remove(diff-1);
         		allActivities.remove(diff);
         		if (allActivities.containsKey(diff-1))
         			allActivities.remove(diff-1);
@@ -135,12 +134,10 @@ public class TaskSchedule implements Serializable {
         	}
 
 			// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
-        	//schedules.put(solCache, todaySchedule);
         	allActivities.put(solCache, todayActivities);
-        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
+
         	solCache = solElapsed;
         	// create a new schedule for the new day
-    		//todaySchedule = new CopyOnWriteArrayList<OneTask>();
     		todayActivities = new CopyOnWriteArrayList<OneActivity>();
     		// 2015-10-21 Added recordYestersolTask()
         	recordYestersolLastTask();
@@ -154,8 +151,6 @@ public class TaskSchedule implements Serializable {
 		int id2 = getID(taskPhases, phase);
 
 		todayActivities.add(new OneActivity(startTime, id0, id1, id2));
-		// add this task
-		//todaySchedule.add(new OneTask(startTime, taskName, description, phase));
 
 	}
 
@@ -212,13 +207,10 @@ public class TaskSchedule implements Serializable {
 
     	if (solCache > 1) {
     		// Load the last task from yestersol's schedule
-    		//List<OneTask> yesterSolschedule = schedules.get(solCache-1);
     		List<OneActivity> yesterSolschedule = allActivities.get(solCache-1);
     		if (yesterSolschedule != null) {
     		int size = yesterSolschedule.size();
 	    		if (size != 0) {
-	    			//OneTask lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
-	    			//todaySchedule.add(new OneTask(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
 	    			OneActivity lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
 	    			// Carry over and save the last yestersol task as the first task on today's schedule
 	    			todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
@@ -268,6 +260,10 @@ public class TaskSchedule implements Serializable {
 		return solCache;
 	}
 
+	/**
+	 * Gets the time the shift starts
+	 * @return time in millisols
+	 */
 	public int getShiftStart() {
 		int start = -1;
 		if (shiftType.equals(ShiftType.A))
@@ -285,6 +281,10 @@ public class TaskSchedule implements Serializable {
 		return start;
 	}
 
+	/**
+	 * Gets the time the shift end
+	 * @return time in millisols
+	 */
 	public int getShiftEnd() {
 		int end = -1;
 		if (shiftType.equals(ShiftType.A))
@@ -302,6 +302,10 @@ public class TaskSchedule implements Serializable {
 		return end;
 	}
 
+	/***
+	 * Gets the shift type
+	 * @return shift type
+	 */
 	public ShiftType getShiftType() {
 		return shiftType;
 	}

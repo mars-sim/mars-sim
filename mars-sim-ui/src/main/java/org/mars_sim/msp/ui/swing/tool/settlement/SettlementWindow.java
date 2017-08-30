@@ -71,6 +71,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
+@SuppressWarnings("unused")
 public class SettlementWindow
 extends ToolWindow {
 

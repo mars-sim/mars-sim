@@ -25,10 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -40,10 +38,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.DesktopPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 
 /**
  * A panel for displaying the settlement map.

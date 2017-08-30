@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitInfoPanel.java
- * @version 3.07 2015-01-14
+ * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
 

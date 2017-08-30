@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobAssignment.java
- * @version 3.08 2015-03-31
+ * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -19,15 +19,19 @@ public class JobAssignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private int sol;
+	private int solRatingSubmitted = -1; //no rating has ever been submitted
+
+    private double jobRating = 5; // has a score of 5 if unrated 
+    	
     private String initiator;
     private String jobType;
     private String timeSubmitted;
     private String authorizedBy;
-    private MarsClock timeAuthorized;
+    
+    private static MarsClock timeAuthorized;
+    
     private JobAssignmentType status; // JobAssignmentType.PENDING or JobAssignmentType.APPROVED
-    private double jobRating = 5; // has a score of 5 if unrated 
-    private int sol;
-	private int solRatingSubmitted = -1; //no rating has ever been submitted
 
 	private static MarsClock marsClock;
 

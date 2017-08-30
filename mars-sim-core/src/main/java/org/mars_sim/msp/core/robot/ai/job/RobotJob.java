@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotJob.java
- * @version 3.07 2015-03-05
+ * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;

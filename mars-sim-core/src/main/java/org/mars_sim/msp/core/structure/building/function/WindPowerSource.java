@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WindPowerSource.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -25,27 +25,24 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final double MAINTENANCE_FACTOR = 2D;
+	private static final double MAINTENANCE_FACTOR = .5D;
 
-	private static final double AIR_DENSITY_MARTIAN_ATM = 0.0156D; // [in kg / m^3]
+	// NOTE: Parameters below are based on the design of a 500 Watt VAWT scaled up to 2kW  
+	// - http://spectrum.library.concordia.ca/36176/1/low_reynolds_number.doc
+	// - https://www.researchgate.net/publication/245526020_Low_Reynolds_Number_Vertical_Axis_Wind_Turbine_for_Mars
 
+	/** Assume the turbine is designed to capture up to 20 m/s wind speed. */
+	private static final double WIND_SPEED_THRESHOLD = 20D; // [in m/s]
 	//private static final double AVERAGE_WIND_SPEED = 7D; // [in m/s]
-
+	private static final double AIR_DENSITY_MARTIAN_ATM = 0.0156D; // [in kg / m^3]
+	
 	private static final double SWEPT_AREA = 8.4345;
 	
 	private static final double POWER_COEFFICIENT = 3.8D;
-	
-	private static final double WIND_SPEED_THRESHOLD = 20D;
-	
+    /** The height factor accounts for the average increase of power output due to higher wind above the surface. */
 	private static final double HEIGHT_FACTOR = 1.2D;
-			
 	// Note : for the height of 0.5–10 m from the surface of Mars the wind speed vary from 15–26.5 m/s.
-	
 	private int numModules = 0;
-	
-	// Note : Parameters based on the design of a 500 Watt VAWT scaled up to 2kW  
-	// at http://spectrum.library.concordia.ca/36176/1/low_reynolds_number.doc
-	// or https://www.researchgate.net/publication/245526020_Low_Reynolds_Number_Vertical_Axis_Wind_Turbine_for_Mars
 	
 	private Weather weather;
 	

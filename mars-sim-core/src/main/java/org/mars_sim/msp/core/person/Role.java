@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Role.java
- * @version 3.1.0 2017-03-11
+ * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person;
@@ -19,8 +19,7 @@ public class Role implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-	String name;
-	Person person;
+	private Person person;
 
 	private MarsClock clock;
 
@@ -33,8 +32,7 @@ public class Role implements Serializable {
     // see https://dzone.com/articles/how-concurrenthashmap-works-internally-in-java
     // see https://dzone.com/articles/concurrenthashmap-isnt-always-enough
 
-	public Role(Person person) { //, RoleType type) {
-		//this.type = type;
+	public Role(Person person) {
 		this.person = person;
 
 	}
@@ -52,7 +50,7 @@ public class Role implements Serializable {
 	 * @param role type
 	 */
 	public void relinquishOldRoleType(RoleType oldType) {
-//		RoleType type = getType();
+
 		if (oldType != null) {
 		    person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
 		}
@@ -66,8 +64,6 @@ public class Role implements Serializable {
         RoleType oldType = roleType;//getType();
 
 	    if (newType != oldType) {
-//	        relinquishOldRoleType();
-//	        System.out.println("New RoleType is "+ type);
 	        this.roleType = newType;
 	        person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
 	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);

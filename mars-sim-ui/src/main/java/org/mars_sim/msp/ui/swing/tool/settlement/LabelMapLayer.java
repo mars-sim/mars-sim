@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.07 2015-12-15
+ * @version 3.1.0 2018-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -66,15 +66,16 @@ implements SettlementMapLayer {
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
 	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan
-	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 
 	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan;
-	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //(255, 255, 255, 190);
+	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(50, 50, 50, 190); //(255, 255, 255, 190);
 
-	static final Color ROBOT_LABEL_COLOR = new Color(255, 153, 11);// dull yellow
-	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
-	static final Color SELECTED_ROBOT_LABEL_COLOR = Color.orange;
-	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	static final Color ROBOT_LABEL_COLOR = new Color(255, 153, 11);
+	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
+	
+	static final Color SELECTED_ROBOT_LABEL_COLOR = new Color(255, 153, 11);
+	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(50, 50, 50, 190);
 
 
 	// Data members
@@ -156,7 +157,7 @@ implements SettlementMapLayer {
 					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "H " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
-							HALLWAY_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, 12);
+							HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 12);
 				}
 				else if (name.contains("Tunnel")) {
 					// 2016-09-25 Shrank the size of a hallway label.
@@ -165,7 +166,7 @@ implements SettlementMapLayer {
 					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "T " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
-							HALLWAY_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, 12);
+							HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 12);
 				}
 				else {
 					// 2015-12-15 Split up the name into multiple lines
@@ -212,7 +213,7 @@ implements SettlementMapLayer {
 							) {
 						for (int j = 0; j < size; j++) {
 							drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
-									SHOP_LABEL_COLOR, BLACK_LABEL_OUTLINE_COLOR, j * 12);
+									SHOP_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, j * 12);
 						}
 					}
 					else if (name.contains("Garage")) {

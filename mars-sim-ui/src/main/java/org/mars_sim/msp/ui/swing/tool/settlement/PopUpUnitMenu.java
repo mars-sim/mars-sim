@@ -436,7 +436,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	/*
 	 * Creates a stage for displaying the detail status of a building
 	 */
-    public void createBuildingPanelFX(Building building) {
+    @SuppressWarnings("restriction")
+	public void createBuildingPanelFX(Building building) {
     	Stage stage = new Stage();
 
 		BuildingStage buildingPanel = new BuildingStage("Building Detail", building, desktop);

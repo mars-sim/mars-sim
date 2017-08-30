@@ -8,13 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,10 +18,8 @@ import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -52,9 +44,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelAstronomicalObservation;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelFarming;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelInhabitable;
@@ -77,23 +67,14 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-//import javafx.scene.paint.Color;
-//import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.control.*;
 import javafx.scene.text.TextAlignment;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
 
+@SuppressWarnings("restriction")
 public class BuildingStage {
 
 	/** default serial id. */
@@ -103,23 +84,20 @@ public class BuildingStage {
 
 	/** The name of the panel. */
 	private String panelName;
-
 	private String newName;
 
-	/** The function panels. */
-	private List<BuildingFunctionPanel> functionPanels;
-
 	private Label buildingNameLabel;
-
 	private VBox box1;
 	private BorderPane mainPane;
 	private Button renameBtn;
 	
-	
 	/** The building this panel is for. */
 	private Building building;
-
 	private MainDesktopPane desktop;
+	
+	/** The function panels. */
+	private List<BuildingFunctionPanel> functionPanels;
+
 
 	/**
 	 * Constructor 1

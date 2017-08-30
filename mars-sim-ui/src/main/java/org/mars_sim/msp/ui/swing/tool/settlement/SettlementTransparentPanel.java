@@ -15,7 +15,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +42,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -423,7 +421,7 @@ public class SettlementTransparentPanel extends JComponent {
 				if (settlement != null) {
 					// 2014-10-26 obtained settlement object
 					//setCurrentSettlement(settlement);
-					((MainDesktopPane)desktop).openUnitWindow(settlement, false);
+					desktop.openUnitWindow(settlement, false);
 				}
 			}
 		});
@@ -725,7 +723,7 @@ public class SettlementTransparentPanel extends JComponent {
 		//logger.info("Old name was " + oldName);
 		//boolean isFX = Platform.isFxApplicationThread();
 
-		if (((MainDesktopPane)desktop).getMainScene() != null) {
+		if (desktop.getMainScene() != null) {
 
 			Platform.runLater(() -> {
 
@@ -736,7 +734,7 @@ public class SettlementTransparentPanel extends JComponent {
 		            }
 					else {
 						Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
-						alert.initOwner(((MainDesktopPane)desktop).getMainScene().getStage());
+						alert.initOwner(desktop.getMainScene().getStage());
 						alert.showAndWait();
 					}
 	/*
@@ -778,8 +776,8 @@ public class SettlementTransparentPanel extends JComponent {
 				mapPanel.getSettlement().changeName(settlementNewName);
 			}
 
-			((MainDesktopPane)desktop).closeToolWindow(SettlementWindow.NAME);
-			((MainDesktopPane)desktop).openToolWindow(SettlementWindow.NAME);
+			desktop.closeToolWindow(SettlementWindow.NAME);
+			desktop.openToolWindow(SettlementWindow.NAME);
 
 		}
 
@@ -835,7 +833,7 @@ public class SettlementTransparentPanel extends JComponent {
 	public String askNameFX(String oldName) {
 		String newName = null;
 		TextInputDialog dialog = new TextInputDialog(oldName);
-		dialog.initOwner(((MainDesktopPane)desktop).getMainScene().getStage());
+		dialog.initOwner(desktop.getMainScene().getStage());
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
 		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));

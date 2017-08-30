@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMapLayer.java
- * @version 3.07 2014-09-15
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;

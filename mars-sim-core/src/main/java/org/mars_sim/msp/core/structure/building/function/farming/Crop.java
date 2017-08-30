@@ -852,61 +852,37 @@ public class Crop implements Serializable {
 		lightingPower = 0;
 	}
 
+	
 	/**
-	 * Computes each input and output constituent for a crop for the specified period of time and return the overall harvest modifier
-	 * @param the maximum possible growth/harvest
-	 * @param a period of time in millisols
-	 * @return the harvest modifier
+	 * Computes the effects of the available sunlight and artificial light
+	 * @param time
+	 * @return instantaneous PAR or uPAR
 	 */
-	// 2015-02-16 Added calculateHarvestModifier()
-	public double calculateHarvestModifier(double maxPeriodHarvest, double time) {
-		// TODO: use theoretical model for crop growth, instead of empirical model below.
-		// TODO: the calculation should be uniquely tuned to each crop
-		double harvestModifier = 1D;
-
-		// TODO: Modify harvest modifier according to the pollination by the number of bees in the greenhouse
-
-		// Determine harvest modifier according to amount of light.
-		// TODO: Modify harvest modifier by amount of artificial light available to the whole greenhouse
-		if (surface == null)
-			surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-		// get the current time
-
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
-
+	public double computeLight(double time) {
+		double lightModifier = 0;
+		
 	    double currentMillisols = marsClock.getMillisol();
-
-	    //  The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
-	    
-		// 2015-04-09 Add instantaneous PAR from solar irradiance
+	    // Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
+		// 2015-04-09 Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)]  * [Wm^-2]
-
 		double PAR_interval = uPAR / 1_000_000D * time * MarsClock.SECONDS_IN_MILLISOL ; // in mol / m^2 within this period of time
 		// [mol /m^2] = [umol /m^2 /s] / u  * [millisols] * [s /millisols]
-
 		// 1 u = 1 micro = 1/1_000_000
 		// Note : daily-PAR has the unit of [mol /m^2 /day]
 	    // Gauge if there is enough sunlight
 	    double progress = cumulativeDailyPAR / dailyPARRequired; //[max is 1]
 	    
 	    double clock = currentMillisols / 1000D; //[max is 1]
-/*		logger.info("uPAR : "+ fmt.format(uPAR)
+	/*		logger.info("uPAR : "+ fmt.format(uPAR)
 				+ "\tPAR_interval : " + fmt.format(PAR_interval)
 				+ "\tprogress : "+ fmt.format(progress)
 				+ "\truler : " + fmt.format(clock));
-*/
+	*/
 	    // When enough PAR have been administered to the crop, the HPS_LAMP will turn off.
 	    // TODO: what if the time zone of a settlement causes sunlight to shine at near the tail end of the currentMillisols time ?
-
 	    // 2015-04-09 Compared cumulativeDailyPAR / dailyPARRequired  vs. current time / 1000D
-		// 2016-10-12 Modified the if-else condition to reduce the frequent toggling on and off of lamp
-		// // and to check on the time of day to anticipate the need of sunlight.
-	    // old : if (cumulativeDailyPAR > dailyPARRequired)
+		// 2016-10-12 Reduce the frequent toggling on and off of lamp and to check on the time of day to anticipate the need of sunlight.
 	    if (0.5 * progress < clock && currentMillisols <= 333
 			|| 0.7 * progress < clock && currentMillisols > 333 && currentMillisols <= 666
 			|| progress < clock && currentMillisols > 666
@@ -915,13 +891,12 @@ public class Crop implements Serializable {
 	    	if (uPAR > 40) { // if sunlight is available
 				turnOffLighting();
 	    		cumulativeDailyPAR = cumulativeDailyPAR + PAR_interval ;
-
-/*			    logger.info(cropType.getName()
+	/*			    logger.info(cropType.getName()
 			    		+ "\tcumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR)
 						+ "\tdelta_PAR_sunlight : "+ fmt.format(delta_PAR_sunlight));
-*/
+	*/
 	    	}
-
+	
 	    	else { //if no sunlight, turn on artificial lighting
 	    		//double conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_IN_MILLISOL  ;
 	    		// DLI is Daily Light Integral is the unit for for cumulative light -- the accumulation of all the PAR received during a day.
@@ -937,23 +912,15 @@ public class Crop implements Serializable {
 		    	// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
 				int numLamp = (int) (Math.ceil(delta_kW / kW_PER_HPS / VISIBLE_RADIATION_HPS / (1-BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
 				// TODO: should also allow the use of LED_KIT for lighting
-
-				//2016-10-11 Add Checking num of lamps in use by the greenhouse
-				//if (numLampCache != numLamp) {
-				//	farm.addNumLamp(numLamp - numLampCache);
-				//	numLampCache = numLamp;
-				//}
-
 				// For converting lumens to PAR/PPF, see http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
 				// Note: do NOT include any losses below
 		    	double supplykW = numLamp * kW_PER_HPS * VISIBLE_RADIATION_HPS * (1-BALLAST_LOSS_HPS) / PHYSIOLOGICAL_LIMIT;
 				turnOnLighting(supplykW);
-				// Note: do NOT include any losses below
 		    	double delta_PAR_supplied = supplykW * time  * conversion_factor / growingArea; // in mol / m2
 				// [ mol / m^2]  = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols] /  [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
 			    cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_supplied + PAR_interval;
 				// [mol /m^2 /d]
-/*			    logger.info(cropType.getName()
+	/*			    logger.info(cropType.getName()
 			    		+ "\tPAR_outstanding_persqm_daily : " + fmt.format(PAR_outstanding_persqm_daily)
 			    		+ "\tdelta_PAR_outstanding : " + fmt.format(delta_PAR_outstanding)
 						+ "\tdelta_kW : "+ fmt.format(delta_kW)
@@ -962,51 +929,54 @@ public class Crop implements Serializable {
 						+ "\tdelta_PAR_supplied : "+ fmt.format(delta_PAR_supplied)
 						+ "\tdelta_PAR_sunlight : "+ fmt.format(delta_PAR_sunlight)
 	    				+ "\tcumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR));
-*/
+	*/
 	    	}
 	    }
-
+	
 	    else {
-
+	
 	    	turnOffLighting();
-			// move the curtain out to block excessive sunlight
-	    	//cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_sunlight;
-
-/*		    logger.info(cropType.getName()
+			// TODO : move the curtain out to block excessive sunlight
+	/*		    logger.info(cropType.getName()
 		    		+ "\tcumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR));
 					//+ "\tdelta_PAR_sunlight : "+ fmt.format(delta_PAR_sunlight));
-*/
+	*/
 	    }
-
+	
 	    // check for the passing of each day
 	    int newSol = marsClock.getSolElapsedFromStart();
-		//if (newSol != solCache) {
-			// the crop has memory of the past lighting condition
-			double lightModifier = cumulativeDailyPAR / dailyPARRequired;
-			// TODO: If too much light, the crop's health may suffer unless a person comes to intervene
-			//solCache = newSol;
-			if (isStartup && newSol == 1) {
-				// if this crop is generated at the start of the sim, lightModifier will be artificially lower
-				// need to add adjustment
-				lightModifier = lightModifier / fractionalGrowingTimeCompleted ;
-			}
-				
-			memory[0] = .33 + .33 * lightModifier + .33 * memory[0];
-			// use .2 instead of .5 since it's normal for crop to go through day/night cycle
-			if (memory[0] > 1.5)
-				memory[0] = 1.5;
-			else if (memory[0] < 0.5)
-				memory[0] = 0.5;
+		// the crop has memory of the past lighting condition
+		lightModifier = cumulativeDailyPAR / dailyPARRequired;
+		// TODO: If too much light, the crop's health may suffer unless a person comes to intervene
+		if (isStartup && newSol == 1) {
+			// if this crop is generated at the start of the sim, lightModifier will be artificially lower
+			// need to add adjustment
+			lightModifier = lightModifier / fractionalGrowingTimeCompleted ;
+		}
+			
+		memory[0] = .33 + .33 * lightModifier + .33 * memory[0];
+		// use .2 instead of .5 since it's normal for crop to go through day/night cycle
+		if (memory[0] > 1.5)
+			memory[0] = 1.5;
+		else if (memory[0] < 0.5)
+			memory[0] = 0.5;
+		
+		return uPAR;
 
-			//}
+	}
 
+	/**
+	 * Compute the effect of the temperature
+	 */
+	public void computeTemperature() {
+		
+		double temperatureModifier = 0;
+		double t_now = farm.getBuilding().getCurrentTemperature();
 
-		double T_NOW = farm.getBuilding().getCurrentTemperature();
-		double temperatureModifier = 0 ;
-		if (T_NOW > (t_initial + T_TOLERANCE))
-			temperatureModifier = t_initial / T_NOW;
-		else if (T_NOW < (t_initial - T_TOLERANCE))
-			temperatureModifier = T_NOW / t_initial;
+		if (t_now > (t_initial + T_TOLERANCE))
+			temperatureModifier = t_initial / t_now;
+		else if (t_now < (t_initial - T_TOLERANCE))
+			temperatureModifier = t_now / t_initial;
 		else
 			// TODO: implement optimal growing temperature for each particular crop
 			temperatureModifier = 1D;
@@ -1014,29 +984,21 @@ public class Crop implements Serializable {
 		memory[2] = .5 * temperatureModifier + .5 * memory[2];
 		if (memory[2] > 1.1)
 			memory[2] = 1.1;
+
+	}
 		
-		// Determine harvest modifier according to amount of grey water available.
-
-		int phaseNum = getCurrentPhaseNum();
-		int length = phases.size();
-
-		double needFactor = 0;
-		// amount of grey water/water needed is also based on % of growth
-		if (phaseNum == 2)
-		// if (phaseType == PhaseType.GERMINATION)
-			needFactor = .1;
-		else if (fractionalGrowingTimeCompleted < .1 )
-			needFactor = .2;
-		else if (fractionalGrowingTimeCompleted < .2 )
-			needFactor = .25;
-		else if (fractionalGrowingTimeCompleted < .3 )
-			needFactor = .3;
-		else if (phaseNum > 2 && phaseNum < length - 2)
-		//else if (phaseType == PhaseType.GROWING)
-			needFactor = fractionalGrowingTimeCompleted;
+	
+	/***
+	 * Computes the effect of water and fertilizer
+	 * @param needFactor
+	 * @param maxPeriodHarvest
+	 * @param time
+	 */
+	public void computeWaterFertilizer(double needFactor, double maxPeriodHarvest, double time) {
 
 		// Calculate water usage
 		double waterRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageWaterNeeded;
+		// Determine the amount of grey water available.
 		double greyWaterAvailable = inv.getAmountResourceStored(greyWaterAR, false);
 		double waterUsed = 0;
 		double totalWaterUsed = 0;
@@ -1098,6 +1060,17 @@ public class Crop implements Serializable {
 		if (memory[3] > 1.1)
 			memory[3] = 1.1;
 
+	}
+	
+	/***
+	 * Computes the effects of the concentration of O2 and CO2
+	 * @param uPAR
+	 * @param needFactor
+	 * @param maxPeriodHarvest
+	 * @param time
+	 */
+	public void computeGases(double uPAR, double needFactor, double maxPeriodHarvest, double time) {
+		
 		// Calculate O2 and CO2 usage
 		double o2Modifier = 0, co2Modifier = 0;
 
@@ -1150,29 +1123,79 @@ public class Crop implements Serializable {
 			Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::calculateHarvestModifier");
 
 		}
+		
+	}
+	
+	/**
+	 * Computes each input and output constituent for a crop for the specified period of time and return the overall harvest modifier
+	 * @param the maximum possible growth/harvest
+	 * @param a period of time in millisols
+	 * @return the harvest modifier
+	 */
+	public double calculateHarvestModifier(double maxPeriodHarvest, double time) {
 
+		double harvestModifier = 1D;
+		
+		// TODO: use theoretical model for crop growth, instead of empirical model below.
+		// TODO: the calculation should be uniquely tuned to each crop
+		// TODO: Modify harvest modifier according to the pollination by the number of bees in the greenhouse
+		// TODO: Modify harvest modifier by amount of artificial light available to the whole greenhouse
+		
+		if (surface == null)
+			surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
+
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
+
+		int phaseNum = getCurrentPhaseNum();
+		int length = phases.size();
+
+		double needFactor = 0;
+		// amount of grey water/water needed is also based on % of growth
+		if (phaseNum == 2)
+		// if (phaseType == PhaseType.GERMINATION)
+			needFactor = .1;
+		else if (fractionalGrowingTimeCompleted < .1 )
+			needFactor = .2;
+		else if (fractionalGrowingTimeCompleted < .2 )
+			needFactor = .25;
+		else if (fractionalGrowingTimeCompleted < .3 )
+			needFactor = .3;
+		else if (phaseNum > 2 && phaseNum < length - 2)
+			needFactor = fractionalGrowingTimeCompleted;
+		
+		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
+		double uPAR = computeLight(time);
+
+		// STEP 2 : COMPUTE THE EFFECTS OF THE TEMPERATURE
+		computeTemperature();
+
+		// STEP 3 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
+		computeWaterFertilizer(needFactor, maxPeriodHarvest, time);
+		
+		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE) 
+		computeGases(uPAR, needFactor, maxPeriodHarvest, time);
+
+		// TODO: add air pressure modifier in future
 
 		// 2015-08-26 Tuned harvestModifier
 		if (phaseNum > 2 && phaseNum < length - 2) {
-			// 2015-08-26 Tuned harvestModifier
 			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * memory[0];
 		}
 		else if (phaseNum == 2)
-
 			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * memory[0];
 
-		if (memory[0] < .5) {
-			// 2015-08-26 Tuned harvestModifier
-			harvestModifier = .5 * harvestModifier
-					+ .1 * harvestModifier * memory[1]
-					+ .1 * harvestModifier * memory[2]
-					+ .1 * harvestModifier * memory[3]
-					+ .1 * harvestModifier * memory[4]
-					+ .1 * harvestModifier * memory[5];
-			// TODO: research how different factors arbitrarily affect different crops
-		}
-
-		// TODO: add airPressureModifier in future
+		harvestModifier = .25 * harvestModifier
+				+ .15 * harvestModifier * memory[1]
+				+ .15 * harvestModifier * memory[2]
+				+ .15 * harvestModifier * memory[3]
+				+ .15 * harvestModifier * memory[4]
+				+ .15 * harvestModifier * memory[5];
+		
+		// TODO: research how the above 6 factors may affect crop growth for different crop categories
 
 		return harvestModifier;
 	}
@@ -1192,13 +1215,12 @@ public class Crop implements Serializable {
 	}
 
 	public int getCurrentPhaseNum() {
-		//int phaseNum = 0;
 		for (Entry<Integer, Phase> entry : phases.entrySet()) {
 	        if (entry.getValue().getPhaseType() == phaseType) {
 	        	return entry.getKey();
 	        }
 	    }
-		return -1;//phaseNum;
+		return -1;
 	}
 
 	/**
