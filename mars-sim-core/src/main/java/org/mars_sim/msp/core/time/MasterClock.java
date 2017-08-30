@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.time;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 
-import javafx.animation.Timeline;
+//import javafx.animation.Timeline;
 
 import java.io.File;
 import java.io.IOException;

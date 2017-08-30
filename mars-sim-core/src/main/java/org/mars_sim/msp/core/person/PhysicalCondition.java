@@ -213,7 +213,7 @@ implements Serializable {
         kJoules = 1000D + RandomUtil.getRandomDouble(1000);
         hygiene = RandomUtil.getRandomDouble(100D);
         
-        personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE + RandomUtil.getRandomInt(-50 - newPerson.getAge(), 50 + (int) (newPerson.getBaseMass())) ;
+        personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
         
         absorption = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
         		
@@ -280,11 +280,28 @@ implements Serializable {
     	if (alive) {
 	      	// 2015-12-05 check for the passing of each day
 	    	int solElapsed = marsClock.getSolElapsedFromStart();
+	    	//System.out.println("sol from start : " + solElapsed);
 	    	if (solCache != solElapsed) {
-	    		// 2015-12-05 reset numSleep back to zero at the beginning of each sol
+	    		// 2015-12-05 Reset numSleep back to zero at the beginning of each sol
 	    		numSleep = 0;
 	    		suppressHabit = 0;
+		    	if (solCache == 0) {
+		    		// 2017-08-29 Modify personalMaxEnergy at the start of the sim 
+		    		int d1 = 35 - person.getAge();
+		    		int d2 = (int)(person.getBaseMass() - Person.AVERAGE_WEIGHT);
+		            personalMaxEnergy = personalMaxEnergy + d1 + d2;
+		            absorption = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+		    	}
+		    	
 	    		solCache = solElapsed;
+	    	}
+	    	
+
+	    		
+	    	int month = marsClock.getSolOfMonth();
+	    	if (month == 1) {
+	    		// check if the person always have a lot of energy
+	    		// if yes, increase weight
 	    	}
 
 	        boolean illnessEvent = false;

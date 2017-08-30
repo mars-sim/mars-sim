@@ -80,7 +80,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	private final static double AVERAGE_HIGH_WEIGHT = 68.5;
 	private final static double AVERAGE_LOW_WEIGHT = 57.2;
-	private final static double AVERAGE_WEIGHT = 62.85 ; //(AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
+	final static double AVERAGE_WEIGHT = 62.85 ; //(AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
 	
 	// Data members
 	private boolean bornOnMars;
