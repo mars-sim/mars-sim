@@ -58,7 +58,7 @@ implements Serializable {
 				.getBuildingConfiguration();
 		powerSources = config.getPowerSources(building.getBuildingType());
 
-		thermalGeneration = building.getThermalGeneration();
+		//thermalGeneration = building.getThermalGeneration();
 
 	}
 

@@ -71,7 +71,7 @@ implements Serializable {
 
     private static final double kBTU_HEAT_DISSIPATED_PER_PERSON = .35D;
     //private static final int HEAT_CAP = 200;  
-	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
+	private static final int PER_UPDATE = 5 ;
 	
     //private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
     //private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
@@ -176,13 +176,16 @@ implements Serializable {
 	
 	private double heat_sink = 0;
 	
-	/** */
+	private double area_factor;
+	
+	private double timeCache;
+	/** is this building a greenhouse */
 	private boolean isGreenhouse = false;
-	/** */
+	/** is this building a hallway or tunnel */
 	private boolean isHallway = false;
 	/** Is the airlock door open */
 	private boolean hasHeatDumpViaAirlockOuterDoor = false;
-	/** */
+	/** THe emissivity of the greenhouse canopy per millisol */
 	private Map<Integer, Double> emissivityMap;
 	/** */
   	private String buildingType;
@@ -231,6 +234,8 @@ implements Serializable {
 
 		floorArea = length * width ;
 
+		area_factor = Math.sqrt(Math.sqrt(floorArea));
+		
 		if (isHallway()) {
 			isHallway = true;
 			heatGainEqiupment = 40D;
@@ -290,7 +295,7 @@ implements Serializable {
 
 		SHC_area = floorArea * M_TO_FT * M_TO_FT * SHC ;
 
-		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE * 24D / 1000D;// [ hr/millisol] ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
+		elapsedTimeinHrs = PER_UPDATE * 24D / 1000D;// [ hr/millisol] ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
 		
 		conversion_factor = elapsedTimeinHrs /  1.8  * 1000D  / SHC_area ; 
 		
@@ -322,6 +327,14 @@ implements Serializable {
     }
 
 	/**
+     * Is this building a large greenhouse.
+     * @return true or false
+     */
+    public boolean isLargeGreenhouse() {
+		return buildingType.toLowerCase().contains("large greenhouse");
+    }
+    
+	/**
      * Is this building a greenhouse.
      * @return true or false
      */
@@ -329,6 +342,22 @@ implements Serializable {
 		return buildingType.toLowerCase().contains("greenhouse");
     }
 
+	/**
+     * Is this building a loading dock garage.
+     * @return true or false
+     */
+    public boolean isLoadingDockGarage() {
+		return buildingType.toLowerCase().equalsIgnoreCase("loading dock garage");
+    }
+
+	/**
+     * Is this building a loading dock garage.
+     * @return true or false
+     */
+    public boolean isGarage() {
+		return buildingType.toLowerCase().equalsIgnoreCase("garage");
+    }
+    
 	/**
      * Is this building a type of (retrofit) hab.
      * @return true or false
@@ -350,8 +379,8 @@ implements Serializable {
 	 * @return none. set heatMode
 	 */
 	// TODO: also set up a time sensitivity value
-	public void setNewHeatMode(double t) {
-		double t_now = t;
+	public void adjustHeatMode() {//double t) {
+		double t_now = currentTemperature;
 		if (building.getPowerMode() == PowerMode.FULL_POWER) {
 			// ALLOWED_TEMP is thermostat's allowance temperature setting
 		    // If T_NOW deg above INITIAL_TEMP, turn off furnace
@@ -691,9 +720,9 @@ implements Serializable {
 	 */
 	public double heatGainVentilation(double t, double time) {
 		double total_gain = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
-		boolean tooLow = t < (t_initial - 1.0 * T_LOWER_SENSITIVITY );
-		boolean tooHigh = t > (t_initial + 1.0 * T_UPPER_SENSITIVITY );
-		double speed_factor = .02 * time * CFM;
+		boolean tooLow = t < (t_initial - 2.0 * T_LOWER_SENSITIVITY );
+		boolean tooHigh = t > (t_initial + 2.0 * T_UPPER_SENSITIVITY );
+		double speed_factor = .01 * time * CFM;
 		
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
 			// TODO : determine if someone opens a hatch ??
@@ -709,40 +738,103 @@ implements Serializable {
 			}
 			
 			int size = adjacentBuildings.size();
+			//area_factor = Math.sqrt(Math.sqrt(floorArea));
+/*			
+			if (isHallway)
+				area_factor = .5;
+			else if (isGreenhouse) 
+				area_factor = 1.5;
+			else if (isLargeGreenhouse()) 
+				area_factor = 2.3;
+			else if (isGarage())
+				area_factor = 2;
+			else if (isLoadingDockGarage())
+				area_factor = 2.5;
+*/			
 			
 			for (int i = 0; i < size; i++) {
-				double t_0 = adjacentBuildings.get(i).getCurrentTemperature();
+				double t_next = adjacentBuildings.get(i).getCurrentTemperature();
+				double t_i = adjacentBuildings.get(i).getInitialTemperature();
 				//LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
 				//		"The temperature for the adj " + adjacentBuildings.get(i) + " in " + settlement 
 				//	+ " is " + Math.round(t*100D)/100D + " C"
 				//	, null);
+
+				boolean too_low_next = t_next < (t_i - 2.0 * T_LOWER_SENSITIVITY );
+				boolean too_high_next = t_next > (t_i + 2.0 * T_UPPER_SENSITIVITY );
 				
-				double d_t = Math.abs(t - t_0);
+				double d_t = Math.abs(t - t_next);
 
 				double gain = 0;
 				if (tooLow) {
-					if (t_0 > t) {
-						// heat coming in
-						gain = speed_factor * d_t;
-						gain = Math.min(gain, CFM/size*2D);
+					if (too_high_next) {
+						if (t_next > t) {
+							// heat coming in
+							gain = 2D * speed_factor * d_t*area_factor;
+							gain = Math.min(gain, CFM/size*2D*area_factor);
+						}
+						else {
+							// heat coming in
+							gain = speed_factor * d_t*area_factor;
+							gain = Math.min(gain, CFM/size*area_factor);
+							// heat is leaving
+						//	gain = - 2D * speed_factor * d_t;
+						//	gain = Math.max(gain, -CFM/size*2D);
+						}
 					}
-					else if (t_0 - 1 < t) {
-						// heat is leaving
-						gain = -speed_factor * d_t / 2D;
-						gain = Math.max(gain, -CFM/size*2D);
+					else if (!too_low_next) {
+						if (t_next > t) {
+							// heat coming in
+							gain = speed_factor * d_t*area_factor;
+							gain = Math.min(gain, CFM/size*2D);
+						}
+						else {
+							// heat coming in
+							gain = .5 *speed_factor * d_t*area_factor;
+							gain = Math.min(gain, CFM/size);
+						}
+						//else if (t_next - T_LOWER_SENSITIVITY < t) {
+							// heat is leaving
+						//	gain = -speed_factor * d_t;
+						//	gain = Math.max(gain, -CFM/size*2D);
+						//}
 					}
 				}
 				
 				else if (tooHigh) {
-					if (t > t_0) {
-						// heat is leaving
-						gain = -speed_factor * d_t;
-						gain = Math.max(gain, -CFM/size*2D);
+					if (too_low_next) {
+						if (t > t_next) {
+							// heat is leaving
+							gain = -2D *speed_factor * d_t*area_factor;
+							gain = Math.max(gain, -CFM/size*2D*area_factor);
+						}
+						else {
+							// heat is leaving
+							gain = -speed_factor * d_t*area_factor;
+							gain = Math.max(gain, -CFM/size*area_factor);
+						}
+						//else if (t < t_next + T_LOWER_SENSITIVITY) {
+							// heat coming in
+						//	gain = 2D *speed_factor * d_t;
+						//	gain = Math.min(gain, CFM/size*2D);
+						//}
 					}
-					else if (t < t_0 + 1) {
-						// heat coming in
-						gain = speed_factor * d_t / 2D;
-						gain = Math.min(gain, CFM/size*2D);
+					else if (!too_high_next) {
+						if (t > t_next) {
+							// heat is leaving
+							gain = -speed_factor * d_t*area_factor;
+							gain = Math.max(gain, -CFM/size*2D);
+						}
+						else {
+							// heat is leaving
+							gain = -.5 * speed_factor * d_t*area_factor;
+							gain = Math.max(gain, -CFM/size);
+						}
+						//else if (t < t_next + T_LOWER_SENSITIVITY) {
+							// heat coming in
+						//	gain = speed_factor * d_t;
+						//	gain = Math.min(gain, CFM/size*2D);
+						//}
 					}
 					
 				}
@@ -839,39 +931,31 @@ implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
-
-		//if ((int)time >= 1) {
-			// if time >= 1 millisols, need to call adjustThermalControl() right away to update the temperature
-		//	adjustThermalControl(time);
-		//}
-
+		
+		int time_factor = (int)(time *25D);
+		if (time_factor < 1)
+			time_factor = 1;
+		time_factor *= PER_UPDATE;
+		
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
+	
+		// Sometimes getMillisol() skip a millisol. how do we avoid it skip calling cycleTHermalControl ?
+		int milli =  (int) (marsClock.getMillisol() * time_factor);
+		if (milli % time_factor == 0) {
+			if (isGreenhouse)
+				emissivity = emissivityMap.get( (int) (1D*milli/time_factor) );
+			else
+				emissivity = EMISSIVITY_INSULATED;
+			cycleThermalControl(time);
+		}
 		//else {
-			// if time < 1 millisols, may skip calling adjustThermalControl() for several cycle to reduce CPU utilization.
-			if (masterClock == null)
-				masterClock = Simulation.instance().getMasterClock();
-			if (marsClock == null)
-				marsClock = masterClock.getMarsClock();
-
-			//int checkTime = (int) Math.round(marsClock.getMillisol());
-			// Note : sometimes getMillisol() skips, does Math.round() help ?
-			//if (checkTime % 10 == 0) {
-			//}
-			
-			
-			// Below is an attempt to ensure that in case getMillisol() skip a millisol, it would still catch it 
-			int oneTenthmillisols =  (int) (marsClock.getMillisol() * 10);
-			//System.out.println(" oneTenthmillisols : " + oneTenthmillisols);
-			if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 0) {
-				//System.out.println(" oneTenthmillisols % 10 == 0 ");
-				// Skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
-				//if (!building.getBuildingType().equals("Hallway"))
-				if (isGreenhouse())
-					emissivity = emissivityMap.get( (int) (oneTenthmillisols/10D) );
-				else
-					emissivity = EMISSIVITY_INSULATED;
-				cycleThermalControl(time);
-			}
+			// Turn heat source off if reaching pre-setting temperature
+			adjustHeatMode();
 		//}
+
 	}
 
 	/**
@@ -881,7 +965,7 @@ implements Serializable {
 	 */
 	public void cycleThermalControl(double time) {
 		//System.out.println("Calling adjustThermalControl()");
-		// Step 1 of Thermal Control
+
 		// Detect temperature change based on heat gain and heat loss
 		double t = currentTemperature;
 		
@@ -891,6 +975,7 @@ implements Serializable {
 		else if (t > 45)
 			t = 45;
 		
+		// STEP 1 : CALCULATE HEAT GAIN/LOSS AND RELATE IT TO THE TEMPERATURE CHANGE
 		double dt = determineDeltaTemperature(t, time);
 		
 		// limit the abrupt change of temperature, for sanity sake
@@ -899,7 +984,7 @@ implements Serializable {
 		else if (dt > 20)
 			dt = 20;
 		
-		// Step 2 of Thermal Control
+		// STEP 2 : ADJUST THE CURRENT TEMPERATURE
 		// Adjust the current temperature
 		t += dt;
 
@@ -911,9 +996,9 @@ implements Serializable {
 		
 		currentTemperature = t;
 		
-		// Step 3 of Thermal Control
-		// Turn heat source off if reaching pre-setting temperature
-		setNewHeatMode(t);
+		// STEP 3 : CHANGE THE HEAT MODE
+		// Turn heat source off if reaching certain temperature thresholds
+		adjustHeatMode();
 
 	}
 
@@ -925,6 +1010,10 @@ implements Serializable {
 		return powerRequired;
 	}
 
+	/**
+	 * Sets the power required for heating
+	 * @param power
+	 */
 	public void setPowerRequired(double power) {
 		powerRequired = power;
 	}
@@ -938,42 +1027,27 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the heat this building currently requires for full-power mode.
-	 * @return heat in kJ/s.
+	 * Gets the heat this building currently required.
+	 * @return heat in kW.
 	 */
-	//2014-11-02  Modified getFullHeatRequired()
 	public double getFullHeatRequired()  {
-		//if (heatGeneratedCache != heatGenerated) {
-		//	heatGeneratedCache = heatGenerated;
-		//}
-
-		// Determine heat required for each function.
-		//TODO: should I add power requirement inside
-		// thermal generation function instead?
-		//Iterator<Function> i = functions.iterator();
-		//while (i.hasNext()) result += i.next().getFullHeatRequired();
 		return heatGeneratedCache;
 	}
 
-	
-	public void setHeatGenerated(double heatGenerated) {
-		if (heatGeneratedCache != heatGenerated)
-			heatGeneratedCache = heatGenerated; 
+	/**
+	 * Sets the heat generated by this building.
+	 */
+	public void setHeatGenerated(double heat) {
+		heatGeneratedCache = heat; 
 	}
 
 	/**
 	 * Gets the heat the building requires for power-down mode.
-	 * @return heat in kJ/s.
+	 * @return heat in kW.
 	*/
-	//2014-10-17  Added heat mode
 	public double getPoweredDownHeatRequired() {
-		double result = basePowerDownHeatRequirement;
+		return basePowerDownHeatRequirement;
 
-		// Determine heat required for each function.
-		//Iterator<Function> i = building.getFunctions().iterator();;
-		//while (i.hasNext()) result += i.next().getPoweredDownHeatRequired();
-
-		return result;
 	}
 
 	/**

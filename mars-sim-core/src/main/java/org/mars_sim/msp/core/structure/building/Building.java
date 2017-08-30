@@ -124,7 +124,7 @@ LocalBoundedObject, InsidePathLocation {
 	/** Default : 50 millisols maintenance time. */
 	private int maintenanceTime = 50;
 	/** Default : 22.5 deg celsius. */
-    private double roomTemperature = 22.5D;
+    private double initialTemperature = 22.5D;
     //public double GREENHOUSE_TEMPERATURE = 24D;
 
     // Data members
@@ -176,6 +176,7 @@ LocalBoundedObject, InsidePathLocation {
 	private RoboticStation roboticStation;
 	private Heating heating;
 	private EVA eva;
+	private Farming farm;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -225,7 +226,7 @@ LocalBoundedObject, InsidePathLocation {
 					//if (heating == null)
 					//	heating = furnace.getHeating();
 					
-		// Set the instance of thermal generation function.
+		// Set the instance of power storage function.
 		if (hasFunction(BuildingFunction.POWER_STORAGE))	    
 			if (powerStorage == null)
 				powerStorage = (PowerStorage) getFunction(BuildingFunction.POWER_STORAGE);
@@ -236,10 +237,15 @@ LocalBoundedObject, InsidePathLocation {
 			if (roboticStation == null)
 				roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
 		
+		// Set the instance of eva function.
 		if (hasFunction(BuildingFunction.EVA))
 			if (eva == null)
 				eva = (EVA) getFunction(BuildingFunction.EVA);
 		
+		// Set the instance of farming function.
+		if (hasFunction(BuildingFunction.FARMING))
+			if (farm == null)
+				farm = (Farming) getFunction(BuildingFunction.FARMING);
 	}
 
 	/** Constructor 2
@@ -359,7 +365,7 @@ LocalBoundedObject, InsidePathLocation {
 		maintenanceTime = buildingConfig.getMaintenanceTime(buildingType);
 
 		// Set room temperature
-		roomTemperature = buildingConfig.getRoomTemperature(buildingType);
+		initialTemperature = buildingConfig.getRoomTemperature(buildingType);
 		//System.out.println("roomTemperature : " + roomTemperature);
 		
 		// TODO: determine the benefit of adding other heat requirements.
@@ -429,48 +435,49 @@ LocalBoundedObject, InsidePathLocation {
 
 	/**
 	 * Sets building nickname
-	 * @return none
+	 * @param nick name
 	 */
 	// 2014-10-28  Added setBuildingNickName()
-    public void setBuildingNickName(String nickName) {
-        this.nickName = nickName;
+    public void setBuildingNickName(String name) {
+        this.nickName = name;
     }
 
 	/**
      * Gets the initial temperature of a building.
      * @return temperature (deg C)
      */
-	//2014-10-23  Added getInitialTemperature()
     public double getInitialTemperature() {
-    	//double result;
-		//if (config.hasFarming(buildingType))
-		//if (buildingType.equals("Inflatable Greenhouse")
-		//		|| buildingType.equals("Large Greenhouse")
-		//		||	buildingType.equals("Inground Greenhouse") )
-		//	return GREENHOUSE_TEMPERATURE;
-		//else
-            return roomTemperature;
+    	return initialTemperature;
     }
 
 	public LifeSupport getLifeSupport() {
+		if (lifeSupport == null)
+			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
 		return lifeSupport;
 	}
 
 	public ThermalGeneration getThermalGeneration() {
+		if (furnace == null)
+			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
 		return furnace;
 	}
-
+	
+	public Farming getFarming() {
+		if (farm == null)
+			farm = (Farming) getFunction(BuildingFunction.FARMING);
+		return farm;
+	}
+		
+		
 	public PowerGeneration getPowerGeneration() {
 		if (powerGen == null)
 			powerGen = (PowerGeneration) getFunction(BuildingFunction.POWER_GENERATION);
-	
 		return powerGen;
 	}
 	
 	public PowerStorage getPowerStorage() {
 		if (powerStorage == null)
 			powerStorage = (PowerStorage) getFunction(BuildingFunction.POWER_STORAGE);
-
 		return powerStorage;
 	}
 	
@@ -484,7 +491,7 @@ LocalBoundedObject, InsidePathLocation {
     	if (heating != null)
             return heating.getCurrentTemperature();
     	else
-    		return roomTemperature;
+    		return initialTemperature;
     }
 
 	/**

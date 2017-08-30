@@ -142,6 +142,19 @@
 		<artifactId>reactfx</artifactId>
 		<version>1.4.1</version>
 	</dependency>
+	<!-- dependency>
+	 https://github.com/libgdx/ashley/wiki
+		<groupId>com.badlogicgames.ashley</groupId>
+		<artifactId>ashley</artifactId>
+		<version>1.7.0</version>
+	</dependency>
+	-->
+	<dependency>
+	<!-- https://github.com/junkdog/artemis-odb  -->
+		<groupId>net.onedaybeard.artemis</groupId>
+		<artifactId>artemis-odb</artifactId>
+		<version>2.1.0</version>
+	</dependency>	
 	<!-- https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava : 1.2 MB
 	<dependency>
 	    <groupId>io.reactivex.rxjava2</groupId>
@@ -201,6 +214,11 @@
 	</dependencyManagement>
  -->	
 	<repositories>
+		<repository>
+			<id>sonatype</id>
+			<name>Sonatype</name>
+			<url>https://oss.sonatype.org/content/repositories/releases</url>
+		</repository>
 <!--
 	    <repository>
 	        <id>pcdp-repo</id>
