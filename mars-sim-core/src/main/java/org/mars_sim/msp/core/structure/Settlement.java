@@ -996,7 +996,7 @@ implements Serializable, LifeSupportType, Objective {
 		// Check every RADIATION_CHECK_FREQ (in millisols)
 	    // Compute whether a baseline, GCR, or SEP event has occurred
 	    remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
-	    if (remainder == 0)
+	    if (remainder == 5)
 	    	//if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load
 	    		checkRadiationProbability(time);
 
@@ -1012,11 +1012,14 @@ implements Serializable, LifeSupportType, Objective {
 	    currentPressure = getTotalPressure() *1000D;
 
 	    remainder = millisols % RESOURCE_UPDATE_FREQ ;
-	    if (remainder == 0) {
-	    	iceProbabilityValue = getIceProbability();
-	    	regolithProbabilityValue = getRegolithProbability();
+	    if (remainder == 5) {
+	    	iceProbabilityValue = computeIceProbability();
 	    }
 
+	    if (remainder == 10) {
+	    	regolithProbabilityValue = computeRegolithProbability();
+	    }
+	    
 	    if (!adjacentBuildingMap.isEmpty()) {
 			int numConnectors = adjacentBuildingMap.size();
 		    
@@ -3448,7 +3451,11 @@ implements Serializable, LifeSupportType, Objective {
     //	return name;
     //}
 
-    public double getRegolithProbability() {
+    /***
+     * Computes the probability of the presence of regolith  
+     * @return probability of finding regolith
+     */
+    public double computeRegolithProbability() {
     	double result = 0;
 
         double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
@@ -3490,7 +3497,11 @@ implements Serializable, LifeSupportType, Objective {
     	return result;
     }
 
-    public double getIceProbability() {
+    /***
+     * Computes the probability of the presence of ice
+     * @return probability of finding ice
+     */
+    public double computeIceProbability() {
     	double result = 0;
 
         double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));

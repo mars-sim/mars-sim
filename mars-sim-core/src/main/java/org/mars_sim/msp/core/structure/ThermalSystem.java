@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 //import org.mars_sim.msp.core.structure.building.function.HeatMode;
 //import org.mars_sim.msp.core.structure.building.function.PowerMode;
 //import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
@@ -52,6 +53,8 @@ implements Serializable {
 
 	private boolean sufficientHeat;
 
+	private boolean isFirstTime;
+	
 	//private HeatMode heatMode;
 	//private HeatMode heatModeCache;
 
@@ -245,6 +248,7 @@ implements Serializable {
 			);
 		}
 
+	
 		// update the total heat generated in the heating system.
 		updateTotalHeatGenerated();
 
@@ -261,7 +265,7 @@ implements Serializable {
 		
 		// Update heat value.
 		determineHeatValue();
-		
+
 /*
 		// Check if there is enough heat generated to fully supply each building.
 		if (heatRequired <= heatGenerated) {
@@ -347,8 +351,8 @@ implements Serializable {
 		Iterator<Building> iHeat = manager.getBuildings(BuildingFunction.THERMAL_GENERATION).iterator();
 		while (iHeat.hasNext()) {
 			Building b = iHeat.next();
-			//ThermalGeneration gen = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-			heat += b.getThermalGeneration().getGeneratedHeat();
+			ThermalGeneration gen = (ThermalGeneration) b.getFunction(BuildingFunction.THERMAL_GENERATION);
+			heat += gen.getGeneratedHeat();//b.getThermalGeneration().getGeneratedHeat();
 			// logger.info(((Building) gen).getName() + " generated: " + gen.getGeneratedHeat());
 		}
 		setGeneratedHeat(heat);
@@ -376,8 +380,10 @@ implements Serializable {
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_GENERATION).iterator();
 		while (i.hasNext()) {
 			Building b = i.next();
-			//ThermalGeneration gen = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-			power += b.getPowerGeneration().getGeneratedPower();
+			ThermalGeneration gen = b.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+			if (gen == null)
+				break;
+			power += b.getThermalGeneration().getGeneratedPower();//.getPowerGeneration().getGeneratedPower();
 			//System.out.println(building.getNickName() + "'s power : " + power);
 			// logger.info(((Building) gen).getName() + " generated: " + gen.getGeneratedHeat());
 		}

@@ -460,6 +460,11 @@ public class LocalAreaUtil {
                 (object.getLength() / 2D), object.getWidth(), object.getLength());
         Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
         Area area = new Area(path); // Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
+        
+        // Notes: 
+        // (Severe) [x341] Walk : Tracy Kilmar cannot exit airlock at Desert Rose. From Walk's canExitAllAirlocks() 
+        // (Severe) [x1060] EVAOperation : Tracy Kilmar cannot walk to outside site. From EVAOperation's walkToOutsideSitePhase()
+        
         if (area.contains(xLoc, yLoc)) {
             result = true;
         }

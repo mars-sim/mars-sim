@@ -13,7 +13,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -34,12 +33,10 @@ import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
-import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -94,7 +91,7 @@ extends TabPanel {
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("decimalFormat1"));//TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
 	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
-	private DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
+	//private DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 	
 	
 	/** Table model for heat info. */
@@ -276,7 +273,7 @@ extends TabPanel {
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(heatInfoPanel,
 		                                5, 2, //rows, cols
-		                                80, 10,        //initX, initY
+		                                30, 10,        //initX, initY
 		                                10, 1);       //xPad, yPad
 	}
 

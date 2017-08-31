@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSourceMeta.java
- * @version 3.10 2017-08-19
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -49,30 +49,28 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
     	double result = 0D;
-    	
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        
+    	Settlement settlement = person.getAssociatedSettlement();
+        
+        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	
-	    	Settlement settlement = person.getSettlement();
-	    	
-	    	boolean[] exposed = new boolean[]{false, false, false};
 	
 	        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
 	        // and if he has to do a EVA to repair a broken vehicle.
 	
-	        if (settlement != null) {
-	        	//2016-10-04 Checked for radiation events
-	    		exposed = person.getSettlement().getExposed();
-	        }
+	        //2016-10-04 Checked for radiation events
+	    	boolean[]exposed = person.getSettlement().getExposed();
+
 	
 			if (exposed[2]) {
-				// SEP can give lethal dose of radiation, out won't go outside
+				// SEP can give lethal dose of radiation
 	            return 0;
 			}
 
             // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                return 0;
-            }
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+	        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
 
             //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
             //double millisols = clock.getMillisol();
@@ -137,17 +135,16 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
 	        if (result > 0)
 	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
-        	if (exposed[0]) {
-    			result = result/1.2;// Baseline can give lethal dose of radiation, out won't go outside
-    		}
+	    	if (exposed[0]) {
+				result = result/2D;// Baseline can give a fair amount dose of radiation
+			}
 
-        	if (exposed[1]) {
-    			// GCR can give lethal dose of radiation, out won't go outside
-    			result = result/2D;
-    		}
+	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+				result = result/4D;
+			}
 
 	        if (result < 0) result = 0;
-        }
+        //}
 
         return result;
     }

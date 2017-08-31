@@ -1,17 +1,17 @@
 /**
  * Mars Simulation Project
  * DigLocalIceMeta.java
- * @version 3.1.0 2017-05-04
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
-import java.util.logging.Level;
+
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -21,17 +21,14 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
+
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceUtil;
+
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.vehicle.Rover;
+
 
 /**
  * Meta task for the DigLocalIce task.
@@ -64,13 +61,23 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        Settlement settlement = person.getAssociatedSettlement();
+        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                return 0;
-            }
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+    		return 0;
 
+        //2016-10-04 Checked for radiation events
+    	boolean[]exposed = person.getSettlement().getExposed();
+
+
+		if (exposed[2]) {
+			// SEP can give lethal dose of radiation
+            return 0;
+		}
+		
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
             if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
@@ -79,8 +86,6 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
                 }
             }
 
-
-            Settlement settlement = person.getSettlement();
             Inventory inv = settlement.getInventory();
 
             // Check at least one EVA suit at settlement.
@@ -124,10 +129,18 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
             //logger.info("DigLocalIceMeta's probability : " + Math.round(result*100D)/100D);
 
+	    	if (exposed[0]) {
+				result = result/2D;// Baseline can give a fair amount dose of radiation
+			}
+
+	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+				result = result/4D;
+			}
+	    	
             if (result < 0D) {
                 result = 0D;
             }
-        }
+        //}
 
         return result;
     }

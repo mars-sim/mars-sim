@@ -188,11 +188,13 @@ implements Serializable {
         }
 
         if (walkingSteps == null) {
-            logger.severe("Walking steps could not be determined for " + person.getName());
+          	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(), 
+            		"Walking steps could not be determined for " + person.getName(), null);
             endTask();
         }
         else if (!canWalkAllSteps(person, walkingSteps)) {
-            logger.fine("Valid Walking steps could not be determined for " + person.getName());
+          	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(), 
+          			"Valid Walking steps could not be determined for " + person.getName(), null);
             endTask();
         }
 
@@ -358,7 +360,7 @@ implements Serializable {
 
         // End task if all steps cannot be walked.
         if (!canWalkAllSteps(person, walkingSteps)) {
-        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(), 
         			person.getName() + " could not find valid walking steps to " + interiorObject, null);
             endTask();
         }
@@ -387,7 +389,7 @@ implements Serializable {
 
         // End task if all steps cannot be walked.
         if (!canWalkAllSteps(robot, walkingSteps)) {
-        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(),
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
         			robot.getName() + " could not find valid walking steps to " + interiorObject, null);
             endTask();
         }
@@ -642,10 +644,9 @@ implements Serializable {
                 if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
                     Airlock airlock = step.airlock;
                     if (!ExitAirlock.canExitAirlock(person, airlock)) {
-                        //result = false;
-                    	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(),
+                        result = false;
+                    	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
                     			person + " cannot exit airlock at " + airlock.getEntityName(), null);
-                        return false;
                     }
                 }
             }
@@ -667,7 +668,8 @@ implements Serializable {
                     Airlock airlock = step.airlock;
                     if (!ExitAirlock.canExitAirlock(robot, airlock)) {
                         result = false;
-                        logger.severe(robot + " cannot exit airlock at " + airlock.getEntityName());
+                       	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
+                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
                     }
                 }
             }

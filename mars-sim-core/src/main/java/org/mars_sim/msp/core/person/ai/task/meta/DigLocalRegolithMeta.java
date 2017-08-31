@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolithMeta.java
- * @version 3.1.0 2017-05-04
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -62,14 +62,24 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        Settlement settlement = person.getAssociatedSettlement();
+
+        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+        // Check if an airlock is available
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+    		return 0;
+
+        //2016-10-04 Checked for radiation events
+    	boolean[]exposed = person.getSettlement().getExposed();
 
 
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                return 0;
-            }
-
+		if (exposed[2]) {
+			// SEP can give lethal dose of radiation
+            return 0;
+		}
+		
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
             if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
@@ -78,7 +88,6 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
                 }
             }
 
-            Settlement settlement = person.getSettlement();
             Inventory inv = settlement.getInventory();
 
 
@@ -124,11 +133,19 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
             //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
+	    	if (exposed[0]) {
+				result = result/2D;// Baseline can give a fair amount dose of radiation
+			}
+
+	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+				result = result/4D;
+			}
+	    	
             if (result <= 0)
                 return 0;
             else if (result > 1D)
             	result = 1;
-        }
+        //}
 
         return result;
     }

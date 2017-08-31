@@ -318,9 +318,10 @@ implements Serializable {
 				    	heatSource.switchFull();
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
-				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    //	result += heatSource.getCurrentPower(getBuilding());
-				    //}
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	heatSource.switchFull();
+				    	result += heatSource.getCurrentPower(getBuilding());
+				    }
 				}
 			}
 			else if (heatMode == HeatMode.THREE_QUARTER_HEAT) {
@@ -332,9 +333,10 @@ implements Serializable {
 				    	heatSource.switchQuarter();
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
-				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
-				    //}
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	heatSource.switchQuarter();
+				    	result = result + heatSource.getCurrentPower(getBuilding());
+				    }
 				}
 			}
 			else if (heatMode == HeatMode.HALF_HEAT) {
@@ -346,9 +348,10 @@ implements Serializable {
 				    	heatSource.switchHalf();
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
-				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
-				    //}
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	heatSource.switchHalf();
+				    	result = result + heatSource.getCurrentPower(getBuilding());
+				    }
 				}
 			}
 			else if (heatMode == HeatMode.QUARTER_HEAT) {
@@ -359,11 +362,15 @@ implements Serializable {
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
 				    	// Note : May get up to three quarters of power (and one quarter of heat)
 				    	heatSource.switchQuarter();
+				    	// multiply result by 3
 				    	result += heatSource.getCurrentPower(getBuilding())*3D;
 				    }
-				    //else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    //	result = result + heatSource.getCurrentPower(getBuilding())/2D;
-				    //}
+				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    	heatSource.switchQuarter();
+				    	result = result + heatSource.getCurrentPower(getBuilding());
+				    	heatSource.switchHalf();
+				    	result = result + heatSource.getCurrentPower(getBuilding());
+				    }
 				}
 			}
 		//}

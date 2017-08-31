@@ -1,7 +1,6 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.1.0 2017-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;

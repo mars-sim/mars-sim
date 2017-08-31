@@ -1,9 +1,10 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.07 2014-09-22
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
@@ -75,8 +76,8 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 0D);
 
-        settlement = person.getSettlement();
-
+        settlement = person.getAssociatedSettlement();
+        
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
