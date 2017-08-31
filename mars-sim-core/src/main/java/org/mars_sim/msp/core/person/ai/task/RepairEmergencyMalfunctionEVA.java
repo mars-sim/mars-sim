@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunctionEVA.java
- * @version 3.08 2015-06-17
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,11 +28,9 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -74,7 +72,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
      * @param person the person to perform the task
      */
     public RepairEmergencyMalfunctionEVA(Person person) {
-        super(NAME, person, false, 0D);
+        super(NAME, person, false, 5D);
 
         //2016-09-24 Factored in a person's preference for the new stress modifier
       	int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
@@ -177,41 +175,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     }
 
     public static boolean requiresEVARepair(Robot robot) {
-
-        boolean result = false;
-/*
-        Malfunction malfunction = null;
-        Malfunctionable entity = null;
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-        while (i.hasNext() && (malfunction == null)) {
-            Malfunctionable e = i.next();
-            MalfunctionManager manager = e.getMalfunctionManager();
-            if (manager.hasEmergencyMalfunction()) {
-                malfunction = manager.getMostSeriousEmergencyMalfunction();
-                entity = e;
-            }
-        }
-
-        if (entity != null) {
-            if (entity instanceof Vehicle) {
-                // Perform EVA emergency repair on outside vehicles that the robot isn't inside.
-                Vehicle vehicle = (Vehicle) entity;
-                boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
-                boolean robotNotInVehicle = !vehicle.getSettlementInventory().containsUnit(robot);
-                if (outsideVehicle && robotNotInVehicle) {
-                    result = true;
-                }
-            }
-            else if (entity instanceof Building) {
-                // Perform EVA emergency repair on uninhabitable buildings.
-                Building building = (Building) entity;
-                if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                    result = true;
-                }
-            }
-        }
-*/
-        return result;
+        return false;
     }
 
     /**
@@ -221,12 +185,11 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
      */
     public static boolean canPerformEVA(Person person) {
 
-        // Check if an airlock is available
-        Airlock airlock = EVAOperation.getWalkableAvailableAirlock(person);
-        if (airlock == null) {
+        // Check if person is incapacitated.
+        if (person.getPerformanceRating() == 0D) {
         	return false;
         }
-
+        
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
@@ -236,57 +199,26 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         }
 
         // Check if person is outside.
-        if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
-        	return false;
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+   
+            // Check if an airlock is available
+            Airlock airlock = EVAOperation.getWalkableAvailableAirlock(person);
+            if (airlock == null) {
+            	return false;
+            }
+            // Check if EVA suit is available.
+            else if (!ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
+            	return false;
+            }
+            
         }
 
-        // Check if EVA suit is available.
-        if ((airlock != null) && !ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
-        	return false;
-        }
-
-        // Check if person is incapacitated.
-        if (person.getPerformanceRating() == 0D) {
-        	return false;
-        }
 
         return true;
     }
 
     public static boolean canPerformEVA(Robot robot) {
-
-        boolean result = false;
-/*
-        // Check if an airlock is available
-        Airlock airlock = EVAOperation.getWalkableAvailableAirlock(robot);
-        if (airlock == null) {
-            result = false;
-        }
-
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
-            if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-                result = false;
-            }
-        }
-
-        // Check if robot is outside.
-        if (robot.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
-            result = false;
-        }
-
-        // Check if EVA suit is available.
-        //if ((airlock != null) && !ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
-        //    result = false;
-        //}
-
-        // Check if robot is incapacitated.
-        if (robot.getPerformanceRating() == 0D) {
-            result = false;
-        }
-*/
-        return result;
+        return false;
     }
 
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.07 2015-01-14
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
@@ -69,7 +68,7 @@ implements Repair, Serializable {
      * @param person the person to perform the task
      */
     public RepairEmergencyMalfunction(Unit unit) {
-        super(NAME, unit, true, true, STRESS_MODIFIER, false, 0D);
+        super(NAME, unit, true, true, STRESS_MODIFIER, false, 5D);
 
         if (unit instanceof Person) {
          	this.person = (Person) unit;

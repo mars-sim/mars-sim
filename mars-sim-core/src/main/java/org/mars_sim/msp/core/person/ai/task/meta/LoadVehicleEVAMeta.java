@@ -57,17 +57,20 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
+        	Settlement settlement = person.getAssociatedSettlement();
+        
         	//2016-10-04 Checked for radiation events
-        	boolean[] exposed = person.getSettlement().getExposed();
+        	boolean[] exposed = settlement.getExposed();
 
-    		if (exposed[2]) {// SEP can give lethal dose of radiation, out won't go outside
+    		if (exposed[2]) {// SEP can give lethal dose of radiation
                 return 0;
     		}
 
             // Check if an airlock is available
-	    	if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
 	    		return 0;
 
             // Check if it is night time.
@@ -80,7 +83,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
             // Check all vehicle missions occurring at the settlement.
             try {
-                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(person.getSettlement());
+                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(settlement);
                 result += 100D * missions.size();
             }
             catch (Exception e) {
@@ -88,15 +91,14 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
             }
 
             // Check if any rovers are in need of EVA suits to allow occupants to exit.
-            if (LoadVehicleEVA.getRoversNeedingEVASuits(person.getSettlement()).size() > 0) {
-                int numEVASuits = person.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+            if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
+                int numEVASuits = settlement.getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
                 if (numEVASuits >= 2) {
                     result += 100D;
                 }
             }
 
             // Crowded settlement modifier
-            Settlement settlement = person.getSettlement();
             if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
                 result *= 2D;
 
@@ -104,7 +106,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
             Job job = person.getMind().getJob();
             if (job != null)
                 result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class)
-                		* person.getSettlement().getGoodsManager().getTransportationFactor();
+                		* settlement.getGoodsManager().getTransportationFactor();
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
@@ -119,18 +121,18 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
             }
 
         	if (exposed[0]) {
-    			result = result/1.2;// Baseline can give lethal dose of radiation, out won't go outside
+    			result = result/2D;// Baseline can give a fair amount dose of radiation
     		}
 
-        	if (exposed[1]) {// GCR can give lethal dose of radiation, out won't go outside
-    			result = result/2D;
+        	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+    			result = result/4D;
     		}
 
 
             if (result < 0)
                 result = 0;
 
-        }
+        //}
 
         return result;
     }

@@ -100,7 +100,7 @@ implements Serializable {
         // Get available greenhouse if any.
         farmBuilding = getAvailableGreenhouse(person);
         if (farmBuilding != null) {
-            greenhouse = (Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
+            greenhouse = farmBuilding.getFarming();//(Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
 
             // Walk to greenhouse.
             walkToActivitySpotInBuilding(farmBuilding, false);
@@ -143,7 +143,7 @@ implements Serializable {
         // Get available greenhouse if any.
         farmBuilding = getAvailableGreenhouse(robot);
         if (farmBuilding != null) {
-            greenhouse = (Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
+            greenhouse = farmBuilding.getFarming();//(Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
 
             // Walk to greenhouse.
             walkToActivitySpotInBuilding(farmBuilding, false);

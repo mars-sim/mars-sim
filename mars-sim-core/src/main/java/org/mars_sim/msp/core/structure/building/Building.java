@@ -468,6 +468,15 @@ LocalBoundedObject, InsidePathLocation {
 		return farm;
 	}
 		
+	public EVA getEVA() {
+		//if (hasFunction(BuildingFunction.EVA))
+		//	eva = (EVA) getFunction(BuildingFunction.EVA);
+		//else
+		//	return null;
+		if (eva == null)
+			eva = (EVA) getFunction(BuildingFunction.EVA);
+		return eva;
+	}
 		
 	public PowerGeneration getPowerGeneration() {
 		if (powerGen == null)

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.10 2017-08-19
+ * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +62,6 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.EVA;
-import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
@@ -99,7 +97,7 @@ implements Serializable, LifeSupportType, Objective {
 	// maximum & minimal acceptable temperature for living space (arbitrary)
 	private static final double MIN_TEMP = 0.0D;
 
-	private static final double MAX_TEMP = 48.0D;
+	private static final double MAX_TEMP = 45.0D;
 
 	public static final int SUPPLY_DEMAND_REFRESH = 10;
 
@@ -577,6 +575,31 @@ implements Serializable, LifeSupportType, Objective {
 		return CollectionUtils.getPerson(getInventory().getContainedUnits());
 	}
 
+	/**
+	 * Gets a collection of people who are doing EVA outside the settlement.
+	 * @return Collection of people
+	 */
+	public Collection<Person> getOutsideEVAPeople() {
+
+		return allAssociatedPeople
+				.stream()
+				.filter(p-> p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+				.collect(Collectors.toList());
+		
+	}
+	
+	/**
+	 * Gets the number of people currently doing EVA outside the settlement
+	 * @return the available population capacity
+	 */
+	public int getNumOutsideEVAPeople() {
+		Collection<Person> ppl = getOutsideEVAPeople();
+		if (ppl.isEmpty() || ppl == null)
+			return 0;
+		else
+			return ppl.size();
+	}
+	
 	/**
 	 * Gets the current available population capacity of the settlement
 	 * @return the available population capacity
@@ -1617,8 +1640,8 @@ implements Serializable, LifeSupportType, Objective {
 			double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
 					person.getYLocation());
 			if (distance < leastDistance) {
-				EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-				result = eva.getAirlock();
+				//EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+				result = building.getEVA().getAirlock();
 				leastDistance = distance;
 			}
 		}
@@ -1638,8 +1661,8 @@ implements Serializable, LifeSupportType, Objective {
 			double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), robot.getXLocation(),
 					robot.getYLocation());
 			if (distance < leastDistance) {
-				EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-				result = eva.getAirlock();
+				//EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+				result = building.getEVA().getAirlock();
 				leastDistance = distance;
 			}
 		}
@@ -1709,8 +1732,8 @@ implements Serializable, LifeSupportType, Objective {
 				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), xLocation,
 						yLocation);
 				if (distance < leastDistance) {
-					EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-					result = eva.getAirlock();
+					//EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+					result = building.getEVA().getAirlock();
 					leastDistance = distance;
 				}
 			}
@@ -1745,7 +1768,7 @@ implements Serializable, LifeSupportType, Objective {
 				double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), xLocation,
 						yLocation);
 				if (distance < leastDistance) {
-					EVA eva = (EVA) nextBuilding.getFunction(BuildingFunction.EVA);
+					EVA eva = nextBuilding.getEVA();//(EVA) nextBuilding.getFunction(BuildingFunction.EVA);
 					if (eva != null) {
 						result = eva.getAirlock();
 						leastDistance = distance;

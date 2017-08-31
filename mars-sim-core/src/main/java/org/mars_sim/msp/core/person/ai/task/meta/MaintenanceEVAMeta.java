@@ -63,18 +63,20 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         double result = 0D;
 
         // Crowded settlement modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    	Settlement settlement = person.getAssociatedSettlement();
+    	
         	//2016-10-04 Checked for radiation events
-        	boolean[] exposed = person.getSettlement().getExposed();
+        	boolean[] exposed = settlement.getExposed();
 
-    		if (exposed[2]) {// SEP can give lethal dose of radiation, out won't go outside
+    		if (exposed[2]) {// SEP can give lethal dose of radiation
     			return 0;
     		}
 
             // Check if an airlock is available
-	    	if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-	               return 0;
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
 
             // Check if it is night time.
             if (surface == null)
@@ -83,8 +85,6 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
             if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
                 if (!surface.inDarkPolarRegion(person.getCoordinates()))
                     return 0;
-
-            Settlement settlement = person.getSettlement();
 
             if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
                 result *= 2D;
@@ -137,17 +137,16 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
                 result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
 
-           	if (exposed[0]) {
-    			result = result/1.2;// Baseline event can give lethal dose of radiation, out won't go outside
+        	if (exposed[0]) {
+    			result = result/2D;// Baseline can give a fair amount dose of radiation
     		}
 
-        	if (exposed[1]) {// GCR can give lethal dose of radiation, out won't go outside
-    			result = result/2D;
+        	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+    			result = result/4D;
     		}
-
 
             if (result < 0) result = 0;
-        }
+        //}
 
         return result;
     }

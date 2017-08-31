@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * CollectionUtils.java
- * @version 3.07 2015-01-21
+ * @version 3.1.0 2017-08-30
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;

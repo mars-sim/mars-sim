@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Repairbot;
+import org.mars_sim.msp.core.structure.Settlement;
 
 public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 
@@ -51,23 +51,22 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        boolean[] exposed = new boolean[]{false, false, false};
-
+    	Settlement settlement = person.getAssociatedSettlement();
+    	
         // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
         // and if he has to do a EVA to repair a broken vehicle.
 
-        if (person.getSettlement() != null) {
-        	//2016-10-04 Checked for radiation events
-    		exposed = person.getSettlement().getExposed();
-        }
+        //2016-10-04 Checked for radiation events
+    	boolean[] exposed = settlement.getExposed();
 
-		if (exposed[2]) {// SEP can give lethal dose of radiation, out won't go outside
+		if (exposed[2]) {// SEP can give lethal dose of radiation
             return 0;
 		}
 
         // Check if an airlock is available
-    	if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-               return 0;
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+    		return 0;
 
         // Check if it is night time.
         if (surface == null)
@@ -135,11 +134,11 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
         }
 
     	if (exposed[0]) {
-			result = result/1.2;// Baseline can give lethal dose of radiation, out won't go outside
+			result = result/2D;// Baseline can give a fair amount dose of radiation
 		}
 
-    	if (exposed[1]) {// GCR can give lethal dose of radiation, out won't go outside
-			result = result/2D;
+    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+			result = result/4D;
 		}
 
         if (result < 0) {

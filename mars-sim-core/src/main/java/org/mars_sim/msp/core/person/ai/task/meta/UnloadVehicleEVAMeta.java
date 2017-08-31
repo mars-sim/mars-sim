@@ -54,18 +54,21 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
+    	Settlement settlement = person.getAssociatedSettlement();
+    	  
         	//2016-10-04 Checked for radiation events
-        	boolean[] exposed = person.getSettlement().getExposed();
+        	boolean[] exposed = settlement.getExposed();
 
-    		if (exposed[2]) {// SEP can give lethal dose of radiation, out won't go outside
+    		if (exposed[2]) {// SEP can give lethal dose of radiation
                 return 0;
     		}
 
             // Check if an airlock is available
-	    	if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-	    		return 0;
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+        		return 0;
 
             // Check if it is night time.
             if (surface == null)
@@ -78,8 +81,8 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
             // Check all vehicle missions occurring at the settlement.
             try {
                 int numVehicles = 0;
-                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getSettlement()).size();
-                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
+                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(settlement).size();
+                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(settlement).size();
                 result = 100D * numVehicles;
             }
             catch (Exception e) {
@@ -88,7 +91,6 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
             }
 
             // Crowded settlement modifier
-            Settlement settlement = person.getSettlement();
             if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
                 result *= 2D;
             }
@@ -100,7 +102,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
             Job job = person.getMind().getJob();
             if (job != null) {
                 result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class)
-                		* person.getSettlement().getGoodsManager().getTransportationFactor();
+                		* settlement.getGoodsManager().getTransportationFactor();
             }
 
             // Modify if operations is the person's favorite activity.
@@ -113,16 +115,16 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
                 result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
 
-           	if (exposed[0]) {
-    			result = result/1.2;// Baseline event can give lethal dose of radiation, out won't go outside
+        	if (exposed[0]) {
+    			result = result/2D;// Baseline can give a fair amount dose of radiation
     		}
 
-        	if (exposed[1]) {// GCR can give lethal dose of radiation, out won't go outside
-    			result = result/2D;
+        	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+    			result = result/4D;
     		}
 
             if (result < 0) result = 0;
-        }
+        //}
 
         return result;
     }

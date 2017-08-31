@@ -10,21 +10,21 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.SystemCondition;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -46,6 +46,8 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+
 	// Data members
 	private String taskNameCache = "", taskDescriptionCache = "", taskPhaseCache = "";
 	private String oldJob = "";
@@ -64,6 +66,7 @@ implements Serializable {
 	private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
 
 	private Person person = null;
+	private PhysicalCondition health;
 
 	/**
 	 * Constructor.
@@ -73,8 +76,10 @@ implements Serializable {
 		// Initialize data members
 		this.mind = mind;
 
-		this.person = mind.getPerson();
-
+		person = mind.getPerson();
+		
+		health = person.getPhysicalCondition();
+		
 		currentTask = null;
 
 		// Initialize cache values.
@@ -284,13 +289,15 @@ implements Serializable {
 	 * @param time the passing time (
 	 */
     public void reduceEnergy(double time) {
-    	PhysicalCondition health = person.getPhysicalCondition();
+    	//PhysicalCondition health = person.getPhysicalCondition();
 //			int ACTIVITY_FACTOR = 6;
 //			double newTime = ACTIVITY_FACTOR * time ;
 //			health.reduceEnergy(newTime);
 			// Changing reduce energy to be just time as it otherwise
 			// ends up being too much energy reduction compared to the
 			// amount gained from eating.
+    	if (health == null)
+    		health = person.getPhysicalCondition();
 		health.reduceEnergy(time);
 
 
@@ -305,6 +312,14 @@ implements Serializable {
 	 */
 	public double performTask(double time, double efficiency) {
 		double remainingTime = 0D;
+		
+		if (person != null) {
+			if (person.getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS 
+					||  (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
+						&& person.getVehicle().getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS))
+			checkForEmergency();
+		}
+		
 		if (currentTask != null) {
 			// For effort driven task, reduce the effective time based on efficiency.
 			if (efficiency < .1D) {
@@ -315,7 +330,7 @@ implements Serializable {
 				time *= efficiency;
 			}
 
-			checkForEmergency();
+			
 			remainingTime = currentTask.performTask(time);
 		}
 
@@ -350,7 +365,8 @@ implements Serializable {
 	}
 
 	private boolean doingAirlockTask() {
-		// Check if robot is performing an airlock task.
+		
+		// Check if person is performing an airlock task.
 		boolean hasAirlockTask = false;
 		Task task = currentTask;
 		while (task != null) {
@@ -416,41 +432,54 @@ implements Serializable {
 	 */
 	private void checkForEmergency() {
 
-		if (person != null) {
+		//if (person != null) {
 			// Check for emergency malfunction.
-			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
+			if (!RepairEmergencyMalfunction.hasEmergencyMalfunction(person))
+				return;
 
 			    // Check if person is already repairing an emergency.
-			    boolean hasEmergencyRepair = doingEmergencyRepair();
+			    //boolean hasEmergencyRepair = 
+			    if (doingEmergencyRepair())
+			    	return;
 
 				// Check if person is performing an airlock task.
-				boolean hasAirlockTask = doingAirlockTask();
-
-				// Check if person is outside.
-				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
+				//boolean hasAirlockTask = 
+				if(doingAirlockTask())
+					return;
 
 				// Cancel current task and start emergency repair task.
-				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
+				//if (!hasEmergencyRepair && !hasAirlockTask) {
 
 					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
 
 			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
 
-			                logger.fine(person + " cancelling task " + currentTask +
-			                        " due to emergency EVA repairs.");
-			                clearTask();
-			                addTask(new RepairEmergencyMalfunctionEVA(person));
+							// Check if person is outside.
+							boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
+							
+							int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
+							
+			            	if (isOutside || numOutside == 0) {
+			            		// if he is already outside or if no one is outside, he will take on this repair task
+			            		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+			            				person + " is cancelling the old task of '" + currentTask +
+				                        "' and rushing to a scene to perform an emergency EVA repair task.", null);
+				                clearTask();
+				                addTask(new RepairEmergencyMalfunctionEVA(person));
+			            	}
 			            }
 					}
+					
 					else {
-					    logger.fine(person + " cancelling task " + currentTask +
-		                        " due to emergency repairs.");
+	            		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+	            				person + " is cancelling the old task of '" + currentTask +
+		                        "' and rushing to a scene to perform an emergency repair task.", null);
 		                clearTask();
 					    addTask(new RepairEmergencyMalfunction(person));
 					}
-				}
-			}
-		}
+				//}
+			//}
+		//}
 	}
 
 	/**
