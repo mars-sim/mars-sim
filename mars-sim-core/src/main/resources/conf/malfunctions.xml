@@ -141,20 +141,20 @@
 	<!-- Damaged wheel on rover. -->
 	<malfunction name="Damaged Wheel">
 		<severity value="20" />
-		<probability value="30.0" />
+		<probability value="5.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
 			<entity name="rover" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="rover wheel" number="1" probability="60" />
+			<part name="rover wheel" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Methane fuel leak. -->
 	<malfunction name="Fuel Leak">
 		<severity value="50" />
-		<probability value="30.0" />
+		<probability value="5.0" />
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
@@ -174,7 +174,7 @@
 	<!-- Problems with the rover's generator. -->
 	<malfunction name="Generator Problems">
 		<severity value="50" />
-		<probability value="40.0" />
+		<probability value="1.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
 		<entity-list>
@@ -183,41 +183,41 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="20" />
 			<part name="spark plug" number="1" probability="15" />
-			<part name="coolant bottle" number="1" probability="40" />
+			<part name="coolant bottle" number="1" probability="20" />
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
 			<part name="plastic tubing" number="1" probability="10" />
-			<part name="lubricant bottle" number="1" probability="30" />
-			<part name="timing belt" number="1" probability="30" />
-			<part name="fuel cell stack" number="3" probability="5"/>
+			<part name="lubricant bottle" number="1" probability="5" />
+			<part name="timing belt" number="1" probability="5" />
+			<part name="fuel cell stack" number="3" probability="1"/>
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Battery failure. -->
 	<malfunction name="Battery Failure">
 		<severity value="40" />
-		<probability value="25.0" />
+		<probability value="5.0" />
 		<repair-time value="50.0" />
 		<entity-list>
 			<entity name="rover" />
 			<entity name="light utility vehicle" />
 			<entity name="solar power source" />
-			<entity name="electric heat source" />
+			<entity name="solar heat source" />
 		</entity-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="3.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
-			<part name="electrical wire" number="2" probability="40" />
-			<part name="rover battery" number="1" probability="10" />
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="rover battery" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Communication system failure. -->
 	<malfunction name="Communication System Failure">
 		<severity value="20" />
-		<probability value="10.0" />
+		<probability value="5.0" />
 		<repair-time value="50.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
@@ -229,14 +229,14 @@
 			<part name="electrical wire" number="2" probability="40" />
 			<part name="radio antenna" number="1" probability="10" />
 			<part name="satellite dish" number="1" probability="5" />
-			<part name="communications circuit board" number="1" probability="5" />
+			<part name="communications circuit board" number="1" probability="2" />
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Navigation system failure. -->
 	<malfunction name="Navigation System Failure">
 		<severity value="15" />
-		<probability value="7.0" />
+		<probability value="2.0" />
 		<repair-time value="50.0" />
 		<eva-repair-time value="20.0" />
 		<entity-list>
@@ -245,8 +245,8 @@
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
-			<part name="satellite dish" number="1" probability="10" />
-			<part name="navigation circuit board" number="1" probability="5" />
+			<part name="satellite dish" number="1" probability="5" />
+			<part name="navigation circuit board" number="1" probability="1" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -267,7 +267,7 @@
 	<!-- Leak in the water reserves. -->
 	<malfunction name="Water Leak">
 		<severity value="50" />
-		<probability value="10.0" />
+		<probability value="5.0" />
 		<emergency-repair-time value="100.0" />
 		<entity-list>
 			<entity name="rover" />
@@ -282,10 +282,10 @@
 			<effect type="resource" name="Water" change-rate="-.1" />
 		</effect-list>
 		<repair-parts-list>
-			<part name="gasket" number="1" probability="30" />
-			<part name="valve" number="1" probability="20" />
-			<part name="plastic tubing" number="2" probability="20" />
-			<part name="epoxy resin bottle" number="1" probability="50" />
+			<part name="gasket" number="1" probability="10" />
+			<part name="valve" number="1" probability="10" />
+			<part name="plastic tubing" number="2" probability="10" />
+			<part name="epoxy resin bottle" number="1" probability="5" />
 			<part name="copper pipe" number="1" probability="10" />
 		<!-- 2014-11-19 Added water tank and small water pump -->
 			<part name="water tank" number="1" probability="5" />
@@ -296,7 +296,7 @@
 	<!-- Failure of life support heating unit.  -->
 	<malfunction name="Heating Unit Failure">
 		<severity value="70" />
-		<probability value="10.0" />
+		<probability value="5.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="20.0" />
 		<entity-list>
@@ -316,7 +316,7 @@
 	<!-- Contamination of the water supply. -->
 	<malfunction name="Water Contamination">
 		<severity value="60" />
-		<probability value="10.0" />
+		<probability value="5.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
 		<entity-list>
@@ -346,7 +346,7 @@
 	<!-- Contamination of the food supply. -->
 	<malfunction name="Food Contamination">
 		<severity value="60" />
-		<probability value="10.0" />
+		<probability value="5.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
 		<entity-list>
@@ -368,7 +368,7 @@
 	<!-- Dangerous chemical spill. -->
 	<malfunction name="Chemical Spill">
 		<severity value="50" />
-		<probability value="10.0" />
+		<probability value="2.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
 		<entity-list>
@@ -388,14 +388,14 @@
 	<!-- EVA suit tear. -->
 	<malfunction name="Suit Tear">
 		<severity value="70" />
-		<probability value="50.0" />
+		<probability value="5.0" />
 		<repair-time value="20.0" />
 		<emergency-repair-time value="10.0" />
 		<entity-list>
 			<entity name="eva suit" />
 		</entity-list>
 		<medical-complaint-list>
-			<medical-complaint name="Frostnip" probability="80.0" />
+			<medical-complaint name="Frostnip" probability="50.0" />
 			<medical-complaint name="Frostbite" probability="10.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
@@ -405,13 +405,13 @@
 
 	<malfunction name="EVA Radio Failure">
 		<severity value="50" />
-		<probability value="20.0" />
+		<probability value="5.0" />
 		<repair-time value="20.0" />
 		<entity-list>
 			<entity name="eva suit" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="eva antenna" number="1" probability="50" />
+			<part name="eva antenna" number="1" probability="20" />
 			<part name="eva radio" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -419,7 +419,7 @@
 	<!-- Electrical wire short. -->
 	<malfunction name="Electrical Short">
 		<severity value="20" />
-		<probability value="35.0" />
+		<probability value="5.0" />
 		<repair-time value="20.0" />
 		<entity-list>
 			<entity name="vehicle" />
@@ -437,7 +437,7 @@
 	<!-- Problems with one of the rover's electric motors. -->
 	<malfunction name="Electric Motor Failure">
 		<severity value="50" />
-		<probability value="20.0" />
+		<probability value="5.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
 		<entity-list>
@@ -454,15 +454,15 @@
 	<!-- Problems with the rover's fuel pump. -->
 	<malfunction name="Fuel Pump Failure">
 		<severity value="50" />
-		<probability value="20.0" />
+		<probability value="5.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="50.0" />
 		<entity-list>
 			<entity name="rover" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
+			<part name="electrical wire" number="2" probability="10" />
+			<part name="wire connector" number="2" probability="10" />
 			<part name="fuel pump" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -470,7 +470,7 @@
 	<!-- Water pump failure. -->
 	<malfunction name="Water Pump Failure">
 		<severity value="50" />
-		<probability value="10.0" />
+		<probability value="5.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
 		<entity-list>
