@@ -19,16 +19,18 @@ https://github.com/mars-sim/mars-sim
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add checkbox to include non-power and non-heat generating buildings in Power/Thermal 
-   Tab Panels.
+1. Add checkbox to include non-power and non-heat generating buildings in Power
+   and Thermal Tab Panels.
 
 2. Include gas diffusion laws and heat flow between adjacent buildings.
 
 3. Improve grid battery charging/discharging model. 
  
-4. Tweak amount of power output from various types of power source.
+4. Tweak amount of power/heat output from various types of power/heat source.
 
 5. Add tracking/displaying various properties of gases in each building.
+
+6. Improve dust storm model and associate it with wind speed on each settlement.
 
 
 ### UI IMPROVEMENT :
@@ -37,15 +39,15 @@ https://github.com/mars-sim/mars-sim
 
 2. Add animated Main Menu items.
 
-3. Create an EXE installation package specifically for installing mars-sim in windows OS 
-with Inno Script Studio.
+3. Create an EXE installation package specifically for installing mars-sim in 
+   windows OS with Inno Script Studio.
 
 
 ### FIXES :
 
 1. Correct some temperature anomaly. 
 
-2. Fix calculation for power output from solar panels.
+2. Fix calculation for power and heat output from solar panels.
 
 3. Fix short height and under-weigh issue. 
 

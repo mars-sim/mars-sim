@@ -33,14 +33,11 @@ implements Serializable {
 	
 	private static final double MAINTENANCE_FACTOR = 2.5D;
 	
-	/** In terms of solar cell degradation, NASA MER has an observable degradation rate of 0.14% per sol
-	 *  on the solar cell (if starting from 100%).
+	/** NASA MER has an observable solar cell degradation rate of 0.14% per sol, 
 	 	Here we tentatively set to 0.04% per sol instead of 0.14%, since that in 10 earth years,
 	 	the efficiency will	drop down to 23.21% of the initial 100%
 	 	100*(1-.04/100)^(365*10) = 23.21% */
 	public static double DEGRADATION_RATE_PER_SOL = .0004; // assuming it is a constant through its mission
-	
-
 	/*
 	 * The number of layers/panels that can be mechanically steered 
 	 * toward the sun to maximum the solar irradiance
@@ -64,6 +61,12 @@ implements Serializable {
 	 */
 	private double efficiency_solar_panel = .68;
 
+	/**
+	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
+	 * to account for variations in the atmospheric columnar dust amount.
+	 */
+	private double dust_deposition_rate = 0;
+	
 	private Coordinates location ;
 	private SurfaceFeatures surface ;
 	private Mars mars;
@@ -76,8 +79,30 @@ implements Serializable {
 	public SolarPowerSource(double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.SOLAR_POWER, maxPower);
+
 	}
 
+	/***
+	 * Computes and updates the dust deposition rate for a settlement
+	 * @param the rate
+	 */
+	public void computeDustDeposition(Settlement settlement) {
+
+		if (location == null)
+			location = settlement.getCoordinates();
+        if (mars == null)
+        	mars = Simulation.instance().getMars();
+		if (surface == null)
+			surface = mars.getSurfaceFeatures();
+		double tau = surface.getOpticalDepth(location);		
+	
+		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
+		// surface at a rate of ~ 0.28% of the surface area per day (Landis and Jenkins, 1999)
+		dust_deposition_rate = .0018 * tau /.5;
+		
+		// during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
+	}
+	
 	/**
 	 * Gets the current power produced by the power source.
 	 * @param building the building this power source is for.

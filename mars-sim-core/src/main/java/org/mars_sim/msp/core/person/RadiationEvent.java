@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RadiationEvent.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-08-31
  * @author Manny Kung
  */
 
@@ -16,9 +16,9 @@ public class RadiationEvent implements Serializable {
 	/** default serial id.*/
 	private static final long serialVersionUID = 1L;
 
-	MarsClock clock;
-	BodyRegionType region;
-	double amount;
+	private MarsClock clock;
+	private BodyRegionType region;
+	private double amount;
 
 	public RadiationEvent(MarsClock clock, BodyRegionType region, double amount ) {
 		this.clock = clock;

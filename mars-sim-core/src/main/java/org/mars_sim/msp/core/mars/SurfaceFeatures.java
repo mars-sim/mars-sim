@@ -30,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SurfaceFeatures implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	public static double MEAN_SOLAR_IRRADIANCE =  586D; // in flux or [W/m2]  = 1371 / (1.52*1.52)
 	// This is the so-called "solar constant" of Mars (not really a constant per se), which is the flux of solar radiation at the top of the atmosphere (TOA) at the mean distance a between Mars and the sun.
 	// Note: at the top of the Mars atmosphere
@@ -42,9 +43,9 @@ public class SurfaceFeatures implements Serializable {
 	private static final double HALF_PI = Math.PI / 2d;
 
 	// Data members
-	private int dataset = 0;
+	//private int dataset = 0;
 	/** Current sol since the start of sim. */
-	private int solCache = 1;
+	//private int solCache = 1;
 
 	private double opticalDepthStartingValue = 0.2342;
 	private double factor;
@@ -69,7 +70,7 @@ public class SurfaceFeatures implements Serializable {
 	private Simulation sim = Simulation.instance();
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 
-	DecimalFormat fmt3 = new DecimalFormat("#0.000");
+	private DecimalFormat fmt3 = new DecimalFormat("#0.000");
 
     /**
      * Constructor
@@ -125,7 +126,7 @@ public class SurfaceFeatures implements Serializable {
     /**
      * Returns a float value representing the current sunlight
      * conditions at a particular location.
-     * @deprecated // use getSolarIrradiance() instead
+     * @deprecated // use getSolarIrradiance() for Watt/sqm and more detail calculation 
      * @return value from 0.0 - 1.0
      * 0.0 represents night time darkness.
      * 1.0 represents daylight.
@@ -196,6 +197,61 @@ public class SurfaceFeatures implements Serializable {
         return result;
     }
 
+    public double getOpticalDepth(Coordinates location) {
+        if (opticalDepthMap.containsKey(location))
+            return opticalDepthMap.get(location);
+        else {
+            return computeOpticalDepth(location); //  opticalDepthStartingValue
+        }
+    }
+    
+    
+    /***
+     * Computes the optical depth of the martian dust
+     * @param location
+     * @return tau
+     */
+    public double computeOpticalDepth(Coordinates location) {
+
+        double tau = 0;
+
+        if (weather == null)
+            weather = sim.getMars().getWeather();
+        
+        double newTau =  0.2237 * weather.getDailyVariationAirPressure(location);
+        // System.out.println("DailyVariationAirPressure : " + weather.getDailyVariationAirPressure(location));
+
+        // Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
+        // the starting value for opticalDepth is 0.2342. See Ref below
+        if (opticalDepthMap.containsKey(location))
+            tau = (opticalDepthMap.get(location) + opticalDepthStartingValue + newTau) / 1.9D;
+        else {
+            tau = opticalDepthStartingValue + newTau;
+        }
+
+        // Reference :
+        // see Chapter 2.3.1 and equation (2.44,45) on page 63 from the book "Mars: Prospective Energy and Material Resources" by Badescu, Springer 2009.
+        // Optical depth is well correlated to the daily variation of surface pressure and to the standard deviation of daily surface pressure
+        // The lower the value of tau, the clearer the sky
+        // Note: tau has an "inverse" relationship with the daily global solar irradiance in Fig 2.8.
+
+        // Add randomness to optical depth
+        tau = tau + RandomUtil.getRandomDouble(.03) - RandomUtil.getRandomDouble(.03);
+        // Notes:
+        // (1) during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
+        // (2) typical observable range is between .32 and .52 (average is 42%).
+        // (3) From Viking data, at no time did the optical depth fall below 0.18,
+
+        // tau is usually between .1 and 6, Page 860, Table IV  of R. M. Haberlet Et al.
+			if (tau > 6)
+				tau = 6;
+			if (tau < .1)
+				tau = .1;
+
+		return tau;
+    }
+    
+    
     /**
      * Calculate the solar irradiance at a particular location on Mars
      * @param location the coordinate location on Mars.
@@ -227,7 +283,7 @@ public class SurfaceFeatures implements Serializable {
  */
 
 // Approach 2 consists of 5 parts
-            // Part 1: get cosine solar zenith angle
+            // PART 1 : COSINE SOLAR ZENITH ANGLE
             double G_0 = 0;
             double G_h = 0;
             double G_bh = 0;
@@ -246,7 +302,7 @@ public class SurfaceFeatures implements Serializable {
             double z = Math.acos(cos_z);
 
             if (z >= Math.PI/2D) {
-            	// Mar is in the so-called twilight zone
+            	// if Mars is in the so-called twilight zone,
             	// Set it to a maximum of 12 degree below the horizon
             	// indirect sunlight such as diffuse/scattering/reflective sunlight will light up the Martian sky
             	if (z <= Math.PI/2D + .1) {
@@ -278,42 +334,11 @@ public class SurfaceFeatures implements Serializable {
                 //if (G_0 <= 0)
                 //	G_0 = 0;
 
-                // Part 4 : Absorption and Scattering of Solar Radiation and Optical Depth
+                
+                // PART 4 : OPTICAL DEPTH - CALCULATING ABSORPTION AND SCATTERING OF SOLAR RADIATION 
 
-                double tau;
+                double tau = computeOpticalDepth(location);
 
-                if (weather == null)
-                    weather = sim.getMars().getWeather();
-                double newTau =  0.2237 * weather.getDailyVariationAirPressure(location);
-                // System.out.println("DailyVariationAirPressure : " + weather.getDailyVariationAirPressure(location));
-                // Initially, weather.getDailyVariationAirPressure() = 0.009773345677998181
-
-                // Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
-                // the starting value for opticalDepth is 0.2342. See Ref below
-                if (opticalDepthMap.containsKey(location))
-                    tau = (opticalDepthMap.get(location) + opticalDepthStartingValue + newTau) / 1.9D;
-                else {
-                    tau = opticalDepthStartingValue + newTau;
-                }
-
-                // Reference :
-                // see Chapter 2.3.1 and equation (2.44,45) on page 63 from the book "Mars: Prospective Energy and Material Resources" by Badescu, Springer 2009.
-                // Optical depth is well correlated to the daily variation of surface pressure and to the standard deviation of daily surface pressure
-                // The lower the value of tau, the clearer the sky
-                // Note: tau has an "inverse" relationship with the daily global solar irradiance in Fig 2.8.
-
-                // Add randomness to optical depth
-                tau = tau + RandomUtil.getRandomDouble(.03) - RandomUtil.getRandomDouble(.03);
-                // Notes:
-                // (1) during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
-                // (2) typical observable range is between .32 and .52 (average is 42%).
-                // (3) From Viking data, at no time did the optical depth fall below 0.18,
-
-                // tau is usually between .1 and 6, Page 860, Table IV  of R. M. Haberlet Et al.
-      			if (tau > 6)
-      				tau = 6;
-      			if (tau < .1)
-      				tau = .1;
 
                 // TODO: Part 4a : reducing opacity of the Martian atmosphere due to local dust storm
 
@@ -351,7 +376,8 @@ public class SurfaceFeatures implements Serializable {
 
                 // Note:  one can estimate m(z), the air mass, as ~ 1/cos_z
 
-                // Part 5 : Diffuse solar irradiance.
+                // PART 5 : DIFFUSE SOLAR IRRADIANCE 
+                
                 // G_h = G_direct + G_diffuse
                 // On earth, the direct solar irradiance plays the major role of bringing in sunlight
                 // On Mars, the role of diffuse solar irradiance is more prominent than that on Earth.
@@ -416,14 +442,6 @@ public class SurfaceFeatures implements Serializable {
     	return solarIrradianceMapCache.get(location);
     }
 
-    public double getOpticalDepth(Coordinates location) {
-    	double result;
-    	if (opticalDepthMap.containsKey(location))
-    		result = opticalDepthMap.get(location);
-    	else
-    		result = opticalDepthStartingValue;
-    	return result;
-    }
 
     /** Returns true if location is in a dark polar region.
      *  A dark polar region is where the sun doesn't rise in the current sol.

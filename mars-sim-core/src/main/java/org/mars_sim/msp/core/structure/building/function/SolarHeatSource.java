@@ -10,10 +10,11 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
  * This class accounts for the effect of temperature via passive solar water heating or passive solar heat collector system.
@@ -28,14 +29,25 @@ implements Serializable {
 	public static double DEGRADATION_RATE_PER_SOL = .0014;
 
 	private double efficiency_solar_to_heat = .58;
+	
 	private double efficiency_solar_to_electricity = .58;
 
-	private SurfaceFeatures surface ;
-	
 	private double maxHeat;
 	
 	private double factor = 1;
 
+	private Coordinates location ;
+	private SurfaceFeatures surface ;
+	private Mars mars;
+	private OrbitInfo orbitInfo;
+	
+	/**
+	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
+	 * to account for variations in the atmospheric columnar dust amount.
+	 */
+	private double dust_deposition_rate = 0;
+	
+	
 	/**
 	 * Constructor.
 	 * @param maxHeat the maximum generated power.
@@ -44,6 +56,27 @@ implements Serializable {
 		// Call HeatSource constructor.
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 		this.maxHeat = maxHeat;
+	}
+	
+	/***
+	 * Computes and updates the dust deposition rate for a settlement
+	 * @param the rate
+	 */
+	public void computeDustDeposition(Settlement settlement) {
+
+		if (location == null)
+			location = settlement.getCoordinates();
+        if (mars == null)
+        	mars = Simulation.instance().getMars();
+		if (surface == null)
+			surface = mars.getSurfaceFeatures();
+		double tau = surface.getOpticalDepth(location);		
+	
+		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
+		// surface at a rate of ~ 0.28% of the surface area per day (Landis and Jenkins, 1999)
+		dust_deposition_rate = .0018 * tau /.5;
+		
+		// during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
 	}
 	
 	public double getCollected(Building building) {
@@ -121,6 +154,9 @@ implements Serializable {
 	public void destroy() {
 		super.destroy();
 		surface = null;
+		location = null;
+		mars = null;
+		orbitInfo = null;
 	}
 
 

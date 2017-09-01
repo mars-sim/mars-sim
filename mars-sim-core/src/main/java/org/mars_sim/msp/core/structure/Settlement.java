@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -146,7 +147,7 @@ implements Serializable, LifeSupportType, Objective {
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 
-	private double currentPressure = NORMAL_AIR_PRESSURE; //[in Pascal]
+	private double currentPressure = NORMAL_AIR_PRESSURE; //[in Pascal], not kPa
 	/** Amount of time (millisols) that the settlement has had zero population.  */
 	private double zeroPopulationTime;
 
@@ -255,7 +256,8 @@ implements Serializable, LifeSupportType, Objective {
 	public AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(OXYGEN);		// 3
 	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
 
-
+	private DustStorm storm;
+	
 	// Constructor 1 called by ConstructionStageTest
 	private Settlement() {
 		super(null, null);
@@ -3557,6 +3559,15 @@ implements Serializable, LifeSupportType, Objective {
 		return outside_temperature;
 	}
 
+	public DustStorm getDustStorm() {
+		return storm;
+	}
+	
+	public void setDustStorm(DustStorm storm) {
+		this.storm = storm;
+	}
+
+	
 	@Override
 	public void destroy() {
 		super.destroy();

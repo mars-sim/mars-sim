@@ -1,21 +1,25 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.08 2015-06-15
+ * @version 3.1.0 2017-08-31
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.structure.CompositionOfAir;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -25,6 +29,10 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	/* default logger. */
+	private static Logger logger = Logger.getLogger(Weather.class.getName());
+	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Static data
 	/** Sea level air pressure in kPa. */
@@ -58,16 +66,16 @@ implements Serializable {
 
 	private int millisols;
 
-	private int numlocalDustStorm = 0;
-	//numRegionalDustStorm = 0;
-	//private int numPlanetEncirclingDustStorm = 0;
-
 	private int checkStorm = 0;
 
 	/** Current sol since the start of sim. */
 	private int solCache = 1;
 
-	private double sum;
+	private int L_s_cache = 0;
+	
+	//private double sum;
+
+	private double dx = 255D * Math.PI/180D - Math.PI;
 
 	private double viking_dt;
 
@@ -75,9 +83,10 @@ implements Serializable {
 
 	private double TEMPERATURE_DELTA_PER_DEG_LAT = 0D;
 
-	private double dailyVariationAirPressure =  RandomUtil.getRandomDouble(.05); // tentatively only
+	private double dailyVariationAirPressure =  RandomUtil.getRandomDouble(.01); // tentatively only
 	//TODO: compute the true dailyVariationAirPressure by the end of the day
 
+	private int newStormID = 1;
 
 	private Map <Coordinates, Map<Integer, List<DailyWeather>>> weatherDataMap = new ConcurrentHashMap<>();
 	private Map <Integer, List<DailyWeather>> dailyRecordMap = new ConcurrentHashMap<>();
@@ -90,12 +99,16 @@ implements Serializable {
 	private transient Map<Coordinates, Double> windSpeedCacheMap;
 	private transient Map<Coordinates, Integer> windDirCacheMap;
 
+	//private static Map<Integer, DustStorm> planetEncirclingDustStormMap = new ConcurrentHashMap<>();
+	//private static Map<Integer, DustStorm> regionalDustStormMap = new ConcurrentHashMap<>();
+	//private static Map<Integer, DustStorm> localDustStormMap = new ConcurrentHashMap<>();
+	//private static Map<Integer, DustStorm> dustDevilMap = new ConcurrentHashMap<>();
 
-	private static Map<Integer, DustStorm> planetEncirclingDustStormMap = new ConcurrentHashMap<>();
-	private static Map<Integer, DustStorm> regionalDustStormMap = new ConcurrentHashMap<>();
-	private static Map<Integer, DustStorm> localDustStormMap = new ConcurrentHashMap<>();
-	private static Map<Integer, DustStorm> dustDevilMap = new ConcurrentHashMap<>();
-
+	private static List<DustStorm> planetEncirclingDustStorms = new ArrayList<>();
+	private static List<DustStorm> regionalDustStorms = new ArrayList<>();
+	private static List<DustStorm> localDustStorms = new ArrayList<>();
+	private static List<DustStorm> dustDevils = new ArrayList<>();
+	
 	private Simulation sim = Simulation.instance();
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
@@ -148,12 +161,10 @@ implements Serializable {
 	 */
 	// 2015-03-17 Added computeAirDensity()
 	public double computeAirDensity(Coordinates location) {
-		double result = 0;
 		checkLocation(location);
 		//The air density is derived from the equation of state : d = p / .1921 / (t + 273.1)
-		result = 1000D * getAirPressure(location) / (.1921 * (getTemperature(location) + 273.1));
-		result = Math.round(result *10.0)/10.0;
-	 	return result;
+		double result = 1000D * getAirPressure(location) / (.1921 * (getTemperature(location) + CompositionOfAir.C_TO_K));
+		return Math.round(result *100.0)/100.0;
 	}
 
 	/**
@@ -171,29 +182,92 @@ implements Serializable {
 	 */
 	// 2015-05-01 Added computeWindSpeed()
 	public double computeWindSpeed(Coordinates location) {
-		double result = 0;
-		//checkLocation(location);
-
-		double rand = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
+		double new_speed = 0;
 
 		if (windSpeedCacheMap == null)
 			windSpeedCacheMap = new ConcurrentHashMap<>();
 
-		if (windSpeedCacheMap.containsKey(location))
-			// TODO: get wind speed using theoretical model and/or empirical data
-			result = windSpeedCacheMap.get(location) + rand;
-		else {
-			result = rand;
+		// On sol 214 in this list of Viking wind speeds, 25.9 m/sec (93.24 km/hr) was recorded.	
+		
+		if (windSpeedCacheMap.containsKey(location)) {
+			
+			double rand = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
+			
+		    // check for the passing of each day
+		    int newSol = marsClock.getSolElapsedFromStart();
+			if (newSol != solCache) {
+
+				double ds_speed = 0;
+				
+				List<Settlement> settlements = new ArrayList<>(Simulation.instance().getUnitManager().getSettlements());
+				for (Settlement s : settlements) {
+					if (s.getCoordinates().equals(location)) {
+						DustStorm ds = s.getDustStorm();
+						if (ds != null) {
+							DustStormType type = ds.getType();
+							ds_speed = ds.getSpeed();
+							
+							if (type == DustStormType.DUST_DEVIL) {
+								// arbitrary speed determination
+								new_speed = .8 * new_speed + .2 * ds_speed ;
+
+							}
+
+							else if (type == DustStormType.LOCAL) {
+								// arbitrary speed determination
+								new_speed = .985 * new_speed + .015 * ds_speed  ;
+
+
+							}
+							else if (type == DustStormType.REGIONAL) {
+
+								// arbitrary speed determination
+								new_speed = .99 * new_speed + .01 * ds_speed;
+
+							}
+
+							else if (type == DustStormType.PLANET_ENCIRCLING) {
+	
+								// arbitrary speed determination
+								new_speed = .995 * new_speed + .005 * ds_speed ;
+
+							}
+						}
+					}
+				}
+					
+				//}	
+				
+				new_speed = ds_speed + rand;
+					
+			}
+			else {
+				
+				new_speed = windSpeedCacheMap.get(location) + rand;	
+
+			}
+			
+			new_speed = windSpeedCacheMap.get(location) + rand;
+
 		}
+		else {
+			
+			new_speed = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
 
-		if (result > 15)
-			result = 15;
-		if (result < 0)
-			result = 0;
+		}
+		
+		// Despite secondhand estimates of higher velocities, official observed gust velocities on Mars are 
+		// in the range of 80-120 mph (120-160 km/hr). 
+		// At higher altitudes, the movement of dust was measured at 250-300 mph (400-480 km/hr). 
 
-		windSpeedCacheMap.put(location, result);
+		if (new_speed > 50) // assume the max surface wind speed of 50 m/s
+			new_speed = 50;
+		if (new_speed < 0)
+			new_speed = 0;
 
-		return result;
+		windSpeedCacheMap.put(location, new_speed);
+		
+		return new_speed;
 	}
 
 	/**
@@ -213,6 +287,10 @@ implements Serializable {
 	// 2015-05-01 Added computeWindDirection()
 	public int computeWindDirection(Coordinates location) {
 		int result = 0;
+		
+		if (getWindSpeed(location) < 0.01)
+			return 0;
+		
 		//checkLocation(location);
 
 		int newDir = RandomUtil.getRandomInt(359);
@@ -268,7 +346,7 @@ implements Serializable {
 		if (millisols % MILLISOLS_PER_UPDATE == 1) {
 			//System.out.println("marsClock : "+ marsClock);
 			//System.out.println("millisols : "+ millisols);
-			double newP = calculateAirPressure(location);
+			double newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
 			//System.out.println("air pressure : "+cache);
 			return newP;
@@ -279,17 +357,23 @@ implements Serializable {
 	}
 
 	/**
-	 * Calculates the air pressure at a given location.
+	 * Calculates the air pressure at a given location and/or height
+	 * @param location
+	 * @param height
 	 * @return air pressure in kPa.
 	 */
-	public double calculateAirPressure(Coordinates location) {
+	public double calculateAirPressure(Coordinates location, double height) {
 		// Get local elevation in meters.
 		if (terrainElevation == null)
 			terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
 
-		double elevation = terrainElevation.getElevation(location) ; // in km since getElevation() return the value in km
+		double elevation = 0;
 
-
+		if (height == 0)
+			elevation = terrainElevation.getElevation(location) ; // in km since getElevation() return the value in km
+		else
+			elevation = height;
+		
 		// p = pressure0 * e(-((density0 * gravitation) / pressure0) * h)
 		//  Q: What are these enclosed values ==>  P = 0.009 * e(-(0.0155 * 3.0 / 0.009) * elevation)
 		//double pressure = SEA_LEVEL_AIR_PRESSURE * Math.exp(-1D *
@@ -307,8 +391,8 @@ implements Serializable {
 		//System.out.println("elevation is " + elevation  + "   pressure2 is " + pressure2);
 
 		// Added randomness
-		double up = RandomUtil.getRandomDouble(.05);
-		double down = RandomUtil.getRandomDouble(.05);
+		double up = RandomUtil.getRandomDouble(.01);
+		double down = RandomUtil.getRandomDouble(.01);
 
 		pressure2 = pressure2 + up - down;
 
@@ -516,7 +600,7 @@ implements Serializable {
     			cache = calculateTemperature(location);
     		//else if (value == AIR_PRESSURE )
     		else  if (map.equals(airPressureCacheMap))
-    			cache = calculateAirPressure(location);
+    			cache = calculateAirPressure(location, 0);
 
 			map.put(location, cache);
 
@@ -566,35 +650,55 @@ implements Serializable {
 			if (orbitInfo == null)
 				orbitInfo = mars.getOrbitInfo();
 
-			double L_s = orbitInfo.getL_s();
-			//The Mars dust storm season begins just after perihelion at around Ls = 260°.
-			// When L_s = 250, Mars is at perihelion--when the sun is closed to Mars.
-			// Mars has the highest liklihood of producing a global dust storm
-			// All of the observed storms have begun within 50-60 degrees of Ls of perihelion (Ls ~ 250);
+			dailyVariationAirPressure +=  RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01);
+			if (dailyVariationAirPressure > .05)
+				dailyVariationAirPressure = .05;
+			else if (dailyVariationAirPressure < -.05)
+				dailyVariationAirPressure = -.05;
+			
 			// more often observed from mid-southern summer, between 241 deg and 270 deg Ls, with a peak period at 255 deg Ls.
 
-			// Assuming all storms start out as a local storm
-			// Artificially limit the # of local storm to 20
-			if (L_s > 240 && L_s < 271 && localDustStormMap.size() <= 30 && checkStorm < 20) {
-				checkStorm++;
-
-				int mod = Math.abs(255-(int)L_s)/2;
-				int num = RandomUtil.getRandomInt(100 + mod);
-				if (num < 6) { // arbitrarily set to 5% chance of generating a regional dust storm on each sol
-					//numlocalDustStorm++;
-					DustStorm ds = new DustStorm("Local Storm " + localDustStormMap.size() + 1, DustStormType.LOCAL, marsClock);
-					ds.setWeather(this);
-					localDustStormMap.put(localDustStormMap.size(), ds);
-				}
+			// Note : The Mars dust storm season begins just after perihelion at around Ls = 260°.
+			int L_s_int = (int)Math.round(orbitInfo.getL_s());
+			
+			if (L_s_cache != L_s_int) {
+				L_s_cache = L_s_int;
+				if (L_s_int == 230)
+					// reset the counter once a year
+					checkStorm = 0;		
 			}
 
-			checkOnDustDevils();
+			// Arbitrarily assume 
+			// (1) 5% is the highest chance of forming a storm, if L_s is right at 255 deg	
+			// (2) 0.05% is the lowest chance of forming a storm, if L_s is right at 75 deg
+			
+			// By doing curve-fitting a cosine curve
+			// (5% - .05%)/2 = 2.475
+			//double dx = 255D * Math.PI/180D - Math.PI;
+			
+			double probability = -2.475 * Math.cos(L_s_cache * Math.PI/180D - dx) + (2.475 + .05); 
+			// probability is 5% at max
+			double size = dustDevils.size() ;
+			// Artificially limit the # of dust storm to 10
+			if (L_s_int > 240 && L_s_int < 271 && size <= 10 && checkStorm < 200) {
+				// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is closed to Mars.
 
-			checkOnLocalStorms();
+				// All of the observed storms have begun within 50-60 degrees of Ls of perihelion (Ls ~ 250);
+				createDustDevils(probability, L_s_int); 
+			}
+			
+			else if (dustDevils.size() <= 20 && checkStorm < 200) {
+
+				createDustDevils(probability, L_s_int); 
+			}
+			
+			checkOnPlanetEncirclingStorms();
 
 			checkOnRegionalStorms();
 
-			checkOnPlanetEncirclingStorms();
+			checkOnLocalStorms();
+
+			checkOnDustDevils();
 
 	    	coordinateList.forEach(location -> {
 	    		// compute the average pressure
@@ -616,111 +720,186 @@ implements Serializable {
 
 	}
 
+	/***
+	 * Checks if a dust devil is formed for each settlement
+	 * @param probability
+	 * @param L_s_int
+	 */
+	public void createDustDevils(double probability, int L_s_int) {
+		List<Settlement> settlements = new ArrayList<>(Simulation.instance().getUnitManager().getSettlements());
+		for (Settlement s : settlements) {
+			if (s.getDustStorm() == null) {
+				// if settlement doesn't have a dust storm formed near it yet
+				List<Settlement> list = new ArrayList<>();
+
+				double chance = RandomUtil.getRandomDouble(100);
+				if (chance <= probability) { 
+
+					// arbitrarily set to the highest 3% chance (if L_s is 241 or 270) of generating a dust devil 
+					// on each sol since it is usually created in Martian spring or summer day,
+					checkStorm++;
+
+					list.add(s);
+
+					// Assuming all storms start out as a dust devil 
+					DustStorm ds = new DustStorm("Dust Devil-" + newStormID, 
+								DustStormType.DUST_DEVIL, newStormID, marsClock, this, list);
+					dustDevils.add(ds);
+					s.setDustStorm(ds);
+					newStormID++;
+					
+					logger.info("at L_s = " + L_s_int + ", " + ds.getName() + " is formed in " + s + ".");
+
+				}
+			}
+		}	
+	}
+	
+	/***
+	 * Checks to see if a dust devil has been subsided or upgraded
+	 */
 	public void checkOnDustDevils() {
 
-		for (Object value : dustDevilMap.values()) {
-			DustStorm d = (DustStorm) value;
-			if (d.getNewSize() == 0) {
-				//Coordinates location = d.getCoordinates();
-
+		for (DustStorm ds : dustDevils) {
+			if (ds.computeNewSize() == 0) {
 				// remove this dust devil
-				dustDevilMap.remove(value);
+				dustDevils.remove(ds);
+				// Set the dust storm instance in that settlement to null
+				ds.getSettlements().get(0).setDustStorm(null);
 			}
+			else if (ds.computeNewSize() > 20) {
+				int id = ds.getID();
+				// if the size of this dust devil grows to 21 km, upgrade it to local storm
+				ds.setName("Local Storm-" + id);
+				ds.setType(DustStormType.LOCAL);
+				// upgrade this to local storm
+				localDustStorms.add(ds);
+				// remove this oversized dust devil
+				dustDevils.remove(ds);
+			}
+			
+			if (ds.getSize() != 0)
+				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
+				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
+	/***
+	 * Checks to see if a local storm should be upgraded or downgraded
+	 */
 	public void checkOnLocalStorms() {
 
-		for (Object value : localDustStormMap.values()) {
-			DustStorm d = (DustStorm) value;
-			if (d.getNewSize() > 2000) {
-				Coordinates location = d.getCoordinates();
+		for (DustStorm ds : localDustStorms) {
+			if (ds.computeNewSize() > 2000) {
+				int id = ds.getID();
 				// if the size of this local storm grows beyond 2000km, upgrade it to regional storm
-				DustStorm dd = new DustStorm("Storm " + regionalDustStormMap.size() + 1, DustStormType.REGIONAL, marsClock);
-				dd.setWeather(this);
-				dd.setCoordinates(location);
-				// upgrade this regional storm to regional storm
-				regionalDustStormMap.put(regionalDustStormMap.size(), dd);
-				// remove this oversize local storm
-				localDustStormMap.remove(value);
+				ds.setName("Local Storm-" + id);
+				ds.setType(DustStormType.REGIONAL);
+				// upgrade this local storm to regional storm
+				regionalDustStorms.add(ds);
+				// remove this oversized local storm
+				localDustStorms.remove(ds);
 			}
-			else if (d.getNewSize() < 15) {
-				Coordinates location = d.getCoordinates();
-				// if the size of a regional shrink below 2000km, downgrade it to planet encircling storm
-				DustStorm dd = new DustStorm("Dust Devil " + dustDevilMap.size() + 1, DustStormType.DUST_DEVIL, marsClock);
-				dd.setWeather(this);
-				dd.setCoordinates(location);
-				// downgrade this regional storm to local
-				dustDevilMap.put(dustDevilMap.size(), dd);
+			else if (ds.computeNewSize() == 0) {
+				// remove this local storm
+				localDustStorms.remove(ds);
+				// Set the dust storm instance in that settlement to null
+				ds.getSettlements().get(0).setDustStorm(null);
+			}
+			else if (ds.computeNewSize() <= 20) {
+				int id = ds.getID();
+				// if the size of a regional shrink below 2000km, downgrade it to dust devil
+				ds.setName("Dust Devil-" + id); 
+				ds.setType(DustStormType.DUST_DEVIL);
+				// downgrade this local storm to dust devil
+				dustDevils.add(ds);
 				// remove this undersize local storm
-				localDustStormMap.remove(value);
+				localDustStorms.remove(ds);
 			}
+			
+			if (ds.getSize() != 0)
+				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
+				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
 
+	/***
+	 * Checks to see if a regional storm should be upgraded or downpgraded
+	 */
 	public void checkOnRegionalStorms() {
 
 		//regionalDustStormMap.entrySet().removeIf(e-> ... );
 
-		for (Object value : regionalDustStormMap.values()) {
-			DustStorm d = (DustStorm) value;
-			if (d.getNewSize() > 4000) {
-				Coordinates location = d.getCoordinates();
+		for (DustStorm ds : regionalDustStorms) {
+			if (ds.computeNewSize() > 4000) {
+				int id = ds.getID();
 				// if the size of a regional grows beyond 2000km, upgrade it to planet encircling storm
-				DustStorm dd = new DustStorm("Planet Encircling Storm " + planetEncirclingDustStormMap.size() + 1, DustStormType.PLANET_ENCIRCLING, marsClock);
-				dd.setWeather(this);
-				dd.setCoordinates(location);
+				ds.setName("Planet Encircling Storm-" + id); 
+				ds.setType(DustStormType.PLANET_ENCIRCLING);
 				// upgrade this regional storm to planet-encircling
-				planetEncirclingDustStormMap.put(planetEncirclingDustStormMap.size(), dd);
+				planetEncirclingDustStorms.add(ds);
 				// remove this oversize regional storm
-				regionalDustStormMap.remove(value);
+				regionalDustStorms.remove(ds);
 			}
-			else if (d.getNewSize() < 2000) {
-				Coordinates location = d.getCoordinates();
-				// if the size of a regional shrink below 2000km, downgrade it to planet encircling storm
-				DustStorm dd = new DustStorm("Local Storm " + localDustStormMap.size() + 1, DustStormType.LOCAL, marsClock);
-				dd.setWeather(this);
-				dd.setCoordinates(location);
+			else if (ds.computeNewSize() == 0) {
+				// remove this local storm
+				regionalDustStorms.remove(ds);
+				// Set the dust storm instance in that settlement to null
+				ds.getSettlements().get(0).setDustStorm(null);
+			}
+			else if (ds.computeNewSize() <= 2000) {
+				int id = ds.getID();
+				// if the size of a regional shrink below 2000km, downgrade it to local storm
+				ds.setName("Local Storm-" + id); 
+				ds.setType(DustStormType.LOCAL);
 				// downgrade this regional storm to local
-				planetEncirclingDustStormMap.put(localDustStormMap.size(), dd);
+				planetEncirclingDustStorms.add(ds);
 				// remove this undersize regional storm
-				regionalDustStormMap.remove(value);
+				regionalDustStorms.remove(ds);
 			}
+			
+			if (ds.getSize() != 0)
+				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
+				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
-
+	/***
+	 * Checks to see if a planet-encircling storm should be downgraded. Note that Mars has the highest 
+	 * likelihood of producing a global dust storm
+	 */
 	public void checkOnPlanetEncirclingStorms() {
 
-		for (Object value : planetEncirclingDustStormMap.values()) {
-			DustStorm d = (DustStorm) value;
-			if (d.getNewSize() < 4000) {
-				Coordinates location = d.getCoordinates();
+		for (DustStorm ds : planetEncirclingDustStorms) {
+			if (ds.computeNewSize() <= 4000) {
+				int id = ds.getID();
 				// if the size of this storm drops below 2000km, downgrade it to become regional storm
-				DustStorm dd = new DustStorm("Storm " + regionalDustStormMap.size() + 1, DustStormType.REGIONAL, marsClock);
-				dd.setWeather(this);
-				dd.setCoordinates(location);
+				ds.setName("Regional Storm-" + id); 
+				ds.setType(DustStormType.REGIONAL);
 				// downgrade this regional storm to regional
-				regionalDustStormMap.put(regionalDustStormMap.size(), dd);
-				// remove this undersize storm
-				planetEncirclingDustStormMap.remove(value);
+				regionalDustStorms.add(ds);
+				// remove this undersized storm
+				planetEncirclingDustStorms.remove(ds);
 			}
+			else if (ds.computeNewSize() == 0) {
+				// remove this local storm
+				planetEncirclingDustStorms.remove(ds);
+				// Set the dust storm instance in that settlement to null
+				ds.getSettlements().get(0).setDustStorm(null);
+			}
+			
+			if (ds.getSize() != 0)
+				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
+				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
-	public Map<Integer, DustStorm> getPlanetEncirclingDustStormMap() {
-		return planetEncirclingDustStormMap;
-	}
 
-	public Map<Integer, DustStorm> getLocalDustStormMap() {
-		return localDustStormMap;
+	public List<DustStorm> getPlanetEncirclingDustStorms() {
+		return planetEncirclingDustStorms;
 	}
-
-	public Map<Integer, DustStorm> getRegionalDustStormMap() {
-		return regionalDustStormMap;
-	}
-
+	
 	//public int getNumRegionalDustStorm() {
 	//	return numRegionalDustStorm;
 	//}

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * RandomUtil.java
- * @version 3.08 2014-02-10
-
+ * @version 3.1.0 2017-08-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;

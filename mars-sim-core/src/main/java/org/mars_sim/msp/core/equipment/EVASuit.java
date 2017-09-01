@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -21,6 +22,7 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The EVASuit class represents an EVA suit which provides life support
@@ -35,6 +37,8 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(EVASuit.class.getName());
+
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Static members
 	public static final String TYPE = "EVA Suit";
@@ -114,30 +118,36 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		//boolean result = true;
         try {
 			if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D) {
-				logger.severe(this.getName() + " ran out of oxygen in EVASuit");
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+						this.getName() + " ran out of oxygen in EVASuit", null);
 				return false;
 			}
 			if (getInventory().getAmountResourceStored(waterAR, false) <= 0D) {
-				logger.info(this.getName() + " ran out of water in EVASuit.");
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						this.getName() + " ran out of water in EVASuit.", null);
 				return false;
 			}
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				logger.severe(this.getName() + "'s oxygen flow sensor detected malfunction.");
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+						this.getName() + "'s oxygen flow sensor detected malfunction.", null);
 				return false;
 			}
 			if (malfunctionManager.getWaterFlowModifier() < 100D) {
-				logger.severe(this.getName() + "'s water flow sensor detected malfunction.");
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						this.getName() + "'s water flow sensor detected malfunction.", null);
 				return false;
 			}
 
 			double p = getAirPressure();
 			if (p > NORMAL_AIR_PRESSURE * 1.5 || p < NORMAL_AIR_PRESSURE * .5) {
-				logger.severe(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+						this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D, null);
 				return false;
 			}
 			double t = getTemperature();
-			if (t > NORMAL_TEMP + 10 || t < NORMAL_TEMP - 10) {
-				logger.severe(this.getName() + " detected improper temperature at " + Math.round(t *10D)/10D);
+			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 40) {
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						this.getName() + " detected improper temperature at " + Math.round(t *10D)/10D, null);
 				return false;
 			}
         }

@@ -78,7 +78,7 @@ extends TabPanel {
 	//private JLabel monitorLabel;
 
 	private double airPressureCache;
-	private int temperatureCache;
+	private double temperatureCache;
 	private double windSpeedCache;
 	private int windDirectionCache;
 	private double airDensityCache;
@@ -416,8 +416,8 @@ extends TabPanel {
     	return fmt.format(value) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
     }
 
-    public int getTemperature() {
-		return (int) weather.getTemperature(locationCache);
+    public double getTemperature() {
+		return weather.getTemperature(locationCache);
     }
 
     // 2014-11-07 Added temperature and pressure panel
@@ -430,11 +430,11 @@ extends TabPanel {
     }
 
     public String getWindSpeedString(double value) {
-    	return fmt.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+    	return fmt2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
     }
 
-    public int getWindSpeed() {
-		return (int) weather.getWindSpeed(locationCache);
+    public double getWindSpeed() {
+		return weather.getWindSpeed(locationCache);
     }
 
     public int getWindDirection() {
@@ -474,15 +474,15 @@ extends TabPanel {
     }
 
     public String getAirDensityString(double value) {
-     	return fmt1.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
+     	return fmt2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
     }
 
-    public int getSolarIrradiance() {
-  		return (int) surfaceFeatures.getSolarIrradiance(locationCache);
+    public double getSolarIrradiance() {
+  		return surfaceFeatures.getSolarIrradiance(locationCache);
       }
 
      public String getSolarIrradianceString(double value) {
-      	return fmt.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
+      	return fmt2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
      }
 
 	private String getLatitudeString() {
@@ -516,18 +516,18 @@ extends TabPanel {
 	        }
 
 
-			double p = getAirPressure();
+			double p =  Math.round(getAirPressure()*100.0)/100.0;
 	        if (airPressureCache != p) {
 	        	airPressureCache = p;
 	        	pressureTF.setText(" " + getAirPressureString(airPressureCache));
 	        }
 
-	        int t = getTemperature();
+	        double t =  Math.round(getTemperature()*100.0)/100.0;
 	        if (temperatureCache != t) {
 	        	temperatureCache = t;
 	        	temperatureValueLabel.setText(getTemperatureString(temperatureCache));
 	        }
-
+ 
 
 	        int wd = getWindDirection();
 	        if (windDirectionCache != wd) {
@@ -535,20 +535,20 @@ extends TabPanel {
 	        	windDirTF.setText(" " + getWindDirectionString(windDirectionCache));
 	        }
 
-	        int s = getWindSpeed();
+	        double s = Math.round(getWindSpeed()*100.0)/100.0;
 	        if (windSpeedCache != s) {
 	        	windSpeedCache = s;
 	        	windSpeedTF.setText(" " + getWindSpeedString(windSpeedCache));
 	        }
 
 
-	        double ad = getAirDensity();
+	        double ad =  Math.round(getAirDensity()*100.0)/100.0;
 	        if (airDensityCache != ad) {
 	        	airDensityCache = ad;
 	        	airDensityTF.setText(" " + getAirDensityString(airDensityCache));
 	        }
 
-	        double od = getOpticalDepth();
+	        double od =  Math.round(getOpticalDepth()*100.0)/100.0;
 	        if (opticalDepthCache != od) {
 	        	opticalDepthCache = od;
 	        	opticalDepthTF.setText(" " + getOpticalDepthString(opticalDepthCache));

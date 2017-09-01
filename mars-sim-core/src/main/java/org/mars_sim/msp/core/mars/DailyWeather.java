@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DailyWeather.java
- * @version 3.08 2015-04-08
+ * @version 3.1.0 2017-08-31
  * @author Manny Kung
  */
 

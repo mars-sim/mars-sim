@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RadiationExposure.java
- * @version 3.1.0 2016-10-05
+ * @version 3.1.0 2017-08-31
  * @author Manny Kung
  */
 
@@ -9,10 +9,8 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +19,6 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 public class RadiationExposure implements Serializable {
 
@@ -99,16 +96,14 @@ public class RadiationExposure implements Serializable {
 	public static final double SEP_CHANCE_SWING = 2D; // can be twice as much. probability of occurrence modifier (arbitrary)
 	public static final double GCR_CHANCE_SWING = 3D; // can be three times as much. probability of occurrence modifier (arbitrary)
 
-    // Baseline radiation
+    // Baseline radiation due to the solar wind, a steady outflow of charged particles from the Sun.
     public static final double BASELINE_PERCENT = 72.5; //[in %] calculated
 
     // Galactic cosmic rays (GCRs) events
     // Based on Ref_A's DAT data, ~25% of the GCR for the one day duration of the event.
     public static final double GCR_PERCENT = 25; //[in %] based on DAT
-
     // Solar energetic particles (SEPs) events
     public static final double SEP_PERCENT = 2.5; //[in %] arbitrary
-
 
     public static final double BASELINE_RAD_PER_SOL = .1; //  [in mSv] arbitrary
 
@@ -161,7 +156,7 @@ public class RadiationExposure implements Serializable {
 	private double [][] dose;
 
 	private MarsClock marsClock;
-	private MasterClock masterClock;
+	//private static MasterClock masterClock;
 	private RadiationEvent event;
 
 	//private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
@@ -175,7 +170,6 @@ public class RadiationExposure implements Serializable {
 		this.person = condition.getPerson();
 		this.condition = condition;
 		dose = new double[3][3];
-
 
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
