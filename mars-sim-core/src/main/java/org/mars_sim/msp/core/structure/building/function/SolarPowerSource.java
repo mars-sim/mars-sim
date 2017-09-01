@@ -67,6 +67,9 @@ implements Serializable {
 	 */
 	private double dust_deposition_rate = 0;
 	
+	// As of Sol 4786 (July 11, 2017), the solar array energy production was 352 watt-hours with 
+	// an atmospheric opacity (Tau) of 0.748 and a solar array dust factor of 0.549.
+	
 	private Coordinates location ;
 	private SurfaceFeatures surface ;
 	private Mars mars;

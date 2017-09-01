@@ -57,19 +57,23 @@ implements Serializable {
 	 * The areocentric longitude (or the orbital position of Mars).
 	 * Note : the value of 0 corresponding to Mars' Northern Spring Equinox.
 	 */
-	private double L_s = 252.5849107170493; // L_s = 252.58 (which corresponds to Earth date 2043-Sep-30) was arbitrarily chosen for mars-sim at the start of the sim
+	private double L_s = 252.5849107170493; 
+	// At the start of the sim, Mars' L_s is at 252.58. This corresponds to Earth date 2043-Sep-30 00:00 UT, 
+	// the date arbitrarily chosen by mars-sim developer.
 
-	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly measured in terms of the areocentric longitude L_s,
-	// as referred to the planet's vernal equinox (the ascending node of the apparent seasonal motion of the Sun on the planet's equator).
+	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly measured in terms of the areocentric 
+	// longitude L_s, as referred to the planet's vernal equinox (the ascending node of the apparent seasonal 
+	// motion of the Sun on the planet's equator).
 
+	
 	// Note 2: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
 	// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
 	// The areocentric longitude at perihelion, L_s = 251 + 0.0064891 * (yr - 2000),
 	
 	/** The areocentric longitude of Mars at perihelion.*/	
-	private double L_s_perihelion;// = 251D + 0.0064891 * (2043- 2000);
-	/** The areocentric longitude of Mars at aphelion.*/
-	private double L_s_aphelion;// = L_s_perihelion - 180D;
+	private double L_s_perihelion;// = 251D + 0.0064891 * (2043- 2000); when L_s at ~250
+	/** The areocentric longitude of Mars at aphelion.*/ 
+	private double L_s_aphelion;// = L_s_perihelion - 180D; when L_s at ~70
 	
 	// Note 3 : L_s_perihelion indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
 	// as related to the occasional onset of global dust storms within the advance of this season.

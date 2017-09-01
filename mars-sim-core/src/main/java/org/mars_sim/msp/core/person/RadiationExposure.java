@@ -28,12 +28,15 @@ public class RadiationExposure implements Serializable {
 	/** default serial id. */
 	private static Logger logger = Logger.getLogger(RadiationExposure.class.getName());
 
-    /* Curiosity's Radiation Assessment Detector (RAD). see http://www.boulder.swri.edu/~hassler/rad/
-     * http://www.swri.org/3pubs/ttoday/Winter13/pdfs/MarsRadiation.pdf
+    /* Curiosity's Radiation Assessment Detector (RAD). 
      * Note: Mars rover Curiosity received an average dose of 300 milli-sieverts (mSv) over the 180-day journey.
      * 300 mSv is equivalent to 24 CAT scans, or more than 15x
      * the annual radiation limit for a worker in a nuclear power plant.
      *
+     Ref
+     1. https://www.space.com/24731-mars-radiation-curiosity-rover.html
+     2. http://www.boulder.swri.edu/~hassler/rad/
+     3. http://www.swri.org/3pubs/ttoday/Winter13/pdfs/MarsRadiation.pdf
      *
      * 1000 millirem = 1 rem
      * 1 Sievert (Sv) is 100 rem
@@ -96,13 +99,37 @@ public class RadiationExposure implements Serializable {
 	public static final double SEP_CHANCE_SWING = 2D; // can be twice as much. probability of occurrence modifier (arbitrary)
 	public static final double GCR_CHANCE_SWING = 3D; // can be three times as much. probability of occurrence modifier (arbitrary)
 
-    // Baseline radiation due to the solar wind, a steady outflow of charged particles from the Sun.
+    // Baseline radiation is a combination of the solar wind and the secondary radiation as a result of primary 
+	// radiation interacting with the surface of a planetary body
+	
+	// The solar wind is a stream of particles, mainly protons and electrons, flowing from the sun's atmosphere at a 
+	// speed of about one million miles per hour. The magnetic field carried by the solar wind as it flows past 
+	// Mars can generate an electric field, 
+	// https://mars.nasa.gov/news/nasa-mission-reveals-speed-of-solar-wind-stripping-martian-atmosphere
+	
+	// Research shows how solar wind and ultraviolet light strip gas from of the top of the planet's atmosphere 
+	// MAVEN measurements indicate that the solar wind strips away gas at a rate of about 100 grams (~ 1/4 lbs) 
+	// each second. 
+	
+	// Without the huge magnetic bubble, called the magnetosphere, which deflects the vast majority of these particles, 
+	// most of Mars is still subjected to the full force of the solar wind, except in the southern 
+	// hemisphere at latitude from -5 to -75 and longitude from 150 to 210, where  vertical (radial) component of 
+	// magnetic fields poking out of the Martian crust. Red and blue areas are zones where stronger-than-average 
+	// magnetic fields protect the planet from solar wind erosion.
+	// Source : https://science.nasa.gov/science-news/science-at-nasa/2001/ast31jan_1/
+	
     public static final double BASELINE_PERCENT = 72.5; //[in %] calculated
 
     // Galactic cosmic rays (GCRs) events
     // Based on Ref_A's DAT data, ~25% of the GCR for the one day duration of the event.
     public static final double GCR_PERCENT = 25; //[in %] based on DAT
+    
     // Solar energetic particles (SEPs) events
+    // Includes Coronal Mass Ejection and Solar Flare
+    // The astronauts should expect one SPE every 2 months on average and a total of 3 or 4 during their 
+    // entire trip, with each one usually lasting not more than a couple of days.
+    // Source : http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to
+    
     public static final double SEP_PERCENT = 2.5; //[in %] arbitrary
 
     public static final double BASELINE_RAD_PER_SOL = .1; //  [in mSv] arbitrary
@@ -146,6 +173,13 @@ public class RadiationExposure implements Serializable {
 
 	private boolean isExposureChecked = false;
 
+	// Radiation Shielding
+	// One material in development at NASA has the potential to do both jobs: Hydrogenated boron nitride 
+	// nanotubes—known as hydrogenated BNNTs—are tiny, nanotubes made of carbon, boron, and nitrogen, with 
+	// hydrogen interspersed throughout the empty spaces left in between the tubes. Boron is also an excellent 
+	// absorber secondary neutrons, making hydrogenated BNNTs an ideal shielding material.
+	// source : https://www.nasa.gov/feature/goddard/real-martians-how-to-protect-astronauts-from-space-radiation-on-mars
+	
 	// dose equivalent limits in mSv (milliSieverts)
 	private int [][] DOSE_LIMITS = {
 			{ 250, 1000, 1500 },

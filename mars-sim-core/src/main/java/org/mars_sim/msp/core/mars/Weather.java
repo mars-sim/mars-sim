@@ -42,8 +42,8 @@ implements Serializable {
 	//private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
 	/** Mars' gravitational acceleration at sea level in m/sec^2. */
 	//private static final double SEA_LEVEL_GRAVITY = 3.0D;
-	/** extreme cold temperatures at Mars. */
-	private static final double EXTREME_COLD = -120D;
+	/** Extreme cold surface temperatures on Mars at Kelvin */
+	private static final double EXTREME_COLD = 120D; // [ in deg Kelvin] or -153.17 C 
 
 	/** Viking 1's longitude (49.97 W) in millisols  */
 	private static final double VIKING_LONGITUDE_OFFSET_IN_MILLISOLS = 138.80D; 	// = 49.97W/180 deg * 500 millisols;
@@ -78,8 +78,6 @@ implements Serializable {
 	private double dx = 255D * Math.PI/180D - Math.PI;
 
 	private double viking_dt;
-
-	private double final_temperature = EXTREME_COLD;
 
 	private double TEMPERATURE_DELTA_PER_DEG_LAT = 0D;
 
@@ -322,6 +320,12 @@ implements Serializable {
 		return getCachedAirPressure(location);
 	}
 
+	// The air pressure varies from 690 to 780 Pa in daily cycles from Sol 9.5 to 13
+	// See chart at https://mars.jpl.nasa.gov/msl/mission/instruments/environsensors/rems/
+	
+	// also the air pressure varies 730 to 920 throughout the year (L_s 0 to 360)
+	// See chart at http://cab.inta-csic.es/rems/en/weather-report-mars-year-33-month-11/
+	
 	/**
 	 * Gets the cached air pressure at a given location.
 	 * @return air pressure in kPa.
@@ -359,8 +363,8 @@ implements Serializable {
 	/**
 	 * Calculates the air pressure at a given location and/or height
 	 * @param location
-	 * @param height
-	 * @return air pressure in kPa.
+	 * @param height [in km]
+	 * @return air pressure [in kPa]
 	 */
 	public double calculateAirPressure(Coordinates location, double height) {
 		// Get local elevation in meters.
@@ -376,27 +380,23 @@ implements Serializable {
 		
 		// p = pressure0 * e(-((density0 * gravitation) / pressure0) * h)
 		//  Q: What are these enclosed values ==>  P = 0.009 * e(-(0.0155 * 3.0 / 0.009) * elevation)
-		//double pressure = SEA_LEVEL_AIR_PRESSURE * Math.exp(-1D *
-		//		SEA_LEVEL_AIR_DENSITY * SEA_LEVEL_GRAVITY / (SEA_LEVEL_AIR_PRESSURE * 1000)* elevation);
-
-		// why * 1000 ?
-
-		// elevation is in km. it should probably read
 		// double pressure = SEA_LEVEL_AIR_PRESSURE * Math.exp(-1D *
 		//		SEA_LEVEL_AIR_DENSITY * SEA_LEVEL_GRAVITY / (SEA_LEVEL_AIR_PRESSURE)* elevation * 1000);
 
-		// If using the precalculated values at http://www.grc.nasa.gov/WWW/k-12/airplane/atmosmrm.html for modeling Mars ,
-		// p = .699 * exp(-0.00009 * h) in kilo-pascal or kPa
-		double pressure2 = .699 * Math.exp(-0.00009 * elevation * 1000);
-		//System.out.println("elevation is " + elevation  + "   pressure2 is " + pressure2);
+		
+		// Use curve-fitting equations at http://www.grc.nasa.gov/WWW/k-12/airplane/atmosmrm.html for modeling Mars
+		// p = .699 * exp(-0.00009 * h); p in kPa, h in m
+		
+		double pressure = 0.699 * Math.exp(-0.00009 * elevation * 1000);
+		// why * 1000 ? The input value of height was in km, but h is in meters
 
 		// Added randomness
 		double up = RandomUtil.getRandomDouble(.01);
 		double down = RandomUtil.getRandomDouble(.01);
 
-		pressure2 = pressure2 + up - down;
+		pressure = pressure + up - down;
 
-		return pressure2;
+		return pressure;
 	}
 
 	/**
@@ -437,12 +437,39 @@ implements Serializable {
 	}
 
 
+	/***
+	 * Calculates the mid-air temperature
+	 * @param h is elevation in km
+	 * @return temperature at elevation h
+	 */
+	public double calculateMidAirTemperature(double h) {
+		double t = 0;
+		
+		// Assume a temperature model with two zones with separate curve fits for the lower atmosphere 
+		// and the upper atmosphere.
+
+		// In the both lower and upper atmosphere, the temperature decreases linearly and the pressure decreases exponentially.
+		// The rate of temperature decrease is called the lapse rate. For the temperature T and the pressure p, 
+		// the metric units curve fits for the lower atmosphere are:	
+
+		if (h <= 7)
+			t = -31 - 0.000998 * h;
+		else
+			t = -23.4 - 0.00222 * h;
+		
+		return t;
+	}
+
+		
 	/**
 	 * Calculates the surface temperature at a given location.
 	 * @return temperature in Celsius.
 	 */
 	public double calculateTemperature(Coordinates location) {
 
+		double t = 0;
+		
+		
 		if (surfaceFeatures == null)
 			surfaceFeatures = sim.getMars().getSurfaceFeatures();
 
@@ -450,9 +477,53 @@ implements Serializable {
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 
 		if (surfaceFeatures.inDarkPolarRegion(location)){
-			//known temperature for cold days at the pole
-			final_temperature = -150D + RandomUtil.getRandomDouble(3) - RandomUtil.getRandomDouble(3);
+			
 
+			// vs. just in inPolarRegion()
+			// see http://www.alpo-astronomy.org/jbeish/Observing_Mars_3.html
+			// Note that the polar region may be exposed to more sunlight
+
+			// see https://www.atmos.umd.edu/~ekalnay/pubs/2008JE003120.pdf
+			// The swing can be plus and minus 10K deg 
+			
+			t = EXTREME_COLD + RandomUtil.getRandomDouble(10) - RandomUtil.getRandomDouble(10) 
+					- CompositionOfAir.C_TO_K;
+
+			// double millisol = marsClock.getMillisol(); 			
+			// TODO: how to relate at what millisols are the mean daytime and mean night time at the pole ?
+
+		}
+		
+		else if (surfaceFeatures.inPolarRegion(location)){
+
+			// Based on Surface brightness temperatures at 32 µm retrieved from the MCS data for 
+			// over five Mars Years (MY), at the “Tleilax” site. 
+
+			if (orbitInfo == null)
+				orbitInfo = mars.getOrbitInfo();
+
+			double L_s = orbitInfo.getL_s();
+			
+			// split into 6 zones for linear curve fitting for each martian year
+			// See chart at https://www.hou.usra.edu/meetings/marspolar2016/pdf/6012.pdf
+
+			
+			if (L_s < 90)
+				t = 0.8333 * L_s + 145;
+			else if (L_s <= 180)
+				t = -0.8333 * L_s + 295;
+			else if (L_s <= 225)
+				t = -.3333 * L_s + 205;
+			else if (L_s <= 280)
+				t = .1818 * L_s + 89.091;
+			else if (L_s <= 320)
+				t =  -.125 * L_s + 175;
+			else if (L_s <= 360)
+				t = .25 * L_s + 55;
+			
+			t = t + RandomUtil.getRandomDouble(3) - RandomUtil.getRandomDouble(3) 
+					- CompositionOfAir.C_TO_K;
+			
 		} else {
 			// 2015-01-28 We arrived at this temperature model based on Viking 1 & Opportunity Rover
 			// by assuming the temperature is the linear combination of the following factors:
@@ -547,7 +618,7 @@ implements Serializable {
 			if (windSpeedCacheMap.containsKey(location))
 				wind_dt = windSpeedCacheMap.get(location) * 1.5D;
 
-			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt - wind_dt + up - down;
+			t = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt - wind_dt + up - down;
 
 			double previous_t = 0;
 			if (temperatureCacheMap == null) {
@@ -558,13 +629,13 @@ implements Serializable {
 				previous_t = temperatureCacheMap.get(location);
 			}
 
-			final_temperature = Math.round ((final_temperature + previous_t )/2.0 *100.0)/100.0;
+			t = Math.round ((t + previous_t )/2.0 *100.0)/100.0;
 			//System.out.println("  final T: " + final_temperature );
 		}
 
 		//temperatureCacheMap.put(location, final_temperature);
 
-		return final_temperature;
+		return t;
 	}
 
 	/**

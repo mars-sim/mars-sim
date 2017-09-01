@@ -22,6 +22,17 @@ public class DustStorm implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	
+	// Martian global dust storms tend to start in the southern hemisphere with a local dust storm. 
+	
+	// Southern spring and summer seem to be the season for global dust storms. 
+	
+	// Local dust storms seem to be swept into huge storms which envelope the entire planet, as was discovered 
+	// by the Viking mission.
+
+	// Global dust storms do not seem to occur every Martian spring or summer, however.
+	
+	// https://www.windows2universe.org/mars/atmosphere/global_dust_storms.html
 
 	private static final int NORTHERN = 0;
 	private static final int SOUTHERN = 1;
@@ -34,7 +45,7 @@ public class DustStorm implements Serializable {
 
 	private static final double R = 187D; // [in J/kg/K]
 	
-	private static final double HEIGHT = 5000D;
+	private static final double HEIGHT = 5D; // [in km]
 	
 	private double mean_pressure = 650D; // [in  Pa]
 
