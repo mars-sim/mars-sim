@@ -22,7 +22,6 @@ public class DustStorm implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	
 	// Martian global dust storms tend to start in the southern hemisphere with a local dust storm. 
 	
 	// Southern spring and summer seem to be the season for global dust storms. 

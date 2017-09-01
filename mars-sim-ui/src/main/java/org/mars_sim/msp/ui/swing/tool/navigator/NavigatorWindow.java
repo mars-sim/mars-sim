@@ -91,7 +91,9 @@ implements ActionListener {
 	public static final int VERTICAL_MINIMAP = 695;
 
 	// Data members
-	private Integer[] degrees = new Integer[181];
+	private Integer[] lon_degrees = new Integer[361];
+	private Integer[] lat_degrees = new Integer[91];
+	
 	private JComboBoxMW<?> latCB, longCB;
 	/** map navigation. */
 	private MapPanel map;
@@ -266,12 +268,19 @@ implements ActionListener {
 			//coordPane.add(latText);
 
 			// 2016-11-24 Switch to using ComboBoxMW for latitude
-			int size = degrees.length;
+			int size = lon_degrees.length;
 			for (int i = 0; i<size; i++) {
-				degrees[i] = i;
+				lon_degrees[i] = i;
 			}
-			latCB = new JComboBoxMW<Integer>(degrees);
+
+			int lat_size = lat_degrees.length;
+			for (int i = 0; i<lat_size; i++) {
+				lat_degrees[i] = i;
+			}
+			
+			latCB = new JComboBoxMW<Integer>(lat_degrees);
 			latCB.setSelectedItem(0);
+			latCB.setPreferredSize(new Dimension(60, -1));
 			coordPane.add(latCB);
 
 
@@ -281,7 +290,7 @@ implements ActionListener {
 			};
 			latDir = new JComboBoxMW<Object>(latStrings);
 			latDir.setEditable(false);
-			latDir.setPreferredSize(new Dimension(30, -1));
+			latDir.setPreferredSize(new Dimension(25, -1));
 			coordPane.add(latDir);
 
 			// Put glue and strut spacers in
@@ -299,8 +308,9 @@ implements ActionListener {
 			//coordPane.add(longText);
 
 			// 2016-11-24 Switch to using ComboBoxMW for longtitude
-			longCB = new JComboBoxMW<Integer>(degrees);
+			longCB = new JComboBoxMW<Integer>(lon_degrees);
 			longCB.setSelectedItem(0);
+			longCB.setPreferredSize(new Dimension(60, -1));
 			coordPane.add(longCB);
 
 			String[] longStrings = {
@@ -309,7 +319,7 @@ implements ActionListener {
 			};
 			longDir = new JComboBoxMW<Object>(longStrings);
 			longDir.setEditable(false);
-			longDir.setPreferredSize(new Dimension(30, -1));
+			longDir.setPreferredSize(new Dimension(25, -1));
 			coordPane.add(longDir);
 
 			// Put glue and strut spacers in
@@ -658,27 +668,25 @@ implements ActionListener {
 				String latDirStr = (String) latDir.getSelectedItem();
 				String longDirStr = (String) longDir.getSelectedItem();
 
-				if ((latitude >= 0D) && (latitude <= 90D)) {
-					if ((longitude >= 0D) && (longitude <= 180)) {
-					    String northString = Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort");
-						if (latDirStr.equals(northString)) {
-						    latitude = 90D - latitude; //$NON-NLS-1$
-						}
-						else {
-						    latitude += 90D;
-						}
-
-						String westString = Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort");
-						if (longitude > 0D) {
-							if (longDirStr.equals(westString)) {
-							    longitude = 360D - longitude; //$NON-NLS-1$
-							}
-						}
-
-						double phi = Math.PI * (latitude / 180D);
-						double theta = (2 * Math.PI) * (longitude / 360D);
-						updateCoords(new Coordinates(phi, theta));
+				if ((latitude >= 0D) && (latitude <= 90D) && (longitude >= 0D) && (longitude <= 360)) {
+				    String northString = Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort");
+					if (latDirStr.equals(northString)) {
+					    latitude = 90D - latitude; //$NON-NLS-1$
 					}
+					else {
+					    latitude += 90D;
+					}
+
+					String westString = Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort");
+					if (longitude > 0D) {
+						if (longDirStr.equals(westString)) {
+						    longitude = 360D - longitude; //$NON-NLS-1$
+						}
+					}
+
+					double phi = Math.PI * (latitude / 180D);
+					double theta = (2 * Math.PI) * (longitude / 360D);
+					updateCoords(new Coordinates(phi, theta));
 				}
 			} catch (NumberFormatException e) {}
 		}

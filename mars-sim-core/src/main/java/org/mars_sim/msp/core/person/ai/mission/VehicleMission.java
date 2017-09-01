@@ -55,6 +55,8 @@ implements UnitListener {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
 
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+  
 	/** Mission phases. */
 	final public static MissionPhase EMBARKING = new MissionPhase(Msg.getString(
 			"Mission.phase.embarking")); //$NON-NLS-1$
@@ -820,10 +822,10 @@ implements UnitListener {
 				                " to continue with " + getName() + " (Required: " + Math.round(amount*100D)/100D +
 				                " kg. Stored: " + Math.round(amountStored*100D)/100D + " kg)";
 
-				    	if (!logCache[0].equals(newLog)) {
-					    	logCache[0] = newLog;
-						    LogConsolidated.log(logger, Level.INFO, 5000, logger.getName(), newLog, null);
-				    	}
+				    	//if (!logCache[0].equals(newLog)) {
+					    //	logCache[0] = newLog;
+						    LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
+				    	//}
 
 				        result = false;
 				    }
@@ -838,10 +840,10 @@ implements UnitListener {
 								" to continue with " + getName() + " (Required: " + num +
 								". Stored: " + numStored + ")";
 
-				    	if (!logCache[1].equals(newLog)) {
-					    	logCache[1] = newLog;
-						    LogConsolidated.log(logger, Level.INFO, 5000, logger.getName(), newLog, null);
-				    	}
+				    	//if (!logCache[1].equals(newLog)) {
+					    //	logCache[1] = newLog;
+						    LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
+				    	//}
 
 						result = false;
 					}
@@ -884,9 +886,11 @@ implements UnitListener {
 				}
 
 				if (!sameDestination) {
-					logger.severe(vehicle.getName() + ", " + distance + " km away from its departed settlement, "
-							+ "is setting its emergency destination to "
-							+ newDestination.getName());// + ", " + distance + " km away.");
+					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,					
+						"Due to emergency situation, " + vehicle.getName() + ", currently at " 
+							+ Math.round(distance*100D)/100D 
+							+ " km away from its origin, is heading toward to the closet settlement "
+							+ newDestination.getName(), null);
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(

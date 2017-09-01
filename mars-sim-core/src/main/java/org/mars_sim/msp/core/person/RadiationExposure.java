@@ -28,6 +28,8 @@ public class RadiationExposure implements Serializable {
 	/** default serial id. */
 	private static Logger logger = Logger.getLogger(RadiationExposure.class.getName());
 
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+
     /* Curiosity's Radiation Assessment Detector (RAD). 
      * Note: Mars rover Curiosity received an average dose of 300 milli-sieverts (mSv) over the 180-day journey.
      * 300 mSv is equivalent to 24 CAT scans, or more than 15x
@@ -446,12 +448,12 @@ public class RadiationExposure implements Serializable {
 
     		if (totalExposure > 0) {
 	    		if (person.getSettlement() != null)
-				    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), 
+				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 				    		person.getName() + " was exposed to " + exposure
     	    			+ " mSv dose of radiation" //in body region " + i
     	    			+ " during an EVA operation near " + person.getSettlement(), null);
 	    		else if (person.getMind().getMission() != null)
-	    			LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), 
+	    			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 	    					person.getName() + " was exposed to " + exposure
     	    			+ " mSv dose of radiation" // in body region " + i
     	    			+ " during " + person.getMind().getMission().getName(), null);
