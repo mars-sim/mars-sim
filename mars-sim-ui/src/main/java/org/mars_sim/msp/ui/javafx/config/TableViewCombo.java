@@ -8,47 +8,29 @@
 package org.mars_sim.msp.ui.javafx.config;
 
 import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.Validator;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.javafx.config.SettlementBase;
-import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
+
 
 //import io.swagger.models.properties.IntegerProperty;
-
-
-import javafx.application.Application;
-import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.Scene;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+@SuppressWarnings({"restriction" })
 public class TableViewCombo {
 
 	/** default logger. */
@@ -71,7 +53,7 @@ public class TableViewCombo {
 
 	private List<SettlementBase> settlements = new ArrayList<>();
 
-	private List<String> settlementConfigNames;
+	//private List<String> settlementConfigNames;
 
 	private List<SettlementTemplate> templates;
 
@@ -92,7 +74,7 @@ public class TableViewCombo {
 
 		simulationConfig = SimulationConfig.instance();
 		settlementConfig = simulationConfig.getSettlementConfiguration();
-		settlementConfigNames = settlementConfig.getSettlementNameList();
+		//settlementConfigNames = settlementConfig.getSettlementNameList();
 		templates = settlementConfig.getSettlementTemplates();
 
 	}
@@ -199,21 +181,27 @@ public class TableViewCombo {
 
 	public String removeUnQualifiedChar(TableColumn<SettlementBase, String> col, String s, boolean checkError) {
     	if (col == latCol || (col == longCol)) {
-        	//System.out.println("Calling fromString()");
-    		s = s.replaceAll("[n]+", "N").replaceAll("[s]+", "S")
-    				.replaceAll("[e]+", "E").replaceAll("[w]+", "W")
-    	    		// remove multiple whitespace to a single whitespace
-    				.replaceAll("[ ]+", " ")
-    	    		// remove multiple dot to one single dot
-    				.replaceAll("[\\.]+", ".")
-    	    		// remove multiple comma to one single comma
-    				.replaceAll("[\\,]+", ",")
-    				//.replaceAll("[\\`\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\_\\+\\-\\=\\{\\}\\|\\;\\'\\:\\,\\/\\<\\>\\?]+", "");
+
+	    	s = // remove multiple dot to one single dot
+	    			s.replaceAll("[\\.]+", ".")
+					// remove multiple comma to one single comma
+					.replaceAll("[\\,]+", ",")
+					// remove excessive directional sign and convert lowercase to uppercase
+					.replaceAll("[n]+", "N").replaceAll("[s]+", "S").replaceAll("[e]+", "E").replaceAll("[w]+", "W")
+					// fill in a zero in case of a decimal separator followed by a whitespace
+					.replaceAll("\\.\\s", ".0 ").replaceAll("\\,\\s", ",0 ")
+					//replaceAll(". W", " W").replaceAll(". N", " N").replaceAll(". S", " S")
+					// remove all whitespace 
+					.replaceAll("[ ]+", "")
+					// insert a whitespace right before the directional notation
+					.replaceAll("E", " E").replaceAll("W", " W").replaceAll("N", " N").replaceAll("S", " S")
+					//.replaceAll("[\\`\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\_\\+\\-\\=\\{\\}\\|\\;\\'\\:\\,\\/\\<\\>\\?]+", "");
 					//.replaceAll("[`~!@#$%^&*()_+-={}|;':,/<>?]+", "");
-    	    		// remove all underscores
-    				.replaceAll("[\\_]+", "")
-    	    		// remove everything except for dot, letters, digits, underscores and whitespace.
-    				.replaceAll("[^\\w\\s&&[^.]&&[^,]]+", "");
+		    		// remove all underscores
+					.replaceAll("[\\_]+", "")
+		    		// remove everything except for dot, letters, digits, underscores and whitespace.
+					.replaceAll("[^\\w\\s&&[^.]&&[^,]]+", "");
+	    	
     		//see http://stackoverflow.com/questions/13494912/java-regex-for-replacing-all-special-characters-except-underscore
     	}
     	else if (col == botCol || (col == settlerCol)) {
@@ -507,7 +495,7 @@ public class TableViewCombo {
 		botCol = null;
 		templateCol = null;
 		settlements = null;
-		settlementConfigNames = null;
+		//settlementConfigNames = null;
 		templates = null;
 		allData = null;
 		settlementConfig = null;

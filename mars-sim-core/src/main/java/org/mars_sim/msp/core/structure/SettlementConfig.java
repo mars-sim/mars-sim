@@ -953,6 +953,7 @@ implements Serializable {
 		return new ArrayList<String>(settlementNamesMap.get("Mars Society (MS)"));
 	}
 
+	
 	/**
 	 * Gets a list of possible settlement names.
 	 * @return list of settlement names as strings

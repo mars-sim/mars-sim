@@ -17,19 +17,16 @@ import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import com.jfoenix.controls.JFXButton;
 
 import java.io.IOException;
-import java.text.DecimalFormatSymbols;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -81,6 +78,7 @@ import org.mars_sim.msp.core.structure.SettlementTemplate;
  * ScenarioConfigEditorFX allows users to configure the types of settlements
  * available at the start of the simulation.
  */
+@SuppressWarnings("restriction")
 public class ScenarioConfigEditorFX {
 
 	/** default logger. */
@@ -1135,13 +1133,62 @@ public class ScenarioConfigEditorFX {
 		//checkNumExistingSettlement();
 		clearError();
 
-		// TODO: in multiplayer mode, check to ensure the latitude/longitude has NOT been chosen already in the table by another settlement registered by the host server
+		// TODO: in multiplayer mode, check to ensure the latitude/longitude has NOT been chosen already in the table 
+		// by another settlement registered by the host server
 
 		// TODO: incorporate checking for user locale and its decimal separation symbol (. or ,)
 
 		// TODO: use decimal separator as defined by user locale 
 		//char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
 		
+		checkLatLong();
+
+		Iterator<SettlementBase> i = tableViewCombo.getSettlementBase().iterator();
+		while (i.hasNext()) {
+			SettlementBase settlement = i.next();
+
+			// Check that settlement name is valid.
+			if ((settlement.getName().trim() == null) || (settlement.getName().trim().isEmpty())
+					|| (settlement.getName().length() < 2) ) {
+				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
+			}
+
+			// Check if population is valid.
+			if ((settlement.getSettler().trim() == null) || (settlement.getSettler().trim().isEmpty())) {
+				setError(Msg.getString("SimulationConfigEditor.error.populationMissing")); //$NON-NLS-1$
+			} else {
+				try {
+					int popInt = Integer.parseInt(settlement.getSettler().trim());
+					if (popInt < 0) {
+						setError(Msg.getString("SimulationConfigEditor.error.populationTooFew")); //$NON-NLS-1$
+					}
+				} catch (NumberFormatException e) {
+					setError(Msg.getString("SimulationConfigEditor.error.populationInvalid")); //$NON-NLS-1$
+					e.printStackTrace();
+				}
+			}
+
+			// Check if number of robots is valid.
+			if ((settlement.getBot().trim() == null) || (settlement.getBot().trim().isEmpty())) {
+				setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
+			} else {
+				try {
+					int num = Integer.parseInt(settlement.getBot().trim());
+					if (num < 0) {
+						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
+					}
+				} catch (NumberFormatException e) {
+					setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks for the validity of the latitude and longitude
+	 */
+	public void checkLatLong() {
 		try {
 			boolean repeated = false;
 			int size = getRowCount();
@@ -1375,8 +1422,8 @@ public class ScenarioConfigEditorFX {
 							double doubleLatNext = Double.parseDouble(numLatNext.trim());
 
 
-							if (doubleLat < 0 || doubleLat > 180
-								|| doubleLatNext < 0 || doubleLatNext > 180
+							if (doubleLat < 0 || doubleLat > 90
+								|| doubleLatNext < 0 || doubleLatNext > 90
 								) {
 								setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
 								return;
@@ -1395,7 +1442,7 @@ public class ScenarioConfigEditorFX {
 						}
 
 						catch(NumberFormatException e) {
-							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+							setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 							e.printStackTrace();
 							return;
 						}
@@ -1434,8 +1481,8 @@ public class ScenarioConfigEditorFX {
 							double doubleLong = Double.parseDouble(numLong.trim());
 							double doubleLongNext = Double.parseDouble(numLongNext.trim());
 
-							if (doubleLong < 0 || doubleLong > 180
-								|| doubleLongNext < 0 || doubleLongNext > 180
+							if (doubleLong < 0 || doubleLong > 360
+								|| doubleLongNext < 0 || doubleLongNext > 360
 								) {
 								setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
 								return;
@@ -1452,9 +1499,9 @@ public class ScenarioConfigEditorFX {
 								break;
 							}
 						}
-
+						
 						catch(NumberFormatException e) {
-							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+							setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
 							e.printStackTrace();
 							return;
 						}
@@ -1471,49 +1518,7 @@ public class ScenarioConfigEditorFX {
 			setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
 			e.printStackTrace();
 		}
-
-		Iterator<SettlementBase> i = tableViewCombo.getSettlementBase().iterator();
-		while (i.hasNext()) {
-			SettlementBase settlement = i.next();
-
-			// Check that settlement name is valid.
-			if ((settlement.getName().trim() == null) || (settlement.getName().trim().isEmpty())
-					|| (settlement.getName().length() < 2) ) {
-				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
-			}
-
-			// Check if population is valid.
-			if ((settlement.getSettler().trim() == null) || (settlement.getSettler().trim().isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.populationMissing")); //$NON-NLS-1$
-			} else {
-				try {
-					int popInt = Integer.parseInt(settlement.getSettler().trim());
-					if (popInt < 0) {
-						setError(Msg.getString("SimulationConfigEditor.error.populationTooFew")); //$NON-NLS-1$
-					}
-				} catch (NumberFormatException e) {
-					setError(Msg.getString("SimulationConfigEditor.error.populationInvalid")); //$NON-NLS-1$
-					e.printStackTrace();
-				}
-			}
-
-			// Check if number of robots is valid.
-			if ((settlement.getBot().trim() == null) || (settlement.getBot().trim().isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
-			} else {
-				try {
-					int num = Integer.parseInt(settlement.getBot().trim());
-					if (num < 0) {
-						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
-					}
-				} catch (NumberFormatException e) {
-					setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
-					e.printStackTrace();
-				}
-			}
-		}
 	}
-
 
 	/**
 	 * Sets up the JavaFX's tooltip
@@ -1549,6 +1554,7 @@ public class ScenarioConfigEditorFX {
 		removeButton = null;
 		undoButton = null;
 		crewButton = null;
+		
 		config = null;
 		mainMenu = null;
 		mainScene = null;
@@ -1556,6 +1562,23 @@ public class ScenarioConfigEditorFX {
 		multiplayerClient = null;
 		settlementConfig = null;
 
+		tabPane = null;
+		errorLabel = null;
+		titleLabel = null;
+
+		clientIDLabel = null;
+		playerLabel = null;
+		titlePane = null;
+		topVB = null;
+		borderAll = null;
+		parent = null;
+		stage = null;
+		cstage = null;
+
+		mainScene = null;
+		tableView = null;
+		tableViewCombo = null;
+		settlementList = null;
 	}
 
 }

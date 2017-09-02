@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AlphanumComparator.java
- * @version 3.1.0 2018-08-16
+ * @version 3.1.0 2017-09-01
  * @author Manny Kung
  */
 
