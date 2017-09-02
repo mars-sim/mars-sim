@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 3.07 2014-11-11
+ * @version 3.1.0 2017-09-01
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -130,7 +130,7 @@ public class MedicalStation
 	public boolean canTreatProblem(HealthProblem problem) {
 		if (problem == null) return false;
 		else {
-			boolean degrading = problem.getDegrading();
+			boolean degrading = problem.isDegrading();
 
 			// Check if treatment is supported in this medical station.
 			Treatment requiredTreatment = problem.getIllness().getRecoveryTreatment();
@@ -206,7 +206,7 @@ public class MedicalStation
 		if (problemsBeingTreated.contains(problem)) {
 			problem.stopTreatment();
 			problemsBeingTreated.remove(problem);
-			boolean cured = problem.getCured();
+			boolean cured = problem.isCured();
 			boolean dead = problem.getSufferer().getPhysicalCondition().isDead();
 			boolean recovering = problem.getRecovering();
 			if (!cured && !dead && !recovering) {

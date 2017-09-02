@@ -88,12 +88,12 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<water-deprivation-time value="6.0" />
 
 	<!-- Number of sols a person can survive without food -->
-	<!-- Default: 21.0 -->
-	<food-deprivation-time value="21.0" />
+	<!-- Default: 30.0 -->
+	<food-deprivation-time value="30.0" />
 
 	<!-- Number of sols a person can go without food before starvation sets in -->
-	<!-- Default: 3.0 -->
-	<starvation-start-time value="3.0" />
+	<!-- Default: 1.5 -->
+	<starvation-start-time value="1.5" />
 
 	<!-- Minimum air pressure (Pa) a person can withstand without harm -->
 	<!-- Default: 25331.25 -->
@@ -101,12 +101,14 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 	<!-- Number of millisols a person can survive in decompression -->
 	<!-- Note: 1 millisol = 88.77 seconds -->
-	<!-- Default: 1.0 -->
-	<decompression-time value="1.0" />
+	<!-- Default: 10.0 -->
+	<decompression-time value="10.0" />
+
+
 
 	<!-- Minimum temperature (degrees celsius) a person can withstand without harm -->
 	<!-- Default: 0 degrees celsius -->
-	<min-temperature value="0.0" />
+	<min-temperature value="-20.0" />
 
 	<!-- Maximum temperature (degrees celsius) a person can withstand without harm -->
 	<!-- Default: 48 degrees celsius -->
@@ -114,8 +116,8 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 	<!-- Number of millisols a person can survive below minimum temperature -->
 	<!-- Note: 1 millisol = 88.77 seconds -->
-	<!-- Default: 160.0 -->
-	<freezing-time value="160.0" />
+	<!-- Default: 25.0 -->
+	<freezing-time value="250.0" />
 
 	<!-- Base percent chance per millisol that a person at high stress will have a panic attack or depression. -->
 	<!-- See medical complaint: "Panic Attack" and "Depression" in medical.xml. -->

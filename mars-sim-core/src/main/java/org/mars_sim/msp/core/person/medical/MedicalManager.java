@@ -50,6 +50,7 @@ implements Serializable {
 	/** Pre-defined complaint. */
 	private Complaint heatStroke;
 
+	private SimulationConfig simConfig;
 	// 2016-06-15 Moved these environement complaints to ComplaintType
 	/** The name of the suffocation complaint. */
 	//public final static String SUFFOCATION = Msg.getString("MedicalManager.suffocation"); //$NON-NLS-1$
@@ -68,9 +69,9 @@ implements Serializable {
 	 * Construct a new {@link MedicalManager}. This also constructs all the pre-defined Complaints and the user-defined ones in
 	 * the XML configuration file.
 	 */
-	public MedicalManager() {//}
-	// 2015-02-04 Added run()
-	//public void run() {
+	public MedicalManager() {
+		simConfig = SimulationConfig.instance();
+
 		initMedical();
 	}
 
@@ -79,44 +80,10 @@ implements Serializable {
 	 * @throws exception if not able to initialize complaints.
 	 */
 	public void initMedical() {
-		// Create the pre-defined complaints, using person configuration.
-		SimulationConfig simConfig = SimulationConfig.instance();
-		PersonConfig personConfig = simConfig.getPersonConfiguration();
 		MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
-        //logger.info("initMedical() : Done with initializing all three configs");
-
-		// Quite serious, 70, and has a 80% performance factor.
-		// Zero recovery as death will result if unchecked.
-		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 70, (personConfig
-				.getFoodDeprivationTime() - personConfig
-				.getStarvationStartTime()) * 1000D, 80);
-
-		// Most serious complaint, 100, and has a 25% performance factor, i.e.
-		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 100, personConfig
-				.getOxygenDeprivationTime(), 25);
-
-		// Very serious complaint, 70, and a 70% performance effect. Zero
-		// recovery as death will result
-		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 60, personConfig
-				.getWaterDeprivationTime() * 1000D, 70);
-
-		// Very serious complaint, 100, and has a 10% performance factor. Zero
-		// recovery as death will result
-		decompression = createEnvironmentComplaint(ComplaintType.DECOMPRESSION, 100,
-				personConfig.getDecompressionTime(), 10);
-
-		// Somewhat serious complaint, 80, and a 40% performance factor. Zero
-		// recovery as death will result
-		freezing = createEnvironmentComplaint(ComplaintType.FREEZING, 80, personConfig
-				.getFreezingTime(), 40);
-
-		// Somewhat serious complaint, 80, and a 40% performance factor. Zero
-		// recovery as death will result
-		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 80, 100D, 40);
-
-		//logger.info("initMedical() : adding Treatments");
-
+		addEnvironmentalComplaints();
+		
 		// Create treatments from medical config.
 		Iterator<Treatment> i = medicalConfig.getTreatmentList().iterator();
 		while (i.hasNext())
@@ -129,26 +96,80 @@ implements Serializable {
 		while (j.hasNext())
 			addComplaint(j.next());
 
-		//logger.info("initMedical() : Done.");
-
 	}
 
+	/***
+	 * Creates the instance for each environmental complaints
+	 */
+	private void addEnvironmentalComplaints() {
+		// Create the pre-defined complaints, using person configuration.
+		PersonConfig personConfig = simConfig.getPersonConfiguration();
+
+		// Most serious complaint
+		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 80, 
+				personConfig.getOxygenDeprivationTime(), 5, 80, true);
+
+		// Very serious complaint
+		decompression = createEnvironmentComplaint(ComplaintType.DECOMPRESSION, 70, 
+				personConfig.getDecompressionTime(), 50, 70, true);
+
+		// Somewhat serious complaint
+		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 60, 
+				200D, 10, 60, true);
+
+		// Serious complaint
+		freezing = createEnvironmentComplaint(ComplaintType.FREEZING, 50, 
+				personConfig.getFreezingTime(), 10, 50, false);
+
+		// Somewhat serious complaint
+		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 40, 
+				personConfig.getWaterDeprivationTime() * 1000D, 5, 40, false);
+
+
+		// Least serious complaint
+		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 20, 
+				(personConfig.getFoodDeprivationTime() 
+						- personConfig.getStarvationStartTime()) * 1000D, 1, 20, false);
+
+	}
+	
+	
 	/**
 	 * Create an environment related Complaint. These are started by the simulation and not via randomness. The all
 	 * result in death hence have no next phase and no recovery period, when the environment changes, the complaint is
 	 * resolved.
 	 */
-	private Complaint createEnvironmentComplaint(ComplaintType type, //String name,
+	
+	/***
+	 * Create an environment related Complaint. 
+	 * @param type
+	 * @param seriousness
+	 * @param degrade
+	 * @param recovery
+	 * @param performance
+	 * @param needBedRest
+	 * @return
+	 */
+	private Complaint createEnvironmentComplaint(ComplaintType type,
 			int seriousness,
-			double degrade, double performance) {
-		return new Complaint(type, seriousness, degrade, 0D, 0D, performance,
-				false, null, null);
+			double degrade, 
+			double recovery,
+			double performance,
+			boolean needBedRest) {
+		return new Complaint(type, 
+				seriousness, 
+				degrade, 
+				recovery, 
+				0D, 
+				performance,
+				needBedRest,
+				null, null);
 	}
 
 	/**
 	 * Package friendly factory method.
 	 */
-	void createComplaint(ComplaintType type, //String name, //
+	void createComplaint(ComplaintType type, 
 			int seriousness, double degrade,
 			double recovery, double probability, double performance,
 			boolean bedRest, Treatment recoveryTreatment, Complaint next) {

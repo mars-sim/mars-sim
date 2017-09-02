@@ -90,7 +90,7 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
         Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
         while (i.hasNext()) {
             HealthProblem problem = i.next();
-            if (problem.getDegrading()) {
+            if (problem.isDegrading()) {
                 Treatment treatment = problem.getIllness().getRecoveryTreatment();
                 if (treatment != null) {
                     boolean selfTreatable = treatment.getSelfAdminister();

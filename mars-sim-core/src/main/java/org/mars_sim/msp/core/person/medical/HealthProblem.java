@@ -82,14 +82,14 @@ public class HealthProblem implements Serializable {
      * Is the problem in a degrading state.
      * @return true if degrading
      */
-    public boolean getDegrading() {
+    public boolean isDegrading() {
     	return (state == DEGRADING);
     }
 
     /**
      * Has the problem been cured.
      */
-    public boolean getCured() {
+    public boolean isCured() {
         return (state == CURED);
     }
 
@@ -134,8 +134,7 @@ public class HealthProblem implements Serializable {
 
     /**
      * Has the problem been cured.
-     */
-    public boolean getRecovering() {
+     */    public boolean getRecovering() {
         return (state == RECOVERING);
     }
 
@@ -252,7 +251,7 @@ public class HealthProblem implements Serializable {
         if ((state == DEGRADING) || (state == TREATMENT)) {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
-
+     
             // 2016-09-22 Randomized the duration and varied it according to the complaint type
             if (illness.getType() == ComplaintType.COLD
             		|| illness.getType() == ComplaintType.FEVER)
@@ -267,11 +266,15 @@ public class HealthProblem implements Serializable {
             else if (illness.getType() == ComplaintType.FLU)
             	duration = duration + duration * RandomUtil.getRandomDouble(.3)
 							- duration * RandomUtil.getRandomDouble(.3);
+            else if (illness.getType() == ComplaintType.STARVATION)
+            	duration = duration + duration * RandomUtil.getRandomDouble(.1)
+							- duration * RandomUtil.getRandomDouble(.1);
             else
-            	duration = duration + duration * RandomUtil.getRandomDouble(.2)
-							- duration * RandomUtil.getRandomDouble(.2);
+            	duration = duration + duration * RandomUtil.getRandomDouble(.1)
+							- duration * RandomUtil.getRandomDouble(.1);
 
             timePassed = 0D;
+            
             if (duration > 0D) {
             	setState(RECOVERING);
 
@@ -289,7 +292,8 @@ public class HealthProblem implements Serializable {
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_RECOVERY);
 				Simulation.instance().getEventManager().registerNewEvent(recoveringEvent);
             }
-            else setCured();
+            else 
+            	setCured();
         }
     }
 

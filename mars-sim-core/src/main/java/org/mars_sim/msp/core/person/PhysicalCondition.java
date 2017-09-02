@@ -24,6 +24,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
+import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.medical.Complaint;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.person.medical.DeathInfo;
@@ -31,13 +35,10 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalEvent;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.person.medical.Medication;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class represents the Physical Condition of a Person.
@@ -88,7 +89,6 @@ implements Serializable {
     private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
     /** Performance modifier for energy. */
     private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
-  
     
     private static final double MAX_DAILY_ENERGY_INTAKE = 10100D;
 
@@ -135,8 +135,8 @@ implements Serializable {
     private double hygiene; 
     /** Person's energy level [in kJ] */
     private double kJoules;
-    /** Person's energy absorption (0.0 to 1.0) */
-    private double absorption;
+    /** Person's food appetite (0.0 to 1.0) */
+    private double appetite;
     
     private double inclination_factor;
 
@@ -153,9 +153,7 @@ implements Serializable {
 
     private boolean isStressedOut = false, isCollapsed = false;
 
-    
     private String name;
-
 
     /** Injury/Illness effecting person. */
     private HashMap<Complaint, HealthProblem> problems;
@@ -210,12 +208,12 @@ implements Serializable {
         fatigue = RandomUtil.getRandomRegressionInteger(1000) * .5;
         stress = RandomUtil.getRandomRegressionInteger(100) * .2;
         hunger = RandomUtil.getRandomRegressionInteger(200);
-        kJoules = 1000D + RandomUtil.getRandomDouble(1000);
+        kJoules = 1000D + RandomUtil.getRandomDouble(1500);
         hygiene = RandomUtil.getRandomDouble(100D);
         
         personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
         
-        absorption = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+        appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
         		
         medicationList = new ArrayList<Medication>();
 
@@ -237,7 +235,7 @@ implements Serializable {
 
         try {
         	personStarvationTime =  1000D * (personConfig.getStarvationStartTime()
-        			+ RandomUtil.getRandomDouble(1.0) - RandomUtil.getRandomDouble(1.0));
+        			+ RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
             //System.out.println("personStarvationTime : "+ Math.round(personStarvationTime*10.0)/10.0);
         }
         catch (Exception e) {
@@ -288,9 +286,10 @@ implements Serializable {
 		    	if (solCache == 0) {
 		    		// 2017-08-29 Modify personalMaxEnergy at the start of the sim 
 		    		int d1 = 35 - person.getAge();
-		    		int d2 = (int)(person.getBaseMass() - Person.AVERAGE_WEIGHT);
-		            personalMaxEnergy = personalMaxEnergy + d1 + d2;
-		            absorption = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+		    		double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
+		    		double preference = person.getPreference().getPreferenceScore(new EatMealMeta())*10D;
+		            personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
+		            appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 		    	}
 		    	
 	    		solCache = solElapsed;
@@ -325,7 +324,7 @@ implements Serializable {
 	                // remove this one.
 	                Complaint next = problem.timePassing(time, this);
 
-	                if (problem.getCured() || (next != null)) {
+	                if (problem.isCured() || (next != null)) {
 	                	Complaint c = problem.getIllness();
 	                    problems.remove(c);
 
@@ -679,10 +678,10 @@ implements Serializable {
      *  @param time the amount of time (millisols).
      */
     public void reduceEnergy(double time) {
-        double dailyEnergyIntake = 10100D;
+        //double dailyEnergyIntake = 10100D;
         // Changing this to a more linear reduction of energy.
         // We may want to change it back to exponential. - Scott
-        double xdelta = (time / 1000D) * dailyEnergyIntake;
+        double xdelta = (time / 1000D) * MAX_DAILY_ENERGY_INTAKE;
     	// TODO: re-tune the experimental FACTOR to work in most situation
 //    	double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
         //System.out.println("PhysicalCondition : ReduceEnergy() : time is " + Math.round(time*100.0)/100.0);
@@ -725,7 +724,7 @@ implements Serializable {
         // Note: changing this to a more linear addition of energy.
         // We may want to change it back to exponential. - Scott
     	
-        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO * absorption;
+        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite;
 //        kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO / kJoules) / ENERGY_FACTOR;
         kJoules += xdelta;
 
@@ -783,32 +782,40 @@ implements Serializable {
     }
 
 
+    /**
+     * Checks if a person is starving or no longer starving
+     * @param hunger
+     */
     public void checkStarvation(double hunger) {
 
     	if (person != null) {
 
             Complaint starvation = getMedicalManager().getStarvation();
 
-//                if (hunger > personStarvationTime
-//                		|| ((hunger > 1000D) && (kJoules < 500D))) {
-            if (hunger > personStarvationTime) {
+            if (hunger > personStarvationTime && (kJoules <= 100D)) {
                 if (!problems.containsKey(starvation)) {
                     addMedicalComplaint(starvation);
                     //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                 }
+                
+                
+                TaskManager mgr = person.getMind().getTaskManager();
+                // TODO : should check if a person is on a critical mission, 
+                mgr.clearTask();
+                // Stop any on-going tasks and go eat
+                mgr.addTask(new EatMeal(person));
+                
             }
-//                else if (hunger < 1000D
-//                		|| kJoules > 500D ) {
-            else if (hunger < 200D) {
+
+            else if (hunger < 500D && kJoules > 800D) {
                 HealthProblem illness = problems.get(starvation);
                 if (illness != null) {
                     illness.startRecovery();
-                    //person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+
                 }
             }
 
-            //person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
         }
     }
 

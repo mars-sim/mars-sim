@@ -161,7 +161,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
                 while (j.hasNext()) {
                     HealthProblem problem = j.next();
-                    if (problem.getDegrading() && medicalCare.canTreatProblem(problem)) {
+                    if (problem.isDegrading() && medicalCare.canTreatProblem(problem)) {
                         canTreatProblems = true;
                     }
                 }
@@ -200,7 +200,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                     Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
                     while (j.hasNext()) {
                         HealthProblem problem = j.next();
-                        if (problem.getDegrading() && sickBay.canTreatProblem(problem)) {
+                        if (problem.isDegrading() && sickBay.canTreatProblem(problem)) {
                             canTreatProblems = true;
                         }
                     }

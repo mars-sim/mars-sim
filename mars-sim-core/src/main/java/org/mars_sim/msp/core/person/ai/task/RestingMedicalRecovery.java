@@ -222,7 +222,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
             HealthProblem problem = i.next();
             if (problem.getRecovering() && problem.requiresBedRest()) {
                 problem.addBedRestRecoveryTime(time);
-                if (!problem.getCured()) {
+                if (!problem.isCured()) {
                     remainingBedRest = true;
                 }
             }
