@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
+import org.mars_sim.msp.ui.swing.tool.settlement.PopUpUnitMenu;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
@@ -175,7 +176,7 @@ extends JPanel {
         JScrollPane scrollPanel = new JScrollPane();
         scrollPanel.setViewportView(functionListPanel);
         //CustomScroll scrollPanel = new CustomScroll(functionListPanel);
-        scrollPanel.setPreferredSize(new Dimension(290, 280));
+        scrollPanel.setPreferredSize(new Dimension(PopUpUnitMenu.WIDTH, PopUpUnitMenu.HEIGHT-70));
         scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPanel, BorderLayout.CENTER);
 /*

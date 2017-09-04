@@ -72,7 +72,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     		return 0;
 
         //2016-10-04 Checked for radiation events
-    	boolean[]exposed = person.getSettlement().getExposed();
+    	boolean[]exposed = settlement.getExposed();
 
 
 		if (exposed[2]) {

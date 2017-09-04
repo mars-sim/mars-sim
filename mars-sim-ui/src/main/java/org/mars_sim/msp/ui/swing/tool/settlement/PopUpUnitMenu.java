@@ -82,7 +82,9 @@ import javafx.scene.shape.Rectangle;
 public class PopUpUnitMenu extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
-
+	public static final int WIDTH = 380;
+	public static final int HEIGHT = 350;
+	
 	private JMenuItem itemOne, itemTwo, itemThree;
     private Unit unit;
 
@@ -108,9 +110,9 @@ public class PopUpUnitMenu extends JPopupMenu {
         UIResource res = null;
 
         if (mainScene != null) {
-	        if (mainScene.getTheme() == 7)
+	        if (MainScene.getTheme() == 7)
 	        	new BorderUIResource.LineBorderUIResource(Color.orange);
-	        else if (mainScene.getTheme() == 0 || mainScene.getTheme() == 6)
+	        else if (MainScene.getTheme() == 0 || MainScene.getTheme() == 6)
 	        	new BorderUIResource.LineBorderUIResource(Color.blue);
         }
         else
@@ -551,9 +553,9 @@ public class PopUpUnitMenu extends JPopupMenu {
         f.setLocation(location);
 
 		f.setUndecorated(true);
-        f.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
+        f.setBackground(new Color(51,25,0,255)); // java.awt.IllegalComponentStateException: The dialog is decorated
         f.add(buildingPanel);
-		f.setSize(320, 350);  // undecorated: 300, 335; decorated: 310, 370
+		f.setSize(WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
 		f.setLayout(new FlowLayout());
 
 		f.setVisible(true);

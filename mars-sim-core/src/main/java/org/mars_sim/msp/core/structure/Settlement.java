@@ -1331,7 +1331,7 @@ implements Serializable, LifeSupportType, Objective {
 		Collection<Person> people = getInhabitants();
 		int pop = people.size();
 
-		int numShift = 0;
+		int nShift = 0;
 
 		if (pop == 1) {
 			numShift = 1;
@@ -1341,7 +1341,8 @@ implements Serializable, LifeSupportType, Objective {
 			numShift = 3;
 		}
 
-		setNumShift(numShift);
+		if (numShift != nShift)
+			numShift = nShift;
 
 		for (Person p : people) {
 
@@ -1351,13 +1352,15 @@ implements Serializable, LifeSupportType, Objective {
 				// 2015-12-05 Check if person is an astronomer.
 	            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
 
+				ShiftType oldShift = p.getTaskSchedule().getShiftType();
+				
 	            if (isAstronomer) {
 	            	// TODO: find the darkest time of the day
 	            	// and set work shift to cover time period
 
 	            	// For now, we may assume it will usually be X or Z, but Y
 	            	// since Y is usually where midday is at unless a person is at polar region.
-	            	ShiftType oldShift = p.getTaskSchedule().getShiftType();
+
 	            	if (oldShift == ShiftType.Y) {
 
 	            		boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
@@ -1388,9 +1391,6 @@ implements Serializable, LifeSupportType, Objective {
 	            } // end of if (isAstronomer)
 
 	            else {
-
-	            	// 2015-12-05 check if the current shift is still open and keep it if possible
-					ShiftType oldShift = p.getTaskSchedule().getShiftType();
 
 					if (oldShift == ShiftType.ON_CALL) {
 

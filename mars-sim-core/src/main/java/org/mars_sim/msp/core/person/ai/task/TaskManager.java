@@ -254,6 +254,9 @@ implements Serializable {
 
 				}
 
+			    if (ts == null)
+			    	ts = person.getTaskSchedule();
+			    
 				ts.recordTask(taskName, taskDescription, taskPhase);
 				taskDescriptionCache = taskDescription;
 			}

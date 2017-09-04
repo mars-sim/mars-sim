@@ -43,6 +43,7 @@ https://github.com/mars-sim/mars-sim
 
 11. Improve display of repetitive log statement.
 
+12. Add a circadian clock for regulating hormones for each person.
 
 ### UI IMPROVEMENT :
 
