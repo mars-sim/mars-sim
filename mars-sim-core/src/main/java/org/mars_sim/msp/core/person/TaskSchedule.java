@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -57,7 +58,7 @@ public class TaskSchedule implements Serializable {
 	private String doAction;
 	private String phase;
 	
-	private ShiftType shiftType, shiftTypeCache;
+	private ShiftType shiftType, shiftTypePrevious;
 
 	//private Map <Integer, List<OneTask>> schedules;
 	//private List<OneTask> todaySchedule;
@@ -68,7 +69,7 @@ public class TaskSchedule implements Serializable {
 
 	private List<OneActivity> todayActivities;
 	
-	private static MarsClock clock;
+	private static MarsClock marsClock;
 	private Person person;
 	private Robot robot;
 
@@ -89,7 +90,7 @@ public class TaskSchedule implements Serializable {
 		taskPhases = new ConcurrentHashMap <String, Integer>();
 
 		if (Simulation.instance().getMasterClock() != null)
-			clock = Simulation.instance().getMasterClock().getMarsClock();
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -108,7 +109,7 @@ public class TaskSchedule implements Serializable {
 		taskNames = new ConcurrentHashMap <String, Integer>();
 		taskPhases = new ConcurrentHashMap <String, Integer>();
 
-		clock = Simulation.instance().getMasterClock().getMarsClock();
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -121,8 +122,8 @@ public class TaskSchedule implements Serializable {
 		this.doAction = description;
 		this.phase = phase;
 
-		int startTime = (int) clock.getMillisol();
-		int solElapsed = clock.getSolElapsedFromStart();
+		int startTime = (int) marsClock.getMillisol();
+		int solElapsed = marsClock.getSolElapsedFromStart();
 		if (solElapsed != solCache) {
     		//2016-09-22 Removed the sol log from LAST_SOL ago
         	if (solElapsed > NUM_SOLS) {
@@ -309,21 +310,56 @@ public class TaskSchedule implements Serializable {
 	public ShiftType getShiftType() {
 		return shiftType;
 	}
-
+ 
 	/*
 	 * Sets up the shift type
 	 * @param shiftType
 	 */
 	public void setShiftType(ShiftType shiftType){
 		// back up the previous shift type
-		shiftTypeCache = this.shiftType;
+		shiftTypePrevious = this.shiftType;
 
 		if (shiftType != null) {
+			
 			if (person != null) {
-				if (shiftTypeCache != null)
-					person.getAssociatedSettlement().decrementAShift(shiftTypeCache);
-				person.getAssociatedSettlement().incrementAShift(shiftType);
+				
+				Settlement s = person.getAssociatedSettlement();
+				
+				if (shiftTypePrevious != null)
+					s.decrementAShift(shiftTypePrevious);
+				
+				s.incrementAShift(shiftType);
+				
+				if (marsClock == null)
+					marsClock = Simulation.instance().getMasterClock().getMarsClock();
+						
+	        	int now = (int) marsClock.getMillisol();
+	      	  	boolean isOnShiftNow = isShiftHour(now);
+	            boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
+
+		        // if a person is NOT on-call && is on shift right now
+		        if (!isOnCall && isOnShiftNow){
+		        	// suppress sleep habit right now
+		        	person.updateValueSleepCycle(now, false);
+		        }
+		        
+/*				
+				ShiftType settementShift = s.getCurrentSettlementShift();
+
+				
+				if (s.getNumShift() == 2) {
+					if (settementShift == shiftType) {
+						
+					}
+				}
+				
+				else if (s.getNumShift() == 2) {
+					
+				}
+*/		
+				
 			}
+			
 /*			else if (robot != null) {
 				if (shiftTypeCache != null)
 					robot.getSettlement().decrementAShift(shiftTypeCache);
@@ -331,11 +367,18 @@ public class TaskSchedule implements Serializable {
 			}
 */
 			this.shiftType = shiftType;
+			
+			// Call CircadianClock immediately to adjust the sleep hour according
+			
+			
+
+			
 		}
 		else
 			logger.warning("TaskSchedule: setShiftType() : " + person + "'s new shiftType is null");
 	}
 
+	
 	/*
 	 * Checks if a person is on shift
 	 * @param time in millisols
@@ -344,31 +387,31 @@ public class TaskSchedule implements Serializable {
 	public boolean isShiftHour(int millisols){
 		boolean result = false;
 
-		if (shiftType.equals(ShiftType.A)) {
+		if (shiftType == ShiftType.A) {
 			if (millisols == 1000 || (millisols >= A_START && millisols <= A_END))
 				result = true;
 		}
 
-		else if (shiftType.equals(ShiftType.B)) {
+		else if (shiftType == ShiftType.B) {
 			if (millisols >= B_START && millisols <= B_END)
 				result = true;
 		}
 
-		if (shiftType.equals(ShiftType.X)) {
+		if (shiftType == ShiftType.X) {
 			if (millisols == 1000 || (millisols >= X_START && millisols <= X_END))
 				result = true;
 		}
 
-		else if (shiftType.equals(ShiftType.Y)) {
+		else if (shiftType == ShiftType.Y) {
 			if (millisols >= Y_START && millisols <= Y_END)
 				result = true;
 		}
 
-		else if (shiftType.equals(ShiftType.Z)) {
+		else if (shiftType == ShiftType.Z) {
 			if (millisols >= Z_START && millisols <= Z_END)
 				result = true;
 		}
-		else if (shiftType.equals(ShiftType.ON_CALL)) {
+		else if (shiftType == ShiftType.ON_CALL) {
 			result = true;
 		}
 
@@ -489,13 +532,13 @@ public class TaskSchedule implements Serializable {
 
     public void destroy() {
     	person = null;
-    	clock  = null;
+    	marsClock  = null;
     	robot  = null;
     	//todaySchedule = null;
         //schedules = null;
         allActivities = null;
         todayActivities =  null;
         shiftType = null;
-        shiftTypeCache = null;
+        shiftTypePrevious = null;
     }
 }

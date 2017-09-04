@@ -192,7 +192,7 @@ extends TabPanel {
     		shiftTF.setEditable(false);
     		shiftTF.setColumns(4);
 
-    		if (!shiftCache.equals(ShiftType.OFF))
+    		if (shiftCache != ShiftType.OFF)
     			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
     		else
     			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
@@ -375,12 +375,12 @@ extends TabPanel {
 			shiftType = person.getTaskSchedule().getShiftType();
 
 			//if (shiftCache != null)
-			if (!shiftCache.equals(shiftType)) {
+			if (shiftCache != shiftType) {
 				shiftCache = shiftType;
 				shiftTF.setText(shiftCache.toString());
 			}
 
-    		if (!shiftCache.equals(ShiftType.OFF))
+    		if (shiftCache != ShiftType.OFF)
     			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
     		else
     			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$

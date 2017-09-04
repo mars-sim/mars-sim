@@ -18,10 +18,12 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
@@ -66,7 +68,12 @@ implements Serializable {
 	private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
 
 	private Person person = null;
+	
 	private PhysicalCondition health;
+	
+	private CircadianClock circadian;
+
+	private TaskSchedule ts;
 
 	/**
 	 * Constructor.
@@ -78,7 +85,11 @@ implements Serializable {
 
 		person = mind.getPerson();
 		
+		circadian = person.getCircadianClock();
+		
 		health = person.getPhysicalCondition();
+		
+		ts = person.getTaskSchedule();
 		
 		currentTask = null;
 
@@ -243,7 +254,7 @@ implements Serializable {
 
 				}
 
-				person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+				ts.recordTask(taskName, taskDescription, taskPhase);
 				taskDescriptionCache = taskDescription;
 			}
 		}
@@ -289,17 +300,9 @@ implements Serializable {
 	 * @param time the passing time (
 	 */
     public void reduceEnergy(double time) {
-    	//PhysicalCondition health = person.getPhysicalCondition();
-//			int ACTIVITY_FACTOR = 6;
-//			double newTime = ACTIVITY_FACTOR * time ;
-//			health.reduceEnergy(newTime);
-			// Changing reduce energy to be just time as it otherwise
-			// ends up being too much energy reduction compared to the
-			// amount gained from eating.
     	if (health == null)
     		health = person.getPhysicalCondition();
 		health.reduceEnergy(time);
-
 
     }
 
@@ -313,12 +316,11 @@ implements Serializable {
 	public double performTask(double time, double efficiency) {
 		double remainingTime = 0D;
 		
-		if (person != null) {
-			if (person.getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS 
-					||  (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
-						&& person.getVehicle().getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS))
+		if (person.getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS) 
+			//	||  (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
+			//		&& person.getVehicle().getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS))
 			checkForEmergency();
-		}
+
 		
 		if (currentTask != null) {
 			// For effort driven task, reduce the effective time based on efficiency.
@@ -345,7 +347,18 @@ implements Serializable {
 		    }
 
 		    if (energyTime > 0D) {
-		        reduceEnergy(energyTime);
+				if (person.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
+						|| person.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {
+					
+					if (circadian == null)
+						circadian = person.getCircadianClock();
+					
+					// it takes more energy to be in EVA doing work
+					reduceEnergy(energyTime);
+			        circadian.exercise(time);
+				}
+				else
+					reduceEnergy(energyTime);		
 		    }
 		}
 
@@ -566,8 +579,11 @@ implements Serializable {
 		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
 		    int millisols =  (int) timeCache.getMillisol();
 
-		    boolean isOnCall = person.getTaskSchedule().getShiftType().equals(ShiftType.ON_CALL);
-		    boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
+		    if (ts == null)
+		    	ts = person.getTaskSchedule();
+		    
+		    boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
+		    boolean isOff = ts.getShiftType() == ShiftType.OFF;
 		    boolean isShiftHour = true;
 
 /*
@@ -643,20 +659,20 @@ implements Serializable {
 */
 
 		    if (isOnCall) {
-		    	mtList = MetaTaskUtil.getAnyHourTasks();
+		    	mtList = MetaTaskUtil.getAllMetaTasks();//getAnyHourTasks();
 		    }
 		    else if (isOff) {
-		    	mtList = MetaTaskUtil.getNonWorkHourTasks();
+		    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
 		    }
 		    else {
 		    	// is the person off the shift ?
-		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+		    	isShiftHour = ts.isShiftHour(millisols);
 
 			    if (isShiftHour) {
-			    	mtList = MetaTaskUtil.getWorkHourTasks();
+			    	mtList = MetaTaskUtil.getWorkHourMetaTasks();
 			    }
 			    else {
-			    	mtList = MetaTaskUtil.getNonWorkHourTasks();
+			    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
 			    }
 		    }
 

@@ -101,7 +101,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 	<!-- Number of millisols a person can survive in decompression -->
 	<!-- Note: 1 millisol = 88.77 seconds -->
-	<!-- Default: 10.0 -->
+	<!-- Default: 10.0 )-->
 	<decompression-time value="10.0" />
 
 

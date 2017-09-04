@@ -17,8 +17,10 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
@@ -78,6 +80,10 @@ public class Sleep extends Task implements Serializable {
     private LivingAccommodations accommodations;
 
     private RoboticStation station;
+    
+    private CircadianClock circadian;
+    
+    private PhysicalCondition pc;
 
     private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;// = sim.getMasterClock();
@@ -102,6 +108,9 @@ public class Sleep extends Task implements Serializable {
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 
+		pc = person.getPhysicalCondition();
+		circadian = person.getCircadianClock();
+		
         //boolean walkSite = false;
 
         timeFactor = 3D; // TODO: should vary this factor by person
@@ -331,8 +340,9 @@ public class Sleep extends Task implements Serializable {
         if (person != null) {
 	    	if (getPhase() == null)
 	            throw new IllegalArgumentException("Task phase is null");
-	    	else if (SLEEPING.equals(getPhase()))
+	    	else if (SLEEPING.equals(getPhase())) {
 	        	return sleepingPhase(time);
+	    	}
 	        else
 	            return time;
         }
@@ -362,12 +372,19 @@ public class Sleep extends Task implements Serializable {
 
 		if (person != null) {
 	        // Reduce person's fatigue
-	        double newFatigue = person.getPhysicalCondition().getFatigue() - (timeFactor * time);
+	        double newFatigue = pc.getFatigue() - (timeFactor * time);
 	        if (newFatigue < 0D) {
 	            newFatigue = 0D;
 	        }
-	        person.getPhysicalCondition().setFatigue(newFatigue);
-
+	        
+	        pc.setFatigue(newFatigue);
+     
+	        circadian.setAwake(false);
+	        circadian.getRested(time);
+	        
+	    	circadian.setNumSleep(circadian.getNumSleep()+1);
+	    	circadian.updateValueSleepCycle((int) marsClock.getMillisol(), true);
+	        
 	        // Check if alarm went off
 	        double newTime = marsClock.getMillisol();
 	        double alarmTime = getAlarmTime();
@@ -411,6 +428,9 @@ public class Sleep extends Task implements Serializable {
 	        if (accommodations != null && accommodations.getSleepers() > 0) {
 	            accommodations.removeSleeper(person);
 	        }
+	        
+	       circadian.setAwake(true);
+	        
 		}
 		else if (robot != null) {
 	        // Remove robot from stations so other robots can use it.
@@ -567,17 +587,17 @@ public class Sleep extends Task implements Serializable {
 
 			ShiftType shiftType = person.getTaskSchedule().getShiftType();
 			// Set to 50 millisols prior to the beginning of the duty shift hour
-			if (shiftType.equals(ShiftType.A))
+			if (shiftType == ShiftType.A)
 				modifiedAlarmTime = 950;
-			else if (shiftType.equals(ShiftType.B))
+			else if (shiftType == ShiftType.B)
 				modifiedAlarmTime = 450;
-			else if (shiftType.equals(ShiftType.X))
+			else if (shiftType == ShiftType.X)
 				modifiedAlarmTime = 950;
-			else if (shiftType.equals(ShiftType.Y))
+			else if (shiftType == ShiftType.Y)
 				modifiedAlarmTime = 283;
-			else if (shiftType.equals(ShiftType.Z))
+			else if (shiftType == ShiftType.Z)
 				modifiedAlarmTime = 616;
-			else if (shiftType.equals(ShiftType.ON_CALL)) { // if only one person is at the settlement, go with this schedule
+			else if (shiftType == ShiftType.ON_CALL) { // if only one person is at the settlement, go with this schedule
 				timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
 				modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
 			}

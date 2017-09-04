@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * YogaMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-09-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -27,7 +27,7 @@ public class YogaMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.yoga"); //$NON-NLS-1$
-
+ 
     @Override
     public String getName() {
         return NAME;
@@ -41,6 +41,9 @@ public class YogaMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+    	if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+    		return 0;
+    	
         double result = 0D;
 
         if (!person.getPreference().isTaskDue(this)) {

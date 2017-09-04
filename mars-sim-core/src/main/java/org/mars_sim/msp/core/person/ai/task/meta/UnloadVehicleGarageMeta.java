@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Meta task for the UnloadVehicleGarage task.
@@ -52,11 +53,13 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
+        	Settlement settlement = person.getAssociatedSettlement();
+      	  
             // Check all vehicle missions occurring at the settlement.
             try {
                 int numVehicles = 0;
-                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(person.getSettlement()).size();
-                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
+                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement).size();
+                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(settlement).size();
                 result = 100D * numVehicles;
             }
             catch (Exception e) {
@@ -107,8 +110,11 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
 	                int numVehicles = 0;
-	                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
-	                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
+	                
+	               	Settlement settlement = robot.getAssociatedSettlement();
+	                
+	                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement).size();
+	                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(settlement).size();
 	                result = 100D * numVehicles;
 	            }
 	            catch (Exception e) {

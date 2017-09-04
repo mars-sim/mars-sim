@@ -20,26 +20,31 @@ import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 public class MetaTaskUtil {
 
     // Static values.
-    private static List<MetaTask> metaTasks = null;
+    private static List<MetaTask> allMetaTasks = null;
 
-    private static List<MetaTask> workHourTasks = null;
-    private static List<MetaTask> nonWorkHourTasks = null;
-    private static List<MetaTask> anyHourTasks = null;
+    private static List<MetaTask> workHourMetaTasks = null;
+    private static List<MetaTask> nonWorkHourMetaTasks = null;
+    private static List<MetaTask> anyHourMetaTasks = null;
 
     private static List<MetaTask> robotMetaTasks = null;
     /**
      * Private constructor for utility class.
      */
-    private MetaTaskUtil() {};
+    private MetaTaskUtil() {
+        initAnyHourTasks();
+        initWorkHourTasks();
+        initNonWorkHourTasks();
+    	
+    };
 
     /**
      * Lazy initialization of metaTasks list.
      */
     private static void initializeMetaTasks() {
 
-    	if (metaTasks == null) {
+    	if (allMetaTasks == null) {
 
-    		metaTasks = new ArrayList<MetaTask>();
+    		allMetaTasks = new ArrayList<MetaTask>();
 
 	        // should initialize any-hour tasks first before other tasks
     		// Note: currently, the 3 lists below have tasks that are mutually exclusive
@@ -51,11 +56,11 @@ public class MetaTaskUtil {
 	        // Note: Using Set for adding tasks should prevent duplicate tasks when creating the task list
 	        // However, each instance of the tasks must be explicitedly stated 
 	        
-	        tasks.addAll(workHourTasks);
-	        tasks.addAll(nonWorkHourTasks);
-	        tasks.addAll(anyHourTasks);
+	        tasks.addAll(workHourMetaTasks);
+	        tasks.addAll(nonWorkHourMetaTasks);
+	        tasks.addAll(anyHourMetaTasks);
 
-	        metaTasks.addAll(tasks); // 55 tasks in total as of 2016-10-04
+	        allMetaTasks.addAll(tasks); // 55 tasks in total as of 2016-10-04
 /*	        
 	        List<MetaTask> tasks = new ArrayList<MetaTask>();
 	        
@@ -123,10 +128,10 @@ public class MetaTaskUtil {
 	        // Therefore, add anyHourTasks into the other two sets
 	        
 	        // 2015-09-28 Incorporate anyHourTasks into workHourTasks
-	        workHourTasks.addAll(anyHourTasks);
+	        workHourMetaTasks.addAll(anyHourMetaTasks);
 
 	        // 2015-09-28 Incorporate anyHourTasks into nonWorkHourTasks
-	        nonWorkHourTasks.addAll(anyHourTasks);
+	        nonWorkHourMetaTasks.addAll(anyHourMetaTasks);
 
 	        //System.out.println("done initializeMetaTasks()");
 
@@ -139,9 +144,9 @@ public class MetaTaskUtil {
      */
     private static void initAnyHourTasks() {
 
-       	if (anyHourTasks == null) {
+       	if (anyHourMetaTasks == null) {
 
-       		anyHourTasks = new ArrayList<MetaTask>();
+       		anyHourMetaTasks = new ArrayList<MetaTask>();
       		
 	    	List<MetaTask> tasks = new ArrayList<MetaTask>();
         
@@ -162,7 +167,7 @@ public class MetaTaskUtil {
 	        tasks.add(new WalkMeta());
 
 	        
-	        anyHourTasks.addAll(tasks);
+	        anyHourMetaTasks.addAll(tasks);
 	        //System.out.println("size of anyHourTasks : " + anyHourTasks.size());
        	}
     }
@@ -174,9 +179,9 @@ public class MetaTaskUtil {
      */
     private static void initWorkHourTasks() {
 
-       	if (workHourTasks == null) {
+       	if (workHourMetaTasks == null) {
 
-	        workHourTasks = new ArrayList<MetaTask>();
+	        workHourMetaTasks = new ArrayList<MetaTask>();
 
 	    	List<MetaTask> tasks = new ArrayList<MetaTask>();
 
@@ -226,7 +231,7 @@ public class MetaTaskUtil {
 	        //s.addAll(tasks);
 	        //s.addAll(anyHourTasks);
 
-	        workHourTasks.addAll(tasks);
+	        workHourMetaTasks.addAll(tasks);
 	        // Note: do NOT add anyHourTasks to workHourTasks at this point
 	        //workHourTasks.addAll(anyHourTasks);
 
@@ -239,9 +244,9 @@ public class MetaTaskUtil {
      */
     private static void initNonWorkHourTasks() {
 
-       	if (nonWorkHourTasks == null) {
+       	if (nonWorkHourMetaTasks == null) {
 
-	    	nonWorkHourTasks = new ArrayList<MetaTask>();
+	    	nonWorkHourMetaTasks = new ArrayList<MetaTask>();
 
 	    	List<MetaTask> tasks = new ArrayList<MetaTask>();
 
@@ -260,7 +265,7 @@ public class MetaTaskUtil {
 	        //s.addAll(tasks);
 	        //s.addAll(anyHourTasks);
 
-	        nonWorkHourTasks.addAll(tasks);
+	        nonWorkHourMetaTasks.addAll(tasks);
 	        // Note: do NOT add anyHourTasks to nonWorkHourTasks at this point
 	        //nonWorkHourTasks.addAll(anyHourTasks);
 
@@ -302,10 +307,10 @@ public class MetaTaskUtil {
     * Gets a list of all meta tasks.
     * @return list of meta tasks.
     */
-   public static List<MetaTask> getMetaTasks() {
+   public static List<MetaTask> getAllMetaTasks() {
 
        // Lazy initialize meta tasks list if necessary.
-       if (metaTasks == null) {
+       if (allMetaTasks == null) {
            initializeMetaTasks();
        }
 
@@ -313,39 +318,39 @@ public class MetaTaskUtil {
 
        // Return copy of meta task list.
        //return new ArrayList<MetaTask>(metaTasks);
-       return metaTasks;
+       return allMetaTasks;
    }
 
    /**
     * Gets a list of all work hour meta tasks.
     * @return list of work hour meta tasks.
     */
-   public static List<MetaTask> getWorkHourTasks() {
+   public static List<MetaTask> getWorkHourMetaTasks() {
 
        // Lazy initialize work hour meta tasks list if necessary.
-       if (workHourTasks == null) {
+       if (workHourMetaTasks == null) {
            initWorkHourTasks();
        }
 
        // Return copy of work hour meta task list.
        //return new ArrayList<MetaTask>(workHourTasks);
-       return workHourTasks;
+       return workHourMetaTasks;
    }
 
    /**
     * Gets a list of all non work hour meta tasks.
     * @return list of work hour meta tasks.
     */
-   public static List<MetaTask> getNonWorkHourTasks() {
+   public static List<MetaTask> getNonWorkHourMetaTasks() {
 
        // Lazy initialize non work hour meta tasks list if necessary.
-       if (nonWorkHourTasks == null) {
+       if (nonWorkHourMetaTasks == null) {
            initNonWorkHourTasks();
        }
 
        // Return copy of non work hour meta task list.
        //return new ArrayList<MetaTask>(nonWorkHourTasks);
-       return nonWorkHourTasks;
+       return nonWorkHourMetaTasks;
    }
 
    /**
@@ -355,23 +360,23 @@ public class MetaTaskUtil {
    public static List<MetaTask> getAnyHourTasks() {
 
        // Lazy initialize all hour meta tasks list if necessary.
-       if (anyHourTasks == null) {
+       if (anyHourMetaTasks == null) {
            initAnyHourTasks();
        }
 
        // Return copy of all hour meta task list.
        //return new ArrayList<MetaTask>(anyHourTasks);
-       return anyHourTasks;
+       return anyHourMetaTasks;
        
    }
-
+ 
     /**
      * Converts a task name in String to Metatask
      * @return meta tasks.
      */
     public static MetaTask getMetaTask(String name) {
     	MetaTask metaTask = null;
-    	Iterator<MetaTask> i = getMetaTasks().iterator();
+    	Iterator<MetaTask> i = getAllMetaTasks().iterator();
     	while (i.hasNext()) {
     		MetaTask t = i.next();
     		if (t.getClass().getSimpleName().equals(name)) {

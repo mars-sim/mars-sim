@@ -981,7 +981,7 @@ public class UnitManager implements Serializable {
 				    person.assignReportingAuthority();
 
 					ChainOfCommand cc = settlement.getChainOfCommand();
-
+ 
 					// 2015-04-30 Assign a role to everyone
 					if (initPop >= POPULATION_WITH_MAYOR) {
 						cc.set7Divisions(true);
@@ -1012,7 +1012,12 @@ public class UnitManager implements Serializable {
 		}
 	}
 
-	// 2015-04-28 Added establishCommand()
+
+	/**
+	 * Establish a command structure for the settlement
+	 * @param settlement
+	 * @param pop
+	 */
 	private void establishCommand(Settlement settlement, int pop) {
 
 		electCommanders(settlement, RoleType.COMMANDER, pop);
@@ -1026,6 +1031,18 @@ public class UnitManager implements Serializable {
 
 	}
 
+	/**
+	 * Establish the mission roles for a one or two person settlement
+	 * @param settlement
+	 * @param pop
+	 */
+	private void establishMissionRoles(Settlement settlement) {
+		//electChief(settlement, RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
+		//electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
+		//electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
+	}
+	
+	
 	// 2015-05-11 Added electCommanders()
 	public void electCommanders(Settlement settlement, RoleType role, int pop) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
@@ -1119,8 +1136,11 @@ public class UnitManager implements Serializable {
 	    if (popSize >= POPULATION_WITH_MAYOR) {
             establishGovernment(settlement);
         }
-        else {
-            establishCommand(settlement, popSize);
+	    if (popSize >= 3) {
+	    	establishCommand(settlement, popSize);
+        }
+	    else {
+            establishMissionRoles(settlement);
         }
 	}
 

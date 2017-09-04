@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -49,14 +50,16 @@ public class EatMealMeta implements MetaTask, Serializable {
 
         double hunger = person.getPhysicalCondition().getHunger();
         double energy = person.getPhysicalCondition().getEnergy();
-
+    	CircadianClock cc = person.getCircadianClock();
+    	double ghrelin = cc.getSurplusGhrelin();
+    	double leptin = cc.getSurplusLeptin();
         // Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ persson per sol
         
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
-        if ((hunger > 250D) || (energy < 2525D)) {
+        if (hunger > 250D || energy < 2525D || ghrelin-leptin > 300) {
             hunger = hunger / 250D;
             energy = (2525D - energy) / 250D;
-            result = hunger + energy;
+            result = hunger + energy +  (ghrelin-leptin - 300);
             if (result <= 0D)
             	return 0;
         }
@@ -90,9 +93,9 @@ public class EatMealMeta implements MetaTask, Serializable {
 	
         }
         
-        //else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        //	; //add modifier
-        //}
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        	result *= .8; // ration food a little bit just in case of running out of it
+        }
         
         else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
         	return 0;

@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -257,6 +258,8 @@ implements Serializable, LifeSupportType, Objective {
 	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
 
 	private DustStorm storm;
+	
+	//private ShiftType currentShift;
 	
 	// Constructor 1 called by ConstructionStageTest
 	private Settlement() {
@@ -923,6 +926,45 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 
+	public ShiftType getCurrentSettlementShift() {
+		
+	    if (marsClock == null)
+	    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	    
+	    int millisols =  (int) marsClock.getMillisol();
+	    
+	    int num = getNumShift();
+	    
+	    if (num == 2) {
+	        
+			if (millisols >= TaskSchedule.A_START && millisols <= TaskSchedule.A_END)
+				return ShiftType.A;
+
+			else if (millisols >= TaskSchedule.B_START && millisols <= TaskSchedule.B_END)
+				return ShiftType.B;
+
+	    }
+	    
+	    else if (num == 3) {
+
+			if (millisols >= TaskSchedule.X_START && millisols <= TaskSchedule.X_END)
+				return ShiftType.X;
+
+			else if (millisols >= TaskSchedule.Y_START && millisols <= TaskSchedule.Y_END)
+				return ShiftType.Y;
+
+
+			else if (millisols >= TaskSchedule.Z_START && millisols <= TaskSchedule.Z_END)
+				return ShiftType.Z;
+
+	    }
+	    else 		
+	    	return ShiftType.ON_CALL;
+	    
+		return null;
+
+	}
+	
 	/**
 	 * Perform time-related processes
 	 *
@@ -933,6 +975,8 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public void timePassing(double time) {
 		
+		//currentShift = getCurrentSettlementShift();
+				
 		outside_temperature = weather.getTemperature(location);
 				
 		//inv = getInventory();
@@ -1254,19 +1298,24 @@ implements Serializable, LifeSupportType, Objective {
 		//else
 		//	counter30++;
 	}
-
+	/***
+	 * Refreshes the sleep map for each person in the settlement
+	 * @param solElapsed
+	 */
 	public void refreshSleepMap(int solElapsed) {
-		// 2015-12-05 Called inflateSleepHabit()
 		// Update the sleep pattern once every x number of days
 		if (solElapsed % SOL_SLEEP_PATTERN_REFRESH == 0) {
 			Collection<Person> people = getInhabitants();
 			for (Person p : people) {
-				p.getPhysicalCondition().inflateSleepHabit();
+				p.getCircadianClock().inflateSleepHabit();
 			}
 		}
 	}
 
-
+	/***
+	 * Prints out the work shift status for this settlement
+	 * @param sol
+	 */
 	public void printWorkShift(String sol) {
 		logger.info(sol+ " " + getName() + "'s Work Shift " +  "-- A:" + numA + " B:" + numB
 				+ ", X:" + numX + " Y:" + numY + " Z:" + numZ + ", OnCall:" + numOnCall);// + " Off:" + off);
@@ -2793,12 +2842,13 @@ implements Serializable, LifeSupportType, Objective {
 		else if (shiftType.equals(ShiftType.Z)) {
 			numZ++;
 		}
+		
 		else if (shiftType.equals(ShiftType.ON_CALL)) {
 			numOnCall++;
 		}
 	}
 
-
+ 
 	/**
 	 * Checks if a particular work shift has been saturated
 	 * @param st The ShiftType
@@ -3567,6 +3617,9 @@ implements Serializable, LifeSupportType, Objective {
 		this.storm = storm;
 	}
 
+	//public ShiftType getCurrentShift() {	
+	//	return currentShift;
+	//}
 	
 	@Override
 	public void destroy() {

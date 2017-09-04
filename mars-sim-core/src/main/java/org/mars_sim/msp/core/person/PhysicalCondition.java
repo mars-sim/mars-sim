@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
-import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.medical.Complaint;
@@ -64,23 +63,21 @@ implements Serializable {
     
     private static String sourceName = logger.getName();
     
-    /** Sleep Habit maximum value. */
-    private static int MAX_WEIGHT = 30;
-    /** Sleep Habit Map resolution. */
-    private static int SLEEP_MAP_RESOLUTION = 20;
     /** Life support minimum value. */
     private static int MIN_VALUE = 0;
     /** Life support maximum value. */
     private static int MAX_VALUE = 1;
 
-    /** Stress jump resulting from being in an accident. */
-    public static final double ACCIDENT_STRESS = 10D;
-
-    public static final double FOOD_RESERVE_FACTOR = 1.5D;
 
     public static final double MENTAL_BREAKDOWN = 100D;
 
     private static final double COLLAPSE_IMMINENT = 5000D;
+
+    /** Stress jump resulting from being in an accident. */
+    public static final double ACCIDENT_STRESS = 10D;
+
+    public static final double FOOD_RESERVE_FACTOR = 1.5D;
+    
     /** Performance modifier for hunger. */
     private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
     /** Performance modifier for fatigue. */
@@ -89,39 +86,38 @@ implements Serializable {
     private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
     /** Performance modifier for energy. */
     private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
-    
+    /** The average maximum daily energy intake */
     private static final double MAX_DAILY_ENERGY_INTAKE = 10100D;
+    
+    // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
+    public static final double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
+    //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
+    public static final double ENERGY_FACTOR = 0.8D;
 
-    /** TODO The anxiety attack health complaint should be an enum or smth. */
-    //private static final String PANIC_ATTACK = "Panic Attack";
-    //private static final String DEPRESSION = "Depression";
-    //private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
+ 	private static double o2_consumption;
+ 	private static double h2o_consumption;
+ 	private static double minimum_air_pressure;
+ 	private static double min_temperature;
+ 	private static double max_temperature;
+ 	private static double food_consumption;
+ 	private static double dessert_consumption;
+ 	private static double highFatigueCollapseChance;
+    private static double stressBreakdownChance;
 
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
-    // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
-    public static double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
-    //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
-    public static double ENERGY_FACTOR = 0.8D;
-
-    private static double INFLATION = 1.15;
-
-	private static double o2_consumption;
-	private static double h2o_consumption;
-	private static double minimum_air_pressure;
-	private static double min_temperature;
-	private static double max_temperature;
-	private static double food_consumption;
-	private static double dessert_consumption;
-	private static double highFatigueCollapseChance;
-    private static double stressBreakdownChance;
-
-    // Data members
 
 	private int solCache = 0;
-	private int numSleep = 0;
-	private int suppressHabit = 0;
-	private int spaceOut = 0;
+
+    private boolean isStarving;
+
+    private boolean isStressedOut = false;
+    
+    private boolean isCollapsed = false;
+    
+    /** True if person is alive. */
+    private boolean alive;
+
 
     /** Person's fatigue level. (0 to infinity) */
     private double fatigue;
@@ -141,22 +137,15 @@ implements Serializable {
     private double inclination_factor;
 
     private double personStarvationTime;
+   
+    private double personalMaxEnergy;
     
     private double foodDryMassPerServing;
     
-    private double personalMaxEnergy;
-    
-    /** True if person is alive. */
-    private boolean alive;
-
-    private boolean isStarving;
-
-    private boolean isStressedOut = false, isCollapsed = false;
-
     private String name;
 
-    /** Injury/Illness effecting person. */
-    private HashMap<Complaint, HealthProblem> problems;
+    private static EatMealMeta eatMealMeta = new EatMealMeta();
+    
     /** Person owning this physical. */
     private Person person;
     /** Details of persons death. */
@@ -167,13 +156,15 @@ implements Serializable {
     private RadiationExposure radiation;
 
 	private MarsClock marsClock;
+	
+	private CircadianClock circadian;
 
     /** List of medications affecting the person. */
     private List<Medication> medicationList;
     
-    // 2015-12-05 Added sleepHabitMap
-    private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
-
+    /** Injury/Illness effecting person. */
+    private HashMap<Complaint, HealthProblem> problems;
+    
 
     /**
      * Constructor 1.
@@ -184,7 +175,11 @@ implements Serializable {
         person = newPerson;
     	name = newPerson.getName();
 
+    	circadian = person.getCircadianClock();
+    	
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
         alive = true;
 
@@ -196,28 +191,27 @@ implements Serializable {
 		//oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
 		//carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
 
-
     	radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
 
         deathDetails = null;
 
         problems = new HashMap<Complaint, HealthProblem>();
-        performance = 1.0D;
-
-        fatigue = RandomUtil.getRandomRegressionInteger(1000) * .5;
+        		
+        medicationList = new ArrayList<Medication>();
+        
+		performance = 1.0D;
+      
+        fatigue = 0; //RandomUtil.getRandomRegressionInteger(1000) * .5;
         stress = RandomUtil.getRandomRegressionInteger(100) * .2;
         hunger = RandomUtil.getRandomRegressionInteger(200);
-        kJoules = 1000D + RandomUtil.getRandomDouble(1500);
+        kJoules = 2500;//1000D + RandomUtil.getRandomDouble(1500);
         hygiene = RandomUtil.getRandomDouble(100D);
         
         personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
         
-        appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-        		
-        medicationList = new ArrayList<Medication>();
-
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;		
+		
 
         // 2017-03-08 Add rates
         o2_consumption = personConfig.getNominalO2ConsumptionRate();
@@ -233,15 +227,9 @@ implements Serializable {
 
         foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
-        try {
-        	personStarvationTime =  1000D * (personConfig.getStarvationStartTime()
+
+       	personStarvationTime =  1000D * (personConfig.getStarvationStartTime()
         			+ RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
-            //System.out.println("personStarvationTime : "+ Math.round(personStarvationTime*10.0)/10.0);
-        }
-        catch (Exception e) {
-        	//logger.severe("");
-            e.printStackTrace(System.err);
-        }
 
     }
 
@@ -250,9 +238,6 @@ implements Serializable {
     }
 
 
-    public double getMassPerServing() {
-        return foodDryMassPerServing;
-    }
 
     /**
      * Gets the medical manager.
@@ -276,18 +261,18 @@ implements Serializable {
     public void timePassing(double time, LifeSupportType support) {
 
     	if (alive) {
-	      	// 2015-12-05 check for the passing of each day
+  
+	        boolean illnessEvent = false;
+
 	    	int solElapsed = marsClock.getSolElapsedFromStart();
-	    	//System.out.println("sol from start : " + solElapsed);
+
 	    	if (solCache != solElapsed) {
-	    		// 2015-12-05 Reset numSleep back to zero at the beginning of each sol
-	    		numSleep = 0;
-	    		suppressHabit = 0;
+
 		    	if (solCache == 0) {
-		    		// 2017-08-29 Modify personalMaxEnergy at the start of the sim 
-		    		int d1 = 35 - person.getAge();
+		    		// Modify personalMaxEnergy at the start of the sim 
+		    		int d1 = 2* (35 - person.getAge()); // Assume that after age 35, metabolism slows down 
 		    		double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
-		    		double preference = person.getPreference().getPreferenceScore(new EatMealMeta())*10D;
+		    		double preference = person.getPreference().getPreferenceScore(eatMealMeta)*10D;
 		            personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
 		            appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 		    	}
@@ -295,16 +280,25 @@ implements Serializable {
 	    		solCache = solElapsed;
 	    	}
 	    	
-
-	    		
-	    	int month = marsClock.getSolOfMonth();
-	    	if (month == 1) {
-	    		// check if the person always have a lot of energy
-	    		// if yes, increase weight
-	    	}
-
-	        boolean illnessEvent = false;
-
+	        // Check life support system
+	        try {
+	        	//System.out.println("o2_consumption : " + o2_consumption * time / 1000D);
+	            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
+	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient oxygen.", null);
+	            if (consumeWater(support, h2o_consumption * (time / 1000D)))
+	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient water.", null);
+	            if (requireAirPressure(support, minimum_air_pressure))
+	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " is under insufficient air pressure.", null);
+	            if (requireTemperature(support, min_temperature, max_temperature))
+	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " cannot survive long at this extreme temperature.", null);
+	            
+	            //TODO: how to run to another building/location
+	        }
+	        catch (Exception e) {
+                e.printStackTrace();
+	            LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + "'s life support system is failing !", null);
+	        }
+	    	
 	        radiation.timePassing(time);
 
 	        // Check the existing problems
@@ -367,26 +361,15 @@ implements Serializable {
 	            person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 	        }
 
-	    	if (alive) {
-		        // Check life support system
-		        try {
-		        	//System.out.println("o2_consumption : " + o2_consumption * time / 1000D);
-		            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
-		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient oxygen.", null);
-		            if (consumeWater(support, h2o_consumption * (time / 1000D)))
-		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient water.", null);
-		            if (requireAirPressure(support, minimum_air_pressure))
-		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " is under insufficient air pressure.", null);
-		            if (requireTemperature(support, min_temperature, max_temperature))
-		            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " cannot survive long at this extreme temperature.", null);
-		            
-		            //TODO: how to run to another building/location
-		        }
-		        catch (Exception e) {
-	                e.printStackTrace();
-		            LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + "'s life support system is failing !", null);
-		        }
-	    	}
+
+	        // Add time to all medications affecting the person.
+	        Iterator<Medication> i = medicationList.iterator();
+	        while (i.hasNext()) {
+	            Medication med = i.next();
+	            if (!med.isMedicated()) {
+	                i.remove();
+	            }
+	        }
 
 	        // Build up fatigue & hunger for given time passing.
 	        setFatigue(fatigue + time);
@@ -401,15 +384,6 @@ implements Serializable {
 
 	        checkStarvation(hunger);
 	        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
-
-	        // Add time to all medications affecting the person.
-	        Iterator<Medication> i = medicationList.iterator();
-	        while (i.hasNext()) {
-	            Medication med = i.next();
-	            if (!med.isMedicated()) {
-	                i.remove();
-	            }
-	        }
 
 	        // If person is at high stress, check for mental breakdown.
 	        if (!isStressedOut)
@@ -428,6 +402,365 @@ implements Serializable {
 
     }
 
+
+    /** Gets the person's fatigue level
+     *  @return person's fatigue
+     */
+    public double getFatigue() {
+        return fatigue;
+    }
+
+    /**
+     * Gets the person's caloric energy.
+     * @return person's caloric energy in kilojoules
+     * Note: one large calorie is about 4.2 kilojoules
+     */
+    public double getEnergy() {
+        return kJoules;
+    }
+
+    /** Reduces the person's energy.
+     *  @param time the amount of time (millisols).
+     */
+    public void reduceEnergy(double time) {
+        double xdelta = time * MAX_DAILY_ENERGY_INTAKE / 1000D;
+    	
+    	// Changing this to a more linear reduction of energy.
+        // We may want to change it back to exponential. - Scott
+
+        // double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
+        // kJoules = kJoules / exponential(xdelta);
+
+        if (kJoules < 100D) {
+            // 100 kJ is the lowest possible energy level
+        	kJoules = 100D;
+        }
+        else if (kJoules < 200D) {
+        	kJoules -= xdelta *.75;
+        }
+        else if (kJoules < 400D) {
+        	kJoules -= xdelta *.8;
+        }
+        else if (kJoules < 600D) {
+        	kJoules -= xdelta *.85;
+        }
+        else if (kJoules < 800D) {
+        	kJoules -= xdelta *.9;
+        }
+        else if (kJoules < 1000D) {
+        	kJoules -= xdelta *.95;
+        }
+        else
+        	kJoules -= xdelta;
+        
+
+    }
+
+//    public double exponential(double x) {
+//    	  x = 1d + x / 256d;
+//    	  x *= x; x *= x; x *= x; x *= x;
+//    	  x *= x; x *= x; x *= x; x *= x;
+//    	  return x;
+//    	}
+
+    /** Sets the person's energy level
+     *  @param kilojoules
+     */
+    public void setEnergy(double kJ) {
+        kJoules = kJ;
+        //System.out.println("PhysicalCondition : SetEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
+    }
+
+    /** Adds to the person's energy intake by eating
+     *  @param person's energy level in kilojoules
+     */
+    public void addEnergy(double foodAmount) {
+    	//  1 calorie = 4.1858 kJ
+    	// TODO: vary MAX_KJ according to the individual's physical profile strength, endurance, etc..
+        // double FOOD_COMPOSITION_ENERGY_RATIO = 16290;  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
+        // double FACTOR = 0.8D;
+		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
+    	
+        // Note: changing this to a more linear addition of energy.
+        // We may want to change it back to exponential. - Scott
+    	
+        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite;
+//        kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO / kJoules) / ENERGY_FACTOR;
+
+        
+        if (kJoules > 9000D) {
+        	kJoules += xdelta *.75;
+        }
+        else if (kJoules > 8000D) {
+        	kJoules += xdelta *.8;
+        }
+        else if (kJoules > 7000D) {
+        	kJoules += xdelta *.85;
+        }
+        else if (kJoules > 6000D) {
+        	kJoules += xdelta *.9;
+        }
+        else if (kJoules > 5000D) {
+        	kJoules += xdelta *.95;
+        }
+        else
+        	kJoules += xdelta;
+        
+        circadian.eatFood(kJoules/50D);
+
+        if (kJoules > personalMaxEnergy *2) {
+        	kJoules = personalMaxEnergy *2;
+        }
+        //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
+    }
+
+    /**
+     * Get the performance factor that effect Person with the complaint.
+     * @return The value is between 0 -> 1.
+     */
+    public double getPerformanceFactor() {
+        return performance;
+    }
+
+    /**
+     * Sets the performance factor.
+     * @param newPerformance new performance (between 0 and 1).
+     */
+    public void setPerformanceFactor(double newPerformance) {
+        if (newPerformance != performance) {
+            performance = newPerformance;
+			if (person != null)
+	            person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+        }
+    }
+
+
+    /**
+     * Define the fatigue setting for this person
+     * @param newFatigue New fatigue.
+     */
+    public void setFatigue(double newFatigue) {
+        //if (fatigue != newFatigue) {
+            fatigue = newFatigue;
+			//if (person != null)
+	            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+        //}
+    }
+
+    /** Gets the person's hunger level
+     *  @return person's hunger
+     */
+    public double getHunger() {
+        return hunger;
+    }
+
+
+    /**
+     * Checks if a person is starving or no longer starving
+     * @param hunger
+     */
+    public void checkStarvation(double hunger) {
+
+    	if (person != null) {
+
+            Complaint starvation = getMedicalManager().getStarvation();
+
+            if (hunger > personStarvationTime && (kJoules <= 100D)) {
+                if (!problems.containsKey(starvation)) {
+                    addMedicalComplaint(starvation);
+                    //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
+                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                }
+                
+                
+                TaskManager mgr = person.getMind().getTaskManager();
+                // TODO : should check if a person is on a critical mission, 
+                mgr.clearTask();
+                // Stop any on-going tasks and go eat
+                mgr.addTask(new EatMeal(person));
+                
+            }
+
+            else if (hunger < 500D && kJoules > 800D) {
+                HealthProblem illness = problems.get(starvation);
+                if (illness != null) {
+                    illness.startRecovery();
+
+                }
+            }
+
+        }
+    }
+
+
+ 
+    /**
+     * Sets the person's stress level.
+     * @param newStress the new stress level (0.0 to 100.0)
+     */
+    public void setStress(double newStress) {
+        if (stress != newStress) {
+            stress = newStress;
+            if (stress > 100D) stress = 100D;
+            else if (stress < 0D) stress = 0D;
+            else if (Double.isNaN(stress)) stress = 0D;
+            person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+        }
+    }
+
+    /**
+     * Checks if person has an anxiety attack due to too much stress.
+     * @param time the time passing (millisols)
+     */
+    // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
+    private void checkForStressBreakdown(double time) {
+
+    	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
+    	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+    	// a person is limited to have only one of them at a time
+        if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
+
+            // Determine stress resilience modifier (0D - 2D).
+            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
+            int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+
+            // 0 (strong) to 1 (weak)
+            double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
+            //System.out.println("checkForStressBreakdown()'s resilienceModifier : " + resilienceModifier);
+/*
+            double chance = 0;
+            try {
+            	// 0 to 100
+            	chance = stressBreakdownChance;
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
+            }
+*/
+            double value = stressBreakdownChance / 10D * resilienceModifier;
+            //System.out.println("checkForStressBreakdown()'s value : " + value);
+            //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
+            if (RandomUtil.lessThanRandPercent(value)) {
+
+            	isStressedOut = true;
+/*
+               	if (fatigue < 200)
+            		fatigue = fatigue * 4;
+            	else if (fatigue < 400)
+            		fatigue = fatigue * 2;
+            	else if (fatigue < 600)
+            		fatigue = fatigue * 1.2;
+*/
+            	double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
+
+            	if (rand < 0.5) {
+
+            		//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+                    if (panicAttack != null) {
+                    	if (inclination_factor > -.5)
+                    		inclination_factor = inclination_factor - .05;
+
+                    	addMedicalComplaint(panicAttack);
+                        //illnessEvent = true;
+                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                        logger.info(name + " suffers from a panic attack.");
+                        //System.out.println(name + " has a panic attack.");
+
+                    }
+                    else
+                    	logger.log(Level.SEVERE, "Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
+
+            	} else {
+
+                    //Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
+                    if (depression != null) {
+                    	if (inclination_factor < .5)
+                    		inclination_factor = inclination_factor + .05;
+                    	addMedicalComplaint(depression);
+                        //illnessEvent = true;
+                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                        logger.info(name + " has an episode of depression.");
+                        //System.out.println(name + " has an episode of depression.");
+                    }
+                    else
+                    	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
+            	}
+
+
+            } else {
+/*
+               	if (fatigue < 200)
+            		fatigue = fatigue * 2;
+            	else if (fatigue < 400)
+            		fatigue = fatigue * 1.5;
+*/
+            }
+        }
+    }
+
+    /**
+     * Checks if person has very high fatigue.
+     * @param time the time passing (millisols)
+     */
+    // 2016-03-01 checkForHighFatigue
+    private void checkForHighFatigueCollapse(double time) {
+    	Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+        if (!problems.containsKey(highFatigue)) {
+
+            // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
+            int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
+            int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+
+            // a person with high endurance will be less likely to be collapse
+            double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
+            //System.out.println("checkForHighFatigueCollapse()'s modifier :" + modifier);
+/*
+            double chance = 0;
+
+            try {
+            	chance = personConfig.getHighFatigueCollapseChance();
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
+            }
+*/
+            double value = highFatigueCollapseChance /5D * modifier;
+
+            if (RandomUtil.lessThanRandPercent(value)) {
+                //System.out.println("checkForHighFatigueCollapse()'s value :" + value);
+            	isCollapsed = true;
+            	//Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+/*
+             	if (stress < 10)
+             		stress = stress * 1.8;
+            	else if (stress < 30)
+            		stress = stress * 1.5;
+            	else if (stress < 50)
+            		stress = stress * 1.2;
+*/
+
+                if (highFatigue != null) {
+                    addMedicalComplaint(highFatigue);
+                    //illnessEvent = true;
+                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                    logger.info(name + " collapses because of high fatigue exhaustion.");
+                }
+                else
+                	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
+            }
+            else {
+
+/*
+            	if (stress < 10)
+             		stress = stress * 1.5;
+            	else if (stress < 30)
+            		stress = stress * 1.3;
+            	else if (stress < 50)
+            		stress = stress * 1.1;
+*/
+            }
+        }
+    }
 
     /**
      * Check for any random ailments that a person comes down with over a period of time.
@@ -658,365 +991,19 @@ implements Serializable {
         return deathDetails;
     }
 
-    /** Gets the person's fatigue level
-     *  @return person's fatigue
-     */
-    public double getFatigue() {
-        return fatigue;
-    }
-
-    /**
-     * Gets the person's caloric energy.
-     * @return person's caloric energy in kilojoules
-     * Note: one large calorie is about 4.2 kilojoules
-     */
-    public double getEnergy() {
-        return kJoules;
-    }
-
-    /** Reduces the person's caloric energy.
-     *  @param time the amount of time (millisols).
-     */
-    public void reduceEnergy(double time) {
-        //double dailyEnergyIntake = 10100D;
-        // Changing this to a more linear reduction of energy.
-        // We may want to change it back to exponential. - Scott
-        double xdelta = (time / 1000D) * MAX_DAILY_ENERGY_INTAKE;
-    	// TODO: re-tune the experimental FACTOR to work in most situation
-//    	double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
-        //System.out.println("PhysicalCondition : ReduceEnergy() : time is " + Math.round(time*100.0)/100.0);
-        //System.out.println("PhysicalCondition : ReduceEnergy() : xdelta is " + Math.round(xdelta*10000.0)/10000.0);
-//        kJoules = kJoules / exponential(xdelta);
-        kJoules -= xdelta;
-
-        if (kJoules < 100D) {
-            // 100 kJ is the lowest possible energy level
-        	kJoules = 100D;
-        }
-
-        //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);
-    }
-
-//    public double exponential(double x) {
-//    	  x = 1d + x / 256d;
-//    	  x *= x; x *= x; x *= x; x *= x;
-//    	  x *= x; x *= x; x *= x; x *= x;
-//    	  return x;
-//    	}
-
-    /** Sets the person's energy level
-     *  @param kilojoules
-     */
-    public void setEnergy(double kJ) {
-        kJoules = kJ;
-        //System.out.println("PhysicalCondition : SetEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
-    }
-
-    /** Adds to the person's energy intake by eating
-     *  @param person's energy level in kilojoules
-     */
-    public void addEnergy(double foodAmount) {
-    	// TODO: vary MAX_KJ according to the individual's physical profile strength, endurance, etc..
-        // double FOOD_COMPOSITION_ENERGY_RATIO = 16290;  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
-        // double FACTOR = 0.8D;
-		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
-    	
-        // Note: changing this to a more linear addition of energy.
-        // We may want to change it back to exponential. - Scott
-    	
-        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite;
-//        kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO / kJoules) / ENERGY_FACTOR;
-        kJoules += xdelta;
-
-        if (kJoules > personalMaxEnergy) {
-        	kJoules = personalMaxEnergy;
-        }
-        //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
-    }
-
-    /**
-     * Get the performance factor that effect Person with the complaint.
-     * @return The value is between 0 -> 1.
-     */
-    public double getPerformanceFactor() {
-        return performance;
-    }
-
-    /**
-     * Sets the performance factor.
-     * @param newPerformance new performance (between 0 and 1).
-     */
-    public void setPerformanceFactor(double newPerformance) {
-        if (newPerformance != performance) {
-            performance = newPerformance;
-			if (person != null)
-	            person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
-        }
-    }
-
-    /**
-     * Gets the person with this physical condition
-     * @return
-     */
-    Person getPerson() {
-        return person;
-    }
-
-    /**
-     * Define the fatigue setting for this person
-     * @param newFatigue New fatigue.
-     */
-    public void setFatigue(double newFatigue) {
-        //if (fatigue != newFatigue) {
-            fatigue = newFatigue;
-			//if (person != null)
-	            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-        //}
-    }
-
-    /** Gets the person's hunger level
-     *  @return person's hunger
-     */
-    public double getHunger() {
-        return hunger;
-    }
-
-
-    /**
-     * Checks if a person is starving or no longer starving
-     * @param hunger
-     */
-    public void checkStarvation(double hunger) {
-
-    	if (person != null) {
-
-            Complaint starvation = getMedicalManager().getStarvation();
-
-            if (hunger > personStarvationTime && (kJoules <= 100D)) {
-                if (!problems.containsKey(starvation)) {
-                    addMedicalComplaint(starvation);
-                    //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
-                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                }
-                
-                
-                TaskManager mgr = person.getMind().getTaskManager();
-                // TODO : should check if a person is on a critical mission, 
-                mgr.clearTask();
-                // Stop any on-going tasks and go eat
-                mgr.addTask(new EatMeal(person));
-                
-            }
-
-            else if (hunger < 500D && kJoules > 800D) {
-                HealthProblem illness = problems.get(starvation);
-                if (illness != null) {
-                    illness.startRecovery();
-
-                }
-            }
-
-        }
-    }
-
-
-    /**
-     * Define the hunger setting for this person
-     * @param newHunger New hunger.
-     */
-    public void setHunger(double newHunger) {
-        if (hunger != newHunger) {
-            hunger = newHunger;
-        }
-    }
-
-
-    /**
-     * Gets the person's stress level
-     * @return stress (0.0 to 100.0)
-     */
-    public double getStress() {
-        return stress;
-    }
-
-    /**
-     * Sets the person's stress level.
-     * @param newStress the new stress level (0.0 to 100.0)
-     */
-    public void setStress(double newStress) {
-        if (stress != newStress) {
-            stress = newStress;
-            if (stress > 100D) stress = 100D;
-            else if (stress < 0D) stress = 0D;
-            else if (Double.isNaN(stress)) stress = 0D;
-            person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
-        }
-    }
-
-    /**
-     * Checks if person has an anxiety attack due to too much stress.
-     * @param time the time passing (millisols)
-     */
-    // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
-    private void checkForStressBreakdown(double time) {
-
-    	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
-    	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-    	// a person is limited to have only one of them at a time
-        if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
-
-            // Determine stress resilience modifier (0D - 2D).
-            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
-            int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
-
-            // 0 (strong) to 1 (weak)
-            double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
-            //System.out.println("checkForStressBreakdown()'s resilienceModifier : " + resilienceModifier);
-/*
-            double chance = 0;
-            try {
-            	// 0 to 100
-            	chance = stressBreakdownChance;
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
-            }
-*/
-            double value = stressBreakdownChance / 10D * resilienceModifier;
-            //System.out.println("checkForStressBreakdown()'s value : " + value);
-            //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
-            if (RandomUtil.lessThanRandPercent(value)) {
-
-            	isStressedOut = true;
-/*
-               	if (fatigue < 200)
-            		fatigue = fatigue * 4;
-            	else if (fatigue < 400)
-            		fatigue = fatigue * 2;
-            	else if (fatigue < 600)
-            		fatigue = fatigue * 1.2;
-*/
-            	double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
-
-            	if (rand < 0.5) {
-
-            		//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-                    if (panicAttack != null) {
-                    	if (inclination_factor > -.5)
-                    		inclination_factor = inclination_factor - .05;
-
-                    	addMedicalComplaint(panicAttack);
-                        //illnessEvent = true;
-                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                        logger.info(name + " suffers from a panic attack.");
-                        //System.out.println(name + " has a panic attack.");
-
-                    }
-                    else
-                    	logger.log(Level.SEVERE, "Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
-
-            	} else {
-
-                    //Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
-                    if (depression != null) {
-                    	if (inclination_factor < .5)
-                    		inclination_factor = inclination_factor + .05;
-                    	addMedicalComplaint(depression);
-                        //illnessEvent = true;
-                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                        logger.info(name + " has an episode of depression.");
-                        //System.out.println(name + " has an episode of depression.");
-                    }
-                    else
-                    	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
-            	}
-
-
-            } else {
-/*
-               	if (fatigue < 200)
-            		fatigue = fatigue * 2;
-            	else if (fatigue < 400)
-            		fatigue = fatigue * 1.5;
-*/
-            }
-        }
-    }
-
-    /**
-     * Checks if person has very high fatigue.
-     * @param time the time passing (millisols)
-     */
-    // 2016-03-01 checkForHighFatigue
-    private void checkForHighFatigueCollapse(double time) {
-    	Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-        if (!problems.containsKey(highFatigue)) {
-
-            // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
-            int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
-            int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
-
-            // a person with high endurance will be less likely to be collapse
-            double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
-            //System.out.println("checkForHighFatigueCollapse()'s modifier :" + modifier);
-/*
-            double chance = 0;
-
-            try {
-            	chance = personConfig.getHighFatigueCollapseChance();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
-            }
-*/
-            double value = highFatigueCollapseChance /5D * modifier;
-
-            if (RandomUtil.lessThanRandPercent(value)) {
-                //System.out.println("checkForHighFatigueCollapse()'s value :" + value);
-            	isCollapsed = true;
-            	//Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-/*
-             	if (stress < 10)
-             		stress = stress * 1.8;
-            	else if (stress < 30)
-            		stress = stress * 1.5;
-            	else if (stress < 50)
-            		stress = stress * 1.2;
-*/
-
-                if (highFatigue != null) {
-                    addMedicalComplaint(highFatigue);
-                    //illnessEvent = true;
-                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                    logger.info(name + " collapses because of high fatigue exhaustion.");
-                }
-                else
-                	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
-            }
-            else {
-
-/*
-            	if (stress < 10)
-             		stress = stress * 1.5;
-            	else if (stress < 30)
-            		stress = stress * 1.3;
-            	else if (stress < 50)
-            		stress = stress * 1.1;
-*/
-            }
-        }
-    }
 
     /**
      * This Person is now dead.
      * @param illness The compliant that makes person dead.
      */
     public void setDead(HealthProblem illness, Boolean causedByUser) {
-        setFatigue(0D);
-        setHunger(0D);
-        setPerformanceFactor(0D);
-        setStress(0D);
         alive = false;
+    	
+    	setFatigue(0D);
+	    setHunger(0D);
+	    setPerformanceFactor(0D);
+	    setStress(0D);
+	    
 
         if (causedByUser) {
         	person.setDead();
@@ -1046,6 +1033,29 @@ implements Serializable {
         person.fireUnitUpdate(UnitEventType.DEATH_EVENT);
     }
 
+    /**
+     * Define the hunger setting for this person
+     * @param newHunger New hunger.
+     */
+    public void setHunger(double newHunger) {
+        if (hunger != newHunger) {
+            hunger = newHunger;
+        }
+    }
+
+
+    /**
+     * Gets the person's stress level
+     * @return stress (0.0 to 100.0)
+     */
+    public double getStress() {
+        return stress;
+    }
+
+    public double getMassPerServing() {
+        return foodDryMassPerServing;
+    }
+    
     /**
      * Checks if the person is dead.
      *
@@ -1104,67 +1114,68 @@ implements Serializable {
 
         double tempPerformance = 1.0D;
 
-        if (person != null) {
+        serious = null;
 
-            serious = null;
-
-            // Check the existing problems. find most serious & performance
-            // effecting
-            Iterator<HealthProblem> iter = problems.values().iterator();
-            while(iter.hasNext()) {
-                HealthProblem problem = iter.next();
-                double factor = problem.getPerformanceFactor();
-                if (factor < tempPerformance) {
-                    tempPerformance = factor;
-                }
-
-                if ((serious == null) || (serious.getIllness().getSeriousness() <
-                        problem.getIllness().getSeriousness())) {
-                    serious = problem;
-                }
+        // Check the existing problems. find most serious & performance
+        // effecting
+        Iterator<HealthProblem> iter = problems.values().iterator();
+        while(iter.hasNext()) {
+            HealthProblem problem = iter.next();
+            double factor = problem.getPerformanceFactor();
+            if (factor < tempPerformance) {
+                tempPerformance = factor;
             }
 
-            // High hunger reduces performance.
-            if (hunger > 1200D) {
-                tempPerformance -= (hunger - 1200D) * HUNGER_PERFORMANCE_MODIFIER /2;
+            if ((serious == null) || (serious.getIllness().getSeriousness() <
+                    problem.getIllness().getSeriousness())) {
+                serious = problem;
             }
-            else if (hunger > 800D) {
-                tempPerformance -= (hunger - 800D) * HUNGER_PERFORMANCE_MODIFIER /4;
-            }
+        }
+        
 
-            // High fatigue reduces performance.
-            if (fatigue > 1400D) {
-                tempPerformance -= (fatigue - 1400D) * FATIGUE_PERFORMANCE_MODIFIER /2;
-            }
-            else if (fatigue > 800D) {
-                tempPerformance -= (fatigue - 800D) * FATIGUE_PERFORMANCE_MODIFIER /4;
-                // e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 -> reduces by 1.25% on each frame
-            }
 
-            // High stress reduces performance.
-            if (stress > 90D) {
-                tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER/2;
-            }
-            else if (stress > 70D) {
-                tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER/4;
-                //e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125  or  1.25%  on each frame
-            }
-            
-            // High stress reduces performance.
-            if (kJoules < 200D) {
-                tempPerformance -= (kJoules - 100D) * ENERGY_PERFORMANCE_MODIFIER/2;
-            }
-            else if (kJoules < 400D) {
-                tempPerformance -= (kJoules - 200D) * ENERGY_PERFORMANCE_MODIFIER/4;
-            }
+        // High hunger reduces performance.
+        if (hunger > 1200D) {
+            tempPerformance -= (hunger - 1200D) * HUNGER_PERFORMANCE_MODIFIER /2;
+        }
+        else if (hunger > 800D) {
+            tempPerformance -= (hunger - 800D) * HUNGER_PERFORMANCE_MODIFIER /4;
+        }
+
+        // High fatigue reduces performance.
+        if (fatigue > 1400D) {
+            tempPerformance -= (fatigue - 1400D) * FATIGUE_PERFORMANCE_MODIFIER /2;
+        }
+        else if (fatigue > 800D) {
+            tempPerformance -= (fatigue - 800D) * FATIGUE_PERFORMANCE_MODIFIER /4;
+            // e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 -> reduces by 1.25% on each frame
+        }
+
+        // High stress reduces performance.
+        if (stress > 90D) {
+            tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER/2;
+        }
+        else if (stress > 70D) {
+            tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER/4;
+            //e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125  or  1.25%  on each frame
+        }
+        
+        // High stress reduces performance.
+        if (kJoules < 200D) {
+            tempPerformance -= (kJoules - 100D) * ENERGY_PERFORMANCE_MODIFIER/2;
+        }
+        else if (kJoules < 400D) {
+            tempPerformance -= (kJoules - 200D) * ENERGY_PERFORMANCE_MODIFIER/4;
         }
 
 
-        if (tempPerformance < 0D) {
-            tempPerformance = 0D;
-        }
+	    if (tempPerformance < 0D) {
+	        tempPerformance = 0D;
+	    }
+	
+	    setPerformanceFactor(tempPerformance);
+	    
 
-        setPerformanceFactor(tempPerformance);
     }
 
     /**
@@ -1179,6 +1190,45 @@ implements Serializable {
         }
         return result;
     }
+
+
+    /**
+     * Gets a list of medication affecting the person.
+     * @return list of medication.
+     */
+    public List<Medication> getMedicationList() {
+        return new ArrayList<Medication>(medicationList);
+    }
+
+    /**
+     * Checks if the person is affected by the given medication.
+     * @param medicationName the name of the medication.
+     * @return true if person is affected by it.
+     */
+    public boolean hasMedication(String medicationName) {
+        if (medicationName == null)
+            throw new IllegalArgumentException("medicationName is null");
+
+        boolean result = false;
+
+        Iterator<Medication> i = medicationList.iterator();
+        while (i.hasNext()) {
+            if (medicationName.equals(i.next().getName())) result = true;
+        }
+
+        return result;
+    }
+
+    /**
+     * Adds a medication that affects the person.
+     * @param medication the medication to add.
+     */
+    public void addMedication(Medication medication) {
+        if (medication == null)
+            throw new IllegalArgumentException("medication is null");
+        medicationList.add(medication);
+    }
+
 
     /**
      * Gets the oxygen consumption rate per Sol.
@@ -1223,196 +1273,15 @@ implements Serializable {
     	//	personConfig = SimulationConfig.instance().getPersonConfiguration();
         return dessert_consumption;//personConfig.getDessertConsumptionRate();
     }
-
+    
     /**
-     * Gets a list of medication affecting the person.
-     * @return list of medication.
+     * Gets the person with this physical condition
+     * @return
      */
-    public List<Medication> getMedicationList() {
-        return new ArrayList<Medication>(medicationList);
+    Person getPerson() {
+        return person;
     }
-
-    /**
-     * Checks if the person is affected by the given medication.
-     * @param medicationName the name of the medication.
-     * @return true if person is affected by it.
-     */
-    public boolean hasMedication(String medicationName) {
-        if (medicationName == null)
-            throw new IllegalArgumentException("medicationName is null");
-
-        boolean result = false;
-
-        Iterator<Medication> i = medicationList.iterator();
-        while (i.hasNext()) {
-            if (medicationName.equals(i.next().getName())) result = true;
-        }
-
-        return result;
-    }
-
-    /**
-     * Adds a medication that affects the person.
-     * @param medication the medication to add.
-     */
-    public void addMedication(Medication medication) {
-        if (medication == null)
-            throw new IllegalArgumentException("medication is null");
-        medicationList.add(medication);
-    }
-
-    /**
-     * Gets the key of the Sleep Cycle Map with the highest weight
-     * @return int[] the two best times in integer
-     */
-    // 2015-12-05 Added getBestKeySleepCycle()
-    public int[] getBestKeySleepCycle() {
-    	int largest[] = {0,0};
-
-    	Iterator<Integer> i = sleepCycleMap.keySet().iterator();
-    	while (i.hasNext()) {
-            int key = i.next();
-    		int value = sleepCycleMap.get(key);
-            if (value > largest[0]) {
-            	largest[1] = largest[0];
-            	largest[0] = key;
-            }
-            else if (value > largest[1])
-            	largest[1] = key;
-
-        }
-
-    	return largest;
-    }
-
-    /**
-     * Updates the weight of the Sleep Cycle Map
-     * @param millisols the time
-     * @param updateType increase or reduce
-     */
-    // 2015-12-05 Added updateValueSleepCycle()
-    public void updateValueSleepCycle(int millisols, boolean updateType) {
-    	// set HEAT_MAP_RESOLUTION of discrete sleep periods
-    	millisols = (millisols / SLEEP_MAP_RESOLUTION )* SLEEP_MAP_RESOLUTION;
-    	int currentValue = 0;
-
-		int d = millisols-SLEEP_MAP_RESOLUTION;
-		int d2 = millisols - 2*SLEEP_MAP_RESOLUTION;
-
-		if (d <= 0)
-			d = 1000 + millisols - SLEEP_MAP_RESOLUTION;
-
-		if (d2 <= 0)
-			d2 = 1000 + millisols - 2*SLEEP_MAP_RESOLUTION;
-
-
-		int a = millisols + SLEEP_MAP_RESOLUTION;
-		int a2 = millisols + 2*SLEEP_MAP_RESOLUTION;
-
-		if (a > 1000)
-			a = millisols + SLEEP_MAP_RESOLUTION - 1000;
-
-		if (a2 > 1000)
-			a2 = millisols + 2*SLEEP_MAP_RESOLUTION - 1000;
-
-    	if (sleepCycleMap.containsKey(millisols)) {
-    		currentValue = sleepCycleMap.get(millisols);
-
-    		if (updateType) {
-        		// Increase the central weight value by 30%
-    			sleepCycleMap.put(millisols, (int) (currentValue *.7 + MAX_WEIGHT * .3));
-
-    			int c2 = (int) (currentValue *.95 + MAX_WEIGHT * .075);
-    			int c = (int) (currentValue *.85 + MAX_WEIGHT * .15);
-
-   				sleepCycleMap.put(d2, c2);
-    			sleepCycleMap.put(d, c);
-    			sleepCycleMap.put(a, c);
-       			sleepCycleMap.put(a2, c2);
-
-    		}
-    		else {
-
-        		// Reduce the central weight value by 10%
-    			sleepCycleMap.put(millisols, (int) (currentValue/1.1));
-
-    			int b = (int) (currentValue/1.05);
-    			int b2 = (int) (currentValue/1.025);
-
-    			sleepCycleMap.put(d2, b2);
-    			sleepCycleMap.put(d, b);
-    			sleepCycleMap.put(a, b);
-    			sleepCycleMap.put(a2, b2);
-
-    		}
-    	}
-    	else {
-    		// For the first time, create the central weight value with 10% of MAX_WEIGHT
-			sleepCycleMap.put(millisols, (int) (MAX_WEIGHT * .1));
-
-			int e = (int) (MAX_WEIGHT * .05);
-			int e2 = (int) (MAX_WEIGHT * .025);
-
-    		sleepCycleMap.put(d2, e2);
-    		sleepCycleMap.put(d, e);
-			sleepCycleMap.put(a, e);
-			sleepCycleMap.put(a2, e2);
-    	}
-
-		//System.out.println(person + "'s sleepHabitMap : " + sleepHabitMap);
-    }
-
-    /**
-     * Scales down the weight of the Sleep Habit Map
-     */
-    // 2015-12-05 Added inflateSleepHabit()
-    public void inflateSleepHabit() {
-    	Iterator<Integer> i = sleepCycleMap.keySet().iterator();
-    	while (i.hasNext()) {
-            int key = i.next();
-    		int value = sleepCycleMap.get(key);
-
-    		if (value > MAX_WEIGHT) {
-    			value = MAX_WEIGHT;
-    			// need to scale down all values, just in case
-    			Iterator<Integer> j = sleepCycleMap.keySet().iterator();
-    	    	while (j.hasNext()) {
-    	            int key1 = j.next();
-    	    		int value1 = sleepCycleMap.get(key1);
-    	    		value1 = (int) (value1/INFLATION/INFLATION);
-    	            sleepCycleMap.put(key1, value1);
-    	        }
-    		}
-
-    		value = (int) (value/INFLATION);
-            sleepCycleMap.put(key, value);
-        }
-    }
-
-	public int getNumSleep() {
-		return numSleep;
-	}
-
-	public int getSuppressHabit() {
-		return suppressHabit;
-	}
-
-	public int getSpaceOut() {
-		return spaceOut;
-	}
-
-	public void setNumSleep(int value) {
-		numSleep = value;
-	}
-
-	public void setSuppressHabit(int value) {
-		suppressHabit = value;
-	}
-
-	public void setSpaceOut(int value) {
-		spaceOut = value;
-	}
-
+    
     /**
      * Prepare object for garbage collection.
      */

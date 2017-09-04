@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2017-09-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -47,6 +48,8 @@ implements Serializable {
     /** The exercise building the person is using. */
     private Exercise gym;
 
+	private CircadianClock circadian;
+	
     /**
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
@@ -56,6 +59,8 @@ implements Serializable {
         super(NAME, person, true, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(30D));
 
+        circadian = person.getCircadianClock();
+        
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // If person is in a settlement, try to find a gym.
@@ -104,8 +109,8 @@ implements Serializable {
      */
     private double exercisingPhase(double time) {
 
-        // Do nothing
-
+        circadian.exercise(time);
+ 
         return 0D;
     }
 

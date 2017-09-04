@@ -92,6 +92,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int solCache = 1;
 
 	//private int[] emotional_states;
+
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */
@@ -108,12 +109,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String country;
 	private String bloodType;
 	private String lastWord;
-	/** The person's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement;
-	private Map<Integer, Gene> paternal_chromosome;
-	private Map<Integer, Gene> maternal_chromosome;
-
-	private LifeSupportType support;
+	
 	/** The gender of the person (male or female). */
 	private PersonGender gender;
 	/** The birth time of the person. */
@@ -126,27 +122,54 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Mind mind;
 	/** Person's physical condition. */
 	private PhysicalCondition health;
-	private Cooking kitchenWithMeal;
-	private PreparingDessert kitchenWithDessert;
-	private PersonConfig config; // SimulationConfig.instance().getPersonConfiguration();
+	/** Person's circadian clock. */	
+	private CircadianClock circadian;
+			
 	private Favorite favorite;
+	
 	private TaskSchedule taskSchedule;
+	
 	private JobHistory jobHistory;
+	
 	private Role role;
+	
 	private Preference preference;
+
+	private LifeSupportType support;
+
+	private Cooking kitchenWithMeal;
+	
+	private PreparingDessert kitchenWithDessert;
+
 	private ReportingAuthority ra;
+	
 	private Point2D bed;
 
 	private Settlement buriedSettlement;
+	
 	private Building quarters;
+	
 	private Building diningBuilding;
+	
 	private Building currentBuilding;
+	
 	private Vehicle vehicle;
 
+	
+	/** The person's achievement in scientific fields. */
+	private Map<ScienceType, Double> scientificAchievement;
+	/** The person's paternal chromosome. */
+	private Map<Integer, Gene> paternal_chromosome;
+	/** The person's maternal chromosome. */
+	private Map<Integer, Gene> maternal_chromosome;
+
+	
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static EarthClock earthClock;
 	private static MasterClock masterClock;
+
+	private PersonConfig config; 
 
 	/**
 	 * Constructor 1 : used by PersonBuilderImpl
@@ -243,7 +266,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		mind = new Mind(this);
 
 		setupChromosomeMap();
-		
+				
+		circadian = new CircadianClock(this);
+
 		health = new PhysicalCondition(this);
 
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
@@ -776,25 +801,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *            amount of time passing (in millisols).
 	 */
 	public void timePassing(double time) {
-		// logger.info("Person's timePassing() is in " +
-		// Thread.currentThread().getName() + " Thread");
-		// System.out.println("Container Unit : " + this.getContainerUnit());
-		// final long time0 = System.nanoTime();
-
-		// 2015-06-29 Added calling taskSchedule
-		// taskSchedule.timePassing(time);
 
 		// If Person is dead, then skip
 		if (!health.isDead()) {// health.getDeathDetails() == null) {
 
 			support = getLifeSupportType();
-			// Pass the time in the physical condition first as this may
-			// result in death.
-
+			
+			circadian.timePassing(time, support);
+			// Pass the time in the physical condition first as this may result in death.
 			health.timePassing(time, support);
 
-			// if alive
-			if (!health.isDead()) {// , config)) {
+			if (!health.isDead()) {
 
 				// 2015-06-29 Added calling preference
 				preference.timePassing(time);
@@ -1286,11 +1303,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	public int[] getBestKeySleepCycle() {
-		return health.getBestKeySleepCycle();
+		return circadian.getBestKeySleepCycle();
 	}
 
 	public void updateValueSleepCycle(int millisols, boolean updateType) {
-		health.updateValueSleepCycle(millisols, updateType);
+		circadian.updateValueSleepCycle(millisols, updateType);
 	}
 
 	// 2015-12-12 Added setEmotionalStates()
@@ -1357,10 +1374,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		else
 			return null;
 	}
+
+	public CircadianClock getCircadianClock() {
+		return circadian;
+	}
+	
 	
 	@Override
 	public void destroy() {
 		super.destroy();
+		circadian = null;
 		vehicle = null;
 		attributes.destroy();
 		attributes = null;

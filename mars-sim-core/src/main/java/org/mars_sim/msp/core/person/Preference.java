@@ -118,7 +118,7 @@ public class Preference implements Serializable {
 
 		this.person = person;
 
-		metaTaskList = MetaTaskUtil.getMetaTasks();
+		metaTaskList = MetaTaskUtil.getAllMetaTasks();
 		metaTaskStringList = new ArrayList<>();
 		//metaMissionList = MetaMissionUtil.getMetaMissions();
 
@@ -322,7 +322,7 @@ public class Preference implements Serializable {
 
 				result +=(int)l;
 		}
-*/
+*/ 
 	}
 
 	public int getPreferenceScore(MetaTask metaTask) {

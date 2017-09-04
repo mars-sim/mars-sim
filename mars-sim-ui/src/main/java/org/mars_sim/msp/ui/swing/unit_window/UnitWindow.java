@@ -374,17 +374,17 @@ public abstract class UnitWindow extends JInternalFrame {
 
     public String getTimePeriod(ShiftType shiftType) {
     	String time = null;
-    	if (shiftType.equals(ShiftType.A))
+    	if (shiftType == ShiftType.A)
     		time = SHIFT_FROM + TaskSchedule.A_START + TO + TaskSchedule.A_END + MILLISOLS;
-    	else if (shiftType.equals(ShiftType.B))
+    	else if (shiftType == ShiftType.B)
     		time = SHIFT_FROM + TaskSchedule.B_START + TO + TaskSchedule.B_END + MILLISOLS;
-    	else if (shiftType.equals(ShiftType.X))
+    	else if (shiftType == ShiftType.X)
     		time = SHIFT_FROM + TaskSchedule.X_START + TO + TaskSchedule.Y_END + MILLISOLS;
-    	else if (shiftType.equals(ShiftType.Y))
+    	else if (shiftType == ShiftType.Y)
     		time = SHIFT_FROM + TaskSchedule.Y_START + TO + TaskSchedule.Y_END + MILLISOLS;
-    	else if (shiftType.equals(ShiftType.Z))
+    	else if (shiftType == ShiftType.Z)
     		time = SHIFT_FROM + TaskSchedule.Z_START + TO + TaskSchedule.Z_END + MILLISOLS;
-    	else if (shiftType.equals(ShiftType.ON_CALL))
+    	else if (shiftType == ShiftType.ON_CALL)
     		time = SHIFT_ANYTIME;
     	else
     		time = ONE_SPACE_SHIFT;

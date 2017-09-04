@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-03-11
  * @author Manny Kung
  */
-
+ 
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;

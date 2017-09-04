@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -105,6 +106,7 @@ public class EatMeal extends Task implements Serializable {
     //private static AmountResource napkinAR = ResourceUtil.napkinAR;
     //private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
     //private static AmountResource foodAR = ResourceUtil.foodAR;
+
 
     /**
      * Constructor.
@@ -332,6 +334,7 @@ public class EatMeal extends Task implements Serializable {
         // Add caloric energy from meal.
         double caloricEnergyFoodAmount = cookedMeal.getDryMass() * mealProportion;
         condition.addEnergy(caloricEnergyFoodAmount);
+        
     }
 
     /**
@@ -417,20 +420,21 @@ public class EatMeal extends Task implements Serializable {
                 // Eat prepared dessert.
             	checkInDescription(PreparingDessert.convertString2AR(nameOfDessert.getName()), true);
                 eatPreparedDessert(eatingTime);
+
             }
             else {
                 // Eat unprepared dessert (fruit, soymilk, etc).
                  boolean enoughDessert = eatUnpreparedDessert(eatingTime);
 
                  if (enoughDessert) {
-                	checkInDescription(unpreparedDessertAR, false);
-                  }
+                	 checkInDescription(unpreparedDessertAR, false);
+                 }
 
                 // If not enough unprepared dessert available, end task.
-                if (!enoughDessert) {
-                    remainingTime = time;
-                    endTask();
-                }
+                 else {//if (!enoughDessert) {
+                	 remainingTime = time;
+                	 endTask();
+                 }
             }
         }
 

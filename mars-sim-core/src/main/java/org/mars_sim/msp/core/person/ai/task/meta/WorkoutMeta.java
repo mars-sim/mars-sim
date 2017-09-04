@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WorkoutMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-09-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -42,23 +42,44 @@ public class WorkoutMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+    	if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+    		return 0;
+    			
         double result = 0D;
-
-        
+               
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
         		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
-            result = 20D + condition.getStress() * 2D;
             
+            double stress = condition.getStress();
             double fatigue = condition.getFatigue();
-            
-            if (fatigue > 2000)
-            	result = result - 20D;
+            double kJ = condition.getEnergy();
 
-            else if (fatigue < 700)
-            	result = result + fatigue/10D;
+            result = fatigue/50D + stress/25D;
+
+            if (kJ < 200)
+            	return 0;
+            
+            if (fatigue > 1000)
+            	result *= 1.8D;
+            else if (fatigue > 900)
+            	result *= 1.6D;
+            else if (fatigue > 800)
+            	result *= 1.4D;
+            else if (fatigue > 700)
+            	result *= 1.2D;
+
+            if (stress > 80)
+            	result *= 2D;
+            else if (stress > 60)
+            	result *= 1.8D;
+            else if (stress > 40)
+            	result *= 1.6D;
+            else if (stress > 20)
+            	result *= 1.4D;
+            	
             
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
@@ -67,22 +88,21 @@ public class WorkoutMeta implements MetaTask, Serializable {
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
             } // a person can still have workout on his own without a gym in MDP Phase 1-3
 
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+            // Modify if working out is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Workout")) {
+                result *= 2D;
+            }
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
+            if (result < 0) result = 0;
+
         }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Modify if working out is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Workout")) {
-            result *= 2D;
-        }
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0)
-         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-        if (result < 0) result = 0;
-
     
         return result;
     }

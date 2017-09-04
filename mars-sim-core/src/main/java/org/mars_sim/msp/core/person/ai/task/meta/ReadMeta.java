@@ -54,8 +54,6 @@ public class ReadMeta implements MetaTask, Serializable {
         	if (person.getLocationSituation() == LocationSituation.IN_VEHICLE)
         		result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
 
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
 
 	        // Effort-driven task modifier.
 	        //result *= person.getPerformanceRating();
@@ -72,10 +70,9 @@ public class ReadMeta implements MetaTask, Serializable {
                 result *= 1.5D;
             }
 
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            }
+
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
 
          	if (condition.getFatigue() > 1200D)
          		result/=1.5;
@@ -91,6 +88,12 @@ public class ReadMeta implements MetaTask, Serializable {
          	else if (condition.getStress() > 90D)
          		result/=3D;
 
+            // 2015-06-07 Added Preference modifier
+            if (result > 0D) {
+                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+            }
+            
+            
 	        if (result < 0) result = 0;
 
         }
