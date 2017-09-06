@@ -1035,13 +1035,13 @@ public class UnitManager implements Serializable {
 	 * Establish the mission roles for a one or two person settlement
 	 * @param settlement
 	 * @param pop
-	 */
+
 	private void establishMissionRoles(Settlement settlement) {
 		//electChief(settlement, RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
 		//electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
 		//electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
 	}
-	
+	 */	
 	
 	// 2015-05-11 Added electCommanders()
 	public void electCommanders(Settlement settlement, RoleType role, int pop) {
@@ -1139,9 +1139,9 @@ public class UnitManager implements Serializable {
 	    if (popSize >= 3) {
 	    	establishCommand(settlement, popSize);
         }
-	    else {
-            establishMissionRoles(settlement);
-        }
+	    //else {
+        //   establishMissionRoles(settlement);
+        //}
 	}
 
 

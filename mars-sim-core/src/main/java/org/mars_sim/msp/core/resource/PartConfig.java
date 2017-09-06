@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PartConfig.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
@@ -37,12 +36,19 @@ public final class PartConfig implements Serializable {
 	public static final String PROBABILITY = "probability";
 	public static final String MAX_NUMBER = "max-number";
 
+	private static int id;
+	
 	// Data members.
 	//private Set<ItemResource> itemResources = new HashSet<ItemResource>();
 	private Set<Part> itemResources = new TreeSet<Part>();
 
 	private Map<String, Part> itemResourceMap;
 
+    private Map<String, Integer> numEntitiesInUse;
+
+    //private List<String> entities;
+    //private Map<Settlement, Map<String, Integer>> settlementEntitiesInUse;
+    
 	
     /**
      * Constructor
@@ -50,6 +56,7 @@ public final class PartConfig implements Serializable {
      * @throws Exception if error reading XML document
      */
     public PartConfig(Document itemResourceDoc) {
+		id = 0;
     	//System.out.println("Setting up PartConfig");
         loadItemResources(itemResourceDoc);
 	
@@ -60,6 +67,9 @@ public final class PartConfig implements Serializable {
 		for (Part p : itemResources) {
 			itemResourceMap.put(p.getName(), p);
 		}
+		
+        numEntitiesInUse = new HashMap<>();
+
     }
 
     /**
@@ -72,6 +82,7 @@ public final class PartConfig implements Serializable {
         Element root = itemResourceDoc.getRootElement();
         List<Element> partNodes = root.getChildren(PART);
         for (Element partElement : partNodes) {
+			id++;
             String name = "";
             String description = "no description available.";
 
@@ -83,13 +94,13 @@ public final class PartConfig implements Serializable {
             if (descriptElem != null) {
             	description = descriptElem.getText();
             }
-
+     		
             // Get mass.
             double mass = Double.parseDouble(partElement
                     .getAttributeValue(MASS));
 
             // Add part to item resources.
-            Part p = new Part(name, description, mass);
+            Part p = new Part(name, id, description, mass);
             itemResources.add(p);
             //ItemResource r = new ItemResource(name, description, mass);
             //itemResources.add(r);

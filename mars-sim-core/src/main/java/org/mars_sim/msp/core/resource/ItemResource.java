@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ItemResource.java
- * @version 3.07 2014-12-01
+ * @version 3.1.0 2017-09-05
  * @author Scott Davis
  */
 
@@ -71,8 +71,9 @@ implements Serializable {
 	 * @param description {@link String}
 	 * @param massPerItem the mass (kg) of the resource per item.
 	 */
-	protected ItemResource(String name, String description, double massPerItem) {
+	protected ItemResource(String name,  int id, String description, double massPerItem) {
 		this.name = name;
+		this.id = id;
 		this.description = description;
 		this.massPerItem = massPerItem;
 	}
@@ -191,10 +192,11 @@ implements Serializable {
 
 	public static ItemResource createItemResource(
 			String resourceName,
+			int id,
 			String description,
 			double massPerItem
 			) {
-		return new ItemResource(resourceName,description,massPerItem);
+		return new ItemResource(resourceName, id, description, massPerItem);
 	}
 
 	private static class UnknownResourceName

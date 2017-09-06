@@ -51,9 +51,7 @@ public class AmountResourceConfig implements Serializable {
 	 * @throws Exception if error reading XML document
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
-		//System.out.println("AmountResourceConfig's constructor");
 		id = 0;
-
 		loadAmountResources(amountResourceDoc);
 	}
 

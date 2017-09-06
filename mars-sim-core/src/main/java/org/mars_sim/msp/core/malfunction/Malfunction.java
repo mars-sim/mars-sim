@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Malfunction.java
- * @version 3.1.0 2017-05-06
+ * @version 3.1.0 2017-09-05
  * @author Scott Davis
  */
 
@@ -14,13 +14,14 @@ import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -32,7 +33,8 @@ public class Malfunction implements Serializable {
     //private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
     //private static Logger logger = Logger.getLogger(CLASS_NAME);
 	private static Logger logger = Logger.getLogger(Malfunction.class.getName());
-
+	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     // Data members
     private int severity;
@@ -46,7 +48,7 @@ public class Malfunction implements Serializable {
     private double EVAWorkTimeCompleted;
     private String name;
 
-    private Collection<String> scope;
+    private Collection<String> scopes;
     private Map<AmountResource, Double> resourceEffects;
     private Map<String, Double> lifeSupportEffects;
     private Map<ComplaintType, Double> medicalComplaints;
@@ -58,7 +60,7 @@ public class Malfunction implements Serializable {
      * @param name name of the malfunction
      */
     public Malfunction(String name, int severity, double probability, double emergencyWorkTime,
-		       double workTime, double EVAWorkTime, Collection<String> scope,
+		       double workTime, double EVAWorkTime, Collection<String> entities,
 		       Map<AmountResource, Double> resourceEffects,
 		       Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints) {
 
@@ -69,7 +71,7 @@ public class Malfunction implements Serializable {
         this.emergencyWorkTime = emergencyWorkTime;
         this.workTime = workTime;
         this.EVAWorkTime = EVAWorkTime;
-        this.scope = scope;
+        this.scopes = entities;
         this.resourceEffects = resourceEffects;
         this.lifeSupportEffects = lifeSupportEffects;
         this.medicalComplaints = medicalComplaints;
@@ -220,8 +222,8 @@ public class Malfunction implements Serializable {
     public boolean unitScopeMatch(Collection<String> unitScope) {
         boolean result = false;
 
-        if ((scope.size() > 0) && (unitScope.size() > 0)) {
-            Iterator<String> i1 = scope.iterator();
+        if ((scopes.size() > 0) && (unitScope.size() > 0)) {
+            Iterator<String> i1 = scopes.iterator();
             while (i1.hasNext()) {
                 String scopeString = i1.next();
                 Iterator<String> i2 = unitScope.iterator();
@@ -266,7 +268,7 @@ public class Malfunction implements Serializable {
      */
     public Malfunction getClone() {
         Malfunction clone = new Malfunction(name, severity, probability, emergencyWorkTime,
-            workTime, EVAWorkTime, scope, resourceEffects, lifeSupportEffects, medicalComplaints);
+            workTime, EVAWorkTime, scopes, resourceEffects, lifeSupportEffects, medicalComplaints);
 
         String id = " (id: " + Integer.toHexString(hashCode()) + ")";
 
@@ -292,7 +294,7 @@ public class Malfunction implements Serializable {
             }
         }
     }
-
+/*
     public void produceSolidWaste(double amount, String name, Inventory inv) {
 
     	try {
@@ -311,7 +313,8 @@ public class Malfunction implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
         }
     }
-
+*/
+    
     /**
      * Gets the parts required to repair this malfunction.
      * @return map of parts and their number.
@@ -335,7 +338,8 @@ public class Malfunction implements Serializable {
     			numberNeeded -= number;
 
     			// 2015-02-26 Added produceSolidWaste()
-                produceSolidWaste(part.getMass(), "Solid Waste", inv);
+                //produceSolidWaste(part.getMass(), "Solid Waste", inv);
+                Storage.storeAnResource(part.getMass(), ResourceUtil.solidWasteAR, inv, sourceName + "::repairWithParts");
 
     			if (numberNeeded > 0) repairParts.put(part, numberNeeded);
     			else repairParts.remove(part);

@@ -187,6 +187,11 @@ implements Serializable {
 
 		// On sol 214 in this list of Viking wind speeds, 25.9 m/sec (93.24 km/hr) was recorded.	
 		
+		// Viking spacecraft from the surface, "during a global dust storm the diurnal temperature range narrowed 
+		// sharply,...the wind speeds picked up considerably—indeed, within only an hour of the storm's arrival they 
+		// had increased to 17 m/s (61 km/h), with gusts up to 26 m/s (94 km/h)
+		// https://en.wikipedia.org/wiki/Climate_of_Mars
+		
 		if (windSpeedCacheMap.containsKey(location)) {
 			
 			double rand = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
@@ -258,7 +263,7 @@ implements Serializable {
 		// in the range of 80-120 mph (120-160 km/hr). 
 		// At higher altitudes, the movement of dust was measured at 250-300 mph (400-480 km/hr). 
 
-		if (new_speed > 50) // assume the max surface wind speed of 50 m/s
+		if (new_speed > 50) // assume the max surface wind speed of up to 50 m/s
 			new_speed = 50;
 		if (new_speed < 0)
 			new_speed = 0;

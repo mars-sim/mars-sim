@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -35,7 +36,6 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
-import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -54,6 +54,9 @@ public abstract class Vehicle extends Unit implements Serializable,
         Malfunctionable, Salvagable, LocalBoundedObject {
 
     private static Logger logger = Logger.getLogger(Vehicle.class.getName());
+	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, 
+    		logger.getName().length());
 
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
@@ -655,13 +658,15 @@ public abstract class Vehicle extends Unit implements Serializable,
         if (isReservedMission) {
             // Set reserved for mission to false if the vehicle is not associated with a mission.
             if (Simulation.instance().getMissionManager().getMissionForVehicle(this) == null) {
-                logger.log(Level.SEVERE, getName() + " is mission reserved but has no mission.");
+            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+                		getName() + " is mission reserved but has NO mission.", null);
                 setReservedForMission(false);
             }
         }
         else {
             if (Simulation.instance().getMissionManager().getMissionForVehicle(this) != null) {
-                logger.log(Level.SEVERE, getName() + " is not mission reserved but is on a mission.");
+            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+                		getName() + " is NOT mission reserved but is on a mission.", null);
             }
         }
 

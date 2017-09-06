@@ -45,8 +45,9 @@ extends TestCase {
 
         String resourceName = "hammer";
         String description = "a tool";
+        int id = 1;
         double massPerItem = 1.4D;
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 		Settlement settlement = new MockSettlement();
 		Inventory settlementInv = settlement.getInventory();
 		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);

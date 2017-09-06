@@ -106,6 +106,7 @@ implements Serializable {
 	private MasterClock masterClock;
 	private MarsClock startTime;
 	private MarsClock currentTime;
+	private	MalfunctionFactory factory;
 
 	/**
 	 * Constructor.
@@ -127,6 +128,8 @@ implements Serializable {
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.wearLifeTime = wearLifeTime;
 		wearCondition = 100D;
+		
+		factory = Simulation.instance().getMalfunctionFactory();
 	}
 
 	/**
@@ -357,7 +360,7 @@ implements Serializable {
 	 * Adds a randomly selected malfunction to the unit (if possible).
 	 */
 	private void addMalfunction() {
-		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
+		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		Malfunction malfunction = factory.getMalfunction(scope);
 		if (malfunction != null) {
 			addMalfunction(malfunction, true);
@@ -803,12 +806,12 @@ implements Serializable {
 	 * @throws Exception if error finding probabilities.
 	 */
 	public Map<Part, Double> getRepairPartProbabilities() {
-		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
+		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getRepairPartProbabilities(scope);
 	}
 
 	public Map<Part, Double> getMaintenancePartProbabilities() {
-		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
+		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getMaintenancePartProbabilities(scope);
 	}
 

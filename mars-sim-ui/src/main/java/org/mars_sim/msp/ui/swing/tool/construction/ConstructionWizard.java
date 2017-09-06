@@ -71,6 +71,7 @@ import java.util.logging.Logger;
  * The ConstructionWizard class is a class for hosting construction event manually.
  *
  */
+@SuppressWarnings("restriction")
 public class ConstructionWizard {
 
 	/** default serial id. */

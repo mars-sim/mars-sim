@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * MalfunctionEvent.java
+ * @version 3.1.0 2017-09-04
+ * @author Scott Davis
+ */
 package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;

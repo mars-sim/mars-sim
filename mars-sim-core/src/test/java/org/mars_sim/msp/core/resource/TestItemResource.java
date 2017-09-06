@@ -27,9 +27,9 @@ public class TestItemResource extends TestCase {
         // initialize 
         new ItemResource();
         
-        hammer = ItemResource.createItemResource("hammer","a tool", 1.4D);
-        socketWrench = ItemResource.createItemResource("socket wrench","another tool", .5D);
-        pipeWrench = ItemResource.createItemResource("pipe wrench","and another tool", 2.5D);
+        hammer = ItemResource.createItemResource("hammer", 1, "a tool", 1.4D);
+        socketWrench = ItemResource.createItemResource("socket wrench", 2, "another tool", .5D);
+        pipeWrench = ItemResource.createItemResource("pipe wrench", 3, "and another tool", 2.5D);
         resources = ItemResource.getItemResources();
         
         resources = Arrays.asList(hammer, socketWrench, pipeWrench);

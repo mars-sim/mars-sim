@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.08 2015-12-23
+ * @version 3.1.0 2017-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -82,13 +81,13 @@ implements Serializable {
             "Mission.phase.construction")); //$NON-NLS-1$
 
 	// Number of mission members.
-	public static final int MIN_PEOPLE = 3;
+	public static final int MIN_PEOPLE = 2;
 	public static final int MAX_PEOPLE = 10;
 
-    public static int FIRST_AVAILABLE_SOL = 10000;
+    public static int FIRST_AVAILABLE_SOL = 2;
 
 	/** Time (millisols) required to prepare construction site for stage. */
-	public static final double SITE_PREPARE_TIME = 500D;
+	public static final double SITE_PREPARE_TIME = 500D;//200D;
 
 	// Default distance between buildings for construction.
 	public static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;

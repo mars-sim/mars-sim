@@ -48,7 +48,8 @@ extends TestCase {
 	private static final String resourceName = "hammer";
 	private static final String description = "a tool";
 	private static final double massPerItem = 1.4D;
-
+	private static final int id = 1;
+	
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
@@ -79,7 +80,7 @@ extends TestCase {
 		person.initialize();
 		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 
 		Inventory vehicleInv = vehicle.getInventory();
 
@@ -137,7 +138,7 @@ extends TestCase {
 	public void testHasEnoughSuppliesGood() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
@@ -178,7 +179,7 @@ extends TestCase {
 	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 
 		inv.storeItemResources(hammer, 5);
 
@@ -210,7 +211,7 @@ extends TestCase {
 	public void testHasEnoughSuppliesNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
@@ -249,7 +250,7 @@ extends TestCase {
 	public void testHasEnoughSuppliesNoEquipment() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 
 		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
@@ -289,7 +290,7 @@ extends TestCase {
 	public void testIsFullyLoadedGood() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -336,7 +337,7 @@ extends TestCase {
 	public void testIsFullyLoadedNoAmountResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -375,7 +376,7 @@ extends TestCase {
 	public void testIsFullyLoadedNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -421,7 +422,7 @@ extends TestCase {
 	public void testIsFullyLoadedNoEquipment() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 

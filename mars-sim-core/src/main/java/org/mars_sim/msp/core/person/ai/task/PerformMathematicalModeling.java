@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2017-09-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
@@ -86,19 +85,19 @@ implements ResearchScientificStudy, Serializable {
                 addPersonToLab();
             }
             else {
-                logger.info("lab could not be determined.");
+                logger.warning("lab equipment not functioning.");
                 endTask();
             }
         }
         else {
-            logger.info("study could not be determined");
+            logger.warning("the study was interrupted.");
             endTask();
         }
 
         // Check if person is in a moving rover.
-        if (inMovingRover(person)) {
-            endTask();
-        }
+        //if (inMovingRover(person)) {
+        //    endTask();
+        //}
 
         // Initialize phase
         addPhase(MODELING);
@@ -426,9 +425,9 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Check if person is in a moving rover.
-        if (inMovingRover(person)) {
-            endTask();
-        }
+        //if (inMovingRover(person)) {
+        //    endTask();
+        //}
 
         if (isDone()) {
             return time;

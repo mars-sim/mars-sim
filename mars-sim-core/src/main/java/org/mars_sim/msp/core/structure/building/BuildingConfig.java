@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2015-02-01
+ * @version 3.1.0 2017-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -15,11 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-//import java.util.logging.Logger;
-
-
-
-
 
 import org.jdom.DataConversionException;
 import org.jdom.Document;

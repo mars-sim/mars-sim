@@ -32,7 +32,7 @@ public class DustStorm implements Serializable {
 	// Global dust storms do not seem to occur every Martian spring or summer, however.
 	
 	// https://www.windows2universe.org/mars/atmosphere/global_dust_storms.html
-
+/*
 	private static final int NORTHERN = 0;
 	private static final int SOUTHERN = 1;
 	private static final int SYRIA_PLANUM = 0; //(12.1 S, 256.1 E)
@@ -41,7 +41,7 @@ public class DustStorm implements Serializable {
 	private static final int THAUMASIA_FOSSAE = 4; //Planum/Thaumasia Fossae (21.7 S, 294.8 E)
 	private static final int HELLESPONTUE = 5; // Hellespontus ( 49.7 S, 35 E)
 	private static final int NOACHIS_TERRA = 6; // Noachis Terra
-
+*/
 	private static final double R = 187D; // [in J/kg/K]
 	
 	private static final double HEIGHT = 5D; // [in km]
@@ -237,8 +237,8 @@ public class DustStorm implements Serializable {
 
 			newSize = sss + up3 - down3;
 
-			if (newSize > 6787) 
-				newSize = 6787;
+			if (newSize > 6787*Math.PI) 
+				newSize = (int) (6787*Math.PI);
 			// arbitrary speed determination
 			newSpeed = 200 + .01 * newSize ;
 

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * Part.java
- * @version 3.07 2015-02-26
-
+ * @version 3.1.0 2017-09-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
@@ -21,6 +20,8 @@ public class Part extends ItemResource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private int id;
+	
 	private double mass;
 
 	// Domain members
@@ -32,14 +33,28 @@ public class Part extends ItemResource {
      * @param description {@link String}
      * @param mass the mass of the part (kg)
      */
-    public Part(String name, String description, double mass) {
+    public Part(String name, int id, String description, double mass) {
         // Use ItemResource constructor.
-        super(name,description,mass);
+        super(name, id, description, mass);
         this.mass = mass;
+        this.id = id;
 
         maintenanceEntities = new ArrayList<MaintenanceEntity>();
     }
 
+	/**
+	 * Gets the part's id.
+	 * @return part id.
+	 */
+	@Override
+	public int getID() {
+		return id;
+	}
+	
+	/**
+	 * Gets the part's mass.
+	 * @return mass in kg.
+	 */
     public double getMass() {
     	return mass;
     }

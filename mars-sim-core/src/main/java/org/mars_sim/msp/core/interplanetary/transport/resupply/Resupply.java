@@ -565,14 +565,18 @@ implements Serializable, Transportable {
                 }
             }
 
-            // Reset command/government system at settlement.
-            unitManager.establishSettlementGovernance(settlement);
+			settlement.updateAllAssociatedPeople();
+			settlement.updateAllAssociatedRobots();
 
             // Reset work shift schedules at settlement.
             //unitManager.setupShift(settlement, popSize);
 
             // 2015-12-06 Added reassignWorkShift()
             settlement.reassignWorkShift();
+            
+            // Reset command/government system at settlement.
+            unitManager.establishSettlementGovernance(settlement);
+
         }
 
     }

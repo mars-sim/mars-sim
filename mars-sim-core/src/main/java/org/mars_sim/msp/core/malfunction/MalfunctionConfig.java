@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionConfig.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -19,6 +19,7 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Provides configuration information about malfunctions.
@@ -49,10 +50,14 @@ public class MalfunctionConfig implements Serializable {
     private static final String PART = "part";
     private static final String NUMBER = "number";
     private static final String VALUE = "value";
+    
     private Document malfunctionDoc;
+    
     private List<Malfunction> malfunctionList;
+    
     private Map<String, List<RepairPart>> repairParts;
-
+    
+    
     /**
      * Constructor
      * @param malfunctionDoc DOM document containing malfunction configuration.
@@ -60,6 +65,7 @@ public class MalfunctionConfig implements Serializable {
     public MalfunctionConfig(Document malfunctionDoc) {
         this.malfunctionDoc = malfunctionDoc;
         repairParts = new HashMap<String, List<RepairPart>>();
+ 
     }
 
     /**
@@ -125,7 +131,8 @@ public class MalfunctionConfig implements Serializable {
                     List<Element> entityNodes = entityListElement.getChildren(ENTITY);
 
                     for (Element entityElement : entityNodes) {
-                        entities.add(entityElement.getAttributeValue(NAME));
+                    	String entity_name = entityElement.getAttributeValue(NAME);
+                        entities.add(entity_name);
                     }
 
                     // Get effects.

@@ -1,30 +1,20 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMissionMeta.java
- * @version 3.08 2015-06-26
+ * @version 3.1.0 2017-09-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.Iterator;
-import java.util.logging.Level;
+
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionValues;
-import org.mars_sim.msp.core.time.MarsClock;
+
 
 /**
  * A meta mission for the BuildingConstructionMission mission.
