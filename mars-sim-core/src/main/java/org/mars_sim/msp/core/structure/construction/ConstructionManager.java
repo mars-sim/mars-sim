@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -239,8 +239,8 @@ implements Serializable {
 		buildingManager.removeBuilding(salvagedBuilding);
 
 		// Move any people in building to somewhere else in the settlement.
-		if (salvagedBuilding.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = (LifeSupport) salvagedBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
+		if (salvagedBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
+			LifeSupport lifeSupport = (LifeSupport) salvagedBuilding.getFunction(FunctionType.LIFE_SUPPORT);
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Person occupant = i.next();
@@ -251,8 +251,8 @@ implements Serializable {
 
 		// 2015-12-23 Added handling robots
 		// Move any robot in building to somewhere else in the settlement.
-		if (salvagedBuilding.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
-			RoboticStation station = (RoboticStation) salvagedBuilding.getFunction(BuildingFunction.ROBOTIC_STATION);
+		if (salvagedBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
+			RoboticStation station = (RoboticStation) salvagedBuilding.getFunction(FunctionType.ROBOTIC_STATION);
 			Iterator<Robot> i = station.getRobotOccupants().iterator();
 			while (i.hasNext()) {
 				Robot occupant = i.next();

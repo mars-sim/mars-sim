@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -165,7 +165,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             else if (entity instanceof Building) {
                 // Perform EVA emergency repair on uninhabitable buildings.
                 Building building = (Building) entity;
-                if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                     result = true;
                 }
             }

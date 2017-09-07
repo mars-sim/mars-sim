@@ -48,7 +48,7 @@ public class LivingAccommodations extends Function implements Serializable {
     //public final static String TOILET_TISSUE = "toilet tissue";
     //public final static String TOXIC_WASTE = "toxic waste";
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.LIVING_ACCOMODATIONS;
+    private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMODATIONS;
 
     private int beds; // max # of beds
     private int sleepers;

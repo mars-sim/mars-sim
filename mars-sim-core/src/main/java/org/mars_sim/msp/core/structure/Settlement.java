@@ -62,7 +62,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
@@ -514,11 +514,11 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public int getPopulationCapacity() {
 		int result = 0;
-		Iterator<Building> i = buildingManager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS).iterator();
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			LivingAccommodations livingAccommodations = (LivingAccommodations) building
-					.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 			result += livingAccommodations.getBeds();
 		}
 
@@ -528,11 +528,11 @@ implements Serializable, LifeSupportType, Objective {
 	// 2016-01-12 Added getSleepers()
 	public int getSleepers() {
 		int result = 0;
-		Iterator<Building> i = buildingManager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS).iterator();
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			LivingAccommodations livingAccommodations = (LivingAccommodations) building
-					.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 			result += livingAccommodations.getSleepers();
 		}
 
@@ -542,11 +542,11 @@ implements Serializable, LifeSupportType, Objective {
 	// 2016-01-12 Added getDesignatedBeds()
 	public int getTotalNumDesignatedBeds() {
 		int result = 0;
-		Iterator<Building> i = buildingManager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS).iterator();
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			LivingAccommodations livingAccommodations = (LivingAccommodations) building
-					.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 			result += livingAccommodations.getBedMap().size();
 		}
 
@@ -641,10 +641,10 @@ implements Serializable, LifeSupportType, Objective {
 			Building building = i.next();
 			result++;
 		}
-		Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.ROBOTIC_STATION).iterator();
+		Iterator<Building> j = buildingManager.getBuildings(FunctionType.ROBOTIC_STATION).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			RoboticStation roboticStations = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+			RoboticStation roboticStations = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
 			stations += roboticStations.getSlots();
 			// stations++;
 		}
@@ -1334,11 +1334,11 @@ implements Serializable, LifeSupportType, Objective {
 		int nShift = 0;
 
 		if (pop == 1) {
-			numShift = 1;
+			nShift = 1;
 		} else if (pop < UnitManager.THREE_SHIFTS_MIN_POPULATION) {
-			numShift = 2;
+			nShift = 2;
 		} else {// if pop => 6
-			numShift = 3;
+			nShift = 3;
 		}
 
 		if (numShift != nShift)
@@ -1687,7 +1687,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		double leastDistance = Double.MAX_VALUE;
 		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(BuildingFunction.EVA).iterator();
+		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 
@@ -1708,7 +1708,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		double leastDistance = Double.MAX_VALUE;
 		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(BuildingFunction.EVA).iterator();
+		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 
@@ -1777,7 +1777,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		double leastDistance = Double.MAX_VALUE;
 		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(BuildingFunction.EVA).iterator();
+		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 
@@ -1813,7 +1813,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		double leastDistance = Double.MAX_VALUE;
 		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(BuildingFunction.EVA).iterator();
+		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
 
@@ -1851,7 +1851,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return number of airlocks.
 	 */
 	public int getAirlockNum() {
-		return buildingManager.getBuildings(BuildingFunction.EVA).size();
+		return buildingManager.getBuildings(FunctionType.EVA).size();
 	}
 
 	/**
@@ -3480,8 +3480,8 @@ implements Serializable, LifeSupportType, Objective {
 
     	else {
         	millisolCache = m;
-	        for (Building b : buildingManager.getBuildings(BuildingFunction.FARMING)) {
-	            Farming farm = (Farming) b.getFunction(BuildingFunction.FARMING);
+	        for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
+	            Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
 	            for (Crop c : farm.getCrops()){
 	                if (c.requiresWork()) {
 	                    result++;

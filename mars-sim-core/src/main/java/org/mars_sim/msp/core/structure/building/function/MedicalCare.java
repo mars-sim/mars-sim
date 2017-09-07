@@ -35,7 +35,7 @@ implements MedicalAid, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.MEDICAL_CARE;
+    private static final FunctionType FUNCTION = FunctionType.MEDICAL_CARE;
 
     private MedicalStation medicalStation;
 
@@ -132,9 +132,9 @@ implements MedicalAid, Serializable {
     public int getPhysicianNum() {
         int result = 0;
 
-        if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
+                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();

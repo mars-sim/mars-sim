@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
@@ -92,7 +92,7 @@ implements Serializable {
         Building manufactureBuilding = getAvailableManufacturingBuilding(person);
         if (manufactureBuilding != null) {
             workshop = (Manufacture) manufactureBuilding
-                    .getFunction(BuildingFunction.MANUFACTURE);
+                    .getFunction(FunctionType.MANUFACTURE);
 
             // Walk to manufacturing building.
             walkToActivitySpotInBuilding(manufactureBuilding, false);
@@ -107,8 +107,8 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.MANUFACTURE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.MANUFACTURE;
     }
 
     /**
@@ -128,7 +128,7 @@ implements Serializable {
             BuildingManager manager = person.getSettlement()
                     .getBuildingManager();
             List<Building> manufacturingBuildings = manager
-                    .getBuildings(BuildingFunction.MANUFACTURE);
+                    .getBuildings(FunctionType.MANUFACTURE);
             manufacturingBuildings = BuildingManager
                     .getNonMalfunctioningBuildings(manufacturingBuildings);
             manufacturingBuildings = getManufacturingBuildingsNeedingWork(
@@ -165,7 +165,7 @@ implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building
-                    .getFunction(BuildingFunction.MANUFACTURE);
+                    .getFunction(FunctionType.MANUFACTURE);
             if (manufacturingFunction.requiresManufacturingWork(skill)) {
                 result.add(building);
             }
@@ -214,7 +214,7 @@ implements Serializable {
         boolean result = false;
 
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding
-                .getFunction(BuildingFunction.MANUFACTURE);
+                .getFunction(FunctionType.MANUFACTURE);
         Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses()
                 .iterator();
         while (i.hasNext()) {
@@ -258,7 +258,7 @@ implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building
-                    .getFunction(BuildingFunction.MANUFACTURE);
+                    .getFunction(FunctionType.MANUFACTURE);
             if (manufacturingFunction.getTechLevel() > highestTechLevel) {
                 highestTechLevel = manufacturingFunction.getTechLevel();
             }
@@ -268,7 +268,7 @@ implements Serializable {
         while (j.hasNext()) {
             Building building = j.next();
             Manufacture manufacturingFunction = (Manufacture) building
-                    .getFunction(BuildingFunction.MANUFACTURE);
+                    .getFunction(FunctionType.MANUFACTURE);
             if (manufacturingFunction.getTechLevel() == highestTechLevel) {
                 result.add(building);
             }
@@ -292,7 +292,7 @@ implements Serializable {
 				.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding
-                .getFunction(BuildingFunction.MANUFACTURE);
+                .getFunction(FunctionType.MANUFACTURE);
         int techLevel = manufacturingFunction.getTechLevel();
 
         Iterator<ManufactureProcessInfo> i = ManufactureUtil

@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -81,7 +81,7 @@ extends TabPanel {
 
 		settlement = (Settlement) unit;
 		mgr = settlement.getBuildingManager();
-		buildings = mgr.getBuildings(BuildingFunction.RESOURCE_PROCESSING);
+		buildings = mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
 		size = buildings.size();
 
 		// Prepare resource processes label panel.
@@ -136,7 +136,7 @@ extends TabPanel {
 		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			ResourceProcessing processing = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
+			ResourceProcessing processing = (ResourceProcessing) building.getFunction(FunctionType.RESOURCE_PROCESSING);
 			Iterator<ResourceProcess> j = processing.getProcesses().iterator();
 			while (j.hasNext()) {
 				ResourceProcess process = j.next();
@@ -178,7 +178,7 @@ extends TabPanel {
 	}
 
 	private List<Building> selectBuildingsWithRP() {
-		return mgr.getBuildings(BuildingFunction.RESOURCE_PROCESSING);
+		return mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
 	}
 
 	/**

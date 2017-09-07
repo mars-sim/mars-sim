@@ -50,7 +50,7 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(FoodProduction.class.getName());
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.FOOD_PRODUCTION;
+    private static final FunctionType FUNCTION = FunctionType.FOOD_PRODUCTION;
 
     private static final double PROCESS_MAX_VALUE = 100D;
 

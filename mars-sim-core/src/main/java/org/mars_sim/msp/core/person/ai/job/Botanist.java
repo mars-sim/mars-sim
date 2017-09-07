@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
@@ -135,22 +135,22 @@ implements Serializable {
 		double result = 0D;
 
 		// Add (labspace * tech level) / 2 for all labs with botany specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
+		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
 			if (lab.hasSpecialty(ScienceType.BOTANY)) {
 				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
 			}
 		}
 
 		// Add (growing area in greenhouses) / 25
-		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING);
+		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		Iterator<Building> j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+			Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
 			result += (farm.getGrowingArea() / 25D);
 		}
 

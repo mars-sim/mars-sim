@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
@@ -74,11 +74,11 @@ implements Serializable {
 		double result = 5D;
 
 		// Add (growing area in greenhouses) / 10
-		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING);
+		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		Iterator<Building> j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+			Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
 			result += (farm.getGrowingArea() / 8D); // changed from /10D to /5D
 		}
 	    //System.out.println("getSettlementNeed() : result is " + result);

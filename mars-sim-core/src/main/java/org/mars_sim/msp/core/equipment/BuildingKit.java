@@ -57,7 +57,7 @@ implements Serializable, Malfunctionable, Salvagable {
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
-		malfunctionManager.addScopeString(TYPE);
+		//malfunctionManager.addScopeString(TYPE);
 		//malfunctionManager.addScopeString("Life Support");
 	}
 

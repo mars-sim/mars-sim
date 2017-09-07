@@ -29,7 +29,7 @@ implements Lab, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.RESEARCH;
+    private static final FunctionType FUNCTION = FunctionType.RESEARCH;
 
     private int techLevel;
     private int researcherCapacity;

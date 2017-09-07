@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * A task for observing the night sky with an astronomical observatory.
@@ -98,8 +98,8 @@ implements ResearchScientificStudy, Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.ASTRONOMICAL_OBSERVATIONS;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.ASTRONOMICAL_OBSERVATIONS;
     }
 
     /**
@@ -113,7 +113,7 @@ implements ResearchScientificStudy, Serializable {
         if (LocationSituation.IN_SETTLEMENT == observer.getLocationSituation()) {
 
             BuildingManager manager = observer.getSettlement().getBuildingManager();
-            List<Building> observatoryBuildings = manager.getBuildings(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+            List<Building> observatoryBuildings = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATIONS);
             observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
             observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
             observatoryBuildings = BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
@@ -124,7 +124,7 @@ implements ResearchScientificStudy, Serializable {
                 Building building = RandomUtil.getWeightedRandomObject(observatoryBuildingProbs);
                 if (building != null) {
                     result = (AstronomicalObservation) building.getFunction(
-                            BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+                            FunctionType.ASTRONOMICAL_OBSERVATIONS);
                 }
             }
         }
@@ -162,7 +162,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            AstronomicalObservation observatory = (AstronomicalObservation) building.getFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+            AstronomicalObservation observatory = (AstronomicalObservation) building.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
             if (observatory.getObserverNum() < observatory.getObservatoryCapacity()) {
                 result.add(building);
             }

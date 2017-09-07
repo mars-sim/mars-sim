@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
@@ -94,7 +94,7 @@ implements Serializable {
                 setDescription(NAME_OFF);
             }
             
-            isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
+            isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 
             // If habitable building, add person to building.
             if (!isEVA) {
@@ -176,7 +176,7 @@ implements Serializable {
         if (settlement != null) {
             BuildingManager manager = settlement.getBuildingManager();
             double bestDiff = 0D;
-            Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_GENERATION).iterator();
+            Iterator<Building> i = manager.getBuildings(FunctionType.POWER_GENERATION).iterator();
             while (i.hasNext()) {
                 Building building = i.next();
                 FuelPowerSource powerSource = getFuelPowerSource(building);
@@ -202,9 +202,9 @@ implements Serializable {
         FuelPowerSource result = null;
 
         Settlement settlement = building.getBuildingManager().getSettlement();
-        if (building.hasFunction(BuildingFunction.POWER_GENERATION)) {
+        if (building.hasFunction(FunctionType.POWER_GENERATION)) {
             double bestDiff = 0D;
-            PowerGeneration powerGeneration = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
+            PowerGeneration powerGeneration = (PowerGeneration) building.getFunction(FunctionType.POWER_GENERATION);
             Iterator<PowerSource> i = powerGeneration.getPowerSources().iterator();
             while (i.hasNext()) {
                 PowerSource powerSource = i.next();

@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -133,8 +133,8 @@ public class Sleep extends Task implements Serializable {
                    	Building q1 = getBestAvailableQuarters(person, true);
                 	if (q1 != null) {
                 		// Case 1 : (the BEST case for a guest) the settlement does have one or more empty, unmarked (EU) bed(s)
-		            	accommodations = (LivingAccommodations) q1.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
-		        		walkToActivitySpotInBuilding(q1, BuildingFunction.LIVING_ACCOMODATIONS, false);
+		            	accommodations = (LivingAccommodations) q1.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+		        		walkToActivitySpotInBuilding(q1, FunctionType.LIVING_ACCOMODATIONS, false);
 		                Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 1: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q1);
 
@@ -143,8 +143,8 @@ public class Sleep extends Task implements Serializable {
                 		// Case 2 : the settlement has only empty, designated (ED) bed(s) available
 		            	// Question : will the owner of this bed be coming back soon from duty ?
                 		// TODO : will split into Case 2a and Case 2b.
-                		accommodations = (LivingAccommodations) q2.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
-		        		walkToActivitySpotInBuilding(q2, BuildingFunction.LIVING_ACCOMODATIONS, false);
+                		accommodations = (LivingAccommodations) q2.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+		        		walkToActivitySpotInBuilding(q2, FunctionType.LIVING_ACCOMODATIONS, false);
 		                Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 2: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q2);
 
@@ -174,7 +174,7 @@ public class Sleep extends Task implements Serializable {
 
 		            // check if this bed is currently empty or occupied (either ED or OD)
 	                Point2D bed = person.getBed();
-	            	accommodations = (LivingAccommodations) pq.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+	            	accommodations = (LivingAccommodations) pq.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 	                boolean empty = accommodations.isActivitySpotEmpty(bed);
 
 	            	if (empty) {
@@ -215,7 +215,7 @@ public class Sleep extends Task implements Serializable {
   			            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
 			            	//person.setQuarters(q6);
 			                //Point2D bed = person.getBed();
-			            	accommodations = (LivingAccommodations) q6.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+			            	accommodations = (LivingAccommodations) q6.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 			            	accommodations.addSleeper(person, false);
 			            	walkToBed(accommodations, person, true);
 			        		//walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);
@@ -280,8 +280,8 @@ public class Sleep extends Task implements Serializable {
             boolean atStation = false;
             Building currentBuilding = BuildingManager.getBuilding(robot);
             if (currentBuilding != null) {
-                if (currentBuilding.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
-                    RoboticStation currentStation = (RoboticStation) currentBuilding.getFunction(BuildingFunction.ROBOTIC_STATION);
+                if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
+                    RoboticStation currentStation = (RoboticStation) currentBuilding.getFunction(FunctionType.ROBOTIC_STATION);
                     if (currentStation.getSleepers() < currentStation.getSlots()) {
                         atStation = true;
                         station = currentStation;
@@ -300,7 +300,7 @@ public class Sleep extends Task implements Serializable {
                 Building building = getAvailableRoboticStationBuilding(robot);
                 if (building != null) {
                     //System.out.println("building.toString() is " + building.toString() );
-                    station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                    station = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
                     if (station != null) {
                     	// TODO: see https://github.com/mars-sim/mars-sim/issues/22
                     	 // Question: why would the method below cause RepairBot to walk outside the settlement to a vehicle ?
@@ -327,12 +327,12 @@ public class Sleep extends Task implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.LIVING_ACCOMODATIONS;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.LIVING_ACCOMODATIONS;
     }
 
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
-        return BuildingFunction.ROBOTIC_STATION;
+    protected FunctionType getRelatedBuildingRoboticFunction() {
+        return FunctionType.ROBOTIC_STATION;
     }
 
     @Override
@@ -457,7 +457,7 @@ public class Sleep extends Task implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             //BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> quartersBuildings = person.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIVING_ACCOMODATIONS);
+            List<Building> quartersBuildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMODATIONS);
             quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
             quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, unmarked);
             if (quartersBuildings.size() > 0) {
@@ -505,7 +505,7 @@ public class Sleep extends Task implements Serializable {
 
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = robot.getSettlement().getBuildingManager();
-            List<Building> buildings = manager.getBuildings(BuildingFunction.ROBOTIC_STATION);
+            List<Building> buildings = manager.getBuildings(FunctionType.ROBOTIC_STATION);
             buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
             buildings = getRoboticStationsWithEmptySlots(buildings);
 			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
@@ -543,7 +543,7 @@ public class Sleep extends Task implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             LivingAccommodations quarters = (LivingAccommodations) building
-            		.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+            		.getFunction(FunctionType.LIVING_ACCOMODATIONS);
             // 2016-01-10 Added checking if an unmarked bed is wanted
             if (unmarked) {
 	            if (quarters.getSleepers() < quarters.getBeds()
@@ -567,7 +567,7 @@ public class Sleep extends Task implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            RoboticStation station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+            RoboticStation station = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
             if (station.getSleepers() < station.getSlots()) {
                 result.add(building);
             }

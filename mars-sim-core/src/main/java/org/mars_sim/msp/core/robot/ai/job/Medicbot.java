@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 
 /** 
@@ -73,11 +73,11 @@ implements Serializable {
 		result+= population / 15D; // changed from /10D to /15D
 
 		// Add (tech level / 2) for all medical infirmaries.
-		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);
+		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
 		Iterator<Building> j = medicalBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			MedicalCare infirmary = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
+			MedicalCare infirmary = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
 			result+= (double) infirmary.getTechLevel() ;
 		}			
 

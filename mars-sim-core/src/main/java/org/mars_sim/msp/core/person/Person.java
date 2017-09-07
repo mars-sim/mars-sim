@@ -45,7 +45,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
@@ -783,7 +783,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		if (quarters != null) {
 			LivingAccommodations accommodations = (LivingAccommodations) quarters
-					.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 			accommodations.getBedMap().remove(this);
 			quarters = null;
 		}
@@ -890,11 +890,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		LocationSituation location = getLocationSituation();
 		if (location == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = getSettlement();
-			List<Building> infirmaries = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);
+			List<Building> infirmaries = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
 			if (infirmaries.size() > 0) {
 				int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
 				Building foundBuilding = infirmaries.get(rand);
-				found = (MedicalAid) foundBuilding.getFunction(BuildingFunction.MEDICAL_CARE);
+				found = (MedicalAid) foundBuilding.getFunction(FunctionType.MEDICAL_CARE);
 			}
 		}
 		if (location == LocationSituation.IN_VEHICLE) {
@@ -1089,8 +1089,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
-				if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-					LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+					LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
 					localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
 				}
 			}

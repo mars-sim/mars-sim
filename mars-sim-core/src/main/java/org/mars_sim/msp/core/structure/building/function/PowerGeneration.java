@@ -32,7 +32,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** TODO Name of the building function needs to be internationalized. */
-	private static final BuildingFunction FUNCTION = BuildingFunction.POWER_GENERATION;
+	private static final FunctionType FUNCTION = FunctionType.POWER_GENERATION;
 
 	// Data members.
 	private double time;
@@ -280,7 +280,7 @@ implements Serializable {
 	public String[] getMalfunctionScopeStrings() {
 		String[] result = new String[powerSources.size() + 1];
 		// TODO take care to properly internationalize malfunction scope "strings"
-		result[0] = getFunction().getName();
+		result[0] = getFunctionType().getName();
 
 		for (int x = 0; x < powerSources.size(); x++) {
 			result[x + 1] = powerSources.get(x).getType().getString();

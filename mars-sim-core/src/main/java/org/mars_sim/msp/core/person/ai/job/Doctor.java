@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.structure.building.function.Research;
 
@@ -128,22 +128,22 @@ implements Serializable {
 		result+= population / 10D;
 
 		// Add (labspace * tech level) / 2 for all labs with medical specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
+		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
 			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
 				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
 			}
 		}
 
 		// Add (tech level / 2) for all medical infirmaries.
-		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);
+		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
 		Iterator<Building> j = medicalBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			MedicalCare infirmary = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
+			MedicalCare infirmary = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
 			result+= (double) infirmary.getTechLevel() / 2D;
 		}
 

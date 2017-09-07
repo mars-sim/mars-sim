@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -171,7 +171,7 @@ implements Serializable {
 			
 		        //System.out.println(person.getName() + " is going to meet " + candidate.getName() + " at " + b.getNickName());
 		  			
-				walkToActivitySpotInBuilding(b, BuildingFunction.LIFE_SUPPORT, false);
+				walkToActivitySpotInBuilding(b, FunctionType.LIFE_SUPPORT, false);
 
 				setDescription(Msg.getString("Task.description.meetTogether.detail", candidate.getName())); //$NON-NLS-1$
 			

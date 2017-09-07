@@ -29,7 +29,7 @@ Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.WASTE_DISPOSAL;
+    private static final FunctionType FUNCTION = FunctionType.WASTE_DISPOSAL;
 
     private int techLevel;
     private int peopleCapacity;

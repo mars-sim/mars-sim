@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * Manages all the building connectors at a settlement.
@@ -472,8 +472,8 @@ public class BuildingConnectorManager implements Serializable {
      */
     public void createBuildingConnections(Building newBuilding) {
 
-        boolean isBuildingConnector = newBuilding.hasFunction(BuildingFunction.BUILDING_CONNECTION);
-        boolean hasLifeSupport = newBuilding.hasFunction(BuildingFunction.LIFE_SUPPORT);
+        boolean isBuildingConnector = newBuilding.hasFunction(FunctionType.BUILDING_CONNECTION);
+        boolean hasLifeSupport = newBuilding.hasFunction(FunctionType.LIFE_SUPPORT);
 
        // boolean needEndCap = false;
         //if (newBuilding.getBuildingType().equalsIgnoreCase("hallway")
@@ -648,7 +648,7 @@ public class BuildingConnectorManager implements Serializable {
 
         boolean goodConnection = false;
         BuildingManager manager = settlement.getBuildingManager();
-        Iterator<Building> i = manager.getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
+        Iterator<Building> i = manager.getBuildings(FunctionType.LIFE_SUPPORT).iterator();
         while (i.hasNext() && !goodConnection) {
             Building building = i.next();
             if (!building.equals(newBuilding)) {

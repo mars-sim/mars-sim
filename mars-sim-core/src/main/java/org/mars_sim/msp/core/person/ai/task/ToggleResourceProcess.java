@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -80,7 +80,7 @@ implements Serializable {
                 setName(NAME_OFF);
                 setDescription(NAME_OFF);
             }
-            isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
+            isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 
             // If habitable building, add person to building.
             if (!isEVA) {
@@ -105,8 +105,8 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.RESOURCE_PROCESSING;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.RESOURCE_PROCESSING;
     }
 
     /**
@@ -141,7 +141,7 @@ implements Serializable {
         if (settlement != null) {
             BuildingManager manager = settlement.getBuildingManager();
             double bestDiff = 0D;
-            Iterator<Building> i = manager.getBuildings(BuildingFunction.RESOURCE_PROCESSING).iterator();
+            Iterator<Building> i = manager.getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
             while (i.hasNext()) {
                 Building building = i.next();
                 ResourceProcess process = getResourceProcess(building);
@@ -167,9 +167,9 @@ implements Serializable {
         ResourceProcess result = null;
 
         Settlement settlement = building.getBuildingManager().getSettlement();
-        if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
+        if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
             double bestDiff = 0D;
-            ResourceProcessing processing = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
+            ResourceProcessing processing = (ResourceProcessing) building.getFunction(FunctionType.RESOURCE_PROCESSING);
             Iterator<ResourceProcess> i = processing.getProcesses().iterator();
             while (i.hasNext()) {
                 ResourceProcess process = i.next();

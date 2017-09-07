@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
@@ -162,12 +162,12 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.FARMING;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.FARMING;
     }
 
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
-        return BuildingFunction.FARMING;
+    protected FunctionType getRelatedBuildingRoboticFunction() {
+        return FunctionType.FARMING;
     }
 
     @Override

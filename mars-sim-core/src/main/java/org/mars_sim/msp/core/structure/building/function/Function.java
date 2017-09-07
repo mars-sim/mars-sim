@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Function.java
- * @version 3.08 2015-05-29
+ * @version 3.1.0 2017-09-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * A settlement building function.
@@ -29,30 +30,31 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private BuildingFunction function;
+    private FunctionType type;
     private Building building;
     private List<Point2D> activitySpots;
 
     /**
      * Constructor.
-     * @param function the function name.
+     * @param type {@link FunctionType}
+     * @param {@link Building}
      */
-    public Function(BuildingFunction function, Building building) {
-        this.function = function;
+    public Function(FunctionType type, Building building) {
+        this.type = type;
         this.building = building;
     }
 
     /**
      * Gets the function.
-     * @return {@link BuildingFunction}
+     * @return {@link FunctionType}
      */
-    public BuildingFunction getFunction() {
-        return function;
+    public FunctionType getFunctionType() {
+        return type;
     }
 
     /**
      * Gets the function's building.
-     * @return building
+     * @return {@link Building}
      */
     public Building getBuilding() {
         return building;
@@ -71,37 +73,39 @@ implements Serializable {
      * TODO malfunction scope strings should be internationalized.
      */
     public String[] getMalfunctionScopeStrings() {
-        String[] result = {function.getName()};
+        String[] result = {type.getName()};
         return result;
     }
 
+    
     /**
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
      */
     public abstract void timePassing(double time) ;
 
-    /*
+    /**
      * Gets the amount of heat required when function is at full heat.
-     * @return heat (kJ/s)
-    */
-    //2014-10-17 mkung: Added getFullHeatRequired()
+     * @return heat (kW)
+     */
     public abstract double getFullHeatRequired();
+    
     /**
      * Gets the amount of heat required when function is at heat down level.
-     * @return heat (kJ/s)
-*/
-    //2014-10-17 mkung: Added getHeatDownHeatRequired()
+     * @return heat (kW)
+     */
     public abstract double getPoweredDownHeatRequired();
-     /**
+    
+    /**
      * Gets the amount of power required when function is at full power.
      * @return power (kW)
-*/
+     */
     public abstract double getFullPowerRequired();
-     /**  
+    
+    /**  
      * Gets the amount of power required when function is at power down level.
      * @return power (kW)
-  */
+     */
     public abstract double getPoweredDownPowerRequired();
    
     /**
@@ -129,7 +133,7 @@ implements Serializable {
     /**
      * Gets an available activity spot for the person.
      * @param person the person looking for the activity spot.
-     * @return activity spot as Point2D object or null if none found.
+     * @return activity spot as {@link Point2D} or null if none found.
      */
     public Point2D getAvailableActivitySpot(Person person) {
 
@@ -178,6 +182,11 @@ implements Serializable {
         return result;
     }
 
+    /**
+     * Gets an available activity spot for the robot.
+     * @param robot the bot looking for the activity spot.
+     * @return activity spot as {@link Point2D} or null if none found.
+     */
     public Point2D getAvailableActivitySpot(Robot robot) {
 
         Point2D result = null;
@@ -233,6 +242,7 @@ implements Serializable {
     
     /**
      * Checks if an activity spot is empty/unoccupied 
+     * @param spot as a {@link Point2D}
      * @return true if this activity spot is empty.
      */
     // 2016-07-02 Added isActivitySpotEmpty()
@@ -338,7 +348,7 @@ implements Serializable {
      * Prepare object for garbage collection.
      */
     public void destroy() {
-        function = null;
+        type = null;
         building = null;
         if (activitySpots != null) {
             activitySpots.clear();

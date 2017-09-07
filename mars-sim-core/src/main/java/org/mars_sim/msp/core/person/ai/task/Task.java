@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -576,14 +576,14 @@ implements Serializable, Comparable<Task> {
 	        if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
 	            // Increase probability if current building is overcrowded.
-	            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
+	            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(FunctionType.LIFE_SUPPORT);
 	            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
 	            if (currentOverCrowding > 0) {
 	                modifier *= ((double) currentOverCrowding + 2);
 	            }
 
 	            // Decrease probability if new building is overcrowded.
-	            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
+	            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(FunctionType.LIFE_SUPPORT);
 	            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
 	            if (newOverCrowding > 0) {
 	                modifier /= ((double) newOverCrowding + 2);
@@ -675,8 +675,8 @@ implements Serializable, Comparable<Task> {
             throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
         }
         else {
-            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
                 double totalOpinion = 0D;
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
@@ -736,11 +736,11 @@ implements Serializable, Comparable<Task> {
      * Override as necessary.
      * @return building function or null if none.
      */
-    protected BuildingFunction getRelatedBuildingFunction() {
+    protected FunctionType getRelatedBuildingFunction() {
         return null;
     }
 
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+    protected FunctionType getRelatedBuildingRoboticFunction() {
         return null;
     }
 
@@ -750,7 +750,7 @@ implements Serializable, Comparable<Task> {
      * @param allowFail true if walking is allowed to fail.
      */
     protected void walkToActivitySpotInBuilding(Building building, boolean allowFail) {
-    	BuildingFunction functionType = null;
+    	FunctionType functionType = null;
 
 		if (person != null)
 	        functionType = getRelatedBuildingFunction();
@@ -799,7 +799,7 @@ implements Serializable, Comparable<Task> {
      * @param functionType the building function type for the activity.
      * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToActivitySpotInBuilding(Building building, BuildingFunction functionType,
+    protected void walkToActivitySpotInBuilding(Building building, FunctionType functionType,
             boolean allowFail) {
 
         Function buildingFunction = building.getFunction(functionType);
@@ -1000,7 +1000,7 @@ implements Serializable, Comparable<Task> {
 
 	            //Building currentBuilding = BuildingManager.getBuilding(person);
 	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
-	            List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
 
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
@@ -1025,7 +1025,7 @@ implements Serializable, Comparable<Task> {
 	            //Building currentBuilding = BuildingManager.getBuilding(robot);
 	            //TODO: determine why the below results in java.lang.NullPointerException
 	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
-	        	List<Building> buildingList = robot.getSettlement().getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+	        	List<Building> buildingList = robot.getSettlement().getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
 
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
@@ -1059,28 +1059,28 @@ implements Serializable, Comparable<Task> {
     		if (currentBuilding != null) {
 	    		String type = robot.getRobotType().getName();
 	    		//List<Building> buildingList;
-	    		BuildingFunction fct = null;
+	    		FunctionType fct = null;
 
 	    		if (type.equals("CHEFBOT"))
-	    			fct = BuildingFunction.COOKING;
+	    			fct = FunctionType.COOKING;
 	    		else if (type.equals("CONSTRUCTIONBOT"))
-	    			fct = BuildingFunction.ROBOTIC_STATION;
+	    			fct = FunctionType.ROBOTIC_STATION;
 	    		else if (type.equals("DELIVERYBOT"))
-	    			fct = BuildingFunction.ROBOTIC_STATION;
+	    			fct = FunctionType.ROBOTIC_STATION;
 	    		else if (type.equals("GARDENBOT"))
-	    			fct = BuildingFunction.FARMING;
+	    			fct = FunctionType.FARMING;
 	    		else if (type.equals("MAKERBOT"))
-	    			fct = BuildingFunction.MANUFACTURE;
+	    			fct = FunctionType.MANUFACTURE;
 	    		else if (type.equals("MEDICBOT"))
-	    			fct = BuildingFunction.MEDICAL_CARE;
+	    			fct = FunctionType.MEDICAL_CARE;
 	    		else if (type.equals("REPAIRBOT"))
-	    			fct = BuildingFunction.ROBOTIC_STATION;
+	    			fct = FunctionType.ROBOTIC_STATION;
 
 	    		if (fct == null)
-	    			fct = BuildingFunction.LIVING_ACCOMODATIONS;
+	    			fct = FunctionType.LIVING_ACCOMODATIONS;
 
 	       		if (fct == null)
-	    			fct = BuildingFunction.LIFE_SUPPORT;
+	    			fct = FunctionType.LIFE_SUPPORT;
 
 	       		// Added debugging statement below
 	            if (currentBuilding.getBuildingManager() == null)

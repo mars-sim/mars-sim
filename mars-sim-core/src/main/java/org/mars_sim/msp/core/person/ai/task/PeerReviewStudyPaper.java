@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -118,7 +118,7 @@ implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> administrationBuildings = manager.getBuildings(BuildingFunction.ADMINISTRATION);
+            List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
             administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
             administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
 
@@ -133,8 +133,8 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.ADMINISTRATION;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.ADMINISTRATION;
     }
 
     /**

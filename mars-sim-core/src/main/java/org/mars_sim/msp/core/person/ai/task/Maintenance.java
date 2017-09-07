@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -378,7 +378,7 @@ implements Serializable {
         boolean result = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 result = true;
             }
         }
@@ -396,7 +396,7 @@ implements Serializable {
         boolean isVehicle = (malfunctionable instanceof Vehicle);
         boolean uninhabitableBuilding = false;
         if (malfunctionable instanceof Building)
-            uninhabitableBuilding = !((Building) malfunctionable).hasFunction(BuildingFunction.LIFE_SUPPORT);
+            uninhabitableBuilding = !((Building) malfunctionable).hasFunction(FunctionType.LIFE_SUPPORT);
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
         boolean hasMalfunction = manager.hasMalfunction();
         double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();

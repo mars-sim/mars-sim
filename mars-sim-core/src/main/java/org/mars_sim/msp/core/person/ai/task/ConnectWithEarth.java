@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -68,7 +68,7 @@ implements Serializable {
 	                // Walk to the facility.
 	                walkToActivitySpotInBuilding(bldg, false);
 
-	                comm = (Communication) bldg.getFunction(BuildingFunction.COMMUNICATION);
+	                comm = (Communication) bldg.getFunction(FunctionType.COMMUNICATION);
 
 	                // set the boolean to true so that it won't be done again today
 	                person.getPreference().setTaskDue(this, true);
@@ -97,8 +97,8 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.COMMUNICATION;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.COMMUNICATION;
     }
 
     @Override
@@ -153,7 +153,7 @@ implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager buildingManager = person.getSettlement()
                     .getBuildingManager();
-            List<Building> bldgs = buildingManager.getBuildings(BuildingFunction.COMMUNICATION);
+            List<Building> bldgs = buildingManager.getBuildings(FunctionType.COMMUNICATION);
             bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
             bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
 

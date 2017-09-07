@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * The Maintenance class is a task for performing
@@ -369,7 +369,7 @@ implements Serializable {
 		boolean isStructure = (malfunctionable instanceof Structure);
 		boolean uninhabitableBuilding = false;
 		if (malfunctionable instanceof Building)
-			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(BuildingFunction.LIFE_SUPPORT);
+			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(FunctionType.LIFE_SUPPORT);
 		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 		boolean hasMalfunction = manager.hasMalfunction();
 		boolean hasParts = false;

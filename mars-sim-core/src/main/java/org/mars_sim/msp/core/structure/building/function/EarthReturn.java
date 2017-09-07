@@ -25,7 +25,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final BuildingFunction NAME = BuildingFunction.EARTH_RETURN;
+	private static final FunctionType NAME = FunctionType.EARTH_RETURN;
 
 	// Data members
 	private int crewCapacity;

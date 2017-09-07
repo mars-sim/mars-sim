@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
@@ -159,8 +159,8 @@ public class EatMeal extends Task implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.DINING;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.DINING;
     }
 
     /**
@@ -202,7 +202,7 @@ public class EatMeal extends Task implements Serializable {
 
           if (kitchen != null) {
               // Walk to kitchen.
-              walkToActivitySpotInBuilding(kitchen.getBuilding(), BuildingFunction.COOKING, true);
+              walkToActivitySpotInBuilding(kitchen.getBuilding(), FunctionType.COOKING, true);
               return time;
           }
           else {
@@ -283,7 +283,7 @@ public class EatMeal extends Task implements Serializable {
 
             if (dessertKitchen != null) {
                 // Walk to dessert kitchen.
-                walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), BuildingFunction.PREPARING_DESSERT, true);
+                walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), FunctionType.PREPARING_DESSERT, true);
                 return time;
             }
             else {
@@ -622,7 +622,7 @@ public class EatMeal extends Task implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             BuildingManager manager = settlement.getBuildingManager();
-            List<Building> diningBuildings = manager.getBuildings(BuildingFunction.DINING);
+            List<Building> diningBuildings = manager.getBuildings(FunctionType.DINING);
             diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
             diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
             if (canChat)
@@ -654,11 +654,11 @@ public class EatMeal extends Task implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             BuildingManager manager = settlement.getBuildingManager();
-            List<Building> cookingBuildings = manager.getBuildings(BuildingFunction.COOKING);
+            List<Building> cookingBuildings = manager.getBuildings(FunctionType.COOKING);
             Iterator<Building> i = cookingBuildings.iterator();
             while (i.hasNext() && (result == null)) {
                 Building building = i.next();
-                Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
+                Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING);
                 if (kitchen.hasCookedMeal()) {
                     result = kitchen;
                 }
@@ -679,11 +679,11 @@ public class EatMeal extends Task implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             BuildingManager manager = settlement.getBuildingManager();
-            List<Building> dessertBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
+            List<Building> dessertBuildings = manager.getBuildings(FunctionType.PREPARING_DESSERT);
             Iterator<Building> i = dessertBuildings.iterator();
             while (i.hasNext() && (result == null)) {
                 Building building = i.next();
-                PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);
+                PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT);
                 if (kitchen.hasFreshDessert()) {
                     result = kitchen;
                 }

@@ -32,7 +32,7 @@ extends Function {
     /** default logger. */
     private static Logger logger = Logger.getLogger(AstronomicalObservation.class.getName());
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.ASTRONOMICAL_OBSERVATIONS;
+    private static final FunctionType FUNCTION = FunctionType.ASTRONOMICAL_OBSERVATIONS;
 
     private static BuildingConfig buildingConfig;
     

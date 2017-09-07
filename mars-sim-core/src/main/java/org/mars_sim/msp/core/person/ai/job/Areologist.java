@@ -47,7 +47,7 @@ import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -145,11 +145,11 @@ implements Serializable {
 		double result = 0D;
 
 		// Add (labspace * tech level / 2) for all labs with areology specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
+		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 		    Building building = i.next();
-		    Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+		    Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
 		    if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
 		        result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
 		    }

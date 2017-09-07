@@ -28,7 +28,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final BuildingFunction FUNCTION = BuildingFunction.EVA;
+	private static final FunctionType FUNCTION = FunctionType.EVA;
 
 	private Airlock airlock;
 

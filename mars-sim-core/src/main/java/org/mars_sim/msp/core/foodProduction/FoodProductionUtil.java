@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -334,7 +334,7 @@ public final class FoodProductionUtil {
     public static boolean doesSettlementHaveFoodProduction(Settlement settlement)
     {
         BuildingManager manager = settlement.getBuildingManager();
-        return (manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).size() > 0);
+        return (manager.getBuildings(FunctionType.FOOD_PRODUCTION).size() > 0);
     }
 
     /**
@@ -347,10 +347,10 @@ public final class FoodProductionUtil {
     {
         int highestTechLevel = 0;
         BuildingManager manager = settlement.getBuildingManager();
-        Iterator<Building> i = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+        Iterator<Building> i = manager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+            FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
             if (foodProductionFunction.getTechLevel() > highestTechLevel) 
                 highestTechLevel = foodProductionFunction.getTechLevel();
         }

@@ -35,7 +35,7 @@ public class RoboticStation extends Function implements Serializable {
 
     private static final double SECONDS_IN_MILLISOL = 88.775244;
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.ROBOTIC_STATION;
+    private static final FunctionType FUNCTION = FunctionType.ROBOTIC_STATION;
 
     private int slots;
     private int sleepers;

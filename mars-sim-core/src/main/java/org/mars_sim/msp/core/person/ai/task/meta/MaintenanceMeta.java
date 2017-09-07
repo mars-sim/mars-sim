@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -62,7 +62,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
                 boolean isVehicle = (entity instanceof Vehicle);
                 boolean uninhabitableBuilding = false;
                 if (entity instanceof Building) {
-                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
+                    uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
                 }
                 MalfunctionManager manager = entity.getMalfunctionManager();
                 boolean hasMalfunction = manager.hasMalfunction();

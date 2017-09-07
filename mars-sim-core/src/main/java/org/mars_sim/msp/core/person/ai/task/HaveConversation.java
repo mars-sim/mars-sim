@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -101,7 +101,7 @@ implements Serializable {
                 Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
                 if (diningBuilding != null) {
                 	// Walk to that building.
-                	walkToActivitySpotInBuilding(diningBuilding, BuildingFunction.DINING, true);
+                	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
                     Collection<Person> p_dining = s.getChattingPeople(person, false, true, false);
                 	pool.addAll(p_dining);
                 	invitee_location = Location.Dining_Building;

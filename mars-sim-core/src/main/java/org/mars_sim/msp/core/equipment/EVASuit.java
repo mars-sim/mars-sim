@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
 
 /**
  * The EVASuit class represents an EVA suit which provides life support
@@ -41,8 +43,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Static members
-	public static final String TYPE = "EVA Suit";
-	public static final String LIFE_SUPOORT = "Life Support";
+	public static String TYPE = SystemType.EVA_SUIT.getName();
 
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 45D;
@@ -85,7 +86,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
-		malfunctionManager.addScopeString(LIFE_SUPOORT);
+		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);

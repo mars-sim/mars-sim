@@ -133,9 +133,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Add a unit scope string to the manager.
-	 * @param scopeString a unit scope string
-	 * @deprecated use enums instead of localized strings
+	 * Add a scope string of a system or a function to the manager.
+	 * @param scopeString
 	 */
 	public void addScopeString(String scopeString) {
 		if ((scopeString != null) && !scope.contains(scopeString))

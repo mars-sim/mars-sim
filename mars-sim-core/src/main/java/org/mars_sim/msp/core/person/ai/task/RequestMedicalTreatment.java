@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
@@ -144,7 +144,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
 
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
-                BuildingFunction.MEDICAL_CARE).iterator();
+                FunctionType.MEDICAL_CARE).iterator();
         while (i.hasNext()) {
             Building building = i.next();
 
@@ -152,7 +152,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if enough beds for patient.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
+            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
             if ((numPatients < numBeds) && !malfunction) {
@@ -309,8 +309,8 @@ public class RequestMedicalTreatment extends Task implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.MEDICAL_CARE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.MEDICAL_CARE;
     }
 
     @Override

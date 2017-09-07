@@ -51,7 +51,7 @@ implements Serializable {
      * @param function the name of the child function.
      * @param building the building this function is for.
      */
-    public VehicleMaintenance(BuildingFunction function, Building building) {
+    public VehicleMaintenance(FunctionType function, Building building) {
         // Use Function constructor.
         super(function, building);
 
@@ -89,10 +89,10 @@ implements Serializable {
             throw new IllegalStateException("Building is full of vehicles.");
 
         // Remove vehicle from any other garage that it might be in.
-        Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunction()).iterator();
+        Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunctionType()).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(getFunction());
+            VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(getFunctionType());
             if (garage.containsVehicle(vehicle)) {
                 garage.removeVehicle(vehicle);
             }

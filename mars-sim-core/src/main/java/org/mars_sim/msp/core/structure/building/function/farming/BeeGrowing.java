@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -25,7 +25,7 @@ implements Serializable {
     /** default logger. */
 	//private static Logger logger = Logger.getLogger(BeeGrowing.class.getName());
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
+    private static final FunctionType FUNCTION = FunctionType.FARMING;
 
     private static int tally; 
     // The bigger the number, the more erratic (and the less frequent) the update

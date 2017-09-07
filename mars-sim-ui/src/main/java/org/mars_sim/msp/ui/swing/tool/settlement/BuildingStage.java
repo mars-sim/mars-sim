@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
@@ -232,9 +232,9 @@ public class BuildingStage {
 	    functionListPanel.add(box);
 
         // Prepare inhabitable panel if building has lifeSupport.
-        if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 //        	try {
-        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
             	BuildingFunctionPanel inhabitablePanel = new BuildingPanelInhabitable(lifeSupport, desktop);
             	functionPanels.add(inhabitablePanel);
             	functionListPanel.add(inhabitablePanel);
@@ -243,9 +243,9 @@ public class BuildingStage {
         }
 
         // Prepare manufacture panel if building has manufacturing.
-        if (building.hasFunction(BuildingFunction.MANUFACTURE)) {
+        if (building.hasFunction(FunctionType.MANUFACTURE)) {
 //        	try {
-        		Manufacture workshop = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+        		Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
         		BuildingFunctionPanel manufacturePanel = new BuildingPanelManufacture(workshop, desktop);
         		//manufacturePanel.setOpaque(false);
         		//manufacturePanel.setBackground(new Color(0,0,0,128));
@@ -257,9 +257,9 @@ public class BuildingStage {
 
 
         // 2014-11-24 Added FoodProduction
-        if (building.hasFunction(BuildingFunction.FOOD_PRODUCTION)) {
+        if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
 //        	try {
-        		FoodProduction foodFactory = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+        		FoodProduction foodFactory = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
         		BuildingFunctionPanel foodProductionPanel = new BuildingPanelFoodProduction(foodFactory, desktop);
         		functionPanels.add(foodProductionPanel);
         		functionListPanel.add(foodProductionPanel);
@@ -268,9 +268,9 @@ public class BuildingStage {
         }
 
         // Prepare farming panel if building has farming.
-        if (building.hasFunction(BuildingFunction.FARMING)) {
+        if (building.hasFunction(FunctionType.FARMING)) {
 //        	try {
-        		Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+        		Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
             	BuildingFunctionPanel farmingPanel = new BuildingPanelFarming(farm, desktop);
             	functionPanels.add(farmingPanel);
             	functionListPanel.add(farmingPanel);
@@ -279,9 +279,9 @@ public class BuildingStage {
         }
 
 		// Prepare cooking panel if building has cooking.
-		if (building.hasFunction(BuildingFunction.COOKING)) {
+		if (building.hasFunction(FunctionType.COOKING)) {
 //			try {
-				Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
+				Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING);
 				BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
 				functionPanels.add(cookingPanel);
 				functionListPanel.add(cookingPanel);
@@ -292,9 +292,9 @@ public class BuildingStage {
 
 		//2014-11-11 Added preparing dessert function
 		// Prepare dessert panel if building has preparing dessert function.
-		if (building.hasFunction(BuildingFunction.PREPARING_DESSERT)) {
+		if (building.hasFunction(FunctionType.PREPARING_DESSERT)) {
 //			try {
-			PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);
+			PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT);
 				BuildingFunctionPanel preparingDessertPanel = new BuildingPanelPreparingDessert(kitchen, desktop);
 				functionPanels.add(preparingDessertPanel);
 				functionListPanel.add(preparingDessertPanel);
@@ -304,9 +304,9 @@ public class BuildingStage {
 		}
 
         // Prepare medical care panel if building has medical care.
-        if (building.hasFunction(BuildingFunction.MEDICAL_CARE)) {
+        if (building.hasFunction(FunctionType.MEDICAL_CARE)) {
 //        	try {
-        		MedicalCare med = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
+        		MedicalCare med = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
             	BuildingFunctionPanel medicalCarePanel = new BuildingPanelMedicalCare(med, desktop);
             	functionPanels.add(medicalCarePanel);
             	functionListPanel.add(medicalCarePanel);
@@ -316,9 +316,9 @@ public class BuildingStage {
         }
 
 		// Prepare vehicle maintenance panel if building has vehicle maintenance.
-		if (building.hasFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
+		if (building.hasFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
 //			try {
-				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 				BuildingFunctionPanel vehicleMaintenancePanel = new BuildingPanelVehicleMaintenance(garage, desktop);
 				functionPanels.add(vehicleMaintenancePanel);
 				functionListPanel.add(vehicleMaintenancePanel);
@@ -328,9 +328,9 @@ public class BuildingStage {
 		}
 
         // Prepare research panel if building has research.
-        if (building.hasFunction(BuildingFunction.RESEARCH)) {
+        if (building.hasFunction(FunctionType.RESEARCH)) {
 //        	try {
-        		Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+        		Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
             	BuildingFunctionPanel researchPanel = new BuildingPanelResearch(lab, desktop);
             	functionPanels.add(researchPanel);
             	functionListPanel.add(researchPanel);
@@ -341,9 +341,9 @@ public class BuildingStage {
 
 
         // Prepare Observation panel if building has Observatory.
-        if (building.hasFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS)) {
+        if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS)) {
 //        	try {
-        		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+        		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
             	BuildingFunctionPanel observationPanel = new BuildingPanelAstronomicalObservation(observation, desktop);
             	functionPanels.add(observationPanel);
             	functionListPanel.add(observationPanel);
@@ -359,9 +359,9 @@ public class BuildingStage {
     	//setPanelStyle(powerPanel);
 
         // Prepare power storage panel if building has power storage.
-        if (building.hasFunction(BuildingFunction.POWER_STORAGE)) {
+        if (building.hasFunction(FunctionType.POWER_STORAGE)) {
 //            try {
-                PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
+                PowerStorage storage = (PowerStorage) building.getFunction(FunctionType.POWER_STORAGE);
                 BuildingFunctionPanel powerStoragePanel = new BuildingPanelPowerStorage(storage, desktop);
                 functionPanels.add(powerStoragePanel);
                 functionListPanel.add(powerStoragePanel);
@@ -371,7 +371,7 @@ public class BuildingStage {
         }
 
         //2014-10-27 mkung: Modified Heating Panel
-        if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+        if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 //          try {
 		        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(building, desktop);
 		        functionPanels.add(heatPanel);
@@ -396,9 +396,9 @@ public class BuildingStage {
         */
 
         // Prepare resource processing panel if building has resource processes.
-        if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
+        if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
 //        	try {
-        		ResourceProcessing processor = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
+        		ResourceProcessing processor = (ResourceProcessing) building.getFunction(FunctionType.RESOURCE_PROCESSING);
             	BuildingFunctionPanel resourceProcessingPanel = new BuildingPanelResourceProcessing(processor, desktop);
             	functionPanels.add(resourceProcessingPanel);
             	functionListPanel.add(resourceProcessingPanel);
@@ -408,9 +408,9 @@ public class BuildingStage {
         }
 
         // Prepare storage process panel if building has storage function.
-        if (building.hasFunction(BuildingFunction.STORAGE)) {
+        if (building.hasFunction(FunctionType.STORAGE)) {
 //            try {
-                Storage storage = (Storage) building.getFunction(BuildingFunction.STORAGE);
+                Storage storage = (Storage) building.getFunction(FunctionType.STORAGE);
                 BuildingFunctionPanel storagePanel = new BuildingPanelStorage(storage, desktop);
                 functionPanels.add(storagePanel);
                 functionListPanel.add(storagePanel);

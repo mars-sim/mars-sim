@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
@@ -65,7 +65,7 @@ implements Serializable {
     
     private static String sourceName = logger.getName();
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
+    private static final FunctionType FUNCTION = FunctionType.COOKING;
 
     public static final int RECHECKING_FREQ = 250; // in millisols
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;
@@ -358,9 +358,9 @@ implements Serializable {
     public int getNumCooks() {
         int result = 0;
 
-        if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
+                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
@@ -370,7 +370,7 @@ implements Serializable {
                 }
 
                 //2015-12-10 Officiated Chefbot's contribution as cook
-                RoboticStation rs = (RoboticStation) getBuilding().getFunction(BuildingFunction.ROBOTIC_STATION);
+                RoboticStation rs = (RoboticStation) getBuilding().getFunction(FunctionType.ROBOTIC_STATION);
                 Iterator<Robot> j = rs.getRobotOccupants().iterator();
                 while (j.hasNext()) {
                     Task task = j.next().getBotMind().getBotTaskManager().getTask();
@@ -601,7 +601,7 @@ implements Serializable {
             //Building building = i.next();
             //Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
             //result += kitchen.getNumberOfAvailableCookedMeals();
-            result += ((Cooking) i.next().getFunction(BuildingFunction.COOKING)).getNumberOfAvailableCookedMeals();
+            result += ((Cooking) i.next().getFunction(FunctionType.COOKING)).getNumberOfAvailableCookedMeals();
         }
 
         return result;

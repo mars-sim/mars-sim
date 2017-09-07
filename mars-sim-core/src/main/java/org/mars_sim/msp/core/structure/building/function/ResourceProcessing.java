@@ -32,7 +32,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final BuildingFunction FUNCTION = BuildingFunction.RESOURCE_PROCESSING;
+	private static final FunctionType FUNCTION = FunctionType.RESOURCE_PROCESSING;
 
 	public static final double PROCESS_MAX_VALUE = 100D;
 

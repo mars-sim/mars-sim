@@ -42,7 +42,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -412,7 +412,7 @@ extends VehicleMission {
 					Building garageBuilding = BuildingManager
 							.getBuilding(getVehicle());
 					if (garageBuilding != null) {
-						VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+						VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 						garage.removeVehicle(getVehicle());
 					}
 
@@ -447,7 +447,7 @@ extends VehicleMission {
 			garageBuilding = BuildingManager.getBuilding(getVehicle());
 			if (garageBuilding != null)
 				garage = (VehicleMaintenance) garageBuilding
-				.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+				.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 
 	        // 2017-04-01 If operator is dead, retrieve the person
 			Vehicle v = getVehicle();
@@ -633,7 +633,7 @@ extends VehicleMission {
 					if (isRoverInAGarage()) {
 						garageBuilding = BuildingManager.getBuilding(getVehicle());
 						garage = (VehicleMaintenance) garageBuilding
-								.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+								.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 						garage.removeVehicle(getVehicle());
 					}
 

@@ -15,7 +15,7 @@ import javax.swing.JLabel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -71,7 +71,7 @@ extends BuildingFunctionPanel {
 		furnace = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);	
 			
 		// Check if the building is a heat producer.
-		hasFurnace = building.hasFunction(BuildingFunction.THERMAL_GENERATION);
+		hasFurnace = building.hasFunction(FunctionType.THERMAL_GENERATION);
 
 		// If heat producer, prepare heat producer label.
 		if (hasFurnace) {

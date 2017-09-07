@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
@@ -926,7 +926,7 @@ public class TransportWizard {
     		leastDistance = Resupply.MIN_NONINHABITABLE_BUILDING_DISTANCE;
     	}
 
-    	List<Building> list = mgr.getBuildings(BuildingFunction.LIFE_SUPPORT);
+    	List<Building> list = mgr.getBuildings(FunctionType.LIFE_SUPPORT);
         Collections.shuffle(list);
 
         Iterator<Building> i = list.iterator();
@@ -979,7 +979,7 @@ public class TransportWizard {
     		leastDistance = Resupply.MIN_NONINHABITABLE_BUILDING_DISTANCE;
     	}
 
-    	List<Building> list = buildingManager.getBuildings(BuildingFunction.LIFE_SUPPORT);
+    	List<Building> list = buildingManager.getBuildings(FunctionType.LIFE_SUPPORT);
         Collections.shuffle(list);
 
         Iterator<Building> i = list.iterator();

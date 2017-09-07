@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 
 public class BeeHive
@@ -25,7 +25,7 @@ implements Serializable {
     /** default logger. */
 	private static Logger logger = Logger.getLogger(BeeHive.class.getName());
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
+    private static final FunctionType FUNCTION = FunctionType.FARMING;
 
     public static final int QUEEN = 0;
     public static final int WORKER = 1;

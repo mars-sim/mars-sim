@@ -43,7 +43,7 @@ implements Serializable {
     
 	/** default logger. */
 	//private static Logger logger = Logger.getLogger(Heating.class.getName());
-	private static final BuildingFunction FUNCTION = BuildingFunction.LIFE_SUPPORT;
+	private static final FunctionType FUNCTION = FunctionType.LIFE_SUPPORT;
 
 	// Heat gain and heat loss calculation
 	// Source 1: Engineering concepts for Inflatable Mars Surface Greenhouses

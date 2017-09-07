@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /** 
@@ -74,11 +74,11 @@ implements Serializable {
 		double result = 15D;
 
 		// Add all kitchen work space in settlement.
-		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.COOKING);
+		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(FunctionType.COOKING);
 		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING); 
+			Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING); 
 			result += (double) kitchen.getCookCapacity();
 		}
 

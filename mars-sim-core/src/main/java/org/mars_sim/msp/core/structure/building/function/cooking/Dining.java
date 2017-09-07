@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 
 /**
@@ -27,7 +27,7 @@ implements Serializable {
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.DINING;
+    private static final FunctionType FUNCTION = FunctionType.DINING;
 
     // Data members
     private int capacity;

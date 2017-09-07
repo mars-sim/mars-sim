@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -107,7 +107,7 @@ implements Serializable {
 
             // Walk to random inhabitable building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(person);
-            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
             if (buildingList.size() > 0) {
                 int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
                 Building destinationBuilding = buildingList.get(buildingIndex);
@@ -239,7 +239,7 @@ implements Serializable {
 
             // Walk to random building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(robot);
-            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
             if (buildingList.size() > 0) {
                 int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
                 Building destinationBuilding = buildingList.get(buildingIndex);

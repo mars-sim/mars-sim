@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -66,8 +66,8 @@ extends TabPanel {
     /** default logger. */
     //private static Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
-    private static final BuildingFunction COOKING = BuildingFunction.COOKING;
-    private static final BuildingFunction PREPARING_DESSERT = BuildingFunction.PREPARING_DESSERT;
+    private static final FunctionType COOKING = FunctionType.COOKING;
+    private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
 
 	// Data Members
 	private int numRow = 0;

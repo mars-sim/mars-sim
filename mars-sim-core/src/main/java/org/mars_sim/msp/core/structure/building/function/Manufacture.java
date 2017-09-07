@@ -65,7 +65,7 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(Manufacture.class.getName());
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.MANUFACTURE;
+    private static final FunctionType FUNCTION = FunctionType.MANUFACTURE;
 
     private static final double PROCESS_MAX_VALUE = 100D;
 

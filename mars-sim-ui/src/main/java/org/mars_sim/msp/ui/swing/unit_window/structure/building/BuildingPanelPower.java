@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -61,7 +61,7 @@ extends BuildingFunctionPanel {
 		super(building, desktop);
 
 		// Check if the building is a power producer.
-		isProducer = building.hasFunction(BuildingFunction.POWER_GENERATION);
+		isProducer = building.hasFunction(FunctionType.POWER_GENERATION);
 
 		// Set the layout
 		if (isProducer) setLayout(new GridLayout(4, 1, 0, 0));
@@ -86,7 +86,7 @@ extends BuildingFunctionPanel {
 
 		// If power producer, prepare power producer label.
 		if (isProducer) {
-			PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
+			PowerGeneration generator = (PowerGeneration) building.getFunction(FunctionType.POWER_GENERATION);
 			powerCache = generator.getGeneratedPower();
 			powerLabel = new JLabel(
 				Msg.getString("BuildingPanelPower.powerProduced", formatter.format(powerCache)), //$NON-NLS-1$

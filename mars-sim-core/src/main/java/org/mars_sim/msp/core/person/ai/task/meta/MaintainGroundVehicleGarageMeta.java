@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -87,12 +87,12 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            Settlement settlement = person.getSettlement();
 	            Iterator<Building> j = settlement.getBuildingManager().getBuildings(
-	                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
+	                    FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
 	            while (j.hasNext() && !garageSpace) {
 	                try {
 	                    Building building = j.next();
 	                    VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(
-	                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+	                            FunctionType.GROUND_VEHICLE_MAINTENANCE);
 	                    if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
 	                        garageSpace = true;
 	                    }

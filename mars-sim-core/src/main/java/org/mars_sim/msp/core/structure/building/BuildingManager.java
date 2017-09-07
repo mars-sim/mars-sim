@@ -43,7 +43,7 @@ import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
@@ -93,6 +93,8 @@ public class BuildingManager implements Serializable {
     /** default serial id. */
     private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
 
+    //private static List<BuildingFunction> buildingFunctions; 
+    
     // Data members
 	private int solCache = 0;
     private int millisolCache = -5;
@@ -112,7 +114,7 @@ public class BuildingManager implements Serializable {
     private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
-    private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
+    private Map<FunctionType, List<Building>> buildingFunctionsMap;
     private Map<String, Integer> buildingTypeIDMap;
 
     
@@ -141,7 +143,7 @@ public class BuildingManager implements Serializable {
 		marsClock = masterClock.getMarsClock();
 
         buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
+		
         // Construct all buildings in the settlement.
         buildings = new ArrayList<Building>();
         if (buildingTemplates != null) {
@@ -216,7 +218,7 @@ public class BuildingManager implements Serializable {
 
     	//setupBuildingFunctionsMap();
 
-        buildingFunctionsMap = new ConcurrentHashMap<BuildingFunction, List<Building>>(); //  HashMap<>();
+        buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>(); //  HashMap<>();
 
         // Initialize building value caches.
         buildingValuesNewCache = new HashMap<String, Double>();
@@ -227,9 +229,9 @@ public class BuildingManager implements Serializable {
 	public void setupBuildingFunctionsMap() {
         //logger.info("setupBuildingFunctionsMap() is on " + Thread.currentThread().getName());
     	//long start = System.nanoTime();
-		buildingFunctionsMap = new ConcurrentHashMap<BuildingFunction, List<Building>>(); //  HashMap<>();
-	    List<BuildingFunction> functions = buildingConfig.getBuildingFunctions();
-	    for (BuildingFunction f : functions) {
+		buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>(); //  HashMap<>();
+	    List<FunctionType> functions = buildingConfig.getBuildingFunctions();
+	    for (FunctionType f : functions) {
 	    	List<Building> l = new ArrayList<Building>();
 	        for (Building b : buildings) {
 	        	if (b.hasFunction(f))
@@ -282,7 +284,7 @@ public class BuildingManager implements Serializable {
 	public void removeAllFunctionsfromBFMap(Building oldBuilding) {
         if (buildingFunctionsMap != null) {
         	// use this only after buildingFunctionsMap has been created
-            for (BuildingFunction f : buildingConfig.getBuildingFunctions()) {
+            for (FunctionType f : buildingConfig.getBuildingFunctions()) {
             	// if this building has this function
             	if (oldBuilding.hasFunction(f)) {
             		List<Building> list = buildingFunctionsMap.get(f);
@@ -301,8 +303,8 @@ public class BuildingManager implements Serializable {
     // 2016-10-28 Add removeOneFunctionsfromBFMap()
 	public void removeOneFunctionfromBFMap(Building b, Function f) {
         if (buildingFunctionsMap != null) {
-        	BuildingFunction bf = f.getFunction();
-        	List<Building> list = buildingFunctionsMap.get(bf);
+        	FunctionType ft = f.getFunctionType();
+        	List<Building> list = buildingFunctionsMap.get(ft);
     		if (!list.contains(b))
     			list.remove(b);
         }
@@ -316,7 +318,7 @@ public class BuildingManager implements Serializable {
 	public void addAllFunctionstoBFMap(Building newBuilding) {
 		if (buildingFunctionsMap != null) {
         	// use this only after buildingFunctionsMap has been created
-            for (BuildingFunction f : buildingConfig.getBuildingFunctions()) {
+            for (FunctionType f : buildingConfig.getBuildingFunctions()) {
             	// if this building has this function
             	if (newBuilding.hasFunction(f)) {
             		List<Building> list = null;
@@ -435,7 +437,7 @@ public class BuildingManager implements Serializable {
 	//2016-10-16 Added getBuildingsWithRoboticStation()
     public List<Building> getBuildingsWithRoboticStation() {
 
-    	return getBuildings(BuildingFunction.ROBOTIC_STATION);
+    	return getBuildings(FunctionType.ROBOTIC_STATION);
 
 /*
     	// Using JavaFX/8 Stream
@@ -457,7 +459,7 @@ public class BuildingManager implements Serializable {
 	//2015-12-30 Added getBuildingsWithLifeSupport()
     public List<Building> getBuildingsWithLifeSupport() {
 
-    	return getBuildings(BuildingFunction.LIFE_SUPPORT);
+    	return getBuildings(FunctionType.LIFE_SUPPORT);
 /*
     	// Using JavaFX/8 Stream
 		List<Building> buildings = getACopyOfBuildings();
@@ -479,7 +481,7 @@ public class BuildingManager implements Serializable {
 	//2015-05-08 Added getBuildingsWithPowerGeneration()
     public List<Building> getBuildingsWithPowerGeneration() {
 
-    	return getBuildings(BuildingFunction.POWER_GENERATION);
+    	return getBuildings(FunctionType.POWER_GENERATION);
 /*
     	// Using JavaFX/8 Stream
 		List<Building> buildings = getACopyOfBuildings();
@@ -500,7 +502,7 @@ public class BuildingManager implements Serializable {
 	//2015-04-02 Added getBuildingsWithThermal()
     public List<Building> getBuildingsWithThermal() {
 
-    	return getBuildings(BuildingFunction.THERMAL_GENERATION);
+    	return getBuildings(FunctionType.THERMAL_GENERATION);
  /*
     	// Using JavaFX/8 Stream
 		List<Building> buildings = getACopyOfBuildings();
@@ -577,10 +579,10 @@ public class BuildingManager implements Serializable {
 
     /**
      * Gets the buildings in a settlement that has a given function.
-     * @param building function {@link BuildingFunction} the function of the building.
+     * @param building function {@link FunctionType} the function of the building.
      * @return list of buildings.
      */
-    public List<Building> getSortedBuildings(BuildingFunction bf) {
+    public List<Building> getSortedBuildings(FunctionType bf) {
  
     	if (buildingFunctionsMap.containsKey(bf)) {
     		//System.out.println("buildingFunctionsMap.get(function)" + buildingFunctionsMap.get(function));
@@ -608,10 +610,10 @@ public class BuildingManager implements Serializable {
 
     /**
      * Gets the buildings in a settlement that has a given function.
-     * @param building function {@link BuildingFunction} the function of the building.
+     * @param building function {@link FunctionType} the function of the building.
      * @return list of buildings.
      */
-    public List<Building> getBuildings(BuildingFunction bf) {
+    public List<Building> getBuildings(FunctionType bf) {
         //logger.info("getBuildings() is on " + Thread.currentThread().getName());
         //logger.info("getBuildings() : function is " + function);
 
@@ -677,7 +679,7 @@ public class BuildingManager implements Serializable {
      * @param functions the array of required functions {@link BuildingFunctions}.
      * @return list of buildings.
      */
-    public List<Building> getBuildings(BuildingFunction f1, BuildingFunction f2) {	
+    public List<Building> getBuildings(FunctionType f1, FunctionType f2) {	
 
  		return buildings
 				.stream()
@@ -798,7 +800,7 @@ public class BuildingManager implements Serializable {
         return result;
 */
 
- 		return getBuildings(BuildingFunction.LIFE_SUPPORT)
+ 		return getBuildings(FunctionType.LIFE_SUPPORT)
 				.stream()
 				.findAny().orElse(null);
     }
@@ -819,7 +821,7 @@ public class BuildingManager implements Serializable {
 
         return result;
 */
- 		return getBuildings(BuildingFunction.EVA)
+ 		return getBuildings(FunctionType.EVA)
 				.stream()
 				.findAny().orElse(null);
 
@@ -852,7 +854,7 @@ public class BuildingManager implements Serializable {
             }
 */
             Building building = getLeastCrowdedBuildings(settlement.getBuildingManager()
-            					.getBuildings(BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT))
+            					.getBuildings(FunctionType.EVA, FunctionType.LIFE_SUPPORT))
     							.stream()
     							.findAny().orElse(null);
 
@@ -872,31 +874,31 @@ public class BuildingManager implements Serializable {
         	// find robot type
         	RobotType robotType = robot.getRobotType();
         	//RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
-        	BuildingFunction function = null;
+        	FunctionType function = null;
 
     		if (robotType == RobotType.CHEFBOT) {//robotJob.equals(RobotType.CHEFBOT)){
-    			function = BuildingFunction.COOKING;
+    			function = FunctionType.COOKING;
             	//functionLists.add(BuildingFunction.FOOD_PRODUCTION);
     		}
 			else if (robotType == RobotType.CONSTRUCTIONBOT) {//robotJob.equals(RobotType.CONSTRUCTIONBOT)){
-				function = BuildingFunction.MANUFACTURE;
+				function = FunctionType.MANUFACTURE;
       		}
 			else if (robotType == RobotType.DELIVERYBOT) {//robotJob.equals(RobotType.DELIVERYBOT)){
-				function =BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
+				function =FunctionType.GROUND_VEHICLE_MAINTENANCE;
     		}
 			else if (robotType == RobotType.GARDENBOT) {//robotJob.equals(RobotType.GARDENBOT)){
-				function = BuildingFunction.FARMING;
+				function = FunctionType.FARMING;
     		}
 			else if (robotType == RobotType.MAKERBOT) {//robotJob.equals(RobotType.MAKERBOT)){
 				//functionLists.add(BuildingFunction.RESOURCE_PROCESSING);
-				function = BuildingFunction.MANUFACTURE;
+				function = FunctionType.MANUFACTURE;
     		}
 			else if (robotType == RobotType.MEDICBOT) {//robotJob.equals(RobotType.MEDICBOT)){
-				function = BuildingFunction.MEDICAL_CARE;
+				function = FunctionType.MEDICAL_CARE;
     		}
 			else if (robotType == RobotType.REPAIRBOT) {//robotJob.equals(RobotType.REPAIRBOT)){
 				//function = BuildingFunction.MANUFACTURE;
-				function = BuildingFunction.ROBOTIC_STATION;
+				function = FunctionType.ROBOTIC_STATION;
 				// TODO: create another building function to house repairbot ?
     		}
 
@@ -911,7 +913,7 @@ public class BuildingManager implements Serializable {
             //Iterator<Building> i = functionBuildings.iterator();
             //while (i.hasNext()) {
             //    Building bldg = i.next();
-            	RoboticStation roboticStation = (RoboticStation) bldg.getFunction(BuildingFunction.ROBOTIC_STATION);
+            	RoboticStation roboticStation = (RoboticStation) bldg.getFunction(FunctionType.ROBOTIC_STATION);
     			// remove hallway, tunnel, observatory
             	if (roboticStation != null) {
             		if (bldg.getBuildingType().toLowerCase().contains("hallway")
@@ -919,30 +921,30 @@ public class BuildingManager implements Serializable {
             				|| bldg.getBuildingType().toLowerCase().contains("observatory")){
             			//functionBuildings.remove(bldg); // will cause ConcurrentModificationException
             		}
-            		else if (function == BuildingFunction.FARMING) {
+            		else if (function == FunctionType.FARMING) {
             			if (bldg.getBuildingType().toLowerCase().contains("greenhouse")) {
             				validBuildings.add(bldg);
             			}
             		}
-            		else if (function == BuildingFunction.MANUFACTURE) {
+            		else if (function == FunctionType.MANUFACTURE) {
             			if (bldg.getBuildingType().toLowerCase().contains("workshop")
             					|| bldg.getBuildingType().toLowerCase().contains("manufacturing shed")
             					|| bldg.getBuildingType().toLowerCase().contains("machinery hab")) {
             				validBuildings.add(bldg);
             			}
             		}
-            		else if (function == BuildingFunction.COOKING) {
+            		else if (function == FunctionType.COOKING) {
             			if (bldg.getBuildingType().toLowerCase().contains("lounge")) {
             				validBuildings.add(bldg);
             			}
             		}
-            		else if (function == BuildingFunction.MEDICAL_CARE) {
+            		else if (function == FunctionType.MEDICAL_CARE) {
             			if (bldg.getBuildingType().toLowerCase().contains("infirmary")
             					|| bldg.getBuildingType().toLowerCase().contains("medical")) {
             				validBuildings.add(bldg);
             			}
             		}
-               		else if (function == BuildingFunction.GROUND_VEHICLE_MAINTENANCE) {
+               		else if (function == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
             			if (bldg.getBuildingType().toLowerCase().contains("garage")) {
             				validBuildings.add(bldg);
             			}
@@ -964,7 +966,7 @@ public class BuildingManager implements Serializable {
 
             else {
                 List<Building> validBuildings1 = new ArrayList<Building>();
-            	List<Building> stations = settlement.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+            	List<Building> stations = settlement.getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
                 for (Building bldg : stations) {
             	//Iterator<Building> j = stations.iterator();
                 //while (j.hasNext()) {
@@ -1003,13 +1005,13 @@ public class BuildingManager implements Serializable {
      */
     public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) {
 
-        List<Building> garages = settlement.getBuildingManager().getBuildings(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+        List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
         List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
         for (Building garageBuilding : garages) {
         //Iterator<Building> i = garages.iterator();
         //while (i.hasNext()) {
         //    Building garageBuilding = i.next();
-            VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+            VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
             if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) openGarages.add(garage);
         }
 
@@ -1032,14 +1034,14 @@ public class BuildingManager implements Serializable {
         Settlement settlement = vehicle.getSettlement();
         if (settlement != null) {
         	for (Building garageBuilding : settlement.getBuildingManager().getBuildings(
-                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
+                    FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
             //Iterator<Building> i = settlement.getBuildingManager().getBuildings(
                     //BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
             //while (i.hasNext()) {
                 //Building garageBuilding = i.next();
                 try {
                     VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
-                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                            FunctionType.GROUND_VEHICLE_MAINTENANCE);
                     if (garage.containsVehicle(vehicle)) {
                         //result = garageBuilding;
                         return garageBuilding;
@@ -1062,14 +1064,14 @@ public class BuildingManager implements Serializable {
         Building result = null;
         if (settlement != null) {
         	for (Building garageBuilding : settlement.getBuildingManager().getBuildings(
-                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
+                    FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
             //Iterator<Building> i = settlement.getBuildingManager().getBuildings(
                     //BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
             //while (i.hasNext()) {
                 //Building garageBuilding = i.next();
                 try {
                     VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
-                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                            FunctionType.GROUND_VEHICLE_MAINTENANCE);
                     if (garage.containsVehicle(vehicle)) {
                         //result = garageBuilding;
                         return garageBuilding;
@@ -1097,12 +1099,12 @@ public class BuildingManager implements Serializable {
          	person = (Person) unit;
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            Settlement settlement = person.getSettlement();
-	            for (Building building : settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT)) {
+	            for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT)) {
 	            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
 	            //while (i.hasNext()) {
 	            //    Building building = i.next();
 	                try {
-	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
 	                    if (lifeSupport.containsOccupant(person)) {
 	                        //if (result == null) {
 	                            result = building;
@@ -1208,7 +1210,7 @@ public class BuildingManager implements Serializable {
 */
         return buildingList
         		.stream()
-        		.filter(b -> ((RoboticStation) b.getFunction(BuildingFunction.LIFE_SUPPORT)).getAvailableOccupancy() > 0)
+        		.filter(b -> ((RoboticStation) b.getFunction(FunctionType.LIFE_SUPPORT)).getAvailableOccupancy() > 0)
         		.collect(Collectors.toList());
     }
 
@@ -1225,7 +1227,7 @@ public class BuildingManager implements Serializable {
         // Find least crowded population.
         int leastCrowded = Integer.MAX_VALUE;
         for (Building b0 : buildingList) {
-            LifeSupport lifeSupport = (LifeSupport) b0.getFunction(BuildingFunction.LIFE_SUPPORT);
+            LifeSupport lifeSupport = (LifeSupport) b0.getFunction(FunctionType.LIFE_SUPPORT);
             int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded < leastCrowded) leastCrowded = crowded;
@@ -1233,7 +1235,7 @@ public class BuildingManager implements Serializable {
 
         // Add least crowded buildings to list.
         for (Building b : buildingList) {
-            LifeSupport lifeSupport = (LifeSupport) b.getFunction(BuildingFunction.LIFE_SUPPORT);
+            LifeSupport lifeSupport = (LifeSupport) b.getFunction(FunctionType.LIFE_SUPPORT);
             int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded == leastCrowded) result.add(b);
@@ -1276,7 +1278,7 @@ public class BuildingManager implements Serializable {
         for (Building building : buildingList) {
         //Iterator<Building> i = buildingList.iterator();
         //while (i.hasNext()) {
-        	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+        	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
         	//if (roboticStation == null) System.out.println("roboticStation is null");
             int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
@@ -1288,7 +1290,7 @@ public class BuildingManager implements Serializable {
         //Iterator<Building> j = buildingList.iterator();
         //while (j.hasNext()) {
         //    Building building = j.next();
-        	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+        	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
 
             int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
@@ -1312,7 +1314,7 @@ public class BuildingManager implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+            LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
             double buildingRelationships = 0D;
             int numPeople = 0;
             for (Person occupant : lifeSupport.getOccupants()) {
@@ -1349,7 +1351,7 @@ public class BuildingManager implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+            LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
             int numPeople = 0;
             for (Person occupant : lifeSupport.getOccupants()) {
             //Iterator<Person> j = lifeSupport.getOccupants().iterator();
@@ -1458,7 +1460,7 @@ public class BuildingManager implements Serializable {
 
                 if (unit instanceof Person) {
                  	Person person = (Person) unit;
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
 
 	                if (!lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.addPerson(person);
@@ -1469,7 +1471,7 @@ public class BuildingManager implements Serializable {
 
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
 
 	                if (!roboticStation.containsRobotOccupant(robot)) {
 	                	roboticStation.addRobot(robot);
@@ -1502,7 +1504,7 @@ public class BuildingManager implements Serializable {
             try {
             	 if (unit instanceof Person) {
                  	Person person = (Person) unit;
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
 
 	                if (!lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.addPerson(person);
@@ -1516,7 +1518,7 @@ public class BuildingManager implements Serializable {
 
             	 else if (unit instanceof Robot) {
                  	Robot robot = (Robot) unit;
-                 	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                 	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
 
                  	if (roboticStation.containsRobotOccupant(robot)) {
                  		roboticStation.addRobot(robot);
@@ -1553,7 +1555,7 @@ public class BuildingManager implements Serializable {
 
                 if (unit instanceof Person) {
                 	Person person = (Person) unit;
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
 
                 	if (!lifeSupport.containsOccupant(person)) {
                 		//System.out.println("!lifeSupport.containsRobotOccupant(person) is true");
@@ -1567,7 +1569,7 @@ public class BuildingManager implements Serializable {
 
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
 
                 	if (!roboticStation.containsRobotOccupant(robot)) {
                 		//System.out.println("!lifeSupport.containsRobotOccupant(robot) is true");
@@ -1599,7 +1601,7 @@ public class BuildingManager implements Serializable {
 
                 if (unit instanceof Person) {
                 	Person person = (Person) unit;
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
 
 	                if (lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.removePerson(person);
@@ -1610,7 +1612,7 @@ public class BuildingManager implements Serializable {
 
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
 
                 	if (roboticStation.containsRobotOccupant(robot)) {
                 		roboticStation.removeRobot(robot);
@@ -1912,7 +1914,7 @@ public class BuildingManager implements Serializable {
 
         int max = -1;
         for (Building b : buildings) {
-        	if (b.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        	if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 int id = b.getInhabitableID();
                 max = Math.max(id, max);
                 //if (id > nextNum)
@@ -1930,7 +1932,7 @@ public class BuildingManager implements Serializable {
 
         int max = -1;
         for (Building b : buildings) {
-        	if (b.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        	if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 int id = b.getInhabitableID();
                 max = Math.max(id, max);
             }
@@ -2028,12 +2030,12 @@ public class BuildingManager implements Serializable {
 
     	else {
         	millisolCache = m;
-	        List<Building> farmBuildings = getLeastCrowdedBuildings(getNonMalfunctioningBuildings(getBuildings(BuildingFunction.FARMING)));
+	        List<Building> farmBuildings = getLeastCrowdedBuildings(getNonMalfunctioningBuildings(getBuildings(FunctionType.FARMING)));
 	        //farmBuildings = getNonMalfunctioningBuildings(farmBuildings);
 	        //farmBuildings = getLeastCrowdedBuildings(farmBuildings);
 	        result = new ArrayList<Building>();
 	        for (Building b : farmBuildings) {
-	            Farming farm = (Farming) b.getFunction(BuildingFunction.FARMING);
+	            Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
 	            if (farm.requiresWork()) {
 	                result.add(b);
 	            }

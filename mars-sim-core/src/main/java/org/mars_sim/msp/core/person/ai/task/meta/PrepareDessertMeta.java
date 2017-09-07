@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
@@ -68,7 +68,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
             if (kitchenBuilding != null) {
 
-                PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
+                PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(FunctionType.PREPARING_DESSERT);
 
                 // Check if there are enough ingredients to prepare a dessert.
                 int numGoodRecipes = kitchen.getAListOfDesserts().size();
@@ -125,7 +125,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
                if (kitchenBuilding != null) {
 
-                   PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
+                   PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(FunctionType.PREPARING_DESSERT);
 
                    // Check if there are enough ingredients to prepare a dessert.
                    int numGoodRecipes = kitchen.getAListOfDesserts().size();

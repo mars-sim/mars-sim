@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 /**
@@ -74,11 +74,11 @@ implements Serializable {
 		double result = 0D;
 
 		// Add (tech level * process number / 2) for all manufacture buildings.
-		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE);
+		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE);
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture workshop = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 2D;
 		}
 

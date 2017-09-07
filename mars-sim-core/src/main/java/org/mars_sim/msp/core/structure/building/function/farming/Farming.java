@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
@@ -73,8 +73,8 @@ implements Serializable {
 
     private static String sourceName = logger.getName();
     
-    private static final BuildingFunction FARMING_FUNCTION = BuildingFunction.FARMING;
-    private static final BuildingFunction RESEARCH_FUNCTION = BuildingFunction.RESEARCH;
+    private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
+    private static final FunctionType RESEARCH_FUNCTION = FunctionType.RESEARCH;
 
 	public static final String FERTILIZER = "fertilizer";
 	//public static final String GREY_WATER = "grey water";
@@ -782,9 +782,9 @@ implements Serializable {
     public int getFarmerNum() {
         int result = 0;
 
-        if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
@@ -1026,7 +1026,7 @@ implements Serializable {
 	// 2016-10-13 Check to see if a botany lab is available
 	public boolean checkBotanyLab(CropType type) {
 		boolean proceed = false;
-		Research lab0 = (Research) getBuilding().getFunction(BuildingFunction.RESEARCH);
+		Research lab0 = (Research) getBuilding().getFunction(FunctionType.RESEARCH);
 		// Check to see if the local greenhouse has a research slot
 		if (lab0.hasSpecialty(ScienceType.BOTANY)) {
 			proceed = lab0.checkAvailability();

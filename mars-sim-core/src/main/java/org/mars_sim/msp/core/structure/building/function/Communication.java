@@ -24,7 +24,7 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.COMMUNICATION;
+    private static final FunctionType FUNCTION = FunctionType.COMMUNICATION;
 
     private static BuildingConfig buildingConfig;
     

@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 
 /**
@@ -87,7 +87,7 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
                     Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
                     if (building != null) {
                         ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);
-                        isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
+                        isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
                         double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
                         double baseProb = diff * 10000D;
                         if (baseProb > 100D) {

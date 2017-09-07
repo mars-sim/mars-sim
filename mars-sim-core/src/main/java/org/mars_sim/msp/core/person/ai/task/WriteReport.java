@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -84,7 +84,7 @@ implements Serializable {
 	                // Walk to the office building.
 	                walkToActivitySpotInBuilding(officeBuilding, false);
 
-	                office = (Administration) officeBuilding.getFunction(BuildingFunction.ADMINISTRATION);
+	                office = (Administration) officeBuilding.getFunction(FunctionType.ADMINISTRATION);
 
 	            }
 	            	            
@@ -113,8 +113,8 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.ADMINISTRATION;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.ADMINISTRATION;
     }
 
     @Override
@@ -169,7 +169,7 @@ implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager buildingManager = person.getSettlement()
                     .getBuildingManager();
-            List<Building> offices = buildingManager.getBuildings(BuildingFunction.ADMINISTRATION);
+            List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
             offices = BuildingManager.getNonMalfunctioningBuildings(offices);
             offices = BuildingManager.getLeastCrowdedBuildings(offices);
 

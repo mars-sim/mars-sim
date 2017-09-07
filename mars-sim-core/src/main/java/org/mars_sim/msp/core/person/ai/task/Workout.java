@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 
 /**
@@ -69,7 +69,7 @@ implements Serializable {
                 // Walk to gym building.
                 walkToActivitySpotInBuilding(gymBuilding, false);
 
-                gym = (Exercise) gymBuilding.getFunction(BuildingFunction.EXERCISE);
+                gym = (Exercise) gymBuilding.getFunction(FunctionType.EXERCISE);
             } 
             else {
                 endTask();
@@ -85,8 +85,8 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.EXERCISE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.EXERCISE;
     }
 
     @Override
@@ -141,7 +141,7 @@ implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager buildingManager = person.getSettlement()
                     .getBuildingManager();
-            List<Building> gyms = buildingManager.getBuildings(BuildingFunction.EXERCISE);
+            List<Building> gyms = buildingManager.getBuildings(FunctionType.EXERCISE);
             gyms = BuildingManager.getNonMalfunctioningBuildings(gyms);
             gyms = BuildingManager.getLeastCrowdedBuildings(gyms);
 

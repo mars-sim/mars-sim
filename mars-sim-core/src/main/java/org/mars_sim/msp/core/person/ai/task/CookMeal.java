@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -104,7 +104,7 @@ implements Serializable {
         kitchenBuilding = getAvailableKitchen(person);
 
 	    if (kitchenBuilding != null) {
-	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	    	kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
 
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);
@@ -200,7 +200,7 @@ implements Serializable {
         kitchenBuilding = getAvailableKitchen(robot);
 
 	    if (kitchenBuilding != null) {
-	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	    	kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
 
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);
@@ -278,13 +278,13 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.COOKING;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.COOKING;
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
-        return BuildingFunction.COOKING;
+    protected FunctionType getRelatedBuildingRoboticFunction() {
+        return FunctionType.COOKING;
     }
 
     /**
@@ -559,7 +559,7 @@ implements Serializable {
         LocationSituation location = person.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
+            List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
             kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings);
@@ -582,7 +582,7 @@ implements Serializable {
         LocationSituation location = robot.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = robot.getSettlement().getBuildingManager();
-            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
+            List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
             kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
@@ -611,7 +611,7 @@ implements Serializable {
             Iterator<Building> i = kitchenBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
+                Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING);
                 if (kitchen.getNumCooks() < kitchen.getCookCapacity()) {
                     result.add(building);
                 }

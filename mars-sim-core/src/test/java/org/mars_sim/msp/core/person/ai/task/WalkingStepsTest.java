@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Rover;

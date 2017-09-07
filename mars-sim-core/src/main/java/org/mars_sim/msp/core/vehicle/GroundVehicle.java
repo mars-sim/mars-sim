@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /** The GroundVehicle class represents a ground-type vehicle.  It is
  *  abstract and should be extended to a particular type of ground
@@ -176,7 +176,7 @@ implements Serializable {
 		// If settlement has garages, place vehicle near a random garage.
 		// Otherwise place vehicle near settlement center.
 		List<Building> garageList = settlement.getBuildingManager().getBuildings(
-				BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+				FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		if (garageList.size() >= 1) {
 			Collections.shuffle(garageList);
 			Building garage = garageList.get(0);

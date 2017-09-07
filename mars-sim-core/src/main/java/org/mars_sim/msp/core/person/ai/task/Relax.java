@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -154,12 +154,12 @@ implements Serializable {
 	}
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.RECREATION;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.RECREATION;
     }
 
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
-        return BuildingFunction.ROBOTIC_STATION;
+    protected FunctionType getRelatedBuildingRoboticFunction() {
+        return FunctionType.ROBOTIC_STATION;
     }
 
 	@Override
@@ -212,7 +212,7 @@ implements Serializable {
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> recreationBuildings = manager.getBuildings(BuildingFunction.RECREATION);
+			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 

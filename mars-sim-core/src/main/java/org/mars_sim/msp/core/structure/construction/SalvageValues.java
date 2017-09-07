@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -239,18 +239,18 @@ implements Serializable {
 		}
 
 		// Check that building doesn't have remaining life support at settlement.
-		if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-			if (settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).size() == 1) {
+		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+			if (settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).size() == 1) {
 				result = 0D;
 			}
 		}
 
 		// Check if building has needed living accommodations for settlement population.
-		if (building.hasFunction(BuildingFunction.LIVING_ACCOMODATIONS)) {
+		if (building.hasFunction(FunctionType.LIVING_ACCOMODATIONS)) {
 			int popSize = settlement.getAllAssociatedPeople().size();
 			int popCapacity = settlement.getPopulationCapacity();
 			LivingAccommodations livingAccommodations = (LivingAccommodations) building.getFunction(
-			        BuildingFunction.LIVING_ACCOMODATIONS);
+			        FunctionType.LIVING_ACCOMODATIONS);
 			int buildingPopCapacity = livingAccommodations.getBeds();
 			if ((popCapacity - buildingPopCapacity) < popSize) {
 				result = 0D;
@@ -258,15 +258,15 @@ implements Serializable {
 		}
 
 		// Check that building doesn't have only airlock at settlement.
-		if (building.hasFunction(BuildingFunction.EVA)) {
+		if (building.hasFunction(FunctionType.EVA)) {
 			if (settlement.getAirlockNum() == 1) {
 			    result = 0D;
 			}
 		}
 		
 		// Check that the building doesn't currently have any people in it.
-		if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-		    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+		    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
 		    if (lifeSupport.getOccupantNumber() > 0) {
 		        result = 0D;
 		    }
@@ -283,8 +283,8 @@ implements Serializable {
 		}
 		
 		// Check that the building doesn't currently have any robots in it.
-		if (building.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
-            RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+		if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
+            RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
             if (roboticStation.getRobotOccupantNumber() > 0) {
                 result = 0D;
             }
@@ -301,9 +301,9 @@ implements Serializable {
         }
 		
 		// Check that the building doesn't currently have any vehicles in it.
-		if (building.hasFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
+		if (building.hasFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
 		    GroundVehicleMaintenance vehicleMaint = (GroundVehicleMaintenance) building.getFunction(
-		            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+		            FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		    if (vehicleMaint.getCurrentVehicleNumber() > 0) {
 		        result = 0D;
 		    }

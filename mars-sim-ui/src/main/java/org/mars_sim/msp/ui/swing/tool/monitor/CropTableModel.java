@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropCategoryType;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
@@ -245,7 +245,7 @@ extends UnitTableModel {
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()){
 			Settlement s = i.next();
-			List<Building> ghs = s.getBuildingManager().getBuildings(BuildingFunction.FARMING);	
+			List<Building> ghs = s.getBuildingManager().getBuildings(FunctionType.FARMING);	
 			Collections.sort(ghs);
 			Iterator<Building> j = ghs.iterator();
 			while (j.hasNext()){
@@ -483,7 +483,7 @@ extends UnitTableModel {
 	public int getTotalNumOfAllCrops(Building b) {
 		int num = 0;
 
-		Farming farm = (Farming) b.getFunction(BuildingFunction.FARMING);
+		Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
 		num += farm.getCrops().size();
 
 		totalNumCropMap.put(b, num);
@@ -512,7 +512,7 @@ extends UnitTableModel {
 		//while (i.hasNext()) {
 			try {
 				//Building greenhouse = i.next();
-				Farming farm = (Farming) b.getFunction(BuildingFunction.FARMING);
+				Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
 				List<Crop> cropsList = farm.getCrops();
 					int kk = 0;
 					//logger.info("setUpNewCropCache() : cropsList.size is " + cropsList.size() ) ;
@@ -610,14 +610,14 @@ extends UnitTableModel {
 		// examine match the CropType within List<CropType> having having cropCategory
 		Settlement settle = (Settlement) unit;
 		BuildingManager bMgr = settle.getBuildingManager();
-		List<Building> greenhouses = bMgr.getBuildings(BuildingFunction.FARMING);
+		List<Building> greenhouses = bMgr.getBuildings(FunctionType.FARMING);
 		Iterator<Building> i = greenhouses.iterator();
 
 		int total = 0;
 		while (i.hasNext()) {
 			try {
 				Building greenhouse = i.next();
-				Farming farm = (Farming) greenhouse.getFunction(BuildingFunction.FARMING);
+				Farming farm = (Farming) greenhouse.getFunction(FunctionType.FARMING);
 				List<Crop> cropsList = farm.getCrops();
 
 				Iterator<Crop> j = cropsList.iterator();
@@ -698,7 +698,7 @@ extends UnitTableModel {
 		Building b = buildings.get(row);
 		int catNum = cropCatMap.get(row).get(col);
 		
-		Farming f = (Farming) b.getFunction(BuildingFunction.FARMING);	
+		Farming f = (Farming) b.getFunction(FunctionType.FARMING);	
 		for (Crop c : f.getCrops()) {
 			if (getCategoryNum(c.getCropType().getCropCategoryType().toString()) == catNum)
 				tt.append(c.getCropType().getName()).append(System.lineSeparator());

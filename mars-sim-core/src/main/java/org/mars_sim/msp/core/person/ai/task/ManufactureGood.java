@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.robot.ai.job.Makerbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.tool.Conversion;
 
@@ -87,7 +87,7 @@ implements Serializable {
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
 		if (manufactureBuilding != null) {
-			workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
+			workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 
 			// Walk to manufacturing building.
 			walkToActivitySpotInBuilding(manufactureBuilding, false);
@@ -119,7 +119,7 @@ implements Serializable {
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
 		if (manufactureBuilding != null) {
-			workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
+			workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 
 			// Walk to manufacturing building.
 			walkToActivitySpotInBuilding(manufactureBuilding, false);
@@ -135,13 +135,13 @@ implements Serializable {
 
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.MANUFACTURE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.MANUFACTURE;
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
-        return BuildingFunction.MANUFACTURE;
+    protected FunctionType getRelatedBuildingRoboticFunction() {
+        return FunctionType.MANUFACTURE;
     }
 
 	/**
@@ -183,11 +183,11 @@ implements Serializable {
             }
 
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			for (Building building : buildingManager.getBuildings(BuildingFunction.MANUFACTURE)) {
+			for (Building building : buildingManager.getBuildings(FunctionType.MANUFACTURE)) {
 			//Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
 			//while (j.hasNext()) {
 			//	Building building = (Building) j.next();
-				Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+				Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
 						manufacturingFunction.getProcesses());
 				for (ManufactureProcess process : processes) {
@@ -238,11 +238,11 @@ implements Serializable {
             }
 
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-			for (Building building : buildingManager.getBuildings(BuildingFunction.MANUFACTURE)) {
+			for (Building building : buildingManager.getBuildings(FunctionType.MANUFACTURE)) {
 			//Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
 			//while (j.hasNext()) {
 			//	Building building = (Building) j.next();
-				Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+				Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
 						manufacturingFunction.getProcesses());
 				for (ManufactureProcess process : processes) {
@@ -273,7 +273,7 @@ implements Serializable {
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> manufacturingBuildings = manager.getBuildings(BuildingFunction.MANUFACTURE);
+			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
@@ -298,7 +298,7 @@ implements Serializable {
 
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			List<Building> manufacturingBuildings = manager.getBuildings(BuildingFunction.MANUFACTURE);
+			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
@@ -331,7 +331,7 @@ implements Serializable {
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 			if (manufacturingFunction.requiresManufacturingWork(skill)) {
 				result.add(building);
 			}
@@ -380,7 +380,7 @@ implements Serializable {
 
 		boolean result = false;
 
-		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(BuildingFunction.MANUFACTURE);
+		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
 		Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcess process = i.next();
@@ -407,7 +407,7 @@ implements Serializable {
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 			if (manufacturingFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = manufacturingFunction.getTechLevel();
 			}
@@ -416,7 +416,7 @@ implements Serializable {
 		Iterator<Building> j = buildingList.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 			if (manufacturingFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
 			}
@@ -439,7 +439,7 @@ implements Serializable {
 
 		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(BuildingFunction.MANUFACTURE);
+		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
@@ -465,7 +465,7 @@ implements Serializable {
 
 		int skillLevel = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(BuildingFunction.MANUFACTURE);
+		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(

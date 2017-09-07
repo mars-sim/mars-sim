@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -208,13 +208,13 @@ implements Serializable {
     }
     
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.GROUND_VEHICLE_MAINTENANCE;
     }
     
     @Override
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
-        return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
+    protected FunctionType getRelatedBuildingRoboticFunction() {
+        return FunctionType.GROUND_VEHICLE_MAINTENANCE;
     }
 
     /**

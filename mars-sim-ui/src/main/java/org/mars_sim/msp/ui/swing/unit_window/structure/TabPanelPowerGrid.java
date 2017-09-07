@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
@@ -471,14 +471,14 @@ extends TabPanel {
 			else if (column == 1) return buildings.get(row);
 			else if (column == 2) {
 				double generated = 0D;
-				if (building.hasFunction(BuildingFunction.POWER_GENERATION)) {
+				if (building.hasFunction(FunctionType.POWER_GENERATION)) {
 					try {
 						//PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
 						generated = building.getPowerGeneration().getGeneratedPower();
 					}
 					catch (Exception e) {}
 				}
-				if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 					try {
 						//ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 						generated += building.getThermalGeneration().getGeneratedPower();

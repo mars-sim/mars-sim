@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -89,7 +89,7 @@ implements Serializable {
         	if (building != null) {
         		try {
         			garage = (VehicleMaintenance) building.getFunction(
-        			        BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+        			        FunctionType.GROUND_VEHICLE_MAINTENANCE);
 
         			// Walk to garage.
         			walkToActivitySpotInBuilding(building, false);
@@ -103,12 +103,12 @@ implements Serializable {
         		// If not in a garage, try to add it to a garage with empty space.
         		Settlement settlement = person.getSettlement();
         		Iterator<Building> j = settlement.getBuildingManager().getBuildings(
-        		        BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
+        		        FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
         		while (j.hasNext() && (garage == null)) {
         			try {
         				Building garageBuilding = j.next();
         				VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(
-        				        BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+        				        FunctionType.GROUND_VEHICLE_MAINTENANCE);
         				if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
         					garage = garageTemp;
         					garage.addVehicle(vehicle);
@@ -138,8 +138,8 @@ implements Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.GROUND_VEHICLE_MAINTENANCE;
     }
 
     @Override

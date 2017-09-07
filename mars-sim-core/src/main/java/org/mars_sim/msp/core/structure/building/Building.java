@@ -49,7 +49,7 @@ import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
@@ -205,9 +205,9 @@ LocalBoundedObject, InsidePathLocation {
 		this.buildingType = template.getBuildingType();
 
 		// Set the instance of life support
-		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
 			if (lifeSupport == null) {
-				lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
+				lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
 			    // 2015-12-30 Set up an inhabitable_building id for tracking composition of air
 				int id = manager.getNextInhabitableID();
 				setInhabitableID(id);
@@ -215,37 +215,37 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
 		// Set the instance of thermal generation function.
-		if (hasFunction(BuildingFunction.POWER_GENERATION))
+		if (hasFunction(FunctionType.POWER_GENERATION))
 			if (powerGen == null)
-				powerGen = (PowerGeneration) getFunction(BuildingFunction.POWER_GENERATION);
+				powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
 		
 		// Set the instance of thermal generation function.
-		if (hasFunction(BuildingFunction.THERMAL_GENERATION))
+		if (hasFunction(FunctionType.THERMAL_GENERATION))
 			if (furnace == null)
-				furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
+				furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
 					//if (heating == null)
 					//	heating = furnace.getHeating();
 					
 		// Set the instance of power storage function.
-		if (hasFunction(BuildingFunction.POWER_STORAGE))	    
+		if (hasFunction(FunctionType.POWER_STORAGE))	    
 			if (powerStorage == null)
-				powerStorage = (PowerStorage) getFunction(BuildingFunction.POWER_STORAGE);
+				powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
 
 		
 		// Set the instance of robotic station function.
-		if (hasFunction(BuildingFunction.ROBOTIC_STATION))
+		if (hasFunction(FunctionType.ROBOTIC_STATION))
 			if (roboticStation == null)
-				roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
+				roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
 		
 		// Set the instance of eva function.
-		if (hasFunction(BuildingFunction.EVA))
+		if (hasFunction(FunctionType.EVA))
 			if (eva == null)
-				eva = (EVA) getFunction(BuildingFunction.EVA);
+				eva = (EVA) getFunction(FunctionType.EVA);
 		
 		// Set the instance of farming function.
-		if (hasFunction(BuildingFunction.FARMING))
+		if (hasFunction(FunctionType.FARMING))
 			if (farm == null)
-				farm = (Farming) getFunction(BuildingFunction.FARMING);
+				farm = (Farming) getFunction(FunctionType.FARMING);
 	}
 
 	/** Constructor 2
@@ -339,18 +339,7 @@ LocalBoundedObject, InsidePathLocation {
 			length = buildingConfig.getLength(buildingType);
 		}
 		
-		
 		floorArea = length * width;
-		
-		
-		//if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")		
-		//		|| buildingType.toLowerCase().contains("greenhouse")) {
-		//	System.out.println(nickName);
-		//	System.out.println("length : " + length);
-		//	System.out.println("width : " + width);
-		//	System.out.println("floor : " + floorArea);
-		//}
-			
 			
 		baseLevel = buildingConfig.getBaseLevel(buildingType);
 		description = buildingConfig.getDescription(buildingType);
@@ -365,13 +354,7 @@ LocalBoundedObject, InsidePathLocation {
 		maintenanceTime = buildingConfig.getMaintenanceTime(buildingType);
 
 		// Set room temperature
-		initialTemperature = buildingConfig.getRoomTemperature(buildingType);
-		//System.out.println("roomTemperature : " + roomTemperature);
-		
-		// TODO: determine the benefit of adding other heat requirements.
-		//baseHeatRequirement = config.getBaseHeatRequirement(buildingType);
-		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(buildingType);
-
+		initialTemperature = buildingConfig.getRoomTemperature(buildingType);	
 		
 		// Determine total maintenance time.
 		double totalMaintenanceTime = maintenanceTime;
@@ -392,6 +375,7 @@ LocalBoundedObject, InsidePathLocation {
 			for (int x = 0; x < function.getMalfunctionScopeStrings().length; x++) {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
+			//malfunctionManager.addScopeString(function.getFunctionType().getName());
 		}
 	}
 
@@ -452,19 +436,19 @@ LocalBoundedObject, InsidePathLocation {
 
 	public LifeSupport getLifeSupport() {
 		if (lifeSupport == null)
-			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
+			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
 		return lifeSupport;
 	}
 
 	public ThermalGeneration getThermalGeneration() {
 		if (furnace == null)
-			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
+			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
 		return furnace;
 	}
 	
 	public Farming getFarming() {
 		if (farm == null)
-			farm = (Farming) getFunction(BuildingFunction.FARMING);
+			farm = (Farming) getFunction(FunctionType.FARMING);
 		return farm;
 	}
 		
@@ -474,19 +458,19 @@ LocalBoundedObject, InsidePathLocation {
 		//else
 		//	return null;
 		if (eva == null)
-			eva = (EVA) getFunction(BuildingFunction.EVA);
+			eva = (EVA) getFunction(FunctionType.EVA);
 		return eva;
 	}
 		
 	public PowerGeneration getPowerGeneration() {
 		if (powerGen == null)
-			powerGen = (PowerGeneration) getFunction(BuildingFunction.POWER_GENERATION);
+			powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
 		return powerGen;
 	}
 	
 	public PowerStorage getPowerStorage() {
 		if (powerStorage == null)
-			powerStorage = (PowerStorage) getFunction(BuildingFunction.POWER_STORAGE);
+			powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
 		return powerStorage;
 	}
 	
@@ -604,11 +588,11 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param function the name of the function.
 	 * @return true if it does.
 	 */
-	public boolean hasFunction(BuildingFunction[] bfs) {
+	public boolean hasFunction(FunctionType[] fts) {
 		boolean result = false;
         for (Function f : functions) {
-        	for (BuildingFunction bf : bfs) {
-	        	if (f.getFunction() == bf) {
+        	for (FunctionType ft : fts) {
+	        	if (f.getFunctionType() == ft) {
 	        		result = result && true;
 	        	}
 			}
@@ -621,8 +605,8 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param function the enum name of the functions.
 	 * @return true if it it does.
 	 */
-	public boolean hasFunction(BuildingFunction bf1, BuildingFunction bf2) {
-		return hasFunction(new BuildingFunction[] {bf1, bf2});
+	public boolean hasFunction(FunctionType bf1, FunctionType bf2) {
+		return hasFunction(new FunctionType[] {bf1, bf2});
 	}
 	
 	/**
@@ -630,10 +614,10 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param function the enum name of the function.
 	 * @return true if it does.
 	 */
-	public boolean hasFunction(BuildingFunction functionType) {
+	public boolean hasFunction(FunctionType functionType) {
 		boolean result = false;
         for (Function f : functions) {
-        	if (f.getFunction() == functionType) {
+        	if (f.getFunctionType() == functionType) {
         		return true;
         	}
 		}
@@ -657,15 +641,15 @@ LocalBoundedObject, InsidePathLocation {
 
 	/**
 	 * Gets a function if the building has it.
-	 * @param functionType {@link BuildingFunction} the function of the building.
+	 * @param functionType {@link FunctionType} the function of the building.
 	 * @return function.
 	 * @throws BuildingException if building doesn't have the function.
 	 */
-	public Function getFunction(BuildingFunction functionType) {
+	public Function getFunction(FunctionType functionType) {
 		Function result = null;
 
         for (Function f : functions) {
-        	if (f.getFunction() == functionType) {
+        	if (f.getFunctionType() == functionType) {
         		return f;
         	}
 		}
@@ -965,7 +949,7 @@ LocalBoundedObject, InsidePathLocation {
 	public int numOfPeopleInAirLock() {
         int num = 0;
 		if (eva == null)
-			eva = (EVA) getFunction(BuildingFunction.EVA);	
+			eva = (EVA) getFunction(FunctionType.EVA);	
 		if (eva != null) {
 	        num = eva.getAirlock().getOccupants().size();
 	        powerNeededForEVAheater = num * kW_EVA_HEATER * .5D; // assume half of people are doing EVA ingress statistically
@@ -1293,7 +1277,7 @@ LocalBoundedObject, InsidePathLocation {
 	public void extractHeat(double heat) {
 		// Set the instance of thermal generation function.
 		if (furnace == null)
-			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
+			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
 
 		heating.setHeatLoss(heat);
 	}

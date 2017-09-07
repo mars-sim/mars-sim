@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -90,19 +90,19 @@ implements Serializable {
 				if (recBuilding != null) {
 					// Walk to recreation building.
 					// 2016-01-10 Added BuildingFunction.RECREATION
-				    walkToActivitySpotInBuilding(recBuilding, BuildingFunction.RECREATION, true);
+				    walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
 				    walkSite = true;
 				} else {
                 	// 2016-01-10 if rec building is not available, go to a gym
                 	Building gym = Workout.getAvailableGym(person);
                 	if (gym != null) {
-	                	walkToActivitySpotInBuilding(gym, BuildingFunction.EXERCISE, true);
+	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                	walkSite = true;
 	                } else {
 						// 2016-01-10 if gym is not available, go back to his quarters
 		                Building quarters = person.getQuarters();    
 		                if (quarters != null) {
-		                	walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS, true);
+		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
 						    walkSite = true;
 		                }
 	                }
@@ -141,8 +141,8 @@ implements Serializable {
 	}
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.LIVING_ACCOMODATIONS;//RECREATION;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.LIVING_ACCOMODATIONS;//RECREATION;
     }
 
     //protected BuildingFunction getRelatedBuildingRoboticFunction() {
@@ -214,7 +214,7 @@ implements Serializable {
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> recreationBuildings = manager.getBuildings(BuildingFunction.RECREATION);
+			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 

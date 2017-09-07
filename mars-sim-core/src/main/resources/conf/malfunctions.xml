@@ -25,13 +25,14 @@
 		<!-- EVA repair time to fix. (millisols) (optional) -->
 		<eva-repair-time value="0.0" />
 
-		<!-- List of entities that are susceptible to this malfunction. (min 1 entity required) -->
-		<entity-list>
-			<entity name="life support" />
-			<entity name="rover" />
-			<entity name="eva suit" />
-			<entity name="farming" />
-		</entity-list>
+		<!-- List of systems (or functions of a building) that are susceptible 
+		to this malfunction. (min 1 entity required) -->
+		<system-list>
+			<system name="life support" />
+			<system name="rover" />
+			<system name="EVA suit" />
+			<system name="farming" />
+		</system-list>
 
 		<!-- List of effects this malfunction can produce. (optional) -->
 		<effect-list>
@@ -75,14 +76,13 @@
 		<probability value="15.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="10.0" />
-		<entity-list>
-			<entity name="life support" />
-			<entity name="rover" />
-			<entity name="eva suit" />
-			<!-- 2014-11-19 Added cooking -->
-			<entity name="cooking" />
-			<entity name="farming" />
-		</entity-list>
+		<system-list>
+			<system name="life support" />
+			<system name="EVA suit" />
+			<system name="cooking" />
+			<system name="vehicle" />			
+			<system name="farming" />
+		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
 		</medical-complaint-list>
@@ -97,11 +97,10 @@
 		<probability value="5" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="20.0" />
-		<entity-list>
-			<entity name="life support" />
-			<entity name="rover" />
-			<entity name="farming" />
-		</entity-list>
+		<system-list>
+			<system name="life support" />
+			<system name="farming" />
+		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 			<effect type="life-support" name="Temperature" change-rate="+.01" />
@@ -121,9 +120,10 @@
 		<probability value="1" />
 		<repair-time value="400.0" />
 		<emergency-repair-time value="40.0" />
-		<entity-list>
-			<entity name="life support" />
-		</entity-list>
+		<system-list>
+			<system name="life support" />
+			<system name="farming" />
+		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.02" />
 			<effect type="life-support" name="Temperature" change-rate="+.02" />
@@ -143,9 +143,9 @@
 		<severity value="20" />
 		<probability value="5.0" />
 		<eva-repair-time value="50.0" />
-		<entity-list>
-			<entity name="rover" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+		</system-list>
 		<repair-parts-list>
 			<part name="rover wheel" number="1" probability="10" />
 		</repair-parts-list>
@@ -157,9 +157,11 @@
 		<probability value="5.0" />
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="50.0" />
-		<entity-list>
-			<entity name="rover" />
-		</entity-list>
+		<system-list>
+			<system name="rover" />
+			<system name="fuel heating source" />
+			<system name="fuel power source" />
+		</system-list>
 		<effect-list>
 			<effect type="resource" name="Methane" change-rate="-.1" />
 		</effect-list>
@@ -177,9 +179,10 @@
 		<probability value="1.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
-		<entity-list>
-			<entity name="rover" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+			<system name="power generation" />
+		</system-list>
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="20" />
 			<part name="spark plug" number="1" probability="15" />
@@ -189,7 +192,6 @@
 			<part name="plastic tubing" number="1" probability="10" />
 			<part name="lubricant bottle" number="1" probability="5" />
 			<part name="timing belt" number="1" probability="5" />
-			<part name="fuel cell stack" number="3" probability="1"/>
 		</repair-parts-list>
 	</malfunction>
 
@@ -198,12 +200,10 @@
 		<severity value="40" />
 		<probability value="5.0" />
 		<repair-time value="50.0" />
-		<entity-list>
-			<entity name="rover" />
-			<entity name="light utility vehicle" />
-			<entity name="solar power source" />
-			<entity name="solar heat source" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+			<system name="power storage" />
+		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="3.0" />
 		</medical-complaint-list>
@@ -220,10 +220,10 @@
 		<probability value="5.0" />
 		<repair-time value="50.0" />
 		<eva-repair-time value="50.0" />
-		<entity-list>
-			<entity name="rover" />
-			<entity name="communication" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+			<system name="communication" />
+		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
@@ -239,9 +239,9 @@
 		<probability value="2.0" />
 		<repair-time value="50.0" />
 		<eva-repair-time value="20.0" />
-		<entity-list>
-			<entity name="rover" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
@@ -254,10 +254,9 @@
 		<severity value="35" />
 		<probability value="2.0" />
 		<repair-time value="100.0" />
-		<entity-list>
-			<entity name="rover" />
-			<entity name="light utility vehicle" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
@@ -269,15 +268,14 @@
 		<severity value="50" />
 		<probability value="5.0" />
 		<emergency-repair-time value="100.0" />
-		<entity-list>
-			<entity name="rover" />
-			<entity name="living accommodations" />
-			<entity name="farming" />
-			<entity name="manufacture" />
-			<entity name="eva suit" />
-			<entity name="areothermal power source" />
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="rover" />
+			<system name="living accommodations" />
+			<system name="farming" />
+			<system name="manufacture" />
+			<system name="EVA suit" />
+			<system name="cooking" />
+		</system-list>
 		<effect-list>
 			<effect type="resource" name="Water" change-rate="-.1" />
 		</effect-list>
@@ -299,9 +297,9 @@
 		<probability value="5.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="20.0" />
-		<entity-list>
-			<entity name="eva suit" />
-		</entity-list>
+		<system-list>
+			<system name="EVA suit" />
+		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Temperature" change-rate="-.1" />
 		</effect-list>
@@ -319,13 +317,13 @@
 		<probability value="5.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
-		<entity-list>
-			<entity name="living accommodations" />
-			<entity name="farming" />
-			<entity name="manufacture" />
-			<entity name="rover" />
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="living accommodations" />
+			<system name="farming" />
+			<system name="manufacture" />
+			<system name="rover" />
+			<system name="cooking" />
+		</system-list>
 		<effect-list>
 			<effect type="resource" name="Water" change-rate="-1.0" />
 			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
@@ -349,10 +347,10 @@
 		<probability value="5.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
-		<entity-list>
-			<entity name="cooking" />
-			<entity name="rover" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+			<system name="rover" />
+		</system-list>
 		<effect-list>
 			<effect type="resource" name="Food" change-rate="-1.0" />
 			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
@@ -371,11 +369,11 @@
 		<probability value="2.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
-		<entity-list>
-			<entity name="farming" />
-			<entity name="manufacture" />
-			<entity name="research" />
-		</entity-list>
+		<system-list>
+			<system name="farming" />
+			<system name="manufacture" />
+			<system name="research" />
+		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 		</effect-list>
@@ -391,9 +389,9 @@
 		<probability value="5.0" />
 		<repair-time value="20.0" />
 		<emergency-repair-time value="10.0" />
-		<entity-list>
-			<entity name="eva suit" />
-		</entity-list>
+		<system-list>
+			<system name="EVA suit" />
+		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Frostnip" probability="50.0" />
 			<medical-complaint name="Frostbite" probability="10.0" />
@@ -407,12 +405,12 @@
 		<severity value="50" />
 		<probability value="5.0" />
 		<repair-time value="20.0" />
-		<entity-list>
-			<entity name="eva suit" />
-		</entity-list>
+		<system-list>
+			<system name="EVA suit" />
+		</system-list>
 		<repair-parts-list>
-			<part name="eva antenna" number="1" probability="20" />
-			<part name="eva radio" number="1" probability="10" />
+			<part name="EVA antenna" number="1" probability="20" />
+			<part name="EVA radio" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -421,13 +419,12 @@
 		<severity value="20" />
 		<probability value="5.0" />
 		<repair-time value="20.0" />
-		<entity-list>
-			<entity name="vehicle" />
-			<entity name="eva suit" />
-			<entity name="power generation" />
-			<entity name="building" />
-			<entity name="settlement" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+			<system name="EVA suit" />
+			<system name="power generation" />
+			<system name="building" />
+		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="4" probability="50" />
 			<part name="electrical wire" number="4" probability="100" />
@@ -440,10 +437,10 @@
 		<probability value="5.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
-		<entity-list>
-			<entity name="rover" />
-			<entity name="light utility vehicle" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+ 			<system name="wind power source" />			
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -457,9 +454,11 @@
 		<probability value="5.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="50.0" />
-		<entity-list>
-			<entity name="rover" />
-		</entity-list>
+		<system-list>
+			<system name="rover" /> 
+			<system name="fuel power source" /> 			
+			<system name="fuel heating source" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="10" />
 			<part name="wire connector" number="2" probability="10" />
@@ -472,10 +471,13 @@
 		<severity value="50" />
 		<probability value="5.0" />
 		<repair-time value="80.0" />
-		<emergency-repair-time value="40.0" />
-		<entity-list>
-			<entity name="areothermal power source" />
-		</entity-list>
+		<emergency-repair-time value="40.0" />	
+		<system-list>
+			<system name="living accommodations" />
+			<system name="farming" />
+			<system name="cooking" />
+ 			<system name="earth return" />			
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -490,9 +492,10 @@
 		<probability value="5.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
-		<entity-list>
-			<entity name="farming" />
-		</entity-list>
+		<system-list>
+			<system name="farming" />
+			<system name="earth return" />			
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -506,9 +509,9 @@
 		<probability value="3.0" />
 		<repair-time value="40.0" />
 		<emergency-repair-time value="20.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="1" probability="20" />
 			<part name="wire connector" number="1" probability="20" />
@@ -523,9 +526,9 @@
 		<probability value="3.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -539,9 +542,9 @@
 		<probability value="3.0" />
 		<repair-time value="40.0" />
 		<emergency-repair-time value="20.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -555,9 +558,9 @@
 		<probability value="3.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -572,9 +575,9 @@
 		<probability value="3.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="5" />
 			<part name="wire connector" number="2" probability="5" />
@@ -592,9 +595,9 @@
 		<probability value="3.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -610,9 +613,9 @@
 		<probability value="3.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="steel sheet" number="2" probability="2" />
@@ -629,9 +632,9 @@
 		<probability value="3.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
-		<entity-list>
-			<entity name="cooking" />
-		</entity-list>
+		<system-list>
+			<system name="solar heating source" />
+		</system-list>
 		<repair-parts-list>
 			<part name="solar parabolic mirror" number="1" probability="10" />
 			<part name="electrical wire" number="2" probability="20" />
@@ -645,13 +648,13 @@
 		<probability value="3.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="25.0" />
-		<entity-list>
-			<entity name="cooking" />
-			<entity name="farming" />
-			<entity name="vehicle" />
-			<entity name="manufacture" />
-			<entity name="living accommodations" />
-		</entity-list>
+		<system-list>
+			<system name="cooking" />
+			<system name="farming" />
+			<system name="vehicle" />
+			<system name="manufacture" />
+			<system name="living accommodations" />
+		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
@@ -665,9 +668,9 @@
 		<probability value="3.0" />
 		<repair-time value="20.0" />
 		<emergency-repair-time value="10" />
-		<entity-list>
-			<entity name="farming" />
-		</entity-list>
+		<system-list>
+			<system name="farming" />
+		</system-list>
 		<repair-parts-list>
 			<part name="oxygen pump" number="3" probability="10" />
 			<part name="carbon dioxide pump" number="3" probability="5" />
@@ -689,9 +692,9 @@
 		<probability value="3.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100" />
-		<entity-list>
-			<entity name="manufacturing" />
-		</entity-list>
+		<system-list>
+			<system name="manufacture" />
+		</system-list>
 		<repair-parts-list>
 			<part name="aluminum wire" number="2" probability="2"  />
 			<part name="electrical wire" number="2" probability="10" />
@@ -715,9 +718,9 @@
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
 		<eva-repair-time value="40.0" />
-		<entity-list>
-			<entity name="building" />
-		</entity-list>
+		<system-list>
+			<system name="building" />
+		</system-list>
 
 		<effect-list>
 			<effect type="resource" name="Oxygen" change-rate="-.2" />
@@ -753,10 +756,11 @@
 		<probability value="1.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100" />
-		<entity-list>
-			<entity name="vehicle" />
-			<entity name="methane power generator" />
-		</entity-list>
+		<system-list>
+			<system name="vehicle" />
+			<system name="fuel power source" />
+			<system name="fuel heating source" />
+		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
 			<medical-complaint name="Laceration" probability="2.0" />

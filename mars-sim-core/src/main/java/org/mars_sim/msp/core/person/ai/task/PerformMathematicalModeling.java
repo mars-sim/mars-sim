@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -29,7 +30,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -46,6 +47,8 @@ implements ResearchScientificStudy, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformMathematicalModeling.class.getName());
+    
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -85,12 +88,12 @@ implements ResearchScientificStudy, Serializable {
                 addPersonToLab();
             }
             else {
-                logger.warning("lab equipment not functioning.");
+            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "lab equipment not functioning.", null);
                 endTask();
             }
         }
         else {
-            logger.warning("the study was interrupted.");
+        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "the study was interrupted.", null);
             endTask();
         }
 
@@ -105,8 +108,8 @@ implements ResearchScientificStudy, Serializable {
     }
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.RESEARCH;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.RESEARCH;
     }
 
     /**
@@ -203,7 +206,7 @@ implements ResearchScientificStudy, Serializable {
         Lab result = null;
 
         BuildingManager manager = person.getSettlement().getBuildingManager();
-        List<Building> labBuildings = manager.getBuildings(BuildingFunction.RESEARCH);
+        List<Building> labBuildings = manager.getBuildings(FunctionType.RESEARCH);
         labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
         labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
@@ -213,7 +216,7 @@ implements ResearchScientificStudy, Serializable {
             Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                     person, labBuildings);
             Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-            result = (Research) building.getFunction(BuildingFunction.RESEARCH);
+            result = (Research) building.getFunction(FunctionType.RESEARCH);
         }
 
         return result;
@@ -232,7 +235,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+            Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
             if (lab.getResearcherNum() < lab.getLaboratorySize()) {
                 result.add(building);
             }
@@ -256,7 +259,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+            Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
             if (lab.hasSpecialty(mathematicsScience)) {
                 result.add(building);
             }

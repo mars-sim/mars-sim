@@ -48,7 +48,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -196,7 +196,7 @@ extends TabPanel {
 				try {
 					Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();
 					if (workshopBuilding != null) {
-						Manufacture workshop = (Manufacture) workshopBuilding.getFunction(BuildingFunction.MANUFACTURE);
+						Manufacture workshop = (Manufacture) workshopBuilding.getFunction(FunctionType.MANUFACTURE);
 						Object selectedItem = processSelection.getSelectedItem();
 						if (selectedItem != null) {
 							if (selectedItem instanceof ManufactureProcessInfo) {
@@ -415,10 +415,10 @@ extends TabPanel {
 	private List<ManufactureProcess> getManufactureProcesses() {
 		List<ManufactureProcess> result = new ArrayList<ManufactureProcess>();
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			//			try {
-			Manufacture workshop = (Manufacture) i.next().getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture workshop = (Manufacture) i.next().getFunction(FunctionType.MANUFACTURE);
 			result.addAll(workshop.getProcesses());
 			//			}
 			//			catch (BuildingException e) {}
@@ -434,10 +434,10 @@ extends TabPanel {
 	private List<SalvageProcess> getSalvageProcesses() {
 		List<SalvageProcess> result = new ArrayList<SalvageProcess>();
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			//            try {
-			Manufacture workshop = (Manufacture) i.next().getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture workshop = (Manufacture) i.next().getFunction(FunctionType.MANUFACTURE);
 			result.addAll(workshop.getSalvageProcesses());
 			//            }
 			//            catch (BuildingException e) {}
@@ -485,7 +485,7 @@ extends TabPanel {
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getManufacturingBuildings() {
-		return new Vector<Building>(settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE));
+		return new Vector<Building>(settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE));
 	}
 
 	/**
@@ -512,7 +512,7 @@ extends TabPanel {
 	                }
 	            }
 
-				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
+				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 				if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 					Iterator<ManufactureProcessInfo> j =
 							ManufactureUtil.getManufactureProcessesForTechSkillLevel(
@@ -538,7 +538,7 @@ extends TabPanel {
 		Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
 		try {
 			if (manufactureBuilding != null) {
-				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
+				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 				if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 					Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
 							ManufactureUtil.getSalvageProcessesForTechLevel(

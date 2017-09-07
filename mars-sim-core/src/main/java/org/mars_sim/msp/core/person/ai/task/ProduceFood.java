@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.tool.Conversion;
 
@@ -84,7 +84,7 @@ implements Serializable {
 		// Get available foodProduction foodFactory if any.
 		Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
 		if (foodProductionBuilding != null) {
-			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
+			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
 
 			// Walk to foodProduction building.
 			walkToActivitySpotInBuilding(foodProductionBuilding, false);
@@ -116,7 +116,7 @@ implements Serializable {
 		// Get available foodProduction foodFactory if any.
 		Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
 		if (foodProductionBuilding != null) {
-			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
+			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
 
 			// Walk to foodProduction building.
 			walkToActivitySpotInBuilding(foodProductionBuilding, false);
@@ -132,12 +132,12 @@ implements Serializable {
 		setPhase(PRODUCE_FOOD);
 	}
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.FOOD_PRODUCTION;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.FOOD_PRODUCTION;
     }
 
-    protected BuildingFunction getRelatedBuildingRoboticFunction() {
-        return BuildingFunction.FOOD_PRODUCTION;
+    protected FunctionType getRelatedBuildingRoboticFunction() {
+        return FunctionType.FOOD_PRODUCTION;
     }
 
 
@@ -153,10 +153,10 @@ implements Serializable {
 		    int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			Iterator<Building> j = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+			Iterator<Building> j = manager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
-				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
 				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
 						foodProductionFunction.getProcesses());
 				Iterator<FoodProductionProcess> k = processes.iterator();
@@ -179,10 +179,10 @@ implements Serializable {
 			int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-			Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+			Iterator<Building> j = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
-				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
 				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
 						foodProductionFunction.getProcesses());
 				Iterator<FoodProductionProcess> k = processes.iterator();
@@ -258,7 +258,7 @@ implements Serializable {
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> foodProductionBuildings = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
+			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
@@ -286,7 +286,7 @@ implements Serializable {
 
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-			List<Building> foodProductionBuildings = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
+			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
@@ -321,7 +321,7 @@ implements Serializable {
 		//Iterator<Building> i = buildingList.iterator();
 		//while (i.hasNext()) {
 		//	Building building = i.next();
-			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
 			if (foodProductionFunction.requiresFoodProductionWork(skill)) {
 				result.add(building);
 			}
@@ -371,7 +371,7 @@ implements Serializable {
 
 		boolean result = false;
 
-		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
+		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
 		for (FoodProductionProcess process : foodProductionFunction.getProcesses()) {
 		//Iterator<FoodProductionProcess> i = foodProductionFunction.getProcesses().iterator();
 		//while (i.hasNext()) {
@@ -400,7 +400,7 @@ implements Serializable {
 		//Iterator<Building> i = buildingList.iterator();
 		//while (i.hasNext()) {
 		//	Building building = i.next();
-			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
 			if (foodProductionFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = foodProductionFunction.getTechLevel();
 			}
@@ -410,7 +410,7 @@ implements Serializable {
 		//Iterator<Building> j = buildingList.iterator();
 		//while (j.hasNext()) {
 		//	Building building = j.next();
-			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
 			if (foodProductionFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
 			}
@@ -451,7 +451,7 @@ implements Serializable {
 	public static double getHighestProcessValue(int skillLevel, Building foodProductionBuilding) {
 
 		double highestProcessValue = 0D;
-		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
+		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
 		int techLevel = foodProductionFunction.getTechLevel();
 
 		for (FoodProductionProcessInfo process : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(

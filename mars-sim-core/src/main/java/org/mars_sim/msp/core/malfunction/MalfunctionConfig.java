@@ -20,6 +20,11 @@ import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
+import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * Provides configuration information about malfunctions.
@@ -38,8 +43,8 @@ public class MalfunctionConfig implements Serializable {
     private static final String REPAIR_TIME = "repair-time";
     private static final String EMERGENCY_REPAIR_TIME = "emergency-repair-time";
     private static final String EVA_REPAIR_TIME = "eva-repair-time";
-    private static final String ENTITY_LIST = "entity-list";
-    private static final String ENTITY = "entity";
+    private static final String SYSTEM_LIST = "system-list";
+    private static final String SYSTEM = "system";
     private static final String EFFECT_LIST = "effect-list";
     private static final String EFFECT = "effect";
     private static final String TYPE = "type";
@@ -126,13 +131,47 @@ public class MalfunctionConfig implements Serializable {
 
 
                     // Get affected entities.
-                    List<String> entities = new ArrayList<String>();
-                    Element entityListElement = malfunctionElement.getChild(ENTITY_LIST);
-                    List<Element> entityNodes = entityListElement.getChildren(ENTITY);
-
-                    for (Element entityElement : entityNodes) {
-                    	String entity_name = entityElement.getAttributeValue(NAME);
-                        entities.add(entity_name);
+                    List<String> systems = new ArrayList<String>();
+                    Element entityListElement = malfunctionElement.getChild(SYSTEM_LIST);
+                    List<Element> systemNodes = entityListElement.getChildren(SYSTEM);
+                  
+                    for (Element systemElement : systemNodes) {
+                    	boolean exist = false;
+                    	String sys_name = Conversion.capitalize(systemElement.getAttributeValue(NAME));
+                    	for (FunctionType f : FunctionType.values()) {
+	                    	if (sys_name.equals(f.getName())) {
+	                    		systems.add(sys_name);
+	                    		exist = true;
+	                    	}
+                    	}
+                    	if (!exist) {
+	                    	for (SystemType s : SystemType.values()) {
+		                    	if (sys_name.equals(s.getName())) {
+		                    		systems.add(sys_name);
+		                    		exist = true;
+		                    	}
+	                    	}
+                    	}
+                    	if (!exist) {
+	                    	for (HeatSourceType h : HeatSourceType.values()) {
+		                    	if (sys_name.equals(h.getName())) {
+		                    		systems.add(sys_name);
+		                    		exist = true;
+		                    	}
+	                    	}
+                    	}
+                    	if (!exist) {
+	                    	for (PowerSourceType p : PowerSourceType.values()) {
+		                    	if (sys_name.equals(p.getName())) {
+		                    		systems.add(sys_name);
+		                    		exist = true;
+		                    	}
+	                    	}
+                    	}
+                    	if (!exist) {
+                    		throw new IllegalStateException(sys_name + " is NOT recognized in malfunction.");
+                    	}
+                    	
                     }
 
                     // Get effects.
@@ -181,7 +220,7 @@ public class MalfunctionConfig implements Serializable {
 
                     // Create malfunction.
                     Malfunction malfunction = new Malfunction(name, severity, probability, emergencyRepairTime, repairTime,
-                            evaRepairTime, entities, resourceEffects, lifeSupportEffects, medicalComplaints);
+                            evaRepairTime, systems, resourceEffects, lifeSupportEffects, medicalComplaints);
 
                     // Add repair parts.
                     Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);

@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -168,7 +168,7 @@ implements Repair, Serializable {
         else if (entity instanceof Building) {
             // Requires EVA repair on uninhabitable buildings.
             Building building = (Building) entity;
-            if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+            if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 result = true;
             }
         }
@@ -194,7 +194,7 @@ implements Repair, Serializable {
         if (entity instanceof Building) {
             // Requires EVA repair on uninhabitable buildings.
             Building building = (Building) entity;
-            if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+            if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 result = true;
             }
         }
@@ -533,7 +533,7 @@ implements Repair, Serializable {
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 
                 // Walk to malfunctioning building.
                 walkToRandomLocInBuilding(building, true);

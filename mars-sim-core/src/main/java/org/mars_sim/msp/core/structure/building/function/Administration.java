@@ -23,7 +23,7 @@ public class Administration extends Function implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.ADMINISTRATION;
+    private static final FunctionType FUNCTION = FunctionType.ADMINISTRATION;
     private static BuildingConfig buildingConfig;
     
     // Data members

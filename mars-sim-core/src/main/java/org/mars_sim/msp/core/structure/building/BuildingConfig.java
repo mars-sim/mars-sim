@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
@@ -170,7 +170,7 @@ public class BuildingConfig implements Serializable {
 
 	private Document buildingDoc;
 	private Set<String> buildingTypes;
-	private List<BuildingFunction> functions;
+	private List<FunctionType> functions;
 
 	/**
 	 * Constructor
@@ -182,40 +182,40 @@ public class BuildingConfig implements Serializable {
 		generateBuildingFunctions();
 	}
 
-	public List<BuildingFunction> getBuildingFunctions() {
+	public List<FunctionType> getBuildingFunctions() {
 		return functions;
 	}
 
 	public void generateBuildingFunctions() {
 
 		functions = new ArrayList<>();
-		functions.add(BuildingFunction.ADMINISTRATION);
-		functions.add(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
-		functions.add(BuildingFunction.BUILDING_CONNECTION);
-		functions.add(BuildingFunction.COMMUNICATION);
-		functions.add(BuildingFunction.COOKING);
-		functions.add(BuildingFunction.DINING);
-		functions.add(BuildingFunction.EARTH_RETURN);
-		functions.add(BuildingFunction.EVA);
-		functions.add(BuildingFunction.EXERCISE);
-		functions.add(BuildingFunction.FARMING);
-		functions.add(BuildingFunction.FOOD_PRODUCTION);
-		functions.add(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
-		functions.add(BuildingFunction.LIFE_SUPPORT);
-		functions.add(BuildingFunction.LIVING_ACCOMODATIONS);
-		functions.add(BuildingFunction.MANAGEMENT);
-		functions.add(BuildingFunction.MANUFACTURE);
-		functions.add(BuildingFunction.MEDICAL_CARE);
-		functions.add(BuildingFunction.POWER_GENERATION);
-		functions.add(BuildingFunction.POWER_STORAGE);
-		functions.add(BuildingFunction.PREPARING_DESSERT);
-		functions.add(BuildingFunction.RECREATION);
-		functions.add(BuildingFunction.RESEARCH);
-		functions.add(BuildingFunction.RESOURCE_PROCESSING);
-		functions.add(BuildingFunction.ROBOTIC_STATION);
-		functions.add(BuildingFunction.STORAGE);
-		functions.add(BuildingFunction.THERMAL_GENERATION);
-		functions.add(BuildingFunction.WASTE_DISPOSAL);
+		functions.add(FunctionType.ADMINISTRATION);
+		functions.add(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+		functions.add(FunctionType.BUILDING_CONNECTION);
+		functions.add(FunctionType.COMMUNICATION);
+		functions.add(FunctionType.COOKING);
+		functions.add(FunctionType.DINING);
+		functions.add(FunctionType.EARTH_RETURN);
+		functions.add(FunctionType.EVA);
+		functions.add(FunctionType.EXERCISE);
+		functions.add(FunctionType.FARMING);
+		functions.add(FunctionType.FOOD_PRODUCTION);
+		functions.add(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		functions.add(FunctionType.LIFE_SUPPORT);
+		functions.add(FunctionType.LIVING_ACCOMODATIONS);
+		functions.add(FunctionType.MANAGEMENT);
+		functions.add(FunctionType.MANUFACTURE);
+		functions.add(FunctionType.MEDICAL_CARE);
+		functions.add(FunctionType.POWER_GENERATION);
+		functions.add(FunctionType.POWER_STORAGE);
+		functions.add(FunctionType.PREPARING_DESSERT);
+		functions.add(FunctionType.RECREATION);
+		functions.add(FunctionType.RESEARCH);
+		functions.add(FunctionType.RESOURCE_PROCESSING);
+		functions.add(FunctionType.ROBOTIC_STATION);
+		functions.add(FunctionType.STORAGE);
+		functions.add(FunctionType.THERMAL_GENERATION);
+		functions.add(FunctionType.WASTE_DISPOSAL);
 	}
 
 

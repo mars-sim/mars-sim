@@ -21,7 +21,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final BuildingFunction FUNCTION = BuildingFunction.BUILDING_CONNECTION;
+	public static final FunctionType FUNCTION = FunctionType.BUILDING_CONNECTION;
 
 	/** constructor. */
 	public BuildingConnection(Building building) {
@@ -47,18 +47,18 @@ implements Serializable {
 	    // Determine demand.
 	    double demand = 0D;
 	    Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-	            BuildingFunction.LIFE_SUPPORT).iterator();
+	            FunctionType.LIFE_SUPPORT).iterator();
 	    while (i.hasNext()) {
 	        Building building = i.next();
 	        // Demand based on life support buildings that are not building connections.
-	        if (!building.hasFunction(BuildingFunction.BUILDING_CONNECTION)) {
+	        if (!building.hasFunction(FunctionType.BUILDING_CONNECTION)) {
 	            
 	            // Only add demand from buildings with same base level as this one.
 	            if (building.getBaseLevel() == baseLevel) {
 	                demand += 1D;
 
 	                // If building is not EVA and does not have a walkable airlock path, add more demand.
-	                if ((settlement.getAirlockNum() > 0) && !building.hasFunction(BuildingFunction.EVA)){
+	                if ((settlement.getAirlockNum() > 0) && !building.hasFunction(FunctionType.EVA)){
 
 	                    if (!settlement.hasWalkableAvailableAirlock(building)) {
 
@@ -72,7 +72,7 @@ implements Serializable {
 	    // Determine supply.
 	    double supply = 0D;
 	    Iterator<Building> j = settlement.getBuildingManager().getBuildings(
-	            BuildingFunction.BUILDING_CONNECTION).iterator();
+	            FunctionType.BUILDING_CONNECTION).iterator();
         while (j.hasNext()) {
             Building building = j.next();
             

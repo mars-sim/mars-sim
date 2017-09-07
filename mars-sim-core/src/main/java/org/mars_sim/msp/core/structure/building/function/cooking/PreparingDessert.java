@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.Storage;
@@ -54,7 +54,7 @@ implements Serializable {
 
     private static String sourceName = logger.getName();
     
-    private static final BuildingFunction FUNCTION = BuildingFunction.PREPARING_DESSERT;
+    private static final FunctionType FUNCTION = FunctionType.PREPARING_DESSERT;
 
 	public static final String GREY_WATER = "grey water";
     public static final String FOOD_WASTE = "food waste";
@@ -278,9 +278,9 @@ implements Serializable {
     public int getNumCooks() {
         int result = 0;
 
-        if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
+                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
@@ -564,7 +564,7 @@ implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);
+            PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT);
             result += kitchen.getAvailableServingsDesserts();
         }
 

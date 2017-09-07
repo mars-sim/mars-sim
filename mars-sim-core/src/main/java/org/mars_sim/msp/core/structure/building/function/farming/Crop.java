@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -643,7 +643,7 @@ public class Crop implements Serializable {
 		// 2015-10-13 Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
 		boolean done = false;
-		Research lab0 = (Research) farm.getBuilding().getFunction(BuildingFunction.RESEARCH);
+		Research lab0 = (Research) farm.getBuilding().getFunction(FunctionType.RESEARCH);
 		// Check to see if the local greenhouse has a research slot
 		if (lab0.hasSpecialty(ScienceType.BOTANY)) {
 			hasEmptySpace = lab0.checkAvailability();
@@ -662,11 +662,11 @@ public class Crop implements Serializable {
 
 		else {
 			// Check available research slot in another lab located in another greenhouse
-			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
+			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
-				Research lab1 = (Research) building.getFunction(BuildingFunction.RESEARCH);
+				Research lab1 = (Research) building.getFunction(FunctionType.RESEARCH);
 				if (lab1.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab1.checkAvailability();
 					if (hasEmptySpace) {
@@ -692,11 +692,11 @@ public class Crop implements Serializable {
 		else {
 
 			// Check available research slot in another lab located in another greenhouse
-			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
+			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
-				Research lab2 = (Research) building.getFunction(BuildingFunction.RESEARCH);
+				Research lab2 = (Research) building.getFunction(FunctionType.RESEARCH);
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {

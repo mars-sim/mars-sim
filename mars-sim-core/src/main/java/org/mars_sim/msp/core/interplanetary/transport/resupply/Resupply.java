@@ -50,7 +50,7 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -413,7 +413,7 @@ implements Serializable, Transportable {
     		leastDistance = MIN_NONINHABITABLE_BUILDING_DISTANCE;
     	}
 
-    	List<Building> list = mgr.getBuildings(BuildingFunction.LIFE_SUPPORT);
+    	List<Building> list = mgr.getBuildings(FunctionType.LIFE_SUPPORT);
         Collections.shuffle(list);
 
         Iterator<Building> i = list.iterator();
@@ -677,7 +677,7 @@ implements Serializable, Transportable {
         	else {
         		//logger.info("No other same building type");
 	            // Put this habitable building next to another inhabitable building (e.g. greenhouse, lander hab, research hab...)
-	            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
 	            Collections.shuffle(inhabitableBuildings);
 	            //System.out.println("inhabitableBuildings.size() is "+ inhabitableBuildings.size());
 	            //System.out.println("Building type is "+ buildingType);
@@ -855,7 +855,7 @@ implements Serializable, Transportable {
         int baseLevel = buildingConfig.getBaseLevel(newBuildingType);
 
         BuildingManager manager = settlement.getBuildingManager();
-        List<Building> inhabitableBuildings = manager.getBuildings(BuildingFunction.LIFE_SUPPORT);
+        List<Building> inhabitableBuildings = manager.getBuildings(FunctionType.LIFE_SUPPORT);
         Collections.shuffle(inhabitableBuildings);
 
         // Case 1

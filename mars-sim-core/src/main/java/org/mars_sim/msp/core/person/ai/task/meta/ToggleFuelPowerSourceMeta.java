@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -88,7 +88,7 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
                 Building building = ToggleFuelPowerSource.getFuelPowerSourceBuilding(person);
                 if (building != null) {
                     FuelPowerSource powerSource = ToggleFuelPowerSource.getFuelPowerSource(building);
-                    isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
+                    isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
                     double diff = ToggleFuelPowerSource.getValueDiff(settlement, powerSource);
                     double baseProb = diff * 10000D;
                     if (baseProb > 100D) {

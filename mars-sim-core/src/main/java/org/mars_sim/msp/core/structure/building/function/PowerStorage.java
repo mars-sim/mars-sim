@@ -38,7 +38,7 @@ implements Serializable {
     private static String sourceName = logger.getName();
   
 	// Building function name.
-	private static final BuildingFunction FUNCTION = BuildingFunction.POWER_STORAGE;
+	private static final FunctionType FUNCTION = FunctionType.POWER_STORAGE;
 
 	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
 	

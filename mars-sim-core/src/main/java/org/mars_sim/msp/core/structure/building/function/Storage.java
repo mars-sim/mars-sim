@@ -39,7 +39,7 @@ implements Serializable {
 	//private static org.apache.log4j.Logger log4j = LogManager.getLogger(Storage.class);
     private static String sourceName = logger.getName();
     
-	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
+	private static final FunctionType FUNCTION = FunctionType.STORAGE;
 	//private static int count = 0;
 	//private double stockCapacity = 0;
 

@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -291,7 +291,7 @@ implements Repair, Serializable {
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 
                 // Walk to malfunctioning building.
                 walkToRandomLocInBuilding(building, true);

@@ -1,6 +1,6 @@
 <!ELEMENT malfunction-list (malfunction*)>
 <!ELEMENT malfunction (severity, probability, repair-time?, emergency-repair-time?, 
-eva-repair-time?, entity-list, effect-list?, medical-complaint-list?, repair-parts-list?)>
+eva-repair-time?, system-list, effect-list?, medical-complaint-list?, repair-parts-list?)>
 <!ATTLIST malfunction name CDATA #REQUIRED>
 <!ELEMENT severity EMPTY>
 <!ATTLIST severity value CDATA #REQUIRED>
@@ -12,9 +12,9 @@ eva-repair-time?, entity-list, effect-list?, medical-complaint-list?, repair-par
 <!ATTLIST emergency-repair-time value CDATA #REQUIRED>
 <!ELEMENT eva-repair-time EMPTY>
 <!ATTLIST eva-repair-time value CDATA #REQUIRED>
-<!ELEMENT entity-list (entity+)>
-<!ELEMENT entity EMPTY>
-<!ATTLIST entity name CDATA #REQUIRED>
+<!ELEMENT system-list (system+)>
+<!ELEMENT system EMPTY>
+<!ATTLIST system name CDATA #REQUIRED>
 <!ELEMENT effect-list (effect*)>
 <!ELEMENT effect EMPTY>
 <!ATTLIST effect name CDATA #REQUIRED>

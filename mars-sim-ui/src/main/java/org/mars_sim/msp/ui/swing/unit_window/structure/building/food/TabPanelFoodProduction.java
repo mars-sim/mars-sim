@@ -46,7 +46,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -185,7 +185,7 @@ extends TabPanel {
 				try {
 					Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 					if (foodFactoryBuilding != null) {
-						FoodProduction foodFactory = (FoodProduction) foodFactoryBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
+						FoodProduction foodFactory = (FoodProduction) foodFactoryBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
 						Object selectedItem = processSelection.getSelectedItem();
 						if (selectedItem != null) {
 							if (selectedItem instanceof FoodProductionProcessInfo) {
@@ -364,10 +364,10 @@ extends TabPanel {
 	private List<FoodProductionProcess> getFoodProductionProcesses() {
 		List<FoodProductionProcess> result = new ArrayList<FoodProductionProcess>();
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 		while (i.hasNext()) {
 			//			try {
-			FoodProduction foodFactory = (FoodProduction) i.next().getFunction(BuildingFunction.FOOD_PRODUCTION);
+			FoodProduction foodFactory = (FoodProduction) i.next().getFunction(FunctionType.FOOD_PRODUCTION);
 			result.addAll(foodFactory.getProcesses());
 			//			}
 			//			catch (BuildingException e) {}
@@ -400,7 +400,7 @@ extends TabPanel {
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getFoodProductionBuildings() {
-		return new Vector<Building>(settlement.getBuildingManager().getBuildings(BuildingFunction.FOOD_PRODUCTION));
+		return new Vector<Building>(settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION));
 	}
 
 	/**
@@ -427,7 +427,7 @@ extends TabPanel {
 	                }
 	            }
 
-				FoodProduction foodFactory = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
+				FoodProduction foodFactory = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
 				if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
 					Iterator<FoodProductionProcessInfo> j =
 							FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(

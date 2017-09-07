@@ -68,7 +68,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.javafx.demo.DragDrop;
@@ -573,9 +573,9 @@ public class MarsNode {
 		Iterator<Building> iter1 = buildings.iterator();
 		while (iter1.hasNext()) {
 			Building building = iter1.next();
-	    	if (building.hasFunction(BuildingFunction.FARMING)) {
+	    	if (building.hasFunction(FunctionType.FARMING)) {
 	//        	try {
-	        		Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+	        		Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
 	            	Button b = createGreenhouseDialog(farm);
 	            	v.getChildren().add(b);
 	//        	}

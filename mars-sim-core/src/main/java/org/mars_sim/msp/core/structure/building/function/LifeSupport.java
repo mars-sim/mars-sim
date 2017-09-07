@@ -39,7 +39,7 @@ implements Serializable {
 
 	DecimalFormat fmt = new DecimalFormat("#.#######");
 
-	private static final BuildingFunction THE_FUNCTION = BuildingFunction.LIFE_SUPPORT;
+	private static final FunctionType THE_FUNCTION = FunctionType.LIFE_SUPPORT;
 
 	// Data members
 	private int occupantCapacity;

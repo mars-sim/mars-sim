@@ -50,7 +50,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -611,8 +611,8 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Building building = BuildingManager.getBuilding(this);
             if (building != null) {
-                if (building.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
-                    RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
+                    RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
                     localRobotGroup = new ConcurrentLinkedQueue<Robot>(roboticStation.getRobotOccupants());
                 }
             }

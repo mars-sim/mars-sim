@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.vehicle.Medical;
@@ -156,8 +156,8 @@ implements Serializable {
 	}
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.MEDICAL_CARE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.MEDICAL_CARE;
     }
 
 	@Override
@@ -228,7 +228,7 @@ implements Serializable {
 			try {
 				Building building = getMedicalAidBuilding(person);
 				if (building != null) {
-					result.add((MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE));
+					result.add((MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE));
 				}
 			}
 			catch (Exception e) {
@@ -347,13 +347,13 @@ implements Serializable {
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
-			List<Building> medicalBuildings = manager.getBuildings(BuildingFunction.MEDICAL_CARE);
+			List<Building> medicalBuildings = manager.getBuildings(FunctionType.MEDICAL_CARE);
 
 			List<Building> needyMedicalBuildings = new ArrayList<Building>();
 			Iterator<Building> i = medicalBuildings.iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				MedicalCare medical = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
+				MedicalCare medical = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
 				if (isNeedyMedicalAid(medical)) {
 					needyMedicalBuildings.add(building);
 				}

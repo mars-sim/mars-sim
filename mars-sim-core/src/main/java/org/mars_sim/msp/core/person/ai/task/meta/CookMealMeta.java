@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /**
@@ -62,7 +62,7 @@ public class CookMealMeta implements MetaTask, Serializable {
             Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
 
             if (kitchenBuilding != null) {
-                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
 
                 // Check if enough meals have been cooked at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getCookNoMore();
@@ -141,7 +141,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
                 if (kitchenBuilding != null) {
 
-                    Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+                    Cooking kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
 
                     // Check if enough meals have been cooked at kitchen for this meal time.
                     boolean enoughMeals = kitchen.getCookNoMore();

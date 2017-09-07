@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -1019,7 +1019,7 @@ implements Serializable {
             // Remove from garage if in garage.
             Building garageBuilding = BuildingManager.getBuilding(getVehicle());
             if (garageBuilding != null) {
-                VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
                 garage.removeVehicle(getVehicle());
             }
 

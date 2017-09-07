@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -82,7 +82,7 @@ implements Serializable {
                 Building studentBuilding = BuildingManager.getBuilding(student);
 
                 if (studentBuilding != null) {
-                    BuildingFunction teachingBuildingFunction = teachingTask.getRelatedBuildingFunction();
+                    FunctionType teachingBuildingFunction = teachingTask.getRelatedBuildingFunction();
                     if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
                         // Walk to relevant activity spot in student's building.
                         walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);
@@ -202,7 +202,7 @@ implements Serializable {
                 Person student = i.next();
                 Building building = BuildingManager.getBuilding(student);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
                     int buildingCrowding = lifeSupport.getOccupantNumber()
                             - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) {
@@ -220,7 +220,7 @@ implements Serializable {
                 Person student = j.next();
                 Building building = BuildingManager.getBuilding(student);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
                     int buildingCrowding = lifeSupport.getOccupantNumber()
                             - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) {

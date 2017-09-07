@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 /**
@@ -74,7 +74,7 @@ implements Serializable {
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
 		if (manufactureBuilding != null) {
-			workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
+			workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 
 			// Walk to manufacturing workshop.
 			walkToActivitySpotInBuilding(manufactureBuilding, false);
@@ -100,8 +100,8 @@ implements Serializable {
 	}
 
     @Override
-    protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.MANUFACTURE;
+    protected FunctionType getRelatedBuildingFunction() {
+        return FunctionType.MANUFACTURE;
     }
 
 	@Override
@@ -242,7 +242,7 @@ implements Serializable {
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> manufacturingBuildings = manager.getBuildings(BuildingFunction.MANUFACTURE);
+			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingSalvageWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithSalvageProcessesRequiringWork(manufacturingBuildings, skill);
@@ -274,7 +274,7 @@ implements Serializable {
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 			if (manufacturingFunction.requiresSalvagingWork(skill)) {
 				result.add(building);
 			}
@@ -322,7 +322,7 @@ implements Serializable {
 
 		boolean result = false;
 
-		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(BuildingFunction.MANUFACTURE);
+		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
 		Iterator<SalvageProcess> i = manufacturingFunction.getSalvageProcesses().iterator();
 		while (i.hasNext()) {
 			SalvageProcess process = i.next();
@@ -351,7 +351,7 @@ implements Serializable {
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 			if (manufacturingFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = manufacturingFunction.getTechLevel();
 			}
@@ -360,7 +360,7 @@ implements Serializable {
 		Iterator<Building> j = buildingList.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 			if (manufacturingFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
 			}
@@ -384,7 +384,7 @@ implements Serializable {
 		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(
 				SkillType.MATERIALS_SCIENCE);
 
-		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(BuildingFunction.MANUFACTURE);
+		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(

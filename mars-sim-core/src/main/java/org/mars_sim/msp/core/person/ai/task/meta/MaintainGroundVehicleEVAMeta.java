@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -58,7 +58,7 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
     	Settlement settlement = person.getAssociatedSettlement();
     	
             if (settlement.getBuildingManager().getBuildings(
-                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE).size() > 0) {
+                    FunctionType.GROUND_VEHICLE_MAINTENANCE).size() > 0) {
 
             	//2016-10-04 Checked for radiation events
             	boolean[] exposed = settlement.getExposed();

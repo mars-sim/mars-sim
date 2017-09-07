@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.Treatment;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
@@ -136,7 +136,7 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
 
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
-                BuildingFunction.MEDICAL_CARE).iterator();
+                FunctionType.MEDICAL_CARE).iterator();
         while (i.hasNext() && !result) {
             Building building = i.next();
 
@@ -144,7 +144,7 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if enough beds for patient.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
+            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
 

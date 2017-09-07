@@ -66,7 +66,7 @@ import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
@@ -641,10 +641,10 @@ public class GoodsManager implements Serializable {
         double demand = 0D;
 
         // Determine demand for resource at each farming building at settlement.
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.FARMING).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+            Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
             demand += getIndividualFarmDemand(resource, farm);
         }
 
@@ -836,9 +836,9 @@ public class GoodsManager implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
+            if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
                 ResourceProcessing processing = (ResourceProcessing) building.getFunction(
-                        BuildingFunction.RESOURCE_PROCESSING);
+                        FunctionType.RESOURCE_PROCESSING);
                 processes.addAll(processing.getProcesses());
             }
         }
@@ -1435,10 +1435,10 @@ public class GoodsManager implements Serializable {
         amount += getManufacturingProcessOutput(amountResourceGood);
 
         // Get the amount of the resource that will be produced by ongoing food production processes.
-        Iterator<Building> p = settlement.getBuildingManager().getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+        Iterator<Building> p = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
         while (p.hasNext()) {
             Building building = p.next();
-            FoodProduction kitchen = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+            FoodProduction kitchen = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
 
             // Go through each ongoing food production process.
             Iterator<FoodProductionProcess> q = kitchen.getProcesses().iterator();
@@ -1466,10 +1466,10 @@ public class GoodsManager implements Serializable {
 
         double result = 0D;
 
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Manufacture workshop = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+            Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
 
             // Go through each ongoing manufacturing process.
             Iterator<ManufactureProcess> j = workshop.getProcesses().iterator();

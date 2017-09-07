@@ -38,7 +38,7 @@ implements Serializable {
 	DecimalFormat fmt = new DecimalFormat("#.#######");
 
 	/** TODO Name of the building function needs to be internationalized. */
-	private static final BuildingFunction FUNCTION = BuildingFunction.THERMAL_GENERATION;
+	private static final FunctionType FUNCTION = FunctionType.THERMAL_GENERATION;
 
 	// Data members.
 	private double heatGeneratedCache;
@@ -464,10 +464,10 @@ implements Serializable {
 	public String[] getMalfunctionScopeStrings() {
 		String[] result = new String[heatSources.size() + 1];
 		// TODO take care to properly internationalize malfunction scope "strings"
-		result[0] = getFunction().getName();
+		result[0] = getFunctionType().getName();
 
 		for (int x = 0; x < heatSources.size(); x++) {
-			result[x + 1] = heatSources.get(x).getType().getString();
+			result[x + 1] = heatSources.get(x).getType().toString();
 		}
 
 		return result;
