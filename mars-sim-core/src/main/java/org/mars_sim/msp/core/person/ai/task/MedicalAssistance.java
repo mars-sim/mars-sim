@@ -311,7 +311,7 @@ implements Serializable {
 			else if (robot != null)
 				logger.info(robot.getName() + " has accident while offering medical assistance.");
 
-			entity.getMalfunctionManager().createAccident();
+			entity.getMalfunctionManager().logAccidentString();
 		}
 	}
 

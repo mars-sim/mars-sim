@@ -386,7 +386,7 @@ implements ResearchScientificStudy, Serializable {
     			else if (robot != null)
     				logger.info(robot.getName() + " has accident while observing astronomical objects.");
 
-                entity.getMalfunctionManager().createAccident();
+                entity.getMalfunctionManager().logAccidentString();
             }
         }
     }

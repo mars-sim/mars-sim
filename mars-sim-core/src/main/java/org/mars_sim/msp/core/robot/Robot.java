@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -196,7 +197,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
-		malfunctionManager.addScopeString(TYPE);
+		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
         // TODO : avoid declaring a birth clock for each robot
         // Find a way to use existing EarthClock inside MasterClock, plus the difference in date

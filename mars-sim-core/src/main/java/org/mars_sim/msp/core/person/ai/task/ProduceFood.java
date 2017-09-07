@@ -741,7 +741,7 @@ implements Serializable {
 			else if (robot != null)
 				logger.info(robot.getName() + " has an accident during food production.");
 
-			foodFactory.getBuilding().getMalfunctionManager().createAccident();
+			foodFactory.getBuilding().getMalfunctionManager().logAccidentString();
 		}
 	}
 

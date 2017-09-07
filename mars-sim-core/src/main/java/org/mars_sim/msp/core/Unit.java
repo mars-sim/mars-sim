@@ -186,6 +186,14 @@ implements Serializable, Comparable<Unit> {
 	}
 
 	/**
+	 * Gets the unit's nickname
+	 * @return the unit's nickname
+	 */
+	public String getNickName() {
+		return name;
+	}
+	
+	/**
 	 * Gets the unit's shortened name
 	 * @return the unit's shortened name
 	 */

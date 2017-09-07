@@ -540,7 +540,7 @@ implements Serializable {
     				logger.info(robot.getName() + " has an accident while constructing the site " + site.getName());
     			}
 
-                luv.getMalfunctionManager().createAccident(site.getName());
+                luv.getMalfunctionManager().logAccidentString(site.getName());
             }
         }
     }

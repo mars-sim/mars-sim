@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.1.0 2017-03-08
+ * @version 3.1.0 2017-09-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -47,6 +49,8 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MalfunctionManager.class.getName());
+
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
@@ -80,7 +84,7 @@ implements Serializable {
 	/** The completed. */
 	private double maintenanceTimeCompleted;
 	/** The scope strings of the unit. */
-	private Collection<String> scope;
+	private Collection<String> scopes;
 	/** The current malfunctions in the unit. */
 	private Collection<Malfunction> malfunctions;
 	/** The parts currently needed to maintain this entity. */
@@ -108,6 +112,8 @@ implements Serializable {
 	private MarsClock currentTime;
 	private	MalfunctionFactory factory;
 
+	// NOTE : each building has its own MalfunctionManager
+	
 	/**
 	 * Constructor.
 	 * @param entity the malfunctionable entity.
@@ -123,7 +129,7 @@ implements Serializable {
 		this.entity = entity;
 		timeSinceLastMaintenance = 0D;
 		effectiveTimeSinceLastMaintenance = 0D;
-		scope = new ArrayList<String>();
+		scopes = new ArrayList<String>();
 		malfunctions = new ArrayList<Malfunction>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.wearLifeTime = wearLifeTime;
@@ -137,8 +143,8 @@ implements Serializable {
 	 * @param scopeString
 	 */
 	public void addScopeString(String scopeString) {
-		if ((scopeString != null) && !scope.contains(scopeString))
-			scope.add(scopeString);
+		if ((scopeString != null) && !scopes.contains(scopeString))
+			scopes.add(scopeString);
 
 		// Update maintenance parts.
 		determineNewMaintenanceParts();
@@ -356,11 +362,11 @@ implements Serializable {
 	}
 
 	/**
-	 * Adds a randomly selected malfunction to the unit (if possible).
+	 * Select a malfunction randomly to the unit (if possible).
 	 */
-	private void addMalfunction() {
+	private void selectMalfunction() {
 		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
-		Malfunction malfunction = factory.getMalfunction(scope);
+		Malfunction malfunction = factory.pickAMalfunction(scopes);
 		if (malfunction != null) {
 			addMalfunction(malfunction, true);
 			numberMalfunctions++;
@@ -411,10 +417,11 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
-			logger.info(entity.getName() + " is behind on maintenance.  "
-					+ "Time since last maintenance: " + solsLastMaint
-					+ " sols.  Condition: " + wearCondition + " %");
-			addMalfunction();
+        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+        			entity.getNickName() + " is behind on maintenance.  "
+					+ "Time since last check-up: " + solsLastMaint
+					+ " sols.  Condition: " + wearCondition + " %.", null);
+			selectMalfunction();
 		}
 	}
 
@@ -546,9 +553,10 @@ implements Serializable {
 	}
 
 	/**
-	 * Called when the unit has an accident.
+	 * Sets up the string for logging an accident
+	 * @param s the place of accident
 	 */
-	public void createAccident(String s) {
+	public void logAccidentString(String s) {
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
 
 		if (s.contains("EVA")) {
@@ -561,16 +569,18 @@ implements Serializable {
 				sb.insert(0, "in an ");
 			else
 				sb.insert(0, "in a ");
-
 		}
 
-		accident(sb.toString());
+    	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+    			"An accident occurs " + sb.toString() + ".", null);
+
+		determineNumOfMalfunctions();
 	}
 
 	/**
-	 * Called when the unit has an accident.
+	 * Sets up the string for logging an accident
 	 */
-	public void createAccident() {
+	public void logAccidentString() {
 		String n = entity.getNickName();
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(n));
 
@@ -586,22 +596,23 @@ implements Serializable {
 			sb.append(" at " + entity.getSettlement());
 		}
 
-		accident(sb.toString());
+    	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+    			"An accident occurs " + sb.toString() + ".", null);
+
+		determineNumOfMalfunctions();
 	}
 
 	/**
-	 * Called when the unit has an accident.
+	 * Determines the numbers of malfunctions.
 	 */
-	public void accident(String s) {
-		logger.info("An accident occurs " + s);
-
+	public void determineNumOfMalfunctions() {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean done = false;
 		double chance = 100D;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
-				addMalfunction();
+				selectMalfunction();
 				chance /= 2D;
 			}
 			else {
@@ -753,7 +764,7 @@ implements Serializable {
 		if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
 		partsNeededForMaintenance.clear();
 
-		Iterator<String> i = scope.iterator();
+		Iterator<String> i = scopes.iterator();
 		while (i.hasNext()) {
 			String entity = i.next();
 			Iterator<Part> j = Part.getParts().iterator();
@@ -806,12 +817,12 @@ implements Serializable {
 	 */
 	public Map<Part, Double> getRepairPartProbabilities() {
 		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
-		return factory.getRepairPartProbabilities(scope);
+		return factory.getRepairPartProbabilities(scopes);
 	}
 
 	public Map<Part, Double> getMaintenancePartProbabilities() {
 		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
-		return factory.getMaintenancePartProbabilities(scope);
+		return factory.getMaintenancePartProbabilities(scopes);
 	}
 
 	/**
@@ -918,8 +929,8 @@ implements Serializable {
 	 */
 	public void destroy() {
 		entity = null;
-		scope.clear();
-		scope = null;
+		scopes.clear();
+		scopes = null;
 		malfunctions.clear();
 		malfunctions = null;
 		if (partsNeededForMaintenance != null) {

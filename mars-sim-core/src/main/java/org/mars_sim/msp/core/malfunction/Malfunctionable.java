@@ -27,12 +27,13 @@ public interface Malfunctionable {
     /**
      * Gets the name of the malfunctionable entity.
      * @return name the entity name
-     */
-    public String getName();
 
+    public String getName();
+     */
+    
     /**
      * Gets the nickname of the building.
-     * @return name the building nickname
+     * @return nickname
      */
     public String getNickName();
 

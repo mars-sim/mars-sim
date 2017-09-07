@@ -563,7 +563,7 @@ implements Serializable {
 				logger.info(robot.getName() + " has an accident while tending greenhouse.");
 			}
 
-        	farmBuilding.getMalfunctionManager().createAccident();
+        	farmBuilding.getMalfunctionManager().logAccidentString();
         }
     }
 

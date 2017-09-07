@@ -236,7 +236,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                     malfunction = manager.getMostSeriousEmergencyMalfunction();
                     entity = e;
                     setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail",
-                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                            malfunction.getName(), entity.getNickName())); //$NON-NLS-1$
                 }
             }
         }

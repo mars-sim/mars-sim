@@ -88,12 +88,12 @@ implements ResearchScientificStudy, Serializable {
                 addPersonToLab();
             }
             else {
-            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "lab equipment not functioning.", null);
+            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + " can't find a lab slot.", null);
                 endTask();
             }
         }
         else {
-        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "the study was interrupted.", null);
+        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + "'s study was interrupted.", null);
             endTask();
         }
 

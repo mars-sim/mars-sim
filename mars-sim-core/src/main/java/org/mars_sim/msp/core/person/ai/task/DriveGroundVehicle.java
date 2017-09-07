@@ -425,7 +425,7 @@ implements Serializable {
 				logger.info(robot.getName() + " has an accident driving " + vehicle.getName());
 			}
 
-	    	vehicle.getMalfunctionManager().createAccident(vehicle.getName());
+	    	vehicle.getMalfunctionManager().logAccidentString(vehicle.getName());
 		}
     }
 

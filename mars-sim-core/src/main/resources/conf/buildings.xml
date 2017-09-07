@@ -634,6 +634,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />			
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="carbon dioxide" rate="19.2" ambient="true" />
@@ -676,6 +677,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />			
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="carbon dioxide" rate="19.2" ambient="true" />
@@ -731,7 +733,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Standard Power Source" power="40.0" />
 			</power-generation>
 
-			<power-storage capacity="40.0" />
+			<power-storage capacity="80.0" />
 			<!--thermal-generation>
 				<heat-source type="Electric Heating Source" capacity="25.0" />
 			</thermal-generation-->
@@ -773,6 +775,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3"/>
 
 		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />		
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="5.0" default="on">
 					<input resource="carbon dioxide" rate="48.0" ambient="true" />
@@ -862,7 +868,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.2" yloc="-3.4" />
 				</activity>
 			</living-accommodations>
-
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
 			<robotic-station slots="4">
 				<activity>
 					<activity-spot xloc="0.0" yloc="-0.5" />
@@ -900,6 +909,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 
 		</functions>
@@ -985,7 +996,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</food-production>
 
 			<life-support capacity="40" power-required="4.0" />
-
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			
+			<power-storage capacity="20.0" />
+			
 			<recreation population-support="25">
 				<activity>
 					<activity-spot xloc="1.6" yloc="1.0" />
@@ -1104,6 +1121,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1130,6 +1149,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.0" yloc="-3.15" />
 				</activity>
 			</medical-care>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="MEDICINE" />
 				<activity>
@@ -1205,6 +1228,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-0.46" yloc="-2.08" />
 				</activity>
 			</management>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="40.0" />
 			<robotic-station slots="4">
 				<activity>
 					<activity-spot xloc="0.0" yloc="-2.8" />
@@ -1216,6 +1243,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1230,6 +1259,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="10" power-required="1.0" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
@@ -1268,6 +1301,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1298,7 +1333,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
-			<power-storage capacity="20.0" />
+			<power-storage capacity="40.0" />
 			<robotic-station slots="4">
 				<activity>
 					<activity-spot xloc="2.0" yloc="-5.8" />
@@ -1341,7 +1376,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc=".7" yloc=".4" />
 				</activity>
 			</manufacture>
-
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>			
+			<power-storage capacity="40.0" />
 			<robotic-station slots="8">
 				<activity>
 					<activity-spot xloc="2" yloc="-3.0" />
@@ -1376,6 +1414,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />					
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1406,6 +1446,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="95.758" />
 				
 			</power-generation>
+			<power-storage capacity="40.0" />			
 		</functions>
 	</building>
 
@@ -1420,11 +1461,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<power-required base-power="0.1" base-power-down-power="0.0" />
 
-
 		<functions>
 			<power-generation>
 				<power-source type="Wind Power Source" power="18.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />
 		</functions>
 	</building>
 
@@ -1440,6 +1481,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="20.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />			
 		</functions>
 	</building>
 
@@ -1456,6 +1498,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Thermal Power Source" power="20.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />
 		</functions>
 	</building>
 
@@ -1471,6 +1514,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="30.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />			
 		</functions>
 	</building>
 
@@ -1486,6 +1530,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="100.0" />
 			</power-generation>
+			<power-storage capacity="40.0" />			
 		</functions>
 	</building>
 
@@ -1639,6 +1684,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1673,6 +1720,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1731,6 +1780,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<EVA airlock-capacity="1" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
 			exterior-xloc="0.0" exterior-yloc="4.5" />
 			<life-support capacity="4" power-required="0.4" />
+
+			<power-storage capacity="40.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="PHYSICS" />
@@ -1752,6 +1803,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1772,6 +1825,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />			
 			<robotic-station slots="2">
 				<activity>
 					<activity-spot xloc="2.6" yloc="2.5" />
@@ -1812,6 +1866,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
@@ -1901,6 +1956,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
+			<power-storage capacity="20.0" />			
 			<research tech-level="2" capacity="2">
 				<research-specialty name="MEDICINE" />
 				<activity>
@@ -1941,6 +1997,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.52" yloc=".99" />
 				</activity>
 			</manufacture>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>	
+			<power-storage capacity="20.0" />			
 			<robotic-station slots="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -2251,6 +2311,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="2" power-required="0.2" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
 			<robotic-station slots="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -2307,7 +2371,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="40.0" />			
 			<robotic-station slots="4">
 				<activity>
 					<activity-spot xloc="-2.25" yloc="3.75" />
@@ -2338,6 +2402,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="2" power-required="0.2" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
@@ -2457,6 +2525,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<building-connection />
 			<life-support capacity="1" power-required="0.1" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="1.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
 			<robotic-station slots="1">
 				<activity>
 					<activity-spot xloc="0.5" yloc="0.0" />

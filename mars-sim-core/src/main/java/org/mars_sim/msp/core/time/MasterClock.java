@@ -658,7 +658,7 @@ public class MasterClock implements Serializable { // Runnable,
             if (timePulse > 0) {
 	            if (keepRunning) {
 	                // Add time pulse length to Earth and Mars clocks.
-	            	earthTime.addTime(computeTimePulseInSeconds());
+	            	earthTime.addTime(timePulse);
 	            	marsTime.addTime(timePulse);
 				  	if (!isPaused
 				  			|| !clockListenerExecutor.isTerminating()

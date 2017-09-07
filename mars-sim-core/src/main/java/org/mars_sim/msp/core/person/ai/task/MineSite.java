@@ -439,7 +439,7 @@ implements Serializable {
     			else if (robot != null) {
     				logger.info(robot.getName() + " has an accident while performing maintenance on " + luv.getName() + ".");
     			}
-                luv.getMalfunctionManager().createAccident(luv.getName());
+                luv.getMalfunctionManager().logAccidentString(luv.getName());
             }
         }
     }

@@ -8,7 +8,9 @@
 package org.mars_sim.msp.core.malfunction;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -22,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,7 +33,9 @@ import java.util.logging.Logger;
  */
 public class Malfunction implements Serializable {
 
-    //private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
+	private static final long serialVersionUID = 1L;
+
+	//private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
     //private static Logger logger = Logger.getLogger(CLASS_NAME);
 	private static Logger logger = Logger.getLogger(Malfunction.class.getName());
 	
@@ -38,6 +43,7 @@ public class Malfunction implements Serializable {
 
     // Data members
     private int severity;
+    private int incidentNum;
     private double probability;
     // Work time tracking
     private double workTime;
@@ -48,30 +54,33 @@ public class Malfunction implements Serializable {
     private double EVAWorkTimeCompleted;
     private String name;
 
-    private Collection<String> scopes;
+    private Collection<String> systems;
     private Map<AmountResource, Double> resourceEffects;
     private Map<String, Double> lifeSupportEffects;
     private Map<ComplaintType, Double> medicalComplaints;
     private Map<Part, Integer> repairParts;
 
-
+    private static MalfunctionConfig config;
+    private static MalfunctionFactory factory;
+    
     /**
      * Constructs a Malfunction object
      * @param name name of the malfunction
      */
-    public Malfunction(String name, int severity, double probability, double emergencyWorkTime,
+    public Malfunction(String name, int incidentNum, int severity, double probability, double emergencyWorkTime,
 		       double workTime, double EVAWorkTime, Collection<String> entities,
 		       Map<AmountResource, Double> resourceEffects,
 		       Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints) {
 
         // Initialize data members
         this.name = name;
+        this.incidentNum = incidentNum;
         this.severity = severity;
         this.probability = probability;
         this.emergencyWorkTime = emergencyWorkTime;
         this.workTime = workTime;
         this.EVAWorkTime = EVAWorkTime;
-        this.scopes = entities;
+        this.systems = entities;
         this.resourceEffects = resourceEffects;
         this.lifeSupportEffects = lifeSupportEffects;
         this.medicalComplaints = medicalComplaints;
@@ -80,6 +89,9 @@ public class Malfunction implements Serializable {
         workTimeCompleted = 0D;
         emergencyWorkTimeCompleted = 0D;
         EVAWorkTimeCompleted = 0D;
+        
+    	config = SimulationConfig.instance().getMalfunctionConfiguration();
+    	factory = Simulation.instance().getMalfunctionFactory();
     }
 
     /**
@@ -177,7 +189,11 @@ public class Malfunction implements Serializable {
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
             emergencyWorkTimeCompleted = emergencyWorkTime;
-            logger.info(name + " incident - emergency repair finished by " + repairer);
+            
+            String id_string = " incident [id#: " + incidentNum  + "]";
+            
+        	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+        			name + id_string + " - emergency repair finished by " + repairer  + ".", null);
             return remaining;
         }
         return 0D;
@@ -222,14 +238,15 @@ public class Malfunction implements Serializable {
     public boolean unitScopeMatch(Collection<String> unitScope) {
         boolean result = false;
 
-        if ((scopes.size() > 0) && (unitScope.size() > 0)) {
-            Iterator<String> i1 = scopes.iterator();
+        if ((systems.size() > 0) && (unitScope.size() > 0)) {
+            Iterator<String> i1 = systems.iterator();
             while (i1.hasNext()) {
                 String scopeString = i1.next();
                 Iterator<String> i2 = unitScope.iterator();
                 while (i2.hasNext()) {
                     String unitScopeString = i2.next();
-            	    if (scopeString.equalsIgnoreCase(unitScopeString)) result = true;
+            	    if (scopeString.equalsIgnoreCase(unitScopeString)) 
+            	    	result = true;
                 }
             }
         }
@@ -255,7 +272,7 @@ public class Malfunction implements Serializable {
 
     /**
      * Gets the medical complaints produced by this malfunction
-     * and their probability of occuring.
+     * and their probability of occurrence.
      * @return medical complaints as name-value pairs in Map
      */
     public Map<ComplaintType, Double> getMedicalComplaints() {
@@ -267,13 +284,15 @@ public class Malfunction implements Serializable {
      * @return clone of this malfunction
      */
     public Malfunction getClone() {
-        Malfunction clone = new Malfunction(name, severity, probability, emergencyWorkTime,
-            workTime, EVAWorkTime, scopes, resourceEffects, lifeSupportEffects, medicalComplaints);
+    	int id =  MalfunctionFactory.getNewIncidentNum();
+        Malfunction clone = new Malfunction(name, id, severity, probability, emergencyWorkTime,
+            workTime, EVAWorkTime, systems, resourceEffects, lifeSupportEffects, medicalComplaints);
 
-        String id = " (id: " + Integer.toHexString(hashCode()) + ")";
-
+        String id_string = " incident [id#: " + id  + "]";
+        
         if (emergencyWorkTime > 0D)
-            logger.info(name + id + " incident - triggering the emergency repair alert");
+        	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            		name + id_string + " - emergency repair alert triggered.", null);
 
         return clone;
     }
@@ -283,14 +302,17 @@ public class Malfunction implements Serializable {
      * @throws Exception if error determining the repair parts.
      */
     void determineRepairParts() {
-    	MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
+    	//MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
     	String[] partNames = config.getRepairPartNamesForMalfunction(name);
         for (String partName : partNames) {
             if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
                 Part part = (Part) ItemResource.findItemResource(partName);
                 repairParts.put(part, number);
-                logger.info(name + " incident - the repair requires " + part.getName() + " (quantity: " + number + ")");
+                String id_string = " incident [id#: " + incidentNum  + "]";
+            	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            			name + id_string + " - the repair requires " + part.getName() 
+            			+ " (quantity: " + number + ").", null);
             }
         }
     }

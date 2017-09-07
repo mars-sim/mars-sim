@@ -304,12 +304,12 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null)
 				logger.info(person.getName() + " has accident while performing EVA maintenance on "
-					     + entity.getName() + ".");
+					     + entity.getNickName() + ".");
 			else if (robot != null)
 				logger.info(robot.getName() + " has accident while performing EVA maintenance on "
-						     + entity.getName() + ".");
+						     + entity.getNickName() + ".");
 
-			entity.getMalfunctionManager().createAccident();
+			entity.getMalfunctionManager().logAccidentString();
 		}
 	}
 
@@ -353,7 +353,7 @@ implements Serializable {
 
 		if (result != null) {
 		    setDescription(Msg.getString("Task.description.maintenanceEVA.detail",
-                    result.getName())); //$NON-NLS-1$;
+                    result.getNickName())); //$NON-NLS-1$;
 		}
 
 		return result;

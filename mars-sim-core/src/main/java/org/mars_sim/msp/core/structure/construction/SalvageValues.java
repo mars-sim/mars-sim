@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageValues.java
- * @version 3.08 2015-06-13
-
+ * @version 3.1.0 2017-09-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.construction;
@@ -240,17 +239,21 @@ implements Serializable {
 
 		// Check that building doesn't have remaining life support at settlement.
 		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			if (settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).size() == 1) {
+			if (settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).size() == 1) { 
 				result = 0D;
 			}
+			LifeSupport lifeSupport = building.getLifeSupport();//(LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+				// Check that the building doesn't currently have any people in it.
+		    if (lifeSupport.getOccupantNumber() > 0) {
+		        result = 0D;
+		    }
 		}
 
 		// Check if building has needed living accommodations for settlement population.
 		if (building.hasFunction(FunctionType.LIVING_ACCOMODATIONS)) {
 			int popSize = settlement.getAllAssociatedPeople().size();
 			int popCapacity = settlement.getPopulationCapacity();
-			LivingAccommodations livingAccommodations = (LivingAccommodations) building.getFunction(
-			        FunctionType.LIVING_ACCOMODATIONS);
+			LivingAccommodations livingAccommodations = building.getLivingAccommodations();//(LivingAccommodations) building.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 			int buildingPopCapacity = livingAccommodations.getBeds();
 			if ((popCapacity - buildingPopCapacity) < popSize) {
 				result = 0D;
@@ -264,13 +267,7 @@ implements Serializable {
 			}
 		}
 		
-		// Check that the building doesn't currently have any people in it.
-		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-		    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
-		    if (lifeSupport.getOccupantNumber() > 0) {
-		        result = 0D;
-		    }
-		}
+
 		
 		// Check that the building isn't on any person's walking path.
 		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
@@ -284,7 +281,7 @@ implements Serializable {
 		
 		// Check that the building doesn't currently have any robots in it.
 		if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-            RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
+            RoboticStation roboticStation = building.getRoboticStation();//(RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
             if (roboticStation.getRobotOccupantNumber() > 0) {
                 result = 0D;
             }

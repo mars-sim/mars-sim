@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleType.java
- * @version 3.1.0 2016-10-06
+ * @version 3.1.0 2017-09-07
  * @author Manny Kung
  *
  */

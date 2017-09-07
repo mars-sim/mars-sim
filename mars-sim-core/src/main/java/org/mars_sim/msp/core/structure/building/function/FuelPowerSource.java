@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FuelPowerSource.java
- * @version 3.1.0 2018-08-23
+ * @version 3.1.0 2017-09-07
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;

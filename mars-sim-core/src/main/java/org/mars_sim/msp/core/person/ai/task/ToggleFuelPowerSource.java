@@ -472,7 +472,7 @@ implements Serializable {
 			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident while toggling a fuel power source.");
 			}
-            building.getMalfunctionManager().createAccident();
+            building.getMalfunctionManager().logAccidentString();
         }
     }
 

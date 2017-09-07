@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -123,7 +125,8 @@ public class EatMeal extends Task implements Serializable {
         // Check if person is not in a settlement or vehicle.
         LocationSituation location = person.getLocationSituation();
         if ((location != LocationSituation.IN_SETTLEMENT) && (location != LocationSituation.IN_VEHICLE)) {
-            logger.severe(person + " is trying to eat a meal, but is not in a settlement or a vehicle.");
+			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
+            		person + " was trying to eat a meal, but now is no longer inside a settlement or vehicle.", null);
             endTask();
         }
 

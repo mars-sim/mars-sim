@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 3.1.0 2017-05-06
+ * @version 3.1.0 2017-09-06
  * @author Scott Davis
  */
 
@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -45,10 +44,15 @@ implements Serializable {
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 
 	// Data members
+	private static int newIncidentNum = 0;
+	
+	
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
 
-	private MalfunctionConfig config;
+	private static MalfunctionConfig config;
+	
+	private static Malfunction meteoriteMalfunction;
 
 	/**
 	 * Constructs a MalfunctionFactory object.
@@ -64,11 +68,11 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets a randomly-picked malfunction for a given unit scope.
+	 * Picks a malfunction from a given unit scope.
 	 * @param scope a collection of scope strings defining the unit.
 	 * @return a randomly-picked malfunction or null if there are none available.
 	 */
-	public Malfunction getMalfunction(Collection<String> scope) {
+	public Malfunction pickAMalfunction(Collection<String> scope) {
 
 		Malfunction result = null;
 
@@ -274,7 +278,7 @@ implements Serializable {
 			Malfunction malfunction = i.next();
 			if (malfunction.unitScopeMatch(scope)) {
 				double malfunctionProbability = malfunction.getProbability() / 100D;
-				MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
+				//MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
 				String[] partNames = config.getRepairPartNamesForMalfunction(malfunction.getName());
 				for (String partName : partNames) {
 					double partProbability = config.getRepairPartProbability(malfunction.getName(), partName) / 100D;
@@ -320,18 +324,29 @@ implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Obtains the malfunction representing the meteorite impact
+	 * @param malfunctionName
+	 * @return {@link Malfunction}
+	 */
 	public static Malfunction getMeteoriteImpactMalfunction(String malfunctionName) {
-		Malfunction item = null;
-		List<Malfunction> list = SimulationConfig.instance().getMalfunctionConfiguration().getMalfunctionList() ;
-		Iterator<Malfunction> i = list.iterator();
-		while (i.hasNext()) {
-			Malfunction m = i.next();
-			if (m.getName().equals(malfunctionName))
-				item = m;
+		if (meteoriteMalfunction == null) {
+			List<Malfunction> list = config.getMalfunctionList();
+			Iterator<Malfunction> i = list.iterator();
+			while (i.hasNext()) {
+				Malfunction m = i.next();
+				if (m.getName().equals(malfunctionName))
+					meteoriteMalfunction = m;
+			}
 		}
-		return item;
+		return meteoriteMalfunction;
 	}
 
+	public static int getNewIncidentNum() {
+		return ++newIncidentNum;
+	}
+
+	
 	/**
 	 * Prepares the object for garbage collection.
 	 */

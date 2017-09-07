@@ -87,7 +87,7 @@ implements ActionListener {
 	private static final String STORED = "Stored";
 
 	private static final String OUTSIDE_ON_A_MISSION = " outside on a mission ";
-	private static final String GONE = " gone ";
+	private static final String GONE = " gone";
 	private static final String DECOMMISSIONED = " decommmissed";
 	private static final String DEAD = "Dead";
 	private static final String BURIED = "Buried";
@@ -839,7 +839,12 @@ implements ActionListener {
 
 	    			} else {
 	        			// case E
-	        			loc = IN + containerCache + GONE + OUTSIDE_ON_A_MISSION;
+	    				//if (containerCache != null)
+	    				//	loc = IN + containerCache + GONE + OUTSIDE_ON_A_MISSION;
+	    				if (vehicle != null)
+	    					loc = IN + vehicle + GONE + OUTSIDE_ON_A_MISSION;
+	    				else
+	    					loc = GONE + OUTSIDE_ON_A_MISSION;
 	    			}
 	    		}
 

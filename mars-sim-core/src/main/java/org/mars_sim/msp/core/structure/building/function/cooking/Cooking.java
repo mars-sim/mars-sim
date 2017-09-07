@@ -7,20 +7,16 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -44,7 +40,6 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -152,13 +147,10 @@ implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
-        // 2014-12-30 Changed inv to include the whole settlement
         //inv = getBuilding().getSettlementInventory();
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
 
         settlement = getBuilding().getBuildingManager().getSettlement();
-
-        //mealsReplenishmentRate = settlement.getMealsReplenishmentRate();
 
         cookingWorkTime = 0D;
 
@@ -170,20 +162,15 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
-    	// 2014-12-12 Added cropTypeList
-        //TODO: make a map of cropName and water content
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration(); // need this to pass maven test
+		CropConfig cropConfig = simulationConfig.getCropConfiguration(); // need this to pass maven test
 		cropTypeList = cropConfig.getCropList();
 
-        // 2014-12-06 Added calling getMealList() from MealConfig
-    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
+    	MealConfig mealConfig = simulationConfig.getMealConfiguration(); // need this to pass maven test
         mealConfigMealList = mealConfig.getMealList();
 
-        // 2016-05-31 Added loading the two parameters from meals.xml
         cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
         waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
 
-    	// 2014-12-08 Added multimaps
         qualityMap = ArrayListMultimap.create();
     	timeMap = ArrayListMultimap.create();
 
@@ -205,6 +192,9 @@ implements Serializable {
 
     }
 
+    /**
+     * Puts together a list of oils
+     */
     public static void prepareOilMenu() {
 
     	if (oilMenuAR == null) {
@@ -217,7 +207,10 @@ implements Serializable {
     }
 
 
-    // 2014-12-12 Created computeDryMass(). Called out once only in Cooking.java's constructor
+    /**
+     * Computes the dry mass of all ingredients
+     */
+    // Note : called out once only in Cooking.java's constructor
     public void computeDryMass() {
     	Iterator<HotMeal> i = mealConfigMealList.iterator();
 
@@ -226,7 +219,7 @@ implements Serializable {
     		HotMeal aMeal = i.next();
 	        List<Double> proportionList = new CopyOnWriteArrayList<>(); //<Double>();
 	        List<Double> waterContentList = new CopyOnWriteArrayList<>(); //ArrayList<Double>();
-
+	        
 	       	List<Ingredient> ingredientList = aMeal.getIngredientList();
 	        Iterator<Ingredient> j = ingredientList.iterator();
 	        while (j.hasNext()) {
@@ -336,10 +329,7 @@ implements Serializable {
         }
 
         double cookingCapacityValue = demand / (supply + 1D);
-        //BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        //System.out.println("before calling cookingCapacity");
         double cookingCapacity = buildingConfig.getCookCapacity(buildingName);
-        //System.out.println("after calling cookingCapacity");
         return cookingCapacity * cookingCapacityValue;
     }
 
@@ -358,9 +348,9 @@ implements Serializable {
     public int getNumCooks() {
         int result = 0;
 
-        if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
+        //if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
+                LifeSupport lifeSupport = getBuilding().getLifeSupport();//(LifeSupport) getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
@@ -370,7 +360,7 @@ implements Serializable {
                 }
 
                 //2015-12-10 Officiated Chefbot's contribution as cook
-                RoboticStation rs = (RoboticStation) getBuilding().getFunction(FunctionType.ROBOTIC_STATION);
+                RoboticStation rs = getBuilding().getRoboticStation();//(RoboticStation) getBuilding().getFunction(FunctionType.ROBOTIC_STATION);
                 Iterator<Robot> j = rs.getRobotOccupants().iterator();
                 while (j.hasNext()) {
                     Task task = j.next().getBotMind().getBotTaskManager().getTask();
@@ -381,7 +371,7 @@ implements Serializable {
 
             }
             catch (Exception e) {}
-        }
+        //}
 
         return result;
     }

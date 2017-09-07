@@ -552,7 +552,7 @@ implements ResearchScientificStudy, Serializable {
     				logger.info(robot.getName() + " has a lab accident while performing " +
                         science.getName() + " experiment");
 
-                entity.getMalfunctionManager().createAccident();
+                entity.getMalfunctionManager().logAccidentString();
             }
         }
     }

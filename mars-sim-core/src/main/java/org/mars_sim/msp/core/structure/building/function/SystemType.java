@@ -12,7 +12,8 @@ public enum SystemType {
 
 	BUILDING		(Msg.getString("SystemType.builidng")), //$NON-NLS-1$
     EVA_SUIT        (Msg.getString("SystemType.EVASuit")), //$NON-NLS=1$ 
-	ROVER			(Msg.getString("SystemType.rover")), //$NON-NLS-1$
+	ROBOT			(Msg.getString("SystemType.robot")), //$NON-NLS-1$
+    ROVER			(Msg.getString("SystemType.rover")), //$NON-NLS-1$
 	VEHICLE			(Msg.getString("SystemType.vehicle")); //$NON-NLS-1$
 
 	private String name;

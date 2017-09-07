@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FuelHeatSource.java
- * @version 3.1.0 2018-08-23
+ * @version 3.1.0 2017-09-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -32,6 +32,8 @@ implements Serializable {
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
 
 	public static final double THERMAL_EFFICIENCY = .9;
+	
+	public static final double ELECTRIC_EFFICIENCY = FuelPowerSource.ELECTRICAL_EFFICIENCY;
 	
 	private double rate;
 	
@@ -184,7 +186,12 @@ implements Serializable {
 	
 	@Override
 	public double getCurrentPower(Building building) {
-		// TODO Auto-generated method stub
+		
+		 if (toggle) {
+			 double spentFuel = consumeFuel(time, building.getInventory());
+			 return getMaxHeat() * spentFuel/maxFuel * ELECTRIC_EFFICIENCY;
+		 }
+		 
 		return 0;
 	}
 	

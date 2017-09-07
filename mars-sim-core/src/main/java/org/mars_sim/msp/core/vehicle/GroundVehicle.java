@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
 
 /** The GroundVehicle class represents a ground-type vehicle.  It is
  *  abstract and should be extended to a particular type of ground
@@ -55,7 +56,7 @@ implements Serializable {
 		super(name, description, settlement, maintenanceWorkTime);
 
 		// Add scope to malfunction manager.
-		malfunctionManager.addScopeString("GroundVehicle");
+		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());//"GroundVehicle");
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
 		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();

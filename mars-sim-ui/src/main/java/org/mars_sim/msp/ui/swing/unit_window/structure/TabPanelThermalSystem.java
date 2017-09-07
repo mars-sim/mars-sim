@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -260,6 +261,8 @@ extends TabPanel {
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		//heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
+		//heatTable.getModel().addTableModelListener(this);
+		
 		// 2015-06-08 Added sorting
 		heatTable.setAutoCreateRowSorter(true);
         //if (!MainScene.OS.equals("linux")) {
@@ -520,16 +523,15 @@ extends TabPanel {
 							|| heatMode == HeatMode.THREE_QUARTER_HEAT
 							|| heatMode == HeatMode.HALF_HEAT
 							|| heatMode == HeatMode.QUARTER_HEAT) {
-						try {
-							//ThermalGeneration heater = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-							//if (heater != null) {
-								return building.getThermalGeneration().getGeneratedHeat();// + heater.getGeneratedPower();
-								//return generated;
-							//}
-							//else
-								//return 0;
-						}
-						catch (Exception e) {}
+						//try {
+							ThermalGeneration heater = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+							if (heater != null) {
+								return heater.getGeneratedHeat();
+							}
+							else
+								return 0;
+						//}
+						//catch (Exception e) {}
 					}
 					else if (heatMode == HeatMode.HEAT_OFF) {
 						return 0.0;
@@ -550,11 +552,11 @@ extends TabPanel {
 
 		public void update() {
 			//2014-11-02 Included only buildings having Thermal control system
-			List<Building> tempBuildings = getBuildings();
-			if (!tempBuildings.equals(buildings)) {
-				buildings = tempBuildings;
+			//List<Building> tempBuildings = getBuildings();
+			//if (!tempBuildings.equals(buildings)) {
+			//	buildings = tempBuildings;
 				heatScrollPane.validate();
-			}
+			//}
 /*			
 			int newSize = buildings.size();
 			if (size != newSize) {

@@ -313,7 +313,7 @@ implements Serializable {
 	                    + entity.getNickName()
 	                    + ".");
 
-            entity.getMalfunctionManager().createAccident();
+            entity.getMalfunctionManager().logAccidentString();
         }
 
     }
@@ -363,7 +363,7 @@ implements Serializable {
 
         if (result != null) {
             setDescription(Msg.getString("Task.description.maintenance.detail",
-                    result.getName())); //$NON-NLS-1$
+                    result.getNickName())); //$NON-NLS-1$
         }
 
         return result;

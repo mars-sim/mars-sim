@@ -720,8 +720,9 @@ implements Serializable {
 				else {
 					taskProbCache.put(mt, 0D);
 
-					logger.severe(mind.getPerson().getName() + " bad task probability: " +  mt.getName() +
-								" probability: " + probability);
+					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+							mind.getPerson().getName() + " task probability invalid when calculating " 
+								+  mt.getName() + " probability (" + probability + ")", null);
 				}
 			}
 		}

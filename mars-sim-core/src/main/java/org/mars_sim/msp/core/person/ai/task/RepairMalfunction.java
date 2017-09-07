@@ -376,14 +376,14 @@ implements Repair, Serializable {
                 if (hasRepairPartsForMalfunction(person, tempMalfunction)) {
                     malfunction = tempMalfunction;
                 setDescription(Msg.getString("Task.description.repairMalfunction.detail",
-                        malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                        malfunction.getName(), entity.getNickName())); //$NON-NLS-1$
             	}
             }
             else if (robot != null) {
                 if (hasRepairPartsForMalfunction(robot, tempMalfunction)) {
                     malfunction = tempMalfunction;
                     setDescription(Msg.getString("Task.description.repairMalfunction.detail",
-                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                            malfunction.getName(), entity.getNickName())); //$NON-NLS-1$
                 }
             }
         }
@@ -513,7 +513,7 @@ implements Repair, Serializable {
 				logger.info(robot.getName() + " ran into an accident while repairing "  + entity.getNickName());
 
             if (entity != null) {
-                entity.getMalfunctionManager().createAccident("malfunction repair in " + entity.getNickName());
+                entity.getMalfunctionManager().logAccidentString("malfunction repair in " + entity.getNickName());
             }
         }
     }

@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.mars.Meteorite;
 import org.mars_sim.msp.core.mars.MeteoriteModule;
@@ -106,6 +107,7 @@ public class BuildingManager implements Serializable {
 
     private Resupply resupply;
     private Meteorite meteorite;
+	private HistoricalEventManager eventManager;
 
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -143,6 +145,7 @@ public class BuildingManager implements Serializable {
 		marsClock = masterClock.getMarsClock();
 
         buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		eventManager = Simulation.instance().getEventManager();
 		
         // Construct all buildings in the settlement.
         buildings = new ArrayList<Building>();
@@ -2089,6 +2092,14 @@ public class BuildingManager implements Serializable {
      */
     public Settlement getSettlement() {
         return settlement;
+    }
+
+    /**
+     * Gets an instance of the historical event manager
+     * @return
+     */
+    public HistoricalEventManager getEventManager() {
+    	return eventManager;
     }
 
 

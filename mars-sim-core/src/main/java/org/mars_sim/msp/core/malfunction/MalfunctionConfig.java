@@ -19,7 +19,6 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Type;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
 import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
@@ -219,7 +218,7 @@ public class MalfunctionConfig implements Serializable {
 
 
                     // Create malfunction.
-                    Malfunction malfunction = new Malfunction(name, severity, probability, emergencyRepairTime, repairTime,
+                    Malfunction malfunction = new Malfunction(name, 0, severity, probability, emergencyRepairTime, repairTime,
                             evaRepairTime, systems, resourceEffects, lifeSupportEffects, medicalComplaints);
 
                     // Add repair parts.

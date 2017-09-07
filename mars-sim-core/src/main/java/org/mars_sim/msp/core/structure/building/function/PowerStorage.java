@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * PowerGeneration.java
- * @version 3.1.0 2018-08-16
+ * PowerStorage.java
+ * @version 3.1.0 2017-09-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The PowerStorage class is a building function for storing power.
+ * The PowerStorage class is a building function depicting the interworking of a grid battery for energy storage.
  */
 public class PowerStorage
 extends Function
@@ -48,38 +48,41 @@ implements Serializable {
 	
 	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .1; // [in %]
 
-	// Tesla Model S has 104 cells per module
+	/** The number of cells per modules of the battery. */
 	private static int cellsPerModule = 104; // 3.6 V * 104 = 374.4 V 
+	// Note : Tesla Model S has 104 cells per module
 	
 	// Data members.
-	private int solCache = 1;
-
+	/** The number of modules of the battery. */
 	private int numModules = 0;
-
+	
+	/** The number of times the battery has been fully discharged/depleted since last reconditioning. */
+	private int timesFullyDepleted = 0;
+	
+	private int solCache = 1;
+	
+	/** The degradation rate of the battery in % per sol. */
 	public double percentBatteryDegradationPerSol = .05; // [in %]
 	
+	/** The maximum nameplate kWh of this battery. */	
 	public double max_kWh_nameplate;
 	
+	/** The internal resistance [in ohms] in each cell. */	
 	public double r_cell = 0.06; // [in ohms]
 
-	/**
-	 * The total internal resistance of the battery
-	 * R_total = R of each cell * # of cells * # of modules 
-	 */
-	private double r_total;
+	/**  The total internal resistance of the battery. */
+	private double r_total; // R_total = R of each cell * # of cells * # of modules 
 	
-	/**
-	 * The C rating is the maximum safe continuous discharge rate of a pack
-	 */
+	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
 	private double C_rating = 1D;
 	
-	/** The health of the battery */
-	private double batteryHealth = 1D; 	
+	/** The health of the battery. */
+	private double health = 1D; 	
 	
-	/** max energy storage capacity in kWh */
-	private double currentMaxCapacity; // [in kilo watt-hour, not Watt-hour]
+	/** The max energy storage capacity in kWh. */
+	private double currentMaxCap; // [in kilo watt-hour, not Watt-hour]
 	
-	/** energy last stored in the battery */
+	/** The energy last stored in the battery. */
 	private double kWhCache;
 	
 	/** 
@@ -95,7 +98,7 @@ implements Serializable {
 	 * indicates the length of time that the battery can supply this current.
 	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
 	 */
-	private double ampHoursRating; // [in ampere-hour or Ah] 	
+	private double ampHours; // [in ampere-hour or Ah] 	
 	
 	/*
 	 * The Terminal voltage is between the battery terminals with load applied. 
@@ -142,20 +145,22 @@ implements Serializable {
 
 		max_kWh_nameplate = config.getPowerStorageCapacity(building.getBuildingType());
 		
-		currentMaxCapacity = max_kWh_nameplate;
+		currentMaxCap = max_kWh_nameplate;
 
-		if (currentMaxCapacity == 20)
+		if (currentMaxCap == 20)
 			numModules = 19;
-		else if (currentMaxCapacity == 40)
+		else if (currentMaxCap == 40) // inflatable greenhouse, ...
 			numModules = 38;
-		else if (currentMaxCapacity == 80)
+		else if (currentMaxCap == 80) // large greenhouse & MD1 only
 			numModules = 80;
-		else if (currentMaxCapacity == 400)
+		else if (currentMaxCap == 120) // MD4
+			numModules = 120;
+		else if (currentMaxCap == 400) // Small Battery Array
 			numModules = 380;
 
 		r_total = r_cell * numModules * cellsPerModule;
 		
-		ampHoursRating = 1000D * currentMaxCapacity/SECONDARY_LINE_VOLTAGE; 
+		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
 
 		// 2017-01-03 at the start of sim, set to a random value		
 		kWhStored = RandomUtil.getRandomDouble(max_kWh_nameplate);		
@@ -185,9 +190,9 @@ implements Serializable {
 		Iterator<Building> iStore = settlement.getBuildingManager().getBuildings(PowerStorage.FUNCTION).iterator();
 		while (iStore.hasNext()) {
 			Building building = iStore.next();
-			PowerStorage store = (PowerStorage) building.getFunction(PowerStorage.FUNCTION);
+			PowerStorage store = building.getPowerStorage();//(PowerStorage) building.getFunction(PowerStorage.FUNCTION);
 			double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-			supply += store.currentMaxCapacity * wearModifier;
+			supply += store.currentMaxCap * wearModifier;
 		}
 
 		double existingPowerStorageValue = demand / (supply + 1D);
@@ -211,34 +216,38 @@ implements Serializable {
 		kWhCache = kWhStored;
 		kWhStored = kWh;	
 		
-		boolean startReconditioning = false;
+		boolean needRecondition = false;
 		
 		if (!locked) {
 			
 			if (kWh <= 0D) {
 				kWh = 0D;
-				startReconditioning = true;
+				needRecondition = true;
+		        // recondition once and lock it for the rest of the sol
+		        locked = true;
+		        timesFullyDepleted++;
 			}
 			
-			else if (kWh < currentMaxCapacity / 5D) {
+			else if (kWh < currentMaxCap / 5D) {
 				
 				int rand = RandomUtil.getRandomInt((int)kWh);		
 				if (rand == 0) {
-					startReconditioning = true;
+					needRecondition = true;
 					//System.out.println("Start reconditioning. kWh : " + kWh);	
-			        // lock it for the rest of the sol
+			        // recondition once and lock it for the rest of the sol
 			        locked = true;
 				}
 			}
 	
-			if (startReconditioning) {
-				startReconditioning = false;
+			if (needRecondition & timesFullyDepleted > 20) {
+				needRecondition = false;
+				timesFullyDepleted = 0;
 				reconditionBattery();
 			}
 		}
 		
-		if (kWh > currentMaxCapacity) {
-			kWh = currentMaxCapacity;			
+		if (kWh > currentMaxCap) {
+			kWh = currentMaxCap;			
 		}
 		
 	
@@ -246,35 +255,45 @@ implements Serializable {
 		
 	}
 
-	
+	/***
+	 * Diagnoses health and update the status of the battery
+	 */
 	public void diagnoseBattery() {
-		if (batteryHealth > 1)
-			batteryHealth = 1;
-		//System.out.println("battery_health is " + battery_health);
-    	currentMaxCapacity = currentMaxCapacity * batteryHealth;
-    	if (currentMaxCapacity > max_kWh_nameplate)
-    		currentMaxCapacity = max_kWh_nameplate;
-		ampHoursRating = 1000D * currentMaxCapacity/SECONDARY_LINE_VOLTAGE; 
-		if (kWhStored > currentMaxCapacity) {
-			kWhStored = currentMaxCapacity;		
+		if (health > 1)
+			health = 1;
+    	currentMaxCap = currentMaxCap * health;
+    	if (currentMaxCap > max_kWh_nameplate)
+    		currentMaxCap = max_kWh_nameplate;
+		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
+		if (kWhStored > currentMaxCap) {
+			kWhStored = currentMaxCap;		
 			kWhCache = kWhStored; 
 		}
 	}
 	
+	/**
+	 * Updates the terminal voltage of the battery
+	 */
 	public void updateVoltage() {
 		//r_total = r_cell * cellsPerModule * numModules;
-    	terminalVoltage = kWhStored / ampHoursRating * 1000D;
+    	terminalVoltage = kWhStored / ampHours * 1000D;
     	if (terminalVoltage > BATTERY_MAX_VOLTAGE)
     		terminalVoltage = BATTERY_MAX_VOLTAGE;
 	}
 	
 
+	/**
+	 * Updates the health of the battery
+	 */
 	public void updateHealth() {
-    	batteryHealth = batteryHealth * (1 - percentBatteryDegradationPerSol/100D);		
+    	health = health * (1 - percentBatteryDegradationPerSol/100D);		
 	}
 
+	/**
+	 * Reconditions the battery
+	 */
 	public void reconditionBattery() {
-		batteryHealth = batteryHealth * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
+		health = health * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
 		
 		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 				"the grid battery for "
@@ -301,7 +320,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return currentMaxCapacity / 5D;
+		return currentMaxCap / 5D;
 	}
 
 	@Override
@@ -335,10 +354,10 @@ implements Serializable {
 	/**
 	 * Gets the building's current max storage capacity
 	 * (Note : this accounts for the battery degradation over time)
-	 * @return capacity (kW hr).
+	 * @return capacity (kWh).
 	 */
 	public double getCurrentMaxCapacity() {
-		return currentMaxCapacity;
+		return currentMaxCap;
 	}
 
 	/**
@@ -350,7 +369,7 @@ implements Serializable {
 	}
 	
 	public double getAmpHourRating() {
-		return ampHoursRating;
+		return ampHours;
 	}
 	
 	public double getTerminalVoltage() {
@@ -362,7 +381,7 @@ implements Serializable {
 	}
 	
 	public double getBatteryHealth() {
-		return batteryHealth;
+		return health;
 	}
 	
 	public double geCRating() {

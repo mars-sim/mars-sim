@@ -37,7 +37,7 @@ public class TestMalfunctionManager extends TestCase {
 		
 		private MockMalfunction(String name, int severity, double emergencyWorkTime, double workTime, 
 				double evaWorkTime) {
-			super(name, severity, 0D, emergencyWorkTime, workTime, evaWorkTime, null, null, null, 
+			super(name, 0, severity, 0D, emergencyWorkTime, workTime, evaWorkTime, null, null, null, 
 					new HashMap<ComplaintType, Double>());
 		}
 	}

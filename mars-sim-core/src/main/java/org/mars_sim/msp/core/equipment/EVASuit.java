@@ -345,8 +345,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 	@Override
 	public String getNickName() {
-		// TODO Auto-generated method stub
-		return null;
+		return getName();
 	}
 
 	public void destroy() {

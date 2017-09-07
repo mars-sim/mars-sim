@@ -152,15 +152,14 @@ implements Serializable {
 		        setPhase(PREPARING_DESSERT);
 
 				// Note: still too repetitive for reporting what a chefbot does.
-		        String jobName = RobotJob.getName(robot.getRobotType());
+		        //String jobName = RobotJob.getName(robot.getRobotType());
 
-		    	String newLog = jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
-		                " at " + robot.getSettlement();
+		    	//String newLog = jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
+		        //        " at " + robot.getSettlement();
 
-		    	//if (!logCache[1].equals(newLog)) {
-			    //	logCache[1] = newLog;
-				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
-		    	//}
+
+				//`LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
+
 
 	        }
 	        else {
@@ -360,7 +359,7 @@ implements Serializable {
             else if (robot != null) {
                 logger.fine(robot.getName() + " has an accident while making dessert");
             }
-            kitchen.getBuilding().getMalfunctionManager().createAccident();
+            kitchen.getBuilding().getMalfunctionManager().logAccidentString();
         }
     }
 

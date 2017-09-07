@@ -486,7 +486,7 @@ implements Serializable {
     	    				logger.info(robot.getName() + " has an accident during EVA operation.");
     	    			}
 
-    	                suit.getMalfunctionManager().createAccident("EVA operation");
+    	                suit.getMalfunctionManager().logAccidentString("EVA operation");
     	            }
     	        }
     	}

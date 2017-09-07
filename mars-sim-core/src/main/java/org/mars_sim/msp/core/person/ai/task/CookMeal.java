@@ -233,22 +233,9 @@ implements Serializable {
 	            		+ robot.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 
-				//if (!logCache[3].equals(newLog)) {
-				//	logCache[3] = newLog;
-					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(), newLog, null);
-				//}
 
-	            // 2015-01-15 Added solElapsed
-/*
-	        	MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	            int solElapsed = marsClock.getSolElapsedFromStart();
-	            if (solElapsed != solElapsedCache) {
-	            	counter = 0;
-	            	logCache[3] = "";
-	            	solElapsedCache = solElapsed;
-	            }
-*/
+				LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(), newLog, null);
+
 	            endTask();
 
 		    }
@@ -260,16 +247,13 @@ implements Serializable {
 			    addPhase(COOKING);
 				setPhase(COOKING);
 
-				String jobName = RobotJob.getName(robot.getRobotType());
+				//String jobName = RobotJob.getName(robot.getRobotType());
 
-				String newLog = jobName + " " + robot.getName() + " made meal at " + kitchen.getBuilding().getNickName() +
-    	                " in " + robot.getSettlement();
+				//String newLog = jobName + " " + robot.getName() + " made meal at " + kitchen.getBuilding().getNickName() +
+    	        //        " in " + robot.getSettlement();
 
-				//if (!logCache[1].equals(newLog)) {
-				//	logCache[1] = newLog;
-					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
-				//}
+				//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
+
 
 		    }
 	    }
@@ -466,7 +450,7 @@ implements Serializable {
 				logger.info(robot.getName() + " has an accident while cooking.");
 			}
 
-            kitchen.getBuilding().getMalfunctionManager().createAccident();
+            kitchen.getBuilding().getMalfunctionManager().logAccidentString();
         }
     }
 

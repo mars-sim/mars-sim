@@ -131,7 +131,7 @@ implements Serializable {
         setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
 
-        logger.info("Travel to Settlement mission");
+        //logger.info("Travel to Settlement mission");
     }
 //    public TravelToSettlement(Robot robot) {
 //        // Use RoverMission constructor

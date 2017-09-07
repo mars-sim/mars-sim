@@ -624,7 +624,7 @@ implements Serializable {
 			else if (robot != null)
 				logger.info(robot.getName() + " has accident while manufacturing construction materials.");
 
-            workshop.getBuilding().getMalfunctionManager().createAccident();
+            workshop.getBuilding().getMalfunctionManager().logAccidentString();
         }
     }
 

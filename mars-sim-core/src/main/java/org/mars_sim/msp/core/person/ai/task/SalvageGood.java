@@ -223,7 +223,7 @@ implements Serializable {
 				logger.info(robot.getName() + " has accident while salvaging " +
 					process.getInfo().getItemName() + ".");
 
-			workshop.getBuilding().getMalfunctionManager().createAccident();
+			workshop.getBuilding().getMalfunctionManager().logAccidentString();
 		}
 	}
 

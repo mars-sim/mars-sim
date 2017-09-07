@@ -397,7 +397,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
 			else if (robot != null)
 				logger.info(robot.getName() + " has accident while providing medical treatment.");
 
-            entity.getMalfunctionManager().createAccident();
+            entity.getMalfunctionManager().logAccidentString();
         }
     }
 

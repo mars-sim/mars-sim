@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionEvent;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -72,6 +73,7 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
@@ -177,6 +179,7 @@ LocalBoundedObject, InsidePathLocation {
 	private Heating heating;
 	private EVA eva;
 	private Farming farm;
+	private LivingAccommodations livingAccommodations;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -185,7 +188,8 @@ LocalBoundedObject, InsidePathLocation {
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
-	DecimalFormat fmt = new DecimalFormat("###.####");
+	private DecimalFormat fmt = new DecimalFormat("###.####");
+
 
 	/** Constructor 1.
 	 * Constructs a Building object.
@@ -246,6 +250,10 @@ LocalBoundedObject, InsidePathLocation {
 		if (hasFunction(FunctionType.FARMING))
 			if (farm == null)
 				farm = (Farming) getFunction(FunctionType.FARMING);
+		
+		if (hasFunction(FunctionType.LIVING_ACCOMODATIONS))
+			if (livingAccommodations == null)
+				livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
 	}
 
 	/** Constructor 2
@@ -366,7 +374,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, wearLifeTime, totalMaintenanceTime);
-		malfunctionManager.addScopeString("Building");
+		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
 
 		// Add each function to the malfunction scope.
 		Iterator<Function> i = functions.iterator();
@@ -440,6 +448,13 @@ LocalBoundedObject, InsidePathLocation {
 		return lifeSupport;
 	}
 
+	public RoboticStation getRoboticStation() {
+		if (roboticStation == null)
+			roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
+	
+		return roboticStation;
+	}
+	
 	public ThermalGeneration getThermalGeneration() {
 		if (furnace == null)
 			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
@@ -474,6 +489,11 @@ LocalBoundedObject, InsidePathLocation {
 		return powerStorage;
 	}
 	
+	public LivingAccommodations	getLivingAccommodations() {
+		if (livingAccommodations == null)
+			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
+		return livingAccommodations;
+	}
 	
     /**
      * Gets the temperature of a building.
@@ -1164,7 +1184,7 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
         if (isImpactImminent) {
-        	LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
         			"A meteorite impact for " + nickName 
 					+ " in " + settlement + " is imminent.", null);
         	int now = (int) marsClock.getMillisol();
@@ -1193,7 +1213,8 @@ LocalBoundedObject, InsidePathLocation {
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
 
-		        	Malfunction item = MalfunctionFactory.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
+		        	Malfunction item = MalfunctionFactory.getMeteoriteImpactMalfunction(
+		        			MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 
 		        	// Simulate the meteorite impact as a malfunction event for now
 					try {
@@ -1204,8 +1225,8 @@ LocalBoundedObject, InsidePathLocation {
 					}
 
 					HistoricalEvent newEvent = new MalfunctionEvent(this, item, true);
-					Simulation.instance().getEventManager().registerNewEvent(newEvent);
-
+					manager.getEventManager().registerNewEvent(newEvent);
+					
 					//check if someone under this roof may have seen/affected by the impact
 					Iterator<Person> i = getInhabitants().iterator();
 					while (i.hasNext()) {

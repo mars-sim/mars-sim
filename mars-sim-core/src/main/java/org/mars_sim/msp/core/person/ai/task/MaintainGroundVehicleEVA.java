@@ -235,7 +235,7 @@ implements Serializable {
 				logger.info(robot.getName() + " has an accident while performing maintenance on " + vehicle.getName() + ".");
 			}
 
-            vehicle.getMalfunctionManager().createAccident(vehicle.getName());
+            vehicle.getMalfunctionManager().logAccidentString(vehicle.getName());
         }
     }
 

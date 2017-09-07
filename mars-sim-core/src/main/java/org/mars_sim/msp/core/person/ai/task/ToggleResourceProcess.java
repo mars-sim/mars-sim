@@ -463,7 +463,7 @@ implements Serializable {
 			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident while toggling a resource process.");
 			}
-            building.getMalfunctionManager().createAccident();
+            building.getMalfunctionManager().logAccidentString();
         }
     }
 

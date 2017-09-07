@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -137,7 +138,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
-	    malfunctionManager.addScopeString("Vehicle");
+	    malfunctionManager.addScopeString(SystemType.VEHICLE.getName());//"Vehicle");
 
 	    // Set width and length of vehicle.
 	    width = config.getWidth(vehicleType);
@@ -206,7 +207,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
-	    malfunctionManager.addScopeString("Vehicle");
+	    malfunctionManager.addScopeString(SystemType.VEHICLE.getName());//"Vehicle");
     }
 
 

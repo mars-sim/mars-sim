@@ -118,7 +118,7 @@ implements Repair, Serializable {
             isEVAMalfunction = canRepairEVA(malfunction);
 
             setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail",
-                  malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                  malfunction.getName(), entity.getNickName())); //$NON-NLS-1$
 
             // Determine location for repairing malfunction.
             Point2D malfunctionLoc = determineMalfunctionLocation();

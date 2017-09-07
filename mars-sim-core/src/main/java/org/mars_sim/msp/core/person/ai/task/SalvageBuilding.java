@@ -402,7 +402,7 @@ implements Serializable {
     			else if (robot != null)
     				logger.info(robot.getName() + " ran into an accident while salvage a building");
 
-                luv.getMalfunctionManager().createAccident();
+                luv.getMalfunctionManager().logAccidentString();
             }
         }
     }

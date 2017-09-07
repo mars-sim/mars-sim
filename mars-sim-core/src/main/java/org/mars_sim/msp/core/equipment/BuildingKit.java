@@ -128,8 +128,7 @@ implements Serializable, Malfunctionable, Salvagable {
 
 	@Override
 	public String getNickName() {
-		// TODO Auto-generated method stub
-		return null;
+		return getName();
 	}
 
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.1.0 2017-08-08
+ * @version 3.1.0 2017-09-07
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * The Rover class represents the rover type of ground vehicle.  It
@@ -102,12 +103,12 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		config = SimulationConfig.instance().getVehicleConfiguration();
 
 		// Add scope to malfunction manager.
-		malfunctionManager.addScopeString("Rover");
-		malfunctionManager.addScopeString("Crewable");
-		malfunctionManager.addScopeString("Life Support");
-		malfunctionManager.addScopeString(description);
-		if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
-		if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
+		//malfunctionManager.addScopeString("Rover");
+		//malfunctionManager.addScopeString("Crewable");
+		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());//."Life Support");
+		//malfunctionManager.addScopeString(description);
+		//if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
+		//if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
 
 		// Set crew capacity
 		crewCapacity = config.getCrewSize(description);

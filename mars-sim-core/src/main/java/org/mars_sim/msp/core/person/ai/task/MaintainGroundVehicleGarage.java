@@ -288,7 +288,7 @@ implements Serializable {
 				logger.info(robot.getName() + " has an accident while performing maintenance on " + vehicle.getName() + " inside a garage.");
 			}
 
-            vehicle.getMalfunctionManager().createAccident(vehicle.getName());
+            vehicle.getMalfunctionManager().logAccidentString(vehicle.getName());
 
         }
     }
