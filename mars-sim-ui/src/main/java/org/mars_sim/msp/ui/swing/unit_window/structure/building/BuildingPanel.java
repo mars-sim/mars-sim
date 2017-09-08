@@ -26,7 +26,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -66,6 +65,7 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPan
 /**
  * The BuildingPanel class is a panel representing a settlement building.
  */
+@SuppressWarnings("restriction")
 public class BuildingPanel
 extends JPanel {
 

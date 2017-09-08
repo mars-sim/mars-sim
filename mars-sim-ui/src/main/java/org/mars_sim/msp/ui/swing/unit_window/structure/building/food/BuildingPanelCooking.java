@@ -34,12 +34,14 @@ extends BuildingFunctionPanel {
 	/** The number of meals cooked today. */
 	private JLabel numMealsTodayLabel;
 	/** The quality of the meals. */
-	private JLabel mealQualityLabel;
+	private JLabel mealGradeLabel;
 
 	// Cache
 	private int numCooksCache;
 	private int numMealsCache;
-	private double mealQualityCache;
+	//private double mealQualityCache;
+	private String gradeCache = "";
+	
 	private int numMealsTodayCache;
 
 	/**
@@ -91,16 +93,10 @@ extends BuildingFunctionPanel {
 		numMealsTodayLabel = new JLabel(Msg.getString("BuildingPanelCooking.mealsToday", numMealsTodayCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numMealsTodayLabel);
 
-
-		// Prepare meal quality label
-		//String mealQualityStr;
-		mealQualityCache = kitchen.getBestMealQualityCache();
-		// Update meal quality
-		//if (mealQualityCache == 0) mealQualityStr = "None";
-		//else mealQualityStr = "" + mealQualityCache;
-		//System.out.println("BuildingPanelCooking.java : initial mealQualityCache : " + mealQualityCache);
-		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityCache), JLabel.CENTER); //$NON-NLS-1$
-		labelPanel.add(mealQualityLabel);
+		// Prepare meal grade label
+		String grade = computeGrade(kitchen.getBestMealQualityCache());
+		mealGradeLabel = new JLabel(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", grade), JLabel.CENTER); //$NON-NLS-1$
+		labelPanel.add(mealGradeLabel);
 	}
 
 	/**
@@ -133,16 +129,45 @@ extends BuildingFunctionPanel {
 			numMealsTodayLabel.setText(Msg.getString("BuildingPanelCooking.mealsToday", numMealsToday)); //$NON-NLS-1$
 		}
 
-		//String mealQualityStr;
-		double mealQuality = 0;
-		mealQuality = kitchen.getBestMealQualityCache();
-		// Update meal quality
-		if (mealQualityCache != mealQuality) {
-			mealQualityCache = mealQuality;
-			//if (mealQuality == 0) mealQualityStr = "None";
-			//else mealQualityStr = "" + mealQuality;
-			//System.out.println("BuildingPanelCooking.java : updated mealQualityCache : "+ mealQuality);
-			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQuality)); //$NON-NLS-1$
+		double mealQuality = kitchen.getBestMealQualityCache();
+		String grade = computeGrade(mealQuality);
+		// Update meal grade
+		if (!gradeCache.equals(grade)) {
+			gradeCache = grade;
+			mealGradeLabel.setText(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", grade)); //$NON-NLS-1$
 		}
 	}
+	
+	/***
+	 * Converts a numeral quality to letter grade for a meal
+	 * @param quality 
+	 * @return grade
+	 */
+	public String computeGrade(double quality) {
+		String grade = "";
+				
+		if (quality < -3)
+			grade = "C-";
+		else if (quality < -2)
+			grade = "C+";
+		else if (quality < -1)
+			grade = "C+";
+		else if (quality < -1)
+			grade = "B-";
+		else if (quality < 0)
+			grade = "B";
+		else if (quality < 1)
+			grade = "B+";
+		else if (quality < 2)
+			grade = "A-";
+		else if (quality < 3)
+			grade = "A";
+		else //if (quality < 4)
+			grade = "A+";
+				
+		return grade;
+	}
+	
+	
+	
 }

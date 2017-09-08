@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBuildings.java
- * @version 3.07 2014-12-03
+ * @version 3.1.0 2017-09-07
  * @author Scott Davis
  */
 
@@ -16,10 +16,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
@@ -28,7 +26,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
-import org.mars_sim.msp.core.AlphanumComparator;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;

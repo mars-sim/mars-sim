@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.1.0 2017-04-15
+ * @version 3.1.0 2017-09-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -39,10 +38,8 @@ import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -50,7 +47,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multimap;
-//import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 
 
@@ -476,8 +472,8 @@ extends TabPanel {
 			String[] columnNames = {
 				    "<html>Meal<br>Name</html>",
 				    "<html># of<br>Servings</html>",
-				    "<html>Best<br>Quality</html>",
-				    "<html>Worst<br>Quality</html>"
+				    "<html>Best<br>Grade</html>",
+				    "<html>Worst<br>Grade</html>"
 				};
 
 			//if (columnIndex == 0) return Msg.getString("TabPanelCooking.column.s"); //$NON-NLS-1$
@@ -492,6 +488,36 @@ extends TabPanel {
 			else return null;
 		}
 
+		/***
+		 * Converts a numeral quality to letter grade for a meal
+		 * @param quality 
+		 * @return grade
+		 */
+		public String computeGrade(double quality) {
+			String grade = "";
+					
+			if (quality < -3)
+				grade = "C-";
+			else if (quality < -2)
+				grade = "C+";
+			else if (quality < -1)
+				grade = "C+";
+			else if (quality < -1)
+				grade = "B-";
+			else if (quality < 0)
+				grade = "B";
+			else if (quality < 1)
+				grade = "B+";
+			else if (quality < 2)
+				grade = "A-";
+			else if (quality < 3)
+				grade = "A";
+			else //if (quality < 4)
+				grade = "A+";
+					
+			return grade;
+		}
+		
 		public Object getValueAt(int row, int column) {
 			//System.out.println("entering getValueAt()");
 			Object result = null;
@@ -525,7 +551,7 @@ extends TabPanel {
 				    	if (value > best )
 				    		best = value;
 				    }
-				    result = best;
+				    result = computeGrade(best);
 				    //allQualityMap.clear();
 				    	//System.out.println(" best is " +best);
 				}
@@ -541,7 +567,7 @@ extends TabPanel {
 				    	if (value < worst )
 				    		worst = value;
 				    }
-				    	result = worst;
+				    	result = computeGrade(worst);
 				    	//allTimeMap.clear();
 				    	//System.out.println(" worst is " + worst);
 				}

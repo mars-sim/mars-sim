@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelPreparingDessert.java
- * @version 3.07 2014-11-28
+ * @version 3.1.0 2017-09-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -39,8 +39,9 @@ extends BuildingFunctionPanel {
 	private int numCooksCache;
 	private int servingsDessertCache;
 	private int servingsDessertTodayCache;
-	private double dessertQualityCache;
-
+	//private double dessertQualityCache;
+	private String dessertGradeCache;
+	
 	/**
 	 * Constructor.
 	 * @param kitchen the cooking building this panel is for.
@@ -91,16 +92,42 @@ extends BuildingFunctionPanel {
 		labelPanel.add(servingsDessertTodayLabel);
 
 
-		// 2014-11-30 Added dessertQualityStr
-		//String dessertQualityStr;
-		dessertQualityCache = kitchen.getBestDessertQualityCache();
-		// Update Dessert quality
-		//if (dessertQualityCache == 0) dessertQualityStr = "None";
-		//else dessertQualityStr = "" + dessertQualityCache;
-		dessertQualityLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertQualityCache), JLabel.CENTER); //$NON-NLS-1$
+		String dessertGradeCache = computeGrade(kitchen.getBestDessertQualityCache());
+		// Update Dessert grade
+		dessertQualityLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertGradeCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(dessertQualityLabel);
 	}
 
+	/***
+	 * Converts a numeral quality to letter grade for a dessert
+	 * @param quality 
+	 * @return grade
+	 */
+	public String computeGrade(double quality) {
+		String grade = "";
+				
+		if (quality < -3)
+			grade = "C-";
+		else if (quality < -2)
+			grade = "C+";
+		else if (quality < -1)
+			grade = "C+";
+		else if (quality < -1)
+			grade = "B-";
+		else if (quality < 0)
+			grade = "B";
+		else if (quality < 1)
+			grade = "B+";
+		else if (quality < 2)
+			grade = "A-";
+		else if (quality < 3)
+			grade = "A";
+		else //if (quality < 4)
+			grade = "A+";
+				
+		return grade;
+	}
+	
 	/**
 	 * Update this panel
 	 */
@@ -123,15 +150,11 @@ extends BuildingFunctionPanel {
 			servingsDessertTodayLabel.setText(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache)); //$NON-NLS-1$
 		}
 
-		// 2014-11-30 Added dessertQualityStr
-		//String dessertQualityStr;
-		double dessertQuality = kitchen.getBestDessertQualityCache();
-		// Update Dessert quality
-		if (dessertQualityCache != dessertQuality) {
-			dessertQualityCache = dessertQuality;
-			//if (dessertQuality == 0) dessertQualityStr = "None";
-			//else dessertQualityStr = "" + dessertQuality;
-			dessertQualityLabel.setText(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertQuality)); //$NON-NLS-1$
+		String dessertGrade = computeGrade(kitchen.getBestDessertQualityCache());
+		// Update Dessert grade
+		if (!dessertGradeCache.equals(dessertGrade)) {
+			dessertGradeCache = dessertGrade;
+			dessertQualityLabel.setText(Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert", dessertGrade)); //$NON-NLS-1$
 		}
 	}
 }
