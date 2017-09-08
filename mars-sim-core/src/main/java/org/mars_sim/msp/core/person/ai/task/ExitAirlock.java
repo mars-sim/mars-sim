@@ -765,7 +765,7 @@ implements Serializable {
             	// 2016-10-07 Note: calling getNewAction() below is still considered "experimental"
             	// It may have caused StackOverflowError if a very high fatigue person is stranded in the airlock and cannot go outside.
             	// Intentionally add a 5% performance boost
-            	person.getPhysicalCondition().setPerformanceFactor(.05);
+            	person.getPhysicalCondition().setPerformanceFactor(.1);
             	person.getMind().getNewAction(true, false);
 
             } catch (Exception e) {

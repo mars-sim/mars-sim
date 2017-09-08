@@ -398,7 +398,7 @@ implements Serializable {
 	        		checkForHighFatigueCollapse(time);
 
 	        // Calculate performance and most serious illness.
-	        recalculate();
+	        recalculatePerformance();
 
     	}
 
@@ -490,19 +490,19 @@ implements Serializable {
 //        kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO / kJoules) / ENERGY_FACTOR;
 
         
-        if (kJoules > 9000D) {
+        if (kJoules > 10000D) {
         	kJoules += xdelta *.75;
         }
-        else if (kJoules > 8000D) {
+        else if (kJoules > 9000D) {
         	kJoules += xdelta *.8;
         }
-        else if (kJoules > 7000D) {
+        else if (kJoules > 8000D) {
         	kJoules += xdelta *.85;
         }
-        else if (kJoules > 6000D) {
+        else if (kJoules > 7000D) {
         	kJoules += xdelta *.9;
         }
-        else if (kJoules > 5000D) {
+        else if (kJoules > 6000D) {
         	kJoules += xdelta *.95;
         }
         else
@@ -513,7 +513,7 @@ implements Serializable {
         if (kJoules > personalMaxEnergy *2) {
         	kJoules = personalMaxEnergy *2;
         }
-        //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
+
     }
 
     /**
@@ -529,11 +529,9 @@ implements Serializable {
      * @param newPerformance new performance (between 0 and 1).
      */
     public void setPerformanceFactor(double newPerformance) {
-        if (newPerformance != performance) {
+        if (performance != newPerformance)
             performance = newPerformance;
-			if (person != null)
-	            person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
-        }
+	    person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
     }
 
 
@@ -542,11 +540,10 @@ implements Serializable {
      * @param newFatigue New fatigue.
      */
     public void setFatigue(double newFatigue) {
-        //if (fatigue != newFatigue) {
+        if (fatigue != newFatigue)
             fatigue = newFatigue;
-			//if (person != null)
-	            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-        //}
+        person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+
     }
 
     /** Gets the person's hunger level
@@ -563,49 +560,45 @@ implements Serializable {
      */
     public void checkStarvation(double hunger) {
 
-    	if (person != null) {
+        Complaint starvation = getMedicalManager().getStarvation();
 
-            Complaint starvation = getMedicalManager().getStarvation();
-
-            if (hunger > personStarvationTime && (kJoules <= 100D)) {
-                if (!problems.containsKey(starvation)) {
-                    addMedicalComplaint(starvation);
-                    //LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
-                    //		person + " is starving. Hunger level : " 
-                    //				+ Math.round(hunger*10.0)/10.0 + ".", null);
-                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                }
-                
-                
-                LocationSituation ls = person.getLocationSituation();
-                TaskManager mgr = person.getMind().getTaskManager();
-                //Stop any on-going tasks
-                mgr.clearTask();
-                // TODO : how to tell a person to walk back to the settlement ?
-                if (ls == LocationSituation.OUTSIDE) {
-        	        //if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-        	        //    Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
-        	        //    mgr.addSubTask(walkingTask);
-        	        //}
-                }
-                else { // in a settlement or on a vehicle
-	                // go eat a meal
-	                mgr.addTask(new EatMeal(person));
-                }
-                
-                // TODO : should check if a person is on a critical mission, 
-
+        if (hunger > personStarvationTime && (kJoules < 150D)) {
+            if (!problems.containsKey(starvation)) {
+                addMedicalComplaint(starvation);
+                //LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+                //		person + " is starving. Hunger level : " 
+                //				+ Math.round(hunger*10.0)/10.0 + ".", null);
+                person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
             }
-
-            else if (hunger < 500D && kJoules > 800D) {
-                HealthProblem illness = problems.get(starvation);
-                if (illness != null) {
-                    illness.startRecovery();
-
-                }
+              
+            LocationSituation ls = person.getLocationSituation();
+            TaskManager mgr = person.getMind().getTaskManager();
+            //Stop any on-going tasks
+            mgr.clearTask();
+            // TODO : how to tell a person to walk back to the settlement ?
+            if (ls == LocationSituation.OUTSIDE) {
+    	        //if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	        //    Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
+    	        //    mgr.addSubTask(walkingTask);
+    	        //}
             }
+            else { // in a settlement or on a vehicle
+                // go eat a meal
+                mgr.addTask(new EatMeal(person));
+            }
+            
+            // TODO : should check if a person is on a critical mission, 
 
         }
+
+        else if (hunger < 500D && kJoules > 800D) {
+            HealthProblem illness = problems.get(starvation);
+            if (illness != null) {
+                illness.startRecovery();
+
+            }
+        }
+
     }
 
 
@@ -854,7 +847,7 @@ implements Serializable {
             	LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
             		person + " is complaining about " + n + ".", null);
 
-            recalculate();
+            recalculatePerformance();
         }
     }
 
@@ -1032,8 +1025,9 @@ implements Serializable {
 
 
     /**
-     * This Person is now dead.
-     * @param illness The compliant that makes person dead.
+     * Renders this Person dead.
+     * @param illness The illness that makes person dead.
+     * @param causedByUser True if it's caused by users
      */
     public void setDead(HealthProblem illness, Boolean causedByUser) {
         alive = false;
@@ -1043,12 +1037,11 @@ implements Serializable {
 	    setPerformanceFactor(0D);
 	    setStress(0D);
 	    
-
         if (causedByUser) {
         	person.setDead();
 
-            this.serious = illness;
             illness.setState(HealthProblem.DEAD);
+            this.serious = illness;
             logger.severe(person + " committed suicide as instructed.");
         }
 
@@ -1066,7 +1059,6 @@ implements Serializable {
             MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
             Simulation.instance().getEventManager().registerNewEvent(event);
         }
-
 
         // Throw unit event.
         person.fireUnitUpdate(UnitEventType.DEATH_EVENT);
@@ -1147,16 +1139,16 @@ implements Serializable {
     }
 
     /**
-     * Calculate the most serious problem and the person's performance.
+     * Calculate how the most serious problem and other metrics would affect a person's performance.
      */
-    private void recalculate() {
+    private void recalculatePerformance() {
 
         double tempPerformance = 1.0D;
 
         serious = null;
 
-        // Check the existing problems. find most serious & performance
-        // effecting
+        // Check the existing problems. find most serious problem and how it
+        // affects performance
         Iterator<HealthProblem> iter = problems.values().iterator();
         while(iter.hasNext()) {
             HealthProblem problem = iter.next();
@@ -1199,19 +1191,25 @@ implements Serializable {
             //e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125  or  1.25%  on each frame
         }
         
-        // High stress reduces performance.
-        if (kJoules < 200D) {
-            tempPerformance -= (kJoules - 100D) * ENERGY_PERFORMANCE_MODIFIER/2;
+        // High kJoules improves performance and low kJoules hurts performance.
+        if (kJoules > 2000) {
+        	//double old = tempPerformance;
+            tempPerformance += (kJoules - 1000) * ENERGY_PERFORMANCE_MODIFIER/4;
+            //LogConsolidated.log(logger, Level.INFO, 200, sourceName,
+            //		"kJ > 2000   " + old + " --> " + tempPerformance, null);
         }
-        else if (kJoules < 400D) {
-            tempPerformance -= (kJoules - 200D) * ENERGY_PERFORMANCE_MODIFIER/4;
+        else if (kJoules < 400) {
+        	//double old = tempPerformance;
+            tempPerformance -= 400_000/kJoules * ENERGY_PERFORMANCE_MODIFIER/4;
+            //LogConsolidated.log(logger, Level.INFO, 200, sourceName,
+            //		"kJ < 400   " + old + " --> " + tempPerformance, null);
         }
 
-
-	    if (tempPerformance < 0D) {
+	    if (tempPerformance > 100D)
+	        tempPerformance = 100D;
+	    else if (tempPerformance < 0D)
 	        tempPerformance = 0D;
-	    }
-	
+	    
 	    setPerformanceFactor(tempPerformance);
 	    
 

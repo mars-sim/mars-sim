@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.tool.Conversion;
  */
 public class MalfunctionConfig implements Serializable {
 
-
 	private static final Logger logger = Logger.getLogger(MalfunctionConfig.class.getName());
 
     // Element names
@@ -88,7 +87,7 @@ public class MalfunctionConfig implements Serializable {
             for (Element malfunctionElement : malfunctionNodes) {
                 String name = "";
 
-                //try {
+                try {
 
                     // Get name.
                     name = malfunctionElement.getAttributeValue(NAME);
@@ -235,13 +234,15 @@ public class MalfunctionConfig implements Serializable {
                     }
 
                     malfunctionList.add(malfunction);
-                //} catch (Exception e) {
-                //    throw new IllegalStateException("Error reading malfunction " + name + ": " + e.getMessage(), e);
-                //}
+                    
+                } catch (Exception e) {
+                    throw new IllegalStateException("Error reading malfunction " + name + " in malfunctions.xml : " 
+                    		+ e.getMessage(), e);
+                }
             }
         }
-
-        //logger.info("Done with calling getMalfunctionList()");
+     
+        // Notes : as of 8 Sep 2017 there are 36 malfunctions
         
         return malfunctionList;
     }

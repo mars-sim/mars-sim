@@ -39,7 +39,6 @@ extends BuildingFunctionPanel {
 	// Cache
 	private int numCooksCache;
 	private int numMealsCache;
-	//private double mealQualityCache;
 	private String gradeCache = "";
 	
 	private int numMealsTodayCache;

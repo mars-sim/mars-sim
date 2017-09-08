@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarThermalPowerSource.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-09-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -25,7 +25,10 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double MAINTENANCE_FACTOR = 2.5D;
+	
 	private static double efficiency_solar_thermal = .70;
+	
 	public static double ARRAY_AREA = 100D;		// in square feet
 	
 	private Coordinates location ;
@@ -66,7 +69,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxPower() * 2D;
+	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
 
 	@Override

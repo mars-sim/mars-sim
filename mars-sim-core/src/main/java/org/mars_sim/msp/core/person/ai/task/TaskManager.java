@@ -49,23 +49,27 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-
 	// Data members
-	private String taskNameCache = "", taskDescriptionCache = "", taskPhaseCache = "";
-	private String oldJob = "";
+	private String taskNameCache = "", taskDescriptionCache = "", taskPhaseNameCache = "";
+	
+	//private String oldJob = "";
+
+	// Cache variables.
+	private static MarsClock marsClock;
+	
+	private transient MarsClock timeCache;
+	
+	private transient double totalProbCache;
+	
+	private transient Map<MetaTask, Double> taskProbCache;
+	
+	private transient List<MetaTask> mtListCache;
+	//private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
+
 	/** The current task the person/robot is doing. */
 	private Task currentTask, lastTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
-	private BotMind botMind;
-
-	// Cache variables.
-	private transient MarsClock timeCache;
-	private static MarsClock marsClock;
-	private transient double totalProbCache;
-	private transient Map<MetaTask, Double> taskProbCache;
-	private transient List<MetaTask> mtListCache;
-	private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
 
 	private Person person = null;
 	
@@ -74,6 +78,8 @@ implements Serializable {
 	private CircadianClock circadian;
 
 	private TaskSchedule ts;
+	
+	//private ShiftType stCache;
 
 	/**
 	 * Constructor.
@@ -229,37 +235,38 @@ implements Serializable {
 	}
 
 	/*
-	 * Prepares the task for recording in the task schedule
+	 * Filters tasks for recording in the task schedule
 	 */
 	// 2015-10-22 Added recordTask()
 	public void recordTask() {
 		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//getTaskClassName();//currentTask.getTaskName(); //
-		String taskPhase = null;
 
-		if (!taskName.toLowerCase().contains("walk")) {//.equals("WalkRoverInterior")
-				//&& !taskName.equals("WalkSettlementInterior")
-				//&& !taskName.equals("WalkSteps")) { // filter off Task phase "Walking" due to its excessive occurrences
-			if (!taskDescription.equals(taskDescriptionCache)
-					&& !taskDescription.toLowerCase().contains("walk") //.equals("Walking inside a settlement")
-					&& !taskDescription.equals("")) {
+		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior, WalkSteps
+		// Filters off descriptions such as "Walking inside a settlement"
+		if (!taskName.toLowerCase().contains("walk")
+			&& !taskDescription.equals(taskDescriptionCache)
+			&& !taskDescription.toLowerCase().contains("walk")
+			&& !taskDescription.equals("")) {
 
-				if (getPhase() != null) {
+			String taskPhaseName = null;
+			TaskPhase tp = getPhase();
+			
+			if (tp != null) {
 
-					taskPhase = getPhase().getName();
+				taskPhaseName = tp.getName();
 
-					if (!taskPhase.equals(taskPhaseCache)) {
-						taskPhaseCache = taskPhase;
-					}
+				if (!taskPhaseNameCache.equals(taskPhaseName))
+					taskPhaseNameCache = taskPhaseName;
 
-				}
-
-			    if (ts == null)
-			    	ts = person.getTaskSchedule();
-			    
-				ts.recordTask(taskName, taskDescription, taskPhase);
-				taskDescriptionCache = taskDescription;
 			}
+
+		    if (ts == null)
+		    	ts = person.getTaskSchedule();
+		    
+			ts.recordTask(taskName, taskDescription, taskPhaseName);
+			taskDescriptionCache = taskDescription;
+
 		}
 	}
 
@@ -284,11 +291,11 @@ implements Serializable {
 			TaskPhase tp = currentTask.getPhase();
 			if (tp != null)
 				if (tp.getName() != null)
-					taskPhaseCache = tp.getName();
+					taskPhaseNameCache = tp.getName();
 				else
-					taskPhaseCache = "";
+					taskPhaseNameCache = "";
 			else
-				taskPhaseCache = "";
+				taskPhaseNameCache = "";
 			// initialize lastTask at the start of sim
 			//if (lastTask == null)
 			//	lastTask = currentTask;
@@ -444,58 +451,50 @@ implements Serializable {
 	/**
 	 * Checks if any emergencies are happening in the person's local.
 	 * Adds an emergency task if necessary.
-	 * @throws Exception if error checking for emergency.
 	 */
 	private void checkForEmergency() {
 
-		//if (person != null) {
-			// Check for emergency malfunction.
-			if (!RepairEmergencyMalfunction.hasEmergencyMalfunction(person))
-				return;
+		// Check for emergency malfunction.
+		if (!RepairEmergencyMalfunction.hasEmergencyMalfunction(person))
+			return;
 
-			    // Check if person is already repairing an emergency.
-			    //boolean hasEmergencyRepair = 
-			    if (doingEmergencyRepair())
-			    	return;
+	    // Check if person is already repairing an emergency.
+	    if (doingEmergencyRepair())
+	    	return;
 
-				// Check if person is performing an airlock task.
-				//boolean hasAirlockTask = 
-				if(doingAirlockTask())
-					return;
+		// Check if person is performing an airlock task.
+		if(doingAirlockTask())
+			return;
 
-				// Cancel current task and start emergency repair task.
-				//if (!hasEmergencyRepair && !hasAirlockTask) {
+		if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
 
-					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
+            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
 
-			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
+				// Check if person is outside.
+				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
+				
+				int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
+				
+            	if (isOutside || numOutside == 0) {
+            		// if he is already outside or if no one is outside, he will take on this repair task
+	                clearTask();
+	                addTask(new RepairEmergencyMalfunctionEVA(person));
+            		LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+            				person + " cancelled the old task '" + currentTask +
+                            "' and rushed to the scene to participate in an EVA emergency repair task.", null);
 
-							// Check if person is outside.
-							boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
-							
-							int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
-							
-			            	if (isOutside || numOutside == 0) {
-			            		// if he is already outside or if no one is outside, he will take on this repair task
-			            		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-			            				person + " is cancelling the old task of '" + currentTask +
-				                        "' and rushing to a scene to perform an emergency EVA repair task.", null);
-				                clearTask();
-				                addTask(new RepairEmergencyMalfunctionEVA(person));
-			            	}
-			            }
-					}
-					
-					else {
-	            		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-	            				person + " is cancelling the old task of '" + currentTask +
-		                        "' and rushing to a scene to perform an emergency repair task.", null);
-		                clearTask();
-					    addTask(new RepairEmergencyMalfunction(person));
-					}
-				//}
-			//}
-		//}
+            	}
+            }
+		}
+		
+		else {
+            clearTask();
+		    addTask(new RepairEmergencyMalfunction(person));
+    		LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+    				person + " cancelled the old task '" + currentTask +
+                    "' and rushed to the scene to participate in an emergency repair task.", null);
+		}
+
 	}
 
 	/**
@@ -585,8 +584,10 @@ implements Serializable {
 		    if (ts == null)
 		    	ts = person.getTaskSchedule();
 		    
-		    boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
-		    boolean isOff = ts.getShiftType() == ShiftType.OFF;
+		    ShiftType st = ts.getShiftType();
+		    		    
+		    boolean isOnCall = (st == ShiftType.ON_CALL);
+		    boolean isOff = (st == ShiftType.OFF);
 		    boolean isShiftHour = true;
 
 /*
@@ -679,41 +680,22 @@ implements Serializable {
 			    }
 		    }
 
-		    //if (mtList == null)
-		    	//System.out.println("mtList is null");
-
 		    if (mtListCache != mtList && mtList != null) {
 		    	//System.out.println("mtListCache : " + mtListCache);
 		    	//System.out.println("mtList : " + mtList);
 		    	mtListCache = mtList;
 		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
 		    }
-/*
-			if (taskProbCache == null) {
-		    	System.out.println("mtListCache : " + mtListCache);
-		    	System.out.println("mtList : " + mtList);
-		    	taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
-			}
+		    
 
-
-			// Note: one cannot compare the difference between two lists with .equals()
-		    if (mtListCache == null || !mtListCache.equals(mtList)) {
-		    	System.out.println("mtListCache : " + mtListCache);
-		    	System.out.println("mtList : " + mtList);
-		    	taskProbCache = null;
-		    	mtListCache = mtList;
-		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-		    }
-
-		    //System.out.println("mtListCache is "+ mtListCache);
-*/
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
 			for (MetaTask mt : mtListCache) {
 				double probability = mt.getProbability(person);
 
-				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+				if ((probability >= 0D) && (!Double.isNaN(probability)) 
+						&& (!Double.isInfinite(probability))) {
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
 				}
@@ -751,7 +733,6 @@ implements Serializable {
 			currentTask.destroy();
 		}
 		mind = null;
-		botMind = null;
 		person = null;
 		timeCache = null;
 		marsClock = null;

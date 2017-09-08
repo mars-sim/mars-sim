@@ -18,19 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.meta.AreologyStudyFieldMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.BiologyStudyFieldMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.BuildingSalvageMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.EmergencySupplyMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.ExplorationMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
-import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
-import org.mars_sim.msp.core.person.ai.mission.meta.MiningMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.RescueSalvageVehicleMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.TradeMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.TravelToSettlementMeta;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
@@ -70,7 +57,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.RespondToStudyInvitationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ReviewJobReassignmentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SalvageBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SalvageGoodMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.StudyFieldSamplesMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TeachMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TendGreenhouseMeta;
@@ -79,7 +65,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
-//import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -97,43 +82,43 @@ public class Preference implements Serializable {
 	private int solCache = 0;
 
 	private NaturalAttributeManager naturalAttributeManager;
+	
 	private Person person;
-	private MarsClock clock;
+	
+	private static MarsClock marsClock;
 
 	private List<MetaTask> metaTaskList;
-	private List<String> metaTaskStringList;
+	private List<String> scoreList;
 	//private List<MetaMission> metaMissionList;
 
 	private Map<MetaTask, Integer> scoreMap; // store preference scores
 	private Map<MetaTask, Integer> priorityMap; // store priority scores for scheduled tasks
-	private Map<MetaTask, Boolean> frequencyMap; // true if the activity can only be done once a day
-	private Map<MetaTask, Boolean> taskDueMap; // true if the activity has been accomplished
+	private Map<MetaTask, Boolean> oneADayMap; // true if the activity can only be done once a day
+	private Map<MetaTask, Boolean> taskAccomplishedMap; // true if the activity has been accomplished
 
-	private Map<String, Integer> stringNameMap;
+	private Map<String, Integer> scoreStringMap;
 
 	private Map<MarsClock, MetaTask> futureTaskMap;
 
 	public Preference(Person person) {
-		//System.out.println("starting Preference's constructor");
-
+		
 		this.person = person;
 
 		metaTaskList = MetaTaskUtil.getAllMetaTasks();
-		metaTaskStringList = new ArrayList<>();
+		scoreList = new ArrayList<>();
 		//metaMissionList = MetaMissionUtil.getMetaMissions();
 
 		scoreMap = new ConcurrentHashMap<>();
-		stringNameMap = new ConcurrentHashMap<>();
+		scoreStringMap = new ConcurrentHashMap<>();
 
 		futureTaskMap = new ConcurrentHashMap<>();
-		taskDueMap = new ConcurrentHashMap<>();
+		taskAccomplishedMap = new ConcurrentHashMap<>();
 		priorityMap = new ConcurrentHashMap<>();
-		frequencyMap = new ConcurrentHashMap<>();
+		oneADayMap = new ConcurrentHashMap<>();
 
 		//scheduleTask("WriteReportMeta", 600, 900);
 		//scheduleTask("ConnectWithEarthMeta", 700, 950);
 
-		//System.out.println("done with Preference's constructor");
 	}
 
 	/*
@@ -244,7 +229,7 @@ public class Preference implements Serializable {
 				|| metaTask instanceof WorkoutMeta
 				|| metaTask instanceof YogaMeta
 				|| metaTask instanceof HaveConversationMeta)
-				// if a person has high spirituality score and thus have ways to deal with stress
+				// if a person has high spirituality score and has alternative ways to deal with stress,
 				// he will less likely require extra time to relax/sleep/workout/do yoga.
 				result -= (int)ss;
 
@@ -275,8 +260,8 @@ public class Preference implements Serializable {
 				result = -7;
 
 			String s = getStringName(metaTask);
-			if (!stringNameMap.containsKey(s)) {
-				stringNameMap.put(s, result);
+			if (!scoreStringMap.containsKey(s)) {
+				scoreStringMap.put(s, result);
 			}
 
 			if (!scoreMap.containsKey(metaTask)) {
@@ -286,10 +271,10 @@ public class Preference implements Serializable {
 		}
 
         for (MetaTask key : scoreMap.keySet()) {
-        	metaTaskStringList.add(getStringName(key));
+        	scoreList.add(getStringName(key));
         }
 
-        Collections.sort(metaTaskStringList);
+        Collections.sort(scoreList);
 
 /*
         // 2015-10-14 Added metaMissionList (NOT READY to publish metaMissionList as preferences)
@@ -325,9 +310,38 @@ public class Preference implements Serializable {
 */ 
 	}
 
+	/**
+	 * Obtains the preference score modified by its priority for a meta task
+	 * @param metaTask
+	 * @return the score
+	 */
 	public int getPreferenceScore(MetaTask metaTask) {
 		int result = 0;
-		//String s = getStringName(metaTask);
+		if (scoreMap.containsKey(metaTask))
+			result = scoreMap.get(metaTask);
+		else {
+			scoreMap.put(metaTask, 0);
+			result = 0;
+		}
+		
+		if (futureTaskMap.containsValue(metaTask)
+				&& (taskAccomplishedMap.get(metaTask) != null)
+				&& !taskAccomplishedMap.get(metaTask)
+				&& oneADayMap.get(metaTask)) {
+			// preference scores are not static. They are influenced by priority scores
+			result += obtainPrioritizedScore(metaTask);
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Obtains the preference score for a meta task
+	 * @param metaTask
+	 * @return the preference score
+	 
+	public int getPreferenceScore(MetaTask metaTask) {
+		int result = 0;
 		if (scoreMap.containsKey(metaTask))
 			result = scoreMap.get(metaTask);
 		else {
@@ -335,32 +349,26 @@ public class Preference implements Serializable {
 			result = 0;
 		}
 
-		if (futureTaskMap.containsValue(metaTask)
-				&& (taskDueMap.get(metaTask) != null)
-				&& !taskDueMap.get(metaTask)
-				&& frequencyMap.get(metaTask)) {
-			// preference scores are not static. They are influenced by priority scores
-			result += checkScheduledTask(metaTask);
-		}
-
 		return result;
 	}
-
-	public int checkScheduledTask(MetaTask metaTask) {
+	*/
+	
+	/***
+	 * Obtains the prioritized score of a meta task from its priority map
+	 * @param metaTask
+	 * @return the prioritized score
+	 */
+	public int obtainPrioritizedScore(MetaTask metaTask) {
 		int result = 0;
-
 		// iterate over
 		Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
 		while (i.hasNext()) {
 			Entry<MarsClock, MetaTask> entry = i.next();
-			MarsClock clock = entry.getKey();
+			MarsClock sch_clock = entry.getKey();
 			MetaTask task = entry.getValue();
 			if (metaTask.equals(task)) {
-				//System.out.println("task matched!");
-				//if (MarsClock.getTotalSol(clock) == MarsClock.getTotalSol(currentTime)){
-				MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-				int now = (int) MarsClock.getTotalMillisols(currentTime);
-				int sch = (int) MarsClock.getTotalMillisols(clock);
+				int now = (int) MarsClock.getTotalMillisols(marsClock);
+				int sch = (int) MarsClock.getTotalMillisols(sch_clock);
 				if (now - sch > 0 && now - sch <= 5) {
 					// examine its timestamp down to within 5 millisols
 					//System.out.println("now - sch = " + (now-sch));
@@ -373,22 +381,14 @@ public class Preference implements Serializable {
 		return result;
 	}
 
-	public Map<MetaTask, Integer> getMetaTaskMap(){
-		return scoreMap;
-	}
 
-	public Map<String, Integer> getMetaTaskStringMap(){
-		return stringNameMap;
-	}
-
-
-	public List<String> getMetaTaskStringList() {
-		return metaTaskStringList;
-	}
-
+	/***
+	 * Obtains the proper string name of a meta task
+	 * @param metaTask {@link MetaTask} 
+	 * @return string name of a meta task
+	 */
 	public static String getStringName(MetaTask metaTask) {
 		String s = metaTask.getClass().getSimpleName();
-
 /*
 		StringBuilder ss = new StringBuilder(s);
 		  for (int i = 1; i < s.length(); ++i) {
@@ -397,29 +397,29 @@ public class Preference implements Serializable {
 		     }
 		  }
 */
-
 		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("Meta", "").replace("E V A ", "EVA ").replace("To ", "to ");
-		//System.out.println(ss + " <-- " + s);
 		return ss;
 	}
 
+	/***
+	 * Obtains the proper string name of a task
+	 * @param task {@link Task} 
+	 * @return string name of a task
+	 */
 	public static String getStringName(Task task) {
 		String s = task.getClass().getSimpleName();
-
 		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA ").replace("To ", "to ");
-		//System.out.println(ss + " <-- " + s);
 		return ss;
 	}
 
-
+/*
 	public void scheduleTask(String s, int t1, int t2, boolean onceOnly, int priority) {
-
 		// set the time between 700 and 950 msols on the next day
-		MarsClock randomTimetomorrow = clock.getMarsClockNextSol(clock, t1, t2);
+		MarsClock randomTimetomorrow = marsClock.getMarsClockNextSol(marsClock, t1, t2);
 		//System.out.println("randomTimetomorrow : " + randomTimetomorrow.getDateTimeStamp());
 		MetaTask mt = MetaTaskUtil.getMetaTask(s);
 		setPlanner(mt, randomTimetomorrow);
-		frequencyMap.put(mt, onceOnly);
+		oneADayMap.put(mt, onceOnly);
 		priorityMap.put(mt, priority);
 	}
 
@@ -427,24 +427,27 @@ public class Preference implements Serializable {
 		if (!futureTaskMap.containsKey(marsClock)) {
 			// TODO: need to compare the clock better
 			futureTaskMap.put(marsClock, metaTask);
-			taskDueMap.put(metaTask, false);
+			taskAccomplishedMap.put(metaTask, false);
 			return true;
 		}
 		return false;
 	}
-
+*/
+	
     /**
      * Performs the action per frame
      * @param time amount of time passing (in millisols).
      */
 	// 2015-06-29 Added timePassing()
     public void timePassing(double time) {
-	    //if (clock == null)
-	    //	clock = Simulation.instance().getMasterClock().getMarsClock();
+	    if (marsClock == null)
+	    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		//int solElapsed = MarsClock.getSolOfYear();//clock);
-		//if (solElapsed != solCache) {
-			//TODO change of preference occus when ....
+		int solElapsed = marsClock.getSolElapsedFromStart();
+		if (solElapsed != solCache) {
+
+			
+			
 /*
 			Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
 			while (i.hasNext()) {
@@ -461,8 +464,8 @@ public class Preference implements Serializable {
 			//scheduleTask("WriteReportMeta", 500, 800, true, 750);
 			//scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
 
-			//solCache = solElapsed;
-		//}
+			solCache = solElapsed;
+		}
 
     }
 
@@ -473,14 +476,15 @@ public class Preference implements Serializable {
      */
     public boolean isTaskDue(MetaTask mt) { //Task task) {
     	//MetaTask mt = convertTask2MetaTask(task);
-    	if (taskDueMap.isEmpty()) {
-    		// if it does not exist (either it is not scheduled or it have been accomplished), the status is true
+    	if (taskAccomplishedMap.isEmpty()) {
+    		// if it does not exist (either it is not scheduled or it have been accomplished), 
+    		// the status is true
     		return true;
     	}
-    	else if (taskDueMap.get(mt) == null)
+    	else if (taskAccomplishedMap.get(mt) == null)
     		return true;
     	else
-    		return taskDueMap.get(mt);
+    		return taskAccomplishedMap.get(mt);
     }
 
     /**
@@ -492,15 +496,15 @@ public class Preference implements Serializable {
       	MetaTask mt = convertTask2MetaTask(task);
 
 		// if this accomplished meta task is onceOnly task, remove it.
-		if (value && frequencyMap.get(mt) != null && !frequencyMap.isEmpty())
-			if (frequencyMap.get(mt) != null && frequencyMap.get(mt)) {
+		if (value && oneADayMap.get(mt) != null && !oneADayMap.isEmpty())
+			if (oneADayMap.get(mt) != null && oneADayMap.get(mt)) {
 				futureTaskMap.remove(mt);
-				frequencyMap.remove(mt);
-				taskDueMap.remove(mt);
+				oneADayMap.remove(mt);
+				taskAccomplishedMap.remove(mt);
 				priorityMap.remove(mt);
 			}
 		else
-			taskDueMap.put(mt, value);
+			taskAccomplishedMap.put(mt, value);
 
     }
 
@@ -515,4 +519,35 @@ public class Preference implements Serializable {
     	result = MetaTaskUtil.getMetaTask(name + META);
     	return result;
     }
+    
+
+	public Map<MetaTask, Integer> getScoreMap(){
+		return scoreMap;
+	}
+
+	public Map<String, Integer> getScoreStringMap(){
+		return scoreStringMap;
+	}
+
+	public List<String> getScoreStringList() {
+		return scoreList;
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		naturalAttributeManager = null;
+		person = null;
+		marsClock = null;
+		metaTaskList = null;
+		scoreList = null;
+		//metaMissionList = null;
+		scoreMap = null;
+		priorityMap = null;
+		oneADayMap = null;
+		taskAccomplishedMap = null;
+		scoreStringMap = null;
+		futureTaskMap = null;
+	}
 }

@@ -915,16 +915,17 @@ public class MasterClock implements Serializable { // Runnable,
 
 
     /**
-     * the following is a utility. It may be slow. It returns a string in YY:DDD:HH:MM:SS.SSS format
-     * note: it is set up currently to only return hh:mm:ss.s
+     * Returns a date time string in HHh MMm SS.SSs format
+     * @param ratio
+     * @return a date time string
      */
-    public String getTimeString(double seconds) {
+    public String getTimeString(double ratio) {
 
         //long years = (int) Math.floor(seconds / secsperyear);
         //long days = (int) ((seconds % secsperyear) / secspday);
-        int hours = (int) ((seconds % secspday) / secsphour);
-        int minutes = (int) ((seconds % secsphour) / secspmin);
-        double secs = (seconds % secspmin);
+        int hours = (int) ((ratio % secspday) / secsphour);
+        int minutes = (int) ((ratio % secsphour) / secspmin);
+        double secs = (ratio % secspmin);
 
         StringBuilder b = new StringBuilder();
 /*
@@ -959,16 +960,17 @@ public class MasterClock implements Serializable { // Runnable,
     }
 
     /**
-     * the following is a utility. It may be slow. It returns a string in YY:DDD:HH:MM:SS.SSS format
-     * note: it is set up currently to only return hh:mm:ss.s
+     * Returns a truncated string in HHh MMm SSs format
+     * @param ratio
+     * @return a date time string
      */
-    public String getTimeTruncated(double seconds) {
+    public String getTimeTruncated(double ratio) {
 
         //long years = (int) Math.floor(seconds / secsperyear);
         //long days = (int) ((seconds % secsperyear) / secspday);
-        int hours = (int) ((seconds % secspday) / secsphour);
-        int minutes = (int) ((seconds % secsphour) / secspmin);
-        double secs = (seconds % secspmin);
+        int hours = (int) ((ratio % secspday) / secsphour);
+        int minutes = (int) ((ratio % secsphour) / secspmin);
+        double secs = (ratio % secspmin);
 
         StringBuilder b = new StringBuilder();
 /*

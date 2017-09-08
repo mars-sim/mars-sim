@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @version 3.08 2015-06-07
+ * @version 3.1.0 2017-09-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -11,10 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GridLayout;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +21,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
-import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
@@ -36,13 +30,11 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -173,9 +165,10 @@ extends TabPanel {
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		centerContentPanel.add(labelPanel, BorderLayout.NORTH);
 
-		// Create preference label
-		JLabel label = new JLabel("Preferences");
-		labelPanel.add(label);
+		// Create preference title label
+		JLabel preferenceLabel = new JLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), JLabel.RIGHT); //$NON-NLS-1$
+		preferenceLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		labelPanel.add(preferenceLabel);
 
 		// Create scroll panel
 		JScrollPane scrollPane = new JScrollPane();
@@ -281,17 +274,17 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		private Preference manager;
-		private List<String> metaTaskStringList;
-		private Map<String, Integer> metaTaskStringMap;
+		private List<String> scoreStringList;
+		private Map<String, Integer> scoreStringMap;
 
 		//ImageIcon icon = new ImageIcon("image.gif");
-
 
 		//String blush = ":blush:";
 		//String frown = ":frowning:";
 		//String ok = ":neutral_face:";//":expressionless";
 		//String smiley = "\uf118";
 		//String frowno = "\uf119";
+		
         byte[] smileyBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x84};
         byte[] neutralBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x90};
         byte[] cryBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0xA2};
@@ -313,13 +306,13 @@ extends TabPanel {
 
 	        }
 
-	        metaTaskStringList = manager.getMetaTaskStringList();
-	        metaTaskStringMap = manager.getMetaTaskStringMap();
+	        scoreStringList = manager.getScoreStringList();
+	        scoreStringMap = manager.getScoreStringMap();
 
 		}
 
 		public int getRowCount() {
-			return metaTaskStringMap.size();
+			return scoreStringMap.size();
 		}
 
 		public int getColumnCount() {
@@ -329,7 +322,7 @@ extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = Double.class;//Integer.class;
+			if (columnIndex == 1) dataType = Double.class; //String.class, Integer.class;
 			return dataType;
 		}
 
@@ -340,11 +333,19 @@ extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
-			Object name = metaTaskStringList.get(row);
+			Object name = scoreStringList.get(row);
 			if (column == 0)
 				return name;
-			else if (column == 1)
-				return metaTaskStringMap.get(name);
+			else if (column == 1) {
+				return scoreStringMap.get(name);
+				/*
+				int score = scoreStringMap.get(name);
+				if (score > 0)
+					return "+" + score;
+				else
+					return score;
+				*/
+			}
 			else
 				return null;
 		}

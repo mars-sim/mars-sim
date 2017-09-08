@@ -40,7 +40,7 @@ extends BuildingFunctionPanel {
 	private int servingsDessertCache;
 	private int servingsDessertTodayCache;
 	//private double dessertQualityCache;
-	private String dessertGradeCache;
+	private String dessertGradeCache = "";
 	
 	/**
 	 * Constructor.
