@@ -104,7 +104,7 @@ implements Serializable {
         kitchenBuilding = getAvailableKitchen(person);
 
 	    if (kitchenBuilding != null) {
-	    	kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
+	    	kitchen = kitchenBuilding.getCooking();
 
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);
@@ -142,11 +142,8 @@ implements Serializable {
 	            		+ person.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 
-				//if (!logCache[2].equals(newLog)) {
-				//	logCache[2] = newLog;
-					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, newLog, null);
-				//}
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, newLog, null);
+
 /*
 	            // 2015-01-15 Added solElapsed
 	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -167,17 +164,12 @@ implements Serializable {
 			    addPhase(COOKING);
 				setPhase(COOKING);
 
-				String jobName = person.getMind().getJob().getName(person.getGender());
+				//String jobName = person.getMind().getJob().getName(person.getGender());
 
-				String newLog = jobName + " " + person.getName() + " made meal at " + kitchen.getBuilding().getNickName() +
-				    	                " in " + person.getSettlement();
+				//String newLog = jobName + " " + person.getName() + " made some meals at " + kitchen.getBuilding().getNickName() +
+				//    	                " in " + person.getSettlement();
 
-
-		    	//if (!logCache[0].equals(newLog)) {
-			    //	logCache[0] = newLog;
-					//logger.info(newLog);
-				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
-		    	//}
+				//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
 
 		    }
 	    }
@@ -200,7 +192,7 @@ implements Serializable {
         kitchenBuilding = getAvailableKitchen(robot);
 
 	    if (kitchenBuilding != null) {
-	    	kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
+	    	kitchen = kitchenBuilding.getCooking();
 
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);

@@ -47,9 +47,10 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.IN_SETTLEMENT
+            	|| ls == LocationSituation.IN_VEHICLE) {
 
 	        // Get all studies in the peer review phase.
 	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
@@ -91,7 +92,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 
 	        // 2015-06-07 Added Preference modifier
             if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+            	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
 
 	        if (result < 0) result = 0;
         }

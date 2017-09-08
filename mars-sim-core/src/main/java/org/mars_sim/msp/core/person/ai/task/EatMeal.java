@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -123,10 +122,10 @@ public class EatMeal extends Task implements Serializable {
         condition = person.getPhysicalCondition();
         
         // Check if person is not in a settlement or vehicle.
-        LocationSituation location = person.getLocationSituation();
-        if ((location != LocationSituation.IN_SETTLEMENT) && (location != LocationSituation.IN_VEHICLE)) {
+        LocationSituation ls = person.getLocationSituation();
+        if ((ls != LocationSituation.IN_SETTLEMENT) && (ls != LocationSituation.IN_VEHICLE)) {
 			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
-            		person + " was trying to eat a meal, but now is no longer inside a settlement or vehicle.", null);
+            		person + " was trying to eat a meal, but is not inside a settlement or vehicle.", null);
             endTask();
         }
 

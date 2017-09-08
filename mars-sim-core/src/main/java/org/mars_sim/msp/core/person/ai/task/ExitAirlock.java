@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.1.0 2018-08-15
+ * @version 3.1.0 2017-09-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -821,8 +821,8 @@ implements Serializable {
             EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
             if (suit != null) {
                 result = true;
-        		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName,
-        		person.getName() + " already has an EVA suit in inventory!", null);
+        		//LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+        		//person.getName() + " already possesses an EVA suit.", null);
             }
         }
         else if (robot != null) {

@@ -133,7 +133,7 @@ public class Sleep extends Task implements Serializable {
                    	Building q1 = getBestAvailableQuarters(person, true);
                 	if (q1 != null) {
                 		// Case 1 : (the BEST case for a guest) the settlement does have one or more empty, unmarked (EU) bed(s)
-		            	accommodations = (LivingAccommodations) q1.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+		            	accommodations = q1.getLivingAccommodations();
 		        		walkToActivitySpotInBuilding(q1, FunctionType.LIVING_ACCOMODATIONS, false);
 		                Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 1: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q1);
@@ -143,7 +143,7 @@ public class Sleep extends Task implements Serializable {
                 		// Case 2 : the settlement has only empty, designated (ED) bed(s) available
 		            	// Question : will the owner of this bed be coming back soon from duty ?
                 		// TODO : will split into Case 2a and Case 2b.
-                		accommodations = (LivingAccommodations) q2.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+                		accommodations = q2.getLivingAccommodations();
 		        		walkToActivitySpotInBuilding(q2, FunctionType.LIVING_ACCOMODATIONS, false);
 		                Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 2: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q2);
@@ -174,7 +174,7 @@ public class Sleep extends Task implements Serializable {
 
 		            // check if this bed is currently empty or occupied (either ED or OD)
 	                Point2D bed = person.getBed();
-	            	accommodations = (LivingAccommodations) pq.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+	            	accommodations = pq.getLivingAccommodations();
 	                boolean empty = accommodations.isActivitySpotEmpty(bed);
 
 	            	if (empty) {
@@ -215,7 +215,7 @@ public class Sleep extends Task implements Serializable {
   			            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
 			            	//person.setQuarters(q6);
 			                //Point2D bed = person.getBed();
-			            	accommodations = (LivingAccommodations) q6.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+			            	accommodations = q6.getLivingAccommodations();
 			            	accommodations.addSleeper(person, false);
 			            	walkToBed(accommodations, person, true);
 			        		//walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);

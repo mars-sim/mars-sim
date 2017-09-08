@@ -67,8 +67,9 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.IN_SETTLEMENT
+        		|| ls == LocationSituation.IN_VEHICLE) {
 
 
             // Stress modifier
@@ -101,22 +102,23 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
                 logger.log(Level.SEVERE, e.getMessage());
             }
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (ls == LocationSituation.IN_VEHICLE) {
         	result *= RandomUtil.getRandomDouble(1.5);
         }
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0)
-        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-        if (result < 0) result = 0;
-
+        
         // Modify probability if during person's work shift.
         int millisols = (int) marsClock.getMillisol();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
         if (isShiftHour) {
             result*= WORK_SHIFT_MODIFIER;
         }
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
+
+        if (result < 0) result = 0;
+
 
         return result;
     }

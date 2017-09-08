@@ -576,14 +576,14 @@ implements Serializable, Comparable<Task> {
 	        if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
 	            // Increase probability if current building is overcrowded.
-	            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(FunctionType.LIFE_SUPPORT);
+	            LifeSupport currentLS = currentBuilding.getLifeSupport();
 	            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
 	            if (currentOverCrowding > 0) {
 	                modifier *= ((double) currentOverCrowding + 2);
 	            }
 
 	            // Decrease probability if new building is overcrowded.
-	            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(FunctionType.LIFE_SUPPORT);
+	            LifeSupport newLS = newBuilding.getLifeSupport();
 	            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
 	            if (newOverCrowding > 0) {
 	                modifier /= ((double) newOverCrowding + 2);
@@ -676,7 +676,7 @@ implements Serializable, Comparable<Task> {
         }
         else {
             if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+                LifeSupport lifeSupport = building.getLifeSupport();
                 double totalOpinion = 0D;
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
@@ -780,14 +780,10 @@ implements Serializable, Comparable<Task> {
                 bed.getX(), bed.getY(), building);
     	
         if (bed != null) {
-        	//System.out.println("Task : " + 
-        	//logger.info(person + "'s bed is at (" + bed.getX() + ", " + bed.getY() + ") in " + building.getNickName());
             // Create subtask for walking to destination.
             createWalkingSubtask(building, spot, allowFail);
         }
         else {
-        	//System.out.println("Task : walkToBed() : " + 
-        	//logger.info(person + " has no designated bed in " + building.getNickName());
         	// If no available activity spot, go to random location in building.
             walkToRandomLocInBuilding(building, allowFail);
         }

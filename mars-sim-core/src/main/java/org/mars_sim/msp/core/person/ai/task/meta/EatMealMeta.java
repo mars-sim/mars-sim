@@ -45,7 +45,8 @@ public class EatMealMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
         
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.OUTSIDE)
         	return 0;
 
         double hunger = person.getPhysicalCondition().getHunger();
@@ -57,8 +58,8 @@ public class EatMealMeta implements MetaTask, Serializable {
         
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
         if (hunger > 250D || energy < 2525D || ghrelin-leptin > 300) {
-            hunger = hunger / 250D;
-            energy = (2525D - energy) / 250D;
+            hunger = hunger / 200D;
+            energy = (2525D - energy) / 50D;
             result = hunger + energy +  (ghrelin-leptin - 300);
             if (result <= 0D)
             	return 0;
@@ -67,7 +68,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         else
         	return 0;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (ls == LocationSituation.IN_SETTLEMENT) {
 
             // Check if a cooked meal is available in a kitchen building at the settlement.
             Cooking kitchen = EatMeal.getKitchenWithMeal(person);
@@ -93,11 +94,11 @@ public class EatMealMeta implements MetaTask, Serializable {
 	
         }
         
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (ls == LocationSituation.IN_VEHICLE) {
         	result *= .8; // ration food a little bit just in case of running out of it
         }
         
-        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+        else if (ls == LocationSituation.OUTSIDE) {
         	return 0;
         }
         

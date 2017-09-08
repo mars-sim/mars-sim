@@ -145,7 +145,7 @@ implements Serializable {
 
     			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 		
             			person.getName() + " has invalid walk start location. (" +
-                        person.getXLocation() + ", " + person.getYLocation() + ") is not within building " 
+                        person.getXLocation() + ", " + person.getYLocation() + ") is not within " 
             					+ building, null);
                 //throw new IllegalStateException(person.getName() + " has invalid walk start location. (" +
                 //    person.getXLocation() + ", " + person.getYLocation() + ") is not within building " + building);

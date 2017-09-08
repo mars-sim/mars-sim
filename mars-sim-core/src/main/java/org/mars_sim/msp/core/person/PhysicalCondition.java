@@ -25,7 +25,9 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.medical.Complaint;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
@@ -568,17 +570,31 @@ implements Serializable {
             if (hunger > personStarvationTime && (kJoules <= 100D)) {
                 if (!problems.containsKey(starvation)) {
                     addMedicalComplaint(starvation);
-                    //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
+                    //LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+                    //		person + " is starving. Hunger level : " 
+                    //				+ Math.round(hunger*10.0)/10.0 + ".", null);
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                 }
                 
                 
+                LocationSituation ls = person.getLocationSituation();
                 TaskManager mgr = person.getMind().getTaskManager();
-                // TODO : should check if a person is on a critical mission, 
+                //Stop any on-going tasks
                 mgr.clearTask();
-                // Stop any on-going tasks and go eat
-                mgr.addTask(new EatMeal(person));
+                // TODO : how to tell a person to walk back to the settlement ?
+                if (ls == LocationSituation.OUTSIDE) {
+        	        //if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+        	        //    Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
+        	        //    mgr.addSubTask(walkingTask);
+        	        //}
+                }
+                else { // in a settlement or on a vehicle
+	                // go eat a meal
+	                mgr.addTask(new EatMeal(person));
+                }
                 
+                // TODO : should check if a person is on a critical mission, 
+
             }
 
             else if (hunger < 500D && kJoules > 800D) {
@@ -815,6 +831,29 @@ implements Serializable {
         if ((complaint != null) && !problems.containsKey(complaint)) {
             HealthProblem problem = new HealthProblem(complaint, person);
             problems.put(complaint, problem);
+            String n = complaint.getType().getName();
+            if (n.equalsIgnoreCase("starvation"))
+                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
+                		person + " is starving.", null);            	
+            else if (n.equalsIgnoreCase("decompression"))
+                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
+                		person + " is suffering from decompression.", null);   
+            else if (n.equalsIgnoreCase("dehydration"))
+                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
+                		person + " is suffering from dehydration.", null); 
+            else if (n.equalsIgnoreCase("freezing"))
+                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
+                		person + " is freezing.", null); 
+            else if (n.equalsIgnoreCase("Heat Stroke"))
+                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
+                		person + " is suffering from a heat stroke.", null);     
+            else if (n.equalsIgnoreCase("suffocation"))
+                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
+                		person + " is suffocating.", null); 
+            else
+            	LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
+            		person + " is complaining about " + n + ".", null);
+
             recalculate();
         }
     }

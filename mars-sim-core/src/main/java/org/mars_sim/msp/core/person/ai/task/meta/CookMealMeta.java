@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -56,13 +57,17 @@ public class CookMealMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (CookMeal.isMealTime(person.getCoordinates())) {
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.OUTSIDE || ls == LocationSituation.IN_VEHICLE)
+        	return 0;
+        
+        if (ls == LocationSituation.IN_SETTLEMENT && CookMeal.isMealTime(person.getCoordinates())) {
 
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
 
             if (kitchenBuilding != null) {
-                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
+                Cooking kitchen = kitchenBuilding.getCooking();
 
                 // Check if enough meals have been cooked at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getCookNoMore();
@@ -89,7 +94,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
                 else {
 
-                    result = 300D;
+                    result = 50D;
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
@@ -141,7 +146,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
                 if (kitchenBuilding != null) {
 
-                    Cooking kitchen = (Cooking) kitchenBuilding.getFunction(FunctionType.COOKING);
+                    Cooking kitchen = kitchenBuilding.getCooking();
 
                     // Check if enough meals have been cooked at kitchen for this meal time.
                     boolean enoughMeals = kitchen.getCookNoMore();

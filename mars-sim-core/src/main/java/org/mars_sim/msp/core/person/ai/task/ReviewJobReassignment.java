@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReviewJobReassignment.java
- * @version 3.08 2015-06-15
+  * @version 3.1.0 2017-09-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,11 +15,9 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -58,7 +56,7 @@ implements Serializable {
     /** The administration building the person is using. */
     private Administration office;
 
-    private MarsClock clock;
+    //private MarsClock clock;
 
     public RoleType roleType;
 

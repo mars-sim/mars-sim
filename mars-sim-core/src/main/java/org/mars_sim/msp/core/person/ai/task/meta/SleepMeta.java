@@ -7,10 +7,8 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 
@@ -88,10 +86,8 @@ public class SleepMeta implements MetaTask, Serializable {
 
         double result = 0;
 
-        //String str = null;
-        
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE
-            || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.IN_SETTLEMENT || ls == LocationSituation.IN_VEHICLE) {
 
            	boolean proceed = false;
 

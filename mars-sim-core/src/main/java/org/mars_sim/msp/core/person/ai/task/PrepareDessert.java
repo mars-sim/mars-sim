@@ -1,10 +1,8 @@
 /**
  * Mars Simulation Project
  * PrepareDessert.java
- * @version 3.08 2015-04-28
+ * @version 3.1.0 2017-09-07
  * @author Manny Kung
- *
- *
  */
 package org.mars_sim.msp.core.person.ai.task;
 
@@ -26,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -86,7 +83,7 @@ implements Serializable {
 
         if (kitchenBuilding != null) {
 
-            kitchen = (PreparingDessert) kitchenBuilding.getFunction(FunctionType.PREPARING_DESSERT);
+            kitchen = kitchenBuilding.getPreparingDessert();
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding, false);
 
@@ -102,15 +99,12 @@ implements Serializable {
 		        addPhase(PREPARING_DESSERT);
 		        setPhase(PREPARING_DESSERT);
 
-		        String jobName = person.getMind().getJob().getName(person.getGender());
+		        //String jobName = person.getMind().getJob().getName(person.getGender());
 
-		    	String newLog = jobName + " " + person.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
-		                " at " + person.getSettlement();
+		    	//String newLog = jobName + " " + person.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
+		        //       " at " + person.getSettlement();
 
-		    	//if (!logCache[0].equals(newLog)) {
-			    //	logCache[0] = newLog;
-				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
-		    	//}
+				//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
 
 	        }
 	        else {
@@ -132,7 +126,7 @@ implements Serializable {
         Building kitchenBuilding = getAvailableKitchen(robot);
 
         if (kitchenBuilding != null) {
-            kitchen = (PreparingDessert) kitchenBuilding.getFunction(FunctionType.PREPARING_DESSERT);
+            kitchen = kitchenBuilding.getPreparingDessert();
 
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding, false);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrepareDessertMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-09-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -61,14 +62,19 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Desserts should be prepared during meal times.
-        if (CookMeal.isMealTime(person.getCoordinates())) {
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.OUTSIDE || ls == LocationSituation.IN_VEHICLE)
+        	return 0;
+        
+        if (ls == LocationSituation.IN_SETTLEMENT && CookMeal.isMealTime(person.getCoordinates())) {
+            // Desserts should be prepared during meal times.
+        	
             // See if there is an available kitchen.
             Building kitchenBuilding = PrepareDessert.getAvailableKitchen(person);
 
             if (kitchenBuilding != null) {
 
-                PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(FunctionType.PREPARING_DESSERT);
+                PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
 
                 // Check if there are enough ingredients to prepare a dessert.
                 int numGoodRecipes = kitchen.getAListOfDesserts().size();
@@ -78,7 +84,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
                 if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                    result = 50D;
+                    result = 20D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
@@ -125,7 +131,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
                if (kitchenBuilding != null) {
 
-                   PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(FunctionType.PREPARING_DESSERT);
+                   PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
 
                    // Check if there are enough ingredients to prepare a dessert.
                    int numGoodRecipes = kitchen.getAListOfDesserts().size();

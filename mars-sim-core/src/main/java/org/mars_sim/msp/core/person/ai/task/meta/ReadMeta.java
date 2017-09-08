@@ -46,12 +46,13 @@ public class ReadMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.IN_SETTLEMENT
+        	|| ls == LocationSituation.IN_VEHICLE) {
 
-        	result += 5D;
+        	result += 3D;
 
-        	if (person.getLocationSituation() == LocationSituation.IN_VEHICLE)
+        	if (ls == LocationSituation.IN_VEHICLE)
         		result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
 
 
@@ -61,36 +62,36 @@ public class ReadMeta implements MetaTask, Serializable {
             String fav = person.getFavorite().getFavoriteActivity();
             // The 3 favorite activities drive the person to want to read
             if (fav.equalsIgnoreCase("Research")) {
-                result *= 2D;
+                result *= 1.5D;
             }
             else if (fav.equalsIgnoreCase("Tinkering")) {
-                result *= 1.5D;
+                result *= 1.2D;
             }
             else if (fav.equalsIgnoreCase("Lab Experimentation")) {
-                result *= 1.5D;
+                result *= 1.2D;
             }
 
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
 
-         	if (condition.getFatigue() > 1200D)
+         	if (condition.getFatigue() > 750D)
          		result/=1.5;
-         	else if (condition.getFatigue() > 2000D)
+         	else if (condition.getFatigue() > 1500D)
          		result/=2D;
-         	else if (condition.getFatigue() > 3000D)
+         	else if (condition.getFatigue() > 2000D)
          		result/=3D;
 
-         	if (condition.getStress() > 55D)
+         	if (condition.getStress() > 45D)
          		result/=1.5;
-         	else if (condition.getStress() > 75D)
+         	else if (condition.getStress() > 65D)
          		result/=2D;
-         	else if (condition.getStress() > 90D)
+         	else if (condition.getStress() > 85D)
          		result/=3D;
 
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
             }
             
             

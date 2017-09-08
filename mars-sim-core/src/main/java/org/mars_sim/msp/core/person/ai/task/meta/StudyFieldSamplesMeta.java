@@ -59,8 +59,8 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+        LocationSituation ls = person.getLocationSituation();
+        if (ls == LocationSituation.IN_VEHICLE) {
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
 	            result = -50D;
@@ -71,8 +71,8 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        	result = -20D;
         }
         
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (ls == LocationSituation.IN_SETTLEMENT
+            	|| ls == LocationSituation.IN_VEHICLE) {
 	
 	        // Check that there are available field samples to study.
 	        try {
@@ -180,7 +180,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	
 	        // 2015-06-07 Added Preference modifier
 	        if (result > 0)
-	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	         	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
 	
 	    }
         

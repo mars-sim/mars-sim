@@ -180,6 +180,8 @@ LocalBoundedObject, InsidePathLocation {
 	private EVA eva;
 	private Farming farm;
 	private LivingAccommodations livingAccommodations;
+	private PreparingDessert preparingDessert;
+	private Cooking cooking;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -493,6 +495,18 @@ LocalBoundedObject, InsidePathLocation {
 		if (livingAccommodations == null)
 			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
 		return livingAccommodations;
+	}
+	
+	public PreparingDessert getPreparingDessert() {
+		if (preparingDessert == null)
+			preparingDessert = (PreparingDessert) getFunction(FunctionType.PREPARING_DESSERT);
+		return preparingDessert;
+	}
+
+	public Cooking getCooking() {
+		if (cooking == null)
+			cooking = (Cooking) getFunction(FunctionType.COOKING);
+		return cooking;
 	}
 	
     /**
