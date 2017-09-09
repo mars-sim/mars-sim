@@ -306,9 +306,10 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
-        LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), " collected " + Math.round(regolithCollected*10D)/10D + " kg of regolith in a DigLocalRegolith task.", null);
-        //logger.info(person.getName() + " collected " + Math.round(regolithCollected*10D)/10D + " kg of regolith in a DigLocalRegolith task.");
-
+        LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), 
+        		person.getName() + " collected " + Math.round(regolithCollected*10D)/10D 
+        		+ " kg of regolith outside " + person.getAssociatedSettlement(), null);
+ 
         // Add experience points
         addExperience(time);
 

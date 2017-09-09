@@ -97,7 +97,7 @@ implements Serializable, LifeSupportType, Objective {
 	/** Normal temperature (celsius) */
 	private static final double NORMAL_TEMP = 22.5D;
 	// maximum & minimal acceptable temperature for living space (arbitrary)
-	private static final double MIN_TEMP = 0.0D;
+	private static final double MIN_TEMP = -15.0D;
 
 	private static final double MAX_TEMP = 45.0D;
 
@@ -333,20 +333,22 @@ implements Serializable, LifeSupportType, Objective {
 
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
-		
+/*	
 		// 2017-05-24 initialize inventory of this building for resource storage 
 		Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
 		Iterator<AmountResource> i3 = resources.iterator();
 		while (i3.hasNext()) {
 			AmountResource ar = i3.next();	
-			double max = getInventory().getTotalAmountResourcesStoredCache(false);
 			//logger.info("max is " + max);
-			getInventory().addAmountResourceTypeCapacity(ar, max);	
 			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
-			if (resourceCapacity >= 0)
-				getInventory().storeAmountResource(ar, 0, true);
+			if (resourceCapacity >= 0) {
+				double max = getInventory().getTotalAmountResourcesStoredCache(false);
+				System.out.println(ar.getName() + "'s max : " + max);
+				//getInventory().storeAmountResource(ar, 0, true);
+				getInventory().addAmountResourceTypeCapacity(ar, max);	
+			}
 		}
-		
+*/
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
 		// Initialize building connector manager.

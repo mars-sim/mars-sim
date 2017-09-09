@@ -10,10 +10,12 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -25,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -91,10 +92,10 @@ implements Serializable {
 
     private static int NUM_DESSERTS = availableDesserts.length;
 
-	private static AmountResource waterAR;
-    private static AmountResource greyWaterAR;
-    private static AmountResource foodWasteAR;
-    public static AmountResource NaClOAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+    private static AmountResource greyWaterAR = ResourceUtil.greyWaterAR;
+    private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
+    public static AmountResource NaClOAR = ResourceUtil.NaClOAR;
 
     public static AmountResource [] availableDessertsAR =
     	{
@@ -173,10 +174,10 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
-		greyWaterAR = ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);
-		waterAR = ResourceUtil.findAmountResource(WATER);
-        foodWasteAR = ResourceUtil.findAmountResource(FOOD_WASTE);
-        NaClOAR = ResourceUtil.findAmountResource(SODIUM_HYPOCHLORITE);
+		//greyWaterAR = ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);
+		//waterAR = ResourceUtil.findAmountResource(WATER);
+        //foodWasteAR = ResourceUtil.findAmountResource(FOOD_WASTE);
+        //NaClOAR = ResourceUtil.findAmountResource(SODIUM_HYPOCHLORITE);
     }
 
     public Inventory getInventory() {
@@ -683,24 +684,26 @@ implements Serializable {
                         double num = RandomUtil.getRandomDouble(8 * quality);
                         if (num < 1) {
                             // Throw out bad dessert as food waste.
-                            Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv);
-                            logger.finest(getDryMass(dessert.getName()) + " kg "
+                            Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv, "::timePassing");
+                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+                            		getDryMass(dessert.getName()) + " kg "
                                     + dessert.getName()
-                                    + " expired, turned bad and discarded at " + getBuilding().getNickName()
-                                    + " in " + settlement.getName()
-                                    );
+                                    + " expired and discarded at " + getBuilding().getNickName()
+                                    + " in " + settlement.getName() + "."
+                                    , null);
                         }
                         else  {
                             // Refrigerate prepared dessert.
                             refrigerateFood(dessert);
-                            logger.finest("Dessert Expired. Refrigerate "
+                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+                            		"A dessert will be expired soon. Refrigerating "
                                     + getDryMass(dessert.getName()) + " kg "
                                     + dessert.getName()
                                     +  " at " + getBuilding().getNickName()
                                     + " in " + settlement.getName()
-                                    );
-                            logger.finest("The dessert has lost its freshness at " +
-                                    getBuilding().getBuildingManager().getSettlement().getName());
+                                    , null);
+                            //logger.finest("The dessert has lost its freshness at " +
+                            //        getBuilding().getBuildingManager().getSettlement().getName());
                         }
 
                         // Adjust the rate to go down for each dessert that wasn't eaten.

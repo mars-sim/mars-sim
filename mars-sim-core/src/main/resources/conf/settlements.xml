@@ -104,8 +104,13 @@
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->
 			<resource type="food" amount="1657.0" />
-			<resource type="grey water" amount="100.0" />
-			<resource type="black water" amount="25.0" />
+			
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />			
+			
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="fertilizer" amount="10.0" />
 			<resource type="argon" amount="10.0" />
@@ -114,7 +119,9 @@
 			<resource type="mustard" amount="50.0" />
 			
 			<!-- Crop -->
-			<!-- No starting crops for this template. -->
+			<!-- No starting crops for this template.
+			 	Note : need to have zero amount in order to 
+			 	initialize the resource storage properly -->
 			<resource type="Blueberry" amount="0.0" />
 			<resource type="Cabbage" amount="0.0" />
 			<resource type="Carrot" amount="0.0" />
@@ -292,10 +299,16 @@
 
 			<!-- Resources -->
 			<resource type="food" amount="3314.0" />
-			<resource type="grey water" amount="300.0" />
-			<resource type="black water" amount="75.0" />
-			<resource type="carbon dioxide" amount="20.0" />
+			
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />	
+						
+			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="fertilizer" amount="50.0" />
+			<resource type="argon" amount="10.0" />			
 
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
@@ -516,11 +529,17 @@
 
 			<!-- Resources -->
 			<resource type="food" amount="4970.0" />
-			<resource type="grey water" amount="400.0" />
-			<resource type="black water" amount="100.0" />
-			<resource type="carbon dioxide" amount="30.0" />
+			
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />	
+			
+			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="fertilizer" amount="50.0" />
-
+			<resource type="argon" amount="10.0" />
+			
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cabbage" amount="50.0" />
@@ -837,11 +856,17 @@
 
 			<!-- Resources -->
 			<resource type="food" amount="9940.0" />
-			<resource type="grey water" amount="1000.0" />
-			<resource type="black water" amount="250.0" />
-			<resource type="carbon dioxide" amount="50.0" />
+			
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />	
+			
+			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="fertilizer" amount="50.0" />
-
+			<resource type="argon" amount="10.0" />
+			
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cabbage" amount="50.0" />
@@ -1094,8 +1119,18 @@
 			<resource type="oxygen" amount="2245.0" />
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
+			
 			<resource type="methane" amount="16000.0" />
-
+			
+			<resource type="carbon dioxide" amount="10.0" />
+			<resource type="fertilizer" amount="50.0" />
+			<resource type="argon" amount="10.0" />			
+			
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />			
 			<!-- Food Resources -->
 			<!-- No starting food resources for this template. -->
 
@@ -1243,7 +1278,18 @@
 			<resource type="oxygen" amount="2245.0" />
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
+			
 			<resource type="methane" amount="16000.0" />
+
+			<resource type="carbon dioxide" amount="10.0" />
+			<resource type="fertilizer" amount="50.0" />
+			<resource type="argon" amount="10.0" />			
+			
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />			
 
 			<!-- Food Resources -->
 			<!-- No starting food resources for this template. -->

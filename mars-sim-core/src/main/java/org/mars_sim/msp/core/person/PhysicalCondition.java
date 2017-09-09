@@ -826,26 +826,26 @@ implements Serializable {
             problems.put(complaint, problem);
             String n = complaint.getType().getName();
             if (n.equalsIgnoreCase("starvation"))
-                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
-                		person + " is starving.", null);            	
+                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                		person + " is starving in " + person.getAssociatedSettlement(), null);            	
             else if (n.equalsIgnoreCase("decompression"))
-                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
-                		person + " is suffering from decompression.", null);   
+                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                		person + " is suffering from decompression in " + person.getAssociatedSettlement(), null);   
             else if (n.equalsIgnoreCase("dehydration"))
-                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
-                		person + " is suffering from dehydration.", null); 
+                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                		person + " is suffering from dehydration in " + person.getAssociatedSettlement(), null); 
             else if (n.equalsIgnoreCase("freezing"))
-                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
-                		person + " is freezing.", null); 
-            else if (n.equalsIgnoreCase("Heat Stroke"))
-                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
-                		person + " is suffering from a heat stroke.", null);     
+                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                		person + " is freezing in " + person.getAssociatedSettlement(), null); 
+            else if (n.equalsIgnoreCase("heat stroke"))
+                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                		person + " is suffering from a heat stroke in " + person.getAssociatedSettlement(), null);     
             else if (n.equalsIgnoreCase("suffocation"))
-                LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
-                		person + " is suffocating.", null); 
+                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                		person + " is suffocating in " + person.getAssociatedSettlement(), null); 
             else
-            	LogConsolidated.log(logger, Level.SEVERE, 500, sourceName, 
-            		person + " is complaining about " + n + ".", null);
+            	LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+            		person + " is complaining about the " + n + " in " + person.getAssociatedSettlement(), null);
 
             recalculatePerformance();
         }

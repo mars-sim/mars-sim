@@ -12,11 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -1059,20 +1061,23 @@ implements Serializable {
                         double quality = meal.getQuality() / 2D + 1D;
                         double num = RandomUtil.getRandomDouble(7 * quality + 1);
                         if (num < 1) {
-                            Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteAR, inv);
-                            logger.fine(dryMassPerServing  + " kg " + meal.getName()
-                                    + " expired, turned bad and discarded at " + getBuilding().getNickName()
-                                    + " in " + settlement.getName() );
+                            Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteAR, inv, "::timePassing");
+                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+                            		dryMassPerServing  + " kg " + meal.getName()
+                                    + " was expired and discarded at " + getBuilding().getNickName()
+                                    + " in " + settlement.getName() + ".", null);
 
                         } else {
                             // Convert the meal into preserved food.
                             preserveFood();
-                            logger.fine("Meal Expired. Convert "
+                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+                            		"A meal will be expired soon. Converting "
                                     + dryMassPerServing  + " kg "
                                     + meal.getName()
                                     + " into preserved food at "
                                     + getBuilding().getNickName()
-                                    + " in " + settlement.getName() );
+                                    + " in " + settlement.getName()
+                                    , null);
                         }
 
                         // Adjust the rate to go down for each meal that wasn't eaten.

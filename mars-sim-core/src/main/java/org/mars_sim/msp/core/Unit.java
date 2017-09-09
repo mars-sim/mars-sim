@@ -46,6 +46,8 @@ implements Serializable, Comparable<Unit> {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+
 	// Data members
 	// unit identifier
 	private static int unitIdentifer = 0;
@@ -649,7 +651,8 @@ implements Serializable, Comparable<Unit> {
 			else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 			else
-				System.err.println("Person " + name + " was no longer on a vehicle.");
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						name + " was no longer on a vehicle.", null);
 
 		}
 
@@ -690,7 +693,8 @@ implements Serializable, Comparable<Unit> {
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 
 			else {
-				System.err.println("Equipment " + name + " was no longer on a vehicle.");
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						name + " was no longer on a vehicle.", null);
 			}
 
 		}

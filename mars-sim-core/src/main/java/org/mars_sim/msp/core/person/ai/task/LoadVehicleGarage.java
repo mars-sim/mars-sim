@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -30,13 +30,11 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
@@ -62,6 +60,8 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
+
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -402,7 +402,8 @@ implements Serializable {
             amountLoading = loadResources(amountLoading);
         }
         catch (Exception e) {
-            logger.severe(e.getMessage());
+            //logger.severe(e.getMessage());
+		    LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, e.getMessage(), null);
         }
 
         // Put rover back into settlement.
@@ -494,7 +495,7 @@ implements Serializable {
 			    if (required) {
 			        canLoad = false;
 			        loadingError = "Not enough resource stored at settlement to load "
-			                + "resource: " + resource + " needed: " + amountNeeded + ", stored: "
+			                + "resource: " + resource + " needed: " + Math.round(amountNeeded*100D)/100D + ", stored: "
 			                + settlementStored;
 			    }
 			    else {
@@ -512,7 +513,7 @@ implements Serializable {
 			        else {
 			            canLoad = false;
 			            loadingError = "Not enough capacity in vehicle for loading resource "
-			                    + resource + ": " + amountNeeded + ", remaining capacity: "
+			                    + resource + ": " + Math.round(amountNeeded*100D)/100D + ", remaining capacity: "
 			                    + remainingCapacity;
 			        }
 			    }
@@ -543,7 +544,9 @@ implements Serializable {
 			}
 			else {
 			    endTask();
-			    throw new IllegalStateException(loadingError);
+			    LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, loadingError, null);
+			    //throw new IllegalStateException(loadingError);
+			    
 			}
 		}
 		else {
@@ -727,7 +730,9 @@ implements Serializable {
                                 loaded++;
                             }
                             else {
-                                logger.warning(vehicle + " cannot store " + eq);
+                                //logger.warning(vehicle + " cannot store " + eq);
+                			    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+                			    		vehicle + " cannot store " + eq, null);
                                 endTask();
                             }
                         }
@@ -815,7 +820,9 @@ implements Serializable {
                             loaded++;
                         }
                         else {
-                            logger.warning(vehicle + " cannot store " + eq);
+                            //logger.warning(vehicle + " cannot store " + eq);
+                            LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+            			    		vehicle + " cannot store " + eq, null);
                             endTask();
                         }
                     }
@@ -911,7 +918,8 @@ implements Serializable {
 
 	        		if ( totalAmountDessertStored < totalDessertNeeded) {
 	        			if (logger.isLoggable(Level.INFO))
-	        				logger.info("desserts needed: " + totalDessertNeeded + " total stored: " + totalAmountDessertStored );
+	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "desserts needed: " 
+	        						+ totalDessertNeeded + " total stored: " + totalAmountDessertStored, null);
 	        			enoughSupplies = false;
 	        		}
                 }
@@ -925,7 +933,8 @@ implements Serializable {
 	        		if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
 	        			double stored = inv.getAmountResourceStored((AmountResource) resource, false);
 	        			if (logger.isLoggable(Level.INFO))
-	        				logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, resource.getName() 
+	        						+ " needed: " + totalNeeded + " stored: " + stored, null);
 	        			enoughSupplies = false;
 	        		}
                 }
@@ -940,7 +949,8 @@ implements Serializable {
         		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
         			int stored = inv.getItemResourceNum((ItemResource) resource);
         			if (logger.isLoggable(Level.INFO))
-        				logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, resource.getName() 
+        						+ " needed: " + totalNeeded + " stored: " + stored, null);
         			enoughSupplies = false;
         		}
         	}
@@ -958,7 +968,8 @@ implements Serializable {
         	if (inv.findNumEmptyUnitsOfClass(equipmentType, false) < totalNeeded) {
         		int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
     			if (logger.isLoggable(Level.INFO))
-    				logger.info(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
+    				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+    						equipmentType + " needed: " + totalNeeded + " stored: " + stored, null);
         		enoughSupplies = false;
         	}
         }
@@ -1094,7 +1105,8 @@ implements Serializable {
     		}
     	}
     	catch (Exception e) {
-            logger.info(e.getMessage());
+            //logger.info(e.getMessage());
+		    LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, e.getMessage(), null);
     		sufficientCapacity = false;
     	}
 

@@ -329,7 +329,7 @@ public class Crop implements Serializable {
 			actualHarvest = maxHarvest * fractionalGrowingTimeCompleted;
 		}
 		
-		computeHealthCondition();
+		computeHealth();
 
 	}
 
@@ -413,7 +413,7 @@ public class Crop implements Serializable {
 	 * Compute the overall health condition of the crop.
 	 * @return condition as value from 0 (poor) to 1 (healthy)
 	 */
-	public double computeHealthCondition() {
+	public double computeHealth() {
 		// 0:bad, 1:good
 		double health = 0D;
 
@@ -454,7 +454,8 @@ public class Crop implements Serializable {
 				logger.info("Crop " + capitalizedCropName + " at " + settlement.getName() + " died of very poor health (" + Math.round(health*100D)/100D + " %) in " 
 						+ settlement.getName() + " and didn't survive.");
 				// 2015-02-06 Added Crop Waste
-				Storage.storeAnResource(actualHarvest, cropWasteAR, inv);
+				if (actualHarvest > 0)
+					Storage.storeAnResource(actualHarvest, cropWasteAR, inv, "::computeHealth");
 				logger.info(actualHarvest + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 				phaseType = PhaseType.FINISHED;
 			}
@@ -470,7 +471,8 @@ public class Crop implements Serializable {
 				logger.info("The seedlings of " + capitalizedCropName + " had poor health (" + Math.round(health*100D)/100D + " %) in " 
 						+ settlement.getName() + " and didn't survive.");
 				// 2015-02-06 Added Crop Waste
-				Storage.storeAnResource(actualHarvest, cropWasteAR, inv);
+				if (actualHarvest > 0)
+					Storage.storeAnResource(actualHarvest, cropWasteAR, inv, "::computeHealth");
 				logger.info(actualHarvest + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 				//actualHarvest = 0;
 				//growingTimeCompleted = 0;
@@ -603,19 +605,21 @@ public class Crop implements Serializable {
 					// 2014-10-07 modified parameter list to include crop name
 					double modifiedHarvest = actualHarvest * workTime / w;
 					// Store the crop harvest
-					if (isSeedPlant)
-						Storage.storeAnResource(modifiedHarvest, seedAR, inv, sourceName + "::addWork");
-					else
-						Storage.storeAnResource(modifiedHarvest, cropAR, inv, sourceName + "::addWork");
-	
-					// 2017-03-30 Extract Mustard Seed
-					if (hasSeed)
-						Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv, sourceName + "addWork");
-					else
-						//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
-						// thus no crop waste
-						generateCropWaste(modifiedHarvest);
-	
+					if (modifiedHarvest > 0) {
+						if (isSeedPlant)
+							Storage.storeAnResource(modifiedHarvest, seedAR, inv, sourceName + "::addWork");
+						else
+							Storage.storeAnResource(modifiedHarvest, cropAR, inv, sourceName + "::addWork");
+		
+						// 2017-03-30 Extract Mustard Seed
+						if (hasSeed)
+							Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv, sourceName + "addWork");
+						else
+							//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
+							// thus no crop waste
+							generateCropWaste(modifiedHarvest);
+					}
+					
 					//logger.info(unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
 					//		+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
 					//		+ " at " + settlement.getName());
@@ -724,7 +728,8 @@ public class Crop implements Serializable {
 		double rand = RandomUtil.getRandomDouble(1);
 		amount = Math.round((amount * .5 + amount * rand)*10_000.0)/10_000.0;
 
-		Storage.storeAnResource(amount, tissueAR, inv);
+		if (amount > 0)
+			Storage.storeAnResource(amount, tissueAR, inv, "::preserveCropTissue");
 
 		// 2015-10-13 if no dedicated research space is available, work can still be performed but productivity is cut half
 		if (hasSpace) {
@@ -746,7 +751,8 @@ public class Crop implements Serializable {
 	public void generateCropWaste(double harvestMass) {
 		// 2015-02-06 Added Crop Waste
 		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
-		Storage.storeAnResource(amountCropWaste, cropWasteAR, inv);
+		if (amountCropWaste > 0)
+			Storage.storeAnResource(amountCropWaste, cropWasteAR, inv, "::generateCropWaste");
 		//logger.info("addWork() : " + cropName + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
 	}
 
@@ -818,13 +824,13 @@ public class Crop implements Serializable {
 			    int currentMillisols = (int) marsClock.getMillisol();
 				if (currentMillisols % 250 == 0) {
 					// Compute health condition 4 times a day
-					computeHealthCondition();
+					computeHealth();
 				}
 
 				// max possible harvest within this period of time
 				double maxPeriodHarvest = maxHarvest * (time / growingTime);
 				// Compute each harvestModifiers and sum them up below
-				double harvestModifier = calculateHarvestModifier(maxPeriodHarvest, time);
+				double harvestModifier = computeHarvest(maxPeriodHarvest, time);
 				// Modify harvest amount.
 				actualHarvest += maxPeriodHarvest * harvestModifier;// * 10D; // assuming the standard area of 10 sq m
 
@@ -1054,7 +1060,8 @@ public class Crop implements Serializable {
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
 		// TODO: Modify harvest modifier according to the moisture level
 		double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
-		Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::calculateHarvestModifier");
+		if (waterReclaimed > 0)
+			Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::computeWaterFertilizer");
 
 		memory[3] = .5 * waterModifier + .5 * memory[3];
 		if (memory[3] > 1.1)
@@ -1092,7 +1099,8 @@ public class Crop implements Serializable {
 			
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * growingArea * time / 1000D * CO2_GENERATION_RATE;
-			Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "::calculateHarvestModifier");
+			if (co2Amount > 0)
+				Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "::computeGases");
 		}
 
 		else {
@@ -1120,7 +1128,8 @@ public class Crop implements Serializable {
 			
 			// Determine the amount of oxygen generated via gas exchange.
 			double oxygenAmount = carbonDioxideUsed * growingArea * time / 1000D * OXYGEN_GENERATION_RATE;
-			Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::calculateHarvestModifier");
+			if (oxygenAmount > 0)
+				Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::computeGases");
 
 		}
 		
@@ -1132,7 +1141,7 @@ public class Crop implements Serializable {
 	 * @param a period of time in millisols
 	 * @return the harvest modifier
 	 */
-	public double calculateHarvestModifier(double maxPeriodHarvest, double time) {
+	public double computeHarvest(double maxPeriodHarvest, double time) {
 
 		double harvestModifier = 1D;
 		

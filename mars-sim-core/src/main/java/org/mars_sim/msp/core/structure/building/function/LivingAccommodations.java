@@ -286,9 +286,11 @@ public class LivingAccommodations extends Function implements Serializable {
         // Black water is only produced by waste water.
         double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
         //System.out.print("gw");
-        Storage.storeAnResource(greyWaterProduced, ResourceUtil.greyWaterAR, inv, sourceName + "::generateWaste");
+        if (greyWaterProduced > 0)
+        	Storage.storeAnResource(greyWaterProduced, ResourceUtil.greyWaterAR, inv, sourceName + "::generateWaste");
         //System.out.print("bw");
-        Storage.storeAnResource(blackWaterProduced, ResourceUtil.blackWaterAR, inv, sourceName + "::generateWaste");
+        if (blackWaterProduced > 0)
+        	Storage.storeAnResource(blackWaterProduced, ResourceUtil.blackWaterAR, inv, sourceName + "::generateWaste");
 
     	// Use toilet paper and generate toxic waste (used toilet paper).
         double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
@@ -297,7 +299,8 @@ public class LivingAccommodations extends Function implements Serializable {
         //System.out.print("tt");
         Storage.retrieveAnResource(toiletPaperUsageBuilding * random_factor, ResourceUtil.toiletTissueAR, inv, true);
     	//System.out.println("LivingAcc : toxicWasteAR is " + toxicWasteAR);
-        Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv, sourceName + " -> generateWaste()");
+        if (toiletPaperUsageBuilding > 0)
+        	Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv, sourceName + " -> generateWaste()");
         //System.out.print("tw");
     }
 

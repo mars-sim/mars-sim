@@ -14,9 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 
@@ -46,6 +48,8 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mission.class.getName());
+	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 	// Global mission identifier
 	private static int missionIdentifer = 0;
 
@@ -731,9 +735,12 @@ implements Serializable {
 			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 			
 			if (startingMember.getSettlement() != null)
-				logger.info(startingMember.getName() + " ended the '" + missionName + "' at "  + startingMember.getSettlement() + ". Reason : " + reason);
+			    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+						startingMember.getName() + " ended the '" + missionName + "' at "  
+			    		+ startingMember.getSettlement() + ". Reason : " + reason, null);
 			else
-		        logger.info(startingMember.getName() + " ended the '" + missionName + ". Reason : " + reason);
+			    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+		        		startingMember.getName() + " ended the '" + missionName + ". Reason : " + reason, null);
 
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
@@ -743,7 +750,8 @@ implements Serializable {
 			
 			if (members != null) {
 				if (!members.isEmpty()) {	
-					logger.info("Mission members removed : " + members);
+				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				    		"Mission members removed : " + members, null);
 	                for (Object o : members.toArray()) {
 	                	performMission((MissionMember) o);
 /*	                	
@@ -765,7 +773,9 @@ implements Serializable {
 			//logger.info(description + " ending at the " + phase + " phase due to " + reason);
 		}
 		else
-	        logger.info("Calling endMission() to the '" + missionName + " initiated by " + startingMember.getName() + ". Reason : '" + reason + "'"); // "' at "  + startingMember.getSettlement() + 
+		    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+	        		"Calling endMission() to the '" + missionName + " initiated by " + startingMember.getName() 
+	        		+ ". Reason : '" + reason + "'", null);
 	}
 
 	/**

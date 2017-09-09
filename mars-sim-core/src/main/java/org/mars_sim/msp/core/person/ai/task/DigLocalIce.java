@@ -27,10 +27,8 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
@@ -307,9 +305,10 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
-	    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), person.getName() + " collected " + Math.round(iceCollected*10D)/10D + " kg of ice in a DigLocalIce task.", null);
-        //logger.info(person.getName() + " collected " + Math.round(iceCollected*10D)/10D + " kg of ice in a DigLocalIce task.");
-
+	    LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), 
+	    		person.getName() + " collected " + Math.round(iceCollected*10D)/10D 
+	    		+ " kg of ice  outside " + person.getAssociatedSettlement(), null);
+ 
         // Add experience points
         addExperience(time);
 

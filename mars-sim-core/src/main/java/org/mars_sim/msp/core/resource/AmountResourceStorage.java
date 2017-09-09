@@ -40,7 +40,7 @@ public class AmountResourceStorage implements Serializable {
     /**
      * Adds capacity for a resource type.
      * @param resource the resource.
-     * @param capacity the capacity amount (kg).
+     * @param capacity the extra capacity amount (kg).
      */
     public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
 

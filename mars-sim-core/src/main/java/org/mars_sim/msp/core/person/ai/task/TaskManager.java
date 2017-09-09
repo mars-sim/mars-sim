@@ -477,22 +477,21 @@ implements Serializable {
 				
             	if (isOutside || numOutside == 0) {
             		// if he is already outside or if no one is outside, he will take on this repair task
-	                clearTask();
-	                addTask(new RepairEmergencyMalfunctionEVA(person));
             		LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-            				person + " cancelled the old task '" + currentTask +
+            				person + " cancelled the task '" + currentTask +
                             "' and rushed to the scene to participate in an EVA emergency repair task.", null);
-
+                    clearTask();
+	                addTask(new RepairEmergencyMalfunctionEVA(person));
             	}
             }
 		}
 		
 		else {
-            clearTask();
-		    addTask(new RepairEmergencyMalfunction(person));
     		LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-    				person + " cancelled the old task '" + currentTask +
+    				person + " cancelled the task '" + currentTask +
                     "' and rushed to the scene to participate in an emergency repair task.", null);
+            clearTask();
+            addTask(new RepairEmergencyMalfunctionEVA(person));
 		}
 
 	}

@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionEvent;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -1198,14 +1197,14 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
         if (isImpactImminent) {
-        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-        			"A meteorite impact for " + nickName 
-					+ " in " + settlement + " is imminent.", null);
         	int now = (int) marsClock.getMillisol();
             // Note: at the fastest sim speed, up to ~5 millisols may be skipped.
         	// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
-        	if (now > moment_of_impact - 3 && now < moment_of_impact + 3) {
-
+        	int delta = (int)Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
+        	if (now > moment_of_impact - 2 *delta && now < moment_of_impact + 2 *delta) {
+            	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            			"A meteorite impact for " + nickName 
+    					+ " in " + settlement + " is imminent.", null);
 	        	// reset the boolean immmediately. This is for keeping track of whether the impact has occurred at msols
 				isImpactImminent = false;
 
