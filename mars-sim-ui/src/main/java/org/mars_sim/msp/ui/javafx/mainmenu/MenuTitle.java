@@ -6,11 +6,13 @@
  */
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
+import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -19,17 +21,22 @@ import javafx.scene.text.Text;
 public class MenuTitle extends Pane {
     private Text text;
 
-    public MenuTitle(String name, int size, Color color) {
+    public MenuTitle(String name, int size, Color color, boolean useSpread) {
         String spread = "";
-        for (char c : name.toCharArray()) {
-            spread += c + " ";
+        if (useSpread) {
+	        for (char c : name.toCharArray()) {
+	            spread += c + " ";
+	        }
+	        text = new Text(spread);
+	        text.setFont(Font.loadFont(MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), size));
+	        text.setEffect(new DropShadow(50, Color.BLACK));
         }
+        else
+            text = new Text(name);
 
-        text = new Text(spread);
-        text.setFont(Font.loadFont(MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), size));
         text.setFill(color);
-        text.setEffect(new DropShadow(50, Color.BLACK));
-
+        text.setTextAlignment(TextAlignment.CENTER);
+        
         getChildren().addAll(text);
     }
 

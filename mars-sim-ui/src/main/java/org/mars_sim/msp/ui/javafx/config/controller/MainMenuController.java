@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.javafx.config.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.mainmenu.ControlledScreen;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.mainmenu.ScreensSwitcher;
@@ -17,13 +18,14 @@ import org.mars_sim.msp.ui.javafx.mainmenu.ScreensSwitcher;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
+//import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+@SuppressWarnings("restriction")
 public class MainMenuController implements Initializable, ControlledScreen {
 
-	@FXML
-	Label rotationRate;
+	@FXML Label rotationRate;
+	@FXML Label buildLabel;
 
 	//@FXML private Button button0, button1, button2;
 
@@ -38,6 +40,7 @@ public class MainMenuController implements Initializable, ControlledScreen {
 
     public void setScreenParent(ScreensSwitcher screenParent){
         switcher = screenParent;
+        setBuild();
     }
 
     //@FXML
@@ -88,5 +91,10 @@ public class MainMenuController implements Initializable, ControlledScreen {
 
     public void setRotation(int rate) {
     	rotationRate.setText(rate+"");
+    }
+    
+    public void setBuild() {
+    	String build = Simulation.BUILD;
+    	buildLabel.setText(build);
     }
 }

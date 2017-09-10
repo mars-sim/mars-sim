@@ -9,15 +9,16 @@ package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import javafx.animation.*;
 import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.geometry.Pos;
+//import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.Scene;
-import javafx.scene.effect.BoxBlur;
+//import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
+//import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -25,6 +26,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -32,6 +34,7 @@ import javafx.util.Pair;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.StarfieldFX;
 
 @SuppressWarnings("restriction")
@@ -84,7 +87,8 @@ public class MenuApp extends Application {
         addLine(X_OFFSET, Y_OFFSET);
         addMenu(X_OFFSET + 10, Y_OFFSET - 25);
         //startAnimation();
-
+        addFooter();
+        
         return root;
     }
 
@@ -119,18 +123,27 @@ public class MenuApp extends Application {
     }
 
     private void addTitle() {
-        MenuTitle title = new MenuTitle("Mars Simulation Project", 36, Color.LIGHTGOLDENRODYELLOW);//DARKGOLDENROD);
+        MenuTitle title = new MenuTitle("Mars Simulation Project", 36, Color.LIGHTGOLDENRODYELLOW, true);//DARKGOLDENROD);
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
-
-        MenuTitle version = new MenuTitle("version 3.1.0", 13, Color.DARKGOLDENROD);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        title.setTranslateY(44);
+        
+        MenuTitle version = new MenuTitle("Version " + Simulation.VERSION, 18, Color.DARKGOLDENROD, true);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
         version.setTranslateX(WIDTH / 2 - version.getTitleWidth() / 2);
-
-        VBox vbox = new VBox();
-        vbox.setTranslateY(45);
-        vbox.getChildren().addAll(title, version);
-        root.getChildren().add(vbox);
+        version.setTranslateY(80);
+        
+        root.getChildren().addAll(title, version);
+        
     }
 
+    private void addFooter() {
+
+        MenuTitle build = new MenuTitle("Build " + Simulation.BUILD + "", 16, Color.BURLYWOOD, true);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        build.setTranslateX(WIDTH - build.getTitleWidth() - 10);
+        build.setTranslateY(HEIGHT-15);
+        
+        root.getChildren().addAll(build);
+        
+    }
     private void addLine(double x, double y) {
         line = new Line(x, y, x, y + 430);
         line.setStrokeWidth(2);

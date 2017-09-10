@@ -12,31 +12,32 @@ import javafx.scene.Parent;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.layout.StackPane;
-import javafx.scene.AmbientLight;
-import javafx.scene.Group;
+//import javafx.scene.layout.StackPane;
+//import javafx.scene.AmbientLight;
+//import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
+//import javafx.stage.Stage;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Cylinder;
+//import javafx.scene.shape.Box;
+//import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
+//import javafx.scene.transform.Rotate;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
-import static javafx.scene.input.KeyCode.*;
+//import static javafx.scene.input.KeyCode.*;
 
 import org.mars_sim.msp.ui.javafx.mainmenu.Xform;
 
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
-import javafx.scene.Node;
+//import javafx.scene.Node;
 
 
+@SuppressWarnings("restriction")
 public class Globe {
 
 	protected double ONE_FRAME = 1.0 / 24.0;

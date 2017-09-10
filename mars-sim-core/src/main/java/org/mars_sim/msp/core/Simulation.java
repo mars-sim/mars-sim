@@ -75,7 +75,7 @@ implements ClockListener, Serializable {
     /** Version string. */
     public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
     /** Build string. */
-    private final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
+    public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
     /** Java version string. */
     private final static String JAVA_TAG = System.getProperty("java.version");//VersionInfo.getRuntimeVersion(); //e.g. "8.0.121-b13 (abcdefg)"; com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
     /** Java version string. */

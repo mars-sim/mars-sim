@@ -66,16 +66,15 @@
             </VBox>
          </bottom>
          <top>
-            <VBox prefHeight="200.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="100.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label id="title" alignment="CENTER" contentDisplay="CENTER" prefHeight="61.0" prefWidth="1024.0" text="Mars Simulation Project" textAlignment="CENTER" textFill="#945f16">
+                  <Label id="title" alignment="CENTER" contentDisplay="CENTER" prefHeight="5.0" prefWidth="1024.0" text="Mars Simulation Project" textAlignment="CENTER" textFill="#945f16">
                      <font>
                         <Font name="Verdana Bold" size="36.0" />
                      </font>
                      <padding>
-                        <Insets top="30.0" />
+                        <Insets top="5.0" />
                      </padding>
-
                      <effect>
                      	<Bloom />
                      </effect>
@@ -91,6 +90,17 @@
                         <Insets />
                      </VBox.margin>
                   </Label>
+                  <Label fx:id="buildLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="1024.0" text="Build 4132" textAlignment="CENTER" textFill="#945f16">
+                      <font>
+							<Font name="Corbel Bold" size="13.0" />
+			          </font>
+		              <effect>
+		                   <SepiaTone />
+		              </effect>
+                      <padding>
+                           <Insets left="0.0" />
+                      </padding>
+                  </Label>                  
                </children>
             </VBox>
          </top>

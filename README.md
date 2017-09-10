@@ -70,7 +70,7 @@ If you would like to contribute to the project, see our [developer wiki](https:/
 
 ## Download 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
-* Check out recent builds at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
+* Check out the most recent build at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
 
 
 ## License

@@ -19,9 +19,9 @@ import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+//import javafx.scene.layout.HBox;
+//import javafx.scene.layout.StackPane;
+//import javafx.scene.layout.VBox;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -37,13 +37,11 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
@@ -51,13 +49,14 @@ import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialog;
+//import com.jfoenix.controls.JFXButton;
+//import com.jfoenix.controls.JFXDialog;
 
 
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
  */
+@SuppressWarnings("restriction")
 public class MainMenu {
 
 	// ------------------------------ FIELDS ------------------------------
@@ -84,7 +83,7 @@ public class MainMenu {
     //private double anchorX;
     //private double rate;
 
-    private int currentItem = 0;
+    //private int currentItem = 0;
     
     private Parent root;
     //private AnchorPane root;
@@ -93,7 +92,7 @@ public class MainMenu {
 
 	private MainMenu mainMenu;
 	private MainScene mainScene;
-	private ScreensSwitcher screen;
+	//private ScreensSwitcher screen;
 
 	//private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
@@ -479,8 +478,10 @@ public class MainMenu {
 	// 2015-09-27 Added setController()
 	public void setController(ControlledScreen myScreenController) {
 	   if (mainMenuController == null)
-		   if (myScreenController instanceof MainMenuController )
+		   if (myScreenController instanceof MainMenuController ) {
 			   mainMenuController = (MainMenuController) myScreenController;
+			   mainMenuController.setBuild();
+		   }
 	}
 
 	public void chooseScreen(int num) {
@@ -636,10 +637,9 @@ public class MainMenu {
 */	
 	public void destroy() {
 		root = null;
-		screen = null;
 		stage = null;
 		scene = null;
-		screen = null;
+		//screen = null;
 		mainMenu = null;
 		mainScene = null;
 		executor = null;

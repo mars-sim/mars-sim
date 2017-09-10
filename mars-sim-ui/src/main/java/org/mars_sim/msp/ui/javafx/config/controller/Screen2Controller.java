@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * Screen2Controller.java
+ * @version 3.1.0 2017-05-08
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.javafx.config.controller;
  
 
@@ -13,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 
+@SuppressWarnings("restriction")
 public class Screen2Controller implements Initializable , ControlledScreen {
 
     ScreensSwitcher switcher;

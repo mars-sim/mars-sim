@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /** Various utilities for applying different effects to nodes. */
+@SuppressWarnings("restriction")
 public class EffectUtilities {
   /** configures the node to fade when it is clicked on performed the onFinished handler when the fade is complete */
   public static void fadeOnClick(final Node node, final EventHandler<ActionEvent> onFinished) {

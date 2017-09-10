@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * ScenarioEditorController.java
+ * @version 3.1.0 2017-05-08
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.ui.javafx.config.controller;
 
 import java.io.IOException;
@@ -35,6 +41,7 @@ import javafx.stage.Stage;
  *
  * @author cdea
  */
+@SuppressWarnings("restriction")
 public class ScenarioEditorController implements Initializable {
     	
         @FXML Hyperlink carlfxHyperlink;
