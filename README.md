@@ -3,7 +3,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dee6a80651fe420b85adf22c4ca79574)](https://www.codacy.com/app/mokun/mars-sim?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mars-sim/mars-sim&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/mars-sim/mars-sim.svg?branch=master)](https://travis-ci.org/mars-sim/mars-sim)
 [![Dependency Status](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5936417e98442b00398eb873?child=summary#dialog_dependency_badge)
-[![License](https://img.shields.io/badge/license-GPL%202.0-blue.svg)](http://www.gnu.org/licenses/gpl-2.0.html)
+[![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 
 # mars-sim

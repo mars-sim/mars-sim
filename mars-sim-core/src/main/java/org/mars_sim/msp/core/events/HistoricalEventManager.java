@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 3.07 2014-10-31
+ * @version 3.1.0 2017-09-09
  * @author Barry Evans
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.events;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 import java.io.Serializable;
 import java.util.ArrayList;

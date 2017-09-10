@@ -60,7 +60,7 @@ implements Serializable {
 	 * @throws Exception when malfunction list could not be found.
 	 */
 	public MalfunctionFactory(MalfunctionConfig config)  {
-		 this.config = config;
+		 MalfunctionFactory.config = config;
 		 //logger.info("start calling config.getMalfunctionList()");
 
 		 malfunctions = config.getMalfunctionList();

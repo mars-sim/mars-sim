@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.medical.Complaint;
@@ -111,7 +112,7 @@ implements Serializable {
 	private MarsClock startTime;
 	private MarsClock currentTime;
 	private	MalfunctionFactory factory;
-
+	private HistoricalEventManager eventManager; 
 	// NOTE : each building has its own MalfunctionManager
 	
 	/**
@@ -136,6 +137,7 @@ implements Serializable {
 		wearCondition = 100D;
 		
 		factory = Simulation.instance().getMalfunctionFactory();
+		eventManager = Simulation.instance().getEventManager();
 	}
 
 	/**
@@ -391,7 +393,7 @@ implements Serializable {
 
 			if (registerEvent) {
 				HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
-				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+				eventManager.registerNewEvent(newEvent);
 			}
 			
 			issueMedicalComplaints(malfunction);
@@ -456,7 +458,7 @@ implements Serializable {
 				}
 
 				HistoricalEvent newEvent = new MalfunctionEvent(entity, item, true);
-				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+				eventManager.registerNewEvent(newEvent);
 			}
 		}
 

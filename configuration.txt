@@ -1,0 +1,55 @@
+The Mars Simulation Project can be configured by editing the 
+XML files in the 'conf' subdirectory.  You can then select the "New"
+option in the project menu to start a new simulation that uses the 
+edited configuration.
+
+It is recommended that you make a backup of the original configuration
+file before editing it as XML errors in the file can cause the program
+to fail.
+
+The following files can be edited:
+
+buildings.xml:	    Modify or create new buildings based on functional 
+                  	components.
+                  
+construction.xml: 	Modify or create new construction sites for constructing
+                  	settlement buildings.
+               
+crops.xml:        	Modify or add new crops that settlers can grow in 
+                  	greenhouses.
+
+foodProduction.xml: Modify or add food technology related processes.
+           
+landmarks.xml:    	Modify or add landmarks.
+               
+malfunctions.xml: 	Modify or create new malfunctions that can occur
+                  	in the simulation.
+                  
+manufacturing.xml: 	Modify or create new manufacturing processes.  
+
+meals.xml:			Modify or create new meal recipes.                  
+                  
+medical.xml:      	Modify or create new illnesses or treatments.
+
+minerals.xml:     	Modify or create new mineral types.
+
+part_packages.xml: 	Modify or create new part packages that can be used for
+                  	initial settlements or resupplies from Earth.
+
+parts.xml:        	Modify or create new parts.
+
+people.xml:       	Modify properties related to people. May add new 
+                  	names to the person name list.
+                  
+resources.xml:    	Modify or create new resources.
+
+resupplies.xml:   	Modify or create settlement resupplies from Earth.
+                  
+settlements.xml:  	Modify or create new settlement templates an
+                  	define individual settlements. May add new settlement
+                  	names to the names list.
+                  
+simulation.xml:   	Modify simulation properties.
+
+vehicles.xml:    	Modify or create new rovers based on components. May add
+					new rover names to the names list.

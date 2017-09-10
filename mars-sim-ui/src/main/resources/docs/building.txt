@@ -1,5 +1,0 @@
-The Mars Simulation Project is designed as a Maven project.  
-
-For information on how to build the project using the Eclipse M2Eclipse Maven plugin, 
-see our getting started with MSP wiki page:
-https://sourceforge.net/p/mars-sim/wiki/Getting_Started_with_MSP/

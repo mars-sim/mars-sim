@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
 
 /**
- * This class represents the historical action of a Malfunction occuring or
+ * This class represents the historical action of a Malfunction occurring or
  * being resolved.
  */
 public class MalfunctionEvent
