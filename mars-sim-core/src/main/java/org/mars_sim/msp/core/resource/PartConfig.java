@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +16,7 @@ import java.util.TreeSet;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * Provides configuration information about parts. Uses a DOM document to get the information.
@@ -36,19 +36,22 @@ public final class PartConfig implements Serializable {
 	public static final String PROBABILITY = "probability";
 	public static final String MAX_NUMBER = "max-number";
 
-	private static int id;
+	private static int new_id;
 	
 	// Data members.
 	//private Set<ItemResource> itemResources = new HashSet<ItemResource>();
-	private Set<Part> itemResources = new TreeSet<Part>();
+	private Set<Part> partSet = new TreeSet<Part>();
 
-	private Map<String, Part> itemResourceMap;
+	private Map<String, Part> namePartMap;
 
-    private Map<String, Integer> numEntitiesInUse;
+	private Map<Integer, Double> MTBF_map;
 
-    //private List<String> entities;
-    //private Map<Settlement, Map<String, Integer>> settlementEntitiesInUse;
-    
+	private Map<Integer, Double> usage_map;
+
+	private Map<Integer, Double> reliability_map;
+	
+	private Map<Integer, Double> failure_map;
+	
 	
     /**
      * Constructor
@@ -56,22 +59,49 @@ public final class PartConfig implements Serializable {
      * @throws Exception if error reading XML document
      */
     public PartConfig(Document itemResourceDoc) {
-		id = 0;
-    	//System.out.println("Setting up PartConfig");
+		new_id = 0;
+
         loadItemResources(itemResourceDoc);
 	
-		itemResourceMap = new HashMap<String, Part>();		
-		//for (ItemResource r : itemResources) {
-		//	itemResourceMap.put(r.getName(), r);
-		//}
-		for (Part p : itemResources) {
-			itemResourceMap.put(p.getName(), p);
+		namePartMap = new HashMap<String, Part>();	
+
+		for (Part p : partSet) {
+			namePartMap.put(p.getName(), p);
 		}
 		
-        numEntitiesInUse = new HashMap<>();
+		createMTBFs();
 
     }
 
+    public Map<Integer, Double> createMTBFs() {
+    	if (MTBF_map == null) {
+    		MTBF_map = new HashMap<Integer, Double>();
+    		for (Part p : partSet) {
+    			int id = p.getID();
+    			MTBF_map.put(id, 0.0);
+    		}
+    	}	
+    	return MTBF_map;
+    }
+    
+    public Map<Integer, Double> getMTBFs() {
+    	return MTBF_map;
+    }
+    
+    public void computeMTBF(int sol) {
+    	
+		for (Part p : partSet) {
+			int id = p.getID();
+			double old_mtbf = MTBF_map.get(id);
+			double new_mtbf = old_mtbf;
+			
+			
+			
+			MTBF_map.put(id, new_mtbf);
+		}
+
+    }
+    
     /**
      * Loads item resources from the parts.xml config document.
      * @param itemResourceDoc the configuration XML document.
@@ -82,7 +112,7 @@ public final class PartConfig implements Serializable {
         Element root = itemResourceDoc.getRootElement();
         List<Element> partNodes = root.getChildren(PART);
         for (Element partElement : partNodes) {
-			id++;
+			new_id++;
             String name = "";
             String description = "no description available.";
 
@@ -100,8 +130,8 @@ public final class PartConfig implements Serializable {
                     .getAttributeValue(MASS));
 
             // Add part to item resources.
-            Part p = new Part(name, id, description, mass);
-            itemResources.add(p);
+            Part p = new Part(name, new_id, description, mass, 1);
+            partSet.add(p);
             //ItemResource r = new ItemResource(name, description, mass);
             //itemResources.add(r);
 
@@ -125,14 +155,11 @@ public final class PartConfig implements Serializable {
     }
 
 	/**
-	 * Gets a collection of all item resources.
-	 * @return collection of item resources.
+	 * Gets a set of all parts.
+	 * @return a set of parts.
 	 */
-	//public Set<ItemResource> getItemResources() {
-	//	return itemResources;
-	//}
-	public Set<Part> getItemResources() {
-		return itemResources;
+	public Set<Part> getPartSet() {
+		return partSet;
 	}
 	/**
 	 * gives back an alphabetically ordered map of all
@@ -143,9 +170,12 @@ public final class PartConfig implements Serializable {
 	//	return itemResourceMap;
 	//}
 	
-	public Map<String, Part> getItemResourcesMap() {
-		//if (itemResourceMap == null) System.err.println("itemResourceMap == null");
-		return itemResourceMap;
+	/**
+	 * Gets a map of part names and corresponding objects
+	 * @return a map of part names and objects
+	 */
+	public Map<String, Part> getNamePartMap() {
+		return namePartMap;
 /*
 		TreeMap<String,Part> map = new TreeMap<String,Part>();
 		for (Part resource : itemResources) {

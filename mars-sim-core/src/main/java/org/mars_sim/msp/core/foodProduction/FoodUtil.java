@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -169,7 +170,7 @@ public class FoodUtil {
 	 */
 	private static void populateItemResources() {
 		//Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
-		Iterator<Part> i = ItemResource.getItemResources().iterator();
+		Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
 		while (i.hasNext()) foodList.add(getResourceFood(i.next()));
 	}
 

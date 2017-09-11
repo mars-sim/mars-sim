@@ -26,33 +26,24 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	// Light utility vehicle attachment parts for mining.
-	public static final String PNEUMATIC_DRILL = "pneumatic drill";
-	public static final String BACKHOE = "backhoe";
-	public static final String SMALL_HAMMER = "small hammer";
-	public static final String SOCKET_WRENCH = "socket wrench";
-	public static final String PIPE_WRENCH = "pipe wrench";
 
 	// Data members
 	private int id;
 	private double massPerItem;
 	private String name;
 	private String description;
+	private int startSol;
 
-	private static Set<Part> set;
 
 	private static PartConfig partConfig;
+	
 	public static Part pneumaticDrill, backhoe, smallHammer, socketWrench, pipeWrench;
 
 
 	public ItemResource() {
 		partConfig = SimulationConfig.instance().getPartConfiguration();
 
-		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
-		backhoe = (Part) findItemResource(BACKHOE);
-		smallHammer = (Part) findItemResource(SMALL_HAMMER);
-		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
-		pipeWrench = (Part) findItemResource(PIPE_WRENCH);
+       	ResourceUtil.getInstance();
 	}
 
 
@@ -70,12 +61,14 @@ implements Serializable {
 	 * @param name the name of the resource.
 	 * @param description {@link String}
 	 * @param massPerItem the mass (kg) of the resource per item.
+	 * @param the sol when this resource is put to use.
 	 */
-	protected ItemResource(String name,  int id, String description, double massPerItem) {
+	protected ItemResource(String name,  int id, String description, double massPerItem, int startSol) {
 		this.name = name;
 		this.id = id;
 		this.description = description;
 		this.massPerItem = massPerItem;
+		this.startSol = startSol;
 	}
 
 	/**
@@ -101,7 +94,10 @@ implements Serializable {
 		return description;
 	}
 
-
+	public int getStartSol() {
+		return startSol;
+	}
+	
 	/**
 	 * Gets the mass for an item of the resource.
 	 * @return mass (kg)
@@ -162,41 +158,22 @@ implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static ItemResource findItemResource(String name) {
-		// 2016-12-08 Using Java 8 stream
-		return getItemResources()
-				.stream()
-				.filter(item -> item.getName().equals(name.toLowerCase()))
-				.findFirst().orElse(null);//.get();
-
-		//return getItemResourcesMap().get(name.toLowerCase());
+		return ItemResourceUtil.findItemResource(name);
 	}
 
-	/**
-	 * Gets a ummutable collection of all the item resources.
-	 * @return collection of item resources.
-	 */
-	//public static Set<ItemResource> getItemResources() {
-	//	return Collections.unmodifiableSet(partConfig.getItemResources());
-	//}
-
-	public static Set<Part> getItemResources() {
-		if (set == null)
-			set = Collections.unmodifiableSet(partConfig.getItemResources());
-		return set;
-	}
 
 	public static Map<String, Part> getItemResourcesMap() {
-		//if (partConfig == null) System.err.println("partConfig == null");
-		return partConfig.getItemResourcesMap();
+		return ItemResourceUtil.getItemResourcesMap();
 	}
 
 	public static ItemResource createItemResource(
 			String resourceName,
 			int id,
 			String description,
-			double massPerItem
+			double massPerItem,
+			int solsUsed
 			) {
-		return new ItemResource(resourceName, id, description, massPerItem);
+		return new ItemResource(resourceName, id, description, massPerItem, solsUsed);
 	}
 
 	private static class UnknownResourceName

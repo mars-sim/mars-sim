@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotBuilder;
 import org.mars_sim.msp.core.robot.RobotBuilderImpl;
@@ -55,6 +56,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -69,6 +72,7 @@ import javafx.collections.ObservableList;
  * creating all units on its construction. There should be only one instance of
  * this class and it should be constructed and owned by Simulation.
  */
+@SuppressWarnings("restriction")
 public class UnitManager implements Serializable {
 
 	/** default serial id. */
@@ -124,12 +128,28 @@ public class UnitManager implements Serializable {
 	private RelationshipManager relationshipManager;
 	private VehicleConfig vehicleConfig;
 	private RobotConfig robotConfig;
+	private PartConfig partConfig;
 
+	private MasterClock masterClock;
+	private MarsClock marsClock;
+	
+	private int solCache = 0;
+	
 	/**
 	 * Constructor.
 	 */
 	public UnitManager() {
 		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
+		
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
+
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
+		
+		if (partConfig == null)
+			partConfig = SimulationConfig.instance().getPartConfiguration();
+		
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
@@ -573,21 +593,12 @@ public class UnitManager implements Serializable {
 				Iterator<AmountResource> j = resourceMap.keySet().iterator();
 				while (j.hasNext()) {
 					AmountResource resource = j.next();
-					// System.out.println("createInitialResources() : resource :
-					// " + resource.getName());
 					double amount = resourceMap.get(resource);
-					// System.out.println("createInitialResources() : amount : "
-					// + amount);
 					Inventory inv = settlement.getInventory();
 					double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
-					// System.out.println("createInitialResources() : capacity
-					// is "+capacity);
-					if (amount > capacity) {
+					if (amount > capacity)
 						amount = capacity;
-					}
 					inv.storeAmountResource(resource, amount, true);
-
-					//System.out.println(settlement.getName() + " -\t" + resource.getName() + " -\t" + amount + " / " + capacity);
 				}
 			}
 		} catch (Exception e) {
@@ -1789,6 +1800,16 @@ public class UnitManager implements Serializable {
 		//logger.info("UnitManager's timePassing() is in " + Thread.currentThread().getName());
 		// it's in pool-5-thread-1
 
+        int solElapsed = marsClock.getMissionSol();
+
+        if (solCache != solElapsed) {
+        	solCache = solElapsed;
+        	
+        	partConfig.computeMTBF(solElapsed);
+   
+        	
+        }
+		
 		if (justReloaded) {
 			Collection<Settlement> c = CollectionUtils.getSettlement(units);
 			for (Settlement s : c) {

@@ -2985,7 +2985,7 @@ public class MainScene {
 
 		benchmarkLabel.setText (masterClock.getDiffCache() + "");
 
-		int solElapsed = marsClock.getSolElapsedFromStart();
+		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solElapsedCache) {
 
 			if (solElapsed == 1) {

@@ -55,7 +55,7 @@ public class JobAssignment implements Serializable {
 
 	public void setSolSubmitted() {
 		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		sol = marsClock.getSolElapsedFromStart();//marsClock);
+		sol = marsClock.getMissionSol();//marsClock);
 	}
 
 	//public MarsClock getTimeAuthorized() {

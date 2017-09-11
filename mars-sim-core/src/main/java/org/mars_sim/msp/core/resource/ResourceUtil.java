@@ -94,6 +94,8 @@ public class ResourceUtil implements Serializable {
 	// The drawback is that this won't work if one loads from a saved sim that has an outdated list of Amount Resources
 	private AmountResourceConfig amountResourceConfig;
 
+	private ItemResourceUtil itemResourceUtil;
+	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -143,6 +145,8 @@ public class ResourceUtil implements Serializable {
 	 */
     private ResourceUtil() {
     	createResourceSet();
+    	
+    	createItemResourceUtil();
     }
 
 	/**
@@ -176,10 +180,15 @@ public class ResourceUtil implements Serializable {
 		createARs();
     }
 
+    public void createItemResourceUtil() {
+    	itemResourceUtil = new ItemResourceUtil();
+    }
+    
 	public void createResourceSet() {
  		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
  		//System.out.println("amountResourceConfig : " + System.identityHashCode(amountResourceConfig));
 		resources = amountResourceConfig.getAmountResources();
+		
 	}
 
     public void createMaps() {

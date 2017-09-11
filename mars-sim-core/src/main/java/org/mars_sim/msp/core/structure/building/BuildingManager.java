@@ -761,7 +761,7 @@ public class BuildingManager implements Serializable {
 		//	marsClock = masterClock.getMarsClock();
 
         // check for the passing of each day
-        int solElapsed = marsClock.getSolElapsedFromStart();
+        int solElapsed = marsClock.getMissionSol();
 
         if (solCache != solElapsed) {
         	solCache = solElapsed;

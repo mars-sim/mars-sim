@@ -53,6 +53,7 @@ implements Serializable {
 	private static MalfunctionConfig config;
 	
 	private static Malfunction meteoriteMalfunction;
+	
 
 	/**
 	 * Constructs a MalfunctionFactory object.
@@ -65,6 +66,8 @@ implements Serializable {
 
 		 malfunctions = config.getMalfunctionList();
 		 //logger.info("Done with calling config.getMalfunctionList()");
+		 
+		 
 	}
 
 	/**

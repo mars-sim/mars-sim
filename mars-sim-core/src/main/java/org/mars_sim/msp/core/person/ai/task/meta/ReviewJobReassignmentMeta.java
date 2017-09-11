@@ -121,7 +121,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 		                            if (marsClock == null)
 		                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		                            // if the job assignment submitted date is > 1 sol
-		                            int sol = marsClock.getSolElapsedFromStart();
+		                            int sol = marsClock.getMissionSol();
 		                            int solRequest = list.get(list.size()-1).getSolSubmitted();
 		                            if (sol == solRequest+1)
 		                                result += 1000D;

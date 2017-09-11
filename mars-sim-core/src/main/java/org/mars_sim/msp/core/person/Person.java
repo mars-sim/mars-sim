@@ -824,7 +824,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				}
 
 				// check for the passing of each day
-				int solElapsed = marsClock.getSolElapsedFromStart();
+				int solElapsed = marsClock.getMissionSol();
 
 				if (solCache != solElapsed) {
 					// 2016-04-20 Added updating a person's age

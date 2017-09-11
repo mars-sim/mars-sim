@@ -21,7 +21,7 @@ public class TestGoods extends TestCase {
 
     protected void setUp() throws Exception {
         SimulationConfig.loadConfig();
-        hammer = ItemResource.createItemResource("hammer", 1, "a tool", 1.4D);
+        hammer = ItemResource.createItemResource("hammer", 1, "a tool", 1.4D, 1);
         goodsList = GoodsUtil.getGoodsList();
     }
 

@@ -2,8 +2,7 @@ package org.mars_sim.msp.core.resource;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+
 
 import junit.framework.TestCase;
 
@@ -25,13 +24,14 @@ public class TestItemResource extends TestCase {
         SimulationConfig.loadConfig();
         
         // initialize 
-        new ItemResource();
+        //new ItemResource();
+       	ResourceUtil.getInstance();
+        resources = ItemResourceUtil.getItemResources();
         
-        hammer = ItemResource.createItemResource("hammer", 1, "a tool", 1.4D);
-        socketWrench = ItemResource.createItemResource("socket wrench", 2, "another tool", .5D);
-        pipeWrench = ItemResource.createItemResource("pipe wrench", 3, "and another tool", 2.5D);
-        resources = ItemResource.getItemResources();
-        
+        hammer = ItemResource.createItemResource("hammer", 1, "a tool", 1.4D, 1);
+        socketWrench = ItemResource.createItemResource("socket wrench", 2, "another tool", .5D, 1);
+        pipeWrench = ItemResource.createItemResource("pipe wrench", 3, "and another tool", 2.5D, 1);
+ 
         resources = Arrays.asList(hammer, socketWrench, pipeWrench);
         
     }

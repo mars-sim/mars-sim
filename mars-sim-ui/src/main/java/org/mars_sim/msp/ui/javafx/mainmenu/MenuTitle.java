@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
-import javafx.geometry.Pos;
+//import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;

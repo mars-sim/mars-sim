@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -160,7 +161,7 @@ public class GoodsUtil {
 	 * Populates the goods list with all item resources.
 	 */
 	private static void populateItemResources() {
-		Iterator<Part> i = ItemResource.getItemResources().iterator();
+		Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
 		//Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
 		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}

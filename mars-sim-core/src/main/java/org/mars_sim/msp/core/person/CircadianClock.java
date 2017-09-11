@@ -48,8 +48,9 @@ public class CircadianClock implements Serializable {
  	private int spaceOut = 0;
 
  	// From http://www.webmd.com/diet/features/your-hunger-hormones#1, 
- 	// Leptin, aka the safety hormone, is a hormone, made by fat cells, that decreases your appetite. 
- 	// Whereas, Ghrelin is a hormone that increases appetite, and also plays a role in body weight.
+ 	// Leptin, aka the safety hormone, is a hormone, made by fat cells, that decreases our appetite. 
+ 	
+ 	// Ghrelin is a hormone that increases appetite, and makes us wanting to eat. It also plays a role in body weight.
  	
  	// From http://www.webmd.com/diet/obesity/features/the-facts-on-leptin-faq#1 :
  	// When your leptin level is above that threshold, your brain senses that you have energy sufficiency, meaning
@@ -111,7 +112,7 @@ public class CircadianClock implements Serializable {
 	
 	public void timePassing(double time, LifeSupportType support) {
 
-    	int solElapsed = marsClock.getSolElapsedFromStart();
+    	int solElapsed = marsClock.getMissionSol();
 
     	if (solCache != solElapsed) {
     		
@@ -477,6 +478,7 @@ public class CircadianClock implements Serializable {
      * @param time
      */
     //During sleep, levels of ghrelin decrease, because sleep requires far less energy than being awake does.
+    //Level of leptin increases
     public void getRested(double time) {
     	increaseLeptinToThreshold(time);
         decreaseGhrelin(time);	

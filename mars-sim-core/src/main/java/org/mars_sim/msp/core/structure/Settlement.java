@@ -1267,7 +1267,7 @@ implements Serializable, LifeSupportType, Objective {
 	// 2015-01-09 Added makeDailyReport()
 	public void performEndOfDayTasks() {
 		// check for the passing of each day
-		int solElapsed = marsClock.getSolElapsedFromStart();
+		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
 			// getFoodEnergyIntakeReport();
 

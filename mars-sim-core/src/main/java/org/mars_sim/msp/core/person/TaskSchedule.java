@@ -123,7 +123,7 @@ public class TaskSchedule implements Serializable {
 		this.phase = phase;
 
 		int startTime = (int) marsClock.getMillisol();
-		int solElapsed = marsClock.getSolElapsedFromStart();
+		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
     		//2016-09-22 Removed the sol log from LAST_SOL ago
         	if (solElapsed > NUM_SOLS) {

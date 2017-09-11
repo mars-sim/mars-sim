@@ -361,7 +361,7 @@ public class Malfunction implements Serializable {
 
     			// 2015-02-26 Added produceSolidWaste()
                 //produceSolidWaste(part.getMass(), "Solid Waste", inv);
-                Storage.storeAnResource(part.getMass(), ResourceUtil.solidWasteAR, inv, sourceName + "::repairWithParts");
+                Storage.storeAnResource(part.getMassPerItem(), ResourceUtil.solidWasteAR, inv, sourceName + "::repairWithParts");
 
     			if (numberNeeded > 0) repairParts.put(part, numberNeeded);
     			else repairParts.remove(part);

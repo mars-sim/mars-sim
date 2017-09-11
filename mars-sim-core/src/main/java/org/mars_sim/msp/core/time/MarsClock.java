@@ -76,8 +76,8 @@ public class MarsClock implements Serializable {
 	public static final int THE_FIRST_SOL = 9353;
 
 	// Martian/Gregorian calendar conversion
-	public static final double SECONDS_IN_MILLISOL = 88.775244; // 1 millisol =
-																// 88.775244 sec
+	public static final double SECONDS_IN_MILLISOL = 88.775244; 
+	// 1 millisol = 88.775244 sec
 
 	// from https://www.teuse.net/games/mars/mars_dates.html
 	// Demios only takes 30hrs, and Phobos 7.6hrs to rotate around mars
@@ -119,14 +119,14 @@ public class MarsClock implements Serializable {
 	// Data members
 	private int orbit;
 	private int month;
-	private int sol;
+	private int sol; // the sol in a month
 	private double millisol;
 
 	private OrbitInfo orbitInfo;
 
 	private Simulation sim = Simulation.instance();
 
-	private int solElapsed = 1;
+	private int missionSol = 1;
 
 	/**
 	 * Constructor with date string parameter.
@@ -168,13 +168,14 @@ public class MarsClock implements Serializable {
 		if (orbitInfo == null)
 			orbitInfo = sim.getMars().getOrbitInfo();
 
-		solElapsed = 1;
 	}
 
 	/**
-	 * Constructs a MarsClock object with a given time param orbit current orbit
-	 * param month current month param sol current sol param millisol current
-	 * millisol
+	 * Constructs a MarsClock object with a given time 
+	 * @param orbit current orbit
+	 * @param month current month 
+	 * @param sol current sol 
+	 * @param millisol current millisol
 	 */
 	public MarsClock(int orbit, int month, int sol, double millisol) {
 		// logger.info("MarsClock's constructor is on " +
@@ -262,18 +263,18 @@ public class MarsClock implements Serializable {
 	 */
 
 	/**
-	 * Returns the total number of sols since the start of the simulation
-	 *
-	 * @return the total number of sol as an integer
+	 * Returns the mission sol. Note: the first day of the mission is Sol 1
+	 * @return sol
 	 */
-	// 2015-02-09 Added getSolElapsedFromStart
-	public int getSolElapsedFromStart() {
+	public int getMissionSol() {
+		return missionSol;
+/*		
 		if (solElapsed != sol) {
 			solElapsed = sol;
 			// System.out.println("sol from start : " + solElapsed);
 		}
 		return solElapsed;
-
+*/
 		/*
 		 * int result = 0;
 		 *
@@ -367,9 +368,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Adds time to the calendar Note: negative time should be used to subtract
-	 * time.
-	 *
+	 * Adds time to the calendar Note: negative time should be used to subtract time.
 	 * @param addedMillisols
 	 *            millisols to be added to the calendar
 	 */
@@ -382,6 +381,7 @@ public class MarsClock implements Serializable {
 				// System.out.println("MarsClock : millisol >= 1000D");
 				millisol -= 1000D;
 				sol += 1;
+				missionSol += 1;
 				if (sol > getSolsInMonth(month, orbit)) {
 					sol = 1;
 					month += 1;
@@ -396,6 +396,7 @@ public class MarsClock implements Serializable {
 			while (millisol < 0D) {
 				millisol += 1000D;
 				sol -= 1;
+				missionSol -= 1;
 				if (sol < 1) {
 					month -= 1;
 					if (month < 1) {

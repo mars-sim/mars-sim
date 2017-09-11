@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,9 +24,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
-import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
-import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.medical.Complaint;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
@@ -266,7 +263,7 @@ implements Serializable {
   
 	        boolean illnessEvent = false;
 
-	    	int solElapsed = marsClock.getSolElapsedFromStart();
+	    	int solElapsed = marsClock.getMissionSol();
 
 	    	if (solCache != solElapsed) {
 

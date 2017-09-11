@@ -304,7 +304,7 @@ extends ToolWindow {
     	if (marsClock == null)
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-    	sol = marsClock.getSolElapsedFromStart();
+    	sol = marsClock.getMissionSol();
     	pop = mapPanel.getSettlement().getAllAssociatedPeople().size();
     	cap = mapPanel.getSettlement().getPopulationCapacity();
 
@@ -424,7 +424,7 @@ extends ToolWindow {
 			marsTimeString = t;
 		}
 	*/
-    	int s = marsClock.getSolElapsedFromStart();
+    	int s = marsClock.getMissionSol();
     	int p = mapPanel.getSettlement().getAllAssociatedPeople().size();
     	int c = mapPanel.getSettlement().getPopulationCapacity();
 

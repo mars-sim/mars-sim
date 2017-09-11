@@ -41,7 +41,7 @@ public class ConstructionSiteTest extends TestCase {
         site = new ConstructionSite(Settlement.createConstructionStage());
 
         Map<Part, Integer> parts = new HashMap<Part, Integer>(1);
-        parts.put(new Part("test part", 1, "test resource description", 1D), 1);
+        parts.put(new Part("test part", 1, "test resource description", 1D, 1), 1);
 
         Map<AmountResource, Double> resources = new HashMap<AmountResource, Double>(1);
         resources.put(new AmountResource(1, "test resource", "test type", "test resource description", Phase.SOLID, false, false), 1D);
@@ -49,7 +49,7 @@ public class ConstructionSiteTest extends TestCase {
         List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Part> attachments = new ArrayList<Part>(1);
-        attachments.add(new Part("attachment part", 2, "test resource description", 1D));
+        attachments.add(new Part("attachment part", 2, "test resource description", 1D, 1));
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 

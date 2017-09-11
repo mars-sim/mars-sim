@@ -28,7 +28,7 @@ public class ConstructionVehicleTypeTest extends TestCase {
         super.setUp();
         
         List<Part> attachments = new ArrayList<Part>(1);
-        attachments.add(new Part("attachment part", 1, "test resource description", 1D));
+        attachments.add(new Part("attachment part", 1, "test resource description", 1D, 1));
         vehicleType = new ConstructionVehicleType("Light Utility Vehicle", 
                 LightUtilityVehicle.class, attachments);
     }

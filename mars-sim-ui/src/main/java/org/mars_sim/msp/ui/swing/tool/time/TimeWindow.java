@@ -573,7 +573,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 					if (martianTimeLabel != null)
 						martianTimeLabel.setText(ts);
 			//});
-			int solElapsed = marsTime.getSolElapsedFromStart();
+			int solElapsed = marsTime.getMissionSol();
 			// 2015-02-24 Added solElapsedCache
 			if (solElapsed != solElapsedCache) {
 				//SwingUtilities.invokeLater(() -> {

@@ -140,7 +140,7 @@ implements Serializable {
 
     		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
     	        // check for the passing of each day
-    	        int solElapsed = sim.getMasterClock().getMarsClock().getSolElapsedFromStart();
+    	        int solElapsed = sim.getMasterClock().getMarsClock().getMissionSol();
     	        if (solElapsed != solCache) {
     	        	solCache = solElapsed;
     	        	jobLock = false;

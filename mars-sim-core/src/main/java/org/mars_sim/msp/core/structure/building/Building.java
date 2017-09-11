@@ -1168,7 +1168,7 @@ LocalBoundedObject, InsidePathLocation {
 			marsClock = masterClock.getMarsClock();
 
         // check for the passing of each day
-        int solElapsed = marsClock.getSolElapsedFromStart();
+        int solElapsed = marsClock.getMissionSol();
         int moment_of_impact = 0;
 
         if (solElapsed != solCache) {

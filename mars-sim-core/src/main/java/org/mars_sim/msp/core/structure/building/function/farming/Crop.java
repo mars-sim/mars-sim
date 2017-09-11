@@ -799,7 +799,7 @@ public class Crop implements Serializable {
 				}
 				
 				// check for the passing of each day
-				int newSol = marsClock.getSolElapsedFromStart();
+				int newSol = marsClock.getMissionSol();
 				if (newSol != currentSol) {
 					// TODO: what needs to be done at the end of each sol ?
 					currentSol = newSol;
@@ -950,7 +950,7 @@ public class Crop implements Serializable {
 	    }
 	
 	    // check for the passing of each day
-	    int newSol = marsClock.getSolElapsedFromStart();
+	    int newSol = marsClock.getMissionSol();
 		// the crop has memory of the past lighting condition
 		lightModifier = cumulativeDailyPAR / dailyPARRequired;
 		// TODO: If too much light, the crop's health may suffer unless a person comes to intervene

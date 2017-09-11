@@ -262,7 +262,7 @@ implements ActionListener {
 	                	if (starRater.isEnabled()) {
 		                    //System.out.println(selection);
 		            		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		            		int sol = marsClock.getSolElapsedFromStart();
+		            		int sol = marsClock.getMissionSol();
 		            		dateTimeRatingSubmitted =  MarsClock.getDateTimeStamp(marsClock);
 		                	ratingLabel.setText("Job rating submitted on " + dateTimeRatingSubmitted);
 		                	ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -410,7 +410,7 @@ implements ActionListener {
         	ratingLabel.setText("");
         }
         else {
-    		int solElapsed = marsClock.getSolElapsedFromStart();
+    		int solElapsed = marsClock.getMissionSol();
         	if (solElapsed > solRatingSubmitted + RATING_DAYS) {
 	        	starRater.setEnabled(true);
 				starRater.setSelection(0);
@@ -585,7 +585,7 @@ implements ActionListener {
 				checkingJobReassignment(person, list);
 
 		        // check for the passing of each day
-		        int solElapsed = marsClock.getSolElapsedFromStart();
+		        int solElapsed = marsClock.getMissionSol();
 
 	        	// If the rating or job reassignment request is at least one day ago
 		        if (solElapsed != solCache) {

@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.building.Building;
+//import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * The Part class represents a type of unit resource that is used for maintenance and repairs.
@@ -20,10 +20,6 @@ public class Part extends ItemResource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private int id;
-	
-	private double mass;
-
 	// Domain members
 	private List<MaintenanceEntity> maintenanceEntities;
 
@@ -32,33 +28,14 @@ public class Part extends ItemResource {
      * @param name the name of the part.
      * @param description {@link String}
      * @param mass the mass of the part (kg)
+     * @param the sol when this part is put to use
      */
-    public Part(String name, int id, String description, double mass) {
+    public Part(String name, int id, String description, double mass, int solsUsed) {
         // Use ItemResource constructor.
-        super(name, id, description, mass);
-        this.mass = mass;
-        this.id = id;
-
+        super(name, id, description, mass, solsUsed);
+        
         maintenanceEntities = new ArrayList<MaintenanceEntity>();
     }
-
-	/**
-	 * Gets the part's id.
-	 * @return part id.
-	 */
-	@Override
-	public int getID() {
-		return id;
-	}
-	
-	/**
-	 * Gets the part's mass.
-	 * @return mass in kg.
-	 */
-    public double getMass() {
-    	return mass;
-    }
-
 
     /**
      * Adds a maintenance entity for the part.
@@ -136,7 +113,7 @@ public class Part extends ItemResource {
     public static Set<Part> getParts() {
         Set<Part> result = new HashSet<Part>();
 
-        Iterator<Part> i = ItemResource.getItemResources().iterator();
+        Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
         while (i.hasNext()) {
             ItemResource resource = i.next();
             if (resource instanceof Part) {

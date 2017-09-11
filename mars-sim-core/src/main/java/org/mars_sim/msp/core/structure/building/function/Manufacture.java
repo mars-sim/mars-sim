@@ -723,7 +723,7 @@ implements Serializable {
         //MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // check for the passing of each day
-        int solElapsed = marsClock.getSolElapsedFromStart();
+        int solElapsed = marsClock.getMissionSol();
         if (solElapsed != solCache) {
             solCache = solElapsed;
             supportingProcesses = inv.getItemResourceNum(printerItem); // b_inv

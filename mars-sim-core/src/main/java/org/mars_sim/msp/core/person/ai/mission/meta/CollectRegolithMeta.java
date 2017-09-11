@@ -56,7 +56,7 @@ public class CollectRegolithMeta implements MetaMission {
 
     	double result = 0;
 
-        if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < MIN_STARTING_SOL)
+        if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() < MIN_STARTING_SOL)
         	return 0;
 
 

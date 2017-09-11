@@ -719,7 +719,8 @@
 	<part name="flexible hose" mass=".1"/>
 
 	<part name="polycarbonate roofing" mass="1">
-		<description>highly transparent, "bullet-resistant" plastic cladding roofing for greenhouses</description>
+		<description>highly transparent, "bullet-resistant" plastic cladding 
+			roofing for greenhouses</description>
 	</part>
 
 	<part name="small stepper motor" mass="1.5">
@@ -737,7 +738,8 @@
 	</part>
 
 	<part name="fuel cell stack" mass="10">
-		<description>Each fuel cell stack comprises 25 solid oxide fuel cell (SOFC), totalling 5kWe</description>
+		<description>Each fuel cell stack comprises 25 solid oxide fuel cell 
+			(SOFC), totalling 5 kWe</description>
 	    <maintenance-entity-list>
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="methane power generator" probability="1" max-number="15" />

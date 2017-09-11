@@ -443,7 +443,7 @@ public class Preference implements Serializable {
 	    if (marsClock == null)
 	    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		int solElapsed = marsClock.getSolElapsedFromStart();
+		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
 
 			

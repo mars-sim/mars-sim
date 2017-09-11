@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Phase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -229,7 +230,7 @@ public class GoodsManager implements Serializable {
         }
 
         // Create parts demand cache.
-        partsDemandCache = new HashMap<Part, Double>(ItemResource.getItemResources().size());
+        partsDemandCache = new HashMap<Part, Double>(ItemResourceUtil.getItemResources().size());
 
         // Create vehicle caches.
         vehicleBuyValueCache = new HashMap<String, Double>();
@@ -346,7 +347,7 @@ public class GoodsManager implements Serializable {
         // 2015-01-15 Added solElapsed
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
-        int solElapsed = marsClock.getSolElapsedFromStart();
+        int solElapsed = marsClock.getMissionSol();
         // System.out.println("GoodManager : solElapsed : "+ solElapsed);
         // Compact and/or clear supply and demand maps every 5 days
         solElapsed = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
@@ -1552,7 +1553,7 @@ public class GoodsManager implements Serializable {
      * @return map of parts and their demand.
      */
     private void determinePartsDemand() {
-        Map<Part, Double> partsProbDemand = new HashMap<Part, Double>(ItemResource.getItemResources().size());
+        Map<Part, Double> partsProbDemand = new HashMap<Part, Double>(ItemResourceUtil.getItemResources().size());
 
         // Get all malfunctionables associated with settlement.
         Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();

@@ -307,7 +307,7 @@ implements Serializable {
 	public void timePassing(double time) {
 		this.time = time;
         // check for the passing of each day
-        int solElapsed = marsClock.getSolElapsedFromStart();
+        int solElapsed = marsClock.getMissionSol();
         
         if (solElapsed != solCache) {
         	solCache = solElapsed;

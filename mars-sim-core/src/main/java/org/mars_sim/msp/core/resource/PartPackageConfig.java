@@ -44,8 +44,8 @@ public class PartPackageConfig implements Serializable {
 	 */
 	public PartPackageConfig(Document partPackageDoc) {
     	// 2016-12-07 Call to just initialize PartConfig in this constructor
-       	new ItemResource();
-       	
+       	//new ItemResource();
+       	ResourceUtil.getInstance();
 		partPackages = new ArrayList<PartPackage>();
 		loadPartPackages(partPackageDoc);
 	}
