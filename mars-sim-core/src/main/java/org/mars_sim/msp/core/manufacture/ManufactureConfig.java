@@ -11,14 +11,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 
 public class ManufactureConfig implements Serializable {
 
@@ -147,11 +150,11 @@ public class ManufactureConfig implements Serializable {
             List<Element> resourceNodes) {
         for (Element resourceElement : resourceNodes) {
             ManufactureProcessItem resourceItem = new ManufactureProcessItem();
-            resourceItem.setType(Type.AMOUNT_RESOURCE);
+            resourceItem.setType(ItemType.AMOUNT_RESOURCE);
             String resourceName = resourceElement.getAttributeValue(NAME).toLowerCase();
             AmountResource resource = AmountResource.findAmountResource(resourceName);
 			if (resource == null)
-				logger.info(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
+				logger.severe(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
 			else {			
 	            resourceItem.setName(resourceName);
 	            resourceItem.setAmount(Double.parseDouble(resourceElement
@@ -171,13 +174,13 @@ public class ManufactureConfig implements Serializable {
             List<Element> partNodes) {
         for (Element partElement : partNodes) {
             ManufactureProcessItem partItem = new ManufactureProcessItem();
-            partItem.setType(Type.PART);
+            partItem.setType(ItemType.PART);
             
             String partName = partElement.getAttributeValue(NAME);
             Part part = (Part) ItemResource.findItemResource(partName);
             
 			if (part == null)
-				logger.info(partName + " shows up in manufacturing.xml but doesn't exist in parts.xml.");
+				logger.severe(partName + " shows up in manufacturing.xml but doesn't exist in parts.xml.");
 			else {         
 	            partItem.setName(partName);
 	            partItem.setAmount(Integer.parseInt(partElement
@@ -197,11 +200,25 @@ public class ManufactureConfig implements Serializable {
             List<Element> equipmentNodes) {
         for (Element equipmentElement : equipmentNodes) {
             ManufactureProcessItem equipmentItem = new ManufactureProcessItem();
-            equipmentItem.setType(Type.EQUIPMENT);
-            equipmentItem.setName(equipmentElement.getAttributeValue(NAME));
-            equipmentItem.setAmount(Integer.parseInt(equipmentElement
-                    .getAttributeValue(NUMBER)));
-            list.add(equipmentItem);
+            equipmentItem.setType(ItemType.EQUIPMENT);
+            String equipmentName = equipmentElement.getAttributeValue(NAME);
+            
+            Set<String> names = EquipmentType.getEquipmentTypeString();//EquipmentFactory.getEquipmentNames();
+            boolean result = false;
+            for (String s : names) {
+            	if (s.equalsIgnoreCase(equipmentName)) {
+    	            result = true;
+            	}
+            }
+            
+        	if (result) {
+	            equipmentItem.setName(equipmentName);
+	            equipmentItem.setAmount(Integer.parseInt(equipmentElement.getAttributeValue(NUMBER)));
+	            list.add(equipmentItem);
+        	}
+        	else 
+				logger.severe("The equipment '" + equipmentName + "' shows up in manufacturing.xml but doesn't "
+						+ "exist in EquipmentType.");
         }
     }
 
@@ -215,7 +232,7 @@ public class ManufactureConfig implements Serializable {
             List<Element> vehicleNodes) {
         for (Element vehicleElement : vehicleNodes) {
             ManufactureProcessItem vehicleItem = new ManufactureProcessItem();
-            vehicleItem.setType(Type.VEHICLE);
+            vehicleItem.setType(ItemType.VEHICLE);
             vehicleItem.setName(vehicleElement.getAttributeValue(NAME));
             vehicleItem.setAmount(Integer.parseInt(vehicleElement
                     .getAttributeValue(NUMBER)));

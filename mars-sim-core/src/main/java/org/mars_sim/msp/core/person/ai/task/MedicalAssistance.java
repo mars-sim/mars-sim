@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -88,7 +86,7 @@ implements Serializable {
 	public MedicalAssistance(Person person) {
 		super(NAME, person, true, true, STRESS_MODIFIER, true, 0D);
 
-        toxicWasteAR = ResourceUtil.toxicWasteAR;//AmountResource.findAmountResource(TOXIC_WASTE);
+        toxicWasteAR = ResourceUtil.toxicWasteAR;
 
 		// Get a local medical aid that needs work.
 		List<MedicalAid> localAids = getNeedyMedicalAids(person);
@@ -228,7 +226,7 @@ implements Serializable {
 			try {
 				Building building = getMedicalAidBuilding(person);
 				if (building != null) {
-					result.add((MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE));
+					result.add(building.getMedical());
 				}
 			}
 			catch (Exception e) {
@@ -353,7 +351,7 @@ implements Serializable {
 			Iterator<Building> i = medicalBuildings.iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				MedicalCare medical = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+				MedicalCare medical = building.getMedical();
 				if (isNeedyMedicalAid(medical)) {
 					needyMedicalBuildings.add(building);
 				}
@@ -427,39 +425,9 @@ implements Serializable {
 	public void produceMedicalWaste() {
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
-            //Inventory inv = containerUnit.getInventory();
-        	//System.out.println("MedicalAssistance : toxicWasteAR is " + toxicWasteAR);
-            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteAR, containerUnit.getInventory());
-            //System.out.println("MedicalAssistance.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);
+            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteAR, containerUnit.getInventory(), sourceName + "::produceMedicalWaste");
 	     }
 	}
-
-/*
-	// 2015-02-06 Added storeAnResource()
-	public boolean storeAnResource(double amount, String name, Inventory inv) {
-		boolean result = false;
-		try {
-			AmountResource ar = AmountResource.findAmountResource(name);
-			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-
-			if (remainingCapacity < amount) {
-			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-				amount = remainingCapacity;
-				result = false;
-			    //logger.info("addHarvest() : storage is full!");
-			}
-			else {
-				inv.storeAmountResource(ar, amount, true);
-				inv.addAmountSupplyAmount(ar, amount);
-				result = true;
-			}
-		} catch (Exception e) {
-    		logger.log(Level.SEVERE,e.getMessage());
-		}
-
-		return result;
-	}
-*/
 
 	@Override
 	public void destroy() {

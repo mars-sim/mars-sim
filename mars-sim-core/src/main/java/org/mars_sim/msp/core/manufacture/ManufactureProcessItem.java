@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 
 /**
  * A manufacturing process input or output item.
@@ -22,7 +22,7 @@ public class ManufactureProcessItem implements Serializable {
 
 	// Data members
 	private String name;
-	private Type type;
+	private ItemType type;
 	private double amount;
 	
 	public String getName() {
@@ -33,11 +33,11 @@ public class ManufactureProcessItem implements Serializable {
 		this.name = name;
 	}
 	
-	public Type getType() {
+	public ItemType getType() {
 		return type;
 	}
 	
-	public void setType(Type type) {
+	public void setType(ItemType type) {
 		this.type = type;
 	}
 	

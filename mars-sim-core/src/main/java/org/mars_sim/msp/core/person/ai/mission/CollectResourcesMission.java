@@ -722,8 +722,7 @@ implements Serializable {
                 new Coordinates(0, 0), true);
 
         // Determine needed repair parts for EVA suits.
-        Map<Part, Double> parts = suit.getMalfunctionManager()
-                .getRepairPartProbabilities();
+        Map<Part, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
         Iterator<Part> i = parts.keySet().iterator();
         while (i.hasNext()) {
             Part part = i.next();

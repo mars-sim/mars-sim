@@ -652,8 +652,8 @@ implements Serializable {
     		usage = 1 - rand;
     	Storage.retrieveAnResource(usage, waterAR, inv, true);
 		double wasteWaterAmount = usage * .5;
-		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + "::consumeWater");
-
+		if (wasteWaterAmount > 0)
+			Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + "::consumeWater");
     }
 
 
@@ -684,7 +684,8 @@ implements Serializable {
                         double num = RandomUtil.getRandomDouble(8 * quality);
                         if (num < 1) {
                             // Throw out bad dessert as food waste.
-                            Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv, "::timePassing");
+                            if (getDryMass(dessert.getName()) > 0)
+                            		Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv, "::timePassing");
                             LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
                             		getDryMass(dessert.getName()) + " kg "
                                     + dessert.getName()

@@ -104,16 +104,18 @@
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->
 			<resource type="food" amount="1657.0" />
-			
+
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
 			<resource type="food waste" amount="25.0" />			
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />			
 			
+			<resource type="methane" amount="3000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="fertilizer" amount="10.0" />
-			<resource type="argon" amount="10.0" />
+			<resource type="argon" amount="10.0" />		
+			
+			<resource type="fertilizer" amount="50.0" />
 			
 			<!-- Food Derived Items -->
 			<resource type="mustard" amount="50.0" />
@@ -305,10 +307,12 @@
 			<resource type="food waste" amount="25.0" />			
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
-						
+			
+			<resource type="methane" amount="6000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
+			<resource type="argon" amount="10.0" />		
+			
 			<resource type="fertilizer" amount="50.0" />
-			<resource type="argon" amount="10.0" />			
 
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
@@ -536,9 +540,11 @@
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
 			
+			<resource type="methane" amount="9000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
+			<resource type="argon" amount="10.0" />		
+			
 			<resource type="fertilizer" amount="50.0" />
-			<resource type="argon" amount="10.0" />
 			
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
@@ -863,10 +869,11 @@
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
 			
+			<resource type="methane" amount="13000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="fertilizer" amount="50.0" />
-			<resource type="argon" amount="10.0" />
+			<resource type="argon" amount="10.0" />		
 			
+			<resource type="fertilizer" amount="50.0" />
 			<!-- Crop -->
 			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cabbage" amount="50.0" />
@@ -1120,11 +1127,11 @@
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
 			
-			<resource type="methane" amount="16000.0" />
-			
+			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="fertilizer" amount="50.0" />
-			<resource type="argon" amount="10.0" />			
+			<resource type="argon" amount="10.0" />		
+			
+			<resource type="fertilizer" amount="50.0" />	
 			
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
@@ -1279,11 +1286,11 @@
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
 			
-			<resource type="methane" amount="16000.0" />
-
+			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="fertilizer" amount="50.0" />
-			<resource type="argon" amount="10.0" />			
+			<resource type="argon" amount="10.0" />		
+			
+			<resource type="fertilizer" amount="50.0" />		
 			
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			

@@ -22,7 +22,7 @@ import javax.swing.JProgressBar;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -209,7 +209,7 @@ public class ManufacturePanel extends JPanel {
      * @return amount string.
      */
     private static String getItemAmountString(ManufactureProcessItem item) {
-    	if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+    	if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 			return item.getAmount() + " kg";
     	}
 		else return Integer.toString((int) item.getAmount());

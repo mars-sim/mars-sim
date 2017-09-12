@@ -74,6 +74,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.WasteDisposal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -181,6 +182,8 @@ LocalBoundedObject, InsidePathLocation {
 	private LivingAccommodations livingAccommodations;
 	private PreparingDessert preparingDessert;
 	private Cooking cooking;
+	private MedicalCare medical;
+	private WasteDisposal waste;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -508,6 +511,17 @@ LocalBoundedObject, InsidePathLocation {
 		return cooking;
 	}
 	
+	public MedicalCare getMedical() {
+		if (medical == null)
+			medical = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
+		return medical;	
+	}
+	
+	public WasteDisposal getWaste() {
+		if (waste == null)
+			waste = (WasteDisposal) getFunction(FunctionType.WASTE_DISPOSAL);
+		return waste;
+	}
     /**
      * Gets the temperature of a building.
      * @return temperature (deg C)

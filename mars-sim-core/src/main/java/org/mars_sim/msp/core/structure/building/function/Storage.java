@@ -89,12 +89,12 @@ implements Serializable {
 
 			double initialAmount = initialResources.get(ar);
 
-			//double remainingCap = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			double remainingCap = inv.getAmountResourceRemainingCapacity(ar, false, false);
 
-			//if (initialAmount > remainingCap)
-			//	initialAmount = remainingCap;
+			if (initialAmount > remainingCap)
+				initialAmount = remainingCap;
 			
-			inv.storeAmountResource(ar, initialAmount, true);
+			inv.storeAmountResource(ar, initialAmount, false);
 		}
 /*
 		// 2017-05-24 initialize inventory of this building for resource storage 
@@ -264,11 +264,12 @@ implements Serializable {
 					amount = remainingCapacity;
 					result = false;
 					double stored = inv.getAmountResourceStored(ar, false);
-				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(AR) Can't store all " + amount 
-				    		+ " kg of '" + ar.getName() 
+				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(AR) Can't store all " 
+				    	+ Math.round(amount*100.0)/100.0 
+				    	+ " kg of '" + ar.getName() 
 				    	+ "' in " + inv.getOwner() 
-				    	+ " (Remaining capacity : " + remainingCapacity
-				    	+ "  Stored : " + stored
+				    	+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
+				    	+ "  Stored : " + Math.round(stored*100.0)/100.0
 				    	+ ")"
 				    	//+ ". Need to allocate more storage space for this resource."
 				    	, null);
@@ -313,14 +314,16 @@ implements Serializable {
 					amount = remainingCapacity;
 					result = false;
 					double stored = inv.getAmountResourceStored(ar, false);
-				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(AR) Can't store all " + amount 
-				    		+ " kg of '" + ar.getName() 
-				    	+ "' in " + inv.getOwner() 
-				    	+ " (Remaining capacity : " + remainingCapacity
-				    	+ "  Stored : " + stored
-				    	+ ")"
+				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(AR) Can't store all "
+					    	+ Math.round(amount*100.0)/100.0 
+					    	+ " kg of '" + ar.getName() 
+					    	+ "' in " + inv.getOwner() 
+					    	+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
+					    	+ "  Stored : " + Math.round(stored*100.0)/100.0
+					    	+ ")"
 				    	//+ ". Need to allocate more storage space for this resource."
-				    	, null);			}
+				    	, null);			
+				    }
 				else {
 					inv.storeAmountResource(ar, amount, true);
 					inv.addAmountSupplyAmount(ar, amount);
@@ -359,8 +362,16 @@ implements Serializable {
 				    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 					amount = remainingCapacity;
 					result = false;
-					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(Str) Can't store more '" 
-					+ name + "' in " + inv.getOwner() + ". Need to allocate more storage space for this resource.", null);
+					double stored = inv.getAmountResourceStored(ar, false);
+				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(String) Can't store all "
+					    	+ Math.round(amount*100.0)/100.0 
+					    	+ " kg of '" + ar.getName() 
+					    	+ "' in " + inv.getOwner() 
+					    	+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
+					    	+ "  Stored : " + Math.round(stored*100.0)/100.0
+					    	+ ")"
+				    	//+ ". Need to allocate more storage space for this resource."
+				    	, null);	
 				}
 				else {
 					inv.storeAmountResource(ar, amount, true);

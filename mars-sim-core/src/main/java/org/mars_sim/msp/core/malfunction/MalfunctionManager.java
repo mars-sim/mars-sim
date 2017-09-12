@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -32,7 +34,9 @@ import org.mars_sim.msp.core.person.medical.Complaint;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -108,11 +112,18 @@ implements Serializable {
 	private double airPressureModifier = 100D;
 	private double temperatureModifier = 100D;
 
-	private MasterClock masterClock;
-	private MarsClock startTime;
-	private MarsClock currentTime;
-	private	MalfunctionFactory factory;
-	private HistoricalEventManager eventManager; 
+	private static MasterClock masterClock;
+	private static MarsClock startTime;
+	private static MarsClock currentTime;
+	
+	private	static MalfunctionFactory factory;
+	private static HistoricalEventManager eventManager; 
+	private static PartConfig partConfig;
+	private static MalfunctionConfig malfunctionConfig;
+	
+	private static SimulationConfig simconfig = SimulationConfig.instance();
+	private static Simulation sim = Simulation.instance();
+	
 	// NOTE : each building has its own MalfunctionManager
 	
 	/**
@@ -136,8 +147,12 @@ implements Serializable {
 		this.wearLifeTime = wearLifeTime;
 		wearCondition = 100D;
 		
-		factory = Simulation.instance().getMalfunctionFactory();
-		eventManager = Simulation.instance().getEventManager();
+		if (partConfig == null)
+			partConfig = simconfig.getPartConfiguration();
+		
+		malfunctionConfig = simconfig.getMalfunctionConfiguration();
+		factory = sim.getMalfunctionFactory();
+		eventManager = sim.getEventManager();
 	}
 
 	/**
@@ -380,10 +395,22 @@ implements Serializable {
 	 * @param malfunction the malfunction to add.
 	 */
 	void addMalfunction(Malfunction malfunction, boolean registerEvent) {
-		if (malfunction == null) throw new IllegalArgumentException("malfunction is null");
+		if (malfunction == null) 
+			throw new IllegalArgumentException("malfunction is null");
 		else {
 			malfunctions.add(malfunction);
 
+			String mal = malfunction.getName();
+/*			
+			if (mal.equalsIgnoreCase("Major Fire"))
+				consumeFireExtingusher(2);
+			else if (mal.equalsIgnoreCase("Medium Fire"))
+				consumeFireExtingusher(1);
+			else if (mal.equalsIgnoreCase("Minor Fire"))
+				consumeFireExtingusher(0);
+			
+			consumeWorkGloves();
+*/			
 			try {
 				getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 			}
@@ -394,12 +421,88 @@ implements Serializable {
 			if (registerEvent) {
 				HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
 				eventManager.registerNewEvent(newEvent);
+				
+				// Register the failure of the Parts involved
+				 Map<Part,Integer> parts = malfunction.getRepairParts();
+				 Set<Part> partSet = parts.keySet();
+				 for (Part p : partSet) {
+					 int num = parts.get(p);
+					 // Increment the number of failure for this Part
+					 partConfig.setFailure(p, num);
+					 
+					 // Recompute the reliability of this Part
+					 partConfig.computeReliability(p);
+				 }
+				
+				 double new_p = 0.0;
+
+				 // Compute the new probability of failure for this malfunction
+				 for (Part p : partSet) {
+					 int id = p.getID();
+					 double rel = partConfig.getReliability(id);
+					 
+					 String name = p.getName();
+					 double needed = malfunctionConfig.getRepairPartProbability(malfunction.getName(), name);
+					 double weight =  (100-rel) * needed/100D;
+					 logger.info(p.getName() + " (Reliability : " + Math.round(rel*100.0)/100.0 
+							 + " %   Needed : " + Math.round(needed*100.0)/100.0 
+							 + " %   Weight : " + Math.round(weight*100.0)/100.0 
+							 + " %)"
+							 );
+					 new_p += weight; 
+				 }
+				 
+				 double old_p = malfunction.getProbability();
+				 logger.info(mal + "'s probability of failure has been updated from " 
+						 + Math.round(old_p*100.0)/100.0  
+						 + " % to " + Math.round(new_p*100.0)/100.0 + " %.");
+				 malfunction.setProbability(new_p);
+				 
 			}
 			
 			issueMedicalComplaints(malfunction);
 		}
 	}
-
+	
+/*
+	public void consumeFireExtingusher(int type) {
+		if (type == 0) {
+			if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
+				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+				
+				int rand = RandomUtil.getRandomInt(3);
+				if (rand > 0)
+					// Say 25% of the time, a fire extinguisher is being used up.
+					entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+			}
+		}
+		else if (type == 1) {
+			if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
+				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+				
+				int rand = RandomUtil.getRandomInt(3);
+				if (rand > 1)
+					// Say 50% of the time, a fire extinguisher is being used up.
+					entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+			}
+		}
+		else if (type == 2) {
+			if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
+				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+				
+			int rand = RandomUtil.getRandomInt(3);
+			if (rand == 0)
+				// Say 25% of the time, a fire extinguisher is being used up.
+				entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 2);
+			else if (rand == 1)
+				// Say 50% of the time, a fire extinguisher is being used up.
+				entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+			}
+		}			
+		
+	}
+*/
+	
 	/**
 	 * Time passing while the unit is being actively used.
 	 * @param time amount of time passing (in millisols)
@@ -412,14 +515,14 @@ implements Serializable {
 		wearCondition -= (time / wearLifeTime) * 100D;
 		if (wearCondition < 0D) wearCondition = 0D;
 
-		// Check for malfunction due to lack of maintenance and wear condition.
 		double maintFactor = effectiveTimeSinceLastMaintenance * MAINTENANCE_MALFUNCTION_FACTOR;
 		double wearFactor = (100D - wearCondition) / 100D * WEAR_MALFUNCTION_FACTOR + 1D;
 		double chance = time * maintFactor * wearFactor;
-
+		
+		// Check for malfunction due to lack of maintenance and wear condition.
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
-        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+        	LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
         			entity.getNickName() + " is behind on maintenance.  "
 					+ "Time since last check-up: " + solsLastMaint
 					+ " sols.  Condition: " + wearCondition + " %.", null);
@@ -837,7 +940,7 @@ implements Serializable {
 
 		// Note : the elaborate if-else conditions below is for passing the maven test
 		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
+			masterClock = sim.getMasterClock();
 		else {
 			if (startTime == null)
 				startTime = masterClock.getInitialMarsTime();
@@ -868,7 +971,7 @@ implements Serializable {
 
 		// Note : the elaborate if-else conditions below is for passing the maven test
 		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
+			masterClock = sim.getMasterClock();
 		else {
 			if (startTime == null)
 				startTime = masterClock.getInitialMarsTime();

@@ -18,7 +18,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
 import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
@@ -30,6 +31,9 @@ import org.mars_sim.msp.core.tool.Conversion;
  * Uses a DOM document to get the information. 
  */
 public class MalfunctionConfig implements Serializable {
+	
+	/** default serial id. */
+	private static final long serialVersionUID = 2L;
 
 	private static final Logger logger = Logger.getLogger(MalfunctionConfig.class.getName());
 
@@ -167,7 +171,8 @@ public class MalfunctionConfig implements Serializable {
 	                    	}
                     	}
                     	if (!exist) {
-                    		throw new IllegalStateException(sys_name + " is NOT recognized in malfunction.");
+                    		throw new IllegalStateException("The system name '" + sys_name 
+                    				+ "' in malfunctions.xml is NOT recognized.");
                     	}
                     	
                     }
@@ -182,16 +187,29 @@ public class MalfunctionConfig implements Serializable {
 
                         for (Element effectElement : effectNodes) {
                             String type = effectElement.getAttributeValue(TYPE);
-                            String effectName = effectElement.getAttributeValue(NAME);
+                            String resourceName = effectElement.getAttributeValue(NAME);
                             Double changeRate = new Double(effectElement.getAttributeValue(CHANGE_RATE));
 
                             if (type.equals("life-support")) {
-                                lifeSupportEffects.put(effectName, changeRate);
-                            } else if (type.equals(Type.AMOUNT_RESOURCE.getName())) {
-                                AmountResource resource = AmountResource.findAmountResource(effectName);
-                                resourceEffects.put(resource, changeRate);
-                            } else {
-                                throw new IllegalStateException("Effect " + effectName + " type not correct in malfunction " + name);
+/*                            	
+                            	if (resourceName.equals("Air Pressure"))
+                            		; // TODO: change the air pressure
+                            	else if (resourceName.equals("Temperature"))
+                            		; // TODO: change the temperature
+                            	else {
+                            	}
+*/                            	
+                                lifeSupportEffects.put(resourceName, changeRate);
+                            } 
+                            else if (type.equals(ItemType.AMOUNT_RESOURCE.getName())) {
+                                AmountResource resource = AmountResource.findAmountResource(resourceName);
+                				if (resource == null)
+                					logger.warning(resourceName + " shows up in malfunctions.xml but doesn't exist in resources.xml.");
+                				else 
+                					resourceEffects.put(resource, changeRate);
+                            } 
+                            else {
+                                throw new IllegalStateException("Effect " + resourceName + " type not correct in malfunction " + name);
                             }
                         }
                     }
@@ -227,9 +245,14 @@ public class MalfunctionConfig implements Serializable {
 
                         for (Element partElement : partNodes) {
                             String partName = partElement.getAttributeValue(NAME);
-                            int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-                            int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY));
-                            addMalfunctionRepairPart(name, partName, partNumber, partProbability);
+            				Part part = (Part) Part.findItemResource(partName);
+            				if (part == null)
+            					logger.severe(partName + " shows up in malfunctions.xml but doesn't exist in parts.xml.");
+            				else {         
+                                int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
+                                int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY));
+                                addMalfunctionRepairPart(name, partName, partNumber, partProbability);
+            				}
                         }
                     }
 
@@ -311,8 +334,8 @@ public class MalfunctionConfig implements Serializable {
      * @param partName the name of the part.
      * @return the probability of the repair part.
      */
-    public int getRepairPartProbability(String malfunctionName, String partName) {
-        int result = 0;
+    public double getRepairPartProbability(String malfunctionName, String partName) {
+        double result = 0;
         List<RepairPart> partList = repairParts.get(malfunctionName);
         if (partList != null) {
             Iterator<RepairPart> i = partList.iterator();
@@ -326,6 +349,23 @@ public class MalfunctionConfig implements Serializable {
         return result;
     }
 
+    public void setRepairPartProbability(String malfunctionName, String partName, double probability) {
+        List<RepairPart> partList = repairParts.get(malfunctionName);
+        if (partList != null) {
+            Iterator<RepairPart> i = partList.iterator();
+            while (i.hasNext()) {
+                RepairPart part = i.next();
+                if (part.name.equalsIgnoreCase(partName)) {
+                    part.setProbability(probability);
+                }
+            }
+        }
+    }
+    
+    public Map<String, List<RepairPart>> getRepairParts() {
+    	return repairParts;
+    }
+    
     /**
      * Prepare object for garbage collection.
      */
@@ -351,7 +391,7 @@ public class MalfunctionConfig implements Serializable {
         // Data members
         private String name;
         private int number;
-        private int probability;
+        private double probability;
 
         /**
          * Constructor
@@ -359,10 +399,14 @@ public class MalfunctionConfig implements Serializable {
          * @param number the maximum number of parts.
          * @param probability the probability of the part being needed.
          */
-        private RepairPart(String name, int number, int probability) {
+        private RepairPart(String name, int number, double probability) {
             this.name = name;
             this.number = number;
             this.probability = probability;
+        }
+        
+        public void setProbability(double probability) {
+        	this.probability = probability;
         }
     }
 }

@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -274,7 +274,7 @@ implements Serializable {
 
         // Consume inputs.
         for (ManufactureProcessItem item : process.getInfo().getInputList()) {
-            if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+            if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
                 //s_inv
                 inv.retrieveAmountResource(resource, item.getAmount());
@@ -283,7 +283,7 @@ implements Serializable {
 				//s_inv.
 				inv.addAmountDemand(resource, item.getAmount());
             }
-            else if (Type.PART.equals(item.getType())) {
+            else if (ItemType.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
                 //s_inv
                 inv.retrieveItemResources(part, (int) item.getAmount());
@@ -491,7 +491,7 @@ implements Serializable {
             while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
                 if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, true) > 0D) {
-                    if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+                    if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
@@ -507,7 +507,7 @@ implements Serializable {
                         // 2015-01-15 Add addSupplyAmount()
                         inv.addAmountSupplyAmount(resource, amount);
                     }
-                    else if (Type.PART.equals(item.getType())) {
+                    else if (ItemType.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
@@ -516,7 +516,7 @@ implements Serializable {
                             inv.storeItemResources(part, (int) item.getAmount());
                         }
                     }
-                    else if (Type.EQUIPMENT.equals(item.getType())) {
+                    else if (ItemType.EQUIPMENT.equals(item.getType())) {
                         // Produce equipment.
                         String equipmentType = item.getName();
                         int number = (int) item.getAmount();
@@ -526,7 +526,7 @@ implements Serializable {
                             inv.storeUnit(equipment);
                         }
                     }
-                    else if (Type.VEHICLE.equals(item.getType())) {
+                    else if (ItemType.VEHICLE.equals(item.getType())) {
                         // Produce vehicles.
                         String vehicleType = item.getName();
                         int number = (int) item.getAmount();
@@ -558,7 +558,7 @@ implements Serializable {
             while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
                 if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, false) > 0D) {
-                    if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+                    if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
@@ -572,7 +572,7 @@ implements Serializable {
                         }
                         inv.storeAmountResource(resource, amount, true);
                     }
-                    else if (Type.PART.equals(item.getType())) {
+                    else if (ItemType.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
@@ -581,7 +581,7 @@ implements Serializable {
                             inv.storeItemResources(part, (int) item.getAmount());
                         }
                     }
-                    else if (Type.EQUIPMENT.equals(item.getType())) {
+                    else if (ItemType.EQUIPMENT.equals(item.getType())) {
                         // Produce equipment.
                         String equipmentType = item.getName();
                         int number = (int) item.getAmount();
@@ -591,7 +591,7 @@ implements Serializable {
                             inv.storeUnit(equipment);
                         }
                     }
-                    else if (Type.VEHICLE.equals(item.getType())) {
+                    else if (ItemType.VEHICLE.equals(item.getType())) {
                         // Produce vehicles.
                         String vehicleType = item.getName();
                         int number = (int) item.getAmount();

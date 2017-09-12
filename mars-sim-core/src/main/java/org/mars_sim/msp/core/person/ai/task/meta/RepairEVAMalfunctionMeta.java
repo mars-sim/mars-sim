@@ -53,9 +53,11 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 
     	Settlement settlement = person.getAssociatedSettlement();
     	
-        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
-        // and if he has to do a EVA to repair a broken vehicle.
-
+    	LocationSituation ls = person.getLocationSituation();
+    	
+    	if (ls == LocationSituation.OUTSIDE)
+    		return 0;
+    	
         //2016-10-04 Checked for radiation events
     	boolean[] exposed = settlement.getExposed();
 
@@ -64,7 +66,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		}
 
         // Check if an airlock is available
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        if (ls == LocationSituation.IN_SETTLEMENT
         		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
     		return 0;
 

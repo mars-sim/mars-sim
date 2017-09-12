@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core.reportingAuthority;
 
+import java.util.Set;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 
@@ -34,6 +36,8 @@ public enum ReportingAuthorityType {
 
 	public static int numSponsors = SPONSORS.length;
 	private String name;
+	
+	private static Set<ReportingAuthorityType> sponsorSet;
 
 	/** hidden constructor. */
 	private ReportingAuthorityType(String name) {
@@ -59,6 +63,15 @@ public enum ReportingAuthorityType {
 		}
 		
 		return null;
+	}
+
+	public static Set<ReportingAuthorityType> getSponsorSet() {
+		if (sponsorSet == null) {
+			for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
+				sponsorSet.add(ra);
+			}
+		}
+		return sponsorSet;
 	}
 
 }

@@ -132,6 +132,10 @@ public class Malfunction implements Serializable {
         return probability;
     }
 
+    public void setProbability(double p) {
+        probability = p;
+    }
+    
     /**
      * Returns the work time required to repair the malfunction.
      * @return work time (in millisols)
@@ -190,7 +194,7 @@ public class Malfunction implements Serializable {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
             emergencyWorkTimeCompleted = emergencyWorkTime;
             
-            String id_string = " incident [id#: " + incidentNum  + "]";
+            String id_string = " incident #" + incidentNum  + "";
             
         	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
         			name + id_string + " - emergency repair finished by " + repairer  + ".", null);
@@ -288,7 +292,7 @@ public class Malfunction implements Serializable {
         Malfunction clone = new Malfunction(name, id, severity, probability, emergencyWorkTime,
             workTime, EVAWorkTime, systems, resourceEffects, lifeSupportEffects, medicalComplaints);
 
-        String id_string = " incident [id#: " + id  + "]";
+        String id_string = " incident #" + id  + "";
         
         if (emergencyWorkTime > 0D)
         	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
@@ -309,7 +313,7 @@ public class Malfunction implements Serializable {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
                 Part part = (Part) ItemResource.findItemResource(partName);
                 repairParts.put(part, number);
-                String id_string = " incident [id#: " + incidentNum  + "]";
+                String id_string = " incident #" + incidentNum  + "";
             	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
             			name + id_string + " - the repair requires " + part.getName() 
             			+ " (quantity: " + number + ").", null);
@@ -360,8 +364,8 @@ public class Malfunction implements Serializable {
     			numberNeeded -= number;
 
     			// 2015-02-26 Added produceSolidWaste()
-                //produceSolidWaste(part.getMass(), "Solid Waste", inv);
-                Storage.storeAnResource(part.getMassPerItem(), ResourceUtil.solidWasteAR, inv, sourceName + "::repairWithParts");
+                if (part.getMassPerItem() > 0)
+                	Storage.storeAnResource(part.getMassPerItem(), ResourceUtil.solidWasteAR, inv, sourceName + "::repairWithParts");
 
     			if (numberNeeded > 0) repairParts.put(part, numberNeeded);
     			else repairParts.remove(part);

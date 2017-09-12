@@ -46,7 +46,6 @@ implements Serializable {
 	// Data members
 	private static int newIncidentNum = 0;
 	
-	
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
 
@@ -79,12 +78,14 @@ implements Serializable {
 
 		Malfunction result = null;
 
+		// 2017-09-12 The total probability will be dynamically updated as the field reliability data trickles in
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
 			Iterator<Malfunction> i = malfunctions.iterator();
 			while (i.hasNext()) {
 				Malfunction temp = i.next();
-				if (temp.unitScopeMatch(scope)) totalProbability += temp.getProbability();
+				if (temp.unitScopeMatch(scope)) 
+					totalProbability += temp.getProbability();
 			}
 		}
 
@@ -94,6 +95,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Malfunction temp = i.next();
 			double probability = temp.getProbability();
+			// will only pick one malfunction at a time
 			if (temp.unitScopeMatch(scope) && (result == null)) {
 				if (r < probability) {
 					try {
@@ -104,7 +106,8 @@ implements Serializable {
 						e.printStackTrace(System.err);
 					}
 				}
-				else r -= probability;
+				else 
+					r -= probability;
 			}
 		}
 
@@ -281,7 +284,7 @@ implements Serializable {
 			Malfunction malfunction = i.next();
 			if (malfunction.unitScopeMatch(scope)) {
 				double malfunctionProbability = malfunction.getProbability() / 100D;
-				//MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
+
 				String[] partNames = config.getRepairPartNamesForMalfunction(malfunction.getName());
 				for (String partName : partNames) {
 					double partProbability = config.getRepairPartProbability(malfunction.getName(), partName) / 100D;
@@ -289,7 +292,8 @@ implements Serializable {
 					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 					Part part = (Part) ItemResource.findItemResource(partName);
-					if (result.containsKey(part)) totalNumber += result.get(part);
+					if (result.containsKey(part)) 
+						totalNumber += result.get(part);
 					result.put(part, totalNumber);
 				}
 			}

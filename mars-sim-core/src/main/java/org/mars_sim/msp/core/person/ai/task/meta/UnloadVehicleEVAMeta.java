@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.08 2015-06-15
+ * @version 3.1.0 2017-09-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -54,77 +53,79 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-    	Settlement settlement = person.getAssociatedSettlement();
+      	Settlement settlement = person.getAssociatedSettlement();
     	  
-        	//2016-10-04 Checked for radiation events
-        	boolean[] exposed = settlement.getExposed();
+      	LocationSituation ls = person.getLocationSituation();
+    	
+    	if (ls == LocationSituation.OUTSIDE)
+    		return 0;
+	
+    	//2016-10-04 Checked for radiation events
+    	boolean[] exposed = settlement.getExposed();
 
-    		if (exposed[2]) {// SEP can give lethal dose of radiation
+		if (exposed[2]) {// SEP can give lethal dose of radiation
+            return 0;
+		}
+
+        // Check if an airlock is available
+        if (ls == LocationSituation.IN_SETTLEMENT
+        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+    		return 0;
+
+        // Check if it is night time.
+        if (surface == null)
+            surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
+            if (!surface.inDarkPolarRegion(person.getCoordinates()))
                 return 0;
-    		}
 
-            // Check if an airlock is available
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
-        		return 0;
+        // Check all vehicle missions occurring at the settlement.
+        try {
+            int numVehicles = 0;
+            numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(settlement).size();
+            numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(settlement).size();
+            result = 100D * numVehicles;
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+            e.printStackTrace(System.err);
+        }
 
-            // Check if it is night time.
-            if (surface == null)
-                surface = Simulation.instance().getMars().getSurfaceFeatures();
+        // Crowded settlement modifier
+        if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
+            result *= 2D;
+        }
 
-            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-                if (!surface.inDarkPolarRegion(person.getCoordinates()))
-                    return 0;
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
 
-            // Check all vehicle missions occurring at the settlement.
-            try {
-                int numVehicles = 0;
-                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(settlement).size();
-                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(settlement).size();
-                result = 100D * numVehicles;
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-                e.printStackTrace(System.err);
-            }
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class)
+            		* settlement.getGoodsManager().getTransportationFactor();
+        }
 
-            // Crowded settlement modifier
-            if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
+        // Modify if operations is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+            result *= 1.5D;
+        }
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
+        // 2015-06-07 Added Preference modifier
+        if (result > 0D) {
+            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        }
 
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class)
-                		* settlement.getGoodsManager().getTransportationFactor();
-            }
+    	if (exposed[0]) {
+			result = result/2D;// Baseline can give a fair amount dose of radiation
+		}
 
-            // Modify if operations is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
-                result *= 1.5D;
-            }
+    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+			result = result/4D;
+		}
 
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            }
-
-        	if (exposed[0]) {
-    			result = result/2D;// Baseline can give a fair amount dose of radiation
-    		}
-
-        	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-    			result = result/4D;
-    		}
-
-            if (result < 0) result = 0;
-        //}
+        if (result < 0) result = 0;
 
         return result;
     }

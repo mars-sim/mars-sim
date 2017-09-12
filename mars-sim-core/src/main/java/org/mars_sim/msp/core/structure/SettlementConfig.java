@@ -388,7 +388,7 @@ implements Serializable {
 				String resourceType = resourceElement.getAttributeValue(TYPE);
 				AmountResource resource = AmountResource.findAmountResource(resourceType);
 				if (resource == null)
-					logger.info(resourceType + " shows up in settlements.xml but doesn't exist in resources.xml.");
+					logger.severe(resourceType + " shows up in settlements.xml but doesn't exist in resources.xml.");
 				else {			
 					double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
 					template.addAmountResource(resource, resourceAmount);
@@ -401,14 +401,12 @@ implements Serializable {
 			for (Element partElement : partNodes) {
 				String partType = partElement.getAttributeValue(TYPE);
 				Part part = (Part) Part.findItemResource(partType);
-				
 				if (part == null)
-					logger.info(partType + " shows up in settlements.xml but doesn't exist in parts.xml.");
+					logger.severe(partType + " shows up in settlements.xml but doesn't exist in parts.xml.");
 				else {         
 					int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 					template.addPart(part, partNumber);	
-				}
-		
+				}	
 			}
 			
 

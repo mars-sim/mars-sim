@@ -14,11 +14,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.Box;
@@ -33,24 +31,17 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.AmountResourceConfig;
-import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -283,11 +274,11 @@ class StartingSettlementPanel extends WizardPanel {
 							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
 						else if (column == 10) {
 							//Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
-							result = inv.getItemResourceNum(ItemResource.pneumaticDrill);
+							result = inv.getItemResourceNum(ItemResourceUtil.pneumaticDrillAR);
 						}
 						else if (column == 11) {
 							//Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
-							result = inv.getItemResourceNum(ItemResource.backhoe);
+							result = inv.getItemResourceNum(ItemResourceUtil.backhoeAR);
 						}
 					}
 				}
@@ -426,12 +417,10 @@ class StartingSettlementPanel extends WizardPanel {
 						if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
 					}
 					else if (column == 11) {
-						//Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
-						if (inv.getItemResourceNum(ItemResource.pneumaticDrill) == 0) result = true;
+						if (inv.getItemResourceNum(ItemResourceUtil.pneumaticDrillAR) == 0) result = true;
 					}
 					else if (column == 12) {
-						//Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
-						if (inv.getItemResourceNum(ItemResource.backhoe) == 0) result = true;
+						if (inv.getItemResourceNum(ItemResourceUtil.backhoeAR) == 0) result = true;
 					}
 				}
 			}

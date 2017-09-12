@@ -629,7 +629,8 @@ public class UnitManager implements Serializable {
 				}
 			}
 		} catch (Exception e) {
-			throw new IllegalStateException("Part could not be created: " + e.getMessage(), e);
+			e.printStackTrace();
+			//throw new IllegalStateException("Parts could not be created: " + e.getMessage(), e);
 		}
 	}
 
@@ -1805,12 +1806,13 @@ public class UnitManager implements Serializable {
         if (solCache != solElapsed) {
         	solCache = solElapsed;
         	
-        	partConfig.computeMTBF(solElapsed);
+        	partConfig.computeReliability();
    
-        	
         }
 		
 		if (justReloaded) {
+        	partConfig.computeReliability();
+        	   
 			Collection<Settlement> c = CollectionUtils.getSettlement(units);
 			for (Settlement s : c) {
 				s.updateAllAssociatedPeople();

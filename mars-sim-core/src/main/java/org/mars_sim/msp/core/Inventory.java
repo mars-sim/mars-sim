@@ -40,6 +40,8 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 123L;
 
+    //private static Logger logger = Logger.getLogger(Inventory.class.getName());
+
     /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 

@@ -69,13 +69,6 @@ public class LivingAccommodations extends Function implements Serializable {
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 
-    //public static AmountResource blackWaterAR;// = ResourceUtil.blackWaterAR;
-    //public static AmountResource greyWaterAR;// = ResourceUtil.greyWaterAR;
-    //public static AmountResource waterAR;// = ResourceUtil.waterAR;
-    //public static AmountResource toiletTissueAR;// = ResourceUtil.toiletTissueAR;
-    //public static AmountResource toxicWasteAR;// = ResourceUtil.toxicWasteAR;
-
-
     /**
      * Constructor
      * @param building the building this function is for.
@@ -285,23 +278,20 @@ public class LivingAccommodations extends Function implements Serializable {
         double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
         // Black water is only produced by waste water.
         double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
-        //System.out.print("gw");
+
         if (greyWaterProduced > 0)
         	Storage.storeAnResource(greyWaterProduced, ResourceUtil.greyWaterAR, inv, sourceName + "::generateWaste");
-        //System.out.print("bw");
+
         if (blackWaterProduced > 0)
         	Storage.storeAnResource(blackWaterProduced, ResourceUtil.blackWaterAR, inv, sourceName + "::generateWaste");
 
     	// Use toilet paper and generate toxic waste (used toilet paper).
         double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
-        //double toiletPaperUsageSettlement = toiletPaperUsagePerMillisol * time * beds;//settlement.getCurrentPopulationNum();
         double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed;//toiletPaperUsageSettlement * buildingProportionCap;
-        //System.out.print("tt");
+
         Storage.retrieveAnResource(toiletPaperUsageBuilding * random_factor, ResourceUtil.toiletTissueAR, inv, true);
-    	//System.out.println("LivingAcc : toxicWasteAR is " + toxicWasteAR);
         if (toiletPaperUsageBuilding > 0)
-        	Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv, sourceName + " -> generateWaste()");
-        //System.out.print("tw");
+        	Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv, sourceName + "::generateWaste");
     }
 
     public Building getBuilding() {

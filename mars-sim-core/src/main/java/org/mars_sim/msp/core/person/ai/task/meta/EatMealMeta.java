@@ -74,7 +74,7 @@ public class EatMealMeta implements MetaTask, Serializable {
             Cooking kitchen = EatMeal.getKitchenWithMeal(person);
             if (kitchen != null) {
                 // Increase probability to eat meal if a cooked meal is available.
-                result *= 2D;
+                result *= 2.5D;
             }
             else { //no kitchen has available meals
                 // If no cooked meal, check if preserved food is available to eat.
@@ -103,7 +103,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         }
         
     	if (CookMeal.isMealTime(person.getCoordinates())) {
-    		result *= 4D;
+    		result *= 10D;
     	}
     	else
     		result *= .75D;    

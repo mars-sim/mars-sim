@@ -113,7 +113,7 @@ implements Serializable {
         }
         else {
             throw new IllegalStateException(person.getName() +
-                    " not in a valid location situation to start EVA task: " +
+                    " is not in a valid location situation to start EVA task: " +
                     person.getLocationSituation());
         }
 

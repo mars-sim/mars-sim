@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WasteDisposal.java
- * @version 3.08 2015-02-07
+ * @version 3.1.0 2017-09-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -84,7 +84,7 @@ Serializable {
                     removedBuilding = true;
                 }
                 else {
-                    WasteDisposal wasteDisposalFunction = (WasteDisposal) building.getFunction(FUNCTION);
+                    WasteDisposal wasteDisposalFunction = building.getWaste();//(WasteDisposal) building.getFunction(FUNCTION);
                     int techLevel = wasteDisposalFunction.techLevel;
                     int labSize = wasteDisposalFunction.peopleCapacity;
                     double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;

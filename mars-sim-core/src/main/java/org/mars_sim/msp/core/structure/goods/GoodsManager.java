@@ -63,7 +63,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Phase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -126,6 +126,7 @@ public class GoodsManager implements Serializable {
     private static final double EVA_SUIT_FACTOR = 100D;
     private static final double VEHICLE_FACTOR = 10000D;
     private static final double LIFE_SUPPORT_FACTOR = 1D;
+    private static final double FUEL_FACTOR = 5D;
     private static final double VEHICLE_FUEL_FACTOR = 1D;
     private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
     private static final double MANUFACTURING_INPUT_FACTOR = .5D;
@@ -144,7 +145,8 @@ public class GoodsManager implements Serializable {
     //private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
     //private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
     //private static final String resource_name = "regolith";
-
+    private static final double METHANE_AVERAGE_DEMAND = 20;
+    
     /** VP probability modifier. */
     public static double ICE_VALUE_MODIFIER = 2D;
     public static double WATER_VALUE_MODIFIER = 3D;
@@ -387,6 +389,9 @@ public class GoodsManager implements Serializable {
             // Add life support demand if applicable.
             projectedDemand += getLifeSupportDemand(resource);
 
+            // Add fuel demand if applicable.
+            projectedDemand += getFuelDemand(resource);
+            
             // Add potable water usage demand if applicable.
             projectedDemand += getPotableWaterUsageDemand(resource);
 
@@ -567,7 +572,22 @@ public class GoodsManager implements Serializable {
         }
         else return 0D;
     }
-
+    
+    /**
+     * Gets the fuel demand for an amount resource.
+     * @param resource the resource to check.
+     * @return demand (kg)
+     */
+    private double getFuelDemand(AmountResource resource) {
+        if (resource.equals(ResourceUtil.methaneAR)) {
+            double amountNeededOrbit = METHANE_AVERAGE_DEMAND * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            int numPeople = settlement.getAllAssociatedPeople().size();
+            return numPeople * amountNeededOrbit * FUEL_FACTOR * trade_factor;
+        }
+        
+        else 
+        	return 0D;
+    }
     /**
      * Gets the potable water usage demand for an amount resource.
      * @param resource the resource to check.
@@ -913,7 +933,7 @@ public class GoodsManager implements Serializable {
         Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
         while ((resourceInput == null) && i.hasNext()) {
             ManufactureProcessItem item = i.next();
-            if (Type.AMOUNT_RESOURCE.equals(item.getType()) &&
+            if (ItemType.AMOUNT_RESOURCE.equals(item.getType()) &&
                     r.equals(item.getName()) ) {
                 resourceInput = item;
                 break;
@@ -971,7 +991,7 @@ public class GoodsManager implements Serializable {
         Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
         while ((resourceInput == null) && i.hasNext()) {
             FoodProductionProcessItem item = i.next();
-            if (Type.AMOUNT_RESOURCE.equals(item.getType()) &&
+            if (ItemType.AMOUNT_RESOURCE.equals(item.getType()) &&
                     resource.getName().equalsIgnoreCase(item.getName()) ) {
                 resourceInput = item;
                 break;
@@ -1748,7 +1768,7 @@ public class GoodsManager implements Serializable {
         Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
         while (i.hasNext()) {
             ManufactureProcessItem item = i.next();
-            if (Type.PART.equals(item.getType()) &&
+            if (ItemType.PART.equals(item.getType()) &&
                     part.getName().equalsIgnoreCase(item.getName())) {
                 partInput = item;
             }
@@ -1824,7 +1844,7 @@ public class GoodsManager implements Serializable {
         Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
         while (i.hasNext()) {
         	FoodProductionProcessItem item = i.next();
-            if (Type.PART.equals(item.getType()) &&
+            if (ItemType.PART.equals(item.getType()) &&
                     part.getName().equalsIgnoreCase(item.getName())
                     ) {
                 partInput = item;

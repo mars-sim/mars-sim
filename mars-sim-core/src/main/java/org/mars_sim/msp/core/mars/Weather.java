@@ -826,7 +826,9 @@ implements Serializable {
 					s.setDustStorm(ds);
 					newStormID++;
 					
-					logger.info("at L_s = " + L_s_int + ", " + ds.getName() + " is formed in " + s + ".");
+					int sol = marsClock.getMissionSol();
+					logger.info("On Sol " + sol + " (L_s = " + L_s_int + "), " + ds.getName() 
+						+ " has been spotted near " + s + ".");
 
 				}
 			}

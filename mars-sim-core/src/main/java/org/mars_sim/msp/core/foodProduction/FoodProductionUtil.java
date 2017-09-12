@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -186,7 +186,7 @@ public final class FoodProductionUtil {
 
         GoodsManager manager = settlement.getGoodsManager();
 
-        if (item.getType().equals(Type.AMOUNT_RESOURCE)) {
+        if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
             AmountResource resource = AmountResource.findAmountResource(item.getName());
             double amount = item.getAmount();
             if (isOutput) {
@@ -199,17 +199,17 @@ public final class FoodProductionUtil {
             Good good = GoodsUtil.getResourceGood(resource);
             result = manager.getGoodValuePerItem(good) * amount;
         }
-        else if (item.getType().equals(Type.PART)) {
+        else if (item.getType().equals(ItemType.PART)) {
             ItemResource resource = ItemResource.findItemResource(item.getName());
             Good good = GoodsUtil.getResourceGood(resource);
             result = manager.getGoodValuePerItem(good) * item.getAmount();
         }
-        else if (item.getType().equals(Type.EQUIPMENT)) {
+        else if (item.getType().equals(ItemType.EQUIPMENT)) {
             Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
             Good good = GoodsUtil.getEquipmentGood(equipmentClass);
             result = manager.getGoodValuePerItem(good) * item.getAmount();
         }
-        else if (item.getType().equals(Type.VEHICLE)) {
+        else if (item.getType().equals(ItemType.VEHICLE)) {
             Good good = GoodsUtil.getVehicleGood(item.getName());
             result = manager.getGoodValuePerItem(good) * item.getAmount();
         }
@@ -260,13 +260,13 @@ public final class FoodProductionUtil {
         Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
         while (result && i.hasNext()) {
             FoodProductionProcessItem item = i.next();
-            if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+            if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
                 result = (inv.getAmountResourceStored(resource, false) >= item.getAmount());
             	// 2015-01-09 Added addDemandTotalRequest()
                 inv.addAmountDemandTotalRequest(resource);
             }
-            else if (Type.PART.equals(item.getType())) {
+            else if (ItemType.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
                 result = (inv.getItemResourceNum(part) >= (int) item.getAmount());
             } else throw new IllegalStateException(
@@ -366,15 +366,15 @@ public final class FoodProductionUtil {
      */
     public static Good getGood(FoodProductionProcessItem item) {
         Good result = null;
-        if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+        if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
             AmountResource resource = AmountResource.findAmountResource(item.getName());
             result = GoodsUtil.getResourceGood(resource);
         }
-        else if (Type.PART.equals(item.getType())) {
+        else if (ItemType.PART.equals(item.getType())) {
             Part part = (Part) ItemResource.findItemResource(item.getName());
             result = GoodsUtil.getResourceGood(part);
         }
-        else if (Type.EQUIPMENT.equals(item.getType())) {
+        else if (ItemType.EQUIPMENT.equals(item.getType())) {
             Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
             result = GoodsUtil.getEquipmentGood(equipmentClass);
         }
@@ -394,14 +394,14 @@ public final class FoodProductionUtil {
     public static double getMass(FoodProductionProcessItem item) {
         double mass = 0D;
 
-        if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+        if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
             mass = item.getAmount();
         }
-        else if (Type.PART.equals(item.getType())) {
+        else if (ItemType.PART.equals(item.getType())) {
             Part part = (Part) ItemResource.findItemResource(item.getName());
             mass = item.getAmount() * part.getMassPerItem();
         }
-        else if (Type.EQUIPMENT.equals(item.getType())) {
+        else if (ItemType.EQUIPMENT.equals(item.getType())) {
             double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
             mass = item.getAmount() * equipmentMass;
         }

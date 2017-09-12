@@ -60,7 +60,12 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
         //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
         	Settlement settlement = person.getAssociatedSettlement();
-        
+
+        	LocationSituation ls = person.getLocationSituation();
+        	
+        	if (ls == LocationSituation.OUTSIDE)
+        		return 0;
+        	
         	//2016-10-04 Checked for radiation events
         	boolean[] exposed = settlement.getExposed();
 
@@ -69,7 +74,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     		}
 
             // Check if an airlock is available
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            if (ls == LocationSituation.IN_SETTLEMENT
             		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
 	    		return 0;
 

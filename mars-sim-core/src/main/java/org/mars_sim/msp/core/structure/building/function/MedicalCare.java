@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.person.medical.MedicalStation;
 import org.mars_sim.msp.core.person.medical.Treatment;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -38,8 +37,6 @@ implements MedicalAid, Serializable {
     private static final FunctionType FUNCTION = FunctionType.MEDICAL_CARE;
 
     private MedicalStation medicalStation;
-
-	//public static AmountResource toxicWasteAR = AmountResource.findAmountResource("toxic waste");
 
     /**
      * Constructor.
@@ -83,7 +80,7 @@ implements MedicalAid, Serializable {
                 removedBuilding = true;
             }
             else {
-                MedicalCare medFunction = (MedicalCare) building.getFunction(FUNCTION);
+                MedicalCare medFunction = building.getMedical();//(MedicalCare) building.getFunction(FUNCTION);
                 double tech = medFunction.getTechLevel();
                 double beds = medFunction.getSickBedNum();
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
@@ -134,7 +131,7 @@ implements MedicalAid, Serializable {
 
         if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
+                LifeSupport lifeSupport = getBuilding().getLifeSupport();
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();

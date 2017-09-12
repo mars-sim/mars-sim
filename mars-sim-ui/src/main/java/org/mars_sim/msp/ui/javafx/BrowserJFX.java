@@ -335,7 +335,7 @@ public class BrowserJFX {
     	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
         reloadButton.setMinWidth(WIDTH+5);
         reloadButton.getStyleClass().add("menu-button");
-        AwesomeDude.setIcon(reloadButton, AwesomeIcon.ARROW_CIRCLE_O_RIGHT, "12.0");
+        AwesomeDude.setIcon(reloadButton, AwesomeIcon.REFRESH, "12.0");
         reloadButton.setTooltip(new Tooltip("Reload this page"));
         reloadButton.setOnAction(e -> {
     		goLoad(tf.getText().trim());

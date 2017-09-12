@@ -377,14 +377,11 @@ implements Serializable {
 	}
 
 	private boolean doingEmergencyRepair() {
+	    // Check if person is already repairing either a EVA or non-EVA emergency.
+	    return (currentTask != null) 
+	    		&& ((currentTask instanceof RepairEmergencyMalfunctionEVA) 
+				|| (currentTask instanceof RepairEmergencyMalfunction));
 
-	    // Check if person is already repairing an emergency.
-	    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask
-				instanceof RepairEmergencyMalfunction));
-		if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
-		    hasEmergencyRepair = true;
-		}
-		return hasEmergencyRepair;
 	}
 
 	private boolean doingAirlockTask() {
@@ -470,28 +467,34 @@ implements Serializable {
 
             if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
 
-				// Check if person is outside.
-				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
-				
-				int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
-				
-            	if (isOutside || numOutside == 0) {
-            		// if he is already outside or if no one is outside, he will take on this repair task
-            		LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-            				person + " cancelled the task '" + currentTask +
-                            "' and rushed to the scene to participate in an EVA emergency repair task.", null);
-                    clearTask();
-	                addTask(new RepairEmergencyMalfunctionEVA(person));
-            	}
+              	LocationSituation ls = person.getLocationSituation();
+            	
+            	if (ls == LocationSituation.OUTSIDE)
+            		return;
+
+				//int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
+				//if (numOutside == 0) {		
+				//}
+            	
+        		// if he is not outside, he may take on this repair task
+        		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+        				person + " cancelled '" + currentTask +
+                        "' and rushed to the scene to participate in an EVA emergency repair.", null);
+                clearTask();
+                
+                addTask(new RepairEmergencyMalfunctionEVA(person));
+
             }
 		}
 		
-		else {
-    		LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-    				person + " cancelled the task '" + currentTask +
-                    "' and rushed to the scene to participate in an emergency repair task.", null);
+		else { // requires no EVA
+			
+    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+    				person + " cancelled '" + currentTask +
+                    "' and rushed to the scene to participate in an non-EVA emergency repair.", null);
             clearTask();
-            addTask(new RepairEmergencyMalfunctionEVA(person));
+            
+            addTask(new RepairEmergencyMalfunction(person));
 		}
 
 	}

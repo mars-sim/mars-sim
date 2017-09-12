@@ -772,8 +772,7 @@ implements UnitListener {
 			// Average number malfunctions per accident is 3.
 			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
-			Map<Part, Double> parts = vehicle.getMalfunctionManager()
-					.getRepairPartProbabilities();
+			Map<Part, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
 			Iterator<Part> i = parts.keySet().iterator();
 			while (i.hasNext()) {
 				Part part = i.next();

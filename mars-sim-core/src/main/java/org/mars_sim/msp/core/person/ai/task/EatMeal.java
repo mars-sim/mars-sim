@@ -371,7 +371,8 @@ public class EatMeal extends Task implements Serializable {
                     //if (inv == null) 
                     	//logger.info("preserved food gone bad, turn into food waste");
                     // Throw food out.
-                    Storage.storeAnResource(foodAmount, ResourceUtil.foodWasteAR, inv, sourceName + "::eatPreservedFood");
+                	if (foodAmount > 0)
+                		Storage.storeAnResource(foodAmount, ResourceUtil.foodWasteAR, inv, sourceName + "::eatPreservedFood");
                 }
                 else {
                     // Consume preserved food.
@@ -542,7 +543,8 @@ public class EatMeal extends Task implements Serializable {
                         //if (inv == null) 
                         	//logger.info("dessert gone bad, turn into food waste");
                         // Throw dessert resource out.
-                        Storage.storeAnResource(dessertAmount, ResourceUtil.foodWasteAR, inv, sourceName + "::eatUnpreparedDessert");
+                    	if (dessertAmount > 0)
+                    		Storage.storeAnResource(dessertAmount, ResourceUtil.foodWasteAR, inv, sourceName + "::eatUnpreparedDessert");
                     }
                     else {
                         // Consume unpreserved dessert.

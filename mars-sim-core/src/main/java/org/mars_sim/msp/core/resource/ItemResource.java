@@ -34,7 +34,7 @@ implements Serializable {
 
 	private static PartConfig partConfig;
 	
-	public static Part pneumaticDrill, backhoe, smallHammer, socketWrench, pipeWrench;
+	//public static Part pneumaticDrill, backhoe, smallHammer, socketWrench, pipeWrench;
 
 
 	public ItemResource() {

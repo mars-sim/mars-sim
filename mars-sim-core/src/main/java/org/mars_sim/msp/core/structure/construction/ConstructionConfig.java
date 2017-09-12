@@ -187,7 +187,7 @@ public class ConstructionConfig implements Serializable {
                     Part part = (Part) ItemResource.findItemResource(partName);
                     
     				if (part == null)
-    					logger.info(partName + " shows up in constructions.xml but doesn't exist in parts.xml.");
+    					logger.severe(partName + " shows up in constructions.xml but doesn't exist in parts.xml.");
     				else
                         parts.put(part, partNum);  
 
@@ -201,7 +201,7 @@ public class ConstructionConfig implements Serializable {
                     double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
                     AmountResource resource = AmountResource.findAmountResource(resourceName);
        				if (resource == null)
-    					logger.info(resourceName + " shows up in constructions.xml but doesn't exist in resources.xml.");
+    					logger.severe(resourceName + " shows up in constructions.xml but doesn't exist in resources.xml.");
     				else
     					resources.put(resource, resourceAmount);
                 }

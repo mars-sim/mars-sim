@@ -54,7 +54,7 @@
 		<part type="ventilation fan" number="3" />
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="160" />
-		<part type="co2 extinguisher" number="26" />
+		<part type="fire extinguisher" number="26" />
 		<part type="rover wheel" number="12" />
 		<part type="gasket" number="94" />
 		<part type="timing belt" number="16" />
@@ -81,6 +81,7 @@
 		<part type="helmet visor" number="8" />
 		<part type="counter pressure suit" number="16" />
 		<part type="coveralls" number="16" />
+		<part type="work gloves" number="16" />		
 		<part type="eva gloves" number="16" />
 		<part type="eva boots" number="16" />
 		<part type="eva pads" number="16" />
@@ -160,7 +161,7 @@
 		<part type="ventilation fan" number="10" />
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="306" />
-		<part type="co2 extinguisher" number="46" />
+		<part type="fire extinguisher" number="46" />
 		<part type="rover wheel" number="12" />
 		<part type="gasket" number="168" />
 		<part type="timing belt" number="16" />
@@ -187,6 +188,7 @@
 		<part type="helmet visor" number="16" />
 		<part type="counter pressure suit" number="32" />
 		<part type="coveralls" number="32" />
+		<part type="work gloves" number="32" />	
 		<part type="eva gloves" number="32" />
 		<part type="eva boots" number="32" />
 		<part type="eva pads" number="32" />
@@ -267,7 +269,7 @@
 		<part type="ventilation fan" number="15" />
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="468" />
-		<part type="co2 extinguisher" number="72" />
+		<part type="fire extinguisher" number="72" />
 		<part type="rover wheel" number="22" />
 		<part type="gasket" number="258" />
 		<part type="timing belt" number="34" />
@@ -294,6 +296,7 @@
 		<part type="helmet visor" number="24" />
 		<part type="counter pressure suit" number="48" />
 		<part type="coveralls" number="48" />
+		<part type="work gloves" number="48" />	
 		<part type="eva gloves" number="48" />
 		<part type="eva boots" number="48" />
 		<part type="eva pads" number="48" />
@@ -374,7 +377,7 @@
 		<part type="ventilation fan" number="15" />
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="536" />
-		<part type="co2 extinguisher" number="78" />
+		<part type="fire extinguisher" number="78" />
 		<part type="rover wheel" number="38" />
 		<part type="gasket" number="372" />
 		<part type="timing belt" number="58" />
@@ -401,6 +404,7 @@
 		<part type="helmet visor" number="24" />
 		<part type="counter pressure suit" number="48" />
 		<part type="coveralls" number="48" />
+		<part type="work gloves" number="48" />	
 		<part type="eva gloves" number="48" />
 		<part type="eva boots" number="48" />
 		<part type="eva pads" number="48" />

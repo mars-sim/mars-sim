@@ -73,7 +73,7 @@ public class PartPackageConfig implements Serializable {
 				//System.out.println("partPackage is " + partPackage.name + "     partType is " + partType);
 				Part part = (Part) ItemResource.findItemResource(partType);
 				if (part == null)
-					logger.info(partType + " shows up in part_packages.xml but doesn't exist in parts.xml.");
+					logger.severe(partType + " shows up in part_packages.xml but doesn't exist in parts.xml.");
 				else {
 					int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 					partPackage.parts.put(part, partNumber);

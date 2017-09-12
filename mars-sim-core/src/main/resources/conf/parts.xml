@@ -12,8 +12,8 @@
 			<entity name="farming" probability="10" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-	<part name="co2 extinguisher" mass="20.0" />
-	<part name="rover wheel" mass="50.0">
+	<part name="fire extinguisher" mass="3" />
+	<part name="rover wheel" mass="15.0">
 		<description>Rover wheels are made of steel and steel wire.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="6" />
@@ -355,7 +355,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="rover fuel tank" mass="50.0" >
+	<part name="rover fuel tank" mass="30.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
@@ -373,6 +373,15 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="fuel tank" mass="50.0" >		
+	<description>for storing methane</description>
+		<maintenance-entity-list>
+			<entity name="life support" probability="10" max-number="1" />
+			<entity name="fuel heating source" probability="5" max-number="1" />
+			<entity name="cooking" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
 	<part name="fuel pump" mass="5.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
@@ -817,7 +826,7 @@
 	<part name="pipe wrench" mass="1.5"/>
 			
 	<part name="decontamination kit" mass="0.2">
-		<description>Useful for chemical spill.</description>
+		<description>Useful for cleaning up a chemical spill.</description>
 	</part>
 
 	<part name="resistor" mass="0.001">
@@ -833,12 +842,16 @@
 	</part>
 	
 	<part name="logic board" mass="0.1">
-		<description>Logic board is a  printed circuit board (PCB) that 
+		<description>a printed circuit board (PCB) that 
 		mechanically supports and electrically connects electronic components 
 		using conductive tracks, pads and other features etched from copper 
 		sheets laminated onto a non-conductive substrate.</description>
 	</part>
-					
+		
+	<part name="work gloves" mass="0.05">
+		<description>a pair of utility work gloves for medium to heavy use.</description>
+	</part>
+						
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

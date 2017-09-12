@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -816,7 +816,7 @@ public class HelpGenerator {
 			.append("<table><ul>\n");
 			for (ManufactureProcessItem input : info.getInputList()) {
 				String inputName = input.getName();
-				Type inputType = input.getType();
+				ItemType inputType = input.getType();
 				String link = getLink_ResourceType(inputType,inputName);
 				String type = getLink_ResourceLink(inputType);
 				helpFileTableRow(
@@ -834,7 +834,7 @@ public class HelpGenerator {
 			.append("<table><ul>\n");
 			for (ManufactureProcessItem output : info.getOutputList()) {
 				String outputName = output.getName();
-				Type outputType = output.getType();
+				ItemType outputType = output.getType();
 				String link = getLink_ResourceType(outputType,outputName);
 				String type = getLink_ResourceLink(outputType);
 				helpFileTableRow(
@@ -928,7 +928,7 @@ public class HelpGenerator {
 			.append("<table><ul>\n");
 			for (FoodProductionProcessItem input : info.getInputList()) {
 				String inputName = input.getName();
-				Type inputType = input.getType();
+				ItemType inputType = input.getType();
 				String link = getLink_ResourceType(inputType,inputName);
 				String type = getLink_ResourceLink(inputType);
 				helpFileTableRow(
@@ -947,7 +947,7 @@ public class HelpGenerator {
 			.append("<table><ul>\n");
 			for (FoodProductionProcessItem output : info.getOutputList()) {
 				String outputName = output.getName();
-				Type outputType = output.getType();
+				ItemType outputType = output.getType();
 				String link = getLink_ResourceType(outputType,outputName);
 				String type = getLink_ResourceLink(outputType);
 				helpFileTableRow(
@@ -968,7 +968,7 @@ public class HelpGenerator {
 		}
 	}
 
-	private static String getLink_ResourceType(Type type, String name) {
+	private static String getLink_ResourceType(ItemType type, String name) {
 		String link;
 		switch (type) {
 			case AMOUNT_RESOURCE : {
@@ -992,7 +992,7 @@ public class HelpGenerator {
 		return link;
 	}
 
-	private static String getLink_ResourceLink(Type type) {
+	private static String getLink_ResourceLink(ItemType type) {
 		String link;
 		switch (type) {
 			case AMOUNT_RESOURCE : {

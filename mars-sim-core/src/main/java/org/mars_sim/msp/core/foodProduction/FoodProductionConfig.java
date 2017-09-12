@@ -15,7 +15,7 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
-import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.resource.ItemType;
 
 public class FoodProductionConfig implements Serializable {
 
@@ -144,7 +144,7 @@ public class FoodProductionConfig implements Serializable {
             List<Element> resourceNodes) {
         for (Element resourceElement : resourceNodes) {
             FoodProductionProcessItem resourceItem = new FoodProductionProcessItem();
-            resourceItem.setType(Type.AMOUNT_RESOURCE);
+            resourceItem.setType(ItemType.AMOUNT_RESOURCE);
             resourceItem.setName(resourceElement.getAttributeValue(NAME).toLowerCase());
             resourceItem.setAmount(Double.parseDouble(resourceElement
                     .getAttributeValue(AMOUNT)));
@@ -163,7 +163,7 @@ public class FoodProductionConfig implements Serializable {
             List<Element> partNodes) {
         for (Element partElement : partNodes) {
             FoodProductionProcessItem partItem = new FoodProductionProcessItem();
-            partItem.setType(Type.PART);
+            partItem.setType(ItemType.PART);
             partItem.setName(partElement.getAttributeValue(NAME).toLowerCase());
             partItem.setAmount(Integer.parseInt(partElement
                     .getAttributeValue(NUMBER)));
@@ -181,7 +181,7 @@ public class FoodProductionConfig implements Serializable {
             List<Element> equipmentNodes) {
         for (Element equipmentElement : equipmentNodes) {
             FoodProductionProcessItem equipmentItem = new FoodProductionProcessItem();
-            equipmentItem.setType(Type.EQUIPMENT);
+            equipmentItem.setType(ItemType.EQUIPMENT);
             equipmentItem.setName(equipmentElement.getAttributeValue(NAME));
             equipmentItem.setAmount(Integer.parseInt(equipmentElement
                     .getAttributeValue(NUMBER)));

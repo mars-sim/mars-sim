@@ -1,11 +1,15 @@
+/**
+ * Mars Simulation Project
+ * ItemType.java
+ * @version 3.1.0 2017-09-04
+ * @author stpa
+ */
 package org.mars_sim.msp.core.resource;
 
 /**
- * to distinguish between items, vehicles, parts, resources.
- * @author stpa
- * 2014-02-06
+ * The ItemType enum class is used for distinguishing between items, vehicles, parts, resources.
  */
-public enum Type {
+public enum ItemType {
 
 	AMOUNT_RESOURCE		("resource"),
 	PART				("part"),
@@ -15,7 +19,7 @@ public enum Type {
 	private String name;	
 
 	/** hidden constructor. */
-	private Type(String name) {
+	private ItemType(String name) {
 		this.name = name;
 	}
 

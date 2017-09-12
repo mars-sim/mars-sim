@@ -12,9 +12,12 @@
 		<!-- Values: 1 to 100 (100 = most severe) -->
 		<severity value="100" />
 
-		<!-- Relative probability of this malfunction occurring. (required) -->
+		<!-- Starting probability of this malfunction occurring. (required)
+		     This composite value is the sum of the weighted probabilities of
+		     all items found in <repair-parts-list>. It is dynamically updated 
+		     as soon as the field reliability data becomes readily available -->
 		<!-- Values: 0.0 to 100.0 (100.0 = most likely) -->
-		<probability value="10.0" />
+		<probability value="5.0" />
 
 		<!-- Normal (non-EVA) repair time to fix. (millisols) (optional) -->
 		<repair-time value="100.0" />
@@ -63,42 +66,78 @@
 		<!-- See parts.xml -->
 		<repair-parts-list>
 			<!-- A part required for repairing this malfunction. -->
-			<!-- Values: number - the number of the part needed. -->
-			<!-- Values: probability - the percentage probability that the part will be needed for repair. -->
-			<part name="airleak patch" number="1" probability="100" />
+			<!-- number - the number of the part needed. -->
+			<!-- probability - the probability of need : the part will be 
+			     needed for repair if this malfunction were to occur. 
+			     Note that this probability has nothing to do with the 
+			     reliability or failure rate of this item. -->
+			<part name="airleak patch" number="2" probability="75" />
+			<part name="work gloves" number="1" probability="5" />			
+			<part name="fiberglass cloth" number="1" probability="20" />
 		</repair-parts-list>
 
 	</malfunction>
 
 	<!-- Small electrical or chemical fire. -->
-	<malfunction name="Minor Fire">
+	<malfunction name="Vehicle Fire">
 		<severity value="60" />
-		<probability value="15.0" />
+		<probability value="2.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="10.0" />
 		<system-list>
-			<system name="life support" />
-			<system name="EVA suit" />
-			<system name="cooking" />
-			<system name="vehicle" />			
-			<system name="farming" />
+			<system name="vehicle" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="1" probability="100" />			
+			<part name="fire extinguisher" number="1" probability="35" />		
+			<part name="steel sheet" number="1" probability="10" />
+			<part name="aluminum sheet" number="1" probability="10" />
+			<part name="plastic sheet" number="1" probability="5" />
+			<part name="fiberglass" number="1" probability="5" />
+			<part name="plastic pipe" number="2" probability="5" />
+			<part name="valve" number="2" probability="5" />
+			<part name="electrical wire" number="2" probability="5" />
+			<part name="wire connector" number="2" probability="5" />				
+			<part name="rover fuel tank" number="4" probability="15" />	
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- Small electrical or chemical fire. -->
+	<malfunction name="Minor Fire">
+		<severity value="60" />
+		<probability value="3.0" />
+		<repair-time value="100.0" />
+		<emergency-repair-time value="10.0" />
+		<system-list>
+			<system name="life support" />
+		</system-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="5.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="fire extinguisher" number="1" probability="35" />		
+			<part name="steel sheet" number="1" probability="10" />
+			<part name="aluminum sheet" number="1" probability="10" />
+			<part name="plastic sheet" number="1" probability="5" />
+			<part name="fiberglass" number="1" probability="5" />
+			<part name="plastic pipe" number="2" probability="5" />
+			<part name="valve" number="2" probability="5" />
+			<part name="electrical wire" number="2" probability="5" />
+			<part name="wire connector" number="2" probability="5" />				
+			<part name="fuel tank" number="4" probability="15" />	
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Medium electrical or chemical fire. -->
 	<malfunction name="Medium Fire">
 		<severity value="80" />
-		<probability value="5" />
+		<probability value="2" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="20.0" />
 		<system-list>
-			<system name="life support" />
+			<system name="cooking" />			
 			<system name="farming" />
 		</system-list>
 		<effect-list>
@@ -110,7 +149,16 @@
 			<medical-complaint name="Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="1" probability="100" />
+			<part name="fire extinguisher" number="2" probability="35" />		
+			<part name="steel sheet" number="1" probability="10" />
+			<part name="aluminum sheet" number="1" probability="10" />
+			<part name="plastic sheet" number="1" probability="5" />
+			<part name="fiberglass" number="1" probability="5" />
+			<part name="plastic pipe" number="3" probability="5" />
+			<part name="valve" number="3" probability="5" />
+			<part name="electrical wire" number="3" probability="5" />
+			<part name="wire connector" number="3" probability="5" />	
+			<part name="fuel tank" number="4" probability="15" />					
 		</repair-parts-list>
 	</malfunction>
 
@@ -121,8 +169,8 @@
 		<repair-time value="400.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
-			<system name="life support" />
-			<system name="farming" />
+			<system name="waste disposal" />			
+			<system name="power storage" />
 		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.02" />
@@ -134,14 +182,23 @@
 			<medical-complaint name="Major Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="2" probability="100" />
+			<part name="fire extinguisher" number="3" probability="35" />		
+			<part name="steel sheet" number="2" probability="10" />
+			<part name="aluminum sheet" number="2" probability="10" />
+			<part name="plastic sheet" number="2" probability="5" />
+			<part name="fiberglass" number="2" probability="5" />
+			<part name="plastic pipe" number="4" probability="5" />
+			<part name="valve" number="4" probability="5" />
+			<part name="electrical wire" number="4" probability="5" />
+			<part name="wire connector" number="4" probability="5" />	
+			<part name="fuel tank" number="4" probability="15" />	
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Damaged wheel on rover. -->
 	<malfunction name="Damaged Wheel">
 		<severity value="20" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<eva-repair-time value="50.0" />
 		<system-list>
 			<system name="vehicle" />
@@ -154,7 +211,7 @@
 	<!-- Methane fuel leak. -->
 	<malfunction name="Fuel Leak">
 		<severity value="50" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="50.0" />
 		<system-list>
@@ -166,17 +223,18 @@
 			<effect type="resource" name="Methane" change-rate="-.1" />
 		</effect-list>
 		<repair-parts-list>
-			<part name="gasket" number="1" probability="30" />
+			<part name="gasket" number="1" probability="25" />
 			<part name="valve" number="1" probability="20" />
-			<part name="epoxy resin bottle" number="1" probability="30" />
-			<part name="plastic tubing" number="1" probability="20" />
+			<part name="epoxy resin bottle" number="1" probability="25" />
+			<part name="plastic tubing" number="1" probability="15" />
+			<part name="rover fuel tank" number="4" probability="15" />				
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Problems with the rover's generator. -->
 	<malfunction name="Generator Problems">
 		<severity value="50" />
-		<probability value="1.0" />
+		<probability value="2.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
 		<system-list>
@@ -198,7 +256,7 @@
 	<!-- Battery failure. -->
 	<malfunction name="Rover Battery Failure">
 		<severity value="40" />
-		<probability value="5.0" />
+		<probability value="2.0" />
 		<repair-time value="50.0" />
 		<system-list>
 			<system name="vehicle" />
@@ -220,7 +278,7 @@
 	<!-- Battery failure. -->
 	<malfunction name="EVA Battery Failure">
 		<severity value="40" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<repair-time value="50.0" />
 		<system-list>
 			<system name="vehicle" />
@@ -301,7 +359,7 @@
 	<!-- Leak in the water reserves. -->
 	<malfunction name="Water Leak">
 		<severity value="50" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
 			<system name="rover" />
@@ -329,7 +387,7 @@
 	<!-- Failure of life support heating unit.  -->
 	<malfunction name="Heating Unit Failure">
 		<severity value="70" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="20.0" />
 		<system-list>
@@ -350,7 +408,7 @@
 	<!-- Contamination of the water supply. -->
 	<malfunction name="Water Contamination">
 		<severity value="60" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
@@ -381,7 +439,7 @@
 	<!-- Contamination of the food supply. -->
 	<malfunction name="Food Contamination">
 		<severity value="60" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
@@ -426,17 +484,17 @@
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="plastic sheet" number="1" probability="10" />
-			<part name="decontamination kit" number="1" probability="60" />
+			<part name="decontamination kit" number="2" probability="50" />
 			<part name="fiberglass" number="1" probability="10" />
 			<part name="fiberglass cloth" number="1" probability="10" />
-			<part name="polyethylene" number="2" probability="10" />
+			<part name="work gloves" number="2" probability="20" />
 		</repair-parts-list>		
 	</malfunction>
 
 	<!-- EVA suit tear. -->
 	<malfunction name="Suit Tear">
 		<severity value="70" />
-		<probability value="5.0" />
+		<probability value="2.0" />
 		<repair-time value="20.0" />
 		<emergency-repair-time value="10.0" />
 		<system-list>
@@ -470,7 +528,7 @@
 	<!-- Electrical wire short. -->
 	<malfunction name="Electrical Short">
 		<severity value="20" />
-		<probability value="5.0" />
+		<probability value="3.0" />
 		<repair-time value="20.0" />
 		<system-list>
 			<system name="robot" />			
@@ -488,7 +546,7 @@
 	<!-- Problems with one of the rover's electric motors. -->
 	<malfunction name="Motor Failure">
 		<severity value="50" />
-		<probability value="5.0" />
+		<probability value="2.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
 		<system-list>
@@ -507,7 +565,7 @@
 	<!-- Problems with the rover's fuel pump. -->
 	<malfunction name="Fuel Pump Failure">
 		<severity value="50" />
-		<probability value="5.0" />
+		<probability value="2.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="50.0" />
 		<system-list>
@@ -526,7 +584,7 @@
 	<!-- Water pump failure. -->
 	<malfunction name="Water Pump Failure">
 		<severity value="50" />
-		<probability value="5.0" />
+		<probability value="2.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />	
 		<system-list>
@@ -546,7 +604,7 @@
 	<!-- 2014-11-19 Added Carbon Dioxide Pump Failure. -->
 	<malfunction name="Carbon Dioxide Pump Failure">
 		<severity value="40" />
-		<probability value="5.0" />
+		<probability value="2.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
@@ -563,7 +621,7 @@
 	<!-- 2014-11-19 Added Kitchen Food Blender Failure. -->
 	<malfunction name="Kitchen Food Blender Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value=".5" />
 		<repair-time value="40.0" />
 		<emergency-repair-time value="20.0" />
 		<system-list>
@@ -582,7 +640,7 @@
 	<!-- 2014-11-19 Added Kitchen Oven Failure. -->
 	<malfunction name="Kitchen Oven Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value=".5" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
@@ -599,7 +657,7 @@
 	<!-- 2014-11-19 Added Kitchen Ventilation Fan Failure. -->
 	<malfunction name="Kitchen Ventilation Fan Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value=".5" />
 		<repair-time value="40.0" />
 		<emergency-repair-time value="20.0" />
 		<system-list>
@@ -616,7 +674,7 @@
 	<!-- 2014-11-19 Added Kitchen Stove Failure. -->
 	<malfunction name="Kitchen Stove Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value=".5" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
@@ -634,7 +692,7 @@
 	<!-- 2014-11-19 Added Kitchen Autoclave Failure. -->
 	<malfunction name="Kitchen Autoclave Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value=".5" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
@@ -656,7 +714,7 @@
 	<!-- 2014-11-19 Added Kitchen Refrigerator Failure. -->
 	<malfunction name="Kitchen Refrigerator Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value=".5" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
@@ -676,7 +734,7 @@
 	<!-- 2016-05-27 Added Kitchen Microwave Failure. -->
 	<malfunction name="Kitchen Microwave Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value="1.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
@@ -697,7 +755,7 @@
 	<!-- 2015-02-16 Added solar parabolic mirror failure. -->
 	<malfunction name="Solar Parabolic Mirror Failure">
 		<severity value="40" />
-		<probability value="3.0" />
+		<probability value="1.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
@@ -714,7 +772,7 @@
 	<!-- 2015-02-16 Added LED Lighting Kit failure. -->
 	<malfunction name="LED Lighting Kit Failure">
 		<severity value="10" />
-		<probability value="3.0" />
+		<probability value="1.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="25.0" />
 		<system-list>
@@ -736,7 +794,7 @@
 	<!-- 2015-02-16 Added mushroom containment kit failure. -->
 	<malfunction name="Mushroom Containment Kit Failure">
 		<severity value="30" />
-		<probability value="3.0" />
+		<probability value="1.0" />
 		<repair-time value="20.0" />
 		<emergency-repair-time value="10" />
 		<system-list>
@@ -807,7 +865,7 @@
 			<medical-complaint name="Panic Attack" probability="10.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="2" probability="10" />
+			<part name="fire extinguisher" number="2" probability="10" />
 			<part name="airleak patch" number="5" probability="5" />
 			<part name="aluminum sheet" number="2" probability="10" />
 			<part name="polycarbonate roofing" number="2" probability="20" />
@@ -839,10 +897,10 @@
 			<medical-complaint name="Laceration" probability="2.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="1" probability="10" />
+			<part name="fire extinguisher" number="1" probability="30" />
 			<part name="aluminum sheet" number="2" probability="10" />
-			<part name="electrical wire" number="5" probability="30"/>
-			<part name="wire connector" number="5" probability="30"/>
+			<part name="electrical wire" number="5" probability="20"/>
+			<part name="wire connector" number="5" probability="20"/>
 			<part name="steel pipe" number="2" probability="10"/>
 			<part name="microcontroller" number="1" probability="5"/>
 			<part name="solid oxide fuel cell" number="2" probability="4"/>

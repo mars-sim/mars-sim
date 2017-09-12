@@ -959,7 +959,8 @@ implements Serializable {
 
 	    retrieveAnIngredientFromMap(usage, ResourceUtil.waterAR, true);
 		double wasteWaterAmount = usage * .75;
-		Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterAR, inv, sourceName + "::consumeWater");
+		if (wasteWaterAmount > 0)
+			Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterAR, inv, sourceName + "::consumeWater");
     }
 
 
@@ -1061,7 +1062,8 @@ implements Serializable {
                         double quality = meal.getQuality() / 2D + 1D;
                         double num = RandomUtil.getRandomDouble(7 * quality + 1);
                         if (num < 1) {
-                            Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteAR, inv, "::timePassing");
+                        	if (dryMassPerServing > 0)
+                        		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteAR, inv, "::timePassing");
                             LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
                             		dryMassPerServing  + " kg " + meal.getName()
                                     + " was expired and discarded at " + getBuilding().getNickName()
@@ -1161,7 +1163,8 @@ implements Serializable {
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltAR, true); //TABLE_SALT, true);//
-		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodAR, inv, sourceName + "::preserveFood");
+		if (dryMassPerServing > 0)
+			Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodAR, inv, sourceName + "::preserveFood");
  	}
 
     /**

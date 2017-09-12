@@ -1,18 +1,14 @@
 /**
  * Mars Simulation Project
  * EquipmentFactory.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-09-04
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,8 +38,10 @@ public final class EquipmentFactory {
 	 * @return set of equipment name strings.
 	 */
 	public static Set<String> getEquipmentNames() {
-	    if (equipmentNamesCache == null) {
-	        equipmentNamesCache = new HashSet<String>(8);
+		
+        if (equipmentNamesCache == null) {
+        	equipmentNamesCache = EquipmentType.getEquipmentTypeString();
+/*        	
 	        equipmentNamesCache.add(Bag.TYPE);
 	        equipmentNamesCache.add(Barrel.TYPE);
 	        equipmentNamesCache.add(EVASuit.TYPE);
@@ -52,8 +50,11 @@ public final class EquipmentFactory {
 	        equipmentNamesCache.add(SpecimenContainer.TYPE);
 	        equipmentNamesCache.add(BuildingKit.TYPE);
 	        equipmentNamesCache.add(Robot.TYPE);
+*/       
 	    }
-	    return new HashSet<String>(equipmentNamesCache);
+    
+	    return equipmentNamesCache;//new HashSet<String>(equipmentNamesCache);
+	    
 	}
 
 	/**

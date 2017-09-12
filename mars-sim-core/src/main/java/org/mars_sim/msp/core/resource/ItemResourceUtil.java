@@ -26,7 +26,8 @@ public class ItemResourceUtil implements Serializable {
 	public static final String SOCKET_WRENCH = "socket wrench";
 	public static final String PIPE_WRENCH = "pipe wrench";
 
-	public static Part pneumaticDrill, backhoe, smallHammer, socketWrench, pipeWrench;
+	public static Part pneumaticDrillAR, backhoeAR, smallHammerAR, socketWrenchAR, pipeWrenchAR, 
+				fireExtinguisherAR, workGlovesAR;
 
 	private static Set<Part> partSet;
 	
@@ -36,11 +37,13 @@ public class ItemResourceUtil implements Serializable {
 
 		partConfig = SimulationConfig.instance().getPartConfiguration();
 
-		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
-		backhoe = (Part) findItemResource(BACKHOE);
-		smallHammer = (Part) findItemResource(SMALL_HAMMER);
-		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
-		pipeWrench = (Part) findItemResource(PIPE_WRENCH);
+		pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
+		backhoeAR = (Part) findItemResource(BACKHOE);
+		smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
+		socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
+		pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
+		fireExtinguisherAR = (Part) findItemResource("fire extingusher");
+		workGlovesAR = (Part) findItemResource("work gloves");
 		
 	}
 
