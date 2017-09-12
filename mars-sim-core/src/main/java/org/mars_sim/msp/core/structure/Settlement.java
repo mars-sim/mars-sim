@@ -252,10 +252,10 @@ implements Serializable, LifeSupportType, Objective {
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	
 	// 2017-04-10 WARNING: cannot use static or result in null
-	public AmountResource foodAR = ResourceUtil.foodAR;//findAmountResource(FOOD);			// 1
-	public AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(WATER);		// 2
-	public AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(OXYGEN);		// 3
-	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
+	public AmountResource foodAR = ResourceUtil.foodAR;
+	public AmountResource waterAR = ResourceUtil.waterAR;
+	public AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
 
 	private DustStorm storm;
 	

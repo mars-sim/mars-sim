@@ -65,7 +65,7 @@
 			<!-- A part required for repairing this malfunction. -->
 			<!-- Values: number - the number of the part needed. -->
 			<!-- Values: probability - the percentage probability that the part will be needed for repair. -->
-			<part name="airleak patch" number="1" probability="60" />
+			<part name="airleak patch" number="1" probability="100" />
 		</repair-parts-list>
 
 	</malfunction>
@@ -87,12 +87,12 @@
 			<medical-complaint name="Minor Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="1" probability="50" />
+			<part name="co2 extinguisher" number="1" probability="100" />			
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Medium electrical or chemical fire. -->
-	<malfunction name="Fire">
+	<malfunction name="Medium Fire">
 		<severity value="80" />
 		<probability value="5" />
 		<repair-time value="200.0" />
@@ -110,7 +110,7 @@
 			<medical-complaint name="Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="1" probability="50" />
+			<part name="co2 extinguisher" number="1" probability="100" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -134,7 +134,7 @@
 			<medical-complaint name="Major Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="2" probability="50" />
+			<part name="co2 extinguisher" number="2" probability="100" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -147,7 +147,7 @@
 			<system name="vehicle" />
 		</system-list>
 		<repair-parts-list>
-			<part name="rover wheel" number="1" probability="10" />
+			<part name="rover wheel" number="1" probability="100" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -168,8 +168,8 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
-			<part name="epoxy resin bottle" number="1" probability="50" />
-			<part name="plastic tubing" number="1" probability="10" />
+			<part name="epoxy resin bottle" number="1" probability="30" />
+			<part name="plastic tubing" number="1" probability="20" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -184,19 +184,19 @@
 			<system name="power generation" />
 		</system-list>
 		<repair-parts-list>
-			<part name="gasket" number="1" probability="20" />
+			<part name="gasket" number="1" probability="10" />
 			<part name="spark plug" number="1" probability="15" />
-			<part name="coolant bottle" number="1" probability="20" />
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="plastic tubing" number="1" probability="10" />
+			<part name="coolant bottle" number="1" probability="10" />
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="wire connector" number="2" probability="25" />
+			<part name="plastic tubing" number="1" probability="5" />
 			<part name="lubricant bottle" number="1" probability="5" />
 			<part name="timing belt" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Battery failure. -->
-	<malfunction name="Battery Failure">
+	<malfunction name="Rover Battery Failure">
 		<severity value="40" />
 		<probability value="5.0" />
 		<repair-time value="50.0" />
@@ -209,12 +209,36 @@
 			<medical-complaint name="Minor Burns" probability="3.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="wire connector" number="2" probability="30" />
-			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="40" />
+			<part name="electrical wire" number="2" probability="40" />
 			<part name="rover battery" number="1" probability="5" />
+			<part name="microcontroller" number="1" probability="5" />
+			<part name="logic board" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
+	<!-- Battery failure. -->
+	<malfunction name="EVA Battery Failure">
+		<severity value="40" />
+		<probability value="5.0" />
+		<repair-time value="50.0" />
+		<system-list>
+			<system name="vehicle" />
+			<system name="robot" />		
+			<system name="power storage" />
+		</system-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="3.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="wire connector" number="2" probability="40" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="eva battery" number="1" probability="5" />
+			<part name="microcontroller" number="1" probability="5" />
+			<part name="logic board" number="1" probability="10" />
+		</repair-parts-list>
+	</malfunction>
+	
 	<!-- Communication system failure. -->
 	<malfunction name="Communication System Failure">
 		<severity value="20" />
@@ -227,11 +251,14 @@
 			<system name="communication" />
 		</system-list>
 		<repair-parts-list>
-			<part name="wire connector" number="2" probability="30" />
-			<part name="electrical wire" number="2" probability="40" />
+			<part name="wire connector" number="2" probability="25" />
+			<part name="electrical wire" number="2" probability="15" />
 			<part name="radio antenna" number="1" probability="10" />
-			<part name="satellite dish" number="1" probability="5" />
-			<part name="communications circuit board" number="1" probability="2" />
+			<part name="satellite dish" number="1" probability="10" />
+			<part name="communications circuit board" number="1" probability="10" />
+			<part name="microcontroller" number="1" probability="5" />			
+			<part name="logic board" number="1" probability="15" />
+			<part name="rf power transistor" number="1" probability="10" />			
 		</repair-parts-list>
 	</malfunction>
 
@@ -245,10 +272,13 @@
 			<system name="vehicle" />
 		</system-list>
 		<repair-parts-list>
-			<part name="wire connector" number="2" probability="30" />
-			<part name="electrical wire" number="2" probability="40" />
-			<part name="satellite dish" number="1" probability="5" />
-			<part name="navigation circuit board" number="1" probability="1" />
+			<part name="wire connector" number="2" probability="25" />
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="satellite dish" number="1" probability="10" />
+			<part name="navigation circuit board" number="1" probability="10" />
+			<part name="microcontroller" number="1" probability="5" />	
+			<part name="logic board" number="1" probability="15" />
+			<part name="rf power transistor" number="1" probability="10" />			
 		</repair-parts-list>
 	</malfunction>
 
@@ -262,6 +292,9 @@
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
+			<part name="light emitting diode kit" number="1" probability="10" />	
+			<part name="logic board" number="1" probability="15" />
+			<part name="microcontroller" number="1" probability="5" />			
 		</repair-parts-list>
 	</malfunction>
 
@@ -282,14 +315,14 @@
 			<effect type="resource" name="Water" change-rate="-.1" />
 		</effect-list>
 		<repair-parts-list>
-			<part name="gasket" number="1" probability="10" />
-			<part name="valve" number="1" probability="10" />
-			<part name="plastic tubing" number="2" probability="10" />
-			<part name="epoxy resin bottle" number="1" probability="5" />
-			<part name="copper pipe" number="1" probability="10" />
+			<part name="gasket" number="1" probability="15" />
+			<part name="valve" number="1" probability="15" />
+			<part name="plastic tubing" number="2" probability="15" />
+			<part name="epoxy resin bottle" number="1" probability="15" />
+			<part name="copper pipe" number="1" probability="15" />
 		<!-- 2014-11-19 Added water tank and small water pump -->
-			<part name="water tank" number="1" probability="5" />
-			<part name="small water pump" number="1" probability="5" />
+			<part name="water tank" number="1" probability="10" />
+			<part name="small water pump" number="1" probability="15" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -307,9 +340,10 @@
 		</effect-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
+			<part name="plastic tubing" number="2" probability="15" />			
 			<part name="electrical wire" number="2" probability="40" />
 			<part name="suit heating unit" number="1" probability="5" />
-			<part name="heat pipe" number="1" probability="1" />
+			<part name="heat pipe" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -335,11 +369,12 @@
 			<medical-complaint name="Heartburn" probability="10.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="gasket" number="1" probability="30" />
+			<part name="gasket" number="1" probability="20" />
 			<part name="valve" number="1" probability="20" />
-			<part name="epoxy resin bottle" number="1" probability="50" />
-			<part name="plastic tubing" number="5" probability="30" />
-			<part name="plastic pipe" number="2" probability="5" />
+			<part name="epoxy resin bottle" number="1" probability="20" />
+			<part name="plastic tubing" number="5" probability="15" />
+			<part name="plastic pipe" number="2" probability="15" />
+			<part name="flexible hose" number="2" probability="10" />		
 		</repair-parts-list>
 	</malfunction>
 
@@ -362,7 +397,13 @@
 			<medical-complaint name="Food Poisoning" probability="10.0" />
 			<medical-complaint name="Heartburn" probability="10.0" />
 		</medical-complaint-list>
-
+		<repair-parts-list>
+			<part name="gasket" number="1" probability="20" />
+			<part name="valve" number="1" probability="20" />
+			<part name="epoxy resin bottle" number="1" probability="20" />
+			<part name="plastic tubing" number="5" probability="20" />
+			<part name="plastic pipe" number="2" probability="20" />
+		</repair-parts-list>
 	</malfunction>
 
 	<!-- Dangerous chemical spill. -->
@@ -383,6 +424,13 @@
 			<medical-complaint name="Minor Burns" probability="10.0" />
 			<medical-complaint name="Hypoxemia" probability="3.0" />
 		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="plastic sheet" number="1" probability="10" />
+			<part name="decontamination kit" number="1" probability="60" />
+			<part name="fiberglass" number="1" probability="10" />
+			<part name="fiberglass cloth" number="1" probability="10" />
+			<part name="polyethylene" number="2" probability="10" />
+		</repair-parts-list>		
 	</malfunction>
 
 	<!-- EVA suit tear. -->
@@ -411,8 +459,11 @@
 			<system name="EVA suit" />
 		</system-list>
 		<repair-parts-list>
+			<part name="wire connector" number="4" probability="40" />
+			<part name="electrical wire" number="4" probability="25" />		
 			<part name="EVA antenna" number="1" probability="20" />
-			<part name="EVA radio" number="1" probability="10" />
+			<part name="rf power transistor" number="1" probability="10" />	
+			<part name="EVA radio" number="1" probability="5" />				
 		</repair-parts-list>
 	</malfunction>
 
@@ -430,25 +481,26 @@
 		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="4" probability="50" />
-			<part name="electrical wire" number="4" probability="100" />
+			<part name="electrical wire" number="4" probability="50" />
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Problems with one of the rover's electric motors. -->
-	<malfunction name="Electric Motor Failure">
+	<malfunction name="Motor Failure">
 		<severity value="50" />
 		<probability value="5.0" />
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
 		<system-list>
 			<system name="robot" />		
-			<system name="vehicle" />
- 			<system name="wind power source" />			
+			<system name="vehicle" />		
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="lubricant bottle" number="1" probability="30" />
+			<part name="aluminum wire" number="2" probability="20" />
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="wire connector" number="2" probability="25" />
+			<part name="lubricant bottle" number="1" probability="20" />
+			<part name="small motor" number="1" probability="5" />			
 		</repair-parts-list>
 	</malfunction>
 
@@ -464,9 +516,10 @@
 			<system name="fuel heating source" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="10" />
-			<part name="wire connector" number="2" probability="10" />
-			<part name="fuel pump" number="1" probability="10" />
+			<part name="aluminum wire" number="2" probability="20" />		
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="wire connector" number="2" probability="30" />
+			<part name="fuel pump" number="1" probability="20" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -517,10 +570,12 @@
 			<system name="cooking" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="1" probability="20" />
-			<part name="wire connector" number="1" probability="20" />
+			<part name="electrical wire" number="1" probability="30" />
+			<part name="wire connector" number="1" probability="30" />
 			<part name="blender" number="1" probability="5" />
-			<part name="lubricant bottle" number="1" probability="5" />
+			<part name="epoxy resin bottle" number="1" probability="15" />
+			<part name="lubricant bottle" number="1" probability="15" />
+			<part name="blender" number="2" probability="5" />			
 		</repair-parts-list>
 	</malfunction>
 
@@ -534,8 +589,9 @@
 			<system name="cooking" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="wire connector" number="2" probability="40" />
+			<part name="logic board" number="1" probability="15" />						
 			<part name="oven" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
@@ -550,8 +606,9 @@
 			<system name="cooking" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
+			<part name="electrical wire" number="2" probability="35" />
+			<part name="wire connector" number="2" probability="35" />
+			<part name="small motor" number="1" probability="20" />				
 			<part name="ventilation fan" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -566,10 +623,11 @@
 			<system name="cooking" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
+			<part name="electrical wire" number="2" probability="35" />
+			<part name="wire connector" number="2" probability="30" />
 			<part name="gasket" number="1" probability="20" />
-			<part name="stove" number="1" probability="3" />
+			<part name="logic board" number="1" probability="10" />				
+			<part name="stove" number="1" probability="5" />				
 		</repair-parts-list>
 	</malfunction>
 
@@ -583,13 +641,15 @@
 			<system name="cooking" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="5" />
-			<part name="wire connector" number="2" probability="5" />
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="wire connector" number="2" probability="25" />
 			<part name="small water pump" number="1"  probability="5"/>
 			<part name="heating element" number="1" probability="5" />
-			<part name="heat pipe" number="2" probability="1" />
+			<part name="heat pipe" number="2" probability="5" />
 			<part name="microcontroller" number="1"  probability="5"/>
-			<part name="ventilation fan" number="1"  probability="5"/>
+			<part name="logic board" number="1" probability="10" />	
+			<part name="ventilation fan" number="1"  probability="15"/>	
+			<part name="autoclave" number="2" probability="5" />				
 		</repair-parts-list>
 	</malfunction>
 
@@ -607,7 +667,9 @@
 			<part name="wire connector" number="2" probability="20" />
 			<part name="valve" number="3" probability="20" />
 			<part name="air compressor" number="1" probability="10" />
-			<part name="lubricant bottle" number="1" probability="5" />
+			<part name="lubricant bottle" number="1" probability="10" />
+			<part name="logic board" number="1" probability="15" />	
+			<part name="refrigerator" number="1" probability="5" />						
 		</repair-parts-list>
 	</malfunction>
 
@@ -621,12 +683,14 @@
 			<system name="cooking" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="steel sheet" number="2" probability="2" />
-			<part name="wire connector" number="5" probability="20" />
+			<part name="electrical wire" number="2" probability="30" />
+			<part name="steel sheet" number="2" probability="5" />
+			<part name="wire connector" number="5" probability="30" />
 			<part name="microcontroller" number="1" probability="5" />
+			<part name="logic board" number="1" probability="10" />			
 			<part name="small transformer" number="1" probability="5" />
-			<part name="rF power transistor" number="1" probability="5" />
+			<part name="rF power transistor" number="1" probability="10" />	
+			<part name="microwave" number="1" probability="5" />				
 		</repair-parts-list>
 	</malfunction>
 
@@ -640,9 +704,10 @@
 			<system name="solar heating source" />
 		</system-list>
 		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="wire connector" number="2" probability="40" />
+			<part name="aluminum sheet" number="1" probability="10" />			
 			<part name="solar parabolic mirror" number="1" probability="10" />
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -660,9 +725,11 @@
 			<system name="living accommodations" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
+			<part name="electrical wire" number="2" probability="30" />
+			<part name="wire connector" number="2" probability="30" />
+			<part name="logic board" number="2" probability="10" />			
 			<part name="light emitting diode bulb" number="5" probability="20" />
+			<part name="light emitting diode kit" number="1" probability="5" />			
 		</repair-parts-list>
 	</malfunction>
 
@@ -676,16 +743,17 @@
 			<system name="farming" />
 		</system-list>
 		<repair-parts-list>
-			<part name="oxygen pump" number="3" probability="10" />
+			<part name="oxygen pump" number="3" probability="5" />
 			<part name="carbon dioxide pump" number="3" probability="5" />
-			<part name="small water pump" number="3" probability="5" />
-			<part name="heating element" number="3" probability="5" />
-			<part name="electrical wire" number="3" probability="5" />
-			<part name="wire connector" number="6" probability="5" />
+			<part name="small water pump" number="3" probability="10" />
+			<part name="heating element" number="3" probability="10" />
+			<part name="electrical wire" number="3" probability="20" />
+			<part name="wire connector" number="6" probability="20" />
 			<part name="fiberglass cloth" number="3" probability="5" />
-			<part name="valve" number="10" probability="10"  />
-			<part name="gasket" number="10" probability="10"  />
-			<part name="plastic tubing" number="10" probability="3"  />
+			<part name="valve" number="10" probability="5"  />
+			<part name="gasket" number="10" probability="5"  />
+			<part name="plastic tubing" number="10" probability="10" />
+			<part name="Mushroom Containment Kit" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -700,18 +768,19 @@
 			<system name="manufacture" />
 		</system-list>
 		<repair-parts-list>
-			<part name="aluminum wire" number="2" probability="2"  />
-			<part name="electrical wire" number="2" probability="10" />
-			<part name="wire connector" number="2" probability="10" />
+			<part name="aluminum wire" number="2" probability="10"  />
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="wire connector" number="2" probability="20" />
 			<part name="small water pump" number="1" probability="5" />
 			<part name="heating element" number="1" probability="5" />
 			<part name="heat pipe" number="2" probability="5" />
 			<part name="microcontroller" number="1" probability="5" />
 			<part name="ventilation fan" number="1" probability="5" />
 			<part name="carbon dioxide laser" number="1" probability="5" />
-			<part name="small stepper motor" number="3" probability="2" />
+			<part name="small stepper motor" number="3" probability="5" />
 			<part name="timing belt" number="3" probability="5" />
-			<part name="optical prism" number="3" probability="3" />
+			<part name="optical prism" number="3" probability="4" />
+			<part name="Laser Sintering 3D Printer" number="1" probability="1" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -738,16 +807,16 @@
 			<medical-complaint name="Panic Attack" probability="10.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="2" probability="30" />
-			<part name="airleak patch" number="5" probability="80" />
-			<part name="aluminum sheet" number="2" probability="30" />
+			<part name="co2 extinguisher" number="2" probability="10" />
+			<part name="airleak patch" number="5" probability="5" />
+			<part name="aluminum sheet" number="2" probability="10" />
 			<part name="polycarbonate roofing" number="2" probability="20" />
-			<part name="plastic sheet" number="2" probability="20" />
-			<part name="fiberglass" number="2" probability="20" />
-			<part name="plastic pipe" number="2" probability="20" />
-			<part name="valve" number="2" probability="20" />
-			<part name="electrical wire" number="5" probability="20" />
-			<part name="wire connector" number="5" probability="20" />
+			<part name="plastic sheet" number="2" probability="10" />
+			<part name="fiberglass" number="2" probability="5" />
+			<part name="plastic pipe" number="2" probability="10" />
+			<part name="valve" number="2" probability="10" />
+			<part name="electrical wire" number="5" probability="10" />
+			<part name="wire connector" number="5" probability="10" />
 
 		</repair-parts-list>
 
@@ -770,13 +839,14 @@
 			<medical-complaint name="Laceration" probability="2.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="co2 extinguisher" number="1" probability="30" />
-			<part name="aluminum sheet" number="2" probability="30" />
-			<part name="electrical wire" number="5" probability="10"/>
+			<part name="co2 extinguisher" number="1" probability="10" />
+			<part name="aluminum sheet" number="2" probability="10" />
+			<part name="electrical wire" number="5" probability="30"/>
 			<part name="wire connector" number="5" probability="30"/>
-			<part name="steel pipe" number="2" probability="30"/>
+			<part name="steel pipe" number="2" probability="10"/>
 			<part name="microcontroller" number="1" probability="5"/>
-			<part name="solid oxide fuel cell" number="25" probability="5"/>
+			<part name="solid oxide fuel cell" number="2" probability="4"/>
+			<part name="fuel cell stack" number="1" probability="1"/>
 		</repair-parts-list>
 	</malfunction>
 

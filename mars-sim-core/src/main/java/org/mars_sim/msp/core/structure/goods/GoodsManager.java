@@ -278,6 +278,13 @@ public class GoodsManager implements Serializable {
 
         Iterator<Good> i = goodsValues.keySet().iterator();
         while (i.hasNext()) updateGoodValue(i.next(), true);
+/* 
+        while (i.hasNext()) {
+        	Good good = i.next();
+        	logger.info("Good : " + good.toString());
+        	updateGoodValue(good, true); 
+        }
+*/    	
         settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
 
         initialized = true;

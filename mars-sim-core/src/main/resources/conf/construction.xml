@@ -421,7 +421,7 @@
 			<part name="solar parabolic mirror" number="3" />
 			<part name="glass tube" number="6" />
 			<part name="steel pipe" number="10" />
-			<part name="small electric motor" number="1" />
+			<part name="small motor" number="1" />
 			<part name="turbine generator" number="1" />
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />
@@ -485,7 +485,7 @@
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
 			<part name="epoxy resin bottle" number="25" />
-			<part name="small electric motor" number="1" />
+			<part name="small motor" number="1" />
 			<part name="brick" number="100" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
@@ -513,7 +513,7 @@
 			<resource name="nickel" amount="1.0" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
-			<part name="small electric motor" number="1" />
+			<part name="small motor" number="1" />
 			<part name="plastic tubing" number="6" />
 			<part name="power cable" number="1" />
 			<part name="electrical wire" number="5" />
@@ -836,7 +836,7 @@
 			<part name="fiberglass" number="5" />
 			<part name="plastic pipe" number="7" />
 			<part name="valve" number="7" />
-			<part name="large electric motor" number="1" />
+			<part name="large motor" number="1" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
 		</building>
@@ -976,7 +976,7 @@
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
 			<part name="epoxy resin bottle" number="25" />
-			<part name="small electric motor" number="1" />
+			<part name="small motor" number="1" />
 			<part name="brick" number="100" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />

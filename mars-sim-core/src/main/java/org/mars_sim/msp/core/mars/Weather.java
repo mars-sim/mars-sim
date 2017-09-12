@@ -504,6 +504,8 @@ implements Serializable {
 			// Based on Surface brightness temperatures at 32 µm retrieved from the MCS data for 
 			// over five Mars Years (MY), at the “Tleilax” site. 
 
+			if (mars == null)
+				mars = sim.getMars();
 			if (orbitInfo == null)
 				orbitInfo = mars.getOrbitInfo();
 

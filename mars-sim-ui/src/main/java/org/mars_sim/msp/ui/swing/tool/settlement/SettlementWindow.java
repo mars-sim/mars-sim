@@ -330,7 +330,7 @@ extends ToolWindow {
 			mainScene.setQuickToolTip(xyLabel, "x and y meters from the center of a building (Note: right-click inside to update)");
 	    }
 	    
-		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
+		//statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 		statusBar.getLeftItems().add(solLabel);
 		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 

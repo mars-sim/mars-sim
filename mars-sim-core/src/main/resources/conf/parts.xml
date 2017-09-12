@@ -341,9 +341,10 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="large electric motor" mass="100.0" >
+	<part name="large motor" mass="100.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
+			<entity name="wind power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -419,9 +420,9 @@
 		<description>Attachment part for light utility vehicle.</description>
 	</part>
 
-	<part name="small electric motor" mass="10.0" >
+	<part name="small motor" mass="10.0" >
 		<maintenance-entity-list>
-			<entity name="light utility vehicle" probability="1" max-number="1" />
+			<entity name="robot" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -570,7 +571,7 @@
 
 	<!-- 2016-05-27 Added RF power transistor, replacaing the use of heavy, bulky magnetron tube used in microwave oven. 
 	see http://www.nxp.com/products/rf/rf-power-transistors/rf-cooking:RF-COOKING?cof=0&am=0   -->
-	<part name="rF power transistor" mass="0.01" >
+	<part name="rf power transistor" mass="0.01" >
 	</part>
 
 
@@ -723,9 +724,10 @@
 			roofing for greenhouses</description>
 	</part>
 
-	<part name="small stepper motor" mass="1.5">
+	<part name="small stepper motor" mass="2">
+		<description>precision motor for use in 3D printing</description>
 		<maintenance-entity-list>
-			<entity name="manufacture" probability="1" max-number="5" />
+			<entity name="manufacture" probability="1" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
@@ -814,6 +816,29 @@
 	
 	<part name="pipe wrench" mass="1.5"/>
 			
+	<part name="decontamination kit" mass="0.2">
+		<description>Useful for chemical spill.</description>
+	</part>
+
+	<part name="resistor" mass="0.001">
+		<description>a basic electrical component.</description>
+	</part>
+	
+	<part name="capacitor" mass="0.005">
+		<description>a basic electrical component.</description>
+	</part>
+	
+	<part name="diode" mass="0.005">
+		<description>a basic electrical component.</description>
+	</part>
+	
+	<part name="logic board" mass="0.1">
+		<description>Logic board is a  printed circuit board (PCB) that 
+		mechanically supports and electrically connects electronic components 
+		using conductive tracks, pads and other features etched from copper 
+		sheets laminated onto a non-conductive substrate.</description>
+	</part>
+					
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

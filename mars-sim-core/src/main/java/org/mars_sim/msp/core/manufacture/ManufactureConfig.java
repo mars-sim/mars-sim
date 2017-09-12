@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConfig.java
- * @version 3.07 2015-02-24
-
+ * @version 3.1.0 2017-09-11
  * @author Scott Davis
  */
 
@@ -12,15 +11,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Type;
 
 public class ManufactureConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(ManufactureConfig.class.getName());
 
 	// Element names
 	private static final String PROCESS = "process";
@@ -143,10 +148,16 @@ public class ManufactureConfig implements Serializable {
         for (Element resourceElement : resourceNodes) {
             ManufactureProcessItem resourceItem = new ManufactureProcessItem();
             resourceItem.setType(Type.AMOUNT_RESOURCE);
-            resourceItem.setName(resourceElement.getAttributeValue(NAME).toLowerCase());
-            resourceItem.setAmount(Double.parseDouble(resourceElement
-                    .getAttributeValue(AMOUNT)));
-            list.add(resourceItem);
+            String resourceName = resourceElement.getAttributeValue(NAME).toLowerCase();
+            AmountResource resource = AmountResource.findAmountResource(resourceName);
+			if (resource == null)
+				logger.info(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
+			else {			
+	            resourceItem.setName(resourceName);
+	            resourceItem.setAmount(Double.parseDouble(resourceElement
+	                    .getAttributeValue(AMOUNT)));
+	            list.add(resourceItem);
+			}
         }
     }
 
@@ -161,10 +172,18 @@ public class ManufactureConfig implements Serializable {
         for (Element partElement : partNodes) {
             ManufactureProcessItem partItem = new ManufactureProcessItem();
             partItem.setType(Type.PART);
-            partItem.setName(partElement.getAttributeValue(NAME));
-            partItem.setAmount(Integer.parseInt(partElement
-                    .getAttributeValue(NUMBER)));
-            list.add(partItem);
+            
+            String partName = partElement.getAttributeValue(NAME);
+            Part part = (Part) ItemResource.findItemResource(partName);
+            
+			if (part == null)
+				logger.info(partName + " shows up in manufacturing.xml but doesn't exist in parts.xml.");
+			else {         
+	            partItem.setName(partName);
+	            partItem.setAmount(Integer.parseInt(partElement
+	                    .getAttributeValue(NUMBER)));
+	            list.add(partItem);
+			}
         }
     }
 

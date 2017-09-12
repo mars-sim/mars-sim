@@ -15,6 +15,7 @@
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
 
+		<part type="logic board" number="25"/>
 		<part type="solid oxide fuel cell" number="100"/>
 		<part type="fuel cell stack" number="10"/>
 		<part type="polycarbonate roofing" number="10"/>
@@ -92,8 +93,9 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="2" />
-		<part type="small electric motor" number="2" />
-		<part type="large electric motor" number="4" />
+		<part type="small motor" number="2" />
+		<part type="large motor" number="4" />
+		<part type="small stepper motor" number="4"/>		
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -119,7 +121,8 @@
 	</part-package>
 
 	<part-package name="package 2" >
-
+	
+		<part type="logic board" number="50"/>
 	    <part type="solid oxide fuel cell" number="200"/>
 		<part type="fuel cell stack" number="20"/>
 		<part type="polycarbonate roofing" number="20"/>
@@ -196,8 +199,9 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="2" />
-		<part type="small electric motor" number="2" />
-		<part type="large electric motor" number="4" />
+		<part type="small motor" number="2" />
+		<part type="large motor" number="4" />
+		<part type="small stepper motor" number="4"/>		
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -225,6 +229,7 @@
 	</part-package>
 
 	<part-package name="package 3">
+		<part type="logic board" number="100"/>	
 		<part type="solid oxide fuel cell" number="300"/>
 		<part type="fuel cell stack" number="30"/>
 		<part type="polycarbonate roofing" number="30"/>
@@ -301,8 +306,9 @@
 		<part type="rover windshield" number="4" />
 		<part type="rover window" number="8" />
 		<part type="winch" number="4" />
-		<part type="small electric motor" number="2" />
-		<part type="large electric motor" number="6" />
+		<part type="small motor" number="3" />
+		<part type="large motor" number="6" />
+		<part type="small stepper motor" number="6"/>		
 		<part type="rover chassis panel" number="8" />
 		<part type="rover generator" number="4" />
 		<part type="rover control panel" number="4" />
@@ -330,6 +336,7 @@
 	</part-package>
 
 	<part-package name="package 4">
+		<part type="logic board" number="200"/>
 		<part type="solid oxide fuel cell" number="500"/>
 		<part type="fuel cell stack" number="50"/>
 		<part type="polycarbonate roofing" number="50"/>
@@ -406,8 +413,9 @@
 		<part type="rover windshield" number="8" />
 		<part type="rover window" number="12" />
 		<part type="winch" number="8" />
-		<part type="small electric motor" number="2" />
-		<part type="large electric motor" number="12" />
+		<part type="small motor" number="6" />
+		<part type="large motor" number="12" />
+		<part type="small stepper motor" number="12"/>		
 		<part type="rover chassis panel" number="14" />
 		<part type="rover generator" number="8" />
 		<part type="rover control panel" number="8" />

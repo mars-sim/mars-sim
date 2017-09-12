@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 3.08 2015-02-10
+ * @version 3.1.0 2017-09-11
  * @author Scott Davis
  */
 

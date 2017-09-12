@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionConfig.java
- * @version 3.07 2014-08-22
+ * @version 3.1.0 2017-09-11
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -24,12 +23,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 
 /**
  * Parses construction configuration file.
  */
 public class ConstructionConfig implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	    
+	private static Logger logger = Logger.getLogger(ConstructionConfig.class.getName());
 
     // Element names
     private static final String NAME = "name";
@@ -180,7 +185,12 @@ public class ConstructionConfig implements Serializable {
                     String partName = partElement.getAttributeValue(NAME);
                     int partNum = Integer.parseInt(partElement.getAttributeValue(NUMBER));
                     Part part = (Part) ItemResource.findItemResource(partName);
-                    parts.put(part, partNum);
+                    
+    				if (part == null)
+    					logger.info(partName + " shows up in constructions.xml but doesn't exist in parts.xml.");
+    				else
+                        parts.put(part, partNum);  
+
                 }
                     
                 List<Element> resourceList = stageInfoElement.getChildren(RESOURCE);
@@ -190,7 +200,10 @@ public class ConstructionConfig implements Serializable {
                     String resourceName = resourceElement.getAttributeValue(NAME);
                     double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
                     AmountResource resource = AmountResource.findAmountResource(resourceName);
-                    resources.put(resource, resourceAmount);
+       				if (resource == null)
+    					logger.info(resourceName + " shows up in constructions.xml but doesn't exist in resources.xml.");
+    				else
+    					resources.put(resource, resourceAmount);
                 }
                     
                 List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);

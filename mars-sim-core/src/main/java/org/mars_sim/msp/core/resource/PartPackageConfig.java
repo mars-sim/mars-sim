@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -26,6 +27,8 @@ public class PartPackageConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+    
+	private static Logger logger = Logger.getLogger(PartPackageConfig.class.getName());
 
 	// Element names
 	private static final String PART_PACKAGE = "part-package";
@@ -57,7 +60,6 @@ public class PartPackageConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	private void loadPartPackages(Document partPackageDoc) {
-		
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
 		for (Element partPackageElement : partPackageNodes) {
@@ -70,12 +72,17 @@ public class PartPackageConfig implements Serializable {
 				String partType = partElement.getAttributeValue(TYPE);
 				//System.out.println("partPackage is " + partPackage.name + "     partType is " + partType);
 				Part part = (Part) ItemResource.findItemResource(partType);
-				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-				partPackage.parts.put(part, partNumber);
+				if (part == null)
+					logger.info(partType + " shows up in part_packages.xml but doesn't exist in parts.xml.");
+				else {
+					int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
+					partPackage.parts.put(part, partNumber);
+				}
 			}
 			
 			partPackages.add(partPackage);
 		}
+		
 	}
 	
 	/**
@@ -89,10 +96,10 @@ public class PartPackageConfig implements Serializable {
 		
 		PartPackage foundPartPackage = null;
 		for(PartPackage partPackage : partPackages) {
-	            if (partPackage.name.equals(name)) {
-	                foundPartPackage = partPackage;
-	                break;
-	            }
+			if (partPackage.name.equals(name)) {
+				foundPartPackage = partPackage;
+				break;
+			}
 	    }
 		
 		if (foundPartPackage != null) 

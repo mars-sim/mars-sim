@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTempla
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 /**
@@ -28,6 +29,8 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 2L;
+
+	private static Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	// Element names
 	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
@@ -384,8 +387,13 @@ implements Serializable {
 			for (Element resourceElement : resourceNodes) {
 				String resourceType = resourceElement.getAttributeValue(TYPE);
 				AmountResource resource = AmountResource.findAmountResource(resourceType);
-				double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
-				template.addAmountResource(resource, resourceAmount);
+				if (resource == null)
+					logger.info(resourceType + " shows up in settlements.xml but doesn't exist in resources.xml.");
+				else {			
+					double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
+					template.addAmountResource(resource, resourceAmount);
+				}
+
 			}
 
 			// Load parts
@@ -393,9 +401,16 @@ implements Serializable {
 			for (Element partElement : partNodes) {
 				String partType = partElement.getAttributeValue(TYPE);
 				Part part = (Part) Part.findItemResource(partType);
-				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-				template.addPart(part, partNumber);
+				
+				if (part == null)
+					logger.info(partType + " shows up in settlements.xml but doesn't exist in parts.xml.");
+				else {         
+					int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
+					template.addPart(part, partNumber);	
+				}
+		
 			}
+			
 
 			// Load part packages
 			List<Element> partPackageNodes = templateElement.getChildren(PART_PACKAGE);
@@ -414,6 +429,8 @@ implements Serializable {
 					}
 				}
 			}
+
+			//System.out.println("SettlementConfig's partPackageNodes : " + partPackageNodes.size());
 
 			// Load resupplies
 			Element resupplyList = templateElement.getChild(RESUPPLY);

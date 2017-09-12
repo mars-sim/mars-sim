@@ -8,11 +8,8 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+
 
 import org.mars_sim.msp.core.SimulationConfig;
 
@@ -63,7 +60,7 @@ implements Serializable {
 	 * @param massPerItem the mass (kg) of the resource per item.
 	 * @param the sol when this resource is put to use.
 	 */
-	protected ItemResource(String name,  int id, String description, double massPerItem, int startSol) {
+	protected ItemResource(String name, int id, String description, double massPerItem, int startSol) {
 		this.name = name;
 		this.id = id;
 		this.description = description;
