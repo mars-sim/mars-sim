@@ -54,6 +54,7 @@ import javafx.util.Duration;
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
  */
+@SuppressWarnings("restriction")
 public class Simulation
 implements ClockListener, Serializable {
 

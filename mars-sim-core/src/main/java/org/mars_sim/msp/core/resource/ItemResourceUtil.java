@@ -8,7 +8,9 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +32,8 @@ public class ItemResourceUtil implements Serializable {
 				fireExtinguisherAR, workGlovesAR;
 
 	private static Set<Part> partSet;
+
+	private static List<Part> sortedParts;
 	
 	private static PartConfig partConfig;
 	
@@ -77,6 +81,13 @@ public class ItemResourceUtil implements Serializable {
 		return partSet;
 	}
 
+	
+	public static List<Part> getSortedParts() {
+		sortedParts = new ArrayList<>(partSet);
+		Collections.sort(sortedParts);
+		return sortedParts;
+	}
+	
 	public static Map<String, Part> getItemResourcesMap() {
 		//if (partConfig == null) System.err.println("partConfig == null");
 		return partConfig.getNamePartMap();

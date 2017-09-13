@@ -326,11 +326,11 @@ implements Serializable {
 	public double performTask(double time, double efficiency) {
 		double remainingTime = 0D;
 		
-		if (person.getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS) 
+		if (person.getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS) {
 			//	||  (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
 			//		&& person.getVehicle().getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS))
 			checkForEmergency();
-
+		}
 		
 		if (currentTask != null) {
 			// For effort driven task, reduce the effective time based on efficiency.

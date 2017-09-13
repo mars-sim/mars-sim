@@ -1,24 +1,30 @@
 /**
- * this can be run at development time to generate .html-files
- * for the in-game help tool. or can be started with every
- * run of the simulation.
+ * Mars Simulation Project
+ * HelpGenerator.java
+ * @version 3.1.0 2017-02-03
  * @author stpa
- * 2015-05-12
- * TODO make the generated help files internationalizable.
  */
+
 
 package org.mars_sim.msp.ui.helpGenerator;
 
+// TODO make the generated help files internationalizable.
+
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -30,6 +36,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
@@ -38,7 +45,10 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
-
+/**
+ * Generates html files for the in-game help. 
+ * Note : start it by running "MarsProjectFX -html.launch" in Eclipse 
+ */
 public class HelpGenerator {
 
 	/** initialized logger for this class. */
@@ -49,13 +59,12 @@ public class HelpGenerator {
 	 * line argument -generateHelp only when needed.
 	 *
 	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
-	// In windows os :
 
-	// Eclipse's htmls at
+	// In Windows OS, the Eclipse's htmls are kept in the \src\ folder
 	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\src\main\resources\docs\help
 	// or D:\Data\git\mars-sim\mars-sim-ui\src\main\resources\docs\help
 	//
-	// newly generated htmls at
+	// After running "MarsProjectFX -html.launch" in Eclipse, the newly generated htmls will be at the \target\ folder 
 	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\target\classes\docs\help
 	// or D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help
 
@@ -478,9 +487,12 @@ public class HelpGenerator {
 	//2016-04-17 Added checking for edible
 	private static final void generateResourceDescriptions() {
 		//System.out.println("Calling generateResourceDescriptions()");
-		Map<String,AmountResource> resources = ResourceUtil.getAmountResourcesMap();
+		//Map<String,AmountResource> resources = ResourceUtil.getAmountResourcesMap();
 		//Map<Integer, AmountResource> resources = AmountResource.getAmountResourcesIDMap();
-
+		
+		ResourceUtil.getInstance().createMaps();
+		List<AmountResource> resources = ResourceUtil.getSortedAmountResources();
+		
 		// first: generate "resources.html" with a list of defined resources
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Amount Resources</h2>\n")
@@ -489,10 +501,12 @@ public class HelpGenerator {
 
 		//System.out.println("Done with making content");
 
-		for (Entry<String,AmountResource> entry : resources.entrySet()) {
+		//for (Map.Entry<String,AmountResource> entry : resources.entrySet()) {
 		//for (Entry<Integer, AmountResource> entry : resources.entrySet()) {
-			AmountResource resource = entry.getValue();
-			String name = entry.getKey();
+			//AmountResource resource = entry.getValue();
+			//String name = entry.getKey();
+		for (AmountResource resource : resources) {
+			String name = resource.getName();	
 			//int id = entry.getKey();
 			String life = resource.isLifeSupport() ? "   (Life Support)" : "";
 			String edible = resource.isEdible() ? "   (Edible)" : "";
@@ -520,10 +534,13 @@ public class HelpGenerator {
 		//System.out.println("generateResourceDescriptions(): done with part 1");
 
 		// STEP 2 :
+	
 		// loop over resource types to generate a help file for each one
-		for (Entry<String,AmountResource> entry : resources.entrySet()) {
-			AmountResource resource = entry.getValue();
-			String name = entry.getKey();
+		//for (Map.Entry<String,AmountResource> entry : resources.entrySet()) {
+		//	AmountResource resource = entry.getValue();
+		//	String name = entry.getKey();
+		for (AmountResource resource : resources) {
+			String name = resource.getName();	
 			String description = resource.getDescription();
 			if (description == null)
 				description = "No Description is Available";
@@ -627,16 +644,20 @@ public class HelpGenerator {
 	 */
 	private static final void generatePartsDescriptions() {
 		//Map<String, ItemResource> parts = ItemResource.getItemResourcesMap();
-		Map<String, Part> parts = ItemResource.getItemResourcesMap();
-
+		//Map<String, Part> parts = ItemResource.getItemResourcesMap();
+		List<Part> parts = ItemResourceUtil.getSortedParts();
+		
 		// first: generate "parts.html" with a list of defined equipment parts
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Parts</h2>\n")
 		.append("<p>Available Types of Parts and Equipments :</p>")
 		.append("<ul>\n");
-		for (String part : parts.keySet()) {
+		
+		//for (String part : parts.keySet()) {
+		for (Part part : parts) {		
+			String name = part.getName();
 			content.append("\t<li>")
-			.append(getLinkPart(part))
+			.append(getLinkPart(name))
 			.append("</li>\n");
 		}
 		content.append("</ul>\n");
@@ -647,9 +668,11 @@ public class HelpGenerator {
 		// second: loop over part types to generate a help file for each one
 		//for (Entry<String, ItemResource> entry : parts.entrySet()) {
 		//	Part part = (Part) entry.getValue();
-		for (Entry<String, Part> entry : parts.entrySet()) {
-			Part part = entry.getValue();
-			String name = entry.getKey();
+		//for (Entry<String, Part> entry : parts.entrySet()) {
+		//	Part part = entry.getValue();
+		//	String name = entry.getKey();
+		for (Part part : parts) {
+			String name = part.getName();
 			String description = part.getDescription();
 			if (description == null)
 				description = "No Description is Available";

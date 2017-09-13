@@ -310,7 +310,7 @@ extends AbstractTableModel {
 			 categoryTypeMap.put(EQUIPMENT, sortedEquipmentTypes);
 
 			 // Create resource type list.
-			 categoryTypeMap.put(RESOURCE, ResourceUtil.getInstance().getAmountResourcesSortedList());
+			 categoryTypeMap.put(RESOURCE, ResourceUtil.getAmountResourceStringSortedList());
 
 			 // Create part type list.
 			 List<String> partNames = new ArrayList<String>();

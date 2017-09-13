@@ -85,7 +85,9 @@ public class ResourceUtil implements Serializable {
     private static Map<Integer, AmountResource> amountResourceIDMap;
     private static Map<Integer, String> IDNameMap;
 
-	private Set<AmountResource> resources;
+	private static Set<AmountResource> resources;
+	
+	private static List<AmountResource> sortedResources;
 
 	// NOTE: This instance is critical during deserialization.
 	// When loading the saved sim, amountResourceConfig from the saved sim will be copied over here
@@ -138,6 +140,7 @@ public class ResourceUtil implements Serializable {
     public static AmountResource sesameOilAR;
     
 	private static AmountResource[] ARs = new AmountResource[20];
+	
 	private static int[] ARs_int = new int[20];
 
 	/**
@@ -193,17 +196,21 @@ public class ResourceUtil implements Serializable {
 
     public void createMaps() {
 		amountResourceMap = new HashMap<String, AmountResource>();
-		for (AmountResource resource : resources) {
+		sortedResources = new ArrayList<>(resources);
+		Collections.sort(sortedResources);
+		
+		for (AmountResource resource : sortedResources) {
 			amountResourceMap.put(resource.getName(), resource);
+			//System.out.println(resource.getName());
 		}
 
 		amountResourceIDMap = new HashMap<Integer, AmountResource>();
-		for (AmountResource resource : resources) {
+		for (AmountResource resource : sortedResources) {
 			amountResourceIDMap.put(resource.getID(), resource);
 		}
 
 		IDNameMap = new HashMap<Integer, String>();
-		for (AmountResource resource : resources) {
+		for (AmountResource resource : sortedResources) {
 			IDNameMap.put(resource.getID(), resource.getName());
 		}
     }
@@ -487,7 +494,7 @@ public class ResourceUtil implements Serializable {
 	 * turns the result into an alphabetically ordered list of strings.
 	 * @return {@link List}<{@link String}>
 	 */
-	public List<String> getAmountResourcesSortedList() {
+	public static List<String> getAmountResourceStringSortedList() {
 		List<String> resourceNames = new ArrayList<String>();
 		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
@@ -497,6 +504,10 @@ public class ResourceUtil implements Serializable {
 		return resourceNames;
 	}
 
+	public static List<AmountResource> getSortedAmountResources() {
+		return sortedResources;
+	}
+	
 	/**
 	 * Gets the hash code value.
 	 */
