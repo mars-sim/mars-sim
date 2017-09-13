@@ -72,7 +72,8 @@ public class CookMealMeta implements MetaTask, Serializable {
                 // Check if enough meals have been cooked at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getCookNoMore();
 
-                if (enoughMeals) return 0;
+                if (enoughMeals) 
+                	return 0;
 
                 // Check if there are enough ingredients to cook a meal.
                 // 2015-12-10 Used getNumCookableMeal()
@@ -95,6 +96,13 @@ public class CookMealMeta implements MetaTask, Serializable {
                 else {
 
                     result = 50D;
+                    
+                	if (CookMeal.isMealTime(person.getCoordinates())) {
+                		result *= 2.5D;
+                	}
+                	else
+                		result *= .25D;   
+                	
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);

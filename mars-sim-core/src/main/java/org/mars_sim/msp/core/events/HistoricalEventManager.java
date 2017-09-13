@@ -114,6 +114,7 @@ public class HistoricalEventManager implements Serializable {
 		 
 		newEvent.setTimestamp(timestamp);
 
+		//System.out.println("New event : " + newEvent.getDescription());
 		events.add(0, newEvent);
 
 		Iterator<HistoricalEventListener> iter = listeners.iterator();

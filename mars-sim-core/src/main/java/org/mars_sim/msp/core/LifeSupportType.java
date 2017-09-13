@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core;
 
-import org.mars_sim.msp.core.resource.AmountResource;
 
 /**
  * This interface represents a Life Support system that provides Oxygen, Water

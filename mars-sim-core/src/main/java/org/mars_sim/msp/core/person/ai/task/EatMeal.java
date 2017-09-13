@@ -740,7 +740,8 @@ public class EatMeal extends Task implements Serializable {
         	Unit containerUnit = person.getTopContainerUnit();
         	if (containerUnit != null) {
         		Inventory inv = containerUnit.getInventory();
-        		Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv);
+        		if (NAPKIN_MASS > 0)
+        			Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv, sourceName + "::endTask");
         	}
         }
     }

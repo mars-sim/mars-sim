@@ -19,6 +19,9 @@ import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 //import javafx.scene.layout.HBox;
 //import javafx.scene.layout.StackPane;
 //import javafx.scene.layout.VBox;
@@ -35,19 +38,27 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
+
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
 
 //import com.jfoenix.controls.JFXButton;
 //import com.jfoenix.controls.JFXDialog;
@@ -80,17 +91,23 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
+    private boolean isShowingDialog = false;
+	private boolean isExit = false;
+	
     //private double anchorX;
     //private double rate;
-
     //private int currentItem = 0;
     
     private Parent root;
-    //private AnchorPane root;
+    
+    private StackPane stackPane;
+
 	private Stage stage;
+	
 	private Scene scene;
 
 	private MainMenu mainMenu;
+	
 	private MainScene mainScene;
 	//private ScreensSwitcher screen;
 
@@ -120,17 +137,6 @@ public class MainMenu {
 		// the JavaFX launcher will call the Application.stop method and terminate the JavaFX application thread.
 		// If this attribute is false, the application will continue to run normally even after the last window is closed,
 		// until the application calls exit. The default value is true.
-
-    	stage.setOnCloseRequest(e -> {
-			boolean isExit = exitDialog(stage);
-			if (!isExit) {
-				e.consume();
-			}
-			else {
-				Platform.exit();
-	    		System.exit(0);
-			}
-		});
     	
 /*
        screen = new ScreensSwitcher(this);
@@ -193,7 +199,8 @@ public class MainMenu {
        screen.toFront();
 */   
        
-	   scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+       stackPane = new StackPane(root);
+	   scene = new Scene(stackPane, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
         // Add keyboard control
 	   menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene);
        // Add mouse control
@@ -231,6 +238,30 @@ public class MainMenu {
            }
        });
      
+		stage.setOnCloseRequest(e -> {
+			if (!isShowingDialog) {
+				dialogOnExit(stackPane);
+			}
+			if (!isExit) {
+				e.consume();
+			}
+			else {
+				Platform.exit();
+	    		System.exit(0);
+			}
+		});
+/*		
+    	stage.setOnCloseRequest(e -> {
+			boolean isExit = exitDialog(stage);
+			if (!isExit) {
+				e.consume();
+			}
+			else {
+				Platform.exit();
+	    		System.exit(0);
+			}
+		});
+ */   	
        stage.setResizable(false);
 	   stage.setTitle(Simulation.title);
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -573,7 +604,7 @@ public class MainMenu {
         	// Warning: cannot load the editor in macosx if it was a JDialog
         //}
     }
-
+/*
 	public boolean exitDialog(Stage stage) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.initOwner(stage);
@@ -598,7 +629,56 @@ public class MainMenu {
 	   	    return false;
 	   	}
    	}
+*/
+
+    public StackPane getPane() {
+    	return stackPane;
+    }
     
+	/**
+	 * Open the exit dialog box
+	 * @param pane
+	 */
+	public void dialogOnExit(StackPane pane) {
+		isShowingDialog = true;
+		Label l = new Label("Do you really want to exit ?");//mainScene.createBlendLabel(Msg.getString("MainScene.exit.header"));
+		l.setPadding(new Insets(10, 10, 10, 10));
+		l.setFont(Font.font(null, FontWeight.BOLD, 14));
+		HBox hb = new HBox();
+		JFXButton b1 = new JFXButton("Exit");
+		b1.setStyle("-fx-background-color: white;");
+		JFXButton b2 = new JFXButton("Back");
+		b2.setStyle("-fx-background-color: white;");
+		hb.getChildren().addAll(b1, b2);
+		hb.setAlignment(Pos.CENTER);
+		HBox.setMargin(b1, new Insets(3,3,3,3));
+		HBox.setMargin(b2, new Insets(3,3,3,3));
+		VBox vb = new VBox();
+		vb.setAlignment(Pos.CENTER);
+		vb.setPadding(new Insets(5, 5, 5, 5));
+		vb.getChildren().addAll(l, hb);
+		StackPane sp = new StackPane(vb);
+		sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
+		StackPane.setMargin(vb, new Insets(10,10,10,10));
+		JFXDialog dialog = new JFXDialog();
+		dialog.setDialogContainer(pane);
+		dialog.setContent(sp);
+		dialog.show();
+
+		b1.setOnAction(e -> {
+			isExit = true;
+			dialog.close();
+			Platform.exit();
+			System.exit(0);
+		});
+		
+		b2.setOnAction(e -> {
+			dialog.close();
+			isShowingDialog = false;
+			e.consume();
+		});
+
+	}	
 /*
 	public boolean exitDialog() {
 		Boolean result = false;

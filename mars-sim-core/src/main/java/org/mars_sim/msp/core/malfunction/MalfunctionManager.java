@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.person.medical.Complaint;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -121,8 +120,8 @@ implements Serializable {
 	private static PartConfig partConfig;
 	private static MalfunctionConfig malfunctionConfig;
 	
-	private static SimulationConfig simconfig = SimulationConfig.instance();
-	private static Simulation sim = Simulation.instance();
+	private static SimulationConfig simconfig;
+	private static Simulation sim;
 	
 	// NOTE : each building has its own MalfunctionManager
 	
@@ -145,11 +144,11 @@ implements Serializable {
 		malfunctions = new ArrayList<Malfunction>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.wearLifeTime = wearLifeTime;
-		wearCondition = 100D;
-		
-		if (partConfig == null)
-			partConfig = simconfig.getPartConfiguration();
-		
+		wearCondition = 100D;		
+
+		simconfig = SimulationConfig.instance();
+		sim = Simulation.instance();
+		partConfig = simconfig.getPartConfiguration();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
 		eventManager = sim.getEventManager();
@@ -420,6 +419,8 @@ implements Serializable {
 
 			if (registerEvent) {
 				HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
+				if (eventManager == null)
+					eventManager = sim.getEventManager();
 				eventManager.registerNewEvent(newEvent);
 				
 				// Register the failure of the Parts involved
@@ -453,9 +454,9 @@ implements Serializable {
 				 }
 				 
 				 double old_p = malfunction.getProbability();
-				 logger.info(mal + "'s probability of failure has been updated from " 
-						 + Math.round(old_p*100.0)/100.0  
-						 + " % to " + Math.round(new_p*100.0)/100.0 + " %.");
+				 logger.info(mal + "'s probability of failure : " 
+						 + Math.round(old_p*10000.0)/10000.0  
+						 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
 				 malfunction.setProbability(new_p);
 				 
 			}
@@ -561,6 +562,8 @@ implements Serializable {
 				}
 
 				HistoricalEvent newEvent = new MalfunctionEvent(entity, item, true);
+				if (eventManager == null)
+					eventManager = sim.getEventManager();
 				eventManager.registerNewEvent(newEvent);
 			}
 		}

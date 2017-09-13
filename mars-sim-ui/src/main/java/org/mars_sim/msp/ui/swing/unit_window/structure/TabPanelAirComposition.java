@@ -16,10 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -32,12 +30,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -168,10 +164,10 @@ extends TabPanel {
 	    pressure_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.pressure.tooltip")); //$NON-NLS-1$
 	    mass_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mass")); //$NON-NLS-1$
 	    mass_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.mass.tooltip")); //$NON-NLS-1$
-	    moles_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.moles")); //$NON-NLS-1$
-	    moles_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.moles.tooltip")); //$NON-NLS-1$
-	    temperature_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.temperature")); //$NON-NLS-1$
-	    temperature_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.temperature.tooltip")); //$NON-NLS-1$
+	    //moles_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.moles")); //$NON-NLS-1$
+	    //moles_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.moles.tooltip")); //$NON-NLS-1$
+	    //temperature_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.temperature")); //$NON-NLS-1$
+	    //temperature_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.temperature.tooltip")); //$NON-NLS-1$
 	    
 	    percent_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -188,6 +184,7 @@ extends TabPanel {
 				tableModel.update();
 			}
 		});
+/*
 	    moles_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				tableModel.update();
@@ -198,20 +195,20 @@ extends TabPanel {
 				tableModel.update();
 			}
 		});
-	    
+*/	    
 	    percent_btn.setSelected(true);
 		radioPane.add(percent_btn);
 		radioPane.add(pressure_btn);
 		radioPane.add(mass_btn);
-		radioPane.add(moles_btn);
-		radioPane.add(temperature_btn);
+		//radioPane.add(moles_btn);
+		//radioPane.add(temperature_btn);
 		
 	    bG = new ButtonGroup();
 	    bG.add(percent_btn);
 	    bG.add(pressure_btn);
 	    bG.add(mass_btn);		
-	    bG.add(moles_btn);
-	    bG.add(temperature_btn);
+	   // bG.add(moles_btn);
+	    //bG.add(temperature_btn);
 	    
 		// Create scroll panel for the outer table panel.
 		scrollPane = new JScrollPane();
@@ -291,23 +288,23 @@ extends TabPanel {
 			// convert from atm to kPascal
 			return String.format("%1.2f", v * CompositionOfAir.kPASCAL_PER_ATM);
 		}
-		else if (moles_btn.isSelected()) {
-			v = air.getTotalMoles()[row];
-			return (String.format("%1.1e", v)).replaceAll("e+", "e"); 
-		}
+		//else if (moles_btn.isSelected()) {
+		//	v = air.getTotalMoles()[row];
+		//	return (String.format("%1.1e", v)).replaceAll("e+", "e"); 
+		//}
 		else if (mass_btn.isSelected()) {
 			v = air.getTotalMass()[row];
 			return String.format("%1.2f", v); 
 		}
-		else if (temperature_btn.isSelected()) {
+		//else if (temperature_btn.isSelected()) {
 			/*
 			for (int gas = 0; gas < CompositionOfAir.numGases; gas++) {
 				v += air.getTemperature()[gas][row];
 			}			
 			return String.format("%2.1f", v/CompositionOfAir.numGases - CompositionOfAir.C_TO_K);
 			*/
-			return String.format("%2.1f", manager.getBuilding(row).getCurrentTemperature());
-		}
+		//	return String.format("%2.1f", manager.getBuilding(row).getCurrentTemperature());
+		//}
 		else
 			return null;
 
@@ -374,7 +371,7 @@ extends TabPanel {
 			}
 
 
-			double totalPressure = settlement.getAirPressure()/1000D; // convert to kPascal by multiplying 1000
+			double totalPressure = Math.round(settlement.getAirPressure()/1000D*1000.0)/1000.0; // convert to kPascal by multiplying 1000
 			if (totalPressureCache != totalPressure) {
 				totalPressureCache = totalPressure;
 				totalPressureLabel.setText(

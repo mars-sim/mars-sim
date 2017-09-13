@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -83,7 +84,8 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     private static VehicleConfig vehicleConfig;
     private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
     private static Inventory inv;// = getInventory();
-
+    private static Weather weather;
+    
 	private List<Point2D> labActivitySpots;
 	private List<Point2D> sickBayActivitySpots;
 
@@ -100,6 +102,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         //life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
 
 		// Get vehicle configuration.
+        weather = Simulation.instance().getMars().getWeather();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		// Add scope to malfunction manager.
@@ -302,7 +305,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE *
 	        (malfunctionManager.getAirPressureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(getCoordinates());
+        double ambient = weather.getAirPressure(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }
@@ -313,7 +316,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public double getTemperature() {
         double result = NORMAL_TEMP *
 	        (malfunctionManager.getTemperatureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getTemperature(getCoordinates());
+        double ambient = weather.getTemperature(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }

@@ -90,8 +90,10 @@ implements Serializable {
         // Initialize data members.
         walkingStepIndex = 0;
 
+        LocationSituation ls = person.getLocationSituation();
+        
         // Determine if person is outside.
-        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+        if (LocationSituation.OUTSIDE == ls) {
 
             Airlock airlock = findEmergencyAirlock(person);
             if (airlock != null) {
@@ -103,7 +105,7 @@ implements Serializable {
                         adjustedInteriorPos.getY(), entity);
             }
         }
-        else if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()){
+        else if (LocationSituation.IN_SETTLEMENT == ls){
 
             // Walk to random inhabitable building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(person);
@@ -119,7 +121,7 @@ implements Serializable {
             }
 
         }
-        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
+        else if (LocationSituation.IN_VEHICLE == ls) {
 
             Vehicle vehicle = person.getVehicle();
 

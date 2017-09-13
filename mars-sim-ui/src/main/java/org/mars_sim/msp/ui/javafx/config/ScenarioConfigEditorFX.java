@@ -15,6 +15,7 @@ import org.mars_sim.msp.ui.javafx.networking.MultiplayerClient;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -57,6 +58,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -90,32 +93,36 @@ public class ScenarioConfigEditorFX {
 	private int clientID = 0;
 	//private double orgSceneX, orgSceneY;
 	//private double orgTranslateX, orgTranslateY;
-
+	
+	private boolean isExit = false;
+    private boolean isShowingDialog = false;
 	private boolean hasError;
 	private boolean hasSettlement;
 	private boolean isCrewEditorOpen = false;
-	//private boolean isDone;
 
 	private String playerName;
 	private String gameMode;
 
-	@FXML
-	private TabPane tabPane;
+    private AnchorPane anchorpane;
+    private StackPane stackPane;
 
 	private JFXButton startButton;
 	private JFXButton addButton;
 	private JFXButton removeButton;
 	private JFXButton undoButton;
 	private JFXButton crewButton;
+	
 	private Label errorLabel;
 	private Label titleLabel;
 	//private Label gameModeLabel;
 	private Label clientIDLabel;
 	private Label playerLabel;
+	
 	private TilePane titlePane;
 	private VBox topVB;
 	private BorderPane borderAll;
 	private Parent parent;
+	
 	private Stage stage;
 	private Stage cstage;
 
@@ -202,7 +209,7 @@ public class ScenarioConfigEditorFX {
 			// stage.getIcons().add(new
 			// Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 
-			Region root = (Region) parent;
+			Region root = (Region) parent;//stackPane;
 			// The Undecorator as a Scene
 			final UndecoratorScene undecoratorScene = new UndecoratorScene(stage, root);
 
@@ -230,7 +237,7 @@ public class ScenarioConfigEditorFX {
 				}
 			});
 
-			AnchorPane anchorpane = null;
+			anchorpane = null;
 			if (parent.lookup("#anchorRoot") == null)
 				System.out.println("Warning: anchorRoot is not found");
 			else
@@ -238,10 +245,12 @@ public class ScenarioConfigEditorFX {
 
 			// List should stretch as anchorpane is resized
 			BorderPane bp = createEditorFrame();
-			AnchorPane.setTopAnchor(bp, 5.0);
-			AnchorPane.setLeftAnchor(bp, 5.0);
-			AnchorPane.setRightAnchor(bp, 5.0);
-			anchorpane.getChildren().add(bp);
+			stackPane = new StackPane(bp);
+			stackPane.setAlignment(Pos.CENTER);
+			AnchorPane.setTopAnchor(stackPane, 5.0);
+			AnchorPane.setLeftAnchor(stackPane, 5.0);
+			AnchorPane.setRightAnchor(stackPane, 5.0);
+			anchorpane.getChildren().add(stackPane);
 
 			// scene = new Scene(undecorator);
 			// undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
@@ -262,9 +271,12 @@ public class ScenarioConfigEditorFX {
 			stage.show();
 
 			stage.setOnCloseRequest(e -> {
-				boolean isExit = mainMenu.exitDialog(stage);//getScreensSwitcher().exitDialog(stage);
-				e.consume(); // need e.consume() in order to call
-								// setFadeOutTransition() below
+				if (!isShowingDialog) {
+					dialogOnExit(stackPane);
+				}
+				// need e.consume() in order to call setFadeOutTransition() below
+				e.consume();
+				
 				if (isExit) {
 					borderAll.setOpacity(0);
 					// undecorator.setFadeOutTransition();
@@ -272,7 +284,6 @@ public class ScenarioConfigEditorFX {
 					Platform.exit();
 				}
 			});
-
 	        //bar.valueProperty().addListener(this::scrolled);
 		});
 
@@ -1547,6 +1558,51 @@ public class ScenarioConfigEditorFX {
 
 	}
 
+	/**
+	 * Open the exit dialog box
+	 * @param pane
+	 */
+	public void dialogOnExit(StackPane pane) {
+		isShowingDialog = true;
+		Label l = mainScene.createBlendLabel(Msg.getString("MainScene.exit.header"));
+		l.setPadding(new Insets(10, 10, 10, 10));
+		l.setFont(Font.font(null, FontWeight.BOLD, 14));
+		HBox hb = new HBox();
+		JFXButton b1 = new JFXButton("Exit");
+		b1.setStyle("-fx-background-color: white;");
+		JFXButton b2 = new JFXButton("Back");
+		b2.setStyle("-fx-background-color: white;");
+		hb.getChildren().addAll(b1, b2);
+		hb.setAlignment(Pos.CENTER);
+		HBox.setMargin(b1, new Insets(3,3,3,3));
+		HBox.setMargin(b2, new Insets(3,3,3,3));
+		VBox vb = new VBox();
+		vb.setAlignment(Pos.CENTER);
+		vb.setPadding(new Insets(5, 5, 5, 5));
+		vb.getChildren().addAll(l, hb);
+		StackPane sp = new StackPane(vb);
+		sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
+		StackPane.setMargin(vb, new Insets(10,10,10,10));
+		JFXDialog dialog = new JFXDialog();
+		dialog.setDialogContainer(pane);
+		dialog.setContent(sp);
+		dialog.show();
+
+		b1.setOnAction(e -> {
+			isExit = true;
+			dialog.close();
+			Platform.exit();
+			System.exit(0);
+		});
+		
+		b2.setOnAction(e -> {
+			dialog.close();
+			isShowingDialog = false;
+			e.consume();
+		});
+
+	}	
+	
 	public void destroy() {
 
 		startButton = null;
@@ -1562,7 +1618,6 @@ public class ScenarioConfigEditorFX {
 		multiplayerClient = null;
 		settlementConfig = null;
 
-		tabPane = null;
 		errorLabel = null;
 		titleLabel = null;
 

@@ -542,11 +542,14 @@ implements Repair, Serializable {
         }
         else if (malfunctionable instanceof Rover) {
 
-	        //if (person != null) {
+	        if (person != null) {
 	            // Walk to malfunctioning rover.
 	            walkToRandomLocInRover((Rover) malfunctionable, true);
 	            isWalk = true;
-        	//}
+        	}
+	        else {
+	        	// robots are not allowed to enter a rover
+	        }
         }
 
         if (!isWalk) {

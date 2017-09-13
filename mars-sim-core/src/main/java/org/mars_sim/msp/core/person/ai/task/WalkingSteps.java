@@ -127,10 +127,10 @@ implements Serializable {
 
         WalkState result = null;
 
-        LocationSituation locationSituation = person.getLocationSituation();
+        LocationSituation ls = person.getLocationSituation();
 
         // Determine initial walk state based on person's location situation.
-        if (LocationSituation.IN_SETTLEMENT == locationSituation) {
+        if (LocationSituation.IN_SETTLEMENT == ls) {
 
             Building building = BuildingManager.getBuilding(person);
             if (building == null) {
@@ -151,7 +151,7 @@ implements Serializable {
                 //    person.getXLocation() + ", " + person.getYLocation() + ") is not within building " + building);
             }
         }
-        else if (LocationSituation.IN_VEHICLE == locationSituation) {
+        else if (LocationSituation.IN_VEHICLE == ls) {
 
             Vehicle vehicle = person.getVehicle();
 
@@ -174,14 +174,14 @@ implements Serializable {
                 result = new WalkState(WalkState.OUTSIDE_LOC);
             }
         }
-        else if (LocationSituation.OUTSIDE == locationSituation) {
+        else if (LocationSituation.OUTSIDE == ls) {
 
             result = new WalkState(WalkState.OUTSIDE_LOC);
         }
         else {
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 					person.getName() +
-                    " is in an invalid location situation for walking task: " + locationSituation, null);
+                    " is in an invalid location situation for walking task: " + ls, null);
             //throw new IllegalStateException(person.getName() +
             //        " is in an invalid location situation for walking task: " + locationSituation);
         }
@@ -199,10 +199,10 @@ implements Serializable {
 
         WalkState result = null;
 
-        LocationSituation locationSituation = robot.getLocationSituation();
+        LocationSituation ls = robot.getLocationSituation();
 
         // Determine initial walk state based on robot's location situation.
-        if (LocationSituation.IN_SETTLEMENT == locationSituation) {
+        if (LocationSituation.IN_SETTLEMENT == ls) {
 
             Building building = BuildingManager.getBuilding(robot);
             if (building == null) {
@@ -246,7 +246,7 @@ implements Serializable {
 */
         else {
         	logger.severe(robot.getName() +
-                    " is in an invalid location situation for walking task: " + locationSituation);
+                    " is in an invalid location situation for walking task: " + ls);
             //throw new IllegalStateException(robot.getName() +
             //        " is in an invalid location situation for walking task: " + locationSituation);
         }

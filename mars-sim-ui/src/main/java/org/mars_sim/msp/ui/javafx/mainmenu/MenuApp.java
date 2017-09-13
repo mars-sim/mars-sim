@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import javafx.animation.*;
 import javafx.application.Application;
-import javafx.geometry.Pos;
+//import javafx.geometry.Pos;
 //import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -26,7 +26,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.TextAlignment;
+//import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -73,7 +73,7 @@ public class MenuApp extends Application {
                 new Pair<String, Runnable>("Benchmark", () -> {}),
                 new Pair<String, Runnable>("Game Options", () -> {}),
                 new Pair<String, Runnable>("Credits", () -> {}),
-                new Pair<String, Runnable>("Exit to Desktop", () -> mainMenu.exitDialog(mainMenu.getStage()))   //Platform::exit)
+                new Pair<String, Runnable>("Exit to Desktop", () -> mainMenu.dialogOnExit(mainMenu.getPane()))   //Platform::exit)
         );
     }    
     

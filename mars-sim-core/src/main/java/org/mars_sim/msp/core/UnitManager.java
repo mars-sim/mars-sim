@@ -1798,16 +1798,12 @@ public class UnitManager implements Serializable {
 	 *             if error during time passing.
 	 */
 	void timePassing(double time) {
-		//logger.info("UnitManager's timePassing() is in " + Thread.currentThread().getName());
-		// it's in pool-5-thread-1
-
         int solElapsed = marsClock.getMissionSol();
 
         if (solCache != solElapsed) {
         	solCache = solElapsed;
         	
         	partConfig.computeReliability();
-   
         }
 		
 		if (justReloaded) {
@@ -1818,13 +1814,16 @@ public class UnitManager implements Serializable {
 				s.updateAllAssociatedPeople();
 				s.updateAllAssociatedRobots();
 			}
+			
 			justReloaded = false;
 		}
 
-		Iterator<Unit> i = units.iterator();
-		while (i.hasNext()) {
-
-			i.next().timePassing(time);
+		for (Unit u : units) {
+			u.timePassing(time);
+		
+		//Iterator<Unit> i = units.iterator();
+		//while (i.hasNext()) {
+			//i.next().timePassing(time);
 /*
 			Unit unit = i.next();
 			if (unit instanceof Building) {

@@ -148,6 +148,8 @@ implements Serializable, LifeSupportType, Objective {
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 
+	private double currentTemperature = 22.5;
+	
 	private double currentPressure = NORMAL_AIR_PRESSURE; //[in Pascal], not kPa
 	/** Amount of time (millisols) that the settlement has had zero population.  */
 	private double zeroPopulationTime;
@@ -753,7 +755,7 @@ implements Serializable, LifeSupportType, Objective {
 			// result = false;
 			// TODO: check if this is working
 			// 2014-11-28 Added MAX_TEMP
-			double t = getTemperature();
+			double t = currentTemperature;//computeTemperature();
 			if (t < MIN_TEMP || t > MAX_TEMP) {
 				return false;
 			}
@@ -775,66 +777,60 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Gets oxygen from system.
-	 *
+	 * Gets oxygen from the inventory.
 	 * @param amountRequested
-	 *            the amount of oxygen requested from system (kg)
-	 * @return the amount of oxygen actually received from system (kg)
+	 *            the amount of oxygen requested [kg]
+	 * @return the amount of oxygen actually received [kg]
 	 * @throws Exception
 	 *             if error providing oxygen.
 	 */
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
 		try {
-			//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-			//if (oxygenAR == null) System.out.println("o2");
 			double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
 			//System.out.println("oxygenLeft : " + oxygenLeft);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
-			getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
-			// 2015-01-09 Added addDemandTotalRequest()
+			// Note: do NOT retrieve O2 here since calculateGasExchange() in CompositionOfAir
+			// is doing it for all inhabitants once per frame.
+			//getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
 			getInventory().addAmountDemandTotalRequest(oxygenAR);
-			// 2015-01-09 addDemandRealUsage()
 			getInventory().addAmountDemand(oxygenAR, oxygenTaken);
 
-			//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
 			double carbonDioxideProvided = oxygenTaken;
 			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
 			if (carbonDioxideProvided > carbonDioxideCapacity)
 				carbonDioxideProvided = carbonDioxideCapacity;
-
-			getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
-			// 2015-01-15 Add addSupplyAmount()
+			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
+			// is doing it for all inhabitants once per frame.
+			//getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
 			getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
 		}
         catch (Exception e) {
-        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing O2 needs: " + e.getMessage(), null);
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing O2/removing CO2: " 
+        			+ e.getMessage(), null);
         }
 
 		return oxygenTaken;
 	}
 
 	/**
-	 * Gets water from system.
+	 * Gets water from the inventory
 	 *
 	 * @param amountRequested
-	 *            the amount of water requested from system (kg)
-	 * @return the amount of water actually received from system (kg)
+	 *            the amount of water requested [kg]
+	 * @return the amount of water actually received [kg]
 	 * @throws Exception
 	 *             if error providing water.
 	 */
 	public double provideWater(double amountRequested) {
-		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterTaken = amountRequested;
 		try {
 			double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
 			getInventory().retrieveAmountResource(waterAR, waterTaken);
-			// 2015-01-09 Added addDemandTotalRequest()
 			getInventory().addAmountDemandTotalRequest(waterAR);
-			// 2015-01-09 addDemandRealUsage()
 			getInventory().addAmountDemand(waterAR, waterTaken);
 
 		}
@@ -846,12 +842,10 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Gets the air pressure of the life support system.
-	 *
-	 * @return air pressure (kPa)
+	 * Computes the air pressure of the life support system.
+	 * @return air pressure [kPa]
 	 */
-	// 2017-03-07 Add getTotalPressure()
-	public double getTotalPressure() {
+	public double computeTotalPressure() {
 		double result = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
 		int size = buildings.size();
@@ -869,32 +863,21 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the air pressure of the life support system.
-	 *
-	 * @return air pressure (Pa)
+	 * @return air pressure [Pa] (not kPa)
 	 */
 	public double getAirPressure() {
-		//double result = NORMAL_AIR_PRESSURE; // = 101325.0
-		// Note: min = 25331.25
-/*
-		if (weather == null)
-			weather = sim.getMars().getWeather();
-		//double ambient = sim.getMars().getWeather().getAirPressure(getCoordinates());
-		double ambient = weather.getAirPressure(getCoordinates());
-		if (result < ambient)
-			return ambient;
-		else
-			return result;
-*/
-		//System.out.println("currentPressure is " + currentPressure);
 		return currentPressure;
 	}
 
+	public double getTemperature() {
+		return currentTemperature;
+	}
+	
 	/**
-	 * Gets the average temperature in the settlement (from the life support system of all buildings)
-	 *
+	 * Computes the average temperature in the settlement (from the life support system of all buildings)
 	 * @return temperature (degrees C)
 	 */
-	public double getTemperature() {
+	public double computeTemperature() {
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
 
 		double total_t_area = 0;
@@ -1057,7 +1040,9 @@ implements Serializable, LifeSupportType, Objective {
 	    // 2015-12-29 Added CompositionOfAir
 	    compositionOfAir.timePassing(time);
 
-	    currentPressure = getTotalPressure() *1000D;
+	    currentPressure = computeTotalPressure() *1000D;
+	    
+	    currentTemperature = computeTemperature();
 
 	    remainder = millisols % RESOURCE_UPDATE_FREQ ;
 	    if (remainder == 5) {

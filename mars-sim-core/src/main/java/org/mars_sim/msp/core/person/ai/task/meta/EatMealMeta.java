@@ -58,9 +58,9 @@ public class EatMealMeta implements MetaTask, Serializable {
         
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
         if (hunger > 250D || energy < 2525D || ghrelin-leptin > 300) {
-            hunger = hunger / 5D;
-            energy = (2525D - energy) / 50D;
-            result = hunger + energy +  (ghrelin-leptin - 300);
+            hunger = hunger / 10D;
+            energy = (2525D - energy) / 100D;
+            result = hunger + energy;// +  (ghrelin-leptin - 300);
             if (result <= 0D)
             	return 0;
         }
@@ -103,10 +103,10 @@ public class EatMealMeta implements MetaTask, Serializable {
         }
         
     	if (CookMeal.isMealTime(person.getCoordinates())) {
-    		result *= 10D;
+    		result *= 5D;
     	}
     	else
-    		result *= .75D;    
+    		result *= .25D;    
     	
         // 2015-06-07 Added Preference modifier
         if (result > 0D) {

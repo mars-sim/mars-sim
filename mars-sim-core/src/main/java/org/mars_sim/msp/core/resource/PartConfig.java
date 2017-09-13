@@ -145,6 +145,9 @@ public final class PartConfig implements Serializable {
 		//		"The 3-year reliability rating of " + p.getName() + " is now " 
 		//		+ Math.round(percent_reliability*100.0)/100.0 + " %", null);
 		
+		if (percent_reliability >= 100)
+			percent_reliability = 99.999;
+		
 		reliability_map.put(id, percent_reliability);
 
      }

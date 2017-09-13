@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4___) - 2017-0_-__
+## v3.1.0-Preview 9 (build 4140) - 2017-09-13
 
 
 ### KNOWN LIMITATIONS :
@@ -34,26 +34,24 @@ https://github.com/mars-sim/mars-sim
 
 7. Improve dust storm model and connect it to wind speed for each settlement.
 
-8. Patch outside air temperature in polar region.  
+8. Account for variation of outside air temperature in polar region.  
 
 9. Refine range of latitude/longitude input in sim config editor and 
    in Mars minimap.
 
 10. Refine grid battery charging/discharging cycle.
 
-11. Improve display of repetitive log statement.
+11. Consolidate repetitive log statements in console/command prompt window.
 
 12. Add a circadian clock for regulating hormones for each person.
 
+13. Add reliability analysis on top of the malfunction model for tracking 
+    probability of failure for some item resource.
+
+
 ### UI IMPROVEMENT :
 
-1. Switch to using only JavaFX UI elements on Help Browser.
-
-2. Add animated Main Menu items.
-
-3. Create an EXE installation package specifically for installing mars-sim in 
-   windows OS with Inno Script Studio.
-
+1. Add build # on the bottom right of the main menu.
 
 
 ### FIXES :
@@ -66,7 +64,9 @@ https://github.com/mars-sim/mars-sim
 
 4. Fix under-weight and short height.  
 
-
+5. Correct issues on being not able to store resources after loading from
+   a saved sim.
+   
 
 -----------------------------------------------------------------------------------------
 

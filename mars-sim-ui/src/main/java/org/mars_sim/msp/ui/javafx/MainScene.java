@@ -3414,7 +3414,7 @@ public class MainScene {
 	/**
 	 * Open the exit dialog box
 	 */
-	public void dialogOnExit() {
+	public void dialogOnExit() {//StackPane pane) {
 		jfxTabPane.getSelectionModel().select(mainTab);
 		isShowingDialog = true;
 		Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));

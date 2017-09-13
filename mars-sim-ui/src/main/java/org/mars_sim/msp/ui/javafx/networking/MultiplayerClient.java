@@ -260,6 +260,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		Dialog<String> dialog = new Dialog<>();
 		// Get the Stage.
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+/*		
     	stage.setOnCloseRequest(e -> {
 			boolean isExit = mainMenu.exitDialog(stage);//.getScreensSwitcher().exitDialog(stage);
 			if (!isExit) {
@@ -269,7 +270,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 				Platform.exit();
 			}
 		});
-
+*/
 		// Add corner icon.
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/network/client48.png").toString()));
 		// Add Stage icon
@@ -354,7 +355,8 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
 		// Add corner icon.
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/network/login32.png").toString()));
-	   	stage.setOnCloseRequest(e -> {
+/*
+		stage.setOnCloseRequest(e -> {
 				boolean isExit = mainMenu.exitDialog(stage);//getScreensSwitcher().exitDialog(stage);
 				if (!isExit) {
 					e.consume();
@@ -363,6 +365,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 					Platform.exit();
 				}
 		});
+*/		
 		// Add Stage icon
 		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/network/login256.png").toString()));
 		// dialog.initOwner(mainMenu.getStage());
@@ -519,6 +522,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		//stage.setOnCloseRequest(e -> {
 		//	sendBye();
 		//});
+/*		
 	   	stage.setOnCloseRequest(e -> {
 				boolean isExit = mainMenu.exitDialog(stage);//getScreensSwitcher().exitDialog(stage);
 				if (!isExit) {
@@ -529,7 +533,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 					Platform.exit();
 				}
 		});
-
+*/
 		BorderPane b = new BorderPane();
 		ta = new TextArea();
 		ta.setEditable(false);

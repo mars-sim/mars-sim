@@ -35,7 +35,7 @@ public class CompositionOfAir implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(CompositionOfAir.class.getName());
+	//private static Logger logger = Logger.getLogger(CompositionOfAir.class.getName());
 	
 	public static final double C_TO_K = 273.15;
 	
@@ -51,7 +51,7 @@ public class CompositionOfAir implements Serializable {
 	
 	private static final double UPPER_THRESHOLD_GAS_COMPOSITION = 1.05;
 	
-	private static final double GAS_CAPTURE_EFFICIENCY = .75D;
+	private static final double GAS_CAPTURE_EFFICIENCY = .9D;
 	
 	// Astronauts aboard the International Space Station preparing for extra-vehicular activity (EVA) 
 	// "camp out" at low atmospheric pressure, 10.2 psi (0.70 bar), spending eight sleeping hours 
@@ -70,6 +70,7 @@ public class CompositionOfAir implements Serializable {
 
 	private static final double[] STANDARD_GAS_PERCENT = new double[] {.0407, .934, 78.0043, 20.021, 1}; // assuming having 1% of moisture
 	
+	// Mars has 0.13% of O2 
 	
 	private static final double CO2_PARTIAL_PRESSURE = 0.000407;
 	private static final double ARGON_PARTIAL_PRESSURE = 0.00934;
@@ -102,7 +103,7 @@ public class CompositionOfAir implements Serializable {
     /** Moisture expelled by a person [kg/millisol] */
     private double moistureExpelled;
 
-	private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
+	//private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
 
 	// Assume using Earth's atmospheric pressure at sea level, 14.7 psi, or ~ 1 bar, for the habitat
 
@@ -463,7 +464,7 @@ public class CompositionOfAir implements Serializable {
 					if (d_percent > 0)
 						Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
 					else {
-						double amount = Math.abs(d_mass)*GAS_CAPTURE_EFFICIENCY;
+						double amount = d_mass * GAS_CAPTURE_EFFICIENCY;
 						if (amount > 0)		
 							Storage.storeAnResource(amount, ar , b.getInventory(), "::monitorAir"); 
 					}
@@ -518,7 +519,7 @@ public class CompositionOfAir implements Serializable {
 	/**
 	 * Obtain the Amount Resource instance of a given gas
 	 * @param gas
-	 * @return
+	 * @return {@link AmountResource}
 	 */
 	public AmountResource getGasAR(int gas) {
 		AmountResource ar = null;
@@ -538,7 +539,7 @@ public class CompositionOfAir implements Serializable {
 	
 	/**
 	 * Expands the array to keep track of the gases in the newly added buildings
-	 * @param buildings a list of buildings
+	 * @param buildings a list of {@link Building}
 	 * @param numID numbers of buildings
 	 */
 	public void addAirNew(List<Building> buildings, int numID) {
@@ -705,10 +706,10 @@ public class CompositionOfAir implements Serializable {
 	/**
 	 * Pumps air to or extract air from a building with this id
 	 * @param id inhabitable id of a building
-	 * @param pump positive if pumped, negative if extracted
+	 * @param isAdding positive if pumping in, negative if extracted
 	 * @param b the building
 	 */
-	public void pumpOrRecaptureAir(int id, boolean pump, Building b) {
+	public void pumpOrRecaptureAir(int id, boolean isAdding, Building b) {
 		double d_moles[] = new double[numGases];
 		//double t = b.getCurrentTemperature();
 		
@@ -718,7 +719,7 @@ public class CompositionOfAir implements Serializable {
 			// calculate moles on each gas
 			d_moles[gas] = numMoles[gas][id] * AIRLOCK_VOLUME_IN_LITER / fixedVolume[id]; //pressure /  R_GAS_CONSTANT / t * AIRLOCK_VOLUME_IN_LITER;
 
-			pumpOrExtractMoles(gas, id, d_moles[gas], pump, b);
+			pumpOrExtractMoles(gas, id, d_moles[gas], isAdding, b);
 		}
 	}
 	

@@ -239,7 +239,9 @@ implements Serializable {
             }
 
             if (taskManager.hasActiveTask() || hasActiveMission()) {
-                takeAction(time);
+                takeAction(time); 
+                // Recursive calling causing Exception in thread "pool-4-thread-217" java.lang.StackOverflowError 
+                // org.mars_sim.msp.core.person.ai.Mind.takeAction(Mind.java:242)
             }
         }
     }

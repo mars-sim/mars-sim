@@ -268,7 +268,6 @@ public class MasterClock implements Serializable { // Runnable,
      */
     // 2015-04-02 Modified removeClockListener()
     public final void removeClockListener(ClockListener oldListener) {
-    	//System.out.println("calling removeClockListener()");
         if (listeners == null) listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         if (listeners.contains(oldListener)) listeners.remove(oldListener);
        	// Check if clockListenerTaskList contain the newListener's task, if it does, delete it
@@ -284,7 +283,6 @@ public class MasterClock implements Serializable { // Runnable,
     // 2015-04-02 addClockListenerTask()
     public void addClockListenerTask(ClockListener listener) {
     	boolean hasIt = false;
-    	//startClockListenerExecutor();
     	if (clockListenerTaskList == null)
     		clockListenerTaskList =  new CopyOnWriteArrayList<ClockListenerTask>();
     	Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
@@ -673,7 +671,7 @@ public class MasterClock implements Serializable { // Runnable,
 
         if (saveType != 0) {
             try {
-                Simulation.instance().saveSimulation(saveType, file);
+                sim.saveSimulation(saveType, file);
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Could not save the simulation as "
                         + (file == null ? "null" : file.getPath()), e);
@@ -702,8 +700,8 @@ public class MasterClock implements Serializable { // Runnable,
 
         // Exit program if exitProgram flag is true.
         if (exitProgram) {
-        	if (Simulation.instance().getAutosaveTimer() != null)
-        		Simulation.instance().getAutosaveTimer().stop();
+        	if (sim.getAutosaveTimer() != null)
+        		sim.getAutosaveTimer().stop();
             System.exit(0);
         }
 
@@ -852,9 +850,9 @@ public class MasterClock implements Serializable { // Runnable,
         uptimer.setPaused(isPaused);
         //if (Simulation.instance().getAutosaveTimer() == null)
         if (isPaused)
-        	Simulation.instance().getAutosaveTimer().pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
+        	sim.getAutosaveTimer().pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
 		else
-			Simulation.instance().getAutosaveTimer().play();
+			sim.getAutosaveTimer().play();
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.

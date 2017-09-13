@@ -1690,43 +1690,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Bunkhouse" width="5.0" length="5.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
-		<description> The Bunkhouse is a spartan living quarters with
-			two beds. It is a retractable housing custom-tailored for
-			temporary mining outpost operation.
-		</description>
-		<power-required base-power="2.0" base-power-down-power="0.2" />
-
-		<functions>
-			<life-support capacity="2" power-required="0.2" />
-			<living-accommodations beds="2">
-				<activity>
-					<activity-spot xloc="1.35" yloc="-1.35" />
-					<activity-spot xloc="-1.35" yloc="-1.35" />
-				</activity>
-			</living-accommodations>
-			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
-			</power-generation>
-			<power-storage capacity="20.0" />			
-			<robotic-station slots="2">
-				<activity>
-					<activity-spot xloc="1.6" yloc="-1.6" />
-					<activity-spot xloc="-1.6" yloc="-1.6" />
-				</activity>
-			</robotic-station>
-			<storage stock-capacity="50000"/>
-			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
-			</thermal-generation>
-		</functions>
-	</building>
-
-
 	<building type="Small Sabatier Processor" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description> The Small Sabatier Processor is a small building housing a sabatier
@@ -2030,6 +1993,39 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
+<!-- end of Machinery Hab -->
+
+	<!-- A hallway's length is variable and determined in templates or during construction. -->
+	<building type="Hallway" width="2.0" length="-1.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
+		<description> The Hallway is a pressurized access tube connecting
+			two inhabitable buildings. It allows only one person to access it
+			at a time.
+		</description>
+		<power-required base-power="0.1" base-power-down-power="0.0" />
+
+		<functions>
+			<building-connection />
+			<life-support capacity="1" power-required="0.1" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="1.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
+			<robotic-station slots="1">
+				<activity>
+					<activity-spot xloc="0.5" yloc="0.0" />
+				</activity>
+			</robotic-station>
+			<thermal-generation>
+				<heat-source type="Solar Heating Source" capacity="1.0" />
+				<heat-source type="Electric Heating Source" capacity="5.0" />
+			</thermal-generation>
+		</functions>
+	</building>
+
+<!-- The buildings below are underground and are used primarily for 
+     Trading and Mining settlements -->
+
 
 	<building type="Outpost Hub" width="10.0" length="10.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
@@ -2302,6 +2298,43 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Outpost Hub  -->
 
+	<building type="Bunkhouse" width="5.0" length="5.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
+		<description> The Bunkhouse is a spartan living quarters with
+			two beds. It is a retractable housing custom-tailored for
+			temporary mining outpost operation.
+		</description>
+		<power-required base-power="2.0" base-power-down-power="0.2" />
+
+		<functions>
+			<life-support capacity="2" power-required="0.2" />
+			<living-accommodations beds="2">
+				<activity>
+					<activity-spot xloc="1.35" yloc="-1.35" />
+					<activity-spot xloc="-1.35" yloc="-1.35" />
+				</activity>
+			</living-accommodations>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />			
+			<robotic-station slots="2">
+				<activity>
+					<activity-spot xloc="1.6" yloc="-1.6" />
+					<activity-spot xloc="-1.6" yloc="-1.6" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="50000"/>
+			<thermal-generation>
+				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
+			</thermal-generation>
+		</functions>
+	</building>
+<!-- end of Bunkhouse -->
+
 	<building type="Storage Shed" width="5.0" length="5.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Storage Shed is a small brick building for
@@ -2344,7 +2377,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-
+<!-- end of Storage Shed -->
 
 	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
@@ -2431,6 +2464,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
+<!-- end of Mining Lab -->
+
 
 	<building type="Inground Greenhouse" width="5.0" length="10.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
@@ -2512,34 +2547,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 <!-- end for inground greenhouse -->
-
-	<!-- A hallway's length is variable and determined in templates or during construction. -->
-	<building type="Hallway" width="2.0" length="-1.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
-		<description> The Hallway is a pressurized access tube connecting
-			two inhabitable buildings. It allows only one person to access it
-			at a time.
-		</description>
-		<power-required base-power="0.1" base-power-down-power="0.0" />
-
-		<functions>
-			<building-connection />
-			<life-support capacity="1" power-required="0.1" />
-			<power-generation>
-				<power-source type="Solar Power Source" power="1.0" />
-			</power-generation>
-			<power-storage capacity="20.0" />
-			<robotic-station slots="1">
-				<activity>
-					<activity-spot xloc="0.5" yloc="0.0" />
-				</activity>
-			</robotic-station>
-			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="1.0" />
-				<heat-source type="Electric Heating Source" capacity="5.0" />
-			</thermal-generation>
-		</functions>
-	</building>
 
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
 	<building type="Tunnel" width="3.0" length="-1.0" base-level="-1"
