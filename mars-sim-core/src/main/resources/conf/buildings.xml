@@ -667,6 +667,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 		</functions>
 	</building>
+<!-- end of Starting ERV Base -->
 
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
@@ -712,7 +713,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 		</functions>
 	</building>
-
+<!-- end of ERV Base -->
 
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
@@ -2193,7 +2194,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
 				<resource-storage resource="nitrogen" capacity="500.0" />
-				
+				<resource-storage resource="hydrogen" capacity="2000.0" />
+					
 				<resource-storage resource="ice" capacity="500.0" />
 				<resource-storage resource="regolith" capacity="1500.0" />
 

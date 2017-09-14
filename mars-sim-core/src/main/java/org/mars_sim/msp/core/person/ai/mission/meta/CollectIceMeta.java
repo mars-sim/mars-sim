@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
@@ -17,17 +15,10 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A meta mission for the CollectIce mission.

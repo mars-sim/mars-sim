@@ -645,20 +645,26 @@ implements Serializable, Comparable<Unit> {
 
 		else if (oldContainer instanceof Vehicle && newContainer == null) {
 			Unit vehicle_container = oldContainer.getContainerUnit();
-			if (vehicle_container.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-			else if (vehicle_container.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			// Case 4
-			else if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-			// Case 6
-			else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			else {
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;	
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						name + " was no longer on a vehicle.", null);
+			if (vehicle_container != null) {
+				if (vehicle_container.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+					currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+				else if (vehicle_container.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+					currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			}
+			else { // if vehicle is out there without a container
+				// Case 4
+				if (oldContainer.getLocationStateType() == LocationStateType.INSIDE_BUILDING)
+					currentStateType = LocationStateType.INSIDE_BUILDING;
+				else if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+					currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+				// Case 6
+				else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+					currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+				else {
+					currentStateType = LocationStateType.OUTSIDE_ON_MARS;	
+					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+							name + " was no longer on a vehicle.", null);
+				}
 			}
 		}
 

@@ -18,14 +18,9 @@ import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Rover;
+
 
 /**
  * A meta mission for the CollectRegolith mission.

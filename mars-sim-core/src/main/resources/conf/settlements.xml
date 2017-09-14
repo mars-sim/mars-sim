@@ -110,7 +110,8 @@
 			<resource type="food waste" amount="25.0" />			
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />			
-			
+
+			<resource type="hydrogen" amount="3000.0" />					
 			<resource type="methane" amount="3000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="argon" amount="10.0" />		
@@ -308,6 +309,7 @@
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
 			
+			<resource type="hydrogen" amount="6000.0" />					
 			<resource type="methane" amount="6000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="argon" amount="10.0" />		
@@ -540,6 +542,7 @@
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
 			
+			<resource type="hydrogen" amount="9000.0" />					
 			<resource type="methane" amount="9000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="argon" amount="10.0" />		
@@ -868,8 +871,9 @@
 			<resource type="food waste" amount="25.0" />			
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
-			
-			<resource type="methane" amount="13000.0" />			
+
+			<resource type="hydrogen" amount="12000.0" />								
+			<resource type="methane" amount="12000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="argon" amount="10.0" />		
 			
@@ -1126,7 +1130,8 @@
 			<resource type="oxygen" amount="2245.0" />
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
-			
+
+			<resource type="hydrogen" amount="16000.0" />								
 			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="argon" amount="10.0" />		
@@ -1285,7 +1290,8 @@
 			<resource type="oxygen" amount="2245.0" />
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
-			
+	
+			<resource type="hydrogen" amount="16000.0" />							
 			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
 			<resource type="argon" amount="10.0" />		

@@ -126,6 +126,7 @@ implements Serializable {
                         person.getVehicle());
             }
         }
+/*        
         else { // already outside
         	
             // Add task phases.
@@ -140,7 +141,7 @@ implements Serializable {
             //       " is not in a valid location situation to start EVA task: " +
             //        person.getLocationSituation());
         }
-
+*/
 
     }
 
