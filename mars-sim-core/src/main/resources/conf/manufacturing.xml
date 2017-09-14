@@ -1917,8 +1917,8 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture rover fuel tank" tech="2" skill="1" work-time="300" process-time="200"
-			power-required=".5">
+	<process name="manufacture fuel tank" tech="2" skill="1" work-time="50" process-time="200"
+			power-required=".3">
 		<inputs>
 			<part name="steel sheet" number="4" />
 			<part name="valve" number="1" />
@@ -1927,12 +1927,12 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="epoxy resin bottle" number="1" />
 		</inputs>
 		<outputs>
-			<part name="rover fuel tank" number="1" />
+			<part name="fuel tank" number="1" />
 		</outputs>
 	</process>
 
-	<process name="manufacture rover oxygen tank" tech="2" skill="1" work-time="200" process-time="200"
-			power-required=".7">
+	<process name="manufacture gas tank" tech="2" skill="1" work-time="50" process-time="200"
+			power-required=".3">
 		<inputs>
 			<part name="steel sheet" number="2" />
 			<part name="valve" number="1" />
@@ -1941,27 +1941,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="epoxy resin bottle" number="1" />
 		</inputs>
 		<outputs>
-			<part name="rover oxygen tank" number="1" />
-		</outputs>
-	</process>
-
-	<process name="manufacture rover water tank" tech="2" skill="1" work-time="200" process-time="200"
-			power-required=".7">
-		<inputs>
-			<part name="steel sheet" number="2" />
-			<part name="valve" number="1" />
-			<part name="gasket" number="1" />
-			<part name="plastic tubing" number="1" />
-			<part name="epoxy resin bottle" number="1" />
-		</inputs>
-		<outputs>
-			<part name="rover water tank" number="1" />
+			<part name="gas tank" number="1" />
 		</outputs>
 	</process>
 
 	<!-- 2014-11-19 Added water tank -->
-	<process name="manufacture water tank" tech="2" skill="1" work-time="200" process-time="200"
-			power-required=".7">
+	<process name="manufacture water tank" tech="2" skill="1" work-time="50" process-time="200"
+			power-required=".3">
 		<inputs>
 			<part name="steel sheet" number="2" />
 			<part name="valve" number="1" />
@@ -1974,19 +1960,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture fuel tank" tech="2" skill="1" work-time="300" process-time="200"
-			power-required=".7">
-		<inputs>
-			<part name="steel sheet" number="4" />
-			<part name="valve" number="1" />
-			<part name="gasket" number="1" />
-			<part name="plastic tubing" number="1" />
-			<part name="epoxy resin bottle" number="1" />
-		</inputs>
-		<outputs>
-			<part name="fuel tank" number="1" />
-		</outputs>
-	</process>
 	
 	<process name="make fuel pump" tech="4" skill="3" work-time="200" process-time="100"
 			power-required="1.0">
@@ -2057,9 +2030,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="large motor" number="3" />
 			<part name="rover battery" number="2" />
 			<part name="rover control panel" number="1" />
-			<part name="rover fuel tank" number="1" />
-			<part name="rover oxygen tank" number="1" />
-			<part name="rover water tank" number="1" />
+			<part name="fuel tank" number="1" />
+			<part name="gas tank" number="1" />
+			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
 			<part name="oxygen pump" number="1" />
 			<part name="satellite dish" number="1" />
@@ -2090,9 +2063,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="large motor" number="4" />
 			<part name="rover battery" number="3" />
 			<part name="rover control panel" number="1" />
-			<part name="rover fuel tank" number="1" />
-			<part name="rover oxygen tank" number="1" />
-			<part name="rover water tank" number="1" />
+			<part name="fuel tank" number="1" />
+			<part name="gas tank" number="1" />
+			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
 			<part name="oxygen pump" number="1" />
 			<part name="satellite dish" number="1" />
@@ -2123,9 +2096,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="large motor" number="5" />
 			<part name="rover battery" number="3" />
 			<part name="rover control panel" number="1" />
-			<part name="rover fuel tank" number="1" />
-			<part name="rover oxygen tank" number="1" />
-			<part name="rover water tank" number="1" />
+			<part name="fuel tank" number="1" />
+			<part name="gas tank" number="1" />
+			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
 			<part name="oxygen pump" number="1" />
 			<part name="satellite dish" number="1" />
@@ -3514,9 +3487,9 @@ oxide fuel cells, at 5 kWe. -->
 		<part-salvage name="large motor" number="3" />
 		<part-salvage name="rover battery" number="2" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="rover fuel tank" number="1" />
-		<part-salvage name="rover oxygen tank" number="1" />
-		<part-salvage name="rover water tank" number="1" />
+		<part-salvage name="fuel tank" number="1" />
+		<part-salvage name="gas tank" number="1" />
+		<part-salvage name="water tank" number="1" />
 		<part-salvage name="fuel pump" number="1" />
 		<part-salvage name="oxygen pump" number="1" />
 		<part-salvage name="satellite dish" number="1" />
@@ -3542,9 +3515,9 @@ oxide fuel cells, at 5 kWe. -->
 		<part-salvage name="large motor" number="4" />
 		<part-salvage name="rover battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="rover fuel tank" number="1" />
-		<part-salvage name="rover oxygen tank" number="1" />
-		<part-salvage name="rover water tank" number="1" />
+		<part-salvage name="fuel tank" number="1" />
+		<part-salvage name="gas tank" number="1" />
+		<part-salvage name="water tank" number="1" />
 		<part-salvage name="fuel pump" number="1" />
 		<part-salvage name="oxygen pump" number="1" />
 		<part-salvage name="satellite dish" number="1" />
@@ -3570,9 +3543,9 @@ oxide fuel cells, at 5 kWe. -->
 		<part-salvage name="large motor" number="5" />
 		<part-salvage name="rover battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="rover fuel tank" number="1" />
-		<part-salvage name="rover oxygen tank" number="1" />
-		<part-salvage name="rover water tank" number="1" />
+		<part-salvage name="fuel tank" number="1" />
+		<part-salvage name="gas tank" number="1" />
+		<part-salvage name="water tank" number="1" />
 		<part-salvage name="fuel pump" number="1" />
 		<part-salvage name="oxygen pump" number="1" />
 		<part-salvage name="satellite dish" number="1" />

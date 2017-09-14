@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.1.0 2018-08-15
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -75,8 +75,8 @@ implements Serializable {
 
 	private MarsClock marsClock;
 	// 2017-04-10 WARNING: cannot use static or result in null
-	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(LifeSupportType.WATER);
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
 
 	/**
 	 * Constructor.
@@ -101,28 +101,47 @@ implements Serializable {
             if (interiorObject == null) {
                 throw new IllegalStateException(person.getName() + " not in building.");
             }
+            else {
+                // Add task phases.
+                addPhase(WALK_TO_OUTSIDE_SITE);
+                addPhase(WALK_BACK_INSIDE);
+
+                // Set initial phase.
+                setPhase(WALK_TO_OUTSIDE_SITE);
+            }
         }
+        
         else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             if (person.getVehicle() instanceof Rover) {
-                interiorObject = (Rover) person.getVehicle();
+                //interiorObject = (Rover) person.getVehicle();
+                // Add task phases.
+                addPhase(WALK_TO_OUTSIDE_SITE);
+                addPhase(WALK_BACK_INSIDE);
+
+                // Set initial phase.
+                setPhase(WALK_TO_OUTSIDE_SITE);
             }
             else {
                 throw new IllegalStateException(person.getName() + " not in a rover vehicle: " +
                         person.getVehicle());
             }
         }
-        else {
-            throw new IllegalStateException(person.getName() +
-                    " is not in a valid location situation to start EVA task: " +
-                    person.getLocationSituation());
+        else { // already outside
+        	
+            // Add task phases.
+            addPhase(WALK_BACK_INSIDE);
+
+            // Set initial phase.
+            setPhase(WALK_BACK_INSIDE);
+            
+            logger.info(person.getName() +
+                    " is already outside and is about to do an EVA to walk back inside");          
+            //throw new IllegalStateException(person.getName() +
+            //       " is not in a valid location situation to start EVA task: " +
+            //        person.getLocationSituation());
         }
 
-        // Add task phases.
-        addPhase(WALK_TO_OUTSIDE_SITE);
-        addPhase(WALK_BACK_INSIDE);
 
-        // Set initial phase.
-        setPhase(WALK_TO_OUTSIDE_SITE);
     }
 
     public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
@@ -252,7 +271,7 @@ implements Serializable {
             }
     	}
     	else if (robot != null) {
-
+/*
             // If not outside, create walk outside subtask.
             if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
 
@@ -270,6 +289,7 @@ implements Serializable {
                     endTask();
                 }
             }
+ */           
     	}
 
 
@@ -481,12 +501,12 @@ implements Serializable {
     	            if (RandomUtil.lessThanRandPercent(chance * time)) {
     	    			if (person != null) {
     	    	            logger.info(person.getName() + " has an accident during EVA operation.");
+        	                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", person);
     	    			}
     	    			else if (robot != null) {
     	    				logger.info(robot.getName() + " has an accident during EVA operation.");
+        	                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", robot);
     	    			}
-
-    	                suit.getMalfunctionManager().logAccidentString("EVA operation");
     	            }
     	        }
     	}

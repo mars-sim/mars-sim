@@ -51,13 +51,13 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-    	Settlement settlement = person.getAssociatedSettlement();
-    	
     	LocationSituation ls = person.getLocationSituation();
     	
-    	if (ls == LocationSituation.OUTSIDE)
-    		return 0;
-    	
+        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
+        	return 0;
+       
+    	Settlement settlement = person.getAssociatedSettlement();
+     
         //2016-10-04 Checked for radiation events
     	boolean[] exposed = settlement.getExposed();
 

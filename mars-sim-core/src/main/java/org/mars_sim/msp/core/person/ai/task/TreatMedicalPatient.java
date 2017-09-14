@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TreatMedicalPatient.java
- * @version 3.1.0 2017-03-09
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -392,12 +392,14 @@ public class TreatMedicalPatient extends Task implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 
-			if (person != null)
+			if (person != null) {
 				logger.info(person.getName() + " has accident while providing medical treatment.");
-			else if (robot != null)
+	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
+			}
+			else if (robot != null) {
 				logger.info(robot.getName() + " has accident while providing medical treatment.");
-
-            entity.getMalfunctionManager().logAccidentString();
+				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
+        	}
         }
     }
 

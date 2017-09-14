@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.location.LocationState;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -27,7 +28,6 @@ import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
-import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -326,7 +326,9 @@ implements Serializable {
 	public double performTask(double time, double efficiency) {
 		double remainingTime = 0D;
 		
-		if (person.getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS) {
+		LocationStateType ls = person.getLocationStateType();
+		
+		if (LocationStateType.OUTSIDE_ON_MARS != ls) {
 			//	||  (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
 			//		&& person.getVehicle().getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS))
 			checkForEmergency();
@@ -357,8 +359,8 @@ implements Serializable {
 		    }
 
 		    if (energyTime > 0D) {
-				if (person.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
-						|| person.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {
+				if (LocationStateType.SETTLEMENT_VICINITY == ls
+						|| LocationStateType.OUTSIDE_ON_MARS == ls) {
 					
 					if (circadian == null)
 						circadian = person.getCircadianClock();

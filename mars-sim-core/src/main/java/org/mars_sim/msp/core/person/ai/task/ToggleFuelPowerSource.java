@@ -1,6 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
+ *  * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -77,8 +78,8 @@ implements Serializable {
         if (building != null) {
             powerSource = getFuelPowerSource(building);
             
-            MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-            double millisols = clock.getMillisol();
+            //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+            //double millisols = clock.getMillisol();
             boolean isOn = powerSource.isToggleON();
             
             boolean isSunRising = Simulation.instance().getMars().getOrbitInfo().isSunRising(person.getSettlement().getCoordinates());
@@ -159,7 +160,7 @@ implements Serializable {
         }
         else {
             logger.fine(person.getName() + " unable to walk to power building " +
-                    powerBuilding.getName());
+                    powerBuilding.getNickName());
             endTask();
         }
     }
@@ -204,7 +205,7 @@ implements Serializable {
         Settlement settlement = building.getBuildingManager().getSettlement();
         if (building.hasFunction(FunctionType.POWER_GENERATION)) {
             double bestDiff = 0D;
-            PowerGeneration powerGeneration = (PowerGeneration) building.getFunction(FunctionType.POWER_GENERATION);
+            PowerGeneration powerGeneration = building.getPowerGeneration();
             Iterator<PowerSource> i = powerGeneration.getPowerSources().iterator();
             while (i.hasNext()) {
                 PowerSource powerSource = i.next();
@@ -431,7 +432,7 @@ implements Serializable {
             String toggle = "off";
             if (toggleOn) toggle = "on";
             logger.fine(person.getName() + " turning " + toggle + " " + powerSource.getType() +
-                    " at " + settlement.getName() + ": " + building.getName());
+                    " at " + settlement.getName() + ": " + building.getNickName());
         }
 
         // Check if an accident happens during toggle power source.
@@ -468,11 +469,13 @@ implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
 	            logger.info(person.getName() + " has an accident while toggling a fuel power source.");
+	            building.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident while toggling a fuel power source.");
+	            building.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
-            building.getMalfunctionManager().logAccidentString();
+
         }
     }
 

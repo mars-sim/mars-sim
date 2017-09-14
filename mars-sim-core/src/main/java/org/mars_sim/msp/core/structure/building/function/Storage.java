@@ -89,12 +89,12 @@ implements Serializable {
 
 			double initialAmount = initialResources.get(ar);
 
-			double remainingCap = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			double remainingCap = inv.getAmountResourceRemainingCapacity(ar, true, false);
 
 			if (initialAmount > remainingCap)
 				initialAmount = remainingCap;
 			
-			inv.storeAmountResource(ar, initialAmount, false);
+			inv.storeAmountResource(ar, initialAmount, true);
 		}
 /*
 		// 2017-05-24 initialize inventory of this building for resource storage 
@@ -309,12 +309,18 @@ implements Serializable {
 			try {
 				double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, true);
 	
-				if (remainingCapacity < amount) {
+				if (remainingCapacity == 0) {
+					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName + " at " + method, "(AR) Capacity for "
+							+ ar.getName() + " is zero or isn't initialized.", null);
+					result = false;
+				}
+				
+				else if (remainingCapacity < amount) {
 				    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 					amount = remainingCapacity;
 					result = false;
 					double stored = inv.getAmountResourceStored(ar, false);
-				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "(AR) Can't store all "
+				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName + " at " + method, "(AR) Can't store all "
 					    	+ Math.round(amount*100.0)/100.0 
 					    	+ " kg of '" + ar.getName() 
 					    	+ "' in " + inv.getOwner() 
@@ -324,11 +330,13 @@ implements Serializable {
 				    	//+ ". Need to allocate more storage space for this resource."
 				    	, null);			
 				    }
+				
 				else {
 					inv.storeAmountResource(ar, amount, true);
 					inv.addAmountSupplyAmount(ar, amount);
 					result = true;
 				}
+				
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 	    		logger.log(Level.SEVERE, "Issues with storeAnResource(ar) on " + ar.getName() + " : " + e.getMessage());

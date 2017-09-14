@@ -39,9 +39,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -69,7 +67,10 @@ extends VehicleMission {
 	public static final double MIN_WATER_RESERVE = 15D;
 
 	// Data members
+	
 	private Settlement startingSettlement;
+	private SurfaceFeatures surface;
+	
 	private Map<AmountResource, Double> dessertResources;
 
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
@@ -87,6 +88,7 @@ extends VehicleMission {
 	protected RoverMission(String name, MissionMember startingMember) {
 		// Use VehicleMission constructor.
 		super(name, startingMember, MIN_GOING_MEMBERS);
+	    surface = Simulation.instance().getMars().getSurfaceFeatures();
 	}
 
 	/**
@@ -98,6 +100,7 @@ extends VehicleMission {
 	protected RoverMission(String missionName,  MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
 		super(missionName, startingMember, minPeople);
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
 	}
 	/**
 	 * Constructor with min people and rover.
@@ -110,6 +113,7 @@ extends VehicleMission {
 			Rover rover) {
 		// Use VehicleMission constructor.
 		super(missionName, startingMember, minPeople, rover);
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
 	}
 
 	/**
@@ -290,7 +294,7 @@ extends VehicleMission {
 		//	throw new NullPointerException("getVehicle().getSettlement() is null");
 
 		else {
-
+			LocationSituation ls = member.getLocationSituation();
 			Settlement settlement = getVehicle().getSettlement();
 			if (settlement == null)
 				throw new IllegalStateException(Msg.getString("RoverMission.log.notAtSettlement",getPhase().getName())); //$NON-NLS-1$
@@ -309,7 +313,7 @@ extends VehicleMission {
 				else {
 					// Check if vehicle can hold enough supplies for mission.
 					if (isVehicleLoadable()) {
-						if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+						if (LocationSituation.IN_SETTLEMENT == ls) {
 							// Load rover
 							// Random chance of having person load (this allows person to do other things sometimes)
 							if (RandomUtil.lessThanRandPercent(75)) {
@@ -324,7 +328,7 @@ extends VehicleMission {
 								}
 								else {
 									// Check if it is day time.
-								    SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+								    //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 								    if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
 								            surface.inDarkPolarRegion(member.getCoordinates())) {
 								        // TODO Refactor.
@@ -345,8 +349,8 @@ extends VehicleMission {
 				}
 			} else {
 				// If person is not aboard the rover, board rover.
-				if (member.getLocationSituation() != LocationSituation.IN_VEHICLE
-						&& member.getLocationSituation() != LocationSituation.BURIED) {
+				if (LocationSituation.IN_VEHICLE != ls
+						&& LocationSituation.BURIED != ls) {
 
 					// Move person to random location within rover.
 					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
@@ -409,8 +413,7 @@ extends VehicleMission {
 					Building garageBuilding = BuildingManager
 							.getBuilding(getVehicle());
 					if (garageBuilding != null) {
-						VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-						garage.removeVehicle(getVehicle());
+						garageBuilding.getVehicleMaintenance().removeVehicle(getVehicle());
 					}
 
 					// Embark from settlement
@@ -430,8 +433,8 @@ extends VehicleMission {
 	protected void performDisembarkToSettlementPhase(MissionMember member,
 			Settlement disembarkSettlement) {
 
-		Building garageBuilding = null;
-		VehicleMaintenance garage = null;
+		//Building garageBuilding = null;
+		//VehicleMaintenance garage = null;
 
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
@@ -441,10 +444,10 @@ extends VehicleMission {
 			// Add vehicle to a garage if available.
 			BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(),
 					disembarkSettlement);
-			garageBuilding = BuildingManager.getBuilding(getVehicle());
-			if (garageBuilding != null)
-				garage = (VehicleMaintenance) garageBuilding
-				.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			//garageBuilding = BuildingManager.getBuilding(getVehicle());
+			//if (garageBuilding != null)
+			//	garage = garageBuilding.getVehicleMaintenance();
+
 
 	        // 2017-04-01 If operator is dead, retrieve the person
 			Vehicle v = getVehicle();
@@ -620,7 +623,7 @@ extends VehicleMission {
 							}
 							else {
 								// Check if it is day time.
-								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+								//SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 								if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
 										surface.inDarkPolarRegion(member.getCoordinates())) {
 								    // TODO Refactor.
@@ -640,10 +643,7 @@ extends VehicleMission {
 
 					// If the rover is in a garage, put the rover outside.
 					if (isRoverInAGarage()) {
-						garageBuilding = BuildingManager.getBuilding(getVehicle());
-						garage = (VehicleMaintenance) garageBuilding
-								.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-						garage.removeVehicle(getVehicle());
+						BuildingManager.getBuilding(getVehicle()).getVehicleMaintenance().removeVehicle(getVehicle());
 					}
 
 					// Leave the vehicle.
@@ -801,21 +801,18 @@ extends VehicleMission {
 				* timeSols * crewNum;
 		if (useBuffer)
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		result.put(oxygenAR, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		result.put(waterAR, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
 				* timeSols * crewNum; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		result.put(foodAR, foodAmount);
 
 		return result;
@@ -896,9 +893,10 @@ extends VehicleMission {
 	public void endMission(String reason) {
 		//logger.info("endMission()'s reason : " + reason);
 		// If at a settlement, "associate" all members with this settlement.
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
+		//Iterator<MissionMember> i = getMembers().iterator();
+		//while (i.hasNext()) {
+		//	MissionMember member = i.next();
+		for (MissionMember member : getMembers()) {
 			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			    member.setAssociatedSettlement(member.getSettlement());
 			}
@@ -932,20 +930,16 @@ extends VehicleMission {
 
 		Inventory inv = settlement.getInventory();
 		try {
-			//AmountResource methane = AmountResource.findAmountResource("methane");
 			if (inv.getAmountResourceStored(methaneAR, false) < 100D) {
 				return false;
 			}
-			//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-			if (inv.getAmountResourceStored(oxygenAR, false) < 50D) {
+			if (inv.getAmountResourceStored(oxygenAR, false) < 100D) {
 				return false;
 			}
-			//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-			if (inv.getAmountResourceStored(waterAR, false) < 50D) {
+			if (inv.getAmountResourceStored(waterAR, false) < 100D) {
 				return false;
 			}
-			//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-			if (inv.getAmountResourceStored(foodAR, false) < 50D) {
+			if (inv.getAmountResourceStored(foodAR, false) < 100D) {
 				return false;
 			}
 		}

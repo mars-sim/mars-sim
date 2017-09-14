@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkOutside.java
- * @version 3.1.0 2017-08-28
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -33,7 +32,6 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -1025,11 +1023,12 @@ implements Serializable {
 
 		            if (RandomUtil.lessThanRandPercent(chance * time)) {
 		                logger.fine(person.getName() + " has accident during an EVA.");
-		                suit.getMalfunctionManager().logAccidentString("EVA");
+		                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA", person);
 		            }
 		        }
 		}
 		else if (robot != null) {
+/*			
 		       EVASuit suit = (EVASuit) robot.getInventory().findUnitOfClass(EVASuit.class);
 		        if (suit != null) {
 
@@ -1045,11 +1044,11 @@ implements Serializable {
 
 		            if (RandomUtil.lessThanRandPercent(chance * time)) {
 		                logger.fine(robot.getName() + " has accident during EVA walking.");
-		                suit.getMalfunctionManager().logAccidentString();
+		                suit.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 		            }
 		        }
+*/       
 		}
-
     }
 
     @Override

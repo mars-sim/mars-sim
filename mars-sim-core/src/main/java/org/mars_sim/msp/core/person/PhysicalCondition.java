@@ -1023,10 +1023,10 @@ implements Serializable {
 
     /**
      * Renders this Person dead.
-     * @param illness The illness that makes person dead.
+     * @param problem The health problem that contributes to his death.
      * @param causedByUser True if it's caused by users
      */
-    public void setDead(HealthProblem illness, Boolean causedByUser) {
+    public void setDead(HealthProblem problem, Boolean causedByUser) {
         alive = false;
     	
     	setFatigue(0D);
@@ -1037,30 +1037,33 @@ implements Serializable {
         if (causedByUser) {
         	person.setDead();
 
-            illness.setState(HealthProblem.DEAD);
-            this.serious = illness;
+            problem.setState(HealthProblem.DEAD);
+            this.serious = problem;
             logger.severe(person + " committed suicide as instructed.");
         }
 
-        deathDetails = new DeathInfo(person, illness);
+        deathDetails = new DeathInfo(person, problem);
 
 		person.getMind().setInactive();
 
-    	if (deathDetails.getBodyRetrieved())
+    	if (person.getVehicle() != null && deathDetails.getBodyRetrieved()) {
+    		examBody(problem); 		
     		person.buryBody();
-
-    	logger.log(Level.SEVERE, "A post-mortem examination was ordered on " + person + ". The cause of death : " + illness.toString().toLowerCase());
-
-        if (!causedByUser) {
-            // Create medical event for death.
-            MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
-            Simulation.instance().getEventManager().registerNewEvent(event);
-        }
-
-        // Throw unit event.
-        person.fireUnitUpdate(UnitEventType.DEATH_EVENT);
+    	}
     }
 
+    public void examBody(HealthProblem problem) {
+    	logger.log(Level.SEVERE, "A post-mortem examination was ordered on " + person 
+    			+ ". The cause of death : " + problem.toString().toLowerCase());
+        // Create medical event for death.
+        MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
+        Simulation.instance().getEventManager().registerNewEvent(event);
+    }
+    
+    public void retrieveBody() {
+    	deathDetails.setBodyRetrieved(true);
+    }
+    
     /**
      * Define the hunger setting for this person
      * @param newHunger New hunger.

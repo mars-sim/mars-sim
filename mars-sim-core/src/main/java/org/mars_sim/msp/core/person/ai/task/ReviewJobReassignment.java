@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The ReviewJobReassignment class is a task for reviewing job reassignment submission in an office space

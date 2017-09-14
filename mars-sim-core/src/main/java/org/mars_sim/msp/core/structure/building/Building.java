@@ -74,6 +74,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.WasteDisposal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
@@ -173,7 +174,6 @@ LocalBoundedObject, InsidePathLocation {
     private ThermalGeneration furnace;
     private PowerGeneration powerGen;
     private PowerStorage powerStorage;
-    
 	private LifeSupport lifeSupport;
 	private RoboticStation roboticStation;
 	private Heating heating;
@@ -184,6 +184,9 @@ LocalBoundedObject, InsidePathLocation {
 	private Cooking cooking;
 	private MedicalCare medical;
 	private WasteDisposal waste;
+	private VehicleMaintenance garage;
+	private FoodProduction foodFactory;
+	private ResourceProcessing processing; 
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -522,6 +525,25 @@ LocalBoundedObject, InsidePathLocation {
 			waste = (WasteDisposal) getFunction(FunctionType.WASTE_DISPOSAL);
 		return waste;
 	}
+	
+	public VehicleMaintenance getVehicleMaintenance() { 
+		if (garage == null)
+			garage = (VehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		return garage;
+	}
+	
+	public FoodProduction getFoodProduction() {
+		if (foodFactory == null)
+			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
+		return foodFactory;		
+	}
+	
+	public ResourceProcessing getResourceProcessing() {
+		if (processing == null)
+			processing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
+		return processing;
+	}
+	
     /**
      * Gets the temperature of a building.
      * @return temperature (deg C)
@@ -1240,18 +1262,18 @@ LocalBoundedObject, InsidePathLocation {
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
 
-		        	Malfunction item = MalfunctionFactory.getMeteoriteImpactMalfunction(
+		        	Malfunction meteor = MalfunctionFactory.getMeteoriteImpactMalfunction(
 		        			MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 
 		        	// Simulate the meteorite impact as a malfunction event for now
 					try {
-						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
+						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, meteor);
 					}
 					catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
 
-					HistoricalEvent newEvent = new MalfunctionEvent(this, item, true);
+					HistoricalEvent newEvent = new MalfunctionEvent(this, meteor, false);
 					manager.getEventManager().registerNewEvent(newEvent);
 					
 					//check if someone under this roof may have seen/affected by the impact

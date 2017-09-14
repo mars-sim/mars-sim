@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Read.java
- * @version 3.08 2015-06-29
+ * @version 3.1.0 2017-09-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -9,20 +9,13 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Preference;
-import org.mars_sim.msp.core.person.RoleType;
+
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.Communication;
 
 /**
  * The Read class is the task of reading

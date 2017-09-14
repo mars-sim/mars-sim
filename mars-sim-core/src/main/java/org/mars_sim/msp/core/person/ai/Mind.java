@@ -201,11 +201,12 @@ implements Serializable {
      */
     public void takeAction(double time) {
 
+    	
         if ((mission != null) && mission.isDone()) {
             mission = null;
         }
 
-        boolean activeMission = (mission != null);
+        boolean hasActiveMission = hasActiveMission();//(mission != null);
 
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
@@ -214,8 +215,9 @@ implements Serializable {
             overrideMission = person.getSettlement().getMissionCreationOverride();
         }
 
+        boolean hasActiveTask = taskManager.hasActiveTask();
         // Perform a task if the person has one, or determine a new task/mission.
-        if (taskManager.hasActiveTask()) {
+        if (hasActiveTask) {
             double remainingTime = taskManager.performTask(time, person
                     .getPerformanceRating());
             if (remainingTime > 0D) {
@@ -223,26 +225,24 @@ implements Serializable {
             }
         }
         else {
-            if (activeMission) {
+            if (hasActiveMission) {
                 mission.performMission(person);
             }
-
+  
             if (!taskManager.hasActiveTask()) {
                 try {
-                    getNewAction(true, (!activeMission && !overrideMission));
-                    // 2015-10-22 Added recordTask()
-                    //taskManager.recordTask();
+                    getNewAction(true, (!hasActiveMission && !overrideMission));
                 } catch (Exception e) {
                     logger.log(Level.WARNING, person + " could not get new action", e);
                     e.printStackTrace(System.err);
                 }
             }
 
-            if (taskManager.hasActiveTask() || hasActiveMission()) {
-                takeAction(time); 
+            //if (hasActiveTask || hasActiveMission) {
+            //    takeAction(time); 
                 // Recursive calling causing Exception in thread "pool-4-thread-217" java.lang.StackOverflowError 
                 // org.mars_sim.msp.core.person.ai.Mind.takeAction(Mind.java:242)
-            }
+            //}
         }
     }
 
@@ -583,7 +583,7 @@ implements Serializable {
     	jobLock = value;
     }
 
-    public PersonalityTraitManager getPersonalityTraitManager() {
+    public PersonalityTraitManager getTraitManager() {
     	return trait;
     }
 

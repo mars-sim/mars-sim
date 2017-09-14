@@ -47,9 +47,11 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 		<crew-size value="4" />
 
 		<!-- Cargo capacity list -->
+		<!-- See Rover.java for adding capacity for each resource -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
 		<!-- Default: varies according to the type of vehicle -->
 		<cargo total-capacity="5800.0">
+
 
 			<!-- The methane cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle -->
@@ -83,7 +85,7 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 
 			<!-- The food waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food waste" value="120.0" />
+			<capacity resource="food waste" value="40.0" />
 			
 			<!-- The solid waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
@@ -146,7 +148,7 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<capacity resource="food" value="525.0" />
 			<capacity resource="dessert" value="50.0" />
 
-			<capacity resource="food waste" value="240.0" />
+			<capacity resource="food waste" value="80.0" />
 			<capacity resource="solid waste" value="160.0" />
 			<capacity resource="toxic waste" value="40.0" />	
 			
@@ -181,8 +183,8 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<capacity resource="food" value="525.0" />
 			<capacity resource="dessert" value="100.0" />
 
-			<capacity resource="food waste" value="60.0" />
-			<capacity resource="solid waste" value="4.0" />
+			<capacity resource="food waste" value="20.0" />
+			<capacity resource="solid waste" value="40.0" />
 			<capacity resource="toxic waste" value="10.0" />	
 		</cargo>
 		<sickbay tech-level="1" beds="1" />

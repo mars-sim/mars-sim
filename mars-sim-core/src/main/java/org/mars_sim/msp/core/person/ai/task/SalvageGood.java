@@ -214,16 +214,17 @@ implements Serializable {
 		chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			logger.info(person.getName() + " has accident while salvaging " +
-					process.getInfo().getItemName() + ".");
-			if (person != null)
+
+			if (person != null) {
 				logger.info(person.getName() + " has accident while salvaging " +
 					process.getInfo().getItemName() + ".");
-			else if (robot != null)
+				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
+			}
+			else if (robot != null) {
 				logger.info(robot.getName() + " has accident while salvaging " +
 					process.getInfo().getItemName() + ".");
-
-			workshop.getBuilding().getMalfunctionManager().logAccidentString();
+				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
+			}
 		}
 	}
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.1.0 2017-05-02
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -535,12 +534,14 @@ implements Serializable {
 
     			if (person != null) {
     	            logger.info(person.getName() + " has an accident while constructing the site " + site.getName());
+                    luv.getMalfunctionManager().createASeriesOfMalfunctions(site.getName(), person);
+
     			}
     			else if (robot != null) {
     				logger.info(robot.getName() + " has an accident while constructing the site " + site.getName());
+                    luv.getMalfunctionManager().createASeriesOfMalfunctions(site.getName(), robot);
     			}
 
-                luv.getMalfunctionManager().logAccidentString(site.getName());
             }
         }
     }

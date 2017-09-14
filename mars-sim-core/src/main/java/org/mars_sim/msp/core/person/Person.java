@@ -769,6 +769,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		//setAssociatedSettlement(null);
 		setBuriedSettlement(associatedSettlement);
 		super.setDescription("Dead");
+		
+        // Throw unit event.
+        fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
 
 	/**

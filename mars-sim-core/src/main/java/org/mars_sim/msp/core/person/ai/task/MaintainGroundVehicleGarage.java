@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -283,13 +283,15 @@ implements Serializable {
 
 			if (person != null) {
 	            logger.info(person.getName() + " has an accident while performing maintenance on " + vehicle.getName() + " inside a garage.");
+	            vehicle.getMalfunctionManager().createASeriesOfMalfunctions(vehicle.getName(), person);
+
 			}
 			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident while performing maintenance on " + vehicle.getName() + " inside a garage.");
+				vehicle.getMalfunctionManager().createASeriesOfMalfunctions(vehicle.getName(), robot);
 			}
 
-            vehicle.getMalfunctionManager().logAccidentString(vehicle.getName());
-
+ 
         }
     }
 

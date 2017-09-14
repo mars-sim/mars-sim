@@ -105,10 +105,11 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         weather = Simulation.instance().getMars().getWeather();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		
 		// Add scope to malfunction manager.
-		//malfunctionManager.addScopeString("Rover");
+		malfunctionManager.addScopeString("Rover");
 		//malfunctionManager.addScopeString("Crewable");
-		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());//."Life Support");
+		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 		//malfunctionManager.addScopeString(description);
 		//if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
 		//if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
@@ -121,26 +122,17 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(description));
+		
 		// Set inventory resource capacities.
-		inv.addAmountResourceTypeCapacity(methaneAR, vehicleConfig.getCargoCapacity(description, "methane"));
+		inv.addAmountResourceTypeCapacity(methaneAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.METHANE));
 		inv.addAmountResourceTypeCapacity(oxygenAR, vehicleConfig.getCargoCapacity(description, LifeSupportType.OXYGEN));
 		inv.addAmountResourceTypeCapacity(waterAR, vehicleConfig.getCargoCapacity(description, LifeSupportType.WATER));
 		inv.addAmountResourceTypeCapacity(foodAR, vehicleConfig.getCargoCapacity(description, LifeSupportType.FOOD));
-		inv.addAmountResourceTypeCapacity(rockSamplesAR, vehicleConfig.getCargoCapacity(description, "rock samples"));
-		inv.addAmountResourceTypeCapacity(iceAR, vehicleConfig.getCargoCapacity(description, "ice"));
-		
-		// TODO: can I call .addAmountResourceTypeCapacity() later after the chosen dessert is known?
-		// In RoverMission.java's getResourcesNeededForTrip() we add the storage space for the desserts
-    	// getRover().getSettlementInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
-
-        //String dessertName = PreparingDessert.getADessert(dessertList);
-		//AmountResource dessert = AmountResource.findAmountResource(dessertName);
-		//inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, dessertName));
-
-		//inv.addAmountResourceTypeCapacity(eWasteAR, config.getCargoCapacity(description, "electronic waste"));
-		inv.addAmountResourceTypeCapacity(foodWasteAR, vehicleConfig.getCargoCapacity(description, "food waste"));
-		inv.addAmountResourceTypeCapacity(solidWasteAR, vehicleConfig.getCargoCapacity(description, "solid waste"));
-		inv.addAmountResourceTypeCapacity(toxicWasteAR, vehicleConfig.getCargoCapacity(description, "toxic waste"));
+		inv.addAmountResourceTypeCapacity(rockSamplesAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.ROCK_SAMLES));
+		inv.addAmountResourceTypeCapacity(iceAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.ICE));
+		inv.addAmountResourceTypeCapacity(foodWasteAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.FOOD_WASTE));
+		inv.addAmountResourceTypeCapacity(solidWasteAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.SOLID_WASTE));
+		inv.addAmountResourceTypeCapacity(toxicWasteAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.TOXIC_WASTE));
 		
 
 

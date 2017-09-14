@@ -302,14 +302,16 @@ implements Serializable {
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null)
-				logger.info(person.getName() + " has accident while performing EVA maintenance on "
+			if (person != null) {
+				logger.info(person.getName() + " has an accident while performing EVA maintenance on "
 					     + entity.getNickName() + ".");
-			else if (robot != null)
-				logger.info(robot.getName() + " has accident while performing EVA maintenance on "
+	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
+			}
+			else if (robot != null) {
+				logger.info(robot.getName() + " has an accident while performing EVA maintenance on "
 						     + entity.getNickName() + ".");
-
-			entity.getMalfunctionManager().logAccidentString();
+				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
+			}
 		}
 	}
 

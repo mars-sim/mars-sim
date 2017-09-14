@@ -84,7 +84,7 @@ implements Serializable {
 			Iterator<Malfunction> i = malfunctions.iterator();
 			while (i.hasNext()) {
 				Malfunction temp = i.next();
-				if (temp.unitScopeMatch(scope)) 
+				if (temp.unitScopeMatch(scope) && !temp.getName().equals(METEORITE_IMPACT_DAMAGE)) 
 					totalProbability += temp.getProbability();
 			}
 		}
@@ -96,7 +96,7 @@ implements Serializable {
 			Malfunction temp = i.next();
 			double probability = temp.getProbability();
 			// will only pick one malfunction at a time
-			if (temp.unitScopeMatch(scope) && (result == null)) {
+			if (temp.unitScopeMatch(scope) && (result == null) && !temp.getName().equals(METEORITE_IMPACT_DAMAGE)) {
 				if (r < probability) {
 					try {
 						result = temp.getClone();

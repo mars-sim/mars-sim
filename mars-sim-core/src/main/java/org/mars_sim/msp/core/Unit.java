@@ -644,16 +644,22 @@ implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.INSIDE_VEHICLE;
 
 		else if (oldContainer instanceof Vehicle && newContainer == null) {
+			Unit vehicle_container = oldContainer.getContainerUnit();
+			if (vehicle_container.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			else if (vehicle_container.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 			// Case 4
-			if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+			else if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
 				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 			// Case 6
 			else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			else
+			else {
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;	
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 						name + " was no longer on a vehicle.", null);
-
+			}
 		}
 
 		// Case 7

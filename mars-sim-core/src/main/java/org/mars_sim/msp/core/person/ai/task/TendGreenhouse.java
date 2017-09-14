@@ -558,12 +558,14 @@ implements Serializable {
 
 			if (person != null) {
 	            logger.info(person.getName() + " has an accident while tending greenhouse.");
+	           	farmBuilding.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident while tending greenhouse.");
+		       	farmBuilding.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 
-        	farmBuilding.getMalfunctionManager().logAccidentString();
+ 
         }
     }
 

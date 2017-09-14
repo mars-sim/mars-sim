@@ -187,7 +187,7 @@ implements Serializable {
 	 * Sync up with the I-E pair score in MBTI
 	 */	
 	public void syncUpExtraversion() {	
-		int value = person.getMind().getPersonalityTraitManager().getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);		
+		int value = person.getMind().getTraitManager().getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);		
 		scores.put(0, value);		
 	}
 	

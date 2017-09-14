@@ -721,12 +721,14 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 
-			if (person != null)
+			if (person != null) {
 				logger.info(person.getName() + " has accident while manufacturing good.");
-			else if (robot != null)
+                workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
+			}
+			else if (robot != null) {
 				logger.info(robot.getName() + " has accident while manufacturing godd.");
-
-			workshop.getBuilding().getMalfunctionManager().logAccidentString();
+				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
+			}
 		}
 	}
 

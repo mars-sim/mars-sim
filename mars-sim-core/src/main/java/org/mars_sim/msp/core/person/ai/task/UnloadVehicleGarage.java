@@ -1,19 +1,23 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @version 3.08 2015-05-22
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -21,6 +25,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -33,6 +38,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -183,6 +189,7 @@ implements Serializable {
 
         logger.fine(person.getName() + " is unloading " + vehicle.getName());
     }
+    
     public UnloadVehicleGarage(Robot robot, Vehicle vehicle) {
         // Use Task constructor.
         super("Unloading vehicle", robot, true, false, STRESS_MODIFIER, true, DURATION);
@@ -384,6 +391,7 @@ implements Serializable {
             endTask();
             return 0D;
         }
+        
         Inventory settlementInv = settlement.getInventory();
 
         // Unload equipment.
@@ -454,6 +462,22 @@ implements Serializable {
             }
         }
 
+        // Retrieve, exam and bury any dead bodies
+        if (this instanceof Crewable) {
+            Crewable crewable = (Crewable) this;
+            for (Person p : crewable.getCrew()) {
+            	if (p.isDead()) {
+            		logger.info("Retrieving the dead body of " + p + " from " + vehicle.getName()
+        			+ " parked inside " + settlement);
+            		PhysicalCondition pc = p.getPhysicalCondition();
+            		pc.retrieveBody();
+            		pc.examBody(pc.getDeathDetails().getProblem());
+            		p.buryBody();
+            	}
+            }
+        }
+        
+        
         if (isFullyUnloaded(vehicle)) {
             endTask();
         }

@@ -194,7 +194,7 @@ public class ResourceUtil implements Serializable {
 		
 	}
 
-    public void createMaps() {
+    public static void createMaps() {
 		amountResourceMap = new HashMap<String, AmountResource>();
 		sortedResources = new ArrayList<>(resources);
 		Collections.sort(sortedResources);
@@ -386,6 +386,8 @@ public class ResourceUtil implements Serializable {
 		}
 		return ar;
 */
+		if (amountResourceMap == null)
+			createMaps();
 		return amountResourceMap.get(name.toLowerCase());
 
 	}

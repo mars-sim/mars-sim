@@ -42,12 +42,6 @@ public class LivingAccommodations extends Function implements Serializable {
     public final static double TOILET_WASTE_PERSON_SOL = .02D;
     public final static double WASH_AND_WASTE_WATER_RATIO = .85D;
 
-    //public final static String WATER = "water";
-    //public final static String BLACK_WATER = "black water";
-    //public final static String GREY_WATER = "grey water";
-    //public final static String TOILET_TISSUE = "toilet tissue";
-    //public final static String TOXIC_WASTE = "toxic waste";
-
     private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMODATIONS;
 
     private int beds; // max # of beds
@@ -287,9 +281,11 @@ public class LivingAccommodations extends Function implements Serializable {
 
     	// Use toilet paper and generate toxic waste (used toilet paper).
         double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
-        double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed;//toiletPaperUsageSettlement * buildingProportionCap;
+        
+        double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;//toiletPaperUsageSettlement * buildingProportionCap;
 
-        Storage.retrieveAnResource(toiletPaperUsageBuilding * random_factor, ResourceUtil.toiletTissueAR, inv, true);
+        Storage.retrieveAnResource(toiletPaperUsageBuilding , ResourceUtil.toiletTissueAR, inv, true);
+        
         if (toiletPaperUsageBuilding > 0)
         	Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv, sourceName + "::generateWaste");
     }

@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.medical.Complaint;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
@@ -36,6 +37,7 @@ import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -399,7 +401,7 @@ implements Serializable {
 		else {
 			malfunctions.add(malfunction);
 
-			String mal = malfunction.getName();
+			String mal_name = malfunction.getName();
 /*			
 			if (mal.equalsIgnoreCase("Major Fire"))
 				consumeFireExtingusher(2);
@@ -423,42 +425,47 @@ implements Serializable {
 					eventManager = sim.getEventManager();
 				eventManager.registerNewEvent(newEvent);
 				
-				// Register the failure of the Parts involved
-				 Map<Part,Integer> parts = malfunction.getRepairParts();
-				 Set<Part> partSet = parts.keySet();
-				 for (Part p : partSet) {
-					 int num = parts.get(p);
-					 // Increment the number of failure for this Part
-					 partConfig.setFailure(p, num);
-					 
-					 // Recompute the reliability of this Part
-					 partConfig.computeReliability(p);
-				 }
-				
-				 double new_p = 0.0;
-
-				 // Compute the new probability of failure for this malfunction
-				 for (Part p : partSet) {
-					 int id = p.getID();
-					 double rel = partConfig.getReliability(id);
-					 
-					 String name = p.getName();
-					 double needed = malfunctionConfig.getRepairPartProbability(malfunction.getName(), name);
-					 double weight =  (100-rel) * needed/100D;
-					 logger.info(p.getName() + " (Reliability : " + Math.round(rel*100.0)/100.0 
-							 + " %   Needed : " + Math.round(needed*100.0)/100.0 
-							 + " %   Weight : " + Math.round(weight*100.0)/100.0 
-							 + " %)"
-							 );
-					 new_p += weight; 
-				 }
-				 
-				 double old_p = malfunction.getProbability();
-				 logger.info(mal + "'s probability of failure : " 
-						 + Math.round(old_p*10000.0)/10000.0  
-						 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
-				 malfunction.setProbability(new_p);
-				 
+				if (!mal_name.equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
+					 // Register the failure of the Parts involved
+					 Map<Part,Integer> parts = malfunction.getRepairParts();
+					 Set<Part> partSet = parts.keySet();
+					 for (Part p : partSet) {
+						 int num = parts.get(p);
+						 // Increment the number of failure for this Part
+						 partConfig.setFailure(p, num);
+						 // Recompute the reliability of this Part
+						 partConfig.computeReliability(p);
+					 }
+					
+					 double new_p = 0.0;
+	
+					 // Compute the new reliability and failure rate for this malfunction
+					 for (Part p : partSet) {
+						 int id = p.getID();
+						 String part_name = p.getName();
+						 if (!part_name.equalsIgnoreCase("decontamination kit") 
+								 && !part_name.equalsIgnoreCase("airleak patch") 
+								 && !part_name.equalsIgnoreCase("fire extinguisher")) {
+							 double rel = partConfig.getReliability(id);
+							 
+							 String name = p.getName();
+							 double needed = malfunctionConfig.getRepairPartProbability(malfunction.getName(), name);
+							 double weight =  (100-rel) * needed/100D;
+							 logger.info(p.getName() + " (Reliability : " + Math.round(rel*100.0)/100.0 
+									 + " %   Needed : " + Math.round(needed*100.0)/100.0 
+									 + " %   Weight : " + Math.round(weight*100.0)/100.0 
+									 + " %)"
+									 );
+							 new_p += weight; 
+							 
+							 double old_p = malfunction.getProbability();
+							 logger.info("Updating " + mal_name + "'s compposite failure rate : " 
+									 + Math.round(old_p*10000.0)/10000.0  
+									 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
+							 malfunction.setProbability(new_p);
+						}
+					}
+				}
 			}
 			
 			issueMedicalComplaints(malfunction);
@@ -661,16 +668,31 @@ implements Serializable {
 	}
 
 	/**
-	 * Sets up the string for logging an accident
+	 * Creates a series of related malfunctions
 	 * @param s the place of accident
 	 */
-	public void logAccidentString(String s) {
+	public void createASeriesOfMalfunctions(String s, Robot r) {
+		handleStringTypeOne(s);
+		determineNumOfMalfunctions();
+	}
+	
+	/**
+	 * Creates a series of related malfunctions
+	 * @param s the place of accident
+	 */
+	public void createASeriesOfMalfunctions(String s, Person p) {
+		handleStringTypeOne(s);
+    	int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
+		determineNumOfMalfunctions(nervousness);
+	}
+	
+	public void handleStringTypeOne(String s) {
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
 
 		if (s.contains("EVA")) {
 			sb.insert(0, "with ");
-
 		}
+		
 		else {
 
 			if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") || s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
@@ -682,20 +704,33 @@ implements Serializable {
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
     			"An accident occurs " + sb.toString() + ".", null);
 
-		determineNumOfMalfunctions();
+	}
+	
+	/**
+	 * Creates a series of related malfunctions
+	 */
+	public void createASeriesOfMalfunctions(Person p) {
+		handleStringTypeTwo();
+       	int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
+		determineNumOfMalfunctions(nervousness);
 	}
 
 	/**
-	 * Sets up the string for logging an accident
+	 * Creates a series of related malfunctions
 	 */
-	public void logAccidentString() {
+	public void createASeriesOfMalfunctions(Robot r) {
+		handleStringTypeTwo();
+		determineNumOfMalfunctions();
+	}
+	
+	public void handleStringTypeTwo() {
 		String n = entity.getNickName();
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(n));
 
 		if (n.contains("EVA")) {
 			sb.insert(0, "with ");
-
 		}
+		
 		else {
 			sb.insert(0, "in ");
 		}
@@ -707,21 +742,21 @@ implements Serializable {
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
     			"An accident occurs " + sb.toString() + ".", null);
 
-		determineNumOfMalfunctions();
 	}
-
+	
 	/**
 	 * Determines the numbers of malfunctions.
 	 */
-	public void determineNumOfMalfunctions() {
+	public void determineNumOfMalfunctions(int score) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean done = false;
 		double chance = 100D;
+		double mod = score/50;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
 				selectMalfunction();
-				chance /= 2D;
+				chance = chance / 3D * mod;
 			}
 			else {
 			    done = true;
@@ -737,6 +772,32 @@ implements Serializable {
 		}
 	}
 
+	/**
+	 * Determines the numbers of malfunctions.
+	 */
+	public void determineNumOfMalfunctions() {
+		// Multiple malfunctions may have occurred.
+		// 50% one malfunction, 25% two etc.
+		boolean done = false;
+		double chance = 100D;
+		while (!done) {
+			if (RandomUtil.lessThanRandPercent(chance)) {
+				selectMalfunction();
+				chance /= 3D;
+			}
+			else {
+			    done = true;
+			}
+		}
+
+		// Add stress to people affected by the accident.
+		Collection<Person> people = entity.getAffectedPeople();
+		Iterator<Person> i = people.iterator();
+		while (i.hasNext()) {
+			PhysicalCondition condition = i.next().getPhysicalCondition();
+			condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
+		}
+	}
 	/**
 	 * Gets the time since last maintenance on entity.
 	 * @return time (in millisols)

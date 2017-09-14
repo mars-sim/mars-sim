@@ -355,27 +355,30 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="rover fuel tank" mass="30.0" >
-		<maintenance-entity-list>
+	<part name="gas tank" mass="20.0" >
+	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
+			<entity name="life support" probability="10" max-number="1" />
+			<entity name="fuel heating source" probability="5" max-number="1" />
+			<entity name="cooking" probability="5" max-number="1" />	
+			<entity name="farming" probability="5" max-number="5" />					
 		</maintenance-entity-list>
 	</part>
 
-	<part name="rover oxygen tank" mass="20.0" >
+	<part name="water tank" mass="20.0" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="rover water tank" mass="20.0" >
-	 	<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="1" />
+			<entity name="life support" probability="10" max-number="1" />
+			<entity name="fuel heating source" probability="5" max-number="1" />
+			<entity name="cooking" probability="5" max-number="1" />		
+			<entity name="farming" probability="5" max-number="5" />				
 		</maintenance-entity-list>
 	</part>
 
 	<part name="fuel tank" mass="50.0" >		
 	<description>for storing methane</description>
 		<maintenance-entity-list>
+			<entity name="rover" probability="5" max-number="1" />		
 			<entity name="life support" probability="10" max-number="1" />
 			<entity name="fuel heating source" probability="5" max-number="1" />
 			<entity name="cooking" probability="5" max-number="1" />
@@ -557,14 +560,7 @@
 			<entity name="farming" probability="5" max-number="5" />
 		</maintenance-entity-list>
 	</part>
-
-	<!-- 2014-11-19 Added water tank for greenhouse. -->
-	<part name="water tank" mass="2.0" >
-	 	<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="5" />
-		</maintenance-entity-list>
-	</part>
-
+	
 	<!-- 2014-11-19 Added an air compressor. -->
 	<part name="air compressor" mass="2.0" >
 	 	<maintenance-entity-list>
@@ -753,7 +749,7 @@
 			(SOFC), totalling 5 kWe</description>
 	    <maintenance-entity-list>
 			<entity name="vehicle" probability="1" max-number="1" />
-			<entity name="methane power generator" probability="1" max-number="15" />
+			<entity name="fuel power source" probability="1" max-number="15" />
 		</maintenance-entity-list>
 	</part>
 

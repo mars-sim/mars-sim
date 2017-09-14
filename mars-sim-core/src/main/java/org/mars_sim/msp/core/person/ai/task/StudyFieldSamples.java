@@ -557,7 +557,7 @@ implements ResearchScientificStudy, Serializable {
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
                 logger.info(person.getName() + " has a lab accident while studying field samples.");
-                entity.getMalfunctionManager().logAccidentString();
+                entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
             }
         }
     }

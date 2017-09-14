@@ -397,12 +397,14 @@ implements Serializable {
             chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-    			if (person != null)
+    			if (person != null) {
     				logger.info(person.getName() + " ran into an accident while salvage a building");
-    			else if (robot != null)
+                    luv.getMalfunctionManager().createASeriesOfMalfunctions(person);
+    			}
+    			else if (robot != null) {
     				logger.info(robot.getName() + " ran into an accident while salvage a building");
-
-                luv.getMalfunctionManager().logAccidentString();
+    				luv.getMalfunctionManager().createASeriesOfMalfunctions(robot);
+    			}
             }
         }
     }

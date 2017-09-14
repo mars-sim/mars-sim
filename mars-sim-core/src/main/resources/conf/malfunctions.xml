@@ -92,53 +92,57 @@
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="fire extinguisher" number="1" probability="35" />		
-			<part name="steel sheet" number="1" probability="10" />
-			<part name="aluminum sheet" number="1" probability="10" />
-			<part name="plastic sheet" number="1" probability="5" />
-			<part name="fiberglass" number="1" probability="5" />
-			<part name="plastic pipe" number="2" probability="5" />
+			<part name="oxygen pump" number="1" probability="5" />
+			<part name="fuel pump" number="1" probability="5" />
+			<part name="heating element" number="1" probability="5" />
+			<part name="rover battery" number="1" probability="5" />
+			<part name="gas tank" number="2" probability="5" />
 			<part name="valve" number="2" probability="5" />
 			<part name="electrical wire" number="2" probability="5" />
 			<part name="wire connector" number="2" probability="5" />				
-			<part name="rover fuel tank" number="4" probability="15" />	
+			<part name="fuel tank" number="4" probability="20" />	
+			<part name="water tank" number="4" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 	
-	<!-- Small electrical or chemical fire. -->
-	<malfunction name="Minor Fire">
+	<!-- Class A Fire are fires in ordinary combustibles such as wood, paper, 
+		cloth, trash, and plastics. -->
+	<malfunction name="Class A Fire">
 		<severity value="60" />
 		<probability value="3.0" />
 		<repair-time value="100.0" />
 		<emergency-repair-time value="10.0" />
 		<system-list>
+			<system name="waste disposal" />		
 			<system name="life support" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="fire extinguisher" number="1" probability="35" />		
-			<part name="steel sheet" number="1" probability="10" />
-			<part name="aluminum sheet" number="1" probability="10" />
+			<part name="fire extinguisher" number="2" probability="35" />		
+			<part name="lubricant bottle" number="1" probability="5" />
+			<part name="gas tank" number="1" probability="5" />
 			<part name="plastic sheet" number="1" probability="5" />
-			<part name="fiberglass" number="1" probability="5" />
-			<part name="plastic pipe" number="2" probability="5" />
+			<part name="fiberglass cloth" number="3" probability="15" />
+			<part name="heating element" number="2" probability="20" />
 			<part name="valve" number="2" probability="5" />
 			<part name="electrical wire" number="2" probability="5" />
 			<part name="wire connector" number="2" probability="5" />				
-			<part name="fuel tank" number="4" probability="15" />	
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Medium electrical or chemical fire. -->
-	<malfunction name="Medium Fire">
+	<!-- Class B fires are fires in flammable liquids such as liquid hydrogen
+		and oxygen and flammable gases such as methane.  -->
+	<malfunction name="Class B Fire">
 		<severity value="80" />
 		<probability value="2" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="20.0" />
 		<system-list>
-			<system name="cooking" />			
+			<system name="cooking" />		
 			<system name="farming" />
+			<system name="thermal generation" />			
 		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
@@ -150,27 +154,60 @@
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="fire extinguisher" number="2" probability="35" />		
-			<part name="steel sheet" number="1" probability="10" />
+			<part name="gas tank" number="1" probability="10" />
 			<part name="aluminum sheet" number="1" probability="10" />
 			<part name="plastic sheet" number="1" probability="5" />
 			<part name="fiberglass" number="1" probability="5" />
 			<part name="plastic pipe" number="3" probability="5" />
 			<part name="valve" number="3" probability="5" />
-			<part name="electrical wire" number="3" probability="5" />
-			<part name="wire connector" number="3" probability="5" />	
+			<part name="electrical wire" number="2" probability="5" />
+			<part name="wire connector" number="2" probability="5" />	
 			<part name="fuel tank" number="4" probability="15" />					
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Large electrical or chemical fire. -->
-	<malfunction name="Major Fire">
+	<!-- Class C fires are fires involving energized electrical equipment such 
+		as motors, transformers, and appliances. -->
+	<malfunction name="Class C Fire">
 		<severity value="100" />
 		<probability value="1" />
 		<repair-time value="400.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
-			<system name="waste disposal" />			
-			<system name="power storage" />
+			<system name="power generation" />		
+			<system name="power storage" />	
+		</system-list>
+		<effect-list>
+			<effect type="life-support" name="Oxygen" change-rate="-.02" />
+			<effect type="life-support" name="Temperature" change-rate="+.02" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="30.0" />
+			<medical-complaint name="Burns" probability="15.0" />
+			<medical-complaint name="Major Burns" probability="5.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="fire extinguisher" number="2" probability="30" />		
+			<part name="power cable" number="2" probability="5" />
+			<part name="aluminum sheet" number="2" probability="5" />
+			<part name="heating element" number="2" probability="5" />
+			<part name="logic board" number="3" probability="10" />
+			<part name="valve" number="4" probability="5" />
+			<part name="electrical wire" number="5" probability="20" />
+			<part name="wire connector" number="5" probability="20" />				
+		</repair-parts-list>
+	</malfunction>
+
+	<!-- Class D fires are fires in combustible metals such as potassium, 
+		sodium, aluminum, and magnesium. -->
+	<malfunction name="Class D Fire">
+		<severity value="100" />
+		<probability value="1" />
+		<repair-time value="400.0" />
+		<emergency-repair-time value="40.0" />
+		<system-list>
+			<system name="research" />		
+			<system name="storage" />
 		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.02" />
@@ -191,10 +228,44 @@
 			<part name="valve" number="4" probability="5" />
 			<part name="electrical wire" number="4" probability="5" />
 			<part name="wire connector" number="4" probability="5" />	
+			<part name="epoxy resin bottle" number="4" probability="15" />	
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- Class K fires are fires in cooking oils and greases such as animals 
+		fats and vegetable fats. -->
+	<malfunction name="Class K Fire">
+		<severity value="100" />
+		<probability value="1" />
+		<repair-time value="400.0" />
+		<emergency-repair-time value="40.0" />
+		<system-list>
+			<system name="cooking" />		
+			<system name="food production" />
+		</system-list>
+		<effect-list>
+			<effect type="life-support" name="Oxygen" change-rate="-.02" />
+			<effect type="life-support" name="Temperature" change-rate="+.02" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="30.0" />
+			<medical-complaint name="Burns" probability="15.0" />
+			<medical-complaint name="Major Burns" probability="5.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="fire extinguisher" number="3" probability="35" />		
+			<part name="ventilation fan" number="2" probability="10" />
+			<part name="blender" number="2" probability="10" />
+			<part name="refrigerator" number="2" probability="5" />
+			<part name="autoclave" number="2" probability="5" />
+			<part name="microwave" number="4" probability="5" />
+			<part name="oven" number="4" probability="5" />
+			<part name="electrical wire" number="4" probability="5" />
+			<part name="wire connector" number="4" probability="5" />	
 			<part name="fuel tank" number="4" probability="15" />	
 		</repair-parts-list>
 	</malfunction>
-
+		
 	<!-- Damaged wheel on rover. -->
 	<malfunction name="Damaged Wheel">
 		<severity value="20" />
@@ -223,11 +294,11 @@
 			<effect type="resource" name="Methane" change-rate="-.1" />
 		</effect-list>
 		<repair-parts-list>
-			<part name="gasket" number="1" probability="25" />
-			<part name="valve" number="1" probability="20" />
-			<part name="epoxy resin bottle" number="1" probability="25" />
+			<part name="gasket" number="1" probability="15" />
+			<part name="valve" number="1" probability="15" />
+			<part name="epoxy resin bottle" number="1" probability="15" />
 			<part name="plastic tubing" number="1" probability="15" />
-			<part name="rover fuel tank" number="4" probability="15" />				
+			<part name="fuel tank" number="4" probability="40" />				
 		</repair-parts-list>
 	</malfunction>
 
@@ -433,6 +504,7 @@
 			<part name="plastic tubing" number="5" probability="15" />
 			<part name="plastic pipe" number="2" probability="15" />
 			<part name="flexible hose" number="2" probability="10" />		
+			<part name="water tank" number="2" probability="10" />					
 		</repair-parts-list>
 	</malfunction>
 
@@ -456,11 +528,12 @@
 			<medical-complaint name="Heartburn" probability="10.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="gasket" number="1" probability="20" />
-			<part name="valve" number="1" probability="20" />
-			<part name="epoxy resin bottle" number="1" probability="20" />
-			<part name="plastic tubing" number="5" probability="20" />
-			<part name="plastic pipe" number="2" probability="20" />
+			<part name="decontamination kit" number="2" probability="50" />		
+			<part name="gasket" number="1" probability="10" />
+			<part name="valve" number="1" probability="10" />
+			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="plastic tubing" number="5" probability="10" />
+			<part name="plastic pipe" number="2" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -575,9 +648,9 @@
 		</system-list>
 		<repair-parts-list>
 			<part name="aluminum wire" number="2" probability="20" />		
-			<part name="electrical wire" number="2" probability="25" />
-			<part name="wire connector" number="2" probability="30" />
-			<part name="fuel pump" number="1" probability="20" />
+			<part name="electrical wire" number="2" probability="10" />
+			<part name="wire connector" number="2" probability="10" />
+			<part name="fuel pump" number="1" probability="60" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -594,10 +667,10 @@
  			<system name="earth return" />			
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="water pump" number="1" probability="30" />
-			<part name="lubricant bottle" number="1" probability="30" />
+			<part name="electrical wire" number="2" probability="10" />
+			<part name="wire connector" number="2" probability="10" />
+			<part name="water pump" number="1" probability="70" />
+			<part name="lubricant bottle" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -612,28 +685,10 @@
 			<system name="earth return" />			
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="carbon dioxide pump" number="1" probability="30" />
-		</repair-parts-list>
-	</malfunction>
-
-	<!-- 2014-11-19 Added Kitchen Food Blender Failure. -->
-	<malfunction name="Kitchen Food Blender Failure">
-		<severity value="40" />
-		<probability value=".5" />
-		<repair-time value="40.0" />
-		<emergency-repair-time value="20.0" />
-		<system-list>
-			<system name="cooking" />
-		</system-list>
-		<repair-parts-list>
-			<part name="electrical wire" number="1" probability="30" />
-			<part name="wire connector" number="1" probability="30" />
-			<part name="blender" number="1" probability="5" />
-			<part name="epoxy resin bottle" number="1" probability="15" />
-			<part name="lubricant bottle" number="1" probability="15" />
-			<part name="blender" number="2" probability="5" />			
+			<part name="electrical wire" number="2" probability="10" />
+			<part name="wire connector" number="2" probability="10" />
+			<part name="carbon dioxide pump" number="1" probability="70" />
+			<part name="lubricant bottle" number="1" probability="10" />		
 		</repair-parts-list>
 	</malfunction>
 
@@ -654,20 +709,23 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- 2014-11-19 Added Kitchen Ventilation Fan Failure. -->
-	<malfunction name="Kitchen Ventilation Fan Failure">
+	<!-- 2014-11-19 Added Ventilation Fan Failure. -->
+	<malfunction name="Ventilation Fan Failure">
 		<severity value="40" />
 		<probability value=".5" />
 		<repair-time value="40.0" />
 		<emergency-repair-time value="20.0" />
 		<system-list>
 			<system name="cooking" />
+			<system name="life support" />			
+			<system name="farming" />			
+			<system name="manufacture" />				
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="35" />
-			<part name="wire connector" number="2" probability="35" />
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="wire connector" number="2" probability="25" />
 			<part name="small motor" number="1" probability="20" />				
-			<part name="ventilation fan" number="1" probability="10" />
+			<part name="ventilation fan" number="1" probability="30" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -826,7 +884,7 @@
 			<system name="manufacture" />
 		</system-list>
 		<repair-parts-list>
-			<part name="aluminum wire" number="2" probability="10"  />
+			<part name="aluminum wire" number="2" probability="5"  />
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="20" />
 			<part name="small water pump" number="1" probability="5" />
@@ -837,8 +895,35 @@
 			<part name="carbon dioxide laser" number="1" probability="5" />
 			<part name="small stepper motor" number="3" probability="5" />
 			<part name="timing belt" number="3" probability="5" />
-			<part name="optical prism" number="3" probability="4" />
-			<part name="Laser Sintering 3D Printer" number="1" probability="1" />
+			<part name="optical prism" number="3" probability="5" />
+			<part name="Laser Sintering 3D Printer" number="1" probability="5" />
+		</repair-parts-list>
+	</malfunction>
+
+	<!-- 2015-09-28 Added fuel cell stack failure. -->
+	<malfunction name="Fuel Cell Stack Failure">
+		<severity value="30" />
+		<probability value="1.0" />
+		<repair-time value="200.0" />
+		<emergency-repair-time value="100" />
+		<system-list>
+			<system name="vehicle" />
+			<system name="fuel power source" />
+			<system name="fuel heating source" />
+		</system-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="5.0" />
+			<medical-complaint name="Laceration" probability="2.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="fire extinguisher" number="1" probability="30" />
+			<part name="aluminum sheet" number="2" probability="10" />
+			<part name="electrical wire" number="5" probability="20"/>
+			<part name="wire connector" number="5" probability="20"/>
+			<part name="steel pipe" number="2" probability="10"/>
+			<part name="microcontroller" number="1" probability="5"/>
+			<part name="solid oxide fuel cell" number="2" probability="4"/>
+			<part name="fuel cell stack" number="1" probability="1"/>
 		</repair-parts-list>
 	</malfunction>
 
@@ -873,39 +958,10 @@
 			<part name="fiberglass" number="2" probability="5" />
 			<part name="plastic pipe" number="2" probability="10" />
 			<part name="valve" number="2" probability="10" />
-			<part name="electrical wire" number="5" probability="10" />
-			<part name="wire connector" number="5" probability="10" />
-
+			<part name="steel sheet" number="5" probability="10" />
+			<part name="fiberglass cloth" number="5" probability="10" />
 		</repair-parts-list>
 
-	</malfunction>
-
-
-	<!-- 2015-09-28 Added fuel cell stack failure. -->
-	<malfunction name="Fuel Cell Stack Failure">
-		<severity value="30" />
-		<probability value="1.0" />
-		<repair-time value="200.0" />
-		<emergency-repair-time value="100" />
-		<system-list>
-			<system name="vehicle" />
-			<system name="fuel power source" />
-			<system name="fuel heating source" />
-		</system-list>
-		<medical-complaint-list>
-			<medical-complaint name="Minor Burns" probability="5.0" />
-			<medical-complaint name="Laceration" probability="2.0" />
-		</medical-complaint-list>
-		<repair-parts-list>
-			<part name="fire extinguisher" number="1" probability="30" />
-			<part name="aluminum sheet" number="2" probability="10" />
-			<part name="electrical wire" number="5" probability="20"/>
-			<part name="wire connector" number="5" probability="20"/>
-			<part name="steel pipe" number="2" probability="10"/>
-			<part name="microcontroller" number="1" probability="5"/>
-			<part name="solid oxide fuel cell" number="2" probability="4"/>
-			<part name="fuel cell stack" number="1" probability="1"/>
-		</repair-parts-list>
 	</malfunction>
 
 </malfunction-list>

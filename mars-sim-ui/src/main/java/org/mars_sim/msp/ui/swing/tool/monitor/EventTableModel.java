@@ -580,7 +580,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    		.onAction(new EventHandler<ActionEvent>() {
 	    			@Override
 	    			public void handle(ActionEvent event){
-	    				System.out.println("[Placeholder] You just clicked on the message '" + message + "'.");
+	    				System.out.println("[Placeholder] The notification box '" + message + "' has just been clicked.");
 	    			}
 	    		})
 	    		.graphic(v)

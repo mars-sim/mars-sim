@@ -14,9 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
 
@@ -29,6 +31,8 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 2L;
+
+	private static Logger logger = Logger.getLogger(VehicleConfig.class.getName());
 
 	// Element names
 	private static final String VEHICLE = "vehicle";
@@ -111,30 +115,32 @@ implements Serializable {
 
 				// cargo capacities
 				Element cargoElement = vehicleElement.getChild(CARGO);
-				v.cargoCapacity = new HashMap<String,Double>();
+				v.cargoCapacityMap = new HashMap<String,Double>();
 				if (cargoElement != null) {
 					double resourceCapacity = 0D;
 					List<Element> capacityList = cargoElement.getChildren(CAPACITY);
 					for (Element capacityElement : capacityList) {
 						resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
-						
 
-						// TODO: if RESOURCE is the placeholder "dessert", will need to change it in future. 
-						/*
-						// 2015-03-09 Added to cargoCapacity map all possible desserts
-						String [] availableDesserts = PreparingDessert.getArrayOfDesserts();							
-					  	// Put together a list of available dessert 
-				        for(String n : availableDesserts) {   	
-				        	if (capacityElement.getAttributeValue(RESOURCE).equals("dessert"))
-							v.cargoCapacity.put(n, resourceCapacity);  	        	
-				        }   
-				        */					
-						
 						// toLowerCase() is crucial in matching resource name
-						v.cargoCapacity.put(capacityElement.getAttributeValue(RESOURCE).toLowerCase(), resourceCapacity);
+						String resource = capacityElement.getAttributeValue(RESOURCE).toLowerCase();
+						
+						if (resource.equalsIgnoreCase("dessert")) {	
+							v.cargoCapacityMap.put(resource, resourceCapacity);
+						}
+						
+						else {
+							AmountResource ar = AmountResource.findAmountResource(resource);
+							if (ar == null)
+								logger.severe(resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
+							else		
+								v.cargoCapacityMap.put(resource, resourceCapacity);
+						}
 						
 					}
+					
 					v.totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
+					
 				} else v.totalCapacity = 0d;
 
 				// sickbay
@@ -323,7 +329,7 @@ implements Serializable {
 	public Double getCargoCapacity(String vehicleType, String resource) {
 		//parseIfNeccessary();
 		//2015-01-05 Changed to resource.toLowerCase()
-		Double value = map.get(vehicleType.toLowerCase()).cargoCapacity.get(resource.toLowerCase());
+		Double value = map.get(vehicleType.toLowerCase()).cargoCapacityMap.get(resource.toLowerCase());
 		if (value == null) return 0d;
 		return value;
 	}
@@ -599,7 +605,7 @@ implements Serializable {
 		private double drivetrainEff,baseSpeed,emptyMass;
 		private int crewSize;
 		private double totalCapacity;
-		private Map<String,Double> cargoCapacity;
+		private Map<String,Double> cargoCapacityMap;
 		private boolean hasSickbay,hasLab,hasPartAttachments;
 		private int sickbayTechLevel,sickbayBeds;
 		private int labTechLevel,attachmentSlots;
@@ -622,7 +628,7 @@ implements Serializable {
 		 * @return {@link Double}
 		 */
 		public final double getCargoCapacity(String cargo) {
-			Double capacity = cargoCapacity.get(cargo);
+			Double capacity = cargoCapacityMap.get(cargo);
 			return (capacity == null) ? 0d : capacity;
 		}
 		///////////////////////////////////////
@@ -661,8 +667,8 @@ implements Serializable {
 			return totalCapacity;
 		}
 		/** @return the cargoCapacity */
-		public final Map<String, Double> getCargoCapacity() {
-			return cargoCapacity;
+		public final Map<String, Double> getCargoCapacityMap() {
+			return cargoCapacityMap;
 		}
 		/** @return the hasSickbay */
 		public final boolean hasSickbay() {

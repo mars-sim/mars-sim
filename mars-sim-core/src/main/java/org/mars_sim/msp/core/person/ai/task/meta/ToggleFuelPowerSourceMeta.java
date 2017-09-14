@@ -50,101 +50,102 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
 
     	double result = 0D;
         
+    	LocationSituation ls = person.getLocationSituation();
+    	
+        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
+        	return 0;
+        	
     	Settlement settlement = person.getAssociatedSettlement();
         
-        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        	
-	
-	        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
-	        // and if he has to do a EVA to repair a broken vehicle.
-	
-	        //2016-10-04 Checked for radiation events
-	    	boolean[]exposed = settlement.getExposed();
+        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
+        // and if he has to do a EVA to repair a broken vehicle.
 
-	
-			if (exposed[2]) {
-				// SEP can give lethal dose of radiation
-	            return 0;
-			}
+        //2016-10-04 Checked for radiation events
+    	boolean[]exposed = settlement.getExposed();
 
-            // Check if an airlock is available
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-	        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
-	    		return 0;
 
-            //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-            //double millisols = clock.getMillisol();
-            
-            // Check if it is getting dark
-            //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            //if (surface.getSolarIrradiance(person.getCoordinates()) < 60D && millisols > 500) {
-            //    if (!surface.inDarkPolarRegion(person.getCoordinates()))
-            //       return 0;
-            //}
+		if (exposed[2]) {
+			// SEP can give lethal dose of radiation
+            return 0;
+		}
 
-            boolean isEVA = false;        
+        // Check if an airlock is available
+        if (LocationSituation.IN_SETTLEMENT == ls
+        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+    		return 0;
 
-            try {
-                Building building = ToggleFuelPowerSource.getFuelPowerSourceBuilding(person);
-                if (building != null) {
-                    FuelPowerSource powerSource = ToggleFuelPowerSource.getFuelPowerSource(building);
-                    isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
-                    double diff = ToggleFuelPowerSource.getValueDiff(settlement, powerSource);
-                    double baseProb = diff * 10000D;
-                    if (baseProb > 100D) {
-                        baseProb = 100D;
-                    }
-                    result += baseProb;
-
-                    if (!isEVA) {
-                        // Factor in building crowding and relationship factors.
-                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-                    }
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace(System.err);
-            }
-
-            if (isEVA) {
-
-                // Crowded settlement modifier
-                if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                    if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
-                        result *= 2D;
-                    }
-                }
-            }
-
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(ToggleFuelPowerSource.class);
-            }
-
-            // Modify if tinkering is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
-                result *= 2D;
-            }
-
-	        // 2015-06-07 Added Preference modifier
-	        if (result > 0)
-	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-	    	if (exposed[0]) {
-				result = result/2D;// Baseline can give a fair amount dose of radiation
-			}
-
-	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-				result = result/4D;
-			}
-
-	        if (result < 0) result = 0;
+        //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        //double millisols = clock.getMillisol();
+        
+        // Check if it is getting dark
+        //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        //if (surface.getSolarIrradiance(person.getCoordinates()) < 60D && millisols > 500) {
+        //    if (!surface.inDarkPolarRegion(person.getCoordinates()))
+        //       return 0;
         //}
+
+        boolean isEVA = false;        
+
+        try {
+            Building building = ToggleFuelPowerSource.getFuelPowerSourceBuilding(person);
+            if (building != null) {
+                FuelPowerSource powerSource = ToggleFuelPowerSource.getFuelPowerSource(building);
+                isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+                double diff = ToggleFuelPowerSource.getValueDiff(settlement, powerSource);
+                double baseProb = diff * 10000D;
+                if (baseProb > 100D) {
+                    baseProb = 100D;
+                }
+                result += baseProb;
+
+                if (!isEVA) {
+                    // Factor in building crowding and relationship factors.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+
+        if (isEVA) {
+            // Crowded settlement modifier
+            if (LocationSituation.IN_SETTLEMENT == ls) {
+                if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
+                    result *= 2D;
+                }
+            }
+        }
+
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
+
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(ToggleFuelPowerSource.class);
+        }
+
+        // Modify if tinkering is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+            result *= 2D;
+        }
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
+    	if (exposed[0]) {
+			result = result/2D;// Baseline can give a fair amount dose of radiation
+		}
+
+    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+			result = result/4D;
+		}
+
+        if (result < 0) result = 0;
+
 
         return result;
     }

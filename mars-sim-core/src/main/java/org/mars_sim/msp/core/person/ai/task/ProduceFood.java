@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodProductionGood.java
- * @version 3.07 2015-02-02
+ * @version 3.1.0 2017-09-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -116,8 +116,7 @@ implements Serializable {
 		// Get available foodProduction foodFactory if any.
 		Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
 		if (foodProductionBuilding != null) {
-			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
-
+			foodFactory = foodProductionBuilding.getFoodProduction();
 			// Walk to foodProduction building.
 			walkToActivitySpotInBuilding(foodProductionBuilding, false);
 		}
@@ -156,7 +155,7 @@ implements Serializable {
 			Iterator<Building> j = manager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
-				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+				FoodProduction foodProductionFunction = building.getFoodProduction();
 				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
 						foodProductionFunction.getProcesses());
 				Iterator<FoodProductionProcess> k = processes.iterator();
@@ -182,7 +181,7 @@ implements Serializable {
 			Iterator<Building> j = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
-				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+				FoodProduction foodProductionFunction = building.getFoodProduction();
 				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
 						foodProductionFunction.getProcesses());
 				Iterator<FoodProductionProcess> k = processes.iterator();
@@ -321,7 +320,7 @@ implements Serializable {
 		//Iterator<Building> i = buildingList.iterator();
 		//while (i.hasNext()) {
 		//	Building building = i.next();
-			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+			FoodProduction foodProductionFunction = building.getFoodProduction();
 			if (foodProductionFunction.requiresFoodProductionWork(skill)) {
 				result.add(building);
 			}
@@ -371,7 +370,7 @@ implements Serializable {
 
 		boolean result = false;
 
-		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
+		FoodProduction foodProductionFunction = foodProductionBuilding.getFoodProduction();
 		for (FoodProductionProcess process : foodProductionFunction.getProcesses()) {
 		//Iterator<FoodProductionProcess> i = foodProductionFunction.getProcesses().iterator();
 		//while (i.hasNext()) {
@@ -400,7 +399,7 @@ implements Serializable {
 		//Iterator<Building> i = buildingList.iterator();
 		//while (i.hasNext()) {
 		//	Building building = i.next();
-			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+			FoodProduction foodProductionFunction = building.getFoodProduction();
 			if (foodProductionFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = foodProductionFunction.getTechLevel();
 			}
@@ -410,7 +409,7 @@ implements Serializable {
 		//Iterator<Building> j = buildingList.iterator();
 		//while (j.hasNext()) {
 		//	Building building = j.next();
-			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+			FoodProduction foodProductionFunction = building.getFoodProduction();
 			if (foodProductionFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
 			}
@@ -451,7 +450,7 @@ implements Serializable {
 	public static double getHighestProcessValue(int skillLevel, Building foodProductionBuilding) {
 
 		double highestProcessValue = 0D;
-		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
+		FoodProduction foodProductionFunction = foodProductionBuilding.getFoodProduction();
 		int techLevel = foodProductionFunction.getTechLevel();
 
 		for (FoodProductionProcessInfo process : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
@@ -736,12 +735,14 @@ implements Serializable {
 		chance *= foodFactory.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null)
+			if (person != null) {
 				logger.info(person.getName() + " has an accident during food production.");
-			else if (robot != null)
+                foodFactory.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
+			}
+			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident during food production.");
-
-			foodFactory.getBuilding().getMalfunctionManager().logAccidentString();
+				foodFactory.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
+			}
 		}
 	}
 

@@ -100,9 +100,9 @@
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
-		<part type="rover fuel tank" number="2" />
-		<part type="rover oxygen tank" number="2" />
-		<part type="rover water tank" number="2" />
+		<part type="fuel tank" number="2" />
+		<part type="gas tank" number="2" />
+		<part type="water tank" number="2" />
 		<part type="heating element" number="26" />
 		<part type="heat pipe" number="26" />
 		<part type="pneumatic drill" number="2" />
@@ -207,9 +207,9 @@
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
-		<part type="rover fuel tank" number="2" />
-		<part type="rover oxygen tank" number="2" />
-		<part type="rover water tank" number="2" />
+		<part type="fuel tank" number="2" />
+		<part type="gas tank" number="2" />
+		<part type="water tank" number="2" />
 		<part type="heating element" number="46" />
 		<part type="heat pipe" number="46" />
 		<part type="pneumatic drill" number="2" />
@@ -315,9 +315,9 @@
 		<part type="rover chassis panel" number="8" />
 		<part type="rover generator" number="4" />
 		<part type="rover control panel" number="4" />
-		<part type="rover fuel tank" number="4" />
-		<part type="rover oxygen tank" number="4" />
-		<part type="rover water tank" number="4" />
+		<part type="fuel tank" number="4" />
+		<part type="gas tank" number="4" />
+		<part type="water tank" number="4" />
 		<part type="heating element" number="72" />
 		<part type="heat pipe" number="72" />
 		<part type="pneumatic drill" number="4" />
@@ -423,9 +423,9 @@
 		<part type="rover chassis panel" number="14" />
 		<part type="rover generator" number="8" />
 		<part type="rover control panel" number="8" />
-		<part type="rover fuel tank" number="8" />
-		<part type="rover oxygen tank" number="8" />
-		<part type="rover water tank" number="8" />
+		<part type="fuel tank" number="8" />
+		<part type="gas tank" number="8" />
+		<part type="water tank" number="8" />
 		<part type="heating element" number="100" />
 		<part type="heat pipe" number="100" />		
 		<part type="pneumatic drill" number="6" />

@@ -62,12 +62,15 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        Settlement settlement = person.getAssociatedSettlement();
-
-        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+    	LocationSituation ls = person.getLocationSituation();
+    	
+        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
+        	return 0;
+       
+    	Settlement settlement = person.getAssociatedSettlement();
+     
         // Check if an airlock is available
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        if (LocationSituation.IN_SETTLEMENT == ls
         		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
     		return 0;
 

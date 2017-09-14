@@ -765,7 +765,7 @@ public class UnitManager implements Serializable {
 				for (String type : bigFiveMap.keySet()) {
 					int value = bigFiveMap.get(type);
 					//System.out.println(type + " : " + value);
-					person.getMind().getPersonalityTraitManager()
+					person.getMind().getTraitManager()
 					.setPersonalityTrait(PersonalityTraitType.fromString(type), value);
 				}
 			}

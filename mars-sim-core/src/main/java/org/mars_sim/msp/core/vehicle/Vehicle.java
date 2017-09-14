@@ -54,7 +54,9 @@ import org.mars_sim.msp.core.time.MarsClock;
 public abstract class Vehicle extends Unit implements Serializable,
         Malfunctionable, Salvagable, LocalBoundedObject {
 
-    private static Logger logger = Logger.getLogger(Vehicle.class.getName());
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(Vehicle.class.getName());
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, 
     		logger.getName().length());

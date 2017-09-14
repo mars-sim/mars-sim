@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -102,6 +103,9 @@ implements Serializable {
 
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
+	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+    public static AmountResource waterAR = ResourceUtil.waterAR;
+	public static AmountResource foodAR = ResourceUtil.foodAR;
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -1010,13 +1014,12 @@ implements Serializable {
 
         if (!isDessert) {
 	    	// Only life support resources are required at settlement at this time.
-	    	//AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	    	//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-	    	//AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-
-	    	if (resource.equals(VehicleMaintenance.oxygenAR)) amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
-	    	else if (resource.equals(VehicleMaintenance.waterAR)) amountPersonPerSol = personConfig.getWaterConsumptionRate();
-	    	else if (resource.equals(VehicleMaintenance.foodAR)) amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
+	    	if (resource.equals(oxygenAR)) 
+	    		amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
+	    	else if (resource.equals(waterAR)) 
+	    		amountPersonPerSol = personConfig.getWaterConsumptionRate();
+	    	else if (resource.equals(foodAR)) 
+	    		amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
         }
 
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);

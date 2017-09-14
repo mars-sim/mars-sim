@@ -349,11 +349,12 @@ implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             if (person != null) {
                 logger.fine(person.getName() + " has an accident while making dessert");
+                kitchen.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
             }
             else if (robot != null) {
                 logger.fine(robot.getName() + " has an accident while making dessert");
+                kitchen.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
             }
-            kitchen.getBuilding().getMalfunctionManager().logAccidentString();
         }
     }
 

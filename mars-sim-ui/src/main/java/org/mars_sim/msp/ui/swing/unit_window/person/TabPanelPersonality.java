@@ -326,7 +326,7 @@ extends TabPanel {
 				vboxes.remove(gauges.get(5));
 				gauges.remove(5);
 				
-				Map<PersonalityTraitType, Integer> points = person.getMind().getPersonalityTraitManager().getPersonalityTraitMap();
+				Map<PersonalityTraitType, Integer> points = person.getMind().getTraitManager().getPersonalityTraitMap();
 
 				QualityGauge g0 = gauges.get(0);
 				g0.setValue((int)(Math.round(points.get(PersonalityTraitType.OPENNESS)/10d)));

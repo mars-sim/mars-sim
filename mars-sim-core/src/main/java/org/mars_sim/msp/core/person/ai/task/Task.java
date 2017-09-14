@@ -94,7 +94,7 @@ implements Serializable, Comparable<Task> {
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
 	
-	//private HistoricalEventManager eventManager;
+	private HistoricalEventManager eventManager;
 
 	/**
 	 * Constructs a Task object.
@@ -126,7 +126,7 @@ implements Serializable, Comparable<Task> {
 		effortDriven = effort;
 		phases = new ArrayList<TaskPhase>();
 
-		//HistoricalEventManager eventManager = Simulation.instance().getEventManager();
+		eventManager = Simulation.instance().getEventManager();
 		
         Person person = null;
         Robot robot = null;
@@ -173,7 +173,9 @@ implements Serializable, Comparable<Task> {
 	            endingEvent = new TaskEvent(robot, this, EventType.TASK_FINISH, "");
 			}
 
-			Simulation.instance().getEventManager().registerNewEvent(endingEvent);
+			if (eventManager == null)
+				eventManager = Simulation.instance().getEventManager();
+			eventManager.registerNewEvent(endingEvent);
         }
     }
 

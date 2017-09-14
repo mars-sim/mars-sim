@@ -97,17 +97,18 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-        if (botTaskManager != null) {
+        if (botTaskManager != null)
         	// 2015-10-22 Added recordTask()
     		botTaskManager.recordTask();
 
-    	if (missionManager != null)
-            // 2015-10-31 Added recordMission()
-    		missionManager.recordMission();
+	    if (missionManager != null)
+	           // 2015-10-31 Added recordMission()
+	    	missionManager.recordMission();
 
+        if (botTaskManager != null)
     		// Take action as necessary.
 	        takeAction(time);
-        }
+        
 
         // I don't think robots should be changing jobs on their own. - Scott
         // Check if this robot needs to get a new job or change jobs.
@@ -142,8 +143,9 @@ implements Serializable {
                 overrideMission = robot.getSettlement().getMissionCreationOverride();
             }
 
+            boolean hasActiveTask = botTaskManager.hasActiveTask();
             // Perform a task if the robot has one, or determine a new task/mission.
-            if (botTaskManager.hasActiveTask()) {
+            if (hasActiveTask) {
                 double remainingTime = botTaskManager.performTask(time, robot
                         .getPerformanceRating());
                 if (remainingTime > 0D) {
@@ -165,9 +167,9 @@ implements Serializable {
                     }
                 }
 
-                if (botTaskManager.hasActiveTask() || hasActiveMission()) {
-                    takeAction(time);
-                }
+                //if (botTaskManager.hasActiveTask() || hasActiveMission()) {
+                //   takeAction(time);
+                //}
             }
         }
     }

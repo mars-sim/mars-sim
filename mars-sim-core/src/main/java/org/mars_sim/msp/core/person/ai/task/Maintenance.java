@@ -304,16 +304,20 @@ implements Serializable {
 
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null)
+			if (person != null) {
 	            logger.info(person.getName() + " has accident while performing maintenance on "
 	                    + entity.getNickName()
 	                    + ".");
-			else if (robot != null)
+	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
+			}
+			else if (robot != null) {
 	            logger.info(robot.getName() + " has accident while performing maintenance on "
 	                    + entity.getNickName()
 	                    + ".");
+	            entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);   
+			}
 
-            entity.getMalfunctionManager().logAccidentString();
+
         }
 
     }

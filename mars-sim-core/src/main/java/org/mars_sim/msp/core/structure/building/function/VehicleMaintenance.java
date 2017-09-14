@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 3.07 2014-10-10
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -42,9 +43,9 @@ implements Serializable {
     protected List<ParkingLocation> parkingLocations;
     private Collection<Vehicle> vehicles;
 
-	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-    public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-	public static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+    public static AmountResource waterAR = ResourceUtil.waterAR;
+	public static AmountResource foodAR = ResourceUtil.foodAR;
 
     /**
      * Constructor.

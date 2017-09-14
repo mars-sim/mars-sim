@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 3.08 2015-07-06
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -435,11 +435,12 @@ implements Serializable {
             if (RandomUtil.lessThanRandPercent(chance * time)) {
     			if (person != null) {
     	            logger.info(person.getName() + " has an accident while performing maintenance on " + luv.getName() + ".");
+    	            luv.getMalfunctionManager().createASeriesOfMalfunctions(luv.getName(), person);
     			}
     			else if (robot != null) {
     				logger.info(robot.getName() + " has an accident while performing maintenance on " + luv.getName() + ".");
+    				luv.getMalfunctionManager().createASeriesOfMalfunctions(luv.getName(), robot);
     			}
-                luv.getMalfunctionManager().logAccidentString(luv.getName());
             }
         }
     }

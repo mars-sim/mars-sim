@@ -52,13 +52,13 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-    	Settlement settlement = person.getAssociatedSettlement();
-    	
     	LocationSituation ls = person.getLocationSituation();
     	
-    	if (ls == LocationSituation.OUTSIDE)
-    		return 0;
-    	
+        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
+        	return 0;
+       
+    	Settlement settlement = person.getAssociatedSettlement();
+     
         // Determine if settlement has a garage.
         if (settlement.getBuildingManager().getBuildings(
                 FunctionType.GROUND_VEHICLE_MAINTENANCE).size() > 0) {

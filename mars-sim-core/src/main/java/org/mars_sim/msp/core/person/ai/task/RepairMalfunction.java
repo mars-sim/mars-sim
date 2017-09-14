@@ -506,14 +506,14 @@ implements Repair, Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // logger.info(person.getName() + " has accident while " + description);
-
-			if (person != null)
+  
+			if (person != null) {
 				logger.info(person.getName() + " ran into an accident while repairing "  + entity.getNickName());
-			else if (robot != null)
+                entity.getMalfunctionManager().createASeriesOfMalfunctions("malfunction repair in " + entity.getNickName(), person);
+			}
+			else if (robot != null) {
 				logger.info(robot.getName() + " ran into an accident while repairing "  + entity.getNickName());
-
-            if (entity != null) {
-                entity.getMalfunctionManager().logAccidentString("malfunction repair in " + entity.getNickName());
+                entity.getMalfunctionManager().createASeriesOfMalfunctions("malfunction repair in " + entity.getNickName(), robot);
             }
         }
     }

@@ -169,7 +169,7 @@ implements Serializable {
         Settlement settlement = building.getBuildingManager().getSettlement();
         if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
             double bestDiff = 0D;
-            ResourceProcessing processing = (ResourceProcessing) building.getFunction(FunctionType.RESOURCE_PROCESSING);
+            ResourceProcessing processing = building.getResourceProcessing();
             Iterator<ResourceProcess> i = processing.getProcesses().iterator();
             while (i.hasNext()) {
                 ResourceProcess process = i.next();
@@ -422,7 +422,7 @@ implements Serializable {
                 toggle = "on";
             }
             logger.fine(person.getName() + " turning " + toggle + " " + process.getProcessName() +
-                    " at " + settlement.getName() + ": " + building.getName());
+                    " at " + settlement.getName() + ": " + building.getNickName());
         }
 
         // Check if an accident happens during toggle process.
@@ -459,11 +459,13 @@ implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
 	            logger.info(person.getName() + " has an accident while toggling a resource process.");
+	            building.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident while toggling a resource process.");
+	            building.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
-            building.getMalfunctionManager().logAccidentString();
+
         }
     }
 

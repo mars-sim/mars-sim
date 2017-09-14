@@ -88,7 +88,6 @@ implements Serializable {
 	private Collection<MissionMember> members;
 	/** A collection of the mission's phases. */
 	private Collection<MissionPhase> phases;
-
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
 

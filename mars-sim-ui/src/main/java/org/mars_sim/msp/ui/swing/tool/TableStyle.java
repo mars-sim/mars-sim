@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -205,7 +206,11 @@ public class TableStyle extends ZebraJTable{
  * This renderer uses a delegation software design pattern to delegate
  * this rendering of the table cell header to the real default render
  **/
-class TableHeaderRenderer implements TableCellRenderer {
+class TableHeaderRenderer implements TableCellRenderer, Serializable {
+	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	private TableCellRenderer defaultRenderer;
 
 	public TableHeaderRenderer(TableCellRenderer theRenderer) {

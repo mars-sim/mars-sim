@@ -39,6 +39,7 @@ public enum UnitEventType {
 	PERFORMANCE_EVENT				("performance event"),
 	ILLNESS_EVENT					("illness event"),
 	DEATH_EVENT						("death event"),
+	BURIAL_EVENT					("burial event"),
 	RADIATION_EVENT					("radiation event"),
 
 	// from Person.java

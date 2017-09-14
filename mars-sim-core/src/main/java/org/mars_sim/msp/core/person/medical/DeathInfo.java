@@ -57,16 +57,20 @@ implements Serializable {
     private boolean bodyRetrieved = false;
 
     private String timeOfDeath;
-    /** Medical cause of death. */
-    private ComplaintType illness;
 
     private String placeOfDeath;
+    
+    /** Medical cause of death. */
+    private ComplaintType illness;
+    /** Medical problem contributing to the death. */  
+    private HealthProblem problem;
     /** Container unit at time of death. */
     private Unit containerUnit;
 
     private Coordinates locationOfDeath;
     /** the person's job at time of death. */
     private Job job;
+    
     private RobotJob robotJob;
     /** Name of mission at time of death. */
     private String mission;
@@ -88,7 +92,7 @@ implements Serializable {
      * @param person the dead person
      */
     public DeathInfo(Person person, HealthProblem problem) {
-
+    	this.problem = problem;
         this.gender = person.getGender();
 
         // Initialize data members
@@ -404,6 +408,10 @@ implements Serializable {
 
 	public boolean getBodyRetrieved() {
 		return bodyRetrieved;
+	}
+	
+	public HealthProblem getProblem() {
+		return problem;
 	}
 
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.1.0 2017-03-03
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -78,9 +78,9 @@ public class EatMeal extends Task implements Serializable {
     /** The proportion of the task for eating dessert. */
     private static final double DESSERT_EATING_PROPORTION = .25D;
     /** Percentage chance that preserved food has gone bad. */
-    private static final double PRESERVED_FOOD_BAD_CHANCE = .5D;
+    private static final double PRESERVED_FOOD_BAD_CHANCE = 1D; // in %
     /** Percentage chance that unprepared dessert has gone bad. */
-    private static final double UNPREPARED_DESSERT_BAD_CHANCE = 1D;
+    private static final double UNPREPARED_DESSERT_BAD_CHANCE = 1D; // in %
     /** Mass (kg) of single napkin for meal. */
     private static final double NAPKIN_MASS = .0025D;
 
@@ -104,10 +104,6 @@ public class EatMeal extends Task implements Serializable {
     private PhysicalCondition condition;
     
     private AmountResource unpreparedDessertAR;
-    //private static AmountResource napkinAR = ResourceUtil.napkinAR;
-    //private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
-    //private static AmountResource foodAR = ResourceUtil.foodAR;
-
 
     /**
      * Constructor.
@@ -366,6 +362,20 @@ public class EatMeal extends Task implements Serializable {
             // Take preserved food from inventory if it is available.
             if (Storage.retrieveAnResource(foodAmount, ResourceUtil.foodAR, inv, true)) {
 
+                // Consume preserved food.
+
+                // Reduce person's hunger by proportion of meal eaten.
+                // Entire meal will reduce person's hunger to 0.
+                currentHunger -= (startingHunger * mealProportion);
+                if (currentHunger < 0D) {
+                    currentHunger = 0D;
+                }
+                condition.setHunger(currentHunger);
+
+                // Add caloric energy from meal.
+                condition.addEnergy(foodAmount);
+                
+/*            	
                 // Check if preserved food has gone bad.
                 if (RandomUtil.lessThanRandPercent(PRESERVED_FOOD_BAD_CHANCE)) {
                     //if (inv == null) 
@@ -388,6 +398,8 @@ public class EatMeal extends Task implements Serializable {
                     // Add caloric energy from meal.
                     condition.addEnergy(foodAmount);
                 }
+                
+*/                
             }
             else {
                 // Not enough food available to eat.
@@ -534,7 +546,11 @@ public class EatMeal extends Task implements Serializable {
                 Inventory inv = containerUnit.getInventory();
                 // Take dessert resource from inventory if it is available.
                 if (Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true)) {
+                	// Consume unpreserved dessert.
 
+                    // Add caloric energy from dessert.
+                    condition.addEnergy(dessertAmount);
+/*                    
                     // Check if dessert resource has gone bad.
                 	//boolean badDessert = RandomUtil.lessThanRandPercent(UNPREPARED_DESSERT_BAD_CHANCE);
                 	//logger.info("badDessert is " + badDessert);
@@ -552,6 +568,7 @@ public class EatMeal extends Task implements Serializable {
                         // Add caloric energy from dessert.
                         condition.addEnergy(dessertAmount);
                     }
+*/                    
                 }
                 else {
                     // Not enough dessert resource available to eat.

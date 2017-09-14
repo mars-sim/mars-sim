@@ -476,12 +476,12 @@ extends TabPanel {
 					return String.format("%1.3f", amt); 
 				else if (pressure_btn.isSelected())
 					return String.format("%1.2f", amt); 
-				else if (moles_btn.isSelected())
-					return String.format("%1.1e", amt).replaceAll("e+0", "e"); 
+				//else if (moles_btn.isSelected())
+				//	return String.format("%1.1e", amt).replaceAll("e+0", "e"); 
 				else if (mass_btn.isSelected())
 					return String.format("%1.2f", amt);//.replaceAll("e+0", "e"); 
-				else if (temperature_btn.isSelected())
-					return String.format("%3.1f", amt); 
+				//else if (temperature_btn.isSelected())
+				//	return String.format("%3.1f", amt); 
 				else if (column == 2 || column == 6)
 					return fmt3.format(amt);
 				else if (column == 3 || column == 4 || column == 5)
@@ -500,10 +500,10 @@ extends TabPanel {
 				return air.getPercentComposition()[gas][id];
 			else if (pressure_btn.isSelected())
 				return air.getPartialPressure()[gas][id] * CompositionOfAir.kPASCAL_PER_ATM;
-			else if (temperature_btn.isSelected())
-				return air.getTemperature()[gas][id] - CompositionOfAir.C_TO_K;
-			else if (moles_btn.isSelected())
-				return air.getNumMoles()[gas][id];
+			//else if (temperature_btn.isSelected())
+			//	return air.getTemperature()[gas][id] - CompositionOfAir.C_TO_K;
+			//else if (moles_btn.isSelected())
+			//	return air.getNumMoles()[gas][id];
 			else if (mass_btn.isSelected())
 				return air.getMass()[gas][id];
 			else

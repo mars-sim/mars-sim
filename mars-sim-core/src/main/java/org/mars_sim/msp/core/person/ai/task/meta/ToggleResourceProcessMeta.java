@@ -49,9 +49,14 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
+
+    	LocationSituation ls = person.getLocationSituation();
     	
-        Settlement settlement = person.getAssociatedSettlement();
-    	   
+        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
+        	return 0;
+       
+    	Settlement settlement = person.getAssociatedSettlement();
+        
          // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
          // and if he has to do a EVA to repair a broken vehicle.
 
@@ -63,11 +68,8 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
  			// SEP can give lethal dose of radiation, out won't go outside
              return 0;
  
-
-        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
             // Check if an airlock is available
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        if (LocationSituation.IN_SETTLEMENT == ls
         		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
     		return 0;
 
@@ -110,7 +112,7 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
             if (isEVA) {
 
                 // Crowded settlement modifier
-                if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (LocationSituation.IN_SETTLEMENT == ls) {
                     if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
                         result *= 2D;
                     }

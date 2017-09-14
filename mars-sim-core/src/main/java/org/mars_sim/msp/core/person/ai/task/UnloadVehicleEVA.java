@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.07 2015-03-01
+ * @version 3.1.0 2017-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -36,6 +37,7 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -474,6 +476,21 @@ implements Serializable {
             }
         }
 
+        // Retrieve, exam and bury any dead bodies
+        if (this instanceof Crewable) {
+            Crewable crewable = (Crewable) this;
+            for (Person p : crewable.getCrew()) {
+            	if (p.isDead()) {
+            		logger.info("Retrieving the dead body of " + p + " from " + vehicle.getName()
+            			+ " parked in the vicinity of " + settlement);
+            		PhysicalCondition pc = p.getPhysicalCondition();
+            		pc.retrieveBody();
+            		pc.examBody(pc.getDeathDetails().getProblem());
+            		p.buryBody();
+            	}
+            }
+        }
+        
         if (isFullyUnloaded(vehicle)) {
             setPhase(WALK_BACK_INSIDE);
         }
