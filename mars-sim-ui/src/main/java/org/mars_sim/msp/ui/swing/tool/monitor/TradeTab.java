@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeTab.java
- * @version 3.07 2014-12-06
-
+  * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -24,10 +23,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 public class TradeTab
 extends TableTab
 implements UnitManagerListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window.

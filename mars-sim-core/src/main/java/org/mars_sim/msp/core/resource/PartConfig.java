@@ -13,13 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -53,23 +51,23 @@ public final class PartConfig implements Serializable {
 	
 	private static int new_id;
 	
-	private MarsClock marsClock;
+	private static MarsClock marsClock;
 	
-	private UnitManager unitManager;
+	private static UnitManager unitManager;
 	
 	// Data members.
 	//private Set<ItemResource> itemResources = new HashSet<ItemResource>();
-	private Set<Part> partSet = new TreeSet<Part>();
+	private static Set<Part> partSet = new TreeSet<Part>();
 
-	private Map<String, Part> namePartMap;
+	private static Map<String, Part> namePartMap;
 
-	private Map<Integer, Double> MTBF_map;
+	private static Map<Integer, Double> MTBF_map;
 
 	//private Map<Integer, Double> usage_map;
 
-	private Map<Integer, Double> reliability_map;
+	private static Map<Integer, Double> reliability_map;
 	
-	private Map<Integer, Integer> failure_map;
+	private static Map<Integer, Integer> failure_map;
 	
 	
     /**

@@ -17,12 +17,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -59,12 +57,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
-//import de.matthiasmann.twl.GUI;
-//import de.matthiasmann.twl.demo.test.TestUtils;
-//import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;
-//import de.matthiasmann.twl.theme.ThemeManager;
-//import org.mars_sim.msp.ui.swing.unit_window.structure.building.InventoryDemo;
-
 
 /**
  * The FarmingBuildingPanel class is a building function panel representing
@@ -72,12 +64,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
  */
 public class BuildingPanelFarming
 extends BuildingFunctionPanel
-implements Serializable, MouseListener {
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+implements MouseListener {
 
-	//private static final int CENTER = 0;
-	private static Logger logger = Logger.getLogger(BuildingPanelFarming.class.getName());
 	// Data members
 
 	/** The number of farmers label. */

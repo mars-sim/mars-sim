@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.social;
@@ -66,8 +65,8 @@ implements Serializable {
 	private static final double SETTLER_MODIFIER = .02D;
 
 	/** The relationship graph. */
-	private Graph relationshipGraph;
-	int count = 0;
+	private static Graph relationshipGraph;
+	private int count = 0;
 
 	/**
 	 * Constructor

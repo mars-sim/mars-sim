@@ -25,9 +25,6 @@ abstract public class UnitTableModel
 extends AbstractTableModel
 implements MonitorModel, UnitListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	/** Collection of units. */
 	private Collection<Unit> units;

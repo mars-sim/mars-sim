@@ -1,48 +1,35 @@
 /**
  * Mars Simulation Project
  * QuotationPopup.java
- * @version 3.08 2016-06-08
+ * @version 3.1.0 2017-09-14
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.javafx.quotation;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Random;
 
-//import org.reactfx.util.FxTimer;
-//import org.reactfx.util.Timer;
-//import org.reactfx.util.Duration;
-//import eu.hansolo.enzo.notification.NotifierBuilder;
-//import eu.hansolo.enzo.notification.Notification.Notifier;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.quotation.Quotation;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
-import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.notification.PNotification;
+//import org.mars_sim.msp.ui.javafx.notification.PNotification;
 
 import javafx.stage.Stage;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+//import javafx.animation.KeyFrame;
+//import javafx.animation.Timeline;
 import javafx.geometry.Pos;
-import javafx.scene.image.Image;
-import javafx.util.Duration;
+//import javafx.scene.image.Image;
+//import javafx.util.Duration;
 
 
 /** The Quotation class creates a quotation in proper format for use by MainScene
  */
-public class QuotationPopup implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+@SuppressWarnings("restriction")
+public class QuotationPopup {
 
 	//private static final int SIZE_ICON = 32;
 	//private static final int BASE_HEIGHT = 70;

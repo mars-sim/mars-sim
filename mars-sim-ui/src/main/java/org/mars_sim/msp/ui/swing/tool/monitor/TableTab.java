@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -19,30 +18,25 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.UIConfig;
+
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -51,10 +45,6 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
  */
 abstract class TableTab
 extends MonitorTab {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private JTableHeader header;
 	//private TableHeaderRenderer theRenderer;
 

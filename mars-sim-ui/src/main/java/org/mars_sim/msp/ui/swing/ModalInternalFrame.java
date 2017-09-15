@@ -18,7 +18,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * An internal frame that supports modal behavior.
@@ -26,9 +25,6 @@ import org.mars_sim.msp.core.structure.Settlement;
  * https://community.oracle.com/thread/1358431?start=0&tstart=0
  */
 public abstract class ModalInternalFrame extends JInternalFrame {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
 
     // Data members
     boolean modal = false;

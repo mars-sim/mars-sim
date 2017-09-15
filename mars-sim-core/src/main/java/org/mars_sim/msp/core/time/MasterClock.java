@@ -99,13 +99,13 @@ public class MasterClock implements Serializable { // Runnable,
 	//private double time_ratio;
 
 	/** Martian Clock. */
-	private MarsClock marsTime;
+	private static MarsClock marsTime;
 	/** Initial Martian time. */
-	private MarsClock initialMarsTime;
+	private static MarsClock initialMarsTime;
 	/** Earth Clock. */
-	private EarthClock earthTime;
+	private static EarthClock earthTime;
 	/** Uptime Timer. */
-	private UpTimer uptimer;
+	private static UpTimer uptimer;
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
 
@@ -113,9 +113,9 @@ public class MasterClock implements Serializable { // Runnable,
 
 	private transient ThreadPoolExecutor clockListenerExecutor;
 
-	private Simulation sim;
+	private static Simulation sim;
 	
-	private SimulationConfig config;
+	private static SimulationConfig config;
 
     /**
      * Constructor
@@ -131,6 +131,7 @@ public class MasterClock implements Serializable { // Runnable,
 
         // Create a Martian clock
         marsTime = new MarsClock(config.getMarsStartDateTime());
+        
         initialMarsTime = (MarsClock) marsTime.clone();
 
         // Create an Earth clock

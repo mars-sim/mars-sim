@@ -92,14 +92,14 @@ implements Serializable, LifeSupportType, Objective {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
-	/** Normal air pressure (Pa) */
-	private static final double NORMAL_AIR_PRESSURE = 101_325D;
+	/** Normal air pressure [in kPa] */
+	private static final double NORMAL_AIR_PRESSURE = 101.325D;
+	
 	/** Normal temperature (celsius) */
-	private static final double NORMAL_TEMP = 22.5D;
+	//private static final double NORMAL_TEMP = 22.5D;
 	// maximum & minimal acceptable temperature for living space (arbitrary)
-	private static final double MIN_TEMP = -15.0D;
-
-	private static final double MAX_TEMP = 45.0D;
+	//private static final double MIN_TEMP = -15.0D;
+	//private static final double MAX_TEMP = 45.0D;
 
 	public static final int SUPPLY_DEMAND_REFRESH = 10;
 
@@ -121,6 +121,10 @@ implements Serializable, LifeSupportType, Objective {
 
 	public static final double MIN_WATER_RESERVE = 400D; // per person
 
+	public static final double SAFETY_TEMPERATURE = 7;
+	
+	public static final double SAFETY_PRESSURE = 20;
+	
 	public static double water_consumption;
 
 	public static double minimum_air_pressure;
@@ -132,7 +136,7 @@ implements Serializable, LifeSupportType, Objective {
 	private int initialPopulation;
 	private int initialNumOfRobots;
 	private int scenarioID;
-	private int solCache = 1, counter30 = 1;
+	private int solCache = 1;//, counter30 = 1;
 	private int numShift;
 	private int numA; // number of people with work shift A
 	private int numB; // number of people with work shift B
@@ -180,6 +184,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	private boolean[] exposed = {false, false, false};
 
+	private double[][] life_support_value = new double[2][7];
+	
 	private String sponsor;
 
 	private String objectiveName;
@@ -324,18 +330,21 @@ implements Serializable, LifeSupportType, Objective {
 
 		//inv = getInventory();
 		unitManager = Simulation.instance().getUnitManager();
-
+		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		water_consumption = personConfig.getWaterConsumptionRate();
         minimum_air_pressure = personConfig.getMinAirPressure();
 
+        life_support_value = settlementConfig.loadLifeSupportRequirements();
+        
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
-/*	
+	
 		// 2017-05-24 initialize inventory of this building for resource storage 
 		Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
 		Iterator<AmountResource> i3 = resources.iterator();
@@ -345,12 +354,12 @@ implements Serializable, LifeSupportType, Objective {
 			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
 			if (resourceCapacity >= 0) {
 				double max = getInventory().getTotalAmountResourcesStoredCache(false);
-				System.out.println(ar.getName() + "'s max : " + max);
+				//System.out.println(ar.getName() + "'s max : " + max);
 				//getInventory().storeAmountResource(ar, 0, true);
 				getInventory().addAmountResourceTypeCapacity(ar, max);	
 			}
 		}
-*/
+
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
 		// Initialize building connector manager.
@@ -518,12 +527,9 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public int getPopulationCapacity() {
 		int result = 0;
-		Iterator<Building> i = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			LivingAccommodations livingAccommodations = (LivingAccommodations) building
-					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
-			result += livingAccommodations.getBeds();
+		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+		for (Building building : bs) {
+			result += building.getLivingAccommodations().getBeds();
 		}
 
 		return result;
@@ -532,12 +538,9 @@ implements Serializable, LifeSupportType, Objective {
 	// 2016-01-12 Added getSleepers()
 	public int getSleepers() {
 		int result = 0;
-		Iterator<Building> i = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			LivingAccommodations livingAccommodations = (LivingAccommodations) building
-					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
-			result += livingAccommodations.getSleepers();
+		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+		for (Building building : bs) {
+			result += building.getLivingAccommodations().getSleepers();
 		}
 
 		return result;
@@ -546,12 +549,9 @@ implements Serializable, LifeSupportType, Objective {
 	// 2016-01-12 Added getDesignatedBeds()
 	public int getTotalNumDesignatedBeds() {
 		int result = 0;
-		Iterator<Building> i = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			LivingAccommodations livingAccommodations = (LivingAccommodations) building
-					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
-			result += livingAccommodations.getBedMap().size();
+		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+		for (Building building : bs) {
+			result += building.getLivingAccommodations().getBedMap().size();
 		}
 
 		return result;
@@ -640,16 +640,20 @@ implements Serializable, LifeSupportType, Objective {
 	public int getRobotCapacity() {
 		int result = 0;
 		int stations = 0;
-		Iterator<Building> i = buildingManager.getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			result++;
-		}
-		Iterator<Building> j = buildingManager.getBuildings(FunctionType.ROBOTIC_STATION).iterator();
-		while (j.hasNext()) {
-			Building building = j.next();
-			RoboticStation roboticStations = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
-			stations += roboticStations.getSlots();
+		//Iterator<Building> i = buildingManager.getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
+		//while (i.hasNext()) {
+		//	Building building = i.next();
+		//List<Building> bs = buildingManager.getBuildings();
+		//for (Building b : bs) {
+		//	result++;
+		//}
+		//result = bs.size();
+		//Iterator<Building> j = buildingManager.getBuildings(FunctionType.ROBOTIC_STATION).iterator();
+		//while (j.hasNext()) {
+		//	Building building = j.next();
+		List<Building> bs = buildingManager.getBuildings(FunctionType.ROBOTIC_STATION);
+		for (Building b : bs) {
+			stations += b.getRoboticStation().getSlots();
 			// stations++;
 		}
 		// stations = stations * 2;
@@ -748,15 +752,17 @@ implements Serializable, LifeSupportType, Objective {
 
 			// TODO: check against indoor air pressure
 			double p = getAirPressure();
-			if (p <= minimum_air_pressure) {// 25331.25)// NORMAL_AIR_PRESSURE) ?
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D, null);
+			//if (p <= minimum_air_pressure) {// 25331.25)// NORMAL_AIR_PRESSURE) ?
+			//System.out.println("life_support_req[0][0] is " + life_support_req[0][0]);
+			//System.out.println("life_support_req[1][0] is " + life_support_req[1][0]);
+			if (p < life_support_value[0][0] - SAFETY_PRESSURE || p > life_support_value[1][0] + SAFETY_PRESSURE) {	
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D + " kPa", null);
 				return false;
 			}
-			// result = false;
-			// TODO: check if this is working
-			// 2014-11-28 Added MAX_TEMP
-			double t = currentTemperature;//computeTemperature();
-			if (t < MIN_TEMP || t > MAX_TEMP) {
+
+			double t = currentTemperature;
+			if (t < life_support_value[0][4] - SAFETY_TEMPERATURE || t > life_support_value[1][4] + SAFETY_TEMPERATURE) {
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, this.getName() + " detected out-of-range temperature at " + Math.round(p *10D)/10D + " C", null);
 				return false;
 			}
 			// result = false;
@@ -794,8 +800,8 @@ implements Serializable, LifeSupportType, Objective {
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
 			//getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
-			getInventory().addAmountDemandTotalRequest(oxygenAR);
-			getInventory().addAmountDemand(oxygenAR, oxygenTaken);
+			//getInventory().addAmountDemandTotalRequest(oxygenAR);
+			//getInventory().addAmountDemand(oxygenAR, oxygenTaken);
 
 			double carbonDioxideProvided = oxygenTaken;
 			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
@@ -804,7 +810,7 @@ implements Serializable, LifeSupportType, Objective {
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
 			//getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
-			getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+			//getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
 		}
         catch (Exception e) {
         	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing O2/removing CO2: " 
@@ -832,7 +838,6 @@ implements Serializable, LifeSupportType, Objective {
 			getInventory().retrieveAmountResource(waterAR, waterTaken);
 			getInventory().addAmountDemandTotalRequest(waterAR);
 			getInventory().addAmountDemand(waterAR, waterTaken);
-
 		}
 	    catch (Exception e) {
 	    	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing H2O needs: " + e.getMessage(), null);
@@ -849,9 +854,7 @@ implements Serializable, LifeSupportType, Objective {
 		double result = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
 		int size = buildings.size();
-		Iterator<Building> k = buildings.iterator();
-		while (k.hasNext()) {
-			Building b = k.next();
+        for (Building b : buildings) { 
 			int id = b.getInhabitableID();
 			double [] tp = compositionOfAir.getTotalPressure();
 			double p = tp[id];
@@ -863,7 +866,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the air pressure of the life support system.
-	 * @return air pressure [Pa] (not kPa)
+	 * @return air pressure [in kPa] (not Pa)
 	 */
 	public double getAirPressure() {
 		return currentPressure;
@@ -882,10 +885,8 @@ implements Serializable, LifeSupportType, Objective {
 
 		double total_t_area = 0;
 		double total_area = 0;
-        Iterator<Building> i = buildings.iterator();
-
-        while (i.hasNext()) {
-            Building b = i.next();
+		
+        for (Building b : buildings) {    
             double a = b.getFloorArea();
             double t = b.getCurrentTemperature();
             total_area = total_area + a;
@@ -961,9 +962,7 @@ implements Serializable, LifeSupportType, Objective {
 	public void timePassing(double time) {
 		
 		//currentShift = getCurrentSettlementShift();
-				
-		outside_temperature = weather.getTemperature(location);
-				
+								
 		//inv = getInventory();
 /*
         int m = (int) marsClock.getMillisol();
@@ -1040,9 +1039,11 @@ implements Serializable, LifeSupportType, Objective {
 	    // 2015-12-29 Added CompositionOfAir
 	    compositionOfAir.timePassing(time);
 
-	    currentPressure = computeTotalPressure() *1000D;
+	    currentPressure = computeTotalPressure() ;
 	    
 	    currentTemperature = computeTemperature();
+
+		outside_temperature = weather.getTemperature(location);
 
 	    remainder = millisols % RESOURCE_UPDATE_FREQ ;
 	    if (remainder == 5) {

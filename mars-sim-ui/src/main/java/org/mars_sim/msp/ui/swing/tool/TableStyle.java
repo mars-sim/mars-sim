@@ -8,31 +8,17 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.Serializable;
-
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.MatteBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.javafx.MainScene;
 
 public class TableStyle extends ZebraJTable{
 
-	private static final long serialVersionUID = 1L;
 	private static JTableHeader theHeader;
-	private static TableHeaderRenderer theRenderer;
+	//private static TableHeaderRenderer theRenderer;
 	private static Color border;// = Color.orange;
 	private static Color hBack;// = new Color(205, 133, 63); // 205, 133, 63 mud orange
 	private static Color hFore;// = new Color(255, 255, 120); // 255, 255, 120 very light yellow
@@ -171,8 +157,8 @@ public class TableStyle extends ZebraJTable{
 
 	    // Get the TableColumn header to display sorted column
 	    theHeader = table.getTableHeader();
-	    theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
-	    theHeader.setDefaultRenderer(theRenderer);
+	    //theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
+	    //theHeader.setDefaultRenderer(theRenderer);
 	    // 2017-01-19 disable this will allow a gradient color on the header
 	    //theHeader.setOpaque(false);
 		theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
@@ -202,54 +188,3 @@ public class TableStyle extends ZebraJTable{
 
 }
 
-/**
- * This renderer uses a delegation software design pattern to delegate
- * this rendering of the table cell header to the real default render
- **/
-class TableHeaderRenderer implements TableCellRenderer, Serializable {
-	
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private TableCellRenderer defaultRenderer;
-
-	public TableHeaderRenderer(TableCellRenderer theRenderer) {
-		defaultRenderer = theRenderer;
-	}
-
-
-	/**
-	 * Renderer the specified Table Header cell
-	 **/
-	public Component getTableCellRendererComponent(JTable table,
-			Object value,
-			boolean isSelected,
-			boolean hasFocus,
-			int row,
-			int column) {
-
-		Component theResult = defaultRenderer.getTableCellRendererComponent(
-				table, value, isSelected, hasFocus,
-				row, column);
-
-		// useful For JTables in person unit windows
-		if (theResult instanceof JLabel) {
-			// Must clear the icon if not sorted column. This is a renderer
-			// class used to render each column heading in turn.
-			JLabel cell = (JLabel) theResult;
-			//cell.setHorizontalAlignment(SwingConstants.CENTER); // not useful
-			//cell.setHorizontalAlignment(JLabel.CENTER); // not useful
-
-			// 2014-12-17 Added
-			cell.setOpaque(true);
-			//cell.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
-			//cell.setForeground(Color.WHITE);
-			//cell.setBackground(new Color(255, 248, 220)); // 255 248 220 cornsilk1
-			cell.setBorder(new MatteBorder(1, 1, 0, 0, TableStyle.getBorderColor()));
-
-		}
-
-
-		return theResult;
-	}
-}

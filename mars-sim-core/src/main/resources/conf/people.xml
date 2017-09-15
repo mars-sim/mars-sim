@@ -8,44 +8,61 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 <people-configuration>
 
-	<!-- The metabolic load or the average amount of oxygen (kg) breathed by a person on each Martian Sol -->
-	<!-- Previously called oxygen-consumption-rate -->
-
-	<!-- Total surface requirement for a crew of 3 during a 500-day surface stay based on
-	nominal	activity is ~1260 kg of O2-->
-
+	<!-- The average amount of oxygen breathed in by a person on each Sol 
+	     for low, nominal & high metabolic activities -->
+	<!-- Default: 0.78, 0.84, 0.96 [in kg] -->	
 	<low-activity-metaboic-load-o2-consumption-rate value="0.78" />
 	<nominal-activity-metaboic-load-o2-consumption-rate value="0.84" />
 	<high-activity-metaboic-load-o2-consumption-rate value="0.96" />
+	<!-- e.g. total surface requirement for a crew of 3 during a 500-day surface 
+	stay based on nominal activity is ~1260 kg of O2-->
+
+	<!-- The average amount of carbon dioxide expelled by a person on each 
+	     Sol for high metabolic activities -->
+	<!-- Default: 1.0433 [in kg] -->	
+	<co2-expelled-rate value="1.0433" />
+	<!-- Note: this is in contrast with the value of 700 to 900 mL CO2 exhalled 
+	     due to norminal activity. 
+	https://www.globe.gov/explore-science/scientists-blog/archived-posts/sciblog/index.html_p=183.html 
+	-->
 
 
-	<!-- The normal average amount of water (kg) drank by a person on each Martian Sol -->
+	<!-- The normal average amount of water drank by a person on each Sol -->
 	<!-- Default: 4.0 -->
 	<water-consumption-rate value="4.0" />
 
-	<!-- The normal average amount (kg) of water usage (cleaning, shower, toilet, etc.) by a person each Martian Sol -->
+	<!-- The normal average amount (kg) of water usage (cleaning, shower, 
+	toilet, etc.) by a person each Martian Sol -->
 	<!-- This compares with ~288 kg water usage per person per day in US-->
 	<!-- Note : 1 US gallon = 3.79 kg or liter (water)-->
-	<!-- Instead of consuming an average of 50 liters to take a shower (typical on Earth), denizens of the ISS uses < 4 liters to bathe. -->
-	<!-- Default: 26.0 -->
-	<water-usage-rate value="26.0" />
+	<!-- Instead of consuming an average of 50 liters to take a shower 
+	(typical on Earth), denizens of the ISS uses < 4 liters to bathe. -->
+	<!-- Default: 10.0 -->
+	<water-usage-rate value="10.0" />
 
-	<!-- The fictitious ratio denoting the amount of grey water and black water generated per unit water usage-->
-	<!-- Default: 4.0. This translates to 80% grey water and 20% black water (OR 4 to 1) -->
+	<!-- The fictitious ratio denoting the amount of grey water and black 
+	water generated per unit water usage-->
+	<!-- Default: 4.0. This translates to 80% grey water and 20% black water 
+	(OR 4 to 1) -->
 	<grey-to-black-water-ratio value="4.0" />
 
-	<!-- The normal average amount of dessert (kg) in dry weight eaten by a person on each Martian Sol -->
-	<!-- Default: 0.3 dry Weight (arbitrary), note that beverage has arbitrary predefined weight-->
+	<!-- The normal average amount of dessert (kg) in dry weight eaten by a 
+	person on each Martian Sol -->
+	<!-- Default: 0.3 dry Weight (arbitrary), note that beverage has arbitrary 
+	predefined weight-->
 	<dessert-consumption-rate value="0.3" />
 
-	<!-- The normal average amount of food (kg) in dry weight eaten by a person on each Martian Sol -->
+	<!-- The normal average amount of food (kg) in dry weight eaten by a 
+	person on each Martian Sol -->
 	<!-- Default: 0.62 dry Weight -->
 	<food-consumption-rate value="0.62" />
 
 	<!-- TODO: account for carbohydrates & protein content
 	(1). http://settlement.arc.nasa.gov/75SummerStudy/Chapt3.html#Food
-		A heavy workload requires about 3000 Cal/day...consist of 2000 g of water, 470 g dry weight of various carbohydrates and fats,
-		60 to 70 g dry weight of proteins, and adequate quantities of various minerals and vitamins
+		A heavy workload requires about 3000 Cal/day...consist of 2000 g of 
+		water, 470 g dry weight of various carbohydrates and fats,
+		60 to 70 g dry weight of proteins, and adequate quantities of various 
+		minerals and vitamins
 	(2). http://settlement.arc.nasa.gov/Contest/Results/96/winner/seis.html#HUMAN
 			Food solids: 0.62Kg ,  Water in food: 1.15Kg
 	(3). Food energy per mass: http://en.wiki2.org/wiki/Food_energy
@@ -95,9 +112,9 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default: 1.5 -->
 	<starvation-start-time value="1.5" />
 
-	<!-- Minimum air pressure (Pa) a person can withstand without harm -->
-	<!-- Default: 25331.25 -->
-	<min-air-pressure value="25331.25" />
+	<!-- Minimum air pressure (kPa) a person can withstand without harm -->
+	<!-- Default: 25.33125 -->
+	<min-air-pressure value="25.33125" />
 
 	<!-- Number of millisols a person can survive in decompression -->
 	<!-- Note: 1 millisol = 88.77 seconds -->

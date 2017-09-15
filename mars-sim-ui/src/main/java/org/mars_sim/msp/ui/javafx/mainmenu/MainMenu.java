@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,9 +31,9 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
+//import javafx.scene.control.Alert;
+//import javafx.scene.control.Alert.AlertType;
+//import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -46,10 +45,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
+//import javafx.stage.Modality;
 import javafx.stage.Screen;
 
-import org.mars_sim.msp.core.Msg;
+//import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
@@ -60,14 +59,10 @@ import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 
-//import com.jfoenix.controls.JFXButton;
-//import com.jfoenix.controls.JFXDialog;
-
-
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction"})
 public class MainMenu {
 
 	// ------------------------------ FIELDS ------------------------------

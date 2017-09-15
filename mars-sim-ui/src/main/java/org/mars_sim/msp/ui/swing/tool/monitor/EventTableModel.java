@@ -43,9 +43,6 @@ public class EventTableModel
 extends AbstractTableModel
 implements MonitorModel, HistoricalEventListener, ClockListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	 /** default logger.   */
 	//private static Logger logger = Logger.getLogger(EventTableModel.class.getName());
 

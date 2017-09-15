@@ -32,9 +32,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  */
 class TableProperties extends JInternalFrame {
 
-    /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
     // Data members
 	/** True if window is open. */
 	protected boolean opened;

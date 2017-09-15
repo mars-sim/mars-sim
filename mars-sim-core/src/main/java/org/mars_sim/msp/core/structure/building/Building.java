@@ -348,6 +348,7 @@ LocalBoundedObject, InsidePathLocation {
 		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel"))	{
 			length = l;
 			width = buildingConfig.getWidth(buildingType);
+			//logger.info(nickName + "'s length and width : " + length + " x " + width);
 		}
 		else {
 			width = buildingConfig.getWidth(buildingType);

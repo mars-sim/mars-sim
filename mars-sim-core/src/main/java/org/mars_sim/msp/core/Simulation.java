@@ -150,29 +150,25 @@ implements ClockListener, Serializable {
 
     // Intransient data members (stored in save file)
     /** Planet Mars. */
-    private Mars mars;
+    private static Mars mars;
     /** The malfunction factory. */
-    private MalfunctionFactory malfunctionFactory;
+    private static MalfunctionFactory malfunctionFactory;
     /** Manager for all units in simulation. */
-    private UnitManager unitManager;
+    private static UnitManager unitManager;
     /** Mission controller. */
-    private MissionManager missionManager;
+    private static MissionManager missionManager;
     /** Manages all personal relationships. */
-    private RelationshipManager relationshipManager;
+    private static RelationshipManager relationshipManager;
     /** Medical complaints. */
-    private MedicalManager medicalManager;
+    private static MedicalManager medicalManager;
     /** Master clock for the simulation. */
-    private MasterClock masterClock;
+    private static MasterClock masterClock;
     /** Manages trade credit between settlements. */
-    private CreditManager creditManager;
+    private static CreditManager creditManager;
     /** Manages scientific studies. */
-    private ScientificStudyManager scientificStudyManager;
+    private static ScientificStudyManager scientificStudyManager;
     /** Manages transportation of settlements and resupplies from Earth. */
-    private TransportManager transportManager;
-    /** Manages resources. */
-    //private static ResourceUtil resourceUtil;// = ResourceUtil.getInstance();
-    //private SimulationConfig simulationConfig;// = SimulationConfig.instance();
-	//public JConsole jc;
+    private static TransportManager transportManager;
 
     /**
      * Private constructor for the Singleton Simulation. This prevents instantiation from other classes.
@@ -698,9 +694,10 @@ implements ClockListener, Serializable {
 			xzout.finish();
 
 
-        } catch (IOException e){
+        } catch (Exception e){
             logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
-            throw e;
+            e.printStackTrace();
+            //throw e;
 
         //} finally {
         //    if (oos != null) {
@@ -713,10 +710,11 @@ implements ClockListener, Serializable {
 		uncompressed = null;
         //fis.close(); // fis closed automatically
         //fos.close(); // fos closed automatically
-        if (oos != null) {
+        if (oos != null)
             oos.close();
-        }
-		xzout.close();
+        
+        if (xzout != null)
+        	xzout.close();
 
         sim.proceed();
 

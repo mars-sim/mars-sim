@@ -9,17 +9,13 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -39,9 +35,6 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 //2015-10-18 Switched from extending JDialog to JinternalFrame
 public class ColumnSelector
 extends ModalInternalFrame {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private final static String PIE_MESSAGE = Msg.getString("ColumnSelector.singleColumn"); //$NON-NLS-1$
 	private final static String BAR_MESSAGE = Msg.getString("ColumnSelector.multipleColumns"); //$NON-NLS-1$

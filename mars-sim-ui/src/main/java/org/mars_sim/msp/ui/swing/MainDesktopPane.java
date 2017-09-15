@@ -81,12 +81,11 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  * It contains all tool and unit windows, and is itself contained,
  * along with the tool bars, by the main window.
  */
+@SuppressWarnings("restriction")
 public class MainDesktopPane
 extends JDesktopPane
 implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 

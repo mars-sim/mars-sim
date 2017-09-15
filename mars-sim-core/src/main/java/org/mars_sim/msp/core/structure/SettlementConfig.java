@@ -196,12 +196,14 @@ implements Serializable {
 	public double[][] loadLifeSupportRequirements() {
 
 		if (life_support_values[0][0] != 0) {
+			// testing only the value at [0][0]
 			return life_support_values;
 		}
 
 		else {
+
 			Element root = settlementDoc.getRootElement();
-			Element req = root.getChild(LIFE_SUPPORT_REQUIREMENTS);
+			Element req = (Element) root.getChild(LIFE_SUPPORT_REQUIREMENTS);
 
 			String [] types = new String[] {
 					TOTAL_PRESSURE,
@@ -212,28 +214,31 @@ implements Serializable {
 					RELATIVE_HUMIDITY,
 					VENTILATION};
 
-			for (int i = 0; i < 7; i++) {
-				life_support_values = getValues(req, types[i], i);
+			for (int j = 0; j < 2; j++) {
+				for (int i = 0; i < 7; i++) {
+					 double t[] = getValues(req, types[i]);
+					 life_support_values[j][i] = t[j];
+				}
 			}
-
+			
 			return life_support_values;
 		}
     }
 
-    public double[][] getValues(Element element, String name, int i) {
-    	double[][] result = new double[2][7];
+    public double[] getValues(Element element, String name) {
+		Element el = (Element) element.getChild(name);
 
-		Element e1 = (Element) element.getChild(name);
-
-		result[0][i] = Double.parseDouble(e1.getAttributeValue(LOW));
+		double a = Double.parseDouble(el.getAttributeValue(LOW));
 		//if (result[0] < 1.0 || result[0] > 15.0 )
 		//	result[0] = 101.0;
+		//System.out.println(a);
 
-		result[1][i] = Double.parseDouble(e1.getAttributeValue(HIGH));
+		double b = Double.parseDouble(el.getAttributeValue(HIGH));
 		//if (result[0] < 1.0 || result[0] > 15.0 )
 		//	result[0] = 99.0;
+		//System.out.println(b);
 
-		return result;
+		return new double[] {a,b};
 /*
 		TOTAL_PRESSURE; // low="99.9" high="102.7" />
 		PARTIAL_PRESSURE_OF_O2 ; //low="19.5" high="23.1" />

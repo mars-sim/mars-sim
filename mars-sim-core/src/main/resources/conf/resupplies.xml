@@ -39,7 +39,8 @@
 		<!-- Resource provided in this resupply. -->
 		<!-- type: the type of resource (see resources.txt) -->
 		<!-- amount: the amount of the resource (kg) -->
-		<resource name="hydrogen" amount="1000.0" />
+		<resource name="hydrogen" amount="2000.0" />
+		<resource name="methane" amount="2000.0" />
 		<resource name="food" amount="1657.0" />
 
 		<!-- Part packages (see part_packages.xml) -->

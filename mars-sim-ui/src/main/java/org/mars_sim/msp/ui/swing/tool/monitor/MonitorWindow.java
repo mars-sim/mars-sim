@@ -10,25 +10,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -49,14 +41,12 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.jidesoft.plaf.LookAndFeelFactory;
-import com.jidesoft.plaf.UIDefaultsLookup;
 import com.jidesoft.swing.JideTabbedPane;
 import com.jidesoft.swing.Searchable;
 import com.jidesoft.swing.SearchableBar;
-//import com.jidesoft.swing.SearchableBar;
+
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
-import com.jidesoft.utils.WildcardSupport;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables
@@ -66,8 +56,6 @@ public class MonitorWindow
 extends ToolWindow
 implements TableModelListener, ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	final private static int STATUSHEIGHT = 25;
 

@@ -28,9 +28,6 @@ public class EventFilter
 extends JInternalFrame
 implements ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private EventTableModel model;
 	private JCheckBox malfunctionCheck;

@@ -430,6 +430,13 @@ implements Serializable {
 	    		//logger.warning("Just ran out of " + name);
 	    		result = false; // not enough for the requested amount
 	    	}
+	    	else if (requestedAmount < 0) {
+	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+	    		    	"(str) Attempting to retrieve zero amount of " + ResourceUtil.findAmountResource(name).getName() 
+	    		    	+ " in " + inv.getOwner() 
+	    		    	, null);
+	    		result = false;
+	    	}
 	    	else {
 	    		if (isRetrieving) {
 		    		inv.retrieveAmountResource(nameAR, requestedAmount);
@@ -471,6 +478,13 @@ implements Serializable {
 	     		//requestedAmount = amountStored;
 	     		// TODO: how to report it only 3 times and quit the reporting ?
 	    		//logger.warning("Just ran out of " + name);
+	    		result = false;
+	    	}
+	    	else if (amount < 0) {
+	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+	    		    	"(AR) Attempting to retrieve zero amount of " + ar.getName() 
+	    		    	+ " in " + inv.getOwner() 
+	    		    	, null);
 	    		result = false;
 	    	}
 	    	else {

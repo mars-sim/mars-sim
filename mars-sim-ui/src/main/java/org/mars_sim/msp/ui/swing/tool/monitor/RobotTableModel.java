@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
- * RobotTableModel.javaTableModel.java
- * @version 3.07 2015-01-08
-
- * @author Barry Evans
+ * RobotTableModel.java
+ * @version 3.1.0 2017-09-14
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -31,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
@@ -47,12 +45,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 public class RobotTableModel
 extends UnitTableModel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	//private static final Logger logger = Logger.getLogger(RobotTableModel.class.getName());
-
-	private static MainDesktopPane desktop;
 
 	// Column indexes
 	/** Robot name column. */
@@ -178,9 +171,6 @@ extends UnitTableModel {
 		setSource(unitManager.getRobots());
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-
-		//2014-12-30 Added desktop
-		this.desktop = desktop;
 
 	}
 

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.08 2015-07-02
-
+ * @version 3.1.0 2017-09-14
  * @author Barry Evans
  */
 
@@ -31,7 +30,6 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
-import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -42,7 +40,6 @@ import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults the

@@ -1,18 +1,16 @@
 /**
  * Mars Simulation Project
  * Heating.java
- * @version 3.1.0 2018-08-16
+ * @version 3.1.0 2017-09-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
@@ -24,7 +22,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -89,9 +86,8 @@ implements Serializable {
     /**  convert meters to feet  */
 	private static final double M_TO_FT = 3.2808399;//10.764;
 	/**  Specific Heat Capacity = 4.0 for a typical U.S. house */
-	private static final double SHC = 6.0; //in BTU/ sq ft / F
-	/**  R-value is a measure of thermal resistance, or ability of heat to transfer from hot to cold, through materials such as insulation */
-	//private static final double R_value = 30;
+	private static final double SHC = 6.0; // [in BTU / sq ft / °F]
+
 	// Building Loss Coefficient (BLC) is 1.0 for a typical U.S. house 
 	//private static double BLC = 0.2;
 
@@ -106,7 +102,12 @@ implements Serializable {
 	 * The U-value is the thermal transmittance (reciprocal of R-value)
 	 * Note that Heat Loss = (1/R-value)(surface area)(∆T) 
 	 * */
-	private static double U_value = 0.07; //1/R_value; // U values are in [Btu/°F/ft2/hr]
+	private static double U_value = 0.07; // = 1/R_value; 
+	// U values are in [Btu/°F/ft2/hr]
+	// or = 0.3975 [Watts/m^2/°K] (by multiplying by 5.678)
+
+	/**  R-value is a measure of thermal resistance, or ability of heat to transfer from hot to cold, through materials such as insulation */
+	//private static final double R_value = 30;
 	
     private static double U_value_area_crack_length, U_value_area_crack_length_for_airlock;
     
@@ -602,7 +603,10 @@ implements Serializable {
 		}		
 		//if (isGreenhouse) System.out.println(building.getNickName() + "'s solarHeatLoss : " + Math.round(solarHeatLoss*10_000D)/10_000D + " kW");
 
-		// (2e) CALCULATE TOTAL HEAT LOSS	
+		// (2e) At high RH, the air has close to the maximum water vapor that it can hold, 
+		// so evaporation, and therefore heat loss, is decreased.
+		
+		// (2f) CALCULATE TOTAL HEAT LOSS	
 		double heatLoss = structuralLoss // in kBTU/hr
 						+ kBTU_PER_HOUR_PER_kW * (ventilationHeatLoss + heatAirlock + solarHeatLoss); // in kBTU/hr
 		
@@ -1027,8 +1031,8 @@ implements Serializable {
 		// Adjust the current temperature
 		t += dt;
 		// Safeguard against anomalous dt that would have crashed mars-sim
-		if (t > 40)
-			t = 40;
+		if (t > 60)
+			t = 60;
 		else if (t < t_out)
 			t = t_out;
 		

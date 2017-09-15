@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.1.0 2018-08-19
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,19 +57,19 @@ public class SurfaceFeatures implements Serializable {
     private transient TerrainElevation terrainElevation;
     private MineralMap mineralMap;
     private AreothermalMap areothermalMap;
-    private MissionManager missionManager;
+    private static MissionManager missionManager;
     private Coordinates sunDirection;
-    private Weather weather;
+    private static Weather weather;
 
 	private Map<Coordinates, Double> opticalDepthMap = new ConcurrentHashMap<>();
 	//private Map<Coordinates, Double> totalSolarIrradianceMap = new ConcurrentHashMap<>();
 	private Map<Coordinates, Double> solarIrradianceMapCache;
-	private MarsClock solarIrradianceMapCacheTime;
+	private static MarsClock solarIrradianceMapCacheTime;
 	
-	private Simulation sim = Simulation.instance();
-	private SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static Simulation sim;
+	private static SimulationConfig simulationConfig;
 
-	private DecimalFormat fmt3 = new DecimalFormat("#0.000");
+	//private DecimalFormat fmt3 = new DecimalFormat("#0.000");
 
     /**
      * Constructor
@@ -78,6 +77,9 @@ public class SurfaceFeatures implements Serializable {
      */
     public SurfaceFeatures() {
 
+    	sim = Simulation.instance();
+    	simulationConfig = SimulationConfig.instance();
+    	
         terrainElevation = new TerrainElevation();
         mineralMap = new RandomMineralMap();
         exploredLocations = new CopyOnWriteArrayList<>();

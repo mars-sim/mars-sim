@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditManager.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 
@@ -36,7 +35,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Domain members
-	private Graph creditGraph;
+	private static Graph creditGraph;
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
 

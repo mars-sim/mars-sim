@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.event.TableModelEvent;
@@ -32,7 +31,6 @@ import javax.swing.table.TableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.PieDataset;
@@ -49,9 +47,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * algorithm works best on a distinct data set values.
  */
 class PieChartTab extends MonitorTab {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
     /**
      * Minimum time (milliseconds) between chart updates

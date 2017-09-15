@@ -24,11 +24,11 @@ implements Serializable {
 
 	// Data members
 	/** Surface features. */
-	private SurfaceFeatures surfaceFeatures;
+	private static SurfaceFeatures surfaceFeatures;
 	/** Orbital information. */
-	private OrbitInfo orbitInfo;
+	private static OrbitInfo orbitInfo;
 	/** Martian weather. */
-	private Weather weather;
+	private static Weather weather;
 
 	/**
 	 * Constructor.
@@ -95,8 +95,8 @@ implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		surfaceFeatures.destroy();
-		orbitInfo.destroy();
-		weather.destroy();
+		surfaceFeatures = null;//.destroy();
+		orbitInfo = null;//.destroy();
+		weather = null;//.destroy();
 	}
 }

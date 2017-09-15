@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.1.0 2016-10-31
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
@@ -40,13 +38,10 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotBuilder;
-import org.mars_sim.msp.core.robot.RobotBuilderImpl;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
@@ -55,7 +50,6 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -90,48 +84,48 @@ public class UnitManager implements Serializable {
 	/** Flag true if the class has just been deserialized */
 	public transient boolean justReloaded = true;
 	/** Collection of all units. */
-	private Collection<Unit> units;
+	private static Collection<Unit> units;
 	/** List of possible settlement names. */
-	private List<String> settlementNames;
+	private static List<String> settlementNames;
 	/** List of possible vehicle names. */
-	private List<String> vehicleNames;
+	private static List<String> vehicleNames;
 	/** List of possible male person names. */
-	private List<String> personMaleNames;
+	private static List<String> personMaleNames;
 	/** List of possible female person names. */
-	private List<String> personFemaleNames;
+	private static List<String> personFemaleNames;
 	/** List of possible robot names. */
-	private List<String> robotNameList;
+	private static List<String> robotNameList;
 
 	/** List of unit manager listeners. */
 	private transient List<UnitManagerListener> listeners;
 	/** Map of equipment types and their numbers. */
-	private Map<String, Integer> equipmentNumberMap;
+	private static Map<String, Integer> equipmentNumberMap;
 	/** Map of vehicle types and their numbers. */
-	private Map<String, Integer> vehicleNumberMap;
+	private static Map<String, Integer> vehicleNumberMap;
 
-	private Map<Integer, List<String>> marsSociety = new HashMap<>();
+	private static Map<Integer, List<String>> marsSociety = new HashMap<>();
 
-	private Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
-	private Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
+	private static Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
+	private static Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
 
-	private Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
-	private Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
+	private static Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
+	private static Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
 
-	private Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
-	private Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
+	private static Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
+	private static Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
 
-	private List<String> countries;
+	private static List<String> countries;
 
-	private Settlement firstSettlement;
-	private PersonConfig personConfig;
-	private SettlementConfig settlementConfig;
-	private RelationshipManager relationshipManager;
-	private VehicleConfig vehicleConfig;
-	private RobotConfig robotConfig;
-	private PartConfig partConfig;
+	private static Settlement firstSettlement;
+	private static PersonConfig personConfig;
+	private static SettlementConfig settlementConfig;
+	private static RelationshipManager relationshipManager;
+	private static VehicleConfig vehicleConfig;
+	private static RobotConfig robotConfig;
+	private static PartConfig partConfig;
 
-	private MasterClock masterClock;
-	private MarsClock marsClock;
+	private static MasterClock masterClock;
+	private static MarsClock marsClock;
 	
 	private int solCache = 0;
 	

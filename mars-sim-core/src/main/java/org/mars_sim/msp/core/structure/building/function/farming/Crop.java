@@ -1089,7 +1089,8 @@ public class Crop implements Serializable {
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			Storage.retrieveAnResource(o2Used, oxygenAR, inv, true);
+			if (o2Used > 0)
+				Storage.retrieveAnResource(o2Used, oxygenAR, inv, true);
 
 			o2Modifier =  o2Used / o2Required;
 
@@ -1115,8 +1116,8 @@ public class Crop implements Serializable {
 
 			if (carbonDioxideUsed > carbonDioxideAvailable)
 				carbonDioxideUsed = carbonDioxideAvailable;
-
-			Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideAR, inv, true);
+			if (carbonDioxideUsed > 0)
+				Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideAR, inv, true);
 
 			// TODO: research how much high amount of CO2 may facilitate the crop growth and reverse past bad health
 

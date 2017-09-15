@@ -28,13 +28,11 @@ import org.mars_sim.msp.ui.javafx.QualityGauge;
 import org.mars_sim.msp.ui.steelseries.gauges.Radial2Top;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.jfoenix.controls.JFXTextField;
 
 import eu.hansolo.medusa.Section;
-import eu.hansolo.medusa.skins.BulletChartSkin;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
@@ -42,54 +40,30 @@ import eu.hansolo.medusa.GaugeBuilder;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.paint.Color;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.event.EventHandler;
 import javafx.scene.text.Font;
-import javafx.scene.control.TextArea;
+
 import javafx.scene.text.FontWeight;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
+
 /**
  * The TabPanelPersonality is a tab panel about the personality, emotional state and mood of a person.
  */
+@SuppressWarnings("restriction")
 public class TabPanelPersonality
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private JFXPanel jfxpanel;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.08 2015-07-05
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
-import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;

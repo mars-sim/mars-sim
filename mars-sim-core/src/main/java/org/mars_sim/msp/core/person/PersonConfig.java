@@ -57,6 +57,8 @@ implements Serializable {
 	private static final String NOMINAL_O2_RATE = "nominal-activity-metaboic-load-o2-consumption-rate";
 	private static final String HIGH_O2_RATE = "high-activity-metaboic-load-o2-consumption-rate";
 
+	private static final String CO2_EXPELLED_RATE = "co2-expelled-rate";
+	
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String WATER_USAGE_RATE = "water-usage-rate";
 	private static final String	GREY_TO_BLACK_WATER_RATIO = "grey-to-black-water-ratio";
@@ -623,6 +625,21 @@ implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the carbon dioxide expelled rate.
+	 * @return carbon dioxide expelled rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	public double getCO2ExpelledRate() {
+		if (o2ConsumptionRate[2] != 0)
+			return o2ConsumptionRate[2];
+		else {
+			o2ConsumptionRate[2] = getValueAsDouble(CO2_EXPELLED_RATE);
+			return o2ConsumptionRate[2];
+		}
+	}
+	
+	
 	/**
 	 * Gets the water consumption rate.
 	 * @return water rate (kg/sol)

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTab.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -12,11 +11,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
  */
 public class UnitTab
 extends TableTab {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-    //public final static String ICON = "user_32";
 
 	/**
 	 * Constructor.

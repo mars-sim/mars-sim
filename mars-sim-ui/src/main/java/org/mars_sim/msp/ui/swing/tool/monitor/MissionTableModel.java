@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 3.08 2015-07-02
+* @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -32,9 +32,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MissionTableModel
 extends AbstractTableModel
 implements MonitorModel, MissionManagerListener, MissionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 

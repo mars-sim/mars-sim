@@ -39,7 +39,8 @@ public class UnitLabelMapLayer extends UnitMapLayer {
         IntPoint labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
         
         if (TopoMarsMap.TYPE.equals(mapType)) g.setColor(displayInfo.getTopoMapLabelColor());
-        else g.setColor(displayInfo.getSurfMapLabelColor());
+        else if (displayInfo != null)
+        	g.setColor(displayInfo.getSurfMapLabelColor());
         	
         g.setFont(displayInfo.getMapLabelFont());
         

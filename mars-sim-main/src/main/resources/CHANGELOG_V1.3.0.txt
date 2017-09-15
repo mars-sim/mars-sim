@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4140) - 2017-09-13
+## v3.1.0-Preview 9 (build 4140) - 2017-09-15
 
 
 ### KNOWN LIMITATIONS :
@@ -48,6 +48,8 @@ https://github.com/mars-sim/mars-sim
 13. Add reliability analysis on top of the malfunction model for tracking 
     probability of failure for some item resource.
 
+14. Shrink down 30% the file size of a saved sim.
+
 
 ### UI IMPROVEMENT :
 
@@ -56,16 +58,15 @@ https://github.com/mars-sim/mars-sim
 
 ### FIXES :
 
-1. Correct building temperature anomaly. 
+1. Correct building temperature fluctuation. 
 
 2. Fix how heat gain/loss is calculated in each building.
 
-3. Refactor solar/fuel/electric heating.
+3. Fix bugs in solar/fuel/electric heating.
 
-4. Fix under-weight and short height.  
+4. Fix settlers being underweight and short height issue.  
 
-5. Correct issues on being not able to store resources after loading from
-   a saved sim.
+5. Correct not being able to store resources after loading from a saved sim.
    
 
 -----------------------------------------------------------------------------------------
@@ -86,8 +87,8 @@ https://github.com/mars-sim/mars-sim
 
 1. Refine phenological/growing stage for each category of crop.
 
-2. Since Corn depletes nitrogen in the soil more quickly than other crops, it makes
-   sense to disallow growing Corn consecutively in the same greenhouse.
+2. Disallow growing corn consecutively in the same greenhouse as it depletes 
+   nitrogen in the soil more quickly than other crops. 
 
 3. Rename Green Onion to Spring Onion. Remove Spices as a Crop Category.
 
@@ -98,8 +99,8 @@ https://github.com/mars-sim/mars-sim
 
 2. Add animated Main Menu items.
 
-3. Create an EXE installation package specifically for installing mars-sim in windows OS 
-with Inno Script Studio.
+3. Create an EXE installation package specifically for installing mars-sim in 
+   Windows OS with Inno Script Studio.
 
 
 ### FIXES :
@@ -108,7 +109,8 @@ with Inno Script Studio.
 
 2. Fix crash if dragging the globe in the Minimap too fast.
 
-3. Temporarily disable the "Edit Mission" and "Abort Mission" Buttons in Mission Tool.
+3. Temporarily disable the "Edit Mission" and "Abort Mission" Buttons in Mission
+   Tool.
 
 
 -----------------------------------------------------------------------------------------

@@ -1,48 +1,28 @@
 /**
  * Mars Simulation Project
  * MessagePopup.java
- * @version 3.08 2016-06-17
+ * @version 3.1.0 2017-09-14
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.javafx.notification;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 import org.mars_sim.msp.ui.javafx.notification.PNotification;
-import org.mars_sim.msp.ui.javafx.quotation.QNotification;
-//import org.reactfx.util.FxTimer;
-//import org.reactfx.util.Timer;
-//import org.reactfx.util.Duration;
-//import eu.hansolo.enzo.notification.NotifierBuilder;
-//import eu.hansolo.enzo.notification.Notification.Notifier;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.quotation.Quotation;
-import org.mars_sim.msp.core.quotation.QuotationConfig;
-import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 
 import javafx.stage.Stage;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 
-/** The Message class creates a quotation in proper format for use by MainScene
+/** 
+ * The Message class creates a quotation in proper format for use by MainScene
  */
-public class MessagePopup implements Serializable {
+@SuppressWarnings("restriction")
+public class MessagePopup  {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 
 	private static final int SIZE_ICON = 64;

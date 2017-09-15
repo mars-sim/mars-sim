@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.quotation.QuotationConfig;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -48,12 +47,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  */
 public class SimulationConfig implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Constants
-	 * ---------------------------------------------------------------------------------------------------- */
+	private static final long serialVersionUID = -5348007442971644450L;
 
 	private static final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
 
@@ -82,22 +76,25 @@ public class SimulationConfig implements Serializable {
 
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
+	
 	private static final String TIME_RATIO = "time-ratio";
 	private static final String TIME_BETWEEN_UPDATES = "time-between-updates";
-	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
-	private static final String MAX_FRAME_SKIPS = "max-frame-skips";
-	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
-	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
+
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
-
+	private static final String MAX_FRAME_SKIPS = "max-frame-skips";
+	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
+	
+	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
+	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
+	
 	public String build;
 
 	private double tbu = 0;
 
 	private double tr = 0;
 
-	private int[] integers = new int[] {0,0,0,0};
+	private int[] data = new int[] {0,0,0,0};
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
@@ -131,8 +128,6 @@ public class SimulationConfig implements Serializable {
 	private RobotConfig robotConfig;
 	// 2016-06-08 Added quotationConfig
 	private QuotationConfig quotationConfig;
-	// 2016-04-08 Add resourceUtil
-	private ResourceUtil resourceUtil;
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
@@ -253,7 +248,7 @@ public class SimulationConfig implements Serializable {
 			         d = Double.valueOf(str.trim()).doubleValue();
 			         //System.out.println("double d = " + d);
 
-			         if (d < 64 && d > 1024)
+			         if (d < 16 && d > 2048)
 			 			throw new IllegalStateException("time_ratio must be between 64.0 and 1024.0");
 
 			      } catch (NumberFormatException nfe) {
@@ -318,8 +313,8 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2015-10-31 getNoDelayPerYield()
 	public int getNoDelaysPerYield() {
-		if (integers[0] != 0) {
-			return integers[0];
+		if (data[0] != 0) {
+			return data[0];
 		}
 
 		else {
@@ -337,7 +332,7 @@ public class SimulationConfig implements Serializable {
 				try {
 			         result = Integer.parseInt(str);
 
-			         if (result > 200 || result < 1)
+			         if (result > 100 || result < 1)
 			 			throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
 
 
@@ -346,7 +341,7 @@ public class SimulationConfig implements Serializable {
 			      }
 			}
 
-			integers[0] = result;
+			data[0] = result;
 			return result;
 
 			//int result = Integer.parseInt(el.getAttributeValue(VALUE));
@@ -363,8 +358,8 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2015-10-31 Added getMaxFrameSkips()
 	public int getMaxFrameSkips() {
-		if (integers[1] != 0) {
-			return integers[1];
+		if (data[1] != 0) {
+			return data[1];
 		}
 
 		else {
@@ -382,7 +377,7 @@ public class SimulationConfig implements Serializable {
 				try {
 			         result = Integer.parseInt(str);
 
-			         if (result > 200 || result < 1)
+			         if (result > 50 || result < 1)
 			 			throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
 
 
@@ -391,7 +386,7 @@ public class SimulationConfig implements Serializable {
 			      }
 			}
 
-			integers[1] = result;
+			data[1] = result;
 			return result;
 
 		}
@@ -440,8 +435,8 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2016-05-02 Added getAutosaveInterval()
 	public int getAutosaveInterval() {
-		if (integers[2] != 0) {
-			return integers[2];
+		if (data[2] != 0) {
+			return data[2];
 		}
 
 		else {
@@ -468,7 +463,7 @@ public class SimulationConfig implements Serializable {
 
 			}
 
-			integers[2] = d;
+			data[2] = d;
 			return d;
 		}
 	}
@@ -480,8 +475,8 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2016-11-23 Added getAverageTransitTime()
 	public int getAverageTransitTime() {
-		if (integers[3] != 0) {
-			return integers[3];
+		if (data[3] != 0) {
+			return data[3];
 		}
 
 		else {
@@ -508,7 +503,7 @@ public class SimulationConfig implements Serializable {
 
 			}
 
-			integers[3] = d;
+			data[3] = d;
 			return d;
 		}
 	}

@@ -13,7 +13,6 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -32,9 +31,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 public class FoodInventoryTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private List<Food> foodList;

@@ -44,7 +44,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
@@ -88,9 +87,9 @@ import org.mars_sim.msp.ui.steelseries.tools.Util;
  * matter if they are radial or linear.
  * @author hansolo
  */
-public abstract class AbstractGauge extends JComponent implements ComponentListener, ActionListener, Serializable {
+public abstract class AbstractGauge extends JComponent implements ComponentListener, ActionListener {
     // <editor-fold defaultstate="collapsed" desc="Variable declarations">
-    private static final long serialVersionUID = 31269L;
+    //private static final long serialVersionUID = 31269L;
     public static final String VALUE_PROPERTY = "value";
     private PropertyChangeSupport propertyChangeSupport;
     protected static final Util UTIL = Util.INSTANCE;

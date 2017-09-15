@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -52,9 +51,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
  */
 public class VehicleTableModel
 extends UnitTableModel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 

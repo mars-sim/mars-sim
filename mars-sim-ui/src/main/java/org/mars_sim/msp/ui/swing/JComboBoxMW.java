@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * JComboBoxMW.java
+ * @version 3.1.0 2017-09-14
+ * @author stpa
+ */
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Dimension;
@@ -13,16 +19,10 @@ import javax.swing.JTextField;
 
 /**
  * A Combobox that is mousewheel-enabled.
- * @version 3.07 2014-10-14
- * @author stpa
- * 2014-01-29
  */
 public class JComboBoxMW<T>
 extends JComboBox<T>
 implements MouseWheelListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private boolean layingOut = false;
 

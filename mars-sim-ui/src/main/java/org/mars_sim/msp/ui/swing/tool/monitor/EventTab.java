@@ -16,9 +16,6 @@ import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 public class EventTab
 extends TableTab {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window

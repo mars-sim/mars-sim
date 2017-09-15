@@ -65,8 +65,6 @@ implements Serializable {
 
 		 malfunctions = config.getMalfunctionList();
 		 //logger.info("Done with calling config.getMalfunctionList()");
-		 
-		 
 	}
 
 	/**

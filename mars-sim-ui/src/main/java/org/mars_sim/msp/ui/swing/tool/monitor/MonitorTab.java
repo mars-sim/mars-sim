@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorTab.java
- * @version 3.07 2014-12-06
-
+* @version 3.1.0 2017-09-14
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -16,8 +15,6 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 
 /**
@@ -27,9 +24,6 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
  */
 public abstract class MonitorTab
 extends JPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** Model providing the data. */
 	private MonitorModel model;

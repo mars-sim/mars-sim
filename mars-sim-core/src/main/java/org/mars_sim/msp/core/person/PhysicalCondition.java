@@ -127,7 +127,7 @@ implements Serializable {
     /** Performance factor 0.0 to 1.0. */
     private double performance;
     /** Person's hygiene factor (0.0 - 100.0) */
-    private double hygiene; 
+    //private double hygiene; 
     /** Person's energy level [in kJ] */
     private double kJoules;
     /** Person's food appetite (0.0 to 1.0) */
@@ -205,7 +205,7 @@ implements Serializable {
         stress = RandomUtil.getRandomRegressionInteger(100) * .2;
         hunger = RandomUtil.getRandomRegressionInteger(200);
         kJoules = 2500;//1000D + RandomUtil.getRandomDouble(1500);
-        hygiene = RandomUtil.getRandomDouble(100D);
+        //hygiene = RandomUtil.getRandomDouble(100D);
         
         personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
         
@@ -213,7 +213,7 @@ implements Serializable {
 		
 
         // 2017-03-08 Add rates
-        o2_consumption = personConfig.getNominalO2ConsumptionRate();
+        //o2_consumption = personConfig.getNominalO2ConsumptionRate();
         h2o_consumption = personConfig.getWaterConsumptionRate();
         minimum_air_pressure = personConfig.getMinAirPressure();
         min_temperature = personConfig.getMinTemperature();

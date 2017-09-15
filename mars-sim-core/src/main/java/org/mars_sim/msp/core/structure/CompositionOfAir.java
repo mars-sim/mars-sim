@@ -72,11 +72,15 @@ public class CompositionOfAir implements Serializable {
 	
 	// Mars has 0.13% of O2 
 	
+	// Note that the fractional/partial pressure below are added up to the value of 1 for
+	// the simplicity of calculation. 
 	private static final double CO2_PARTIAL_PRESSURE = 0.000407;
 	private static final double ARGON_PARTIAL_PRESSURE = 0.00934;
 	private static final double N2_PARTIAL_PRESSURE = .780043;
 	private static final double O2_PARTIAL_PRESSURE = .20021;
 	private static final double H2O_PARTIAL_PRESSURE = 0.01;
+	// https://en.wikipedia.org/wiki/Vapour_pressure_of_water
+	
 	
 	public static final double CO2_MOLAR_MASS = 44.0095 /1000D; // [in kg/mol]
 	public static final double ARGON_MOLAR_MASS = 39.948 /1000D; // [in kg/mol]
@@ -102,6 +106,8 @@ public class CompositionOfAir implements Serializable {
     private double cO2Expelled;
     /** Moisture expelled by a person [kg/millisol] */
     private double moistureExpelled;
+    /** Water cosumed by a person [kg/millisol] */
+    private double h2oConsumed;
 
 	//private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
 
@@ -167,14 +173,16 @@ public class CompositionOfAir implements Serializable {
 		weather = Simulation.instance().getMars().getWeather();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		
-		o2Consumed = personConfig.getNominalO2ConsumptionRate() /1000D; // divide by 1000 to convert to [kg/millisol] 
+		o2Consumed = personConfig.getHighO2ConsumptionRate() /1000D; // divide by 1000 to convert to [kg/millisol] 
 		
-		cO2Expelled = 1.0433/1000D; // [in kg/millisol]  1.0433 kg or 2.3 pounds CO2 per day 
+		cO2Expelled = personConfig.getCO2ExpelledRate()/1000D; // [in kg/millisol]  1.0433 kg or 2.3 pounds CO2 per day for high metabolic activity.
 		
 		// If we are breathing regular air, at about ~20-21% 02, we use about 5% of that O2 and exhale the by product of 
 		// glucose utilization CO2 and the balance of the O2, so exhaled breath is about 16% oxygen, and about 4.75 % CO2. 
 		
 		moistureExpelled = .8/1000D; // ~800 ml through breathing, sweat and skin per sol, divide by 1000 to convert to [kg/millisol] 
+		
+		//h2oConsumed = personConfig.getWaterConsumptionRate() / 1000D;
 		
 		// see https://micpohling.wordpress.com/2007/03/27/math-how-much-co2-is-emitted-by-human-on-earth-annually/	
 		// https://www.quora.com/How-much-water-does-a-person-lose-in-a-day-through-breathing
@@ -328,6 +336,7 @@ public class CompositionOfAir implements Serializable {
 		double o2 = o2Consumed * time;
 		double cO2 = cO2Expelled * time;
 		double moisture = moistureExpelled * time;
+		//double h2o = (h2oConsumed - moistureExpelled) * time;
 		
 		// Part 1 : calculate for each gas the partial pressure and # of moles
 		for (Building b: buildings) {
@@ -339,6 +348,7 @@ public class CompositionOfAir implements Serializable {
 			o2 = numPeople * o2;
 			cO2 = numPeople * cO2;
 			moisture = numPeople * moisture;
+			//h2o = numPeople * h2o;
 			
 			for (int gas = 0; gas< numGases; gas++) {
 
@@ -704,12 +714,12 @@ public class CompositionOfAir implements Serializable {
 	}
 
 	/**
-	 * Pumps air to or extract air from a building with this id
+	 * Pump in or recapture air from a given building
 	 * @param id inhabitable id of a building
-	 * @param isAdding positive if pumping in, negative if extracted
+	 * @param pumpInto positive if pumping in, negative if extracted
 	 * @param b the building
 	 */
-	public void pumpOrRecaptureAir(int id, boolean isAdding, Building b) {
+	public void pumpOrRecaptureAir(int id, boolean pumpInto, Building b) {
 		double d_moles[] = new double[numGases];
 		//double t = b.getCurrentTemperature();
 		
@@ -719,19 +729,19 @@ public class CompositionOfAir implements Serializable {
 			// calculate moles on each gas
 			d_moles[gas] = numMoles[gas][id] * AIRLOCK_VOLUME_IN_LITER / fixedVolume[id]; //pressure /  R_GAS_CONSTANT / t * AIRLOCK_VOLUME_IN_LITER;
 
-			pumpOrExtractMoles(gas, id, d_moles[gas], isAdding, b);
+			pumpOrRecaptureGas(gas, id, d_moles[gas], pumpInto, b);
 		}
 	}
 	
 	/**
-	 * Pumps or extract numbers of moles of a certain gas to a building with this id
+	 * Pump in or recapture numbers of moles of a certain gas to a given building
 	 * @param gas the type of gas
 	 * @param id inhabitable id of a building
 	 * @param d_moles numbers of moles
-	 * @param pump positive if pumped, negative if extracted
+	 * @param pumpInto positive if pumped, negative if extracted
 	 * @param b the building
 	 */
-	public void pumpOrExtractMoles(int gas, int id, double d_moles, boolean pump, Building b) {
+	public void pumpOrRecaptureGas(int gas, int id, double d_moles, boolean pumpInto, Building b) {
 		double old_moles = numMoles[gas][id];
 		double old_mass = mass[gas][id];		
 		double new_moles = 0;
@@ -744,10 +754,11 @@ public class CompositionOfAir implements Serializable {
 
 		//System.out.println(" # moles of [" + gas + "] to pump or recapture : " + d_moles);
 		//System.out.println(" mass of [" + gas + "] to pump or recapture : " + d_mass);
-		if (pump) {
+		if (pumpInto) {
 			new_moles = old_moles + d_moles;
 			new_mass = old_mass + d_mass;
-			Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
+			if (d_mass > 0)
+				Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
 		}
 		else { // recapture
 			new_moles = old_moles - d_moles;
@@ -802,6 +813,15 @@ public class CompositionOfAir implements Serializable {
 		return fixedVolume;
 	}
 
+	/**
+	 * Calculates the partial pressure of water vapor at a given temperature using Buck equation
+	 * @param t_C temperature in deg celsius
+	 * @return partial pressure in kPa
+	 * Note : see https://en.wikipedia.org/wiki/Vapour_pressure_of_water
+	 */
+	public double calculateWaterVaporPressure(double t_C) {
+		return 0.61121 * Math.exp((18.678- t_C/234.5)*(t_C/(257.14+t_C)));
+	}
 	
 	public void destroy() {
 		buildingManager = null;

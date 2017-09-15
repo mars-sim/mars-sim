@@ -23,13 +23,16 @@
 	     see http://www2.le.ac.uk/offices/safety-services/documents/pdfs/air-monitoring-guide.pdf -->
 	<life-support-requirements>
 
-		<!-- all pressures in kPa-->
+		<!-- recommended range of total air pressure in kPa -->				
 		<total-pressure low="99.9" high="102.7" />
-		<partial-pressure-of-oxygen low="19.5" high="23.1" />
-		<partial-pressure-of-nitrogen low="77" high="79"/>
+		<!-- recommended range of partial pressure for O2 in kPa -->		
+		<partial-pressure-of-oxygen low="19" high="23" />
+		<!-- recommended range of partial pressure for NO2 in kPa -->				
+		<partial-pressure-of-nitrogen low="74" high="82"/>
+		<!-- recommended range of partial pressure for CO2 in kPa -->		
 		<partial-pressure-of-carbon-dioxide low=".036" high="1.0" />
-		<!-- temperature in degree celsius-->
-		<temperature low="18.3" high="23.9"/>
+		<!-- recommended range of temperatures [in degree celsius]-->
+		<temperature low="18" high="26"/>
 		<!-- humidity in %-->
 		<relative-humidity low="30" high="70"/>
 		<!-- ventilation in m/s-->
@@ -111,6 +114,7 @@
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />			
 
+			<resource type="nitrogen" amount="3000.0" />	
 			<resource type="hydrogen" amount="3000.0" />					
 			<resource type="methane" amount="3000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
@@ -308,7 +312,8 @@
 			<resource type="food waste" amount="25.0" />			
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
-			
+	
+			<resource type="nitrogen" amount="6000.0" />			
 			<resource type="hydrogen" amount="6000.0" />					
 			<resource type="methane" amount="6000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
@@ -541,7 +546,8 @@
 			<resource type="food waste" amount="25.0" />			
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
-			
+	
+			<resource type="nitrogen" amount="6000.0" />			
 			<resource type="hydrogen" amount="9000.0" />					
 			<resource type="methane" amount="9000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
@@ -872,6 +878,7 @@
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
 
+			<resource type="nitrogen" amount="12000.0" />
 			<resource type="hydrogen" amount="12000.0" />								
 			<resource type="methane" amount="12000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
@@ -1131,6 +1138,7 @@
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
 
+			<resource type="nitrogen" amount="16000.0" />
 			<resource type="hydrogen" amount="16000.0" />								
 			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
@@ -1291,6 +1299,7 @@
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
 	
+			<resource type="nitrogen" amount="16000.0" />	
 			<resource type="hydrogen" amount="16000.0" />							
 			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />

@@ -1,12 +1,10 @@
 /**
  * Mars Simulation Project
  * TradeTableModel.java
- * @version 3.07 2014-11-17
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
-
-//import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,9 +32,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 public class TradeTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private List<Good> goodsList;

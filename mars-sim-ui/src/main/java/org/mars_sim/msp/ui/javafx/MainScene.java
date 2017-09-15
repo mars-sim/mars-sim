@@ -7,10 +7,8 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
-import com.jfoenix.controls.JFXBadge;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -18,16 +16,12 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
-import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXToggleButton;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 
-import de.jensd.fx.fontawesome.AwesomeDude;
-
 import org.controlsfx.control.MaskerPane;
-import org.controlsfx.control.NotificationPane;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
 
@@ -54,7 +48,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
@@ -69,7 +62,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -83,7 +75,6 @@ import javafx.util.Duration;
 import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
-import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -94,7 +85,6 @@ import javafx.scene.input.ScrollEvent;
 import java.awt.Toolkit;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -118,7 +108,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
-import org.mars_sim.msp.ui.javafx.demo.DragDrop;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
@@ -152,6 +141,7 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
  */
 @SuppressWarnings("restriction")
 public class MainScene {
+	
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	public static String OS = Simulation.OS.toLowerCase();//System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'

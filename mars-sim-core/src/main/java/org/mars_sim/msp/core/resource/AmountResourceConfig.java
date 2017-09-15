@@ -8,11 +8,8 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.jdom.Document;
@@ -40,10 +37,10 @@ public class AmountResourceConfig implements Serializable {
 
 	private static final String CROP = "crop";
 
-	private static int id;
+	private static int resource_id = 0;
 
 	// Data members.
-	Set<AmountResource> arSet;
+	private static Set<AmountResource> resourceSet;
 
 	/**
 	 * Constructor
@@ -51,7 +48,7 @@ public class AmountResourceConfig implements Serializable {
 	 * @throws Exception if error reading XML document
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
-		id = 0;
+		resourceSet = new TreeSet<AmountResource>();
 		loadAmountResources(amountResourceDoc);
 	}
 
@@ -62,14 +59,10 @@ public class AmountResourceConfig implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	private void loadAmountResources(Document amountResourceDoc) {
-		//System.out.println("arSet :\t" + arSet.hashCode());
-		arSet = new TreeSet<AmountResource>();
-		//System.out.println("arSet :\t" + arSet.hashCode());
-
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
 		for (Element resourceElement : resourceNodes) {
-			id++;
+			resource_id++;
 			// 2015-02-24 Added toLowerCase() just in case
 			String name = resourceElement.getAttributeValue(NAME).toLowerCase();
 			// 2016-06-28 Added type
@@ -85,12 +78,13 @@ public class AmountResourceConfig implements Serializable {
 			// 2014-11-25 Added edible
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 			// 2014-11-25 Added edible
-			arSet.add(new AmountResource(id, name, type, description, phase, lifeSupport, edible));
+			
+			resourceSet.add(new AmountResource(resource_id, name, type, description, phase, lifeSupport, edible));
 
 			if (type != null && type.toLowerCase().equals(CROP)) {
-				id++;
+				resource_id++;
 				// Create the tissue culture for each crop.
-				arSet.add(new AmountResource(id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
+				resourceSet.add(new AmountResource(resource_id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
 				// TODO: may set edible to true
 			}
 
@@ -102,13 +96,12 @@ public class AmountResourceConfig implements Serializable {
 	 * @return set of resources.
 	 */
 	public Set<AmountResource> getAmountResources() {
-		//System.out.println("arSet :\t" + arSet.hashCode());
-		return arSet;
+		return resourceSet;
 	}
 
 
 
 	public void destroy() {
-		arSet = null;
+		resourceSet = null;
 	}
 }

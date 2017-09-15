@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * TableSorter.java
+ * @version 3.1.0 2017-09-14
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.event.TableModelEvent;

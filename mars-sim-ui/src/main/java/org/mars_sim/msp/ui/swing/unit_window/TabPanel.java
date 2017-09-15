@@ -8,8 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -18,12 +16,9 @@ import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 
 public abstract class TabPanel extends JScrollPane {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	protected String tabTitle;
 	protected Icon tabIcon;

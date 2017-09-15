@@ -107,13 +107,13 @@ implements Serializable {
 	private static List<DustStorm> localDustStorms = new ArrayList<>();
 	private static List<DustStorm> dustDevils = new ArrayList<>();
 	
-	private Simulation sim = Simulation.instance();
-	private MarsClock marsClock;
-	private SurfaceFeatures surfaceFeatures;
-	private TerrainElevation terrainElevation;
-	private MasterClock masterClock;
-	private OrbitInfo orbitInfo;
-	private Mars mars;
+	private static Simulation sim = Simulation.instance();
+	private static MarsClock marsClock;
+	private static SurfaceFeatures surfaceFeatures;
+	private static TerrainElevation terrainElevation;
+	private static MasterClock masterClock;
+	private static OrbitInfo orbitInfo;
+	private static Mars mars;
 
 
 	/** Constructs a Weather object */

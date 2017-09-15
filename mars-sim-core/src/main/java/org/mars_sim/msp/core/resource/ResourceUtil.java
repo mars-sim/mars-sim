@@ -26,24 +26,6 @@ public class ResourceUtil implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-/*
-    public static final int FOOD = 1;
-    public static final int WATER = 2;
-    public static final int OXYGEN =  3;
-    public static final int CO2 = 4;
-
-    public static final int METHANE = 8;
-    public static final int ICE = 12;
-    public static final int REGOLITH = 142;
-    public static final int ROCK_SAMLE = 143;
-
-    public static final int FOOD_WASTE = 16;
-    public static final int SOLID_WASTE = 17;
-    public static final int GREY_WATER = 19;
-    public static final int TABLE_SALT = 23;
-    public static final int SODIUM_HYPOCHLORITE = 145;
-    public static final int NAPKIN = 150;
-*/
 
     public static final String ARGON = "argon";
     public static final String NITROGEN = "nitrogen";
@@ -94,10 +76,8 @@ public class ResourceUtil implements Serializable {
 	// This way, the newly created amountResourceConfig will be overridden
 	// and the resources from the original version of amountResourceConfig will be preserved
 	// The drawback is that this won't work if one loads from a saved sim that has an outdated list of Amount Resources
-	private AmountResourceConfig amountResourceConfig;
+	private static AmountResourceConfig amountResourceConfig;
 
-	private ItemResourceUtil itemResourceUtil;
-	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -148,7 +128,6 @@ public class ResourceUtil implements Serializable {
 	 */
     private ResourceUtil() {
     	createResourceSet();
-    	
     	createItemResourceUtil();
     }
 
@@ -184,14 +163,12 @@ public class ResourceUtil implements Serializable {
     }
 
     public void createItemResourceUtil() {
-    	itemResourceUtil = new ItemResourceUtil();
+    	new ItemResourceUtil();
     }
     
 	public void createResourceSet() {
  		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
- 		//System.out.println("amountResourceConfig : " + System.identityHashCode(amountResourceConfig));
 		resources = amountResourceConfig.getAmountResources();
-		
 	}
 
     public static void createMaps() {

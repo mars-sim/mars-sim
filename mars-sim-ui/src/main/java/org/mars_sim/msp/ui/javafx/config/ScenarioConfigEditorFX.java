@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScenarioConfigEditorFX.java
- * @version 3.1.0 2017-01-24
+ * @version 3.1.0 2017-09-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.javafx.config;
@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -42,7 +41,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;

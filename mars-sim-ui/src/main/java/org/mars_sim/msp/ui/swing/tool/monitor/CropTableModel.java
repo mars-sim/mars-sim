@@ -51,9 +51,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 public class CropTableModel
 extends UnitTableModel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
     /** default logger. */
 	private static Logger logger = Logger.getLogger(CropTableModel.class.getName());
 

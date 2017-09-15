@@ -32,8 +32,7 @@ import org.mars_sim.msp.core.tool.Conversion;
  */
 public class MalfunctionConfig implements Serializable {
 	
-	/** default serial id. */
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = -8080257736164772388L;
 
 	private static final Logger logger = Logger.getLogger(MalfunctionConfig.class.getName());
 

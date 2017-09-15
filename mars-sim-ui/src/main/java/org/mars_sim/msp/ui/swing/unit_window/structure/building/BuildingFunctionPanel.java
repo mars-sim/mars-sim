@@ -7,8 +7,6 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.Color;
-
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.structure.building.Building;
@@ -19,11 +17,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  * The BuildingFunctionPanel class is a panel representing a function for
  * a settlement building.
  */
-public abstract class BuildingFunctionPanel
-extends JPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public abstract class BuildingFunctionPanel extends JPanel {
 
 	/** The building this panel is for. */
 	protected Building building;

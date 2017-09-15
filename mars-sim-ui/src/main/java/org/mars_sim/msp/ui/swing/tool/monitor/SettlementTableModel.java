@@ -6,17 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -29,11 +25,9 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -43,9 +37,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 // 2014-10-14 mkung: moved all food related columns to FoodTableModel.java
 public class SettlementTableModel
 extends UnitTableModel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 
