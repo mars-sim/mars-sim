@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * InhabitableBuildingPanel.java
- * @version 3.07 2014-11-21
+ * BuildingPanelInhabitable.java
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -90,8 +90,8 @@ implements MouseListener {
 		// Create inhabitant list panel
 		JPanel inhabitantListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(inhabitantListPanel, BorderLayout.CENTER);
-		inhabitantListPanel.setOpaque(false);
-		inhabitantListPanel.setBackground(new Color(0,0,0,128));
+		//inhabitantListPanel.setOpaque(false);
+		//inhabitantListPanel.setBackground(new Color(0,0,0,128));
 
 		
 		// Create scroll panel for inhabitant list
@@ -99,10 +99,10 @@ implements MouseListener {
 		scrollPanel.setPreferredSize(new Dimension(160, 60));
 		inhabitantListPanel.add(scrollPanel);
 		scrollPanel.setViewportView(inhabitantList);
-		scrollPanel.getViewport().setOpaque(false);
-		scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
-		scrollPanel.setOpaque(false);
-		scrollPanel.setBackground(new Color(0,0,0,128));
+		//scrollPanel.getViewport().setOpaque(false);
+		//scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
+		//scrollPanel.setOpaque(false);
+		//scrollPanel.setBackground(new Color(0,0,0,128));
 	    scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		
@@ -116,8 +116,8 @@ implements MouseListener {
 		inhabitantList = new JList<Person>(inhabitantListModel);
 		inhabitantList.addMouseListener(this);
 
-		inhabitantList.setOpaque(false);
-		inhabitantList.setBackground(new Color(0,0,0,128));
+		//inhabitantList.setOpaque(false);
+		//inhabitantList.setBackground(new Color(0,0,0,128));
 
 	}
 

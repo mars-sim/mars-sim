@@ -17,7 +17,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
 	<process name="extract iron oxide and sand from regolith"
 			tech="1" skill="0"
-			work-time="50"
+			work-time="25"
 			process-time="50"
 			power-required="0.1">
 		<description>Process for extracting iron oxide from regolith.</description>
@@ -39,7 +39,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 	<process name="extract iron oxide and sand from regolith (large batch)"
 			tech="1" skill="2"
 			work-time="100"
-			process-time="100"
+			process-time="200"
 			power-required="0.5">
 		<inputs>
 			<resource name="regolith" amount="500.0" />
@@ -81,8 +81,8 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 
 	<process name="extract nitrogen compounds from regolith (large batch)"
 			tech="1" skill="2"
-			work-time="200"
-			process-time="600"
+			work-time="50"
+			process-time="500"
 			power-required=".5">
 		<inputs>
 			<resource name="regolith" amount="500.0" />
@@ -104,8 +104,8 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 
 	<process name="extract nitrogen compounds from regolith"
 			tech="1" skill="2"
-			work-time="50"
-			process-time="150"
+			work-time="10"
+			process-time="100"
 			power-required="0.1">
 		<inputs>
 			<resource name="regolith" amount="50.0" />
@@ -133,7 +133,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			tech="1" skill="2"
 			work-time="20"
 			process-time="200"
-			power-required="0.05">
+			power-required="0.1">
 		<inputs>
 			<resource name="crop waste" amount="1.0" />
 			<resource name="Black Water" amount="10.0" />
@@ -145,8 +145,8 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 		<outputs>
 			<resource name="Nitrate" amount="0.1" />
 			<resource name="Nitrite" amount="0.02" />
-			<resource name="Nitrogen" amount="0.1" />
-			<resource name="Ammonia" amount="0.1" />
+			<resource name="Nitrogen" amount="0.5" />
+			<resource name="Ammonia" amount="0.5" />
 			<resource name="Grey Water" amount="10.0" />
 		</outputs>
 	</process>
@@ -155,7 +155,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			tech="1" skill="2"
 			work-time="80"
 			process-time="800"
-			power-required=".3">
+			power-required=".5">
 		<inputs>
 			<resource name="crop waste" amount="10" />
 			<resource name="Black Water" amount="100" />
@@ -230,7 +230,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 	</process>
 
 	<process name="make paper, napkin and toilet tissue from pulp"
-			tech="2" skill="2"
+			tech="1" skill="1"
 			work-time="50"
 			process-time="100"
 			power-required=".1">
@@ -246,7 +246,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 	</process>
 
 	<process name="make paper, napkin and toilet tissue from pulp (large batch)"
-			tech="2" skill="2"
+			tech="1" skill="1"
 			work-time="150"
 			process-time="500"
 			power-required=".5">
@@ -270,7 +270,7 @@ TODO 2: need to recruit chemist to monitor the process
 		 -->
 	<process name="make bleaching chemical for paper making"
 			tech="2" skill="3"
-			work-time="20"
+			work-time="10"
 			process-time="50"
 			power-required=".05">
 		<inputs>
@@ -313,7 +313,7 @@ Note: 1 kg of H2 is 14.13 liter
 -->
 	<process name="make sodium hypochlorite for bleaching and sanitation"
 			tech="2" skill="3"
-			work-time="20"
+			work-time="10"
 			process-time="100"
 			power-required=".1">
 		<inputs>
@@ -329,7 +329,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="make sodium hypochlorite for bleaching and sanitation (large batch)"
 			tech="2" skill="3"
-			work-time="80"
+			work-time="50"
 			process-time="400"
 			power-required=".5">
 		<inputs>
@@ -360,7 +360,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="make compost by mixing crop waste and food waste (large batch)"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="500"
+			process-time="1000"
 			power-required=".3">
 		<inputs>
 			<resource name="crop waste" amount="70.0" />
@@ -373,8 +373,8 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="make fertilizers for growing crops"
 			tech="2" skill="2"
-			work-time="50"
-			process-time="500"
+			work-time="25"
+			process-time="250"
 			power-required="0.2">
 		<inputs>
 		<!-- TODO:
@@ -402,8 +402,8 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="make fertilizers for growing crops (large batch)"
 			tech="2" skill="2"
-			work-time="150"
-			process-time="1000"
+			work-time="50"
+			process-time="500"
 			power-required="1">
 		<inputs>
 		<!-- TODO:
@@ -451,7 +451,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="extract aluminum oxide from regolith"
 			tech="1" skill="0"
-			work-time="100"
+			work-time="50"
 			process-time="100"
 			power-required="0.2">
 		<inputs>
@@ -465,7 +465,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="extract aluminum oxide from regolith (large batch)"
 			tech="1" skill="2"
-			work-time="500"
+			work-time="250"
 			process-time="500"
 			power-required="1.0">
 		<inputs>
@@ -479,7 +479,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="extract aluminum and oxide from sand"
 	tech="1" skill="0"
-			work-time="100"
+			work-time="50"
 			process-time="100"
 			power-required="0.2">
 		<inputs>
@@ -494,7 +494,7 @@ Note: 1 kg of H2 is 14.13 liter
 	
 	<process name="extract aluminum and oxide from sand (large batch)"
 	tech="1" skill="2"
-			work-time="500"
+			work-time="250"
 			process-time="500"
 			power-required="1.0">
 		<inputs>
@@ -573,7 +573,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5 5kg iron ingots. -->
-	<process name="cast iron ingot" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="cast iron ingot" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".2">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
@@ -584,7 +584,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 5kg iron ingots. -->
-	<process name="cast iron ingot (large batch)" tech="2" skill="4" work-time="500" process-time="1000"
+	<process name="cast iron ingot (large batch)" tech="2" skill="4" work-time="250" process-time="1000"
 			power-required="1.0">
 		<inputs>
 			<resource name="iron powder" amount="250.0" />
@@ -595,7 +595,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (15kg) sheet of iron. -->
-	<process name="make iron sheet" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="make iron sheet" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".7">
 		<inputs>
 			<resource name="iron powder" amount="15.0" />
@@ -606,7 +606,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (15kg) sheet of iron. -->
-	<process name="do iron sheet rolling" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="do iron sheet rolling" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".5">
 		<inputs>
 			<part name="iron ingot" number="3" />
@@ -619,7 +619,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<!-- Produces 5 1kg aluminum ingots. -->
 	<process name="cast aluminum ingot"
 			tech="2" skill="2"
-			work-time="100"
+			work-time="50"
 			process-time="200"
 			power-required=".2">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
@@ -634,7 +634,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 1kg aluminum ingots. -->
-	<process name="cast aluminum ingot (large batch)" tech="2" skill="4" work-time="500" process-time="1000"
+	<process name="cast aluminum ingot (large batch)" tech="2" skill="4" work-time="250" process-time="1000"
 			power-required="1">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -648,7 +648,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
-	<process name="make aluminum sheet" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="make aluminum sheet" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".7">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -662,7 +662,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
-	<process name="do aluminum sheet rolling" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="do aluminum sheet rolling" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".4">
 		<inputs>
 			<part name="aluminum ingot" number="5" />
@@ -673,7 +673,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of thin aluminum wire. -->
-	<process name="do aluminum wire drawing" tech="2" skill="3" work-time="300" process-time="200"
+	<process name="do aluminum wire drawing" tech="2" skill="3" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -708,7 +708,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5 5kg steel ingots. -->
-	<process name="do steel ingot alloying" tech="2" skill="3" work-time="100" process-time="100"
+	<process name="do steel ingot alloying" tech="2" skill="3" work-time="50" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
@@ -720,7 +720,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 5kg steel ingots. -->
-	<process name="do steel ingot alloying (large batch)" tech="2" skill="5" work-time="500" process-time="500"
+	<process name="do steel ingot alloying (large batch)" tech="2" skill="5" work-time="250" process-time="500"
 			power-required=".5">
 		<inputs>
 			<resource name="iron powder" amount="250.0" />
@@ -732,7 +732,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
-	<process name="make steel sheet" tech="2" skill="3" work-time="200" process-time="200"
+	<process name="make steel sheet" tech="2" skill="3" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
 			<resource name="iron powder" amount="15.0" />
@@ -744,7 +744,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
-	<process name="roll steel sheet" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="roll steel sheet" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
 			<part name="steel ingot" number="3" />
@@ -755,7 +755,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of thick steel wire. -->
-	<process name="draw steel wire" tech="2" skill="3" work-time="300" process-time="200"
+	<process name="draw steel wire" tech="2" skill="3" work-time="50" process-time="200"
 			power-required=".2">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -766,7 +766,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5kg of steel cable. -->
-	<process name="do steel cable winding" tech="2" skill="3" work-time="100" process-time="0"
+	<process name="do steel cable winding" tech="2" skill="3" work-time="50" process-time="50"
 			power-required="0.2">
 		<inputs>
 			<part name="steel wire" number="5" />
@@ -777,7 +777,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 10kg steel pipe. -->
-	<process name="make steel pipe" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="make steel pipe" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".1">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -788,7 +788,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 10kg iron pipe. -->
-	<process name="make iron pipe" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="make iron pipe" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".1">
 		<inputs>
 			<part name="iron sheet" number="2" />
@@ -799,7 +799,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 10kg steel canister. -->
-	<process name="make steel canister" tech="2" skill="2" work-time="250" process-time="200"
+	<process name="make steel canister" tech="2" skill="2" work-time="50" process-time="100"
 			 power-required=".1">
 		<inputs>
 			<part name="steel sheet" number="2" />

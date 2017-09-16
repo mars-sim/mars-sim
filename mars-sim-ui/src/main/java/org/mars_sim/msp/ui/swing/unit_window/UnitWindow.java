@@ -437,15 +437,13 @@ public abstract class UnitWindow extends JInternalFrame {
     	int theme = mainScene.getTheme();
     	if (theme != themeCache) {
         	themeCache = theme;
-	    	if (theme == 0) {
-	        	factory.update(new Color(0xC6D9D9));//0xD6D9DF));
-			}
-    		if (theme == 6) {
-	        	factory.update(new Color(0xC6D9D9));
-			}
-			else if (theme == 7) {
+	    	//if (theme == 0)
+	        //	factory.update(new Color(198, 217, 217));//new Color(0xC6D9D9));//0xD6D9DF));
+    		//if (theme == 6)
+	        //	factory.update(new Color(198, 217, 217));//new Color(0xC6D9D9));
+			if (theme == 7)
 		    	factory.update(new Color(0xC1BF9D));
-			}
+
     	}
 		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()
     	SwingUtilities.invokeLater(() -> {

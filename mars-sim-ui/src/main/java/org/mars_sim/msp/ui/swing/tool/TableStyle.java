@@ -60,17 +60,18 @@ public class TableStyle extends ZebraJTable{
 		// 255 228 225	MistyRose1
 
     	if (theme == 0) { // snow + skyblue
+    		
     		// see default colors for nimbus
     		// https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary
-    		hFore = new Color(57, 105, 138);// ;//(57, 105, 138) is navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
-    		hBack = new Color(198, 217, 217); // 255, 255, 120 very light yellow
+    		//hFore = new Color(57, 105, 138);// ;//(57, 105, 138) is dark navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
+    		//hBack = new Color(198, 217, 217); // Color(198, 217, 217) is super pale light blue 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(42, 79, 105);//(198, 217, 217); ;//(42, 79, 105); //(42, 205, 60) is navy blue; (31, 151, 229); // 139 71 38	sienna4
-    		selBack = new Color(144, 208, 229); // (144, 208, 229) is pale cyan; (70, 130, 180) is steelblue/dark sky blue
+    		selBack = new Color(70, 130, 180); // (144, 208, 229) is pale bright cyan; (70, 130, 180) is steelblue/dark sky blue
     		selFore = new Color(255, 255, 255); // (86, 105, 119) is grey blue; (133, 164, 242) is very pale light blue; 255 255 224 is LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-    		border = new Color(165, 247, 233);//Color.WHITE;//new Color(57, 105, 138);//Color.LIGHT_GRAY;
-    		themeName = "Snow Blue";
+    		border = Color.WHITE; //Color(165, 247, 233 is bright light blue//new Color(57, 105, 138);//Color.LIGHT_GRAY;
+    		themeName = "nimbus";
 
     	}
 

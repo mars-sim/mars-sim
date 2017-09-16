@@ -157,7 +157,7 @@ extends JPanel {
 				"BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
 		renameBtn.setPreferredSize(new Dimension(70, 20));
 		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
-	    renameBtn.setBackground(Color.GRAY);
+	    //renameBtn.setBackground(Color.GRAY);
 	    renameBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// if rename is done successfully, then update the building name
@@ -489,13 +489,9 @@ extends JPanel {
 	@SuppressWarnings("restriction")
 	private void renameBuilding() {
 
-		//boolean isRenamed;
-
 		String oldName = building.getNickName();
 		newName = oldName;
 		logger.info("Old name was " + oldName);
-
-		//boolean isFX = Platform.isFxApplicationThread();
 
 		if (desktop.getMainScene() != null) {
 
@@ -614,41 +610,5 @@ extends JPanel {
 	    	i.next().update();
 
     }
-    /**
-     * Sets the panel's color theme.
-     * @return panel name
-     */
-    public void setTheme(boolean value) {
-        isTranslucent = value;
-		//System.out.println("BuildingPanel.java : setTheme() : isTranslucent is " + isTranslucent);
-    }
-
-    /*
-	//2015-05-01 Added setupDetailButton
-	public void setupDetailButton() {
-
-			JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			JButton detailB = new JButton(Msg.getString(
-					"BuildingPanel.detailButton")); //$NON-NLS-1$
-			detailB.setPreferredSize(new Dimension(60, 20));
-			detailB.setFont(new Font("Serif", Font.PLAIN, 9));
-			detailB.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					if (building != null) {
-						desktop.openUnitWindow(building, false);
-					}
-				}
-			});
-			btnPanel.add(detailB);
-			namePanel.add(btnPanel);
-	        //if (isTranslucent) {
-	        	//detailB.setOpaque(false);
-	        	//detailB.setBackground(new Color(0,0,0,128));
-	        	//detailB.setForeground(Color.ORANGE);
-	        //}
-			//setPanelStyle(btnPanel);
-
-	}
-*/	
     
 }

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
- * PowerStorageBuildingPanel.java
- * @version 3.07 2014-12-06
-
+ * BuildingPanelPowerStorage.java
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 

@@ -64,9 +64,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.EVA;
-import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
-import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -387,7 +385,8 @@ implements Serializable, LifeSupportType, Objective {
 		else
 			setObjective(ObjectiveType.CROP_FARM);
 
-		logger.info("Set " + this + "'s development objective to " + objectiveType.toString() + ", based on the " + template + " template");
+		logger.info("Set " + this + "'s development objective to " + objectiveType.toString() 
+			+ " (based on the '" + template + "' Template)");
 		
 
 	}

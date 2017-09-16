@@ -265,8 +265,8 @@ implements Serializable {
                     addSubTask(walkingTask);
                 }
                 else {
-    	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
-    	    				person.getName() + " cannot walk to outside site.", null);
+    	    		//LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
+    	    		//		person.getName() + " cannot walk to outside site.", null);
                     endTask();
                 }
             }

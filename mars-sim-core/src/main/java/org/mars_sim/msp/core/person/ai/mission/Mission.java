@@ -134,7 +134,8 @@ implements Serializable {
         	s = "' with 1 other at ";
         else
         	s = "' with " + n + " others at ";
-        logger.info(startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement());
+        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+        		startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement(), null);
 
         // Add starting member to mission.
         // 2015-11-01 Temporarily set the shift type to none during the mission

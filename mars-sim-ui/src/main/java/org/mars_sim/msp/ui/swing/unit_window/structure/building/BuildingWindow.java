@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingWindow.java
- * @version 3.08 2015-04-26
+  * @version 3.1.0 2017-09-15
  * @author Manny Kung
  */
 
@@ -54,7 +54,7 @@ public class BuildingWindow extends UnitWindow {
         super.update();
 
         // Check if building has been salvaged.
-        Building building = (Building) getUnit();
+        //Building building = (Building) getUnit();
         //if (!salvaged && building.isSalvaged()) {
         //    addTabPanel(new SalvageTabPanel(building, desktop));
         //    salvaged = true;

@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -79,6 +80,8 @@ implements Serializable {
 
     private static double dessertMassPerServing;
 
+ 
+    
     // 2015-01-03 Added availableDesserts
     private static String [] availableDesserts =
     	{
@@ -111,11 +114,11 @@ implements Serializable {
     // arbitrary percent of dry mass of the corresponding dessert/beverage.
     public static double [] dryMass =
     	{
-    		0.3,
+    		0.05,
 			0.02,
-			0.5,
-			0.8,
-			0.5,
+			0.15,
+			0.3,
+			0.3,
 			0.02
 		};
 
@@ -250,9 +253,9 @@ implements Serializable {
                 removedBuilding = true;
             }
             else {
-                PreparingDessert preparingDessertFunction = (PreparingDessert) building.getFunction(FUNCTION);
+                //PreparingDessert preparingDessertFunction = (PreparingDessert) building.getFunction(FUNCTION);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .25D + .25D;
-                supply += preparingDessertFunction.cookCapacity * wearModifier;
+                supply += building.getPreparingDessert().cookCapacity * wearModifier;
             }
         }
 
@@ -351,12 +354,24 @@ implements Serializable {
      * @return PreparedDessert
      */
     public PreparedDessert chooseADessert(Person person) {
+    	List<PreparedDessert> menu = new ArrayList<>();//servingsOfDessert);
         PreparedDessert bestDessert = null;
         PreparedDessert bestFavDessert = null;
         double bestQuality = -1;
         String favoriteDessert = person.getFavorite().getFavoriteDessert();
 
-        Iterator<PreparedDessert> i = servingsOfDessert.iterator();
+        double thirst = person.getPhysicalCondition().getThirst();
+     
+        if (thirst > 100) {
+	        for (PreparedDessert d : servingsOfDessert) {
+	        	if (d.getName().contains("juice") || d.getName().contains("milk"))
+	        		menu.add(d);
+	        }
+        }
+        else
+        	menu = servingsOfDessert;
+        
+        Iterator<PreparedDessert> i = menu.iterator();
         while (i.hasNext()) {
             PreparedDessert d = i.next();
             double q = d.getQuality();
@@ -369,7 +384,7 @@ implements Serializable {
                 	//}
               		bestQuality = q;
                     bestFavDessert = d;
-                    servingsOfDessert.remove(bestFavDessert);
+                    menu.remove(bestFavDessert);
                     return bestFavDessert;
                 }
             }
@@ -377,6 +392,7 @@ implements Serializable {
             else if (q > bestQuality) {
                 bestQuality = q;
                 bestDessert = d;
+                // pick this by breaking
                 break;
             }
 
@@ -388,7 +404,7 @@ implements Serializable {
 
 
         if (bestDessert != null) {
-            servingsOfDessert.remove(bestDessert);
+        	menu.remove(bestDessert);
         }
 
         return bestDessert;
@@ -482,7 +498,6 @@ implements Serializable {
  	 */
  	public List<String> getAListOfDesserts() {
  		// TODO : turn this list into an array to speed up the operation
-
     	List<String> dessertList = new CopyOnWriteArrayList<>(); //ArrayList<String>();
 
 	  	// Put together a list of available dessert
@@ -491,8 +506,11 @@ implements Serializable {
         	double amount = dryMass[i];
             ///System.out.println("PreparingDessert : it's " + availableDesserts[i]);
         	boolean isAvailable = Storage.retrieveAnResource(amount, availableDessertsAR[i], inv, false);
-
-        	if (isAvailable) {
+        	boolean isWater_av = false;
+        	if (dessertMassPerServing > amount)
+        		isWater_av = Storage.retrieveAnResource(dessertMassPerServing-amount, waterAR, inv, false);
+        	
+        	if (isAvailable && isWater_av) {
             	//System.out.println("n is available");
         		dessertList.add(availableDesserts[i]);
         	}
@@ -599,9 +617,11 @@ implements Serializable {
 
         else {
 	        Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
-
+	        if (dessertMassPerServing > dryMass)
+	        	Storage.retrieveAnResource(dessertMassPerServing-dryMass, waterAR, inv, true);
+	        
 	        double dessertQuality = 0;
-        // TODO: quality also dependent upon the hygiene of a person
+	        // TODO: quality also dependent upon the hygiene of a person
 		    double culinarySkillPerf = 0;
 		    // 2017-04-26 Add influence of a person/robot's performance on meal quality
 		    if (person != null)
@@ -617,9 +637,9 @@ implements Serializable {
 		    	producerName = robot.getName();
 
 	        // Create a serving of dessert and add it into the list
-		    servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, (MarsClock)currentTime.clone(), producerName, this));
+		    servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing, (MarsClock)currentTime.clone(), producerName, this));
 
-		    consumeWater();
+		    //consumeWater();
 
 		    dessertCounterPerSol++;
 

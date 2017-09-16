@@ -35,8 +35,10 @@ public class CompositionOfAir implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(CompositionOfAir.class.getName());
+	private static Logger logger = Logger.getLogger(CompositionOfAir.class.getName());
 	
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+
 	public static final double C_TO_K = 273.15;
 	
 	public static final int numGases = 5;
@@ -471,12 +473,12 @@ public class CompositionOfAir implements Serializable {
 
 					AmountResource ar = getGasAR(gas);
 					
-					if (d_percent > 0)
+					if (d_mass > 0)
 						Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
 					else {
-						double amount = d_mass * GAS_CAPTURE_EFFICIENCY;
-						if (amount > 0)		
-							Storage.storeAnResource(amount, ar , b.getInventory(), "::monitorAir"); 
+						double recaptured = d_mass * GAS_CAPTURE_EFFICIENCY;
+						if (recaptured > 0)		
+							Storage.storeAnResource(recaptured, ar , b.getInventory(), sourceName + "::monitorAir"); 
 					}
 						
 					double new_m = 0;
@@ -764,7 +766,8 @@ public class CompositionOfAir implements Serializable {
 			new_moles = old_moles - d_moles;
 			new_mass = old_mass - d_mass;
 			if (d_mass > 0)
-				Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar , b.getInventory(), "::pumpOrExtractMoles"); 
+				Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar , b.getInventory(), true,
+						sourceName + "::pumpOrRecaptureGas"); 
 			if (new_moles < 0)
 				new_moles = 0;
 			if (new_mass < 0)

@@ -723,25 +723,23 @@ implements Serializable {
     public static boolean canExitAirlock(Person person, Airlock airlock) {
 
 		// Check if person is outside.
-        if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
-    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+    		LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, 
     				person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since he/she is already outside.", null);
+          	//person.getMind().getNewAction(true, false);
+          	person.getMind().getTaskManager().clearTask();
             return false;
         }
 
         // Check if EVA suit is available.
         else if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
 	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " since no EVA suit is available.";
-
-	    	//if (!logCache[0].equals(newLog)) {
-		    //	logCache[0] = newLog;
-			//	logger.severe(logCache[0]);
-	    	//}
+                    " since no working EVA suit is available.";
     		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
-
-            return false;
+          	//person.getMind().getNewAction(true, false);//getTaskManager().clearTask();
+    		person.getMind().getTaskManager().clearTask();
+    		return false;
         }
 
         //double performance = person.getPerformanceRating();

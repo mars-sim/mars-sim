@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -101,12 +100,10 @@ implements Serializable {
 	private Map<Part, Integer> emergencyParts;
 	private Vehicle emergencyVehicle;
 
-	private static AmountResource foodAR = ResourceUtil.foodAR;//AmountResource.findAmountResource(LifeSupportType.FOOD);
-	private static AmountResource oxygenAR =  ResourceUtil.oxygenAR;//AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	private static AmountResource waterAR = ResourceUtil.waterAR;//AmountResource.findAmountResource(LifeSupportType.WATER);
-	private static AmountResource methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource("methane");
-	//private static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
-	//private static AmountResource iceAR = AmountResource.findAmountResource("ice");
+	private static AmountResource foodAR = ResourceUtil.foodAR;
+	private static AmountResource oxygenAR =  ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource methaneAR = ResourceUtil.methaneAR;
 
     private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
@@ -166,7 +163,7 @@ implements Serializable {
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " starting emergency supply mission from " + getStartingSettlement() +
+                logger.info(startingPerson.getName() + " started an emergency supply mission from " + getStartingSettlement() +
                         " to " + getEmergencySettlement() + " using " + getRover().getName());
             }
         }
@@ -258,7 +255,7 @@ implements Serializable {
         if (logger.isLoggable(Level.INFO)) {
             Person startingPerson = (Person) members.toArray()[0];
             if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " starting emergency supply mission from " + getStartingSettlement() +
+                logger.info(startingPerson.getName() + " started an emergency supply mission from " + getStartingSettlement() +
                         " to " + getEmergencySettlement() + "on " + getRover().getName());
             }
         }
@@ -663,12 +660,8 @@ implements Serializable {
 
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
-            //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             if (resource.equals(oxygenAR)) amountNeededSol = config.getNominalO2ConsumptionRate();
-            //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (resource.equals(waterAR)) amountNeededSol = config.getWaterConsumptionRate();
-            //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
             if (resource.equals(foodAR)) amountNeededSol = config.getFoodConsumptionRate();
 
             double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_IN_MONTH_LONG * 3D);
@@ -676,7 +669,6 @@ implements Serializable {
             result = numPeople * amountNeededOrbit ;
         }
         else {
-            //AmountResource methane = AmountResource.findAmountResource("methane");
             if (resource.equals(methaneAR)) {
                 Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
                 while (i.hasNext()) {
@@ -746,14 +738,11 @@ implements Serializable {
 
         double solsMonth = MarsClock.SOLS_IN_MONTH_LONG;
         int numPeople = settlement.getAllAssociatedPeople().size();
-        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
-       // AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenAR, false);
 
-        // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(oxygenAR);
 
         oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygenAR);
@@ -766,11 +755,9 @@ implements Serializable {
         }
 
         // Determine water amount needed.
-        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth;
         double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterAR, false);
 
-        // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(waterAR);
 
         waterAmountAvailable += getResourcesOnMissions(settlement, waterAR);
@@ -783,11 +770,9 @@ implements Serializable {
         }
 
         // Determine food amount needed.
-        //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth;
         double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodAR, false);
 
-        // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(foodAR);
 
         foodAmountAvailable += getResourcesOnMissions(settlement, foodAR);
@@ -800,11 +785,9 @@ implements Serializable {
         }
 
         // Determine methane amount needed.
-        //AmountResource methane = AmountResource.findAmountResource("methane");
         double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
         double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methaneAR, false);
 
-        // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(methaneAR);
 
         methaneAmountAvailable += getResourcesOnMissions(settlement, methaneAR);

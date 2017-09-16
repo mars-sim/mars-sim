@@ -379,12 +379,12 @@ public class TabPanelDashboard extends TabPanel {
 				
 				commitButton.getStylesheets().clear();
 				
-				if (theme == 6) {
+				if (theme == 0 || theme == 6) {
 					String cssFile = "/fxui/css/snowBlue.css";
 					String color = "-fx-border-style: 2px; " + "-fx-background-color: white;" + "-fx-border-color: white;"
 							+ "-fx-background-radius: 2px;";
 					setCSS(cssFile, color);
-				} else if (theme == 0 || theme == 7) {
+				} else if (theme == 7) {
 					String cssFile = "/fxui/css/nimrodskin.css";
 					String color = "-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
 							+ "-fx-background-radius: 2px;";

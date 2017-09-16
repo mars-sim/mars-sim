@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMissionMeta.java
- * @version 3.08 2015-02-10
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -16,15 +16,11 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A meta mission for the BuildingSalvageMission mission.

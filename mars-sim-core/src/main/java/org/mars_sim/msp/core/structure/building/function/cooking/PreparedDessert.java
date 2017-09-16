@@ -34,7 +34,7 @@ implements Serializable {
 	private String name;
 
 	private String producerName;
-	private String consumerName;
+	//private String consumerName;
 	private PreparingDessert kitchen;
 
 	private double dryMass;
@@ -43,7 +43,8 @@ implements Serializable {
 	 * @param quality the quality of the dessert
 	 * @param creationTime the time the dessert was cooked.
 	 */
-	public PreparedDessert(String name, double quality, double dryMass, MarsClock creationTime, String producerName, PreparingDessert kitchen) {
+	public PreparedDessert(String name, double quality, double dryMass, MarsClock creationTime, String producerName, 
+			PreparingDessert kitchen) {
 		this.quality = quality;
 		this.name = name;
 		this.dryMass = dryMass;
@@ -52,14 +53,14 @@ implements Serializable {
 		this.producerName = producerName;
 		this.kitchen = kitchen;
 	}
-
+/*
 	public PreparedDessert(PreparedDessert preparedDessert, String consumerName) {
 		this.quality = preparedDessert.quality;
 		this.name = preparedDessert.name;
 		this.expirationTime = preparedDessert.expirationTime;
 		this.consumerName = consumerName;
 	}
-
+*/
 	// 2014-11-28 Added getName()
 	public String getName() {
 		return name;
@@ -87,8 +88,9 @@ implements Serializable {
 	public MarsClock getExpirationTime() {
 		return expirationTime;
 	}
-
+/*
 	public void setConsumerName(String consumerName) {
 		this.consumerName = consumerName;
 	}
+	*/
 }

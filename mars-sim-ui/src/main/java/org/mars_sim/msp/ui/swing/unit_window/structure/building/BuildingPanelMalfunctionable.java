@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelMalfunctionable.java
- * @version 3.07 2014-11-21
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;

@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
@@ -121,10 +122,10 @@ public class BuildingStage {
 	
     public void applyTheme() {
         String cssFile = null;
-        
-        if (desktop.getMainScene().getTheme() == 6)
+        int theme = MainScene.getTheme(); 
+        if (theme == 0 || theme == 6)
         	cssFile = "/fxui/css/snowBlue.css";
-        else
+        else if (theme == 7)
         	cssFile = "/fxui/css/nimrodskin.css";
         
         buildingNameLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());

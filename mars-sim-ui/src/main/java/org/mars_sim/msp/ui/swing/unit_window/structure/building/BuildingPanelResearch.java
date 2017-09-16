@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * ResearchBuildingPanel.java
- * @version 3.07 2014-11-21
+ * BuildingPanelResearch.java
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -12,10 +12,11 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 
 /**
@@ -95,11 +96,16 @@ extends BuildingFunctionPanel {
 		//add(specialtiesListPanel, BorderLayout.CENTER);
 
 		JTextArea specialtyTA = new JTextArea();
+		//JTextPane specialtyTA = new JTextPane();
+		//StyledDocument doc = specialtyTA.getStyledDocument();
+		//SimpleAttributeSet center = new SimpleAttributeSet();
+		//StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		//doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		specialtyTA.setEditable(false);
-		specialtyTA.setOpaque(false);
-		specialtyTA.setBackground(new Color(0,0,0,128));
+		//specialtyTA.setOpaque(false);
+		//specialtyTA.setBackground(new Color(0,0,0,128));
 		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
-		//specialtyTA.setColumns();
+		specialtyTA.setColumns(7);
 		//specialtyTA.setFont(new Font("Serif", Font.PLAIN, 12));
 
 		// For each specialty, add specialty name panel.

@@ -106,8 +106,9 @@
 			<!-- Resources -->
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->
-			<resource type="food" amount="1657.0" />
-
+			<resource type="food" amount="4000.0" />
+			<resource type="water" amount="4000.0" />	
+			
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
 			<resource type="food waste" amount="25.0" />			
@@ -118,7 +119,7 @@
 			<resource type="hydrogen" amount="3000.0" />					
 			<resource type="methane" amount="3000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="argon" amount="10.0" />		
+			<resource type="argon" amount="30.0" />		
 			
 			<resource type="fertilizer" amount="50.0" />
 			
@@ -305,8 +306,9 @@
 
 
 			<!-- Resources -->
-			<resource type="food" amount="3314.0" />
-			
+			<resource type="food" amount="6000.0" />
+			<resource type="water" amount="6000.0" />	
+						
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
 			<resource type="food waste" amount="25.0" />			
@@ -317,7 +319,7 @@
 			<resource type="hydrogen" amount="6000.0" />					
 			<resource type="methane" amount="6000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="argon" amount="10.0" />		
+			<resource type="argon" amount="60.0" />		
 			
 			<resource type="fertilizer" amount="50.0" />
 
@@ -539,19 +541,20 @@
 			<equipment type="Specimen Box" number="140" />
 
 			<!-- Resources -->
-			<resource type="food" amount="4970.0" />
-			
+			<resource type="food" amount="8000.0" />
+			<resource type="water" amount="8000.0" />	
+						
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
 			<resource type="food waste" amount="25.0" />			
 			<resource type="solid waste" amount="25.0" />			
 			<resource type="crop waste" amount="25.0" />	
 	
-			<resource type="nitrogen" amount="6000.0" />			
+			<resource type="nitrogen" amount="9000.0" />			
 			<resource type="hydrogen" amount="9000.0" />					
 			<resource type="methane" amount="9000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="argon" amount="10.0" />		
+			<resource type="argon" amount="90.0" />		
 			
 			<resource type="fertilizer" amount="50.0" />
 			
@@ -870,8 +873,9 @@
 			<equipment type="Specimen Box" number="260" />
 
 			<!-- Resources -->
-			<resource type="food" amount="9940.0" />
-			
+			<resource type="food" amount="10000.0" />
+			<resource type="water" amount="10000.0" />	
+						
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
 			<resource type="food waste" amount="25.0" />			
@@ -882,7 +886,7 @@
 			<resource type="hydrogen" amount="12000.0" />								
 			<resource type="methane" amount="12000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="argon" amount="10.0" />		
+			<resource type="argon" amount="120.0" />		
 			
 			<resource type="fertilizer" amount="50.0" />
 			<!-- Crop -->
@@ -1134,15 +1138,15 @@
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
 
-			<resource type="oxygen" amount="2245.0" />
-			<resource type="water" amount="69472.0" />
-			<resource type="food" amount="1656.0" />
+			<resource type="oxygen" amount="4000.0" />
+			<resource type="water" amount="4000.0" />
+			<resource type="food" amount="4000.0" />
 
 			<resource type="nitrogen" amount="16000.0" />
 			<resource type="hydrogen" amount="16000.0" />								
 			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="argon" amount="10.0" />		
+			<resource type="argon" amount="160.0" />		
 			
 			<resource type="fertilizer" amount="50.0" />	
 			
@@ -1295,15 +1299,15 @@
 			<equipment type="Large Bag" number="20" />
 			<equipment type="Specimen Box" number="100" />
 
-			<resource type="oxygen" amount="2245.0" />
-			<resource type="water" amount="69472.0" />
-			<resource type="food" amount="1656.0" />
-	
+			<resource type="oxygen" amount="4000.0" />
+			<resource type="water" amount="4000.0" />
+			<resource type="food" amount="4000.0" />
+
 			<resource type="nitrogen" amount="16000.0" />	
 			<resource type="hydrogen" amount="16000.0" />							
 			<resource type="methane" amount="16000.0" />			
 			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="argon" amount="10.0" />		
+			<resource type="argon" amount="160.0" />		
 			
 			<resource type="fertilizer" amount="50.0" />		
 			

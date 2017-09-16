@@ -7,17 +7,14 @@
 package org.mars_sim.msp.ui.javafx;
 
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ListChangeListener.Change;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -58,7 +55,6 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -95,8 +91,6 @@ public class BrowserJFX {
 
     public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
     public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
-
-
 
     private static final String CSS =
     		"a, a:link, a:visited, a:hover{color:rgb(184, 134, 11); text-decoration:none;}"

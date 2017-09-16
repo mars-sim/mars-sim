@@ -419,53 +419,60 @@ implements Serializable {
 				e.printStackTrace(System.err);
 			}
 
-			if (registerEvent) {
-				HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
-				if (eventManager == null)
-					eventManager = sim.getEventManager();
-				eventManager.registerNewEvent(newEvent);
-				
-				if (!mal_name.equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
-					 // Register the failure of the Parts involved
-					 Map<Part,Integer> parts = malfunction.getRepairParts();
-					 Set<Part> partSet = parts.keySet();
-					 for (Part p : partSet) {
-						 int num = parts.get(p);
-						 // Increment the number of failure for this Part
-						 partConfig.setFailure(p, num);
-						 // Recompute the reliability of this Part
-						 partConfig.computeReliability(p);
-					 }
-					
-					 double new_p = 0.0;
-	
-					 // Compute the new reliability and failure rate for this malfunction
-					 for (Part p : partSet) {
-						 int id = p.getID();
-						 String part_name = p.getName();
-						 if (!part_name.equalsIgnoreCase("decontamination kit") 
-								 && !part_name.equalsIgnoreCase("airleak patch") 
-								 && !part_name.equalsIgnoreCase("fire extinguisher")) {
-							 double rel = partConfig.getReliability(id);
-							 
-							 String name = p.getName();
-							 double needed = malfunctionConfig.getRepairPartProbability(malfunction.getName(), name);
-							 double weight =  (100-rel) * needed/100D;
-							 logger.info(p.getName() + " (Reliability : " + Math.round(rel*100.0)/100.0 
-									 + " %   Needed : " + Math.round(needed*100.0)/100.0 
-									 + " %   Weight : " + Math.round(weight*100.0)/100.0 
-									 + " %)"
-									 );
-							 new_p += weight; 
-							 
-							 double old_p = malfunction.getProbability();
-							 logger.info("Updating " + mal_name + "'s compposite failure rate : " 
-									 + Math.round(old_p*10000.0)/10000.0  
-									 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
-							 malfunction.setProbability(new_p);
-						}
-					}
-				}
+			if (!registerEvent)
+				return;
+			
+			HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
+			if (eventManager == null)
+				eventManager = sim.getEventManager();
+			eventManager.registerNewEvent(newEvent);
+			
+			if (mal_name.equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE))
+				return;
+			
+			 // Register the failure of the Parts involved
+			 Map<Part,Integer> parts = malfunction.getRepairParts();
+			 Set<Part> partSet = parts.keySet();
+			 for (Part p : partSet) {
+				 int num = parts.get(p);
+				 // Increment the number of failure for this Part
+				 partConfig.setFailure(p, num);
+				 // Recompute the reliability of this Part
+				 partConfig.computeReliability(p);
+			 }
+			
+			 double new_p = 0.0;
+
+			 // Compute the new reliability and failure rate for this malfunction
+			 for (Part p : partSet) {
+				 int id = p.getID();
+				 String part_name = p.getName();
+				 if (part_name.equalsIgnoreCase("decontamination kit") 
+						 || part_name.equalsIgnoreCase("airleak patch") 
+						 || part_name.equalsIgnoreCase("fire extinguisher")) {
+					 // they do NOT contribute to the malfunctions and are tools to fix the malfunction
+					 // and do NOT need to change their reliability.
+					 return ;
+				 }
+			 
+				 double rel = partConfig.getReliability(id);
+				 
+				 String name = p.getName();
+				 double needed = malfunctionConfig.getRepairPartProbability(malfunction.getName(), name);
+				 double weight =  (100-rel) * needed/100D;
+				 logger.info(p.getName() + " (Part Reliability: " + Math.round(rel*100.0)/100.0 
+						 + " %   Part Malfunction Probability: " + Math.round(needed*100.0)/100.0 
+						 + " %   Part Failure Rate: " + Math.round(weight*100.0)/100.0 
+						 + " %)"
+						 );
+				 new_p += weight; 
+				 
+				 double old_p = malfunction.getProbability();
+				 logger.info("Updating '" + mal_name + "' Compposite Failure Rate : " 
+						 + Math.round(old_p*10000.0)/10000.0  
+						 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
+				 malfunction.setProbability(new_p);
+		 
 			}
 			
 			issueMedicalComplaints(malfunction);

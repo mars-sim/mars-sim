@@ -45,15 +45,13 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
-import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
-import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
-import javafx.application.Platform;
+//import javafx.application.Platform;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the

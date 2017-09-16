@@ -437,8 +437,8 @@ implements Serializable {
 
     /**
      * Determines a new action for the person based on available tasks, missions and active missions.
-     * @param tasks can actions be tasks?
-     * @param missions can actions be new missions?
+     * @param tasks can the action be a new task?
+     * @param missions can the action be a new mission?
      */
     public void getNewAction(boolean tasks, boolean missions) {
 

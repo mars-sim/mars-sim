@@ -28,8 +28,8 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 
 	<!-- The normal average amount of water drank by a person on each Sol -->
-	<!-- Default: 4.0 -->
-	<water-consumption-rate value="4.0" />
+	<!-- Default: 3.0 -->
+	<water-consumption-rate value="3" />
 
 	<!-- The normal average amount (kg) of water usage (cleaning, shower, 
 	toilet, etc.) by a person each Martian Sol -->
@@ -37,8 +37,8 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Note : 1 US gallon = 3.79 kg or liter (water)-->
 	<!-- Instead of consuming an average of 50 liters to take a shower 
 	(typical on Earth), denizens of the ISS uses < 4 liters to bathe. -->
-	<!-- Default: 10.0 -->
-	<water-usage-rate value="10.0" />
+	<!-- Default: 8.0 -->
+	<water-usage-rate value="8.0" />
 
 	<!-- The fictitious ratio denoting the amount of grey water and black 
 	water generated per unit water usage-->

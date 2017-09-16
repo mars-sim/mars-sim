@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmergencySupplyMissionMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -73,13 +73,25 @@ public class EmergencySupplyMissionMeta implements MetaMission {
                 return 0;
             }
 
+            int min_num = 0;
+            int all = settlement.getAllAssociatedPeople().size();
+            if (all == 2)
+            	min_num = 0;
+            else 
+            	min_num = RoverMission.MIN_STAYING_MEMBERS;
+    	    
     	    // Check if minimum number of people are available at the settlement.
-            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
+            if (!RoverMission.minAvailablePeopleAtSettlement(settlement, min_num)) {
     	        return 0;
     	    }
 
-    	    // Check if min number of EVA suits at settlement.
-            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
+            if (all == 2)
+            	min_num = 1;
+            else
+            	min_num = RoverMission.MIN_GOING_MEMBERS;
+    	    
+            // Check if min number of EVA suits at settlement.
+            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
     	        return 0;
     	    }
 

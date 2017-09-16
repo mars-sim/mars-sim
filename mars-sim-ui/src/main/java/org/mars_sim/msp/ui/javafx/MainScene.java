@@ -18,8 +18,6 @@ import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXToggleButton;
-import com.nilo.plaf.nimrod.NimRODLookAndFeel;
-import com.nilo.plaf.nimrod.NimRODTheme;
 
 import org.controlsfx.control.MaskerPane;
 import org.fxmisc.wellbehaved.event.InputMap;
@@ -2458,12 +2456,16 @@ public class MainScene {
 		// (2). the inability of loading the tab icons of the Monitor Tool at the beginning
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
+/*
 		if (OS.contains("linux")) {
 			setTheme(0);
 		}
 		else {
 			setTheme(7);
 		}
+*/
+		setTheme(0); // 0 = nimbus
+		
 		//logger.info("done with MainScene's initializeTheme()");
 	}
 
@@ -2474,7 +2476,7 @@ public class MainScene {
 
 		if (menuBar.getStylesheets() != null)
 			menuBar.getStylesheets().clear();
-
+			
 		String cssFile;
 
 		if (this.theme != theme) {
@@ -2484,7 +2486,9 @@ public class MainScene {
 				// for numbus theme
 				cssFile = "/fxui/css/snowBlue.css";
 				updateThemeColor(0, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
-				themeSkin = "snowBlue";
+				themeSkin = "numbus";
+				
+				// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
 
 			} else if (theme == 1) { // olive green
 				cssFile = "/fxui/css/oliveskin.css";
@@ -2524,7 +2528,10 @@ public class MainScene {
 				themeSkin = "nimrod";
 
 			}
-
+			
+			SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));
+			
+/*
 			SwingUtilities.invokeLater(() -> {
 				// 2016-06-17 Added checking for OS.
 				if (OS.contains("linux")) {
@@ -2534,8 +2541,10 @@ public class MainScene {
 				else
 					setLookAndFeel(NIMROD_THEME);
 			});
+*/
 		}
-		//logger.info("done with MainScene's changeTheme()");
+
+	
 	}
 
 	/**
@@ -2555,7 +2564,9 @@ public class MainScene {
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
-		} else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel"
+		} 
+/*		
+		else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel"
 			try {
 				NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme"));
 				//NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme file
@@ -2568,13 +2579,21 @@ public class MainScene {
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
-		} else if (choice == NIMBUS_THEME) {
+		}
+*/
+		else if (choice == NIMBUS_THEME) {
 			try {
 				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 					if (info.getName().equals("Nimbus")) {
 						// Set Nimbus look & feel if found in JVM.
-						//System.out.println("found Nimbus");
+
+						// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
+						
+						// UIManager.put("nimbusBase", new Color(...));
+						// UIManager.put("nimbusBlueGrey", new Color(...));
+						// UIManager.put("control", new Color(...));
+						
 						UIManager.setLookAndFeel(info.getClassName());
 						foundNimbus = true;
 						//themeSkin = "nimbus";

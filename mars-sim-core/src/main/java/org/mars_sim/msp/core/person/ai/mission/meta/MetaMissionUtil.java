@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaMissionUtil.java
- * @version 3.07 2015-03-02
+ * @version 3.1.0 2017-09-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;

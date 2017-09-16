@@ -57,11 +57,13 @@ extends TabPanel {
 
 	// Data cache
 	private double fatigueCache;
+	private double thirstCache;
 	private double hungerCache;
 	private double energyCache;
 	private double stressCache;
 	private double performanceCache;
 
+	private JLabel thirstLabel;
 	private JLabel fatigueLabel;
 	private JLabel hungerLabel;
 	private JLabel energyLabel;
@@ -125,6 +127,16 @@ extends TabPanel {
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
+		JLabel thirstNameLabel = new JLabel(Msg.getString("TabPanelHealth.thirst"), JLabel.RIGHT); //$NON-NLS-1$
+		conditionPanel.add(thirstNameLabel);
+
+		// Prepare hunger label
+		thirstCache = condition.getThirst();
+		thirstLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+		        formatter.format(thirstCache)), JLabel.LEFT);
+		conditionPanel.add(thirstLabel);
+		
+		// Prepare hunger name label
 		JLabel hungerNameLabel = new JLabel(Msg.getString("TabPanelHealth.hunger"), JLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(hungerNameLabel);
 
@@ -168,7 +180,7 @@ extends TabPanel {
 
 		// 2017-03-28 Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(conditionPanel,
-		                                5, 2, //rows, cols
+		                                6, 2, //rows, cols
 		                                100, 4,        //initX, initY
 		                                50, 3);       //xPad, yPad
 
@@ -310,6 +322,14 @@ extends TabPanel {
 			        formatter.format(fatigueCache)));
 		}
 
+		// Update thirst if necessary.
+		double newT = condition.getThirst();
+		if (thirstCache *.95 > newT || thirstCache *1.05 < newT) {
+			thirstCache = newT;
+			thirstLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+			        formatter.format(thirstCache)));
+		}
+		
 		// Update hunger if necessary.
 		double newH = condition.getHunger();
 		if (hungerCache *.95 > newH || hungerCache *1.05 < newH) {

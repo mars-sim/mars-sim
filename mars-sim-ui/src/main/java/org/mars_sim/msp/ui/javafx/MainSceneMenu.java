@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 //import org.mars_sim.msp.ui.jme3.jme3FX.MarsPanel;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;

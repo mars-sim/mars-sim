@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.1.0 2017-04-26
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -26,13 +26,12 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
-import org.mars_sim.msp.core.time.MarsClock;
+
 
 /**
  * The CookMeal class is a task for cooking meals in a building
@@ -138,7 +137,7 @@ implements Serializable {
 	        	}
 */
 
-				String newLog = "cannot cook meals in "
+				String newLog = person + " cannot cook meals in "
 	            		+ person.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 
@@ -221,7 +220,7 @@ implements Serializable {
 	            		+ " because none of the ingredients of any meals are available ");
 */
 
-				String newLog = "cannot cook meals in "
+				String newLog = robot + " cannot cook meals in "
 	            		+ robot.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ";
 

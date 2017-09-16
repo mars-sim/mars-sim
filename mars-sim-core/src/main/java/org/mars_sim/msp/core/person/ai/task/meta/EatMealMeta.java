@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -49,18 +50,23 @@ public class EatMealMeta implements MetaTask, Serializable {
         if (ls == LocationSituation.OUTSIDE)
         	return 0;
 
-        double hunger = person.getPhysicalCondition().getHunger();
-        double energy = person.getPhysicalCondition().getEnergy();
+        PhysicalCondition pc = person.getPhysicalCondition();
+        
+        double thirst = pc.getThirst();
+        double hunger = pc.getHunger();
+        double energy = pc.getEnergy();
+        
     	CircadianClock cc = person.getCircadianClock();
     	double ghrelin = cc.getSurplusGhrelin();
     	double leptin = cc.getSurplusLeptin();
         // Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ persson per sol
         
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
-        if (hunger > 250D || energy < 2525D || ghrelin-leptin > 300) {
-            hunger = hunger / 10D;
+        if (thirst > 200 || hunger > 250D || energy < 2525D || ghrelin-leptin > 300) {
+        	thirst = thirst / 10D;
+        	hunger = hunger / 10D;
             energy = (2525D - energy) / 100D;
-            result = hunger + energy;// +  (ghrelin-leptin - 300);
+            result = thirst + hunger + energy;// +  (ghrelin-leptin - 300);
             if (result <= 0D)
             	return 0;
         }
@@ -74,7 +80,8 @@ public class EatMealMeta implements MetaTask, Serializable {
             Cooking kitchen = EatMeal.getKitchenWithMeal(person);
             if (kitchen != null) {
                 // Increase probability to eat meal if a cooked meal is available.
-                result *= 2.5D;
+            	int num = kitchen.getNumberOfAvailableCookedMeals();
+                result *= 1.5 * num;
             }
             else { //no kitchen has available meals
                 // If no cooked meal, check if preserved food is available to eat.
@@ -103,7 +110,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         }
         
     	if (CookMeal.isMealTime(person.getCoordinates())) {
-    		result *= 5D;
+    		result *= 4D;
     	}
     	else
     		result *= .25D;    

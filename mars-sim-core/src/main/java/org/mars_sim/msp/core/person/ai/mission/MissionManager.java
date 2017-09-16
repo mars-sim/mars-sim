@@ -41,23 +41,24 @@ implements Serializable {
 	/** default logger. */
 	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
 
-	// Data members
-	private String phaseDescriptionCache;
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
+	
 	/** Mission listeners. */
 	private transient List<MissionManagerListener> listeners;
 
 	// Cache variables.
+	private transient double totalProbCache;
+
+	private String phaseDescriptionCache;
+	
 	private transient Person personCache;
 	private transient Robot robotCache;
 	private transient MarsClock personTimeCache;
 	private transient MarsClock robotTimeCache;
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient Map<MetaMission, Double> robotMissionProbCache;
-	private transient double totalProbCache;
-	//private transient MarsClock currentTime;// = Simulation.instance().getMasterClock().getMarsClock();
-	
+
 	/**
 	 * Constructor.
 	 */

@@ -618,8 +618,8 @@ public class MasterClock implements Serializable { // Runnable,
 	            	statusUpdate();
 	            	skips++;
 
-	            	if (skips == maxFrameSkips) {
-		            	logger.info("# of skips = maxFrameSkips. Slowing down TBU...");
+	            	if (skips >= maxFrameSkips) {
+		            	logger.info("# of skips >= max frame skips. Reseting total pulse to slow down Time Between Updates (TBU).");
 		            	resetTotalPulses();
 		            	if (timeBetweenUpdates > (long) (default_tbu_ns * 1.25))
 		            		timeBetweenUpdates = (long) (default_tbu_ns * 1.25);

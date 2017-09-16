@@ -6,10 +6,10 @@
 	<part name="airleak patch" mass=".2">
 		<description>Plastic and adhesive patch for airleaks.</description>
 		<maintenance-entity-list>
-			<entity name="life support" probability="10" max-number="4" />
-			<entity name="rover" probability="10" max-number="2" />
-			<entity name="eva suit" probability="10" max-number="1" />
-			<entity name="farming" probability="10" max-number="4" />
+			<entity name="life support" probability="5" max-number="4" />
+			<entity name="rover" probability="5" max-number="2" />
+			<entity name="eva suit" probability="5" max-number="1" />
+			<entity name="farming" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 	<part name="fire extinguisher" mass="3" />
@@ -21,89 +21,87 @@
 	</part>
 	<part name="gasket" mass=".1">
 		<maintenance-entity-list>
-			<entity name="rover" probability="30" max-number="4" />
-			<entity name="farming" probability="60" max-number="6" />
-			<entity name="living accommodations" probability="30" max-number="4" />
-			<entity name="manufacture" probability="60" max-number="6" />
+			<entity name="rover" probability="5" max-number="4" />
+			<entity name="farming" probability="5" max-number="6" />
+			<entity name="living accommodations" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="6" />
 			<entity name="eva suit" probability="5" max-number="1" />
-			<entity name="settlement" probability="15" max-number="2" />
+			<entity name="settlement" probability="5" max-number="2" />
 			<entity name="areothermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="valve" mass=".2">
 		<maintenance-entity-list>
-			<entity name="rover" probability="20" max-number="2" />
-			<entity name="farming" probability="30" max-number="3" />
-			<entity name="living accommodations" probability="15" max-number="2" />
-			<entity name="manufacture" probability="30" max-number="3" />
+			<entity name="rover" probability="5" max-number="2" />
+			<entity name="farming" probability="5" max-number="3" />
+			<entity name="living accommodations" probability="5" max-number="2" />
+			<entity name="manufacture" probability="5" max-number="3" />
 			<entity name="eva suit" probability="5" max-number="1" />
-			<entity name="settlement" probability="10" max-number="1" />
+			<entity name="settlement" probability="5" max-number="1" />
 			<entity name="areothermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="epoxy resin bottle" mass=".2">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="50" max-number="6" />
-			<entity name="farming" probability="80" max-number="12" />
-			<entity name="living accommodations" probability="40" max-number="4" />
-			<entity name="manufacture" probability="80" max-number="6" />
-			<entity name="eva suit" probability="20" max-number="1" />
-			<entity name="settlement" probability="20" max-number="4" />
+			<entity name="vehicle" probability="5" max-number="6" />
+			<entity name="farming" probability="5" max-number="12" />
+			<entity name="living accommodations" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="6" />
+			<entity name="eva suit" probability="5" max-number="1" />
+			<entity name="settlement" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="spark plug" mass=".1">
 		<maintenance-entity-list>
-			<entity name="rover" probability="30" max-number="2" />
+			<entity name="rover" probability="5" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="coolant bottle" mass=".2">
 		<maintenance-entity-list>
-			<entity name="rover" probability="30" max-number="1" />
+			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="electrical wire" mass=".2">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="30" max-number="6" />
-			<entity name="power generation" probability="20" max-number="4" />
-			<entity name="manufacture" probability="20" max-number="4" />
-			<entity name="settlement" probability="10" max-number="8" />
+			<entity name="building" probability="5" max-number="6" />		
+			<entity name="vehicle" probability="5" max-number="6" />
+			<entity name="power generation" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="4" />
+			<entity name="settlement" probability="5" max-number="8" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="power cable" mass="2.0">
 		<maintenance-entity-list>
-			<entity name="power generation" probability="10" max-number="2" />
-			<entity name="settlement" probability="5" max-number="4" />
+			<entity name="power generation" probability="1" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="wire connector" mass=".1">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="30" max-number="6" />
-			<entity name="power generation" probability="20" max-number="4" />
-			<entity name="manufacture" probability="20" max-number="4" />
-			<entity name="settlement" probability="10" max-number="8" />
+			<entity name="vehicle" probability="5" max-number="6" />
+			<entity name="power generation" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="plastic tubing" mass=".1">
 		<maintenance-entity-list>
-			<entity name="rover" probability="10" max-number="4" />
-			<entity name="farming" probability="30" max-number="10" />
-			<entity name="manufacture" probability="60" max-number="10" />
-			<entity name="settlement" probability="10" max-number="4" />
+			<entity name="rover" probability="5" max-number="4" />
+			<entity name="farming" probability="5" max-number="10" />
+			<entity name="manufacture" probability="5" max-number="10" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="lubricant bottle" mass=".2">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="10" max-number="4" />
-			<entity name="manufacture" probability="10" max-number="2" />
+			<entity name="vehicle" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
@@ -118,8 +116,8 @@
 
 	<part name="radio antenna" mass="2.0">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="10" max-number="1" />
-			<entity name="communication" probability="10" max-number="1" />
+			<entity name="vehicle" probability="5" max-number="1" />
+			<entity name="communication" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -132,7 +130,7 @@
 
 	<part name="timing belt" mass=".2">
 		<maintenance-entity-list>
-			<entity name="rover" probability="30" max-number="1" />
+			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -151,38 +149,38 @@
 
 	<part name="plastic pipe" mass="1.0">
 		<maintenance-entity-list>
-			<entity name="living accommodations" probability="10" max-number="2" />
-			<entity name="farming" probability="20" max-number="4" />
-			<entity name="manufacture" probability="20" max-number="2" />
+			<entity name="living accommodations" probability="5" max-number="2" />
+			<entity name="farming" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="2" />
 			<entity name="rover" probability="5" max-number="1" />
-			<entity name="settlement" probability="10" max-number="4" />
+			<entity name="settlement" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="steel pipe" mass="10.0">
 		<maintenance-entity-list>
-			<entity name="farming" probability="10" max-number="2" />
-			<entity name="manufacture" probability="10" max-number="2" />
-			<entity name="rover" probability="10" max-number="1" />
-			<entity name="settlement" probability="10" max-number="2" />
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="manufacture" probability="1" max-number="2" />
+			<entity name="rover" probability="1" max-number="1" />
+			<entity name="settlement" probability="1" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="iron pipe" mass="10.0">
 		<maintenance-entity-list>
-			<entity name="farming" probability="10" max-number="2" />
-			<entity name="manufacture" probability="10" max-number="2" />
-			<entity name="rover" probability="10" max-number="1" />
-			<entity name="settlement" probability="10" max-number="2" />
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="manufacture" probability="1" max-number="2" />
+			<entity name="rover" probability="1" max-number="1" />
+			<entity name="settlement" probability="1" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="copper pipe" mass="5.0">
 		<maintenance-entity-list>
-			<entity name="living accommodations" probability="10" max-number="1" />
-			<entity name="farming" probability="20" max-number="2" />
-			<entity name="manufacture" probability="10" max-number="2" />
-			<entity name="settlement" probability="5" max-number="1" />
+			<entity name="living accommodations" probability="2" max-number="1" />
+			<entity name="farming" probability="2" max-number="2" />
+			<entity name="manufacture" probability="2" max-number="2" />
+			<entity name="settlement" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -229,7 +227,7 @@
 
 	<part name="eva helmet" mass="2.0" >
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -242,40 +240,40 @@
 	<part name="counter pressure suit" mass="1.0" >
 		<description>Spandex inner EVA suit for counter pressure.</description>
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="coveralls" mass="2.0" >
 		<description>Outer EVA suit with insulative liner.</description>
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="suit heating unit" mass="2.0">
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="5" max-number="1" />
+			<entity name="eva suit" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="eva gloves" mass="1.0" >
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="eva boots" mass="4.0" >
 		<description>steel soled and tipped.  Fiberglass insulated.</description>
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="eva pads" mass="2.0" >
 		<description>steel plate with fiberglass insulation.</description>
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -289,19 +287,19 @@
 
 	<part name="eva antenna" mass=".5" >
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="eva battery" mass="10.0" >
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="eva radio" mass="2.0" >
 		<maintenance-entity-list>
-			<entity name="eva suit" probability="10" max-number="1" />
+			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -358,17 +356,17 @@
 	<part name="gas tank" mass="20.0" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
-			<entity name="life support" probability="10" max-number="1" />
-			<entity name="fuel heating source" probability="5" max-number="1" />
-			<entity name="cooking" probability="5" max-number="1" />	
-			<entity name="farming" probability="5" max-number="5" />					
+			<entity name="life support" probability="1" max-number="1" />
+			<entity name="fuel heating source" probability="3" max-number="1" />
+			<entity name="cooking" probability="3" max-number="1" />	
+			<entity name="farming" probability="3" max-number="5" />					
 		</maintenance-entity-list>
 	</part>
 
 	<part name="water tank" mass="20.0" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
-			<entity name="life support" probability="10" max-number="1" />
+			<entity name="life support" probability="1" max-number="1" />
 			<entity name="fuel heating source" probability="5" max-number="1" />
 			<entity name="cooking" probability="5" max-number="1" />		
 			<entity name="farming" probability="5" max-number="5" />				
@@ -407,8 +405,8 @@
 		<description>The heating element is a thermofoil conductive
 		electrical element embedded in a thin Kapton substrate.</description>
 		<maintenance-entity-list>
-			<entity name="life support" probability="10" max-number="1" />
-			<entity name="rover" probability="5" max-number="1" />
+			<entity name="life support" probability="1" max-number="1" />
+			<entity name="rover" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -494,7 +492,7 @@
 	<part name="glass tube" mass="5.0" >
 		<description>Long transparent glass tube.</description>
 		<maintenance-entity-list>
-			<entity name="solar thermal power source" probability="10" max-number="1" />
+			<entity name="solar thermal power source" probability="2" max-number="1" />
 <!--
 			<entity name="large algae greenhouse" probability="5" max-number="1" />
 -->
@@ -536,7 +534,7 @@
 	<part name="condenser coil" mass="10.0" >
 		<description>Copper tube coil used to condense steam into liquid water.</description>
 		<maintenance-entity-list>
-			<entity name="areothermal power source" probability="10" max-number="1" />
+			<entity name="areothermal power source" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -764,8 +762,8 @@
 		<description>This long transmitting antenna serves to transmit telemetry data for a portable science station in the field. 
 		</description>
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="10" max-number="1" />
-			<entity name="communication" probability="10" max-number="1" />
+			<entity name="vehicle" probability="2" max-number="1" />
+			<entity name="communication" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -842,6 +840,10 @@
 		mechanically supports and electrically connects electronic components 
 		using conductive tracks, pads and other features etched from copper 
 		sheets laminated onto a non-conductive substrate.</description>
+		<maintenance-entity-list>
+			<entity name="vehicle" probability="2" max-number="1" />
+			<entity name="communication" probability="2" max-number="1" />
+		</maintenance-entity-list>		
 	</part>
 		
 	<part name="work gloves" mass="0.05">

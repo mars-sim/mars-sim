@@ -77,11 +77,20 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 return 0;
             }
 
+            
+            int min_num = 0;
+            int all = settlement.getAllAssociatedPeople().size();
+ 
+            if (all == 2)
+            	min_num = 1;
+            else
+            	min_num = RescueSalvageVehicle.MIN_GOING_MEMBERS;
+    	    
             // Check if min number of EVA suits at settlement.
-            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
-                    RescueSalvageVehicle.MIN_GOING_MEMBERS) {
-                return 0;
-            }
+            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
+    	        return 0;
+    	    }
+            
 
             // Check for embarking missions.
             else if (VehicleMission.hasEmbarkingMissions(settlement)) {
@@ -100,6 +109,11 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                     //    return 0;
                 }
                 else {
+                    if (all == 2)
+                    	min_num = 0;
+                    else 
+                    	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
+           	            	
                     // Check if minimum number of people are available at the settlement.
                     if (!RoverMission.minAvailablePeopleAtSettlement(settlement,
                             (RescueSalvageVehicle.MIN_STAYING_MEMBERS))) {

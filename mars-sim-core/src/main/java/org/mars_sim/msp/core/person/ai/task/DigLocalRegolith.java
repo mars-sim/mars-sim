@@ -29,10 +29,10 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The DigLocalRegolith class is a task for performing
@@ -47,6 +47,8 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
+
+    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -66,7 +68,7 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
-	private static AmountResource regolithAR = Rover.regolithAR;
+	private static AmountResource regolithAR = ResourceUtil.regolithAR;
 
 	/**
 	 * Constructor.
@@ -300,13 +302,14 @@ implements Serializable {
             regolithCollected = remainingPersonCapacity;
             finishedCollecting = true;
         }
-
+        
         person.getInventory().storeAmountResource(regolithAR, regolithCollected, true);
+        //Storage.storeAnResource(regolithCollected, regolithAR, person.getInventory(), sourceName + "::collectRegolith");
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
         }
 
-        LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), 
+        LogConsolidated.log(logger, Level.INFO, 5000, logger.getName(), 
         		person.getName() + " collected " + Math.round(regolithCollected*10D)/10D 
         		+ " kg of regolith outside " + person.getAssociatedSettlement(), null);
  

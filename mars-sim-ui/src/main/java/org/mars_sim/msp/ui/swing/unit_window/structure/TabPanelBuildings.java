@@ -104,29 +104,19 @@ implements ActionListener {
 		buildingInfoPanel.add(buildingSelectPanel);
 		panelList.add(buildingSelectPanel);
 		
-        //JLabel buildingLabel = new JLabel("Selected Building: ", JLabel.CENTER);
-        //buildingLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //buildingLabel.setForeground(new Color(102, 51, 0)); // dark brown
-        //buildingSelectPanel.add(buildingLabel);
-
 		// Create building combo box model.
 		comboBoxModel = new DefaultComboBoxModel<Building>();
 
 		buildingsCache = new ArrayList<Building>(buildings);
-			//System.out.println("TabPanelBuildings.java : constructor : buildingsCache is "+ buildingsCache);
-		Iterator<Building> i = buildingsCache.iterator();		
-		while (i.hasNext()) {
-			Building b = i.next();
-			// 2014-10-29: <<NOT USED>> Modified to load nickName instead of buildingType
-			// b.setType(b.getNickName());
+		for (Building b : buildingsCache) {
 	    	comboBoxModel.addElement(b);
 		}
 		// Create building list.
 		comboBox = new JComboBoxMW<Building>(comboBoxModel);
 		comboBox.setRenderer(new PromptComboBoxRenderer());
-		comboBox.setOpaque(false);
-		comboBox.setBackground(new Color(0,0,0,128));
-		comboBox.setBackground(new Color(255,229,204));
+		//comboBox.setOpaque(false);
+		//comboBox.setBackground(new Color(0,0,0,128));
+		//comboBox.setBackground(new Color(255,229,204));
 		//comboBox.setForeground(Color.orange);
 		comboBox.addActionListener(this);
 		comboBox.setMaximumRowCount(10);

@@ -15,8 +15,8 @@
 	<oxygen-consumption-rate value="2.0" />
 
 	<!-- The average amount of water (kg) consumed by a crop per square meter area in each Martian Sol -->
-	<!-- Default: 5.0 -->
-	<water-consumption-rate value="5.0" />
+	<!-- Default: 3.0 -->
+	<water-consumption-rate value="3.0" />
 
 	<!-- The ratio of measured irradiance [ Wm^-2 to PPF on Mars. Useful for calculate the instantaneous PAR in Crop.java -->
 	<!-- see http://physics.stackexchange.com/questions/52487/photometer-measured-irradiance-l-converted-to-photon-rate -->

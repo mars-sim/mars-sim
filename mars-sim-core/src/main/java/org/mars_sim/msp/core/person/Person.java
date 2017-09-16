@@ -76,7 +76,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	private final static double AVERAGE_TALL_HEIGHT = 176.5;
 	private final static double AVERAGE_SHORT_HEIGHT = 162.5;
-	private final static double AVERAGE_HEIGHT = 169.5;//(AVERAGE_TALL_HEIGHT + AVERAGE_SHORT_HEIGHT)/2D;
+	final static double AVERAGE_HEIGHT = 169.5;//(AVERAGE_TALL_HEIGHT + AVERAGE_SHORT_HEIGHT)/2D;
 	
 	private final static double AVERAGE_HIGH_WEIGHT = 68.5;
 	private final static double AVERAGE_LOW_WEIGHT = 57.2;
@@ -1013,7 +1013,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *            the amount of food to consume (in kg)
 	 * @param takeFromInv
 	 *            is food taken from local inventory?
-	 */
+	 
 	public void consumeFood(double amount, boolean takeFromInv) {
 		if (takeFromInv) {
 			// takeFrom Inv is true if meal == null, meaning that the person is
@@ -1026,7 +1026,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			// health.consumeFood(amount);
 		}
 	}
-
+*/
+	
 	// /**
 	// * Person consumes given amount of food.
 	// * @param amount the amount of food to consume (in kg)

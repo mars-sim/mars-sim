@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * LandmarkMapLayer.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
@@ -10,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.map;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;

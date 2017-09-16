@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * BuildingPanelThermal.java
- * @version 3.07 2014-11-21
+ * @version 3.1.0 2017-09-15
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;

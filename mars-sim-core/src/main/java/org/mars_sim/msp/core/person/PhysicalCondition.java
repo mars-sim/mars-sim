@@ -48,6 +48,11 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
+    
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+ 
     public static final String WELL = "Well";
     public static final String DEAD = "Dead : ";
     public static final String ILL = "Ill : ";
@@ -57,11 +62,6 @@ implements Serializable {
 	public static final String FOOD = "food";
 	public static final String CO2 = "carbon dioxide";
 
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
-    
-    private static String sourceName = logger.getName();
-    
     /** Life support minimum value. */
     private static int MIN_VALUE = 0;
     /** Life support maximum value. */
@@ -76,7 +76,8 @@ implements Serializable {
     public static final double ACCIDENT_STRESS = 10D;
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
-    
+    /** Performance modifier for thirst. */
+    private static final double THIRST_PERFORMANCE_MODIFIER = .00015D;    
     /** Performance modifier for hunger. */
     private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
     /** Performance modifier for fatigue. */
@@ -93,6 +94,7 @@ implements Serializable {
     //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
     public static final double ENERGY_FACTOR = 0.8D;
 
+
  	private static double o2_consumption;
  	private static double h2o_consumption;
  	private static double minimum_air_pressure;
@@ -106,6 +108,9 @@ implements Serializable {
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
 
+    /** The amount of water this person would consume each time (assuming drinking water 8 times a day) */
+    private double waterConsumedEach; 
+    
 	private int solCache = 0;
 
     private boolean isStarving;
@@ -117,8 +122,9 @@ implements Serializable {
     /** True if person is alive. */
     private boolean alive;
 
-
-    /** Person's fatigue level. (0 to infinity) */
+    /** Person's thirst level. [in millisols]. */
+    private double thirst;
+    /** Person's fatigue level . (0 to infinity) */
     private double fatigue;
     /** Person's hunger level [in millisols]. */
     private double hunger;
@@ -176,7 +182,7 @@ implements Serializable {
 
     	circadian = person.getCircadianClock();
     	
-        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+        //sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
@@ -201,9 +207,10 @@ implements Serializable {
         
 		performance = 1.0D;
       
+		thirst = RandomUtil.getRandomRegressionInteger(100);
         fatigue = 0; //RandomUtil.getRandomRegressionInteger(1000) * .5;
-        stress = RandomUtil.getRandomRegressionInteger(100) * .2;
-        hunger = RandomUtil.getRandomRegressionInteger(200);
+        stress = RandomUtil.getRandomRegressionInteger(100);
+        hunger = RandomUtil.getRandomRegressionInteger(100);
         kJoules = 2500;//1000D + RandomUtil.getRandomDouble(1500);
         //hygiene = RandomUtil.getRandomDouble(100D);
         
@@ -214,7 +221,13 @@ implements Serializable {
 
         // 2017-03-08 Add rates
         //o2_consumption = personConfig.getNominalO2ConsumptionRate();
-        h2o_consumption = personConfig.getWaterConsumptionRate();
+        h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
+        
+        // assuming a person drinks 8 times a day, each time 375 mL
+        waterConsumedEach = h2o_consumption / 8D 
+        		* person.getBaseMass()/Person.AVERAGE_WEIGHT
+        		* person.getHeight()/Person.AVERAGE_HEIGHT; //[in g]
+        
         minimum_air_pressure = personConfig.getMinAirPressure();
         min_temperature = personConfig.getMinTemperature();
         max_temperature = personConfig.getMaxTemperature();
@@ -371,6 +384,7 @@ implements Serializable {
 	        }
 
 	        // Build up fatigue & hunger for given time passing.
+	        setThirst(thirst + time);
 	        setFatigue(fatigue + time);
 	        setHunger(hunger + time);
 
@@ -409,6 +423,10 @@ implements Serializable {
         return fatigue;
     }
 
+    public double getThirst() {
+    	return thirst;
+    }
+    
     /**
      * Gets the person's caloric energy.
      * @return person's caloric energy in kilojoules
@@ -528,7 +546,7 @@ implements Serializable {
     public void setPerformanceFactor(double newPerformance) {
         if (performance != newPerformance)
             performance = newPerformance;
-	    person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+	    //person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
     }
 
 
@@ -539,10 +557,15 @@ implements Serializable {
     public void setFatigue(double newFatigue) {
         if (fatigue != newFatigue)
             fatigue = newFatigue;
-        person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-
+        //person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
     }
 
+    public void setThirst(double t) {
+        if (thirst != t)
+        	thirst = t;
+        //person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+    }
+    
     /** Gets the person's hunger level
      *  @return person's hunger
      */
@@ -610,7 +633,7 @@ implements Serializable {
             if (stress > 100D) stress = 100D;
             else if (stress < 0D) stress = 0D;
             else if (Double.isNaN(stress)) stress = 0D;
-            person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+            //person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
         }
     }
 
@@ -854,13 +877,13 @@ implements Serializable {
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
      * @throws Exception if error consuming food.
-     */
+     
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
 		consumePackedFood(amount, container);//, LifeSupportType.FOOD);
 
     }
-
+*/
     /**
      * Robot consumes given amount of power
      * @param amount amount of power to consume (in kJ).
@@ -1164,6 +1187,13 @@ implements Serializable {
         }
         
 
+        // High hunger reduces performance.
+        if (thirst > 400D) {
+            tempPerformance -= (thirst - 400D) * THIRST_PERFORMANCE_MODIFIER /2;
+        }
+        else if (thirst > 250D) {
+            tempPerformance -= (thirst - 250D) * THIRST_PERFORMANCE_MODIFIER /4;
+        }
 
         // High hunger reduces performance.
         if (hunger > 1200D) {
@@ -1289,6 +1319,10 @@ implements Serializable {
         return h2o_consumption; //personConfig.getWaterConsumptionRate();
     }
 
+    public double getWaterConsumedEach() {
+    	return waterConsumedEach;
+    }
+    
     /**
      * Gets the food consumption rate per Sol.
      * @return food consumed (kg/Sol)

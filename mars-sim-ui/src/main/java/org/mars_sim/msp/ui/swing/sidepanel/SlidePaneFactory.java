@@ -25,18 +25,33 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.mars_sim.msp.ui.javafx.MainScene;
+
 /**
  *
  * @author root
  */
 public class SlidePaneFactory extends Box {
+	
+	private Color color = new Color(214,217,223);
+	
+	private StateListener listener;
+    
+	private List<StateListener> listeList = new ArrayList<StateListener>();
 
-	Color color = new Color(0xC1BF9D);
-    StateListener listener;
-    List<StateListener> listeList = new ArrayList<StateListener>();
 
     private SlidePaneFactory(final boolean isGroup) {
         super(BoxLayout.Y_AXIS);
+        
+    	int theme = MainScene.getTheme();
+
+    	//if (theme == 0) // nimbus
+    	//	color = new Color(198, 217, 217);//Color(0xC6D9D9);//0xD6D9DF));
+    	//else if (theme == 6)
+    	//	color = new Color(198, 217, 217);//Color(0xC6D9D9);
+    	if (theme == 7)
+    		color = new Color(0xC1BF9D);
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

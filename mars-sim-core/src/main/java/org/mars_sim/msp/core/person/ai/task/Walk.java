@@ -193,11 +193,13 @@ implements Serializable {
           	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(), 
             		"Walking steps could not be determined for " + person.getName(), null);
             endTask();
+          	person.getMind().getNewAction(true, false);
         }
         else if (!canWalkAllSteps(person, walkingSteps)) {
           	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(), 
           			"Valid Walking steps could not be determined for " + person.getName(), null);
             endTask();
+          	person.getMind().getNewAction(true, false);
         }
 
         // Initialize task phase.
@@ -647,8 +649,8 @@ implements Serializable {
                     Airlock airlock = step.airlock;
                     if (!ExitAirlock.canExitAirlock(person, airlock)) {
                         result = false;
-                    	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
-                    			person + " cannot exit airlock at " + airlock.getEntityName(), null);
+                    	//LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(),
+                    	//		person + " cannot exit airlock at " + airlock.getEntityName(), null);
                     }
                 }
             }

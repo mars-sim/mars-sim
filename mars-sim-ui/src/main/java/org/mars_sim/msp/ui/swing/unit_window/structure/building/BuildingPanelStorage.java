@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelStorage.java
- * @version 3.07 2014-11-21
+ * @version 3.1.0 2017-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -12,14 +12,16 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
-import javax.swing.*;
-
-import java.awt.*;
-import java.util.Collections;
-import java.util.Iterator;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * The BuildingPanelStorage class is a building function panel representing

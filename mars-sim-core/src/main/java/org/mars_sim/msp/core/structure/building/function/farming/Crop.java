@@ -60,7 +60,7 @@ public class Crop implements Serializable {
 	//  Be sure that FERTILIZER_NEEDED is static, but NOT "static final"
 	public static final double FERTILIZER_NEEDED_WATERING = 0.0001D;  // a very minute amount needed per unit time, called if grey water is not available
 	public static final double FERTILIZER_NEEDED_IN_SOIL_PER_SQM = 1D; // amount needed when planting a new crop
-	public static final double MOISTURE_RECLAMATION_FRACTION = .1D;
+	public static final double MOISTURE_RECLAMATION_FRACTION = .2D;
 	public static final double OXYGEN_GENERATION_RATE = .9D;
 	public static final double CO2_GENERATION_RATE = .9D;
 	// public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; // only 42% are EM within 400 to 700 nm
@@ -78,37 +78,12 @@ public class Crop implements Serializable {
 
     public static final String TISSUE_CULTURE = "tissue culture";
 
-    //public static final String TABLE_SALT = "table salt";
-	//public static final String FERTILIZER = "fertilizer";
-	//public static final String GREY_WATER = "grey water";
-    //public static final String SOIL = "soil";
-    //public static final String CROP_WASTE = "crop waste";
-    //public static final String FOOD_WASTE = "food waste";
-    //public static final String SOLID_WASTE = "solid waste";
-
-    //public static final String NAPKIN = "napkin";
-    //public static final String NaClO4 = "sodium hypochlorite";
-
-	//public static final String OXYGEN = "oxygen";
-	//public static final String WATER = "water";
-	//public static final String FOOD = "food";
-	//public static final String CO2 = "carbon dioxide";
-
-	//public static final String METHANE = "methane";			// 8
-	//public static final String ICE = "ice";
-	//public static final String REGOLITH = "regolith";
-	//public static final String ROCK_SAMPLE = "rock samples";
-
-
 	// Data members
 	/**	true if this crop is generated at the start of the sim  */
 	private boolean isStartup;
 	private boolean hasSeed = false;
 	private boolean isSeedPlant = false;
 
-	//private int numLampCache;
-    /** Current sol since the start of sim. */
-	//private int solCache = 1;
 	/** Current sol of month. */
 	private int currentSol = 1;
 	/** ratio between inedible and edible biomass */
@@ -144,7 +119,7 @@ public class Crop implements Serializable {
 	private double diseaseIndex = 0;
 
 	/**	Past Environment Factors influencing the crop */
-	private Double[] memory = new Double[]{ 1.0,  // light
+	private Double[] environment = new Double[]{ 1.0,  // light
 											1.0,  // fertilizer
 											1.0,  // temperature
 											1.0,  // water
@@ -493,7 +468,7 @@ public class Crop implements Serializable {
 	//2016-07-15 Added getHealth()
 	public double getHealth() {
 		double env_factor = 0;
-		for (double m : memory) {
+		for (double m : environment) {
 			env_factor = env_factor + m;
 		}
 		if (env_factor/5D > 1.1)
@@ -960,12 +935,12 @@ public class Crop implements Serializable {
 			lightModifier = lightModifier / fractionalGrowingTimeCompleted ;
 		}
 			
-		memory[0] = .33 + .33 * lightModifier + .33 * memory[0];
+		environment[0] = .33 + .33 * lightModifier + .33 * environment[0];
 		// use .2 instead of .5 since it's normal for crop to go through day/night cycle
-		if (memory[0] > 1.5)
-			memory[0] = 1.5;
-		else if (memory[0] < 0.5)
-			memory[0] = 0.5;
+		if (environment[0] > 1.5)
+			environment[0] = 1.5;
+		else if (environment[0] < 0.5)
+			environment[0] = 0.5;
 		
 		return uPAR;
 
@@ -987,9 +962,9 @@ public class Crop implements Serializable {
 			// TODO: implement optimal growing temperature for each particular crop
 			temperatureModifier = 1D;
 
-		memory[2] = .5 * temperatureModifier + .5 * memory[2];
-		if (memory[2] > 1.1)
-			memory[2] = 1.1;
+		environment[2] = .5 * temperatureModifier + .5 * environment[2];
+		if (environment[2] > 1.1)
+			environment[2] = 1.1;
 
 	}
 		
@@ -997,13 +972,12 @@ public class Crop implements Serializable {
 	/***
 	 * Computes the effect of water and fertilizer
 	 * @param needFactor
-	 * @param maxPeriodHarvest
 	 * @param time
 	 */
-	public void computeWaterFertilizer(double needFactor, double maxPeriodHarvest, double time) {
+	public void computeWaterFertilizer(double needFactor, double time) {
 
 		// Calculate water usage
-		double waterRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageWaterNeeded;
+		double waterRequired = needFactor * growingArea * time / 1000D * averageWaterNeeded;
 		// Determine the amount of grey water available.
 		double greyWaterAvailable = inv.getAmountResourceStored(greyWaterAR, false);
 		double waterUsed = 0;
@@ -1049,9 +1023,9 @@ public class Crop implements Serializable {
 		        Storage.retrieveAnResource(fertilizerUsed, fertilizerAR, inv, true);
 		    }
 
-			memory[1] = .5 * fertilizerModifier + .5 * memory[1];
-			if (memory[1] > 1.1)
-				memory[1] = 1.1;
+			environment[1] = .5 * fertilizerModifier + .5 * environment[1];
+			if (environment[1] > 1.1)
+				environment[1] = 1.1;
 			
 			totalWaterUsed = greyWaterAvailable + waterUsed;
 		}
@@ -1063,9 +1037,9 @@ public class Crop implements Serializable {
 		if (waterReclaimed > 0)
 			Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::computeWaterFertilizer");
 
-		memory[3] = .5 * waterModifier + .5 * memory[3];
-		if (memory[3] > 1.1)
-			memory[3] = 1.1;
+		environment[3] = .5 * waterModifier + .5 * environment[3];
+		if (environment[3] > 1.1)
+			environment[3] = 1.1;
 
 	}
 	
@@ -1094,9 +1068,9 @@ public class Crop implements Serializable {
 
 			o2Modifier =  o2Used / o2Required;
 
-			memory[4] = .5 * o2Modifier + .5 * memory[4];
-			if (memory[4] > 1.1)
-				memory[4] = 1.1;
+			environment[4] = .5 * o2Modifier + .5 * environment[4];
+			if (environment[4] > 1.1)
+				environment[4] = 1.1;
 			
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * growingArea * time / 1000D * CO2_GENERATION_RATE;
@@ -1123,9 +1097,9 @@ public class Crop implements Serializable {
 
 			co2Modifier = carbonDioxideUsed / carbonDioxideRequired;
 
-			memory[5] = .5 * co2Modifier + .5 * memory[5];
-			if (memory[5] > 1.1)
-				memory[5] = 1.1;
+			environment[5] = .5 * co2Modifier + .5 * environment[5];
+			if (environment[5] > 1.1)
+				environment[5] = 1.1;
 			
 			// Determine the amount of oxygen generated via gas exchange.
 			double oxygenAmount = carbonDioxideUsed * growingArea * time / 1000D * OXYGEN_GENERATION_RATE;
@@ -1163,19 +1137,19 @@ public class Crop implements Serializable {
 		int phaseNum = getCurrentPhaseNum();
 		int length = phases.size();
 
-		double needFactor = 0;
+		double growthFactor = 0;
 		// amount of grey water/water needed is also based on % of growth
 		if (phaseNum == 2)
 		// if (phaseType == PhaseType.GERMINATION)
-			needFactor = .1;
+			growthFactor = .1;
 		else if (fractionalGrowingTimeCompleted < .1 )
-			needFactor = .2;
+			growthFactor = .2;
 		else if (fractionalGrowingTimeCompleted < .2 )
-			needFactor = .25;
+			growthFactor = .25;
 		else if (fractionalGrowingTimeCompleted < .3 )
-			needFactor = .3;
+			growthFactor = .3;
 		else if (phaseNum > 2 && phaseNum < length - 2)
-			needFactor = fractionalGrowingTimeCompleted;
+			growthFactor = fractionalGrowingTimeCompleted;
 		
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		double uPAR = computeLight(time);
@@ -1184,26 +1158,26 @@ public class Crop implements Serializable {
 		computeTemperature();
 
 		// STEP 3 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
-		computeWaterFertilizer(needFactor, maxPeriodHarvest, time);
+		computeWaterFertilizer(growthFactor, time);
 		
 		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE) 
-		computeGases(uPAR, needFactor, maxPeriodHarvest, time);
+		computeGases(uPAR, growthFactor, maxPeriodHarvest, time);
 
 		// TODO: add air pressure modifier in future
 
 		// 2015-08-26 Tuned harvestModifier
 		if (phaseNum > 2 && phaseNum < length - 2) {
-			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * memory[0];
+			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environment[0];
 		}
 		else if (phaseNum == 2)
-			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * memory[0];
+			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environment[0];
 
 		harvestModifier = .25 * harvestModifier
-				+ .15 * harvestModifier * memory[1]
-				+ .15 * harvestModifier * memory[2]
-				+ .15 * harvestModifier * memory[3]
-				+ .15 * harvestModifier * memory[4]
-				+ .15 * harvestModifier * memory[5];
+				+ .15 * harvestModifier * environment[1]
+				+ .15 * harvestModifier * environment[2]
+				+ .15 * harvestModifier * environment[3]
+				+ .15 * harvestModifier * environment[4]
+				+ .15 * harvestModifier * environment[5];
 		
 		// TODO: research how the above 6 factors may affect crop growth for different crop categories
 

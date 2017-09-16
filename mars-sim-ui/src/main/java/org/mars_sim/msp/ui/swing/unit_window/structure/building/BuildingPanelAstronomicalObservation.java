@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AstronomicalObservationBuildingPanel.java
- * @version 3.07 2014-11-21
+ * @version 3.1.0 2017-09-15
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -12,8 +12,6 @@ import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
-import org.mars_sim.msp.ui.swing.unit_window.structure.StormTrackingWindow;
 
 import javax.swing.*;
 

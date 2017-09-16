@@ -8,15 +8,12 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -24,19 +21,16 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
@@ -74,15 +68,15 @@ implements Serializable {
     private static String sourceName = logger.getName();
     
     private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
-    private static final FunctionType RESEARCH_FUNCTION = FunctionType.RESEARCH;
+    //private static final FunctionType RESEARCH_FUNCTION = FunctionType.RESEARCH;
 
 	public static final String FERTILIZER = "fertilizer";
 	//public static final String GREY_WATER = "grey water";
     public static final String SOIL = "soil";
     public static final String CROP_WASTE = "crop waste";
     public static final String TISSUE_CULTURE = "tissue culture";
-	public static final String LED_KIT = "light emitting diode kit";
-	public static final String HPS_LAMP = "high pressure sodium lamp";
+	//public static final String LED_KIT = "light emitting diode kit";
+	//public static final String HPS_LAMP = "high pressure sodium lamp";
 
 	/** amount of crop tissue culture needed for each square meter of growing area */
     public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
@@ -92,14 +86,14 @@ implements Serializable {
 	/** The original list of crop types from CropConfig*/
     private static List<CropType> cropTypeList;
 
-	private static ItemResource LED_Item;
-	private static ItemResource HPS_Item;
+	//private static ItemResource LED_Item;
+	//private static ItemResource HPS_Item;
 
 	/** The number of crop types available */
 	private static int size;
 	
-	private int numLEDInUse;
-	private int cacheNumLED;
+	//private int numLEDInUse;
+	//private int cacheNumLED;
 	private int numHPSinNeed;
     private int cropNum;
 	private int solCache = 1;
@@ -110,7 +104,7 @@ implements Serializable {
     private double remainingGrowingArea;
     private double totalMaxHarvest = 0;
 
-	private boolean checkLED;
+	//private boolean checkLED;
 
     private String cropInQueue;
 
@@ -144,8 +138,8 @@ implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
-		LED_Item = ItemResource.findItemResource(LED_KIT);
-		HPS_Item = ItemResource.findItemResource(HPS_LAMP);
+		//LED_Item = ItemResource.findItemResource(LED_KIT);
+		//HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
         this.building = building;
         this.settlement = building.getBuildingManager().getSettlement();
@@ -1145,8 +1139,8 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
-        LED_Item = null;
-    	HPS_Item = null;
+        //LED_Item = null;
+    	//HPS_Item = null;
 
         marsClock = null;
         inv = null;

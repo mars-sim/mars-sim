@@ -53,23 +53,22 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	/** Water capacity (kg.). */
 	private static final double WATER_CAPACITY = 4D;
 	/** Normal air pressure (Pa). */
-	private static final double NORMAL_AIR_PRESSURE = 101325D;
+	private static final double NORMAL_AIR_PRESSURE = 101325D/3;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334000D;
 	/** 100 millisols. */
-	private static final double MAINTENANCE_TIME = 100D;
+	private static final double MAINTENANCE_TIME = 20D;
 
 	// Data members
 	/** The equipment's malfunction manager. */
-	protected MalfunctionManager malfunctionManager;
-	private Weather weather ;
+	private MalfunctionManager malfunctionManager;
+	private static Weather weather ;
 
-	// 2017-04-10 WARNING: cannot use static or result in null
-	public AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(WATER);		// 2
-	public AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(OXYGEN);		// 3
-	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//findAmountResource(CO2);	// 4
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
 
 
 	/**
@@ -89,10 +88,6 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
-
-		//oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-		//waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
-		//carbonDioxideAR = ResourceUtil.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
 
 		// Set the resource capacities of the EVA suit.
 		getInventory().addAmountResourceTypeCapacity(oxygenAR, OXYGEN_CAPACITY);
@@ -139,13 +134,13 @@ implements LifeSupportType, Serializable, Malfunctionable {
 			}
 
 			double p = getAirPressure();
-			if (p > NORMAL_AIR_PRESSURE * 1.5 || p < NORMAL_AIR_PRESSURE * .5) {
+			if (p > NORMAL_AIR_PRESSURE * 1.3 || p < NORMAL_AIR_PRESSURE * .7) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 						this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D, null);
 				return false;
 			}
 			double t = getTemperature();
-			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 40) {
+			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 						this.getName() + " detected improper temperature at " + Math.round(t *10D)/10D, null);
 				return false;
@@ -173,44 +168,32 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double amountRequested) {
-/*
-		//double oxygenTaken = oxygenTaken;
-		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
+		// Should we assume breathing in pure oxygen or trimix and heliox
+		// http://www.proscubadiver.net/padi-course-director-joey-ridge/helium-and-diving/
 
-		if (oxygenTaken > oxygenLeft) {
-			oxygenTaken = oxygenLeft;
-		}
-
-		getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
-		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(oxygenAR);
-		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(oxygenAR, oxygenTaken);
-*/
+		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on the ISS
 		double oxygenTaken = amountRequested;
 		try {
-			//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-			//if (oxygenAR == null) System.out.println("o2");
 			double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
-			//System.out.println("oxygenLeft : " + oxygenLeft);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
-			// 2015-01-09 Added addDemandTotalRequest()
 			getInventory().addAmountDemandTotalRequest(oxygenAR);
-			// 2015-01-09 addDemandRealUsage()
 			getInventory().addAmountDemand(oxygenAR, oxygenTaken);
+			
+/*
+  			// Assume the EVA Suit has pump system to vent out all CO2 to prevent the built-up
+			// Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL. 
+			// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g ( 2g/L x .04 x .5l). 
 
-			//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-			double carbonDioxideProvided = oxygenTaken;
+			double carbonDioxideProvided = .04 * .04 * oxygenTaken;
 			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
 			if (carbonDioxideProvided > carbonDioxideCapacity)
 				carbonDioxideProvided = carbonDioxideCapacity;
 
 			getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
-			// 2015-01-15 Add addSupplyAmount()
 			getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+*/			
 		}
         catch (Exception e) {
             logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
@@ -225,8 +208,6 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken)  {
-		//double waterTaken = waterTaken;
-		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
 
 		if (waterTaken > waterLeft) {
@@ -234,9 +215,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		}
 
 		getInventory().retrieveAmountResource(waterAR, waterTaken);
-		// 2015-01-09 Added addDemandTotalRequest()
 		getInventory().addAmountDemandTotalRequest(waterAR);
-		// 2015-01-09 addDemandRealUsage()
 		getInventory().addAmountDemand(waterAR, waterTaken);
 
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
@@ -278,11 +257,6 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// the temperature of the suit will not be lower than the ambient temperature
 		if (result < ambient) {
 			// TODO: add codes to simulate the use of cooling coil to turn on cooler to reduce the temperature inside the EVA suit.
-
-			// calculate new temperature
-
-			// return newTemperature
-
 			// if cooling coil malfunction, then return ambient only
 			return result;
 			// NOTE: for now, turn off returning ambient until new codes are added.

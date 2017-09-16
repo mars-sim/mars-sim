@@ -5,16 +5,14 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4140) - 2017-09-15
+## v3.1.0-Preview 9 (build 4141) - 2017-09-15
 
 
 ### KNOWN LIMITATIONS :
 
 1. In MacOS, JavaFX WebEngine's bug creates garbled characters in Help Browser.
 
-2. In Linux, textfields do not allow text input.
-
-3. Not compatible with 32-bit Java 8.
+2. In Linux, text fields do not allow text input.
 
 
 ### CORE ENGINE IMPROVEMENTS :
@@ -50,6 +48,8 @@ https://github.com/mars-sim/mars-sim
 
 14. Shrink down 30% the file size of a saved sim.
 
+15. Add thirst modeling.
+
 
 ### UI IMPROVEMENT :
 
@@ -68,6 +68,7 @@ https://github.com/mars-sim/mars-sim
 
 5. Correct not being able to store resources after loading from a saved sim.
    
+6. Redefine stock capacity for each building to avoid space shortage.   
 
 -----------------------------------------------------------------------------------------
 
