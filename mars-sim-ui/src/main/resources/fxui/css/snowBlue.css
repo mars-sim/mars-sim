@@ -226,7 +226,7 @@
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
-.label-small {
+.label-small .label #status-bar{
     -fx-background-color:
         linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
         linear-gradient(#020b02, #3a3a3a),
@@ -330,8 +330,8 @@
 
 .jfx-slider > .track {
 	-fx-background-color: gray;
-	-fx-pref-height: 5px;
-	-fx-pref-width: 5px;
+	-fx-pref-height: 2px;
+	-fx-pref-width: 2px;
 }
 
 .jfx-slider > .sliderValue {

@@ -157,17 +157,17 @@ public class TableStyle extends ZebraJTable{
     	}
 
 	    // Get the TableColumn header to display sorted column
-	    theHeader = table.getTableHeader();
+	    //theHeader = table.getTableHeader();
 	    //theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
 	    //theHeader.setDefaultRenderer(theRenderer);
 	    // 2017-01-19 disable this will allow a gradient color on the header
 	    //theHeader.setOpaque(false);
-		theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
-		theHeader.setBorder(BorderFactory.createLineBorder(border, 1));
+		//theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
+		//theHeader.setBorder(BorderFactory.createLineBorder(border, 1));
 		//theHeader.setBorder(new MatteBorder(1, 1, 0, 0, TableStyle.getBorderColor()));
     	// TODO: why is it NOT working?
-		if (hBack != null) theHeader.setBackground(hBack);
-		if (hFore != null) theHeader.setForeground(hFore);
+		//if (hBack != null) theHeader.setBackground(hBack);
+		//if (hFore != null) theHeader.setForeground(hFore);
 
 		if (fore != null) table.setForeground(fore);
 		if (back != null) table.setBackground(back);

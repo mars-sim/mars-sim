@@ -5,12 +5,13 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4141) - 2017-09-15
+## v3.1.0-Preview 9 (build 4142) - 2017-09-15
 
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, JavaFX WebEngine's bug creates garbled characters in Help Browser.
+1. In MacOS, JavaFX WebEngine's bug creates garbled characters on certain 
+   webpages in Help Browser.
 
 2. In Linux, text fields do not allow text input.
 

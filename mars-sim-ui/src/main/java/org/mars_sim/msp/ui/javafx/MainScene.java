@@ -1352,6 +1352,7 @@ public class MainScene {
 		return s;
 	}
 */
+/*	
     public static Label createIconLabel(String iconName, int iconSize){
         return LabelBuilder.create()
                 .text(iconName)
@@ -1359,7 +1360,8 @@ public class MainScene {
                 .style("-fx-font-size: " + iconSize + "px;")
                 .build();
     }
-
+*/
+    
     /**
      * Creates and returns the sound popup box
      */
@@ -1763,6 +1765,9 @@ public class MainScene {
 
 		rotateCWBtn = new JFXButton();
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw")))));	 //$NON-NLS-1$
+		//IconNode rotateCWIcon = new IconNode(FontAwesome.ar.ARROW_CIRCLE_O_RIGHT);
+		//rotateCWIcon.setIconSize(30);
+		//rotateCWBtn.setGraphic(rotateCWIcon);
 		//Tooltip t0 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
 		//rotateCWBtn.setTooltip(t0);
 		setQuickToolTip(rotateCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.clockwise"));
@@ -1772,6 +1777,9 @@ public class MainScene {
 
 		rotateCCWBtn = new JFXButton();
 		rotateCCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw")))));	//$NON-NLS-1$
+		//IconNode rotateCCWIcon = new IconNode(FontAwesome.ARROW_CIRCLE_O_LEFT);
+		//rotateCCWIcon.setIconSize(30);
+		//rotateCCWBtn.setGraphic(rotateCCWIcon);
 		//Tooltip t1 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
 		//rotateCCWBtn.setTooltip(t1);
 		setQuickToolTip(rotateCCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"));
@@ -1781,6 +1789,9 @@ public class MainScene {
 
 		recenterBtn = new JFXButton();
 		recenterBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$
+		//IconNode recenterIcon = new IconNode(FontAwesome.ALIGN_CENTER);
+		//recenterIcon.setIconSize(30);
+		//recenterBtn.setGraphic(recenterIcon);
 		//Tooltip t2 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
 		//recenterBtn.setTooltip(t2);
 		setQuickToolTip(recenterBtn, Msg.getString("SettlementTransparentPanel.tooltip.recenter"));

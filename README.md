@@ -71,7 +71,7 @@ We will help you and answer your questions in our new [Gitter chatroom](https://
 ## Java Environment Setup
 * Windows
   - Edit the `JAVA_HOME` and `PATH` in System's Environment Variables in Control Panel 
-  - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_131` or `C:\Program Files\Java\jdk1.8.0_131`
+  - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_144` or `C:\Program Files\Java\jdk1.8.0_144`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`          
 
 
@@ -85,4 +85,4 @@ We will help you and answer your questions in our new [Gitter chatroom](https://
 
 
 ## License
-This project is licensed under the terms of the GPL v2.0 license.
+This project is licensed under the terms of the GPL v3.0 license.

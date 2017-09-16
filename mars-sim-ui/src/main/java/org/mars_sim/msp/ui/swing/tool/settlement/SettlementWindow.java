@@ -71,7 +71,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "restriction" })
 public class SettlementWindow
 extends ToolWindow {
 
@@ -84,7 +84,7 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	public static final String CSS_FILE = "/fxui/css/nimrodskin.css";
+	public static String css_file = "/fxui/css/snowBlue.css";
 
 	public static final String SOL  = " Sol : ";
 	public static final String POPULATION  = "  Population : ";
@@ -297,8 +297,10 @@ extends ToolWindow {
 	public StatusBar createStatusBar() {
 		if (statusBar == null) {
 			statusBar = new StatusBar();
-			statusBar.getStylesheets().add(getClass().getResource(CSS_FILE).toExternalForm());
+			statusBar.setId("status-bar");
 			statusBar.setText("");
+			setTheme(null);
+			
 		}
 
     	if (marsClock == null)
@@ -360,8 +362,9 @@ extends ToolWindow {
 		statusBar.getRightItems().add(timeLabel);
 		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 */
-
+/*
 		Color c = Color.rgb(156,77,0);
+		
 		//String c = orange.toString().replace("0x", "");
 		//System.out.println("c is " + c.toString().replace("0x", "")); // 9c4d00ff
 
@@ -370,7 +373,7 @@ extends ToolWindow {
 		capLabel.setTextFill(c);
 		xyLabel.setTextFill(c);
 		timeLabel.setTextFill(c);
-
+*/
 
 /*
  * 		using setStyle("-fx-text-fill: orange;") will not allow
@@ -395,7 +398,9 @@ extends ToolWindow {
 	 * Updates the cpu loads, memory usage and time text in the status bar
 	 */
 	public void updateStatusBarText() {
-
+			
+		setTheme(null);
+		
 		if (mainScene != null) {
 			if (mainScene.isMainSceneDone() && !isBound) {
 				isBound = true;
@@ -544,8 +549,30 @@ extends ToolWindow {
 		this.yCoor = y;
 	}
 
+	public Color checkTheme() {
+		int theme = MainScene.getTheme();
+		// orange theme : F4BA00
+		// blue theme : 3291D2
+		//String color = txtColor.replace("0x", "");
+		if (theme == 0 || theme == 6) {
+			css_file = "/fxui/css/snowBlue.css";
+			return Color.rgb(0,107,184);
+		}
+		else if (theme == 7) {
+			css_file = "/fxui/css/nimrodskin.css";	
+			return Color.rgb(156,77,0);
+		}
+		else return null;
+	}
+	
 	public void setTheme(Color c) {
 		if (solLabel != null) {
+			
+			if (c == null)
+				c = checkTheme();
+
+			setStatusBarTheme(css_file);
+
 			solLabel.setTextFill(c);
 			popLabel.setTextFill(c);
 			capLabel.setTextFill(c);

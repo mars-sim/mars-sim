@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -177,16 +178,23 @@ implements ActionListener {
 					return this;
 				}
 				
-				if (isSelected) {
-					result.setForeground(new Color(184,134,11));
-			        result.setBackground(Color.orange); 
-		
-		          // unselected, and not the DnD drop location
-		        } else {
-		        	  result.setForeground(new Color(184,134,11));
-		        	  result.setBackground(new Color(255,229,204)); //pale yellow (255,229,204)
-				      //Color(184,134,11)) brown
-		        }
+				int theme = MainScene.getTheme();
+				
+				if (theme == 0 || theme == 6) {
+					
+				}
+				else if (theme == 7) { 
+					if (isSelected) {
+						result.setForeground(new Color(184,134,11));
+				        result.setBackground(Color.orange); 
+			
+			          // unselected, and not the DnD drop location
+			        } else {
+			        	  result.setForeground(new Color(184,134,11));
+			        	  result.setBackground(new Color(255,229,204)); //pale yellow (255,229,204)
+					      //Color(184,134,11)) brown
+			        }
+				}
 				
 		        //result.setOpaque(false);
 

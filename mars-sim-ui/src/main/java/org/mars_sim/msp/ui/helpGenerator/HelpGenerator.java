@@ -52,12 +52,12 @@ public class HelpGenerator {
 	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
 
 	// In Windows OS, the Eclipse's htmls are kept in the \src\ folder
-	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\src\main\resources\docs\help
-	// or D:\Data\git\mars-sim\mars-sim-ui\src\main\resources\docs\help
+	// or at \mars-sim\mars-sim-ui\src\main\resources\docs\help
+	// e.g. D:\Data\git\mars-sim\mars-sim-ui\src\main\resources\docs\help
 	//
 	// After running "MarsProjectFX -html.launch" in Eclipse, the newly generated htmls will be at the \target\ folder 
-	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\target\classes\docs\help
-	// or D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help
+	// or at at \mars-sim-ui\target\classes\docs\help
+	// e.g. D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help
 
 */
 
