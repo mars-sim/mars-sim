@@ -64,7 +64,7 @@ implements Serializable, Comparable<Unit> {
 	/** The unit's inventory. */
 	private Inventory inventory;
 	/** The unit containing this unit. */
-	protected Unit containerUnit;
+	protected Unit containerUnit, containerUnitCache;
 	/** Unit location coordinates. */
 	private Coordinates location;
 
@@ -305,7 +305,17 @@ implements Serializable, Comparable<Unit> {
 	public Unit getContainerUnit() {
 		return containerUnit;
 	}
-
+/*
+	public Unit getContainerUnitCache() {
+		if (containerUnitCache != null) {
+			return containerUnitCache;			
+		}
+		else if (containerUnit != null) {
+			return containerUnit;
+		}
+		return getTopContainerUnit();
+	}
+*/
 	/**
 	 * Gets the topmost container unit that owns this unit.
 	 * Returns null if unit has no container unit (meaning that the unit is outside)
@@ -337,21 +347,24 @@ implements Serializable, Comparable<Unit> {
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {
-			if (this instanceof Robot)
-				updatePersonState(newContainer);
-			else if (this instanceof Equipment)
-				updateEquipmentState(newContainer);
-			else if (this instanceof Person)
-				updatePersonState(newContainer);
-			else if (this instanceof Vehicle)
-				updateVehicleState(newContainer);
-			else if (this instanceof Building)
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-				//currentState = insideSettlement;
-			else if (this instanceof Settlement)
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-				//currentState = outsideOnMars;
+		if (this instanceof Robot)
+			updatePersonRobotState(newContainer);
+		else if (this instanceof Equipment)
+			updateEquipmentState(newContainer);
+		else if (this instanceof Person)
+			updatePersonRobotState(newContainer);
+		else if (this instanceof Vehicle)
+			updateVehicleState(newContainer);
+		else if (this instanceof Building)
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			//currentState = insideSettlement;
+		else if (this instanceof Settlement)
+			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			//currentState = outsideOnMars;
 
+		if (containerUnit != null)
+			containerUnitCache = containerUnit;
+		
 		this.containerUnit = newContainer;
 
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -624,7 +637,7 @@ implements Serializable, Comparable<Unit> {
 	 * Updates the location state type of a person or robot
 	 * @param newContainer
 	 */
-	public void updatePersonState(Unit newContainer) {
+	public void updatePersonRobotState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 
 		// Case 1
@@ -882,9 +895,12 @@ implements Serializable, Comparable<Unit> {
 		}
 		final UnitEvent ue = new UnitEvent(this, updateType, target);
 		synchronized(listeners) {
-			Iterator<UnitListener> i = listeners.iterator();
-			while (i.hasNext()) {
-				i.next().unitUpdate(ue);
+			//Iterator<UnitListener> i = listeners.iterator();
+			//while (i.hasNext()) {
+			//	i.next().unitUpdate(ue);
+			//}
+			for (UnitListener u: listeners) {
+				u.unitUpdate(ue);
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
+import javafx.application.Platform;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -159,6 +160,9 @@ public class PersonTableModel extends UnitTableModel {
 	private Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
+	
+	private MainDesktopPane desktop;
+	
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
@@ -182,6 +186,7 @@ public class PersonTableModel extends UnitTableModel {
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);
 
+		this.desktop = desktop;
 		sourceType = ValidSourceType.ALL_PEOPLE;
 		setSource(unitManager.getPeople());
 		unitManagerListener = new LocalUnitManagerListener();
@@ -339,7 +344,19 @@ public class PersonTableModel extends UnitTableModel {
 	 *            the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		SwingUtilities.invokeLater(new PersonTableUpdater(event, this));
+		
+		if (desktop.getMainScene() != null) {
+			Platform.runLater(
+				new PersonTableUpdater(event, this)
+			);
+				
+		}
+		else {
+			SwingUtilities.invokeLater(
+				new PersonTableUpdater(event, this)
+			);
+		}
+		
 		/*
 		 * String eventType = event.getType();
 		 *
@@ -550,18 +567,16 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	public String getHungerStatus(double hunger, double energy) {
 		String status = "N/A";
-		if (hunger < 100 || energy > 5000)
+		if (hunger < 200 || energy > 5000)
 			status = Msg.getString("PersonTableModel.column.hunger.level1");
 		else if (hunger < 500 || energy > 3000)
 			status = Msg.getString("PersonTableModel.column.hunger.level2");
-		else if (hunger < 1000 || energy > 1000)
+		else if (hunger < 1000 || energy > 1500)
 			status = Msg.getString("PersonTableModel.column.hunger.level3");
-		else if (hunger < 2000 || energy > 500)
+		else if (hunger < 2000 || energy > 300)
 			status = Msg.getString("PersonTableModel.column.hunger.level4");
 		else
-			status = Msg.getString("PersonTableModel.column.hunger.level5");
-		// logger.info(" hunger pt : " + Math.round(hunger) + ", status : " +
-		// status);
+			status = Msg.getString("PersonTableModel.column.hunger.level5"); // very hungry
 		return status;
 	}
 

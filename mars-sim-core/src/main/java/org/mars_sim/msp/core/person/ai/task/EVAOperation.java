@@ -74,7 +74,7 @@ implements Serializable {
 	private double outsideSiteYLoc;
 
 	private MarsClock marsClock;
-	// 2017-04-10 WARNING: cannot use static or result in null
+	
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 
@@ -91,12 +91,14 @@ implements Serializable {
         this.siteDuration = siteDuration;
         timeOnSite = 0D;
 
+        LocationSituation ls = person.getLocationSituation();
+        
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // Check if person is in a settlement or a rover.
-        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
+        if (LocationSituation.IN_SETTLEMENT == ls) {
             interiorObject = BuildingManager.getBuilding(person);
             if (interiorObject == null) {
                 throw new IllegalStateException(person.getName() + " not in building.");
@@ -111,7 +113,7 @@ implements Serializable {
             }
         }
         
-        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
+        else if (LocationSituation.IN_VEHICLE == ls) {
             if (person.getVehicle() instanceof Rover) {
                 //interiorObject = (Rover) person.getVehicle();
                 // Add task phases.
@@ -520,20 +522,13 @@ implements Serializable {
     /**
      * Check for radiation exposure of the person performing this EVA.
      * @param time the amount of time on EVA (in millisols)
+     * @result true if detected
      */
     protected boolean isRadiationDetected(double time) {
-
     	if (person != null) {
-
-    	    int millisols =  (int) marsClock.getMillisol();
-    		// Check every RADIATION_CHECK_FREQ (in millisols)
-    	    // Compute whether a baseline, GCR, or SEP event has occurred
-    	    //// Note : remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
-    	    if (millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0)
-    	    		return person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
+    	    return person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
 
     	} else if (robot != null) {
-
     		return false;
     	}
 
@@ -551,14 +546,13 @@ implements Serializable {
     public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation,
             double yLocation) {
         Airlock result = null;
-        LocationSituation location = person.getLocationSituation();
 
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
             Settlement settlement = person.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
             //logger.info(person.getName() + " is walking to an airlock. getClosestWalkableAvailableAirlock()");
         }
-        else if (location == LocationSituation.IN_VEHICLE) {
+        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle instanceof Airlockable) {
                 result = ((Airlockable) vehicle).getAirlock();
@@ -571,13 +565,12 @@ implements Serializable {
     public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation,
             double yLocation) {
         Airlock result = null;
-        LocationSituation location = robot.getLocationSituation();
 
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
             Settlement settlement = robot.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
         }
-        else if (location == LocationSituation.IN_VEHICLE) {
+        else if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
             Vehicle vehicle = robot.getVehicle();
             if (vehicle instanceof Airlockable) {
                 result = ((Airlockable) vehicle).getAirlock();

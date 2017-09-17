@@ -92,6 +92,8 @@ implements ActionListener {
 	private static final String DEAD = "Dead";
 	private static final String BURIED = "Buried";
 
+	private static final String USED_BY = "Used by ";
+	
 	private int themeCache;
 
 	private double elevationCache;
@@ -981,7 +983,14 @@ implements ActionListener {
     		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     			// case A
     			//loc = AT + e.getBuildingLocation().getNickName() + IN + topContainerCache;
-    			loc = STORED + AT + topContainerCache;
+				if (topContainerCache == null)
+	    			loc = STORED + AT + containerCache;
+				//else if (containerCache == null)
+	    		//	loc = STORED + AT + topContainerCache;
+				else
+					loc = USED_BY + e.getLastOwner().getName();
+				
+
     		}
 
        		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {
@@ -1006,7 +1015,11 @@ implements ActionListener {
     		else if (e.getLocationSituation() == LocationSituation.OUTSIDE) {
 
     			if (e.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
-    				loc = WITHIN_THE_VINCINITY_OF + topContainerCache;
+    				if (topContainerCache == null)
+    					loc = WITHIN_THE_VINCINITY_OF + containerCache;
+    				else if (containerCache == null)
+    					loc = WITHIN_THE_VINCINITY_OF + topContainerCache;
+
     			}
 
     			else if (e.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {//.getName().equals("Outside on the surface of Mars")) {

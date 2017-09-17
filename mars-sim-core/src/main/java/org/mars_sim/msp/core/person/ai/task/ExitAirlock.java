@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -178,12 +180,13 @@ implements Serializable {
             // Get an EVA suit from entity inventory.
             if (!hasSuit) {
                 Inventory inv = airlock.getEntityInventory();
-                EVASuit suit = getGoodEVASuit(inv);
+                EVASuit suit = getGoodEVASuit(inv, person);
                 if (suit != null) {
                 	//logger.info(person + " found an EVA suit.");
                     try {
                         inv.retrieveUnit(suit);
                         person.getInventory().storeUnit(suit);
+                        suit.setLastOwner(person);
                         loadEVASuit(suit);
                         hasSuit = true;
                         //logger.info(person + " grabbed an EVA suit.");
@@ -836,7 +839,7 @@ implements Serializable {
      * @return true if good EVA suit is in inventory
      */
     public static boolean goodEVASuitAvailable(Inventory inv) {
-        return (getGoodEVASuit(inv) != null);
+        return (getGoodEVASuit(inv, null) != null);
     }
 
     /**
@@ -845,26 +848,44 @@ implements Serializable {
      * @param inv the inventory to check.
      * @return EVA suit or null if none available.
      */
-    public static EVASuit getGoodEVASuit(Inventory inv) {
-
-        EVASuit result = null;
-
-        Iterator<Unit> i = inv.findAllUnitsOfClass(EVASuit.class).iterator();
-        while (i.hasNext() && (result == null)) {
-            EVASuit suit = (EVASuit) i.next();
+    public static EVASuit getGoodEVASuit(Inventory inv, Person p) {
+        List<EVASuit> suits = new ArrayList<>();
+        //Iterator<Unit> i = inv.findAllUnitsOfClass(EVASuit.class).iterator();    
+        //while (i.hasNext() && (result == null)) {
+        //    EVASuit suit = (EVASuit) i.next();
+        Collection<Unit> list = inv.findAllUnitsOfClass(EVASuit.class);    
+        for (Unit u : list) { 
+        	EVASuit suit = (EVASuit) u;
             boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
             try {
                 boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
                 if (!malfunction && hasEnoughResources) {
-                    result = suit;
+                	if (p != null)
+                		suits.add(suit);
+                	else
+                		return suit;
                 }
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
             }
         }
+        
+        
+        for (EVASuit suit : suits) { 
+        	if (suit.getLastOwner() == p)
+        		// prefer to pick the same suit that a person used to wear in the past
+        		return suit;
+        }
 
-        return result;
+        // pick any one of the good suits
+        int size = suits.size();
+        if (size == 0)
+        	return null;
+        else if (size == 1)
+        	return suits.get(0);
+        else 
+        	return suits.get(RandomUtil.getRandomInt(size - 1));
     }
 
     /**
@@ -881,7 +902,6 @@ implements Serializable {
         int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
         // Check if enough oxygen.
-        //AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
         double neededOxygen = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, true, false);
         double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
         // Make sure there is enough extra oxygen for everyone else.
@@ -889,7 +909,6 @@ implements Serializable {
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
-        //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
         double neededWater = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.waterAR, true, false);
         double availableWater = entityInv.getAmountResourceStored(ResourceUtil.waterAR, false);
         // Make sure there is enough extra water for everyone else.
@@ -911,21 +930,17 @@ implements Serializable {
             Inventory entityInv = person.getContainerUnit().getInventory();
 
             // Fill oxygen in suit from entity's inventory.
-            //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
             double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
 
-        	// 2015-01-09 Added addDemandTotalRequest()
             entityInv.addAmountDemandTotalRequest(oxygenAR);
 
             double takenOxygen = neededOxygen;
             if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
             try {
                 entityInv.retrieveAmountResource(oxygenAR, takenOxygen);
-            	// 2015-01-09 addDemandRealUsage()
                 entityInv.addAmountDemand(oxygenAR, takenOxygen);
                 suitInv.storeAmountResource(oxygenAR, takenOxygen, true);
-                // not calling addSupplyAmount()
             }
             catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
@@ -933,20 +948,19 @@ implements Serializable {
             }
 
             // Fill water in suit from entity's inventory.
-            //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
             double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
             double availableWater = entityInv.getAmountResourceStored(waterAR, false);
-        	// 2015-01-09 Added addDemandTotalRequest()
+
             entityInv.addAmountDemandTotalRequest(waterAR);
 
             double takenWater = neededWater;
             if (takenWater > availableWater) takenWater = availableWater;
             try {
                 entityInv.retrieveAmountResource(waterAR, takenWater);
-            	// 2015-01-09 addDemandRealUsage()
+
                 entityInv.addAmountDemand(waterAR, takenWater);
                 suitInv.storeAmountResource(waterAR, takenWater, true);
-                // not calling addSupplyAmount()
+
             }
             catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 

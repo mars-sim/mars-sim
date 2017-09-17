@@ -10,7 +10,7 @@ package org.mars_sim.msp.ui.swing.unit_window.equipment;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
+
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;

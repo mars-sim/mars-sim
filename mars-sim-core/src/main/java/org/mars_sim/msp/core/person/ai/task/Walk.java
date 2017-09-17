@@ -400,12 +400,12 @@ implements Serializable {
 
         // Initialize task phase.
         addPhase(WALKING_SETTLEMENT_INTERIOR);
-        addPhase(WALKING_ROVER_INTERIOR);
-        addPhase(WALKING_EXTERIOR);
-        addPhase(EXITING_AIRLOCK);
-        addPhase(ENTERING_AIRLOCK);
-        addPhase(EXITING_ROVER_GARAGE);
-        addPhase(ENTERING_ROVER_GARAGE);
+        //addPhase(WALKING_ROVER_INTERIOR);
+        //addPhase(WALKING_EXTERIOR);
+        //addPhase(EXITING_AIRLOCK);
+        //addPhase(ENTERING_AIRLOCK);
+        //addPhase(EXITING_ROVER_GARAGE);
+       // addPhase(ENTERING_ROVER_GARAGE);
 
         setPhase(getWalkingStepPhase());
     }
@@ -939,12 +939,12 @@ implements Serializable {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking to (" + xx + ", " + yy + ")");
+    	        	//setDescription("Walking to (" + xx + ", " + yy + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arriving at (" + xx + ", " + yy + ")");
+    	        	//setDescription("Arriving at (" + xx + ", " + yy + ")");
                     endTask();
                 }
             }
@@ -952,12 +952,12 @@ implements Serializable {
             	if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
 	                logger.finer(person + " starting walk outside task.");
 		        	// 2015-11-11 setDescription()
-		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", " + yy + ")");
+		        	//setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", " + yy + ")");
 	                addSubTask(new WalkOutside(person, x, y,
 	                        xx, yy, true));
             	}
             	else {
-          	      logger.severe(person + " is not outside.");
+          	      logger.severe("Somehow " + person + " is not physically outside. End this task now.");
           	      endTask();
             	}
             }
@@ -980,12 +980,12 @@ implements Serializable {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking to (" + xx + ", " + yy + ")");
+    	        	setDescription("Walking toward (" + xx + ", " + yy + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arriving at (" + xx + ", " + yy + ")");
+    	        	//setDescription("Arriving at (" + xx + ", " + yy + ")");
                     endTask();
                 }
             }
@@ -998,7 +998,7 @@ implements Serializable {
 	                        xx, yy, true));
             	}
             	else {
-            		logger.severe(robot + " is not outside.");
+            	    logger.severe("Somehow " + robot + " is not physically outside. End this task now.");
             		endTask();
             	}
             }

@@ -10,9 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Airlock;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -31,15 +29,8 @@ implements Serializable {
 	private static final FunctionType FUNCTION = FunctionType.EVA;
 
 	private Airlock airlock;
-
-	//public static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-    //public static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
-    //public static AmountResource foodAR = AmountResource.foodAR;//findAmountResource(LifeSupportType.FOOD);
-
-	//public static AmountResource methaneAR = AmountResource.methaneAR;//findAmountResource("methane");
-	//public static AmountResource regolithAR = AmountResource.regolithAR;//findAmountResource("regolith");
-    //public static AmountResource iceAR = AmountResource.iceAR;//findAmountResource("ice");
-   // public static AmountResource rockSamplesAR = AmountResource.rockSamplesAR;//findAmountResource("rock samples");
+	
+	private static BuildingConfig config;
 
 	/**
 	 * Constructor
@@ -49,7 +40,7 @@ implements Serializable {
 		// Use Function constructor.
 		super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		config = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Add a building airlock.
 		int airlockCapacity = config.getAirlockCapacity(building.getBuildingType());
@@ -100,15 +91,14 @@ implements Serializable {
 				removedBuilding = true;
 			}
 			else {
-				EVA evaFunction = (EVA) building.getFunction(FUNCTION);
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += evaFunction.airlock.getCapacity() * wearModifier;
+				supply += building.getEVA().airlock.getCapacity() * wearModifier;
 			}
 		}
 
 		double airlockCapacityValue = demand / (supply + 1D);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		double airlockCapacity = config.getAirlockCapacity(buildingName);
 
 		return airlockCapacity * airlockCapacityValue;

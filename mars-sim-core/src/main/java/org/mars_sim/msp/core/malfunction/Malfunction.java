@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.malfunction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -61,8 +60,7 @@ public class Malfunction implements Serializable {
     private Map<Part, Integer> repairParts;
 
     private static MalfunctionConfig config;
-    private static MalfunctionFactory factory;
-    
+ 
     /**
      * Constructs a Malfunction object
      * @param name name of the malfunction
@@ -91,7 +89,7 @@ public class Malfunction implements Serializable {
         EVAWorkTimeCompleted = 0D;
         
     	config = SimulationConfig.instance().getMalfunctionConfiguration();
-    	factory = Simulation.instance().getMalfunctionFactory();
+    	
     }
 
     /**

@@ -1,11 +1,13 @@
+/**
+ * Mars Simulation Project
+ * HistoricalEventCategory.java
+ * @version 3.1.0 2017-09-16
+ * @author stpa
+ */
 package org.mars_sim.msp.core.events;
 
 import org.mars_sim.msp.core.Msg;
 
-/**
- * @author stpa
- * 2014-03-06
- */
 public enum HistoricalEventCategory {
 
 	MEDICAL (Msg.getString("HistoricalEventType.medical")), //$NON-NLS-1$

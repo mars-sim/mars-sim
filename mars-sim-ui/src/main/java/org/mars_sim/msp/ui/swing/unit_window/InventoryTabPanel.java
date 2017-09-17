@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
@@ -57,9 +58,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
     private JTable equipmentTable, resourcesTable ;
+    
 
     /**
      * Constructor
@@ -332,15 +335,31 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
 				equipment.put(
 					unit.getName(),
-					yesNo(unit.getInventory().isEmpty(true))
+					showOwner(unit)//.getInventory())//.isEmpty(true))
 				);
 				list.add(unit);
 			}
 			Collections.sort(list);
 		}
 
-		private String yesNo(boolean bool) {
-			return bool ? "yes" : "no";
+		private String showOwner(Unit unit) {//boolean bool) {
+			String s = null;
+			if (unit.getName().toLowerCase().contains("eva")) {
+				Person p = (Person) ((Equipment) unit).getLastOwner();
+				if (p != null)
+					s = p.getName();
+				else 
+					s = unit.getContainerUnit().getName();		
+			}
+			else {		
+				Set<AmountResource> ars = unit.getInventory().getAllAmountResourcesStored(false);
+				if (ars.size() > 1) System.out.print(ars.size());
+				for (AmountResource ar : ars) {
+					s = ar.getName();
+                }
+			}
+			return s;
+			//return bool ? "yes" : "no";
 		}
 
 		public int getRowCount() {
@@ -375,10 +394,16 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			List<Unit> newList = new ArrayList<Unit>();
 			Map<String,String> newMap = new HashMap<String,String>();
 			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
+/*
 				newMap.put(
 					unit.getName(),
 					yesNo(unit.getInventory().isEmpty(true))
 				);
+*/				
+				newMap.put(
+						unit.getName(),
+						showOwner(unit)//.getInventory())//.isEmpty(true))
+					);
 				newList.add(unit);
 			};
 

@@ -96,6 +96,7 @@ public class RadiationExposure implements Serializable {
     // TODO: vary the chance according to the solar cycle, day/night and other factors
     // On MSL, SEPs is only 5% of GCRs, not like 10% (=25/2.5) here
 
+    /** The time interval that a person checks for radiation exposure */
 	public static final int RADIATION_CHECK_FREQ = 50; // in millisols
 
 	public static final double SEP_CHANCE_SWING = 2D; // can be twice as much. probability of occurrence modifier (arbitrary)
@@ -173,6 +174,10 @@ public class RadiationExposure implements Serializable {
 
 	private int solCache = 1, counter30 = 1, counter360 = 1;
 
+	private int millisolsCache;
+	
+	private boolean repeated;
+	
 	private boolean isExposureChecked = false;
 
 	// Radiation Shielding
@@ -394,9 +399,20 @@ public class RadiationExposure implements Serializable {
      */
     public boolean isRadiationDetected(double time) {
 
-    	if (person != null) {
-
-    		double totalExposure = 0;
+        int millisols = (int) marsClock.getMillisol();
+        
+        if (millisolsCache == millisols)
+        	repeated = true;
+        
+        millisolsCache = millisols;
+        
+		// Check every RADIATION_CHECK_FREQ (in millisols)
+	    if (!repeated && millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
+	    	// Use repeated to avoid calculating the exposure over and over when the time ratio is low
+	    	// and millisols iterates very slowly and gives the same value.
+	    	repeated = true;
+    		
+	    	double totalExposure = 0;
     		double exposure = 0;
        	    double shield_factor = 0;
 
@@ -414,6 +430,8 @@ public class RadiationExposure implements Serializable {
 	    		shield_factor = 1 ; // arbitrary
 
        	    //System.out.println("chance is " + chance + " rand is "+ rand);
+    		
+    	    // Compute whether a baseline, GCR, or SEP event has occurred
     	    for (int i = 0; i < 3 ; i++) {
     	    	if (exposed[i]) {
     	    	// each body region receive a random max dosage

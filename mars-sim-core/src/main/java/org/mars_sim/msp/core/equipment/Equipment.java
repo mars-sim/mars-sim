@@ -42,6 +42,7 @@ implements Salvagable {
 	private boolean isSalvaged;
 	private SalvageInfo salvageInfo;
 
+	private Unit lastOwner;
 	//private String name;
 
 	/** Constructs an Equipment object
@@ -195,6 +196,14 @@ implements Salvagable {
 		}
 	}
 
+	public void setLastOwner(Unit unit) {
+		lastOwner = unit;
+	}
+	
+	public Unit getLastOwner() {
+		return lastOwner;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

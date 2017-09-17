@@ -7,12 +7,14 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.awt.geom.Point2D;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -30,6 +32,8 @@ extends Airlock {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleAirlock.class.getName());
+
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Data members.
 	/** The vehicle this airlock is for. */
@@ -89,7 +93,10 @@ extends Airlock {
 					vehicle.getInventory().storeUnit(person);
 				}
 				else if (LocationSituation.BURIED != person.getLocationSituation()) {
-					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
+					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+							Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName())
+							, null);
+					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}
 			else if (DEPRESSURIZED.equals(getState())) {
@@ -98,7 +105,10 @@ extends Airlock {
 					vehicle.getInventory().retrieveUnit(person);
 				}
 				else if (LocationSituation.BURIED != person.getLocationSituation()) {
-					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$
+					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+							Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName())
+							, null);
+					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}
 			else {

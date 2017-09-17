@@ -667,6 +667,7 @@ implements Serializable {
                 // Return suit to entity's inventory.
                 // logger.finer(person.getName() + " putting away EVA suit into " + entity.getName());
                 personInv.retrieveUnit(suit);
+                //suit.setLastOwner(person);
                 entityInv.storeUnit(suit);
             }
             else {

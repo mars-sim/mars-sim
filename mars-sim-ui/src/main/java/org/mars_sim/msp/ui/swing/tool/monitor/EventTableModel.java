@@ -346,23 +346,18 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					noFiring = true;
 				}
 
-				if (!noFiring)
-					//if (!isPaused)
-						if ((index == 0) && (event != null) ) {
-							SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
-						}
+				if (!noFiring && index == 0 && event != null) {
+					SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
+				}
 
 			}
 
 		} else if (desktop.getMainScene() != null) {
 
-			if ( mainSceneMenu == null) {
+			if (mainSceneMenu == null) {
 				try {
-
 					mainSceneMenu = desktop.getMainScene().getMainSceneMenu();
 				} catch (NullPointerException e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
 				}
 
 			} else if (mainSceneMenu != null) {
@@ -385,51 +380,49 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					noFiring = true;
 				}
 */
-				if (!noFiring) {
-					//if (!isPaused)
-					if ((index == 0) && (event != null) ) {
+				if (!noFiring && index == 0 && event != null) {
 
-						int type = 0;
-						String header = null ;
-						String message = event.getDescription(); //.toUpperCase();
-						// reset willNotify to false
-						boolean willNotify = false;
+					int type = 0;
+					String header = null ;
+					String message = event.getDescription(); //.toUpperCase();
+					// reset willNotify to false
+					boolean willNotify = false;
 
-						if (message != null && message != "" ) {
+					if (message != null && message != "" ) {
 
-						    HistoricalEventCategory category = event.getCategory();
+					    HistoricalEventCategory category = event.getCategory();
 
-						    if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
-						           // && showMalfunction ) {
-						        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
+					    if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+					           // && showMalfunction ) {
+					        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
 
-						        // Only display notification window when malfunction has occurred, not when fixed.
-						        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
-						            willNotify = true;
-						        }
+					        // Only display notification window when malfunction has occurred, not when fixed.
+					        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
+					            willNotify = true;
+					        }
+					        
+					        //Malfunction mal = (Malfunction) event.getSource();
 
-						        type = 0;
-						    }
+					        type = 0;
+					    }
 
-						    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
-						            // && showMedical )	{
+					    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
+					            // && showMedical )	{
 
-						        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
+					        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
 
-						        // Only display notification windows when medical problems are starting or person has died.
-						        if ((event.getType() == EventType.MEDICAL_STARTS) ||
-						                (event.getType() == EventType.MEDICAL_DEATH)) {
-						            willNotify = true;
-						        }
+					        // Only display notification windows when medical problems are starting or person has died.
+					        if ((event.getType() == EventType.MEDICAL_STARTS) ||
+					                (event.getType() == EventType.MEDICAL_DEATH)) {
+					            willNotify = true;
+					        }
 
-						        type = 1;
-						    }
-						}
-
-						if (willNotify)
-							Platform.runLater(new NotifyFXLauncher(header, message, type));
-
+					        type = 1;
+					    }
 					}
+
+					if (willNotify)
+						Platform.runLater(new NotifyFXLauncher(header, message, type));
 				}
 			}
 		}

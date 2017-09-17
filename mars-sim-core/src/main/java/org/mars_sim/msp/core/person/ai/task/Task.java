@@ -153,11 +153,13 @@ implements Serializable, Comparable<Task> {
 
         done = true;
 
-		if (person != null) {
-	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
+		if (person != null) { 
+			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+	        //person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 
 		}
 		else if (robot != null) {
-	        robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
+			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+			//robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 		}
 
 
@@ -315,10 +317,12 @@ implements Serializable, Comparable<Task> {
         else if (phases.contains(newPhase)) {
             phase = newPhase;
 			if (person != null) {
-	            person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+	            //person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
 			}
 			else if (robot != null) {
-	            robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+	            //robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
 			}
 
         }
@@ -357,10 +361,12 @@ implements Serializable, Comparable<Task> {
                 subTask.destroy();
                 subTask = newSubTask;
 				if (person != null) {
-	                person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+					// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+	                //person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 				}
 				else if (robot != null) {
-					robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+					// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+					//robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 				}
 
             }
@@ -371,10 +377,12 @@ implements Serializable, Comparable<Task> {
         else {
             subTask = newSubTask;
 			if (person != null) {
-	            person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+	            //person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 			}
 			else if (robot != null) {
-	            robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+	            //robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 			}
         }
     }
