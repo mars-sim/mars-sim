@@ -796,8 +796,10 @@ public class MainWindow extends JComponent {
 
 		if (changed) {
 
-			SwingUtilities.updateComponentTreeUI(frame);
-
+			//SwingUtilities.updateComponentTreeUI(frame);
+			frame.validate();
+			frame.repaint();
+			
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateAnnouncementWindowLF();

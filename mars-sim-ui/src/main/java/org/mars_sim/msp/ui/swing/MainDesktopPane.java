@@ -316,7 +316,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		for (JInternalFrame f : frames) {
 			//((ToolWindow)f).update();
 			f.updateUI();
-			SwingUtilities.updateComponentTreeUI(f);
+			//SwingUtilities.updateComponentTreeUI(f);
+			f.validate();
+			f.repaint();
 		}
 	}
 
@@ -1462,7 +1464,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	public void updateAnnouncementWindowLF() {
 	    if (announcementWindow != null) {
-	        SwingUtilities.updateComponentTreeUI(announcementWindow);
+	        //SwingUtilities.updateComponentTreeUI(announcementWindow);
+	        announcementWindow.validate();
+	        announcementWindow.repaint();
 	    }
 	}
 
@@ -1474,7 +1478,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		Iterator<ToolWindow> i = toolWindows.iterator();
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();
-			SwingUtilities.updateComponentTreeUI(toolWindow);
+		    // Note : Call updateComponentTreeUI() below is must-have or else Monitor Tool won't work
+		    SwingUtilities.updateComponentTreeUI(toolWindow); 
+			//toolWindow.validate();
+			//toolWindow.repaint();
 		   	//SwingUtilities.invokeLater(() -> {
 		   		toolWindow.update();
 		   	//});
@@ -1487,7 +1494,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		Iterator<UnitWindow> i = unitWindows.iterator();
 		while (i.hasNext()) {
 			UnitWindow window = i.next();
-			SwingUtilities.updateComponentTreeUI(window);
+			//SwingUtilities.updateComponentTreeUI(window);
+			window.validate();
+			window.repaint();
 		   	//SwingUtilities.invokeLater(() -> {
 	            window.update();
 		   	//});

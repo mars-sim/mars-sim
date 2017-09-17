@@ -237,16 +237,17 @@ implements Serializable {
 			// logger.info(name + " production level: " + productionLevel);
 
 			// Input resources from inventory.
-			Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
-			while (inputI.hasNext()) {
-				AmountResource resource = inputI.next();
+			//Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
+			//while (inputI.hasNext()) {
+			//	AmountResource resource = inputI.next();
+			for (AmountResource resource : maxInputResourceRates.keySet()) {
 				double maxRate = maxInputResourceRates.get(resource);
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
 				double remainingAmount = inventory.getAmountResourceStored(resource, false);
 
 				// 2015-01-09 Added addDemandTotalRequest()
-				inventory.addAmountDemandTotalRequest(resource);
+				//inventory.addAmountDemandTotalRequest(resource);
 
 				if (resourceAmount > remainingAmount)
 					resourceAmount = remainingAmount;
@@ -254,16 +255,17 @@ implements Serializable {
 				try {
 					inventory.retrieveAmountResource(resource, resourceAmount);
 					// 2015-01-09 addAmountDemand
-					inventory.addAmountDemand(resource,resourceAmount);
+					//inventory.addAmountDemand(resource,resourceAmount);
 				}
 				catch (Exception e) {}
 				// logger.info(resourceName + " input: " + resourceAmount + "kg.");
 			}
 
 			// Output resources to inventory.
-			Iterator<AmountResource> outputI = maxOutputResourceRates.keySet().iterator();
-			while (outputI.hasNext()) {
-				AmountResource resource = outputI.next();
+			//Iterator<AmountResource> outputI = maxOutputResourceRates.keySet().iterator();
+			//while (outputI.hasNext()) {
+			//	AmountResource resource = outputI.next();
+			for (AmountResource resource : maxOutputResourceRates.keySet()) {	
 				double maxRate = maxOutputResourceRates.get(resource);
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
@@ -302,10 +304,11 @@ implements Serializable {
 		// Convert time from millisols to seconds.
 		// double timeSec = MarsClock.convertMillisolsToSeconds(time);
 
-		Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
-		while (inputI.hasNext()) {
-			AmountResource resource = inputI.next();
+		//Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
+		//while (inputI.hasNext()) {
+		//	AmountResource resource = inputI.next();
 			//System.out.println(resource.getName());
+		for (AmountResource resource : maxInputResourceRates.keySet()) {	
 			double maxRate = maxInputResourceRates.get(resource);
 			double desiredResourceAmount = maxRate * time;
 			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);

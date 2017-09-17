@@ -490,7 +490,7 @@
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
--->
+
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />
@@ -955,10 +955,11 @@
 			<vehicle type="Light Utility Vehicle" number="1" />
 
 			<equipment type="EVA Suit" number="12" />
-			<equipment type="Gas Canister" number="100" />
-			<equipment type="Barrel" number="100" />
-			<equipment type="Bag" number="100" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Gas Canister" number="10" />
+			<equipment type="Barrel" number="10" />
+			<equipment type="Bag" number="10" />
+			<equipment type="Large Bag" number="10" />
+			<equipment type="Specimen Box" number="10" />
 
 			<resource type="oxygen" amount="4000.0" />
 			<resource type="water" amount="4000.0" />
@@ -1115,11 +1116,11 @@
 			<vehicle type="Light Utility Vehicle" number="2" />
 
 			<equipment type="EVA Suit" number="12" />
-			<equipment type="Gas Canister" number="100" />
-			<equipment type="Barrel" number="100" />
-			<equipment type="Bag" number="100" />
-			<equipment type="Large Bag" number="20" />
-			<equipment type="Specimen Box" number="100" />
+			<equipment type="Gas Canister" number="10" />
+			<equipment type="Barrel" number="10" />
+			<equipment type="Bag" number="10" />
+			<equipment type="Large Bag" number="10" />
+			<equipment type="Specimen Box" number="10" />
 
 			<resource type="oxygen" amount="4000.0" />
 			<resource type="water" amount="4000.0" />

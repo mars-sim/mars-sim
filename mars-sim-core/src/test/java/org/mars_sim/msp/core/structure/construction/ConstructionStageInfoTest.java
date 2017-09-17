@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
 import junit.framework.TestCase;
@@ -36,7 +36,7 @@ public class ConstructionStageInfoTest extends TestCase {
         parts.put(new Part("test part", 1, "test resource description", 1D, 1), 1);
         
         Map<AmountResource, Double> resources = new HashMap<AmountResource, Double>(1);
-        resources.put(new AmountResource(1, "test resource", "test type","test resource description", Phase.SOLID, false, false), 1D);
+        resources.put(new AmountResource(1, "test resource", "test type","test resource description", PhaseType.SOLID, false, false), 1D);
         
         List<ConstructionVehicleType> vehicles = 
             new ArrayList<ConstructionVehicleType>(1);
@@ -102,7 +102,7 @@ public class ConstructionStageInfoTest extends TestCase {
         while (i.hasNext()) {
             AmountResource resource = i.next();
             assertEquals("test resource", resource.getName());
-            assertEquals(Phase.SOLID, resource.getPhase());
+            assertEquals(PhaseType.SOLID, resource.getPhase());
             assertEquals(1D, resources.get(resource));
         }
     }

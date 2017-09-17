@@ -7,7 +7,7 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 
 import java.io.Serializable;
 
@@ -39,15 +39,15 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the liquid capacity.
-		getInventory().addAmountResourcePhaseCapacity(Phase.LIQUID, CAPACITY);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, CAPACITY);
 	}
 
 	/**
 	 * Gets the phase of resources this container can hold.
 	 * @return resource phase.
 	 */
-	public Phase getContainingResourcePhase() {
-		return Phase.LIQUID;
+	public PhaseType getContainingResourcePhase() {
+		return PhaseType.LIQUID;
 	}
 
 	/**

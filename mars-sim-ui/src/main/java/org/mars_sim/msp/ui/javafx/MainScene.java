@@ -2630,7 +2630,7 @@ public class MainScene {
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateUnitWindowLF();
-				SwingUtilities.updateComponentTreeUI(desktop);
+				//SwingUtilities.updateComponentTreeUI(desktop);
 				//desktop.updateAnnouncementWindowLF();
 				// desktop.updateTransportWizardLF();
 				//System.out.println("just updated UI");

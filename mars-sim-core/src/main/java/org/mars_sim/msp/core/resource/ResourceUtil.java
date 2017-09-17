@@ -29,6 +29,7 @@ public class ResourceUtil implements Serializable {
 
     public static final String ARGON = "argon";
     public static final String NITROGEN = "nitrogen";
+    public static final String CO = "carbon monoxide";
 
     public static final String HYDROGEN = "hydrogen";
     public static final String METHANE = "methane";
@@ -87,6 +88,8 @@ public class ResourceUtil implements Serializable {
 
 	public static AmountResource hydrogenAR;
 	public static AmountResource methaneAR;
+
+	public static AmountResource coAR;
 
     public static AmountResource soilAR;
     public static AmountResource iceAR;
@@ -198,9 +201,11 @@ public class ResourceUtil implements Serializable {
 		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
 		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
 		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);	// 4
-
+		
 		argonAR = findAmountResource(ARGON);	// 
 		nitrogenAR = findAmountResource(NITROGEN);	// 
+
+		coAR = findAmountResource(CO);	// 
 
 		hydrogenAR = findAmountResource(HYDROGEN);		// 7
     	methaneAR = findAmountResource(METHANE);			// 8

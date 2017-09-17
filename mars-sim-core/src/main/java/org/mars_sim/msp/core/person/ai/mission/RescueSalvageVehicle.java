@@ -275,7 +275,7 @@ implements Serializable {
             }
         }
         else if (TRAVELLING.equals(getPhase())) {
-            if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+            if (null != getCurrentNavpoint() && getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
                 setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                         getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
@@ -317,7 +317,8 @@ implements Serializable {
      */
     private void rendezvousPhase(MissionMember member) {
 
-        logger.info(getVehicle().getName() + " rendezvous with " + vehicleTarget.getName());
+        logger.info(member.getName() + " is driving " + getVehicle().getName() 
+        		+ " to rendezvous with " + vehicleTarget.getName());
 
         // If rescuing vehicle crew, load rescue life support resources into vehicle (if possible).
         if (rescue) {

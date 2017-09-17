@@ -30,10 +30,10 @@ class AmountResourcePhaseStorage implements Serializable {
 	// Data members
 
 	/** Capacity for each phase of amount resource. */
-	private Map<Phase, Double> amountResourcePhaseCapacities = null;
+	private Map<PhaseType, Double> amountResourcePhaseCapacities = null;
 
 	/** Stored resources by phase. */
-	private Map<Phase, StoredPhase> amountResourcePhaseStored = null;
+	private Map<PhaseType, StoredPhase> amountResourcePhaseStored = null;
 
 	/** The cache value for the total amount phase resources stored. (kg) */
 	private transient double totalStoredCache = 0D;
@@ -45,14 +45,14 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws ResourceException if error adding capacity.
      */
-    void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
+    void addAmountResourcePhaseCapacity(PhaseType phase, double capacity) {
 
         if (capacity < 0D) {
             throw new IllegalStateException("Cannot add negative phase capacity: " + capacity);
         }
 
         if (amountResourcePhaseCapacities == null) {
-            amountResourcePhaseCapacities = new HashMap<Phase, Double>();
+            amountResourcePhaseCapacities = new HashMap<PhaseType, Double>();
         }
 
         if (hasAmountResourcePhaseCapacity(phase)) {
@@ -69,7 +69,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param phase the phase.
      * @return true if capacity in phase.
      */
-    boolean hasAmountResourcePhaseCapacity(Phase phase) {
+    boolean hasAmountResourcePhaseCapacity(PhaseType phase) {
 
         boolean result = false;
 
@@ -85,7 +85,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param phase the phase
      * @return the capacity (kg).
      */
-    double getAmountResourcePhaseCapacity(Phase phase) {
+    double getAmountResourcePhaseCapacity(PhaseType phase) {
 
         double result = 0D;
 
@@ -101,7 +101,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param phase the phase
      * @return amount stored (kg)
      */
-    double getAmountResourcePhaseStored(Phase phase) {
+    double getAmountResourcePhaseStored(PhaseType phase) {
 
         double result = 0D;
 
@@ -118,7 +118,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param phase the resource phase.
      * @return stored amount as StoredPhase object.
      */
-    private StoredPhase getAmountResourcePhaseStoredObject(Phase phase) {
+    private StoredPhase getAmountResourcePhaseStoredObject(PhaseType phase) {
 
         StoredPhase result = null;
 
@@ -151,8 +151,8 @@ class AmountResourcePhaseStorage implements Serializable {
         double totalAmount = 0D;
 
         if (amountResourcePhaseStored != null) {
-            Map<Phase, StoredPhase> tempMap = Collections.unmodifiableMap(amountResourcePhaseStored);
-            Iterator<Phase> i = tempMap.keySet().iterator();
+            Map<PhaseType, StoredPhase> tempMap = Collections.unmodifiableMap(amountResourcePhaseStored);
+            Iterator<PhaseType> i = tempMap.keySet().iterator();
             while (i.hasNext()) {
                 totalAmount += tempMap.get(i.next()).amount;
             }
@@ -167,7 +167,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param phase the phase
      * @return remaining capacity (kg)
      */
-    double getAmountResourcePhaseRemainingCapacity(Phase phase) {
+    double getAmountResourcePhaseRemainingCapacity(PhaseType phase) {
 
         double result = 0D;
 
@@ -183,7 +183,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param phase the phase
      * @return the resource stored.
      */
-    AmountResource getAmountResourcePhaseType(Phase phase) {
+    AmountResource getAmountResourcePhaseType(PhaseType phase) {
 
         AmountResource result = null;
 
@@ -211,7 +211,7 @@ class AmountResourcePhaseStorage implements Serializable {
 
         if (amount > SMALL_AMOUNT_COMPARISON) {
 
-            Phase resourcePhase = resource.getPhase();
+            PhaseType resourcePhase = resource.getPhase();
             boolean storable = false;
 
             if (getAmountResourcePhaseRemainingCapacity(resourcePhase) >= amount) {
@@ -228,7 +228,7 @@ class AmountResourcePhaseStorage implements Serializable {
                 totalStoredCacheDirty = true;
 
                 if (amountResourcePhaseStored == null) {
-                    amountResourcePhaseStored = new HashMap<Phase, StoredPhase>();
+                    amountResourcePhaseStored = new HashMap<PhaseType, StoredPhase>();
                 }
 
                 StoredPhase stored = getAmountResourcePhaseStoredObject(resourcePhase);
@@ -251,7 +251,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param amount the amount to retrieve.
      * @throws ResourceException if error retrieving amount from phase.
      */
-    void retrieveAmountResourcePhase(Phase phase, double amount) {
+    void retrieveAmountResourcePhase(PhaseType phase, double amount) {
 
         if (amount < 0D) {
             throw new IllegalStateException("Cannot retrieve negative amount of phase: " + amount); 

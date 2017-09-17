@@ -9,7 +9,7 @@
 package org.mars_sim.msp.core;
 
 import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 
 /**
  * A mock unit for testing that implements the container interface.
@@ -17,9 +17,9 @@ import org.mars_sim.msp.core.resource.Phase;
 public class MockUnit3 extends Unit implements Container {
 
     // Data members.
-    private Phase resourcePhase;
+    private PhaseType resourcePhase;
     
-    public MockUnit3(Phase resourcePhase) {
+    public MockUnit3(PhaseType resourcePhase) {
         // Use Unit constructor.
         super("Mock Unit 3", new Coordinates(0D, 0D));
         
@@ -28,7 +28,7 @@ public class MockUnit3 extends Unit implements Container {
     }
 
     @Override
-    public Phase getContainingResourcePhase() {
+    public PhaseType getContainingResourcePhase() {
         return resourcePhase;
     }
 

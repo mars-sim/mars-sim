@@ -93,7 +93,7 @@ public class AmountResourceStorage implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws ResourceException if error adding capacity.
      */
-    public void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
+    public void addAmountResourcePhaseCapacity(PhaseType phase, double capacity) {
 
         if (phaseStorage == null) {
             phaseStorage = new AmountResourcePhaseStorage();
@@ -106,12 +106,12 @@ public class AmountResourceStorage implements Serializable {
      * Gets the phase capacities in storage.
      * @return map of phases with capacities.
      */
-    public Map<Phase, Double> getAmountResourcePhaseCapacities() {
+    public Map<PhaseType, Double> getAmountResourcePhaseCapacities() {
 
-        Map<Phase, Double> phaseCapacities = new HashMap<Phase, Double>();
+        Map<PhaseType, Double> phaseCapacities = new HashMap<PhaseType, Double>();
 
         if (phaseStorage != null) {
-            for (Phase phase : Phase.values()) {
+            for (PhaseType phase : PhaseType.values()) {
                 double capacity = phaseStorage.getAmountResourcePhaseCapacity(phase);
                 if (capacity > 0D) {
                     phaseCapacities.put(phase, capacity);
@@ -217,7 +217,7 @@ public class AmountResourceStorage implements Serializable {
 
         // Add phase storage resources.
         if (phaseStorage != null) {
-            for (Phase phase : Phase.values()) {
+            for (PhaseType phase : PhaseType.values()) {
                 if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) {
                     tempResources.add(phaseStorage.getAmountResourcePhaseType(phase));
                 }

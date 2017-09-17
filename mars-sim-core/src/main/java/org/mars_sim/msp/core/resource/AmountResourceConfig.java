@@ -70,21 +70,23 @@ public class AmountResourceConfig implements Serializable {
 
 			String description = resourceElement.getText();
 			// Get phase.
-			String phaseString = resourceElement.getAttributeValue(PHASE).toUpperCase();
+			String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
 
-			Phase phase = Phase.valueOf(phaseString);
+			//PhaseType phase = PhaseType.valueOf(phaseString);
+			PhaseType phaseType = PhaseType.fromString(phaseString);
+
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 			// 2014-11-25 Added edible
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 			// 2014-11-25 Added edible
 			
-			resourceSet.add(new AmountResource(resource_id, name, type, description, phase, lifeSupport, edible));
+			resourceSet.add(new AmountResource(resource_id, name, type, description, phaseType, lifeSupport, edible));
 
 			if (type != null && type.toLowerCase().equals(CROP)) {
 				resource_id++;
 				// Create the tissue culture for each crop.
-				resourceSet.add(new AmountResource(resource_id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
+				resourceSet.add(new AmountResource(resource_id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phaseType, lifeSupport, false));
 				// TODO: may set edible to true
 			}
 

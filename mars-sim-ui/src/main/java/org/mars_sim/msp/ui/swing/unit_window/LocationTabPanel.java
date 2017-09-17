@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.1.0 2017-02-20
+ * @version 3.1.0 2017-09-16
  * @author Scott Davis
  */
 
@@ -983,7 +983,7 @@ implements ActionListener {
     		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     			// case A
     			//loc = AT + e.getBuildingLocation().getNickName() + IN + topContainerCache;
-				if (topContainerCache == null)
+				if (containerCache != null)
 	    			loc = STORED + AT + containerCache;
 				//else if (containerCache == null)
 	    		//	loc = STORED + AT + topContainerCache;

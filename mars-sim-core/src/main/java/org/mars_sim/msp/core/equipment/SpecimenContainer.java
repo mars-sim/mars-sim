@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -43,8 +43,8 @@ implements Container, Serializable {
 	 * Gets the phase of resources this container can hold.
 	 * @return resource phase.
 	 */
-	public Phase getContainingResourcePhase() {
-		return Phase.SOLID;
+	public PhaseType getContainingResourcePhase() {
+		return PhaseType.SOLID;
 	}
 
 	/**

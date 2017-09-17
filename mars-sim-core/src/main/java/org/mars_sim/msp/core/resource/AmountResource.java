@@ -56,7 +56,7 @@ implements Serializable {
 
 	private String description;
 
-	private Phase phase;
+	private PhaseType phase;
 
 	private static AmountResourceConfig amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
 
@@ -75,7 +75,7 @@ implements Serializable {
 		String name,
 		String type,
 		String description,
-		Phase phase,
+		PhaseType phase,
 		boolean lifeSupport,
 		boolean edible
 	) {
@@ -135,7 +135,7 @@ implements Serializable {
 	 * Gets the resources material phase.
 	 * @return phase value
 	 */
-	public Phase getPhase() {
+	public PhaseType getPhase() {
 		return phase;
 	}
 

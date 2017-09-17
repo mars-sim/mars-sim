@@ -57,6 +57,13 @@ implements Serializable {
     // Data members.
     private int techLevel;
     private int concurrentProcesses;
+    
+    private Building building;
+    private Settlement settlement;
+    private GoodsManager goodsManager;
+    private UnitManager manager;
+    private Inventory inv;
+    
     private List<FoodProductionProcess> processes;
 
     private static BuildingConfig config;
@@ -69,7 +76,13 @@ implements Serializable {
     public FoodProduction(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
-
+    	
+    	this.building = building;
+    	settlement = building.getSettlement();
+    	goodsManager = settlement.getGoodsManager();
+        manager = Simulation.instance().getUnitManager();
+        inv = building.getInventory();
+        
         config = SimulationConfig.instance().getBuildingConfiguration();
 
         techLevel = config.getFoodProductionTechLevel(building.getBuildingType());
@@ -220,6 +233,7 @@ implements Serializable {
      * @throws BuildingException if error adding process.
      */
     public void addProcess(FoodProductionProcess process) {
+    
         if (process == null) {
             throw new IllegalArgumentException("process is null");
         }
@@ -249,16 +263,17 @@ implements Serializable {
                             item.getType() +
                             " not a valid type."
                     );
-
+     
             // Recalculate settlement good value for input item.
-            GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+            if (goodsManager == null)
+            	goodsManager = settlement.getGoodsManager();
             goodsManager.updateGoodValue(FoodProductionUtil.getGood(item), false);
         }
 
 
         // Log foodProduction process starting.
         if (logger.isLoggable(Level.FINEST)) {
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+ 
             logger.finest(
                     getBuilding() + " at " 
                             + settlement
@@ -347,9 +362,9 @@ implements Serializable {
 
         if (!premature) {
             // Produce outputs.
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            UnitManager manager = Simulation.instance().getUnitManager();
-            Inventory inv = getBuilding().getSettlementInventory();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            //UnitManager manager = Simulation.instance().getUnitManager();
+            //Inventory inv = getBuilding().getSettlementInventory();
 
             Iterator<FoodProductionProcessItem> j = process.getInfo().getOutputList().iterator();
             while (j.hasNext()) {
@@ -409,7 +424,6 @@ implements Serializable {
                             item.getType() + " not a valid type.");
 
                     // Recalculate settlement good value for output item.
-                    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
                     goodsManager.updateGoodValue(FoodProductionUtil.getGood(item), false);
                 }
             }
@@ -417,9 +431,9 @@ implements Serializable {
         else {
 
             // Premature end of process.  Return all input materials.
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            UnitManager manager = Simulation.instance().getUnitManager();
-            Inventory inv = getBuilding().getSettlementInventory();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            //UnitManager manager = Simulation.instance().getUnitManager();
+            //Inventory inv = getBuilding().getSettlementInventory();
 
             Iterator<FoodProductionProcessItem> j = process.getInfo().getInputList().iterator();
             while (j.hasNext()) {
@@ -479,7 +493,7 @@ implements Serializable {
                             item.getType() + " not a valid type.");
 
                     // Recalculate settlement good value for output item.
-                    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+                    //GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
                     goodsManager.updateGoodValue(FoodProductionUtil.getGood(item), false);
                 }
             }

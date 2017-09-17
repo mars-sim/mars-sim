@@ -40,10 +40,10 @@ implements Salvagable {
 
 	// Data members.
 	private boolean isSalvaged;
+	
 	private SalvageInfo salvageInfo;
 
 	private Unit lastOwner;
-	//private String name;
 
 	/** Constructs an Equipment object
 	 *  @param name the name of the unit

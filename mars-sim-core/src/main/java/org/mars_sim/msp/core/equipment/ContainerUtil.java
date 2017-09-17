@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 
 /**
  * A utility class for containers.
@@ -30,8 +30,7 @@ public final class ContainerUtil {
 	public static Class<? extends Container> getContainerClassToHoldResource(
 		AmountResource resource
 	) {
-		Phase phase = resource.getPhase();
-		return getContainerTypeNeeded(phase);
+		return getContainerTypeNeeded(resource.getPhase());
 	}
 
 	/**
@@ -39,12 +38,13 @@ public final class ContainerUtil {
 	 * @param phase the amount resource phase.
 	 * @return container class.
 	 */
-	public static Class<? extends Container> getContainerTypeNeeded(Phase phase) {
+	public static Class<? extends Container> getContainerTypeNeeded(PhaseType phase) {
 		Class<? extends Container> result = null;
 		switch (phase) {
 			case GAS : result = GasCanister.class; break;
 			case LIQUID : result = Barrel.class; break;
 			case SOLID : result = Bag.class;
+			//System.out.println("ContainerUtil : Can't match " + phase + " to any known phases.");
 		}
 		return result;
 	}
@@ -73,9 +73,9 @@ public final class ContainerUtil {
 	 * @param containerClass the container class.
 	 * @return amount resource phase.
 	 */
-	public static Phase getContainerPhase(Class<? extends Container> containerClass) {
+	public static PhaseType getContainerPhase(Class<? extends Container> containerClass) {
 	    
-	    Phase result = null;
+	    PhaseType result = null;
 	    
 	    Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
 	    Container container = (Container) EquipmentFactory.getEquipment(equipmentClass, coordinates, true);

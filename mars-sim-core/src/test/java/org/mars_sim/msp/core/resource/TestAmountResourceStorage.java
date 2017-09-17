@@ -71,7 +71,7 @@ public class TestAmountResourceStorage extends TestCase {
 	
 	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage();
-		storage.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 		double amountCO2 = storage.getAmountResourceCapacity(carbonDioxide);
 		assertEquals("Amount resource type capacity set correctly.", 100D, amountCO2, 0D);
@@ -80,7 +80,7 @@ public class TestAmountResourceStorage extends TestCase {
 	public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage();
 		try {
-			storage.addAmountResourcePhaseCapacity(Phase.GAS, -100D);
+			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, -100D);
 			fail("Cannot add negative capacity for a phase.");
 		}
 		catch (Exception e) {}
@@ -88,7 +88,7 @@ public class TestAmountResourceStorage extends TestCase {
 	
 	public void testInventoryAmountResourceComboCapacityGood() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage();
-		storage.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
 		AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 		storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
 		double amountCO2 = storage.getAmountResourceCapacity(carbonDioxide);
@@ -124,7 +124,7 @@ public class TestAmountResourceStorage extends TestCase {
 	
 	public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage();
-		storage.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
 		storage.storeAmountResource(hydrogen, 100D);
 		double amountPhaseStored = storage.getAmountResourceStored(hydrogen);
@@ -133,7 +133,7 @@ public class TestAmountResourceStorage extends TestCase {
 	
 	public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage();
-		storage.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
 		try {
 			storage.storeAmountResource(hydrogen, 101D);
@@ -167,7 +167,7 @@ public class TestAmountResourceStorage extends TestCase {
 		AmountResourceStorage storage = new AmountResourceStorage();
 		AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 		storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-		storage.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
 		storage.storeAmountResource(carbonDioxide, 60D);
 		double remainingCapacity = storage.getAmountResourceRemainingCapacity(carbonDioxide);
 		assertEquals("Amount type capacity remaining is correct amount.", 40D, remainingCapacity, 0D);
@@ -184,7 +184,7 @@ public class TestAmountResourceStorage extends TestCase {
 		AmountResourceStorage storage = new AmountResourceStorage();
 		AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 		storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-		storage.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
 		storage.storeAmountResource(carbonDioxide, 100D);
 		storage.retrieveAmountResource(carbonDioxide, 50D);
 		double remainingCapacity = storage.getAmountResourceRemainingCapacity(carbonDioxide);
@@ -196,7 +196,7 @@ public class TestAmountResourceStorage extends TestCase {
 			AmountResourceStorage storage = new AmountResourceStorage();
 			AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 			storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-			storage.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
 			storage.storeAmountResource(carbonDioxide, 100D);
 			storage.retrieveAmountResource(carbonDioxide, 101D);
 			fail("Amount type retrieved fails correctly.");
@@ -209,7 +209,7 @@ public class TestAmountResourceStorage extends TestCase {
 			AmountResourceStorage storage = new AmountResourceStorage();
 			AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 			storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-			storage.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
 			storage.storeAmountResource(carbonDioxide, 100D);
 			storage.retrieveAmountResource(carbonDioxide, -100D);
 			fail("Amount type retrieved fails correctly.");
@@ -232,7 +232,7 @@ public class TestAmountResourceStorage extends TestCase {
 		AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
-		storage.addAmountResourcePhaseCapacity(Phase.LIQUID, 100D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.LIQUID, 100D);
 		storage.storeAmountResource(carbonDioxide, 10D);
 		storage.storeAmountResource(water, 20D);
 		double totalStored = storage.getTotalAmountResourcesStored(false);
@@ -244,7 +244,7 @@ public class TestAmountResourceStorage extends TestCase {
 		AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
-		storage.addAmountResourcePhaseCapacity(Phase.LIQUID, 100D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.LIQUID, 100D);
 		storage.storeAmountResource(carbonDioxide, 10D);
 		storage.storeAmountResource(water, 20D);
 		Set<AmountResource> allResources = storage.getAllAmountResourcesStored(false);

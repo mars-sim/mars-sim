@@ -753,19 +753,21 @@ implements Serializable {
 				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 				    		"Mission members removed : " + members, null);
 	                for (Object o : members.toArray()) {
-	                	performMission((MissionMember) o);
-/*	                	
+	                	//performMission((MissionMember) o);
 	                    removeMember((MissionMember) o);
+                  
 	                    if (o instanceof Person) {
 	        		        Person person = (Person) o;
-	        				performDisembarkToSettlementPhase(person, person.getAssociatedSettlement());
+	        		        person.setMission(null);
+	        		        
+	        				//performDisembarkToSettlementPhase(person, person.getAssociatedSettlement());
 		                    //person.getAssociatedSettlement().getInventory().storeUnit(person);
 	        		    }
-	                    else if (o instanceof Robot) {
-	                    	Robot robot = (Robot) o;
+	                    //else if (o instanceof Robot) {
+	                    //	Robot robot = (Robot) o;
 	                    	//robot.getAssociatedSettlement().getInventory().storeUnit(robot);
-	        		    }
-*/	        		    
+	        		    //}
+     		    
 	                }
 				}
 			}

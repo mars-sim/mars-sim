@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceStorage;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
@@ -399,7 +399,7 @@ implements Serializable {
      * @param phase the phase
      * @param capacity the capacity amount (kg).
      */
-    public void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
+    public void addAmountResourcePhaseCapacity(PhaseType phase, double capacity) {
         // Set capacity cache to all dirty because capacity values are changing.
         setAmountResourceCapacityCacheAllDirty(false);
         // Initialize resource storage if necessary.
@@ -1828,7 +1828,7 @@ implements Serializable {
                         entry.getValue()
                         );
             }
-            for (Entry<Phase,Double> entry : resourceStorage.getAmountResourcePhaseCapacities().entrySet()) {
+            for (Entry<PhaseType,Double> entry : resourceStorage.getAmountResourcePhaseCapacities().entrySet()) {
                 result.addAmountResourcePhaseCapacity(
                         entry.getKey(),
                         entry.getValue()

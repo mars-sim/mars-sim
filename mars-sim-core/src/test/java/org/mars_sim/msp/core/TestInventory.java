@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 
 public class TestInventory extends TestCase {
 
@@ -76,7 +76,7 @@ public class TestInventory extends TestCase {
     public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         double amountCO2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
         assertEquals(100D, amountCO2, 0D);
     }
@@ -84,7 +84,7 @@ public class TestInventory extends TestCase {
     public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
         try {
-            inventory.addAmountResourcePhaseCapacity(Phase.GAS, -100D);
+            inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, -100D);
             fail("Should have thrown exception, cannot add negative");
         } catch (Exception e) {
             //expected
@@ -94,7 +94,7 @@ public class TestInventory extends TestCase {
     public void testInventoryAmountResourceComboCapacityGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
         double amountCO2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
         assertEquals(100D, amountCO2, 0D);
@@ -131,7 +131,7 @@ public class TestInventory extends TestCase {
     public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         inventory.storeAmountResource(hydrogen, 100D, true);
         double amountPhaseStored = inventory.getAmountResourceStored(hydrogen, false);
         assertEquals(100D, amountPhaseStored, 0D);
@@ -140,7 +140,7 @@ public class TestInventory extends TestCase {
     public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         try {
             inventory.storeAmountResource(hydrogen, 101D, true);
             fail("Throws exception if overloaded");
@@ -176,8 +176,8 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
         inventory.addGeneralCapacity(130D);
-        Unit testUnit = new MockUnit3(Phase.GAS);
-        testUnit.getInventory().addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+        Unit testUnit = new MockUnit3(PhaseType.GAS);
+        testUnit.getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         inventory.storeUnit(testUnit);
         inventory.storeAmountResource(hydrogen, 100D, true);
         double amountPhaseStored = inventory.getAmountResourceStored(hydrogen, false);
@@ -188,7 +188,7 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
         inventory.addGeneralCapacity(130D);
-        Unit testUnit = new MockUnit3(Phase.GAS);
+        Unit testUnit = new MockUnit3(PhaseType.GAS);
         testUnit.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
         inventory.storeUnit(testUnit);
         inventory.storeAmountResource(hydrogen, 100D, true);
@@ -215,7 +215,7 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
         inventory.storeAmountResource(carbonDioxide, 60D, true);
         double remainingCapacity = inventory.getAmountResourceRemainingCapacity(
                 AmountResource.findAmountResource(CARBON_DIOXIDE), true, false);
@@ -237,8 +237,8 @@ public class TestInventory extends TestCase {
     public void testInventoryAmountResourceRemainingCapacityDeepLimitedGeneral() {
         MockUnit1 unit1 = new MockUnit1();
         unit1.getInventory().addGeneralCapacity(80D);
-        MockUnit3 unit2 = new MockUnit3(Phase.SOLID);
-        unit2.getInventory().addAmountResourcePhaseCapacity(Phase.SOLID, 100D);
+        MockUnit3 unit2 = new MockUnit3(PhaseType.SOLID);
+        unit2.getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, 100D);
         unit1.getInventory().storeUnit(unit2);
         AmountResource food = AmountResource.findAmountResource(FOOD);
         double remainingCapacity = unit1.getInventory().getAmountResourceRemainingCapacity(
@@ -257,7 +257,7 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
         inventory.storeAmountResource(carbonDioxide, 100D, true);
         inventory.retrieveAmountResource(carbonDioxide, 50D);
         double remainingCapacity = inventory.getAmountResourceRemainingCapacity(
@@ -269,7 +269,7 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
         inventory.storeAmountResource(carbonDioxide, 100D, true);
         try {
             inventory.retrieveAmountResource(carbonDioxide, 101D);
@@ -283,7 +283,7 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
         inventory.storeAmountResource(carbonDioxide, 100D, true);
         try {
             inventory.retrieveAmountResource(carbonDioxide, -100D);
@@ -308,8 +308,8 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
         inventory.addGeneralCapacity(130D);
-        Unit testUnit = new MockUnit3(Phase.GAS);
-        testUnit.getInventory().addAmountResourcePhaseCapacity(Phase.GAS, 100D);
+        Unit testUnit = new MockUnit3(PhaseType.GAS);
+        testUnit.getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         inventory.storeUnit(testUnit);
         inventory.storeAmountResource(hydrogen, 100D, true);
         double remainingCapacity1 = inventory.getAmountResourceRemainingCapacity(hydrogen, true, false);
@@ -323,7 +323,7 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
         inventory.addGeneralCapacity(130D);
-        Unit testUnit = new MockUnit3(Phase.GAS);
+        Unit testUnit = new MockUnit3(PhaseType.GAS);
         testUnit.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
         inventory.storeUnit(testUnit);
         inventory.storeAmountResource(hydrogen, 100D, true);
@@ -337,9 +337,9 @@ public class TestInventory extends TestCase {
         AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
         AmountResource food = AmountResource.findAmountResource(FOOD);
         inventory.addGeneralCapacity(130D);
-        inventory.addAmountResourcePhaseCapacity(Phase.GAS, 20D);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 20D);
         inventory.addAmountResourceTypeCapacity(food, 30D);
-        Unit testUnit = new MockUnit3(Phase.GAS);
+        Unit testUnit = new MockUnit3(PhaseType.GAS);
         testUnit.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
         inventory.storeUnit(testUnit);
         inventory.storeAmountResource(hydrogen, 120D, true);

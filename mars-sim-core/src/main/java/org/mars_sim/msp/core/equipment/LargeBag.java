@@ -8,7 +8,7 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.resource.PhaseType;
 
 import java.io.Serializable;
 
@@ -35,15 +35,15 @@ public class LargeBag extends Equipment implements Container, Serializable {
         setBaseMass(EMPTY_MASS);
         
         // Set the solid capacity.
-        getInventory().addAmountResourcePhaseCapacity(Phase.SOLID, CAPACITY);
+        getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, CAPACITY);
     }
     
     /**
      * Gets the phase of resources this container can hold.
      * @return resource phase.
      */
-    public Phase getContainingResourcePhase() {
-        return Phase.SOLID;
+    public PhaseType getContainingResourcePhase() {
+        return PhaseType.SOLID;
     }
     
     /**
