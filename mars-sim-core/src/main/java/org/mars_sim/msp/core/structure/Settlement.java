@@ -882,6 +882,15 @@ implements Serializable, LifeSupportType, Objective {
 	public double computeTemperature() {
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
 
+		double sum = 0;
+        for (Building b : buildings) {
+            sum += b.getCurrentTemperature();
+        }
+				
+		return sum/buildings.size();
+/*
+		List<Building> buildings = buildingManager.getBuildingsWithThermal();
+
 		double total_t_area = 0;
 		double total_area = 0;
 		
@@ -893,6 +902,8 @@ implements Serializable, LifeSupportType, Objective {
         }
 
         return total_t_area / total_area;
+ */
+        
 /*
 		double result = NORMAL_TEMP; // (malfunctionManager.getTemperatureModifier() / 100D);
 		//double result = getLifeSupport().getTemperature();

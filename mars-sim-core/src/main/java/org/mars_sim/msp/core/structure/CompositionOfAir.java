@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -45,7 +44,7 @@ public class CompositionOfAir implements Serializable {
 	
 	private static final double HEIGHT = 2.5; // assume an uniform height of 2.5m in all buildings
 	
-	private static final double LOW_ATM_FACTOR = 0.6463D; // 9.5 psi / 14.7 psi = 0.6463
+	//private static final double LOW_ATM_FACTOR = 0.6463D; // 9.5 psi / 14.7 psi = 0.6463
 
 	private static final double AIRLOCK_VOLUME_IN_LITER = Building.AIRLOCK_VOLUME_IN_CM / 1000D; // [in liters] 12 cm^3 -> .012 L
 	
@@ -62,7 +61,6 @@ public class CompositionOfAir implements Serializable {
 	// the possibility of using 100% O2 at 9.5 psi (0.66 bar) in the suits to lessen the pressure 
 	// reduction, and hence the risk of DCS.[72]
 	// see https://en.wikipedia.org/wiki/Decompression_sickness
-
 	
 	//private static final double CO2_PERCENT = 0;//0.0407;
 	//private static final double ARGON_PERCENT = 0;//0.9340;
@@ -102,14 +100,18 @@ public class CompositionOfAir implements Serializable {
     // alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
     // see https://en.wikipedia.org/wiki/Gas_constant
 
+    private int msolCache;
+    
+    private boolean isDone = false;
+    
     /** Oxygen consumed by a person [kg/millisol] */
     private double o2Consumed;
     /** CO2 expelled by a person [kg/millisol] */    
     private double cO2Expelled;
     /** Moisture expelled by a person [kg/millisol] */
     private double moistureExpelled;
-    /** Water cosumed by a person [kg/millisol] */
-    private double h2oConsumed;
+    /** Water consumed by a person [kg/millisol] */
+    //private double h2oConsumed;
 
 	//private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
 
@@ -138,6 +140,7 @@ public class CompositionOfAir implements Serializable {
 	private double [] totalMoles;
 	private double [] totalMass;
 	//private double [] totalPercent;
+	//private double [] buildingTemperature;
 	
 	private double [][] percent;
 	private double [][] partialPressure;
@@ -147,17 +150,18 @@ public class CompositionOfAir implements Serializable {
 	
 	// Note : Gas volumes are additive. If you mix some volumes of oxygen and nitrogen, final volume will equal sum of volumes, also final mass will equal sum of masses. 
 
-	private Map<Integer, Double> emissivityMap;
+	//private Map<Integer, Double> emissivityMap;
+
+	private static Weather weather;
+	private static MasterClock masterClock;
+	private static MarsClock clock;
+	private static SurfaceFeatures surfaceFeatures;
+	private static PersonConfig personConfig;
 
 	private Settlement settlement;
  	private ThermalSystem thermalSystem;
  	private BuildingManager buildingManager;
-	private Weather weather;
 	private Coordinates location;
-	private MasterClock masterClock;
-	private MarsClock clock;
-	private SurfaceFeatures surfaceFeatures;
-	private PersonConfig personConfig;
 	
 	private List<Building> buildings;
 
@@ -213,6 +217,7 @@ public class CompositionOfAir implements Serializable {
 		totalPressure = new double[numIDs];
 		totalMoles = new double[numIDs];
 		totalMass = new double[numIDs];
+		//buildingTemperature = new double[numIDs];
 
 		// Part 1 : set up initial conditions at the start of sim
 		for (int id = 0; id < numIDs; id++) {
@@ -241,7 +246,7 @@ public class CompositionOfAir implements Serializable {
 			int id = b.getInhabitableID();
 			double t = C_TO_K  + b.getCurrentTemperature();
 
-			double sum1 = 0, sum2 = 0, sum3 = 0;
+			double sum1 = 0, sum2 = 0, sum3 = 0;//, sum4 = 0;
 			
 			for (int gas = 0; gas < numGases; gas++) {
 						
@@ -261,13 +266,15 @@ public class CompositionOfAir implements Serializable {
 				sum1 += nm;
 				sum2 += m;
 				sum3 += p;
+				//sum4 += t;
 				
 			}
 			
 			totalMoles [id] = sum1;
 			totalMass [id] = sum2;
 			totalPressure [id] = sum3;
-
+			//buildingTemperature[id] = sum4/numGases;
+			
 			//System.out.println(b.getNickName() + " has a total " + Math.round(totalMass[id]*100D)/100D + " kg of gas");
 		}
 		
@@ -295,20 +302,20 @@ public class CompositionOfAir implements Serializable {
 		
 		// For each time interval
 		calculateGasExchange(time, newList, num);
+			
+		int msol = (int) Math.round(clock.getMillisol());
 		
+		if (msolCache != msol) {
+			msolCache = msol;
+			isDone = true;
+		}
 		
-		int checkTime = (int) Math.round(clock.getMillisol());
 		// Note : sometimes getMillisol() skips, does Math.round() help ?
-		if (checkTime % MILLISOLS_PER_UPDATE == 0) {
+		if (isDone && msol % MILLISOLS_PER_UPDATE == 0) {
+			isDone = false;
 			//System.out.println("at " + checkTime + " remainder is " + checkTime % MILLISOLS_PER_UPDATE);
 			monitorAir(newList, num);
 		}
-		
-		// check for the passing of each day
-		//int solElapsed = clock.getSolElapsedFromStart();
-		//if (solElapsed != solCache) {
-		//	monitorAir(newList, num);
-		//}
 		
 	}
 	
@@ -387,19 +394,21 @@ public class CompositionOfAir implements Serializable {
 		// calculate for each building the total pressure, total # of moles and percentage of composition
 		for (int id = 0; id< num; id++) {
 			
-			double p = 0, nm = 0, m = 0;
+			double sum_p = 0, sum_nm = 0, sum_m = 0;//, sum_t = 0;
 			// calculate for each gas the total pressure and moles
 			for (int gas = 0; gas < numGases; gas++) {
 				
-				p += partialPressure [gas][id];
-				nm += numMoles [gas][id];
-				m += mass [gas][id];
+				sum_p += partialPressure [gas][id];
+				sum_nm += numMoles [gas][id];
+				sum_m += mass [gas][id];
+				//sum_t += temperature[gas][id];
 
 			}
 
-			totalPressure [id] = p;
-			totalMoles [id] = nm;
-			totalMass [id] = m;
+			totalPressure [id] = sum_p;
+			totalMoles [id] = sum_nm;
+			totalMass [id] = sum_m;
+			//buildingTemperature[id] = sum_t/numGases;
 			
 			//System.out.println(buildingManager.getBuilding(id).getNickName() + " has a total " + Math.round(totalMass[id]*100D)/100D + " kg of gas");
 		}
@@ -414,21 +423,7 @@ public class CompositionOfAir implements Serializable {
 				percent [gas][id] = partialPressure [gas][id] / totalPressure [id] * 100D;
 				
 			}
-		}
-
-/*
-		// if time < 1 millisols, may skip calling adjustThermalControl() for several cycle to reduce CPU utilization.
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-		if (clock == null)
-			clock = masterClock.getMarsClock();
-		int oneTenthmillisols =  (int) (clock.getMillisol() * 10);
-		//System.out.println(" oneTenthmillisols : " + oneTenthmillisols);
-		if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 0) {
-			//emissivity = emissivityMap.get( (int) (oneTenthmillisols/10D) );
-		}
-*/
-		
+		}	
 	}
 	
 	/**
@@ -476,7 +471,7 @@ public class CompositionOfAir implements Serializable {
 					if (d_mass > 0)
 						Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
 					else {
-						double recaptured = d_mass * GAS_CAPTURE_EFFICIENCY;
+						double recaptured = - d_mass * GAS_CAPTURE_EFFICIENCY;
 						if (recaptured > 0)		
 							Storage.storeAnResource(recaptured, ar , b.getInventory(), sourceName + "::monitorAir"); 
 					}
@@ -486,6 +481,9 @@ public class CompositionOfAir implements Serializable {
 					
 					new_m = mass [gas][id] + d_mass;
 					new_nm = new_m / molecularMass;
+					if (new_nm < 0)
+			            throw new IllegalStateException("new # of moles " + new_nm +
+			                    " is not supposed to be negative in " + settlement);
 					
 					temperature [gas][id] = t;	
 					
@@ -573,6 +571,7 @@ public class CompositionOfAir implements Serializable {
 			double [] new_totalPressure = Arrays.copyOf(totalPressure, totalPressure.length + diff);
 			double [] new_totalMoles = Arrays.copyOf(totalMoles, totalMoles.length + diff);
 			double [] new_totalMass = Arrays.copyOf(totalMass, totalMass.length + diff);
+			//double [] new_buildingTemperature = Arrays.copyOf(buildingTemperature, buildingTemperature.length + diff);
 			
 			double [][] new_temperature = createGasArray(temperature, numID);
 			double [][] new_percent = createGasArray(percent, numID);
@@ -626,7 +625,7 @@ public class CompositionOfAir implements Serializable {
 				int id = b.getInhabitableID();
 				
 				double t = C_TO_K  + b.getCurrentTemperature();
-				double sum_nm = 0, sum_p = 0, sum_mass = 0;
+				double sum_nm = 0, sum_p = 0, sum_mass = 0;//, sum_t = 0;
 				
 				// calculate for each gas the new volume, # of moles and total # of moles
 				for (int gas = 0; gas < numGases; gas++) {
@@ -648,12 +647,14 @@ public class CompositionOfAir implements Serializable {
 					sum_nm += nm;
 					sum_p += p;
 					sum_mass += m;
+					//sum_t += t;
 					
 				}
 
 				new_totalMoles [id] = sum_nm;
 				new_totalPressure [id] = sum_p;
 				new_totalMass [id] = sum_mass;
+				//new_buildingTemperature [id] = sum_t/numGases;
 				
 			}
 			
@@ -678,6 +679,7 @@ public class CompositionOfAir implements Serializable {
 			totalPressure = new_totalPressure;
 			totalMoles = new_totalMoles;
 			totalMass = new_totalMass;
+			//buildingTemperature = new_buildingTemperature;
 			
 			/*
 			double [][] new_percentByVolume = new double[numGases][numBuildings];
@@ -690,7 +692,6 @@ public class CompositionOfAir implements Serializable {
 
 			numIDsCache = numID;
 		}
-
 
 	}
 
@@ -816,6 +817,10 @@ public class CompositionOfAir implements Serializable {
 		return fixedVolume;
 	}
 
+	//public double [] getBuildingTemperature() {
+	//	return buildingTemperature;
+	//}
+	
 	/**
 	 * Calculates the partial pressure of water vapor at a given temperature using Buck equation
 	 * @param t_C temperature in deg celsius
@@ -831,8 +836,6 @@ public class CompositionOfAir implements Serializable {
 	 	thermalSystem = null;
 		weather = null;
 		location = null;
-		emissivityMap.clear();
-		emissivityMap = null;
 		settlement = null;
 		masterClock = null;
 		clock = null;

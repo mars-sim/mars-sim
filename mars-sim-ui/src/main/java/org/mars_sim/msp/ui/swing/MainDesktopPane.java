@@ -1478,14 +1478,14 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		Iterator<ToolWindow> i = toolWindows.iterator();
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();
-		    // Note : Call updateComponentTreeUI() below is must-have or else Monitor Tool won't work
-		    SwingUtilities.updateComponentTreeUI(toolWindow); 
-			//toolWindow.validate();
-			//toolWindow.repaint();
 		   	//SwingUtilities.invokeLater(() -> {
 		   		toolWindow.update();
 		   	//});
+			//toolWindow.validate();
+			//toolWindow.repaint();	
 			//toolWindow.pack(); // why will it cause help window to stretch?
+			// Note : Call updateComponentTreeUI() below is must-have or else Monitor Tool won't work	
+			SwingUtilities.updateComponentTreeUI(toolWindow); 	
 		}
 	}
 

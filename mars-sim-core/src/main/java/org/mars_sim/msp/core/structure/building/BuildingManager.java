@@ -107,8 +107,8 @@ public class BuildingManager implements Serializable {
 
     private Resupply resupply;
     private Meteorite meteorite;
-	private HistoricalEventManager eventManager;
-
+    
+	private static HistoricalEventManager eventManager;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
     private static BuildingConfig buildingConfig;

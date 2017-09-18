@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4144) - 2017-09-16
+## v3.1.0-Preview 9 (build 4145) - 2017-09-17
 
 
 ### KNOWN LIMITATIONS :
@@ -25,7 +25,7 @@ https://github.com/mars-sim/mars-sim
 
 3. Improve grid battery charging/discharging model. 
 
-4. Add air monitoring and ventilation control (heat only) for each building.
+4. Add air monitoring and heat ventilation for each building.
 
 5. Tweak amount of power/heat output from various types of power/heat source.
 

@@ -943,9 +943,9 @@
 			<building id="25" type="Solar Thermal Array" x-location="-41.5" y-location="28.0" facing="0.0" />
 			<building id="26" type="Solar Thermal Array" x-location="-47.5" y-location="28.0" facing="0.0" />
 			<building id="27" type="Solar Thermal Array" x-location="-53.5" y-location="28.0" facing="0.0" />
-			<building id="28" type="Small Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
-			<building id="29" type="Small Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
-			<building id="30" type="Small Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
+			<building id="28" type="Medium Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
+			<building id="29" type="Medium Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
+			<building id="30" type="Medium Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
 			<building id="31" type="Wind Turbine" x-location="-24.0" y-location="60.0" facing="270.0" />
 			<building id="32" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
 			<building id="33" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
@@ -1104,9 +1104,9 @@
 			<building id="29" type="Solar Thermal Array" x-location="-41.5" y-location="28.0" facing="0.0" />
 			<building id="30" type="Solar Thermal Array" x-location="-47.5" y-location="28.0" facing="0.0" />
 			<building id="31" type="Solar Thermal Array" x-location="-53.5" y-location="28.0" facing="0.0" />
-			<building id="32" type="Small Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
-			<building id="33" type="Small Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
-			<building id="34" type="Small Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
+			<building id="32" type="Medium Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
+			<building id="33" type="Medium Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
+			<building id="34" type="Medium Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
 			<building id="35" type="Wind Turbine" x-location="-24.0" y-location="60.0" facing="270.0" />
 			<building id="36" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
 			<building id="37" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />

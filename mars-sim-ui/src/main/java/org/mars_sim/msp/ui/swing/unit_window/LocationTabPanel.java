@@ -985,11 +985,12 @@ implements ActionListener {
     			//loc = AT + e.getBuildingLocation().getNickName() + IN + topContainerCache;
 				if (containerCache != null)
 	    			loc = STORED + AT + containerCache;
-				//else if (containerCache == null)
-	    		//	loc = STORED + AT + topContainerCache;
-				else
+				else if (e.getLastOwner() != null)
 					loc = USED_BY + e.getLastOwner().getName();
-				
+				else if (topContainerCache != null)
+	    			loc = STORED + AT + topContainerCache;
+				else
+					loc = "Unknown";
 
     		}
 

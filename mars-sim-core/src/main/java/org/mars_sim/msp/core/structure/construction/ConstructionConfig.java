@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.construction;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 
@@ -138,8 +140,24 @@ public class ConstructionConfig implements Serializable {
                 
             try {
                     
-                // Get name.
+                // Get name
                 name = stageInfoElement.getAttributeValue(NAME);
+                
+                if (stageInfoList == buildingStageInfoList) {
+	                boolean invalid_name = true;
+	                
+	                Set<String> types = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes();
+	                
+	                for (String s : types) {
+	                	if (s.toLowerCase().equals(name.toLowerCase())) {
+	                		invalid_name = false;
+	                		break;
+	                	}
+	                }
+	                if (invalid_name)
+	                	throw new IllegalStateException("ConstructionConfig : '" + name +
+	                			"' in constructions.xml does not match to any building types in buildings.xml.");
+                }
                 
                 String widthStr = stageInfoElement.getAttributeValue(WIDTH);
                 double width = Double.parseDouble(widthStr);

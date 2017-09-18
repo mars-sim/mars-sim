@@ -1083,6 +1083,8 @@ Note: 1 kg of H2 is 14.13 liter
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
 			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
 			Note: ignoring hydrogen sulfide as waste for now.
+			
+			Gypsum has up to 8.6 % water
 		</description>
 		<inputs>
 			<resource name="gypsum" amount="50.0" />

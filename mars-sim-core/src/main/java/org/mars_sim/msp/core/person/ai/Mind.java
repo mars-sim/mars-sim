@@ -124,7 +124,7 @@ implements Serializable {
 
         if (missionManager != null)
         	// 2015-10-31 Added recordMission()
-        	missionManager.recordMission();
+        	missionManager.recordMission(person);
 
     	// Note : for now a Mayor/Manager cannot switch job
     	if (job instanceof Manager)

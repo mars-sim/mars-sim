@@ -70,34 +70,25 @@ implements Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
 			Settlement settlement) {
 
-		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		Inventory inv = settlement.getInventory();
 
 		double result = 0D;
 		List<ResourceProcess> processes = config.getResourceProcesses(buildingName);
-		Iterator<ResourceProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			ResourceProcess process = i.next();
+		for (ResourceProcess process : processes) {
 			double processValue = 0D;
-
-			Iterator<AmountResource> j = process.getOutputResources().iterator();
-			while (j.hasNext()) {
-				AmountResource resource = j.next();
+			for (AmountResource resource : process.getOutputResources()) {		
 				if (!process.isWasteOutputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
-					double rate = process.getMaxOutputResourceRate(resource) * 1000D;
+					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
 					processValue += settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
 				}
 			}
 
 			double inputInventoryLimit = 1D;
-
-			Iterator<AmountResource> k = process.getInputResources().iterator();
-			while (k.hasNext()) {
-				AmountResource resource = k.next();
+			for (AmountResource resource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
-					double rate = process.getMaxInputResourceRate(resource) * 1000D;
+					double rate = process.getMaxInputResourceRate(resource);// * 1000D;
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
 
 					// Check inventory limit.

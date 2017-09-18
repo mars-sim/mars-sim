@@ -513,7 +513,7 @@
 			</vehicle>
 		</building>
 		
-		<building name="small sabatier processor" width="5.0" length="5.0" base-level="0" constructable="true" 
+		<building name="large sabatier reactor" width="5.0" length="5.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="10.0" skill-required="3" frame="small steel frame" >
 			<resource name="nickel" amount="1.0" />
 			<part name="valve" number="6" />
@@ -528,7 +528,7 @@
 			</vehicle>
 		</building>
 		
-		<building name="small battery array" width="5.0" length="10.0" base-level="0" constructable="true" 
+		<building name="medium battery array" width="5.0" length="10.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="10.0" skill-required="2" frame="array frame" >
 			<part name="rover battery" number="10" />
 			<part name="fiberglass cloth" number="10" />

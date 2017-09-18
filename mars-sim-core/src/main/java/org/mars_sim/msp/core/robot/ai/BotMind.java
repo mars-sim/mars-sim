@@ -103,7 +103,7 @@ implements Serializable {
 
 	    if (missionManager != null)
 	           // 2015-10-31 Added recordMission()
-	    	missionManager.recordMission();
+	    	missionManager.recordMission(robot);
 
         if (botTaskManager != null)
     		// Take action as necessary.

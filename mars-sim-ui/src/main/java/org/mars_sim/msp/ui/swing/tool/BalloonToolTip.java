@@ -56,7 +56,7 @@ public class BalloonToolTip extends BalloonTip {
 		FadingUtils.fadeInBalloon(bt, null, 300, 24);
 		FadingUtils.fadeOutBalloon(bt, null, 300, 24);
 		ToolTipUtils.balloonToToolTip(bt, 300, 5000);
-		SwingUtilities.updateComponentTreeUI(bt);
+		//SwingUtilities.updateComponentTreeUI(bt);
 		//desktop.updateToolWindowLF();
 	}
 
@@ -85,7 +85,7 @@ public class BalloonToolTip extends BalloonTip {
 		FadingUtils.fadeInBalloon(bt, null, 300, 24);
 		FadingUtils.fadeOutBalloon(bt, null, 300, 24);
 		ToolTipUtils.balloonToToolTip(bt, 300, 5000);
-		SwingUtilities.updateComponentTreeUI(bt);
+		//SwingUtilities.updateComponentTreeUI(bt);
 		//desktop.updateToolWindowLF();
 	}
 	
@@ -110,7 +110,7 @@ public class BalloonToolTip extends BalloonTip {
 		FadingUtils.fadeInBalloon(bt, null, 300, 24);
 		FadingUtils.fadeOutBalloon(bt, null, 300, 24);
 		ToolTipUtils.balloonToToolTip(bt, 300, 5000);
-		SwingUtilities.updateComponentTreeUI(bt);
+		//SwingUtilities.updateComponentTreeUI(bt);
 		//desktop.updateToolWindowLF();
 	}
 
@@ -140,7 +140,7 @@ public class BalloonToolTip extends BalloonTip {
 		//FadingUtils.fadeOutBalloon(t, null, 300, 24); // not compatible with ToolTipUtils.balloonToToolTip()
 
 		ToolTipUtils.balloonToToolTip(t, 300, 5000);
-		SwingUtilities.updateComponentTreeUI(t);
+		//SwingUtilities.updateComponentTreeUI(t);
 		//desktop.updateToolWindowLF();
 	}
 
@@ -170,7 +170,7 @@ public class BalloonToolTip extends BalloonTip {
 		//FadingUtils.fadeOutBalloon(t, null, 300, 24); // not compatible with ToolTipUtils.balloonToToolTip()
 
 		ToolTipUtils.balloonToToolTip(t, 300, 5000);
-		SwingUtilities.updateComponentTreeUI(t);
+		//SwingUtilities.updateComponentTreeUI(t);
 		//desktop.updateToolWindowLF();
 	}
 }

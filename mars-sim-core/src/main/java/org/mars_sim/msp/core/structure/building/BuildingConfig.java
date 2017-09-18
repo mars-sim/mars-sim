@@ -89,6 +89,7 @@ public class BuildingConfig implements Serializable {
 	private static final String EXTERIOR_Y_LOCATION = "exterior-yloc";
 	private static final String RECREATION = "recreation";
 	private static final String DINING = "dining";
+	
 	private static final String RESOURCE_PROCESSING = "resource-processing";
 
 	private static final String POWER_REQUIRED = "power-required";
@@ -743,7 +744,6 @@ public class BuildingConfig implements Serializable {
 
 			// Get input resources.
 			List<Element> inputNodes = processElement.getChildren(INPUT);
-
 			for (Element inputElement : inputNodes) {
 				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
 				AmountResource resource = ResourceUtil.findAmountResource(resourceName);

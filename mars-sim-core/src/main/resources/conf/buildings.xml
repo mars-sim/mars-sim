@@ -169,76 +169,208 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<!-- The building is capable of processing resources. -->
-			<!-- power-down-level: the efficiency of the resource processes -->
-			<!-- when building is in 'power down' mode. -->
+			<!-- power-down-level: the efficiency of the resource processes 
+								   when building is in 'power down' mode. -->
+	
 			<resource-processing power-down-level=".5">
 
+				<!--  NASA's Regenerative ECLSS Water Recovery System (WRS) 
+					consumes a time averaged 743 W-hr/hr in overall -->
+				
+				<!-- NASA's Waste Processing Assembly (WPA) removes free gas 
+				and solid materials such as hair and lint, before the water 
+				goes through a series of multifiltration beds for further 
+				purification. It consumes about 320 W-hr/hr aboard ISS. 
+						
+				https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
+				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf	
+				 					
+				We assume a waste processor capable of daily processsing
+				40 kg grey water (with .5 kg Cl2) and generate 38 kg clean 
+				water and 2 kg of solid waste. Note that .5 kg of water is lost 
+				through evaporation.
+				-->	
+				
 				<!-- Grey Water Recycling process for cleaning grey water. -->
-				<process name="Grey Water Recycling" power-required="1.0" default="on">
-
+				
+				<process name="Grey Water Processor" power-required=".32" default="on">
 					<!-- Input: grey water, oxygen, chlorine  -->
 					<!-- resource: the resource added to the process. -->
 					<!-- See resources.xml -->
-					<!-- rate: the rate (kg/millisol) the resource is being added to the process. -->
-					<!-- ambient: true if resource is being drown from the external environment, -->
-					<!-- false if resource is being drawn from the settlement's inventory. -->
-					<input resource="grey water" rate="30.0" ambient="false" />
+					<!-- rate: the rate (kg/sol) the resource is added -->
+					<!-- ambient: true if resource is freely available from outside -->
+					<!--          false if supplied from settlement's inventory. -->
+					
+					<input resource="grey water" rate="40.0" ambient="false" />
 					<!-- input resource="oxygen" rate="1.5" ambient="false" /-->
-					<input resource="chlorine" rate="0.03" ambient="false" />
+					<input resource="chlorine" rate="0.5" ambient="false" />
+					
 					<!-- Output : clean water, solid waste -->
 					<!-- resource: the resource resulting from the process. -->
 					<!-- See resources.xml -->
-					<!-- rate: the rate (kg/millisol) the resource is being produced by the process. -->
-					<!-- ambient: true if resource is being released into the external environment, -->
-					<!-- false if resource is stored in the settlement's inventory. -->
-					<output resource="water" rate="27.0" ambient="false" />
-					<output resource="solid waste" rate="0.03" ambient="false" />
+					<!-- rate: the rate (kg/sol) the resource is produced -->
+					<!-- ambient: true if resource is vented outside -->
+					<!--          false if kept by settlement's inventory. -->
+					<output resource="water" rate="38" ambient="false" />
+					<output resource="solid waste" rate="2" ambient="false" />
+					
 				</process>
 
-				<process name="Black Water Recycling" power-required="1.0" default="on">
-					<input resource="black water" rate="10.0" ambient="false" />
-					<!-- input resource="oxygen" rate="0.5" ambient="false" /-->
-					<input resource="chlorine" rate="0.01" ambient="false" />
-					<output resource="water" rate="9.0" ambient="false" />
-					<output resource="toxic waste" rate="0.01" ambient="false" />
+				<!-- NASA's Urine Processor Assembly (UPA) uses low pressure 
+				vacuum distillation process is used to recover water from 
+		 		urine. The entire process occurs within a rotating
+				distillation assembly that compensates for the absence
+				of gravity and therefore aids in the separation of liquids 
+				and gases in space. 
+				
+				UPA is designed to process a nominal load of 9 kg/day 
+				(19.8 lbs/day) of wastewater consisting of urine and flush. 
+				It uses a time average of 315 W-hr/hr
+					
+				Product water from the Urine Processor is combined with 
+				all other wastewaters and delivered to the Water Processor 
+				for treatment. 
+													
+				We assume a urine/fece processor capable of daily processsing
+				20 kg black water and generate 17 kg clean water and 
+				2 kg of toxic waste. There is a lost of 1 kg of water.
+				-->
+					
+				<process name="Black Water Processor" power-required=".315" default="on">
+					<input resource="black water" rate="20" ambient="false" />
+					<input resource="chlorine" rate="0.1" ambient="false" />
+					<output resource="water" rate="17" ambient="false" />
+					<output resource="toxic waste" rate="2" ambient="false" />
 				</process>
 
-				<!-- The precursor technology is based on an experimental device being
-				researched in by NASA called Vortical Oxidative Reactor Technology Experiment (VORTEX).
-				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html -->
-				<process name="Waste Incineration" power-required="2.0" default="on">
-					<input resource="toxic waste" rate="0.2" ambient="false" />
-					<input resource="solid waste" rate="0.2" ambient="false" />
-					<output resource="fertilizer" rate="0.05" ambient="false" />
-				</process>
-
-				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
-				<process name="Carbon Scrubbing" power-required="2.0" default="off">
-					<input resource="carbon dioxide" rate=".067" ambient="false" />
-					<output resource="oxygen" rate=".05" ambient="false" />
+				<!-- The precursor technology is based on an experimental device
+				being researched in by NASA called Vortical Oxidative Reactor 
+				Technology Experiment (VORTEX).
+				
+				Burning, or oxidizing, organic waste would produce four major 
+				by-products: ash, carbon dioxide, water and heat. Ash can be
+				converted to fertilizer for farming..
+				 
+				 
+				Also,  Solid Waste Management
+				 
+   			 	https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
+				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html 
+				
+				We assume 10 kg of waste will turn into 8 kg of by-products
+				per sol. 
+				-->
+				<process name= "Solid Waste Management" power-required=".3" default="on">
+					<input resource="toxic waste" rate="4" ambient="false" />
+					<input resource="solid waste" rate="6" ambient="false" />
+					<output resource="fertilizer" rate="2" ambient="false" />
+					<output resource="carbon dioxide" rate="2" ambient="false" />
+					<output resource="water" rate="2" ambient="false" />
+					<output resource="carbon" rate="2" ambient="false" />
 				</process>
 				
-				<!-- Sabatier process for making methane and water from CO2 and H2. -->
-				<process name="Sabatier" power-required="2.0" default="on">
-					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="hydrogen" rate=".32" ambient="false" />
-					<output resource="methane" rate=".72" ambient="false" />
-					<output resource="water" rate="1.60" ambient="false" />
-				</process>
+				<!-- Sabatier process :
+
+					CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
+
+				CO2 : 44 g/mol
+				4H2 : 8 g/mol
+				CH4 : 16 g/mol
+				2H2O : 36 g/mol
+				
+				Sabatier with Reverse Water Gas Shift (RWGS) :  
+					
+					3CO2 + 6H2 -> CH4 + 2CO + 4H2O, exothermic heat = -83 kJ/mol
+	
+				
+				CO2 : 132 g/mol
+				4H2 : 12 g/mol
+				CH4 : 16 g/mol
+				2CO : 56 g/mol
+				4H2O : 72 g/mol
+				
+				The primary disadvantage of the Sabatier process is that twice 
+				as much hydrogen is consumed as can be recovered by the 
+				electrolysis of the produced water.
+				
+				In one in-situ propellant prooduction system (ISPP), it uses
+				Sabatier and Reverse Water Gas Shift (RWGS) to convert H2 
+				and CO2 into OX and CH4 (with CO as waste).  It requires 470 W
+				to produce 1 kg of propellant per sol, per Zurin's paper on
+				"Integrated Mars In-Situ Propellant Production System.
+				
+				We assume a system that's 4 times more efficient in producing
+				CH4 below
+				
+				CO2 : 39.6 kg/sol
+				4H2 : 3.6 kg/sol
+				CH4 : 4.8 kg/sol
+				2CO : 16.8 g/mol
+				4H2O : 21.6 kg/sol
+				-->
+				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
+					<input resource="carbon dioxide" rate="33.6" ambient="true" />
+					<input resource="carbon dioxide" rate="6" ambient="false" />					
+					<input resource="hydrogen" rate="3.6" ambient="false" />
+					<output resource="methane" rate="4.8" ambient="false" />
+					<output resource="carbon monoxide" rate="16.8" ambient="false" />
+					<output resource="water" rate="21.6" ambient="false" />
+				</process>	
 		
-				<!-- Water Electrolysis for splitting water into H2 and O2. -->		
-				<process name="Water Electrolysis" power-required="4.0" default="off">
-					<input resource="water" rate=".1" ambient="false" />
-					<output resource="hydrogen" rate=".011" ambient="false" />
-					<output resource="oxygen" rate=".089" ambient="false" />
+				<!-- Oxygen Generation System can split water into H2 and O2. 
+	
+				NASA's Oxygen Generation System is designed to generate
+				oxygen from 5 to 20 pounds (2.3 to 9 kg) of oxygen per day 
+				during continuous operation and a normal rate of 12 pounds 
+				(5.4 kg) of oxygen per day during cyclic operation.
+				
+				The Oxygen Generation System will accommodate the testing
+				of an experimental Carbon Dioxide Reduction Assembly
+				(CReA). Once deployed, the reduction assembly will cause
+				hydrogen produced by the Oxygen Generation Assembly to
+				react with carbon dioxide removed from the cabin atmosphere
+				to produce water and methane. 
+				
+				Oxygen Generator Assembly (OGA) uses 1312 W of power.
+				
+				https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
+				
+				See also https://www.quora.com/How-is-oxygen-generated-on-the-ISS
+				
+				
+				Available water electrolysis units using solid polymer 
+				electrolytes are highly efficient (>90%) and extremely rugged, 
+				as they have been designed for nuclear submarine use with 
+				specifications that include resistance to depth charge attack,
+				per Zubrin, et al.
+								
+				During normal operations on the ISS, approximately 23 L water 
+				per day is used by the OGS with a constant current of 50 ampere 
+				to each electrolytic cell in the OGS system
+				
+				2H2O -> 2H2 + O2
+				
+				2H2O : 36 g/mol
+				2H2 : 4 g/mol
+				O2 : 32 g/mol
+				
+				50A * 120 = 6kW
+				
+				
+				https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
+				
+				We assume a power usage of 1kW system for splitting 18 kg water
+				into 2 kg H2 and 16 kg O2
+				
+				-->	
+				<process name="Oxygen Generation System" power-required="1" default="off">
+					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
+					<input resource="water" rate="18" ambient="false" />
+					<output resource="hydrogen" rate="2" ambient="false" />
+					<output resource="oxygen" rate="16" ambient="false" />
+					<!-- output resource="methane" rate="2" ambient="false" /-->
 				</process>
 
-				<!-- CO2 Reduction for obtaining O2 (and CO) from CO2. -->					
-				<process name="CO2 Reduction" power-required="2.0" default="off">
-					<input resource="carbon dioxide" rate=".825" ambient="true" />
-					<output resource="oxygen" rate=".3" ambient="false" />
-					<output resource="carbon monoxide" rate=".525" ambient="false" />
-				</process>
 				
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -651,22 +783,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<resource-processing power-down-level=".5">
-				<process name="Sabatier" power-required="2.0" default="on">
-					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="hydrogen" rate="3.2" ambient="false" />
-					<output resource="methane" rate="7.2" ambient="false" />
-					<output resource="water" rate="16.0" ambient="false" />
-				</process>
-				<process name="Water Electrolysis" power-required="4.0" default="off">
-					<input resource="water" rate="1" ambient="false" />
-					<output resource="hydrogen" rate=".11" ambient="false" />
-					<output resource="oxygen" rate=".89" ambient="false" />
-				</process>
-				<process name="CO2 Reduction" power-required="2.0" default="off">
-					<input resource="carbon dioxide" rate=".825" ambient="true" />
-					<output resource="oxygen" rate=".3" ambient="false" />
-					<output resource="carbon monoxide" rate=".525" ambient="false" />
-				</process>
+				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />				
+					<input resource="hydrogen" rate="3.6" ambient="false" />
+					<output resource="methane" rate="4.8" ambient="false" />
+					<output resource="carbon monoxide" rate="16.8" ambient="false" />
+					<output resource="water" rate="21.6" ambient="false" />
+				</process>	
+				<process name="Oxygen Generation System" power-required="1.5" default="off">
+					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
+					<input resource="water" rate="36" ambient="false" />
+					<output resource="hydrogen" rate="4" ambient="false" />
+					<output resource="oxygen" rate="32" ambient="false" />
+					<!-- output resource="methane" rate="2" ambient="false" /-->
+				</process>				
 			</resource-processing>
 			<storage stock-capacity="10000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
@@ -699,22 +829,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<resource-processing power-down-level=".5">
-				<process name="Sabatier" power-required="2.0" default="on">
-					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="hydrogen" rate="3.2" ambient="false" />
-					<output resource="methane" rate="7.2" ambient="false" />
-					<output resource="water" rate="16.0" ambient="false" />
-				</process>
-				<process name="Water Electrolysis" power-required="4.0" default="off">
-					<input resource="water" rate="1" ambient="false" />
-					<output resource="hydrogen" rate=".11" ambient="false" />
-					<output resource="oxygen" rate=".89" ambient="false" />
-				</process>
-				<process name="CO2 Reduction" power-required="2.0" default="off">
-					<input resource="carbon dioxide" rate=".825" ambient="true" />
-					<output resource="oxygen" rate=".3" ambient="false" />
-					<output resource="carbon monoxide" rate=".525" ambient="false" />
-				</process>
+				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />
+					<input resource="hydrogen" rate="3.6" ambient="false" />
+					<output resource="methane" rate="4.8" ambient="false" />
+					<output resource="carbon monoxide" rate="16.8" ambient="false" />
+					<output resource="water" rate="21.6" ambient="false" />
+				</process>	
+				<process name="Oxygen Generation System" power-required="1.5" default="off">
+					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
+					<input resource="water" rate="36" ambient="false" />
+					<output resource="hydrogen" rate="4" ambient="false" />
+					<output resource="oxygen" rate="32" ambient="false" />
+					<!-- output resource="methane" rate="2" ambient="false" /-->
+				</process>		
 			</resource-processing>
 			<storage stock-capacity="10000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
@@ -801,31 +929,34 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />		
 			<resource-processing power-down-level=".5">
-				<process name="Grey Water Recycling" power-required="3.0" default="on">
-					<input resource="grey water" rate="90.0" ambient="false" />
-					<!-- input resource="oxygen" rate="4.5" ambient="false" /-->
-					<input resource="chlorine" rate="0.09" ambient="false" />
-					<output resource="water" rate="81.0" ambient="false" />
-					<output resource="solid waste" rate="0.09" ambient="false" />
+			    <!-- The grey water processor below is 5 times more powerful 
+			         than the one fund in Lander Hab or Outpost Hub  -->
+				<process name="Grey Water Processor" power-required="1" default="on">			
+					<input resource="grey water" rate="120.0" ambient="false" />
+					<input resource="chlorine" rate="2.5" ambient="false" />
+					<output resource="water" rate="110" ambient="false" />
+					<output resource="solid waste" rate="10" ambient="false" />
 				</process>
-				<process name="Black Water Recycling" power-required="3.0" default="on">
-					<input resource="black water" rate="30.0" ambient="false" />
-					<!-- input resource="oxygen" rate="1.3" ambient="false" /-->
-					<input resource="chlorine" rate="0.03" ambient="false" />
-					<output resource="water" rate="27.0" ambient="false" />
-					<output resource="toxic waste" rate="0.03" ambient="false" />
-				</process>
-
-				<process name="Waste Incineration" power-required="4.0" default="off">
-					<input resource="toxic waste" rate="0.4" ambient="false" />
-					<input resource="solid waste" rate="0.4" ambient="false" />
-					<output resource="fertilizer" rate="0.1" ambient="false" />
+				<!-- The black water processor below is 4 times more powerful 
+				     than the one found in Lander Hab or Outpost Hub  -->
+				<process name="Black Water Processor" power-required=".315" default="on">
+					<input resource="black water" rate="80" ambient="false" />
+					<input resource="chlorine" rate="0.4" ambient="false" />
+					<output resource="water" rate="76" ambient="false" />
+					<output resource="toxic waste" rate="1" ambient="false" />
 				</process>
 
-				<process name="Carbon Scrubbing" power-required="2.0" default="off">
-					<input resource="carbon dioxide" rate=".67" ambient="false" />
-					<output resource="oxygen" rate=".5" ambient="false" />
+				<!-- The Solid Waste Management below is 4 times more powerful 
+				     than the one found in Lander Hab or Outpost Hub  -->
+				<process name= "Solid Waste Management" power-required="1" default="on">
+					<input resource="toxic waste" rate="16" ambient="false" />
+					<input resource="solid waste" rate="24" ambient="false" />
+					<output resource="fertilizer" rate="8" ambient="false" />
+					<output resource="carbon dioxide" rate="8" ambient="false" />
+					<output resource="water" rate="8" ambient="false" />
+					<output resource="carbon" rate="8" ambient="false" />
 				</process>
+				
 			</resource-processing>
 
 			<storage stock-capacity="10000">
@@ -1705,23 +1836,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Manufacturing Shed -->
 
-	<building type="Small Sabatier Processor" width="5.0" length="5.0" base-level="0"
+	<building type="Large Sabatier Reactor" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
-		<description> The Small Sabatier Processor is a building housing many
-			high capacity sabatier system modules for processing H2 and CO2 at 
-			elevated temperatures and pressures in the presence of a nickel 
+		<description> This building houses a number of high capacity sabatier 
+			methanation modules for processing hydrogen and carbon dioxide at 
+			elevated temperatures and pressures in the presence of a  
 			catalyst to produce methane and water.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sabatier" power-required="2.0" default="on">
-					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="hydrogen" rate="3.2" ambient="false" />
-					<output resource="methane" rate="7.2" ambient="false" />
-					<output resource="water" rate="16.0" ambient="false" />
-				</process>
+				<process name="Sabatier RWGS Reactor" power-required="2.35" default="on">
+					<input resource="carbon dioxide" rate="132" ambient="true" />
+					<input resource="hydrogen" rate="12" ambient="false" />
+					<output resource="methane" rate="16" ambient="false" />
+					<output resource="carbon monoxide" rate="56" ambient="false" />
+					<output resource="water" rate="72" ambient="false" />
+				</process>			
 			</resource-processing>
 			<storage stock-capacity="10000">
 				<resource-storage resource="carbon dioxide" capacity="5000" />
@@ -1734,9 +1866,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- Small Sabatier Processor -->
 
 	<!-- Array of rover batteries -->
-	<building type="Small Battery Array" width="5.0" length="10.0" base-level="0"
+	<building type="Medium Battery Array" width="5.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
-		<description> The Small Battery Array showcased an advanced battery system that
+		<description> The Medium Battery Array showcased an advanced battery system that
 			stored excess power during non-peak hours and released power during peak power
 			usage.
 		</description>
@@ -2130,51 +2262,44 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</recreation>
 
 			<resource-processing power-down-level=".5">
-				<process name="Grey Water Recycling" power-required="0.5" default="on">
-					<input resource="grey water" rate="15.0" ambient="false" />
-					<!-- input resource="oxygen" rate="0.75" ambient="false" /-->
-					<input resource="chlorine" rate="0.015" ambient="false" />
-
-					<output resource="water" rate="13.5" ambient="false" />
-					<output resource="solid waste" rate="0.015" ambient="false" />
+				<process name="Grey Water Processor" power-required=".32" default="on">			
+					<input resource="grey water" rate="40.0" ambient="false" />
+					<input resource="chlorine" rate="0.5" ambient="false" />
+					<output resource="water" rate="38" ambient="false" />
+					<output resource="solid waste" rate="2" ambient="false" />
+				</process>
+					<process name="Black Water Processor" power-required=".315" default="on">
+					<input resource="black water" rate="20" ambient="false" />
+					<input resource="chlorine" rate="0.1" ambient="false" />
+					<output resource="water" rate="17" ambient="false" />
+					<output resource="toxic waste" rate="2" ambient="false" />
 				</process>
 
-				<process name="Black Water Recycling" power-required="1.0" default="on">
-					<input resource="black water" rate="5.0" ambient="false" />
-					<!-- input resource="oxygen" rate="0.25" ambient="false" /-->
-					<input resource="chlorine" rate="0.005" ambient="false" />
-					<output resource="water" rate="4.5" ambient="false" />
-					<output resource="toxic waste" rate="0.005" ambient="false" />
+					<process name= "Solid Waste Management" power-required=".3" default="on">
+					<input resource="toxic waste" rate="4" ambient="false" />
+					<input resource="solid waste" rate="6" ambient="false" />
+					<output resource="fertilizer" rate="2" ambient="false" />
+					<output resource="carbon dioxide" rate="2" ambient="false" />
+					<output resource="water" rate="2" ambient="false" />
+					<output resource="carbon" rate="2" ambient="false" />
 				</process>
 
-				<process name="Waste Incineration" power-required="1.0" default="on">
-					<input resource="toxic waste" rate="0.1" ambient="false" />
-					<input resource="solid waste" rate="0.1" ambient="false" />
-					<output resource="fertilizer" rate="0.025" ambient="false" />
-				</process>
 
-				<process name="Carbon Scrubbing" power-required="2.0" default="off">
-					<input resource="carbon dioxide" rate=".0335" ambient="false" />
-					<output resource="oxygen" rate=".025" ambient="false" />
-				</process>
-
-				<process name="Sabatier" power-required="2.0" default="on">
-					<input resource="carbon dioxide" rate="19.2" ambient="true" />
-					<input resource="hydrogen" rate=".32" ambient="false" />
-					<output resource="methane" rate=".72" ambient="false" />
-					<output resource="water" rate="1.6" ambient="false" />
-				</process>
+				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
+					<input resource="carbon dioxide" rate="33.6" ambient="true" />
+					<input resource="carbon dioxide" rate="6" ambient="false" />
+					<input resource="hydrogen" rate="3.6" ambient="false" />
+					<output resource="methane" rate="4.8" ambient="false" />
+					<output resource="carbon monoxide" rate="16.8" ambient="false" />
+					<output resource="water" rate="21.6" ambient="false" />
+				</process>	
 				
-				<process name="Water Electrolysis" power-required="4.0" default="off">
-					<input resource="water" rate=".1" ambient="false" />
-					<output resource="hydrogen" rate=".011" ambient="false" />
-					<output resource="oxygen" rate=".089" ambient="false" />
-				</process>
-				
-				<process name="CO2 Reduction" power-required="2.0" default="off">
-					<input resource="carbon dioxide" rate=".825" ambient="true" />
-					<output resource="oxygen" rate=".3" ambient="false" />
-					<output resource="carbon monoxide" rate=".525" ambient="false" />
+				<process name="Oxygen Generation System" power-required="1" default="off">
+					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
+					<input resource="water" rate="18" ambient="false" />
+					<output resource="hydrogen" rate="2" ambient="false" />
+					<output resource="oxygen" rate="16" ambient="false" />
+					<!-- output resource="methane" rate="2" ambient="false" /-->
 				</process>
 				
 				<activity>

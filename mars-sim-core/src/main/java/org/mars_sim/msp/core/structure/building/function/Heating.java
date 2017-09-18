@@ -185,9 +185,6 @@ implements Serializable {
 	
 	private double area_factor;
 	
-	//private double timeCache;
-	
-	
 	/** is this building a greenhouse */
 	private boolean isGreenhouse = false;
 	/** is this building a hallway or tunnel */

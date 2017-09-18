@@ -52,8 +52,8 @@ implements Serializable {
 
 	private String phaseDescriptionCache;
 	
-	private transient Person personCache;
-	private transient Robot robotCache;
+	//private transient Person personCache;
+	//private transient Robot robotCache;
 	private transient MarsClock personTimeCache;
 	private transient MarsClock robotTimeCache;
 	private transient Map<MetaMission, Double> missionProbCache;
@@ -64,8 +64,8 @@ implements Serializable {
 	 */
 	public MissionManager() {
 		// Initialize cache values.
-		personCache = null;
-		robotCache = null;
+		//personCache = null;
+		//robotCache = null;
 		personTimeCache = null;
 		robotTimeCache = null;
 		totalProbCache = 0D;
@@ -157,17 +157,28 @@ implements Serializable {
 	 * @param newTask
 	 */
 	// 2015-10-22 Added recordMission()
-	public void recordMission() {//Mission newMission) {
-		// Records the new mission
-
+	public void recordMission(MissionMember member) {//Mission newMission) {
 		Mission newMission = null;
+		Person p = null;
+		Robot r = null;
+		
+		if (member instanceof Person) {
+			p = (Person) member;
+			newMission = getMission(p);
+		}
+		else {
+			r = (Robot) member;
+			newMission = getMission(r);
+		}
+/*			
+
 		if (personCache != null) {
 			newMission = getMission(personCache);
 		}
 		else if (robotCache != null) {
 			newMission = getMission(robotCache);
 		}
-
+*/
 		if (newMission != null) {
 			String phaseDescription = newMission.getPhaseDescription();
 
@@ -176,11 +187,11 @@ implements Serializable {
 				String desc = newMission.getDescription();
 				String name = newMission.getName();
 
-				if (personCache != null) {
-					personCache.getTaskSchedule().recordTask(name, desc, phaseDescription);
+				if (p != null) {
+					p.getTaskSchedule().recordTask(name, desc, phaseDescription);
 				}
-				else if (robotCache != null) {
-					robotCache.getTaskSchedule().recordTask(name, desc, phaseDescription);
+				else if (r != null) {
+					r.getTaskSchedule().recordTask(name, desc, phaseDescription);
 				}
 
 				phaseDescriptionCache = phaseDescription;
@@ -496,12 +507,6 @@ implements Serializable {
 
 		// Set the time cache to the current time.
 		personTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		//if (currentTime == null && Simulation.instance().getMasterClock() != null)
-		//	currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		
-		//personTimeCache = (MarsClock) currentTime.clone();
-
-		personCache = person;
 	}
 
 	private void calculateProbability(Robot robot) {
@@ -530,9 +535,7 @@ implements Serializable {
 
 		// Set the time cache to the current time.
 		robotTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		//robotTimeCache = (MarsClock) currentTime.clone();
 
-		robotCache = robot;
 	}
 
 	/**
@@ -543,13 +546,13 @@ implements Serializable {
 	private boolean useCache(Person person) {
 		//if (currentTime == null)
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return currentTime.equals(personTimeCache) && (person == personCache);
+		return currentTime.equals(personTimeCache);// && (person == personCache);
 	}
 
 	private boolean useCache(Robot robot) {
 		//if (currentTime == null)
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return currentTime.equals(robotTimeCache) && (robot == robotCache);
+		return currentTime.equals(robotTimeCache);// && (robot == robotCache);
 	}
 	/**
 	 * Updates mission based on passing time.
@@ -575,7 +578,8 @@ implements Serializable {
 			listeners.clear();
 			listeners = null;
 		}
-		personCache = null;
+		
+		//personCache = null;
 		personTimeCache = null;
 		robotTimeCache = null;
 		if (missionProbCache != null) {

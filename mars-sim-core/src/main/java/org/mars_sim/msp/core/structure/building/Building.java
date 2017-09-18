@@ -1278,9 +1278,7 @@ LocalBoundedObject, InsidePathLocation {
 					manager.getEventManager().registerNewEvent(newEvent);
 					
 					//check if someone under this roof may have seen/affected by the impact
-					Iterator<Person> i = getInhabitants().iterator();
-					while (i.hasNext()) {
-						Person person = i.next();
+					for (Person person : getInhabitants()) {
 						if (RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
 
 							// TODO: someone got hurt, declare medical emergency
