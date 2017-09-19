@@ -381,6 +381,7 @@ implements Serializable {
 		
 		return false;
 	}
+	
 	/**
 	 * Picks a crop type randomly
 	 * @return crop type
@@ -468,7 +469,7 @@ implements Serializable {
     	double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea *rand;
 
     	// TODO: adjust how much old soil should be turned to crop waste
-    	Storage.storeAnResource(amount, ResourceUtil.cropWasteAR, inv);
+    	Storage.storeAnResource(amount, ResourceUtil.cropWasteAR, inv, sourceName + "::provideNewSoil");
 
     	// TODO: adjust how much new soil is needed to replenish the soil bed
     	Storage.retrieveAnResource(amount, ResourceUtil.soilAR, inv, true );
@@ -936,16 +937,15 @@ implements Serializable {
 
 	/**
      * Creates crop waste from the daily tending of the greenhouse
-     *
-     */
-	// 2015-02-26 Added produceDailyTendingCropWaste()
-	public void produceDailyTendingCropWaste() {
+
+	public void produceDailyCropWaste() {
 		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		Storage.storeAnResource(amountCropWaste, ResourceUtil.cropWasteAR, inv);
+		Storage.storeAnResource(amountCropWaste, ResourceUtil.cropWasteAR, inv, sourceName + "::provideNewSoil");
 	}
-
+*/
+	
 /*
    public void storeAnResource(double amount, String name) {
     	try {

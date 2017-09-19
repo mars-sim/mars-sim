@@ -1836,7 +1836,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Manufacturing Shed -->
 
-	<building type="Large Sabatier Reactor" width="5.0" length="5.0" base-level="0"
+	<building type="Large Sabatier Processor" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description> This building houses a number of high capacity sabatier 
 			methanation modules for processing hydrogen and carbon dioxide at 

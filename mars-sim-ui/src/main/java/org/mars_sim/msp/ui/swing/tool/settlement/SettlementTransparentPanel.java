@@ -71,16 +71,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
-import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
-import org.mars_sim.msp.ui.swing.DesktopPane;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
+@SuppressWarnings("restriction")
 public class SettlementTransparentPanel extends JComponent {
 
-	private static final long serialVersionUID = 1L;
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 	/** Zoom change. */
@@ -697,7 +694,7 @@ public class SettlementTransparentPanel extends JComponent {
 		public JCustomCheckBoxMenuItem(String s, boolean b) {
 			super(s, b);
 		}
-		private static final long serialVersionUID = 1L;
+
 		/*public void paint(Graphics g) {
 			//protected void paintComponent(Graphics g) {
 				//super.paintComponent(g);

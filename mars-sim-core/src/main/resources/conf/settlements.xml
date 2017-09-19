@@ -97,9 +97,9 @@
 
 			<!-- Equipment -->
 			<equipment type="EVA Suit" number="12" />
-			<equipment type="Gas Canister" number="10" />
-			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
+			<equipment type="Gas Canister" number="40" />
+			<equipment type="Barrel" number="40" />
+			<equipment type="Bag" number="40" />
 			<equipment type="Large Bag" number="10" />
 			<equipment type="Specimen Box" number="10" />
 
@@ -220,9 +220,9 @@
 			<vehicle type="Light Utility Vehicle" number="1" />
 			
 			<equipment type="EVA Suit" number="24" />
-			<equipment type="Gas Canister" number="20" />
-			<equipment type="Barrel" number="20" />
-			<equipment type="Bag" number="20" />
+			<equipment type="Gas Canister" number="80" />
+			<equipment type="Barrel" number="80" />
+			<equipment type="Bag" number="80" />
 			<equipment type="Large Bag" number="20" />
 			<equipment type="Specimen Box" number="20" />
 
@@ -423,9 +423,9 @@
 			<vehicle type="Light Utility Vehicle" number="2" />
 			
 			<equipment type="EVA Suit" number="36" />
-			<equipment type="Gas Canister" number="30" />
-			<equipment type="Barrel" number="30" />
-			<equipment type="Bag" number="30" />
+			<equipment type="Gas Canister" number="120" />
+			<equipment type="Barrel" number="120" />
+			<equipment type="Bag" number="120" />
 			<equipment type="Large Bag" number="30" />
 			<equipment type="Specimen Box" number="30" />
 
@@ -723,9 +723,9 @@
 			<vehicle type="Light Utility Vehicle" number="3" />
 			
 			<equipment type="EVA Suit" number="72" />
-			<equipment type="Gas Canister" number="40" />
-			<equipment type="Barrel" number="40" />
-			<equipment type="Bag" number="40" />
+			<equipment type="Gas Canister" number="160" />
+			<equipment type="Barrel" number="160" />
+			<equipment type="Bag" number="160" />
 			<equipment type="Large Bag" number="40" />
 			<equipment type="Specimen Box" number="40" />
 

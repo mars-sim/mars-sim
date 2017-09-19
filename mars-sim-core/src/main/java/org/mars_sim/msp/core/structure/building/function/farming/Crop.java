@@ -326,8 +326,9 @@ public class Crop implements Serializable {
 			if (inv.hasItemResource(mushroomBoxAR)) {
 				inv.retrieveItemResources(mushroomBoxAR, 1);
 				inv.addItemDemand(mushroomBoxAR, 2);
-				Storage.retrieveAnResource(growingArea *.5, cropWasteAR, inv, true);
 			}
+			// Require some dead matter for fungi to decompose
+			Storage.retrieveAnResource(growingArea *.5, cropWasteAR, inv, true);
 		}
 	}
 	
@@ -581,7 +582,7 @@ public class Crop implements Serializable {
 					
 					// 2017-03-30 Extract Mustard Seed
 					if (hasSeed)
-						Storage.storeAnResource(lastHarvest * ratio, seedAR, inv);
+						Storage.storeAnResource(lastHarvest * ratio, seedAR, inv, sourceName + "::addWork");
 					else
 						//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
 						// thus no crop waste
