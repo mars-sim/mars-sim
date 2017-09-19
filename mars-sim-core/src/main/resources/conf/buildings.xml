@@ -790,12 +790,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
-				<process name="Oxygen Generation System" power-required="1.5" default="off">
-					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
-					<input resource="water" rate="36" ambient="false" />
-					<output resource="hydrogen" rate="4" ambient="false" />
-					<output resource="oxygen" rate="32" ambient="false" />
-					<!-- output resource="methane" rate="2" ambient="false" /-->
+					<process name="Oxygen Generation System" power-required="1.5" default="off">
+					<!-- input resource="carbon dioxide" rate="30" ambient="true" /-->					
+					<input resource="water" rate="54" ambient="false" />
+					<output resource="hydrogen" rate="6" ambient="false" />
+					<output resource="oxygen" rate="48" ambient="false" />
+					<!-- output resource="methane" rate="6" ambient="false" /-->
 				</process>				
 			</resource-processing>
 			<storage stock-capacity="10000">
@@ -837,11 +837,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
 				<process name="Oxygen Generation System" power-required="1.5" default="off">
-					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
-					<input resource="water" rate="36" ambient="false" />
-					<output resource="hydrogen" rate="4" ambient="false" />
-					<output resource="oxygen" rate="32" ambient="false" />
-					<!-- output resource="methane" rate="2" ambient="false" /-->
+					<!-- input resource="carbon dioxide" rate="30" ambient="true" /-->					
+					<input resource="water" rate="54" ambient="false" />
+					<output resource="hydrogen" rate="6" ambient="false" />
+					<output resource="oxygen" rate="48" ambient="false" />
+					<!-- output resource="methane" rate="6" ambient="false" /-->
 				</process>		
 			</resource-processing>
 			<storage stock-capacity="10000">

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
@@ -25,10 +24,11 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.medical.AntiStressMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
-import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -45,6 +45,8 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PrescribeMedication.class.getName());
 
+    private String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
@@ -256,12 +258,13 @@ implements Serializable {
 
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
-            storeAnResource(AVERAGE_MEDICAL_WASTE, TOXIC_WASTE, inv);
+            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteAR, inv, sourceName + "::produceMedicalWaste");
+            //storeAnResource(AVERAGE_MEDICAL_WASTE, TOXIC_WASTE, inv);
             //System.out.println("PrescribeMedication.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);
 	     }
 	}
 
-
+/*
 	// 2015-02-06 Added storeAnResource()
 	public boolean storeAnResource(double amount, String name, Inventory inv) {
 		boolean result = false;
@@ -286,7 +289,8 @@ implements Serializable {
 
 		return result;
 	}
-
+*/
+	
     @Override
     protected void addExperience(double time) {
         // Add experience to "Medical" skill

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 3.1.0 2017-03-04
+ * @version 3.1.0 2017-09-19
  * @author Scott Davis
  */
 
@@ -15,8 +15,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -24,28 +22,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.sidepanel.BookForm;
 import org.mars_sim.msp.ui.swing.sidepanel.SlidePaneFactory;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
-import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -157,7 +146,22 @@ public abstract class UnitWindow extends JInternalFrame {
             namePanel.setPreferredSize(new Dimension(465,70));
 
         namePanel.setBorder(null);
-        factory = SlidePaneFactory.getInstance();
+        int theme = 0;
+    	if (mainScene != null) {
+	    	theme = MainScene.getTheme();
+	    	if (themeCache != theme) {
+	        	themeCache = theme;
+	        	// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
+	        	// pale grey : Color(214,217,223) = D6D9DF
+	        	// pale mud : (193, 191, 157) = C1BF9D
+	    	}
+    	}
+    	
+    	else {
+    		theme = 7;
+    	}
+    	
+        factory = SlidePaneFactory.getInstance(theme);
         factory.add(namePanel, STATUS, getImage(STATUS_ICON), false);
         mainPane.add(factory);//, BorderLayout.CENTER);
 
@@ -434,17 +438,24 @@ public abstract class UnitWindow extends JInternalFrame {
      * Updates this window.
      */
     public void update() {
-    	int theme = mainScene.getTheme();
-    	if (theme != themeCache) {
-        	themeCache = theme;
-	    	//if (theme == 0)
-	        //	factory.update(new Color(198, 217, 217));//new Color(0xC6D9D9));//0xD6D9DF));
-    		//if (theme == 6)
-	        //	factory.update(new Color(198, 217, 217));//new Color(0xC6D9D9));
-			if (theme == 7)
-		    	factory.update(new Color(0xC1BF9D));
-
+    	if (mainScene != null) {
+	    	int theme = MainScene.getTheme();
+	    	if (theme != themeCache) {
+	        	themeCache = theme;
+	        	// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
+	        	// pale grey : Color(214,217,223) = D6D9DF
+	        	// pale mud : (193, 191, 157) = C1BF9D
+				if (theme == 7)
+			    	factory.update(new Color(0xC1BF9D));
+		    	else
+		    		factory.update(new Color(0xD6D9DF));
+	    	}
     	}
+    	
+    	else {
+    		factory.update(new Color(0xC1BF9D));
+    	}
+    	
 		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()
     	SwingUtilities.invokeLater(() -> {
 	    	// Update each of the tab panels.

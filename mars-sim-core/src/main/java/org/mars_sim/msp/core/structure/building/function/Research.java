@@ -1,23 +1,30 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 3.07 2014-06-19
+ * @version 3.1.0 2017-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The Research class is a building function for research.
@@ -31,11 +38,22 @@ implements Lab, Serializable {
 
     private static final FunctionType FUNCTION = FunctionType.RESEARCH;
 
-    private int techLevel;
-    private int researcherCapacity;
-    private List<ScienceType> researchSpecialties;
-    private int researcherNum;
+	private static final int NUM_INSPECTIONS = 5;
 
+    private int techLevel;
+    private int researcherCapacity = 0;
+    private int researcherNum = 0;
+    private int solCache;
+    
+    private List<ScienceType> researchSpecialties;
+
+    /** This map is the log book for tallying the # of daily inspections on the tissue cultures that this lab maintains */
+    private Map<String, Integer> tissueCultureMap;
+    //private List<String> tissueCultureList;
+    
+    private static BuildingConfig config;
+    private static MarsClock marsClock;
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -44,14 +62,19 @@ implements Lab, Serializable {
         // Use Function constructor
         super(FUNCTION, building);
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        config = SimulationConfig.instance().getBuildingConfiguration();
 
-        techLevel = config.getResearchTechLevel(building.getBuildingType());
-        researcherCapacity = config.getResearchCapacity(building.getBuildingType());
-        researchSpecialties = config.getResearchSpecialties(building.getBuildingType());
+        marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        
+        setupTissueCultures();
+        
+        String type = building.getBuildingType();
+        techLevel = config.getResearchTechLevel(type);
+        researcherCapacity = config.getResearchCapacity(type);
+        researchSpecialties = config.getResearchSpecialties(type);
 
         // Load activity spots
-        loadActivitySpots(config.getResearchActivitySpots(building.getBuildingType()));
+        loadActivitySpots(config.getResearchActivitySpots(type));
     }
 
     /**
@@ -66,7 +89,9 @@ implements Lab, Serializable {
 
         double result = 0D;
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        if (config == null)
+        	config = SimulationConfig.instance().getBuildingConfiguration();
+        
         List<ScienceType> specialties = config.getResearchSpecialties(buildingName);
 
         for (ScienceType specialty : specialties) {
@@ -77,14 +102,14 @@ implements Lab, Serializable {
 
             double researchSupply = 0D;
             boolean removedBuilding = false;
-            Iterator<Building> k = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
-            while (k.hasNext()) {
-                Building building = k.next();
+
+            List<Building> b_list = settlement.getBuildingManager().getBuildings(FUNCTION);
+            for (Building building : b_list) {
                 if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
                     removedBuilding = true;
                 }
                 else {
-                    Research researchFunction = (Research) building.getFunction(FUNCTION);
+                    Research researchFunction = building.getResearch();
                     int techLevel = researchFunction.techLevel;
                     int labSize = researchFunction.researcherCapacity;
                     double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
@@ -171,6 +196,7 @@ implements Lab, Serializable {
      * @throws Exception if person cannot be added.
      */
     public Boolean checkAvailability() {
+    	//System.out.println("lab : " + researcherNum + " of " + researcherCapacity);
         if (researcherNum < researcherCapacity) {
             return true;
         }
@@ -196,7 +222,20 @@ implements Lab, Serializable {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-    public void timePassing(double time) {}
+    public void timePassing(double time) {
+    	
+	    // check for the passing of each day
+	    int solElapsed = marsClock.getMissionSol();
+	    if (solCache != solElapsed) {
+			solCache = solElapsed;
+			
+			for (String s : tissueCultureMap.keySet()) {
+				tissueCultureMap.put(s, 0);
+			}
+
+		}
+    	
+    }
 
     /**
      * Gets the amount of power required when function is at full power.
@@ -214,6 +253,38 @@ implements Lab, Serializable {
         return 0D;
     }
 
+    public void setupTissueCultures() {
+       	tissueCultureMap = new HashMap<>();
+/*
+        Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
+        for (AmountResource ar : tissues) {
+        	String s = ar.getName();
+        	tissueCultureMap.put(s, 0);
+        }	
+*/        
+    }
+    
+	public List<String> getUncheckedTissues() {
+		List<String> batch = new ArrayList<>();
+		for (String s : tissueCultureMap.keySet()) {
+			if (tissueCultureMap.get(s) < NUM_INSPECTIONS)
+				batch.add(s);
+		}
+		return batch;
+	}
+	
+    public void markChecked(String s) {
+    	tissueCultureMap.put(s, tissueCultureMap.get(s) + 1);
+    }
+    
+    public boolean addTissueCulture(String tissueName) {
+    	if (!tissueCultureMap.containsKey(tissueName)) {
+    		tissueCultureMap.put(tissueName, 0);
+    		return true;
+    	}
+    	return false;
+    }
+    
     @Override
     public double getMaintenanceTime() {
 
@@ -228,12 +299,6 @@ implements Lab, Serializable {
         return result;
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-        researchSpecialties.clear();
-        researchSpecialties = null;
-    }
 
 	@Override
 	public double getFullHeatRequired() {
@@ -246,4 +311,11 @@ implements Lab, Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	   @Override
+	    public void destroy() {
+	        super.destroy();
+	        researchSpecialties.clear();
+	        researchSpecialties = null;
+	    }
 }

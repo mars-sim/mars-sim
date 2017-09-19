@@ -24,12 +24,11 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -154,39 +153,29 @@ public class Crop implements Serializable {
 	/** Current phase of crop. */
 	private PhaseType phaseType;
 	private CropCategoryType cropCategoryType;
+	
 	private CropType cropType;
 	private Inventory inv;
 	private Farming farm;
 	private Settlement settlement;
-	private SurfaceFeatures surface;
-	private MarsClock marsClock;
-	private MasterClock masterClock;
+	private Building building;
+	
+	private static SurfaceFeatures surface;
+	private static MarsClock marsClock;
+	private static MasterClock masterClock;
 	private static CropConfig cropConfig;
 
 	private AmountResource cropAR, tissueAR;
 
-	//private static AmountResource foodAR = ResourceUtil.findAmountResource(FOOD); // 1 / needed by Farming 
-	private static AmountResource waterAR = ResourceUtil.waterAR;//.findAmountResource(WATER); // 2
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;//.findAmountResource(OXYGEN); // 3
-	private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;//.findAmountResource(CO2); // 4
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
+	private static AmountResource greyWaterAR =  ResourceUtil.greyWaterAR;
+	private static AmountResource cropWasteAR =  ResourceUtil.cropWasteAR;
+	private static AmountResource fertilizerAR =  ResourceUtil.fertilizerAR;
 
-	//private static AmountResource methaneAR =  ResourceUtil.findAmountResource(METHANE);			// 8
-	//private static AmountResource iceAR =  ResourceUtil.findAmountResource(ICE);					// 12
-	//private static AmountResource foodWasteAR =  ResourceUtil.findAmountResource(FOOD_WASTE);			// 16
-	//private static AmountResource solidWasteAR =  ResourceUtil.findAmountResource(SOLID_WASTE);		// 17
-	private static AmountResource greyWaterAR =  ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);			// 19
-	//private static AmountResource tableSaltAR =  ResourceUtil.findAmountResource(TABLE_SALT); 		// 23
-
-	//private static AmountResource regolithAR =  ResourceUtil.findAmountResource(REGOLITH);		// 142
-	//private static AmountResource rockSamplesAR =  ResourceUtil.findAmountResource(ROCK_SAMPLE);	// 143
-
-	//private static AmountResource NaClO4AR =  ResourceUtil.findAmountResource(NaClO4);	// 145
-	//private static AmountResource napkinAR =  ResourceUtil.findAmountResource(NAPKIN);				// 150
-
-	private static AmountResource cropWasteAR =  ResourceUtil.cropWasteAR;//.findAmountResource(CROP_WASTE);
-	private static AmountResource fertilizerAR =  ResourceUtil.fertilizerAR;//.findAmountResource(FERTILIZER);
-	//private static AmountResource soilAR =  ResourceUtil.findAmountResource(SOIL);
-    
+	private static Part mushroomBoxAR = ItemResourceUtil.mushroomBoxAR;
+			
 	private static AmountResource seedAR;
 
 	private Map<Integer, Phase> phases = new HashMap<>();
@@ -209,17 +198,24 @@ public class Crop implements Serializable {
 			Settlement settlement, boolean isStartup, double tissuePercent) {
 		this.cropType = cropType;
 		this.cropCategoryType = cropType.getCropCategoryType();
-		this.isStartup = isStartup;
-		
-		this.farm = farm;
-		farmName = farm.getBuilding().getNickName();
-		this.settlement = settlement;
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
+		this.farm = farm;
+		this.settlement = settlement;
+		this.isStartup = isStartup;
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
+		building = farm.getBuilding();
+		farmName = building.getNickName();
 		phases = cropType.getPhases();
+
+		inv = settlement.getInventory();
+      
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		masterClock = Simulation.instance().getMasterClock();
+		marsClock = masterClock.getMarsClock();
 
 		for (Phase p : phases.values()) {
 			p.setHarvestFactor(1);
@@ -227,7 +223,15 @@ public class Crop implements Serializable {
 		
 		cropName = cropType.getName();
 		String tissue = cropName + " " + TISSUE_CULTURE;
-
+		dailyPARRequired = cropType.getDailyPAR();
+		cropName = cropType.getName();
+		capitalizedCropName = Conversion.capitalize(cropType.getName());
+		// Note : growingTime is in millisols
+		growingTime = cropType.getGrowingTime();
+		// Note : growingDay in sols
+		double growingDay = growingTime/1000D;
+		maxHarvest = dailyMaxHarvest * growingDay;
+		
 		//2017-03-30 Add special case for extracting seeds from White Mustard
 		if (cropName.equalsIgnoreCase("White Mustard"))
 			hasSeed = true;
@@ -248,30 +252,14 @@ public class Crop implements Serializable {
 		cropAR = AmountResource.findAmountResource(cropName);
 		tissueAR = AmountResource.findAmountResource(tissue);
 
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	    averageWaterNeeded = cropConfig.getWaterConsumptionRate();
 	    averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
 	    averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
 		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
 
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
 	    conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_IN_MILLISOL ;
 
-		masterClock = Simulation.instance().getMasterClock();
-		marsClock = masterClock.getMarsClock();
-
-		inv = settlement.getInventory();
-		t_initial = farm.getBuilding().getInitialTemperature();
-
-		// 2015-04-08  Added dailyPARRequired
-		dailyPARRequired = cropType.getDailyPAR();
-		cropName = cropType.getName();
-		capitalizedCropName = Conversion.capitalize(cropType.getName());
-		// growingTime in millisols
-		growingTime = cropType.getGrowingTime();
-		// growingDay in sols
-		double growingDay = growingTime/1000D;
-		maxHarvest = dailyMaxHarvest * growingDay;
+		t_initial = building.getInitialTemperature();
 
 		if (!isStartup) {
 			
@@ -292,6 +280,8 @@ public class Crop implements Serializable {
 				phaseType = PhaseType.PLANTING;
 				logger.info("Proceeds to transferring plantflets from "
 						+ capitalizedCropName + "'s tissue culture into the field.");
+				
+				setupMushroom();
 			}
 
 			else {
@@ -331,6 +321,16 @@ public class Crop implements Serializable {
 
 	}
 
+	public void setupMushroom() {
+		if (cropName.toLowerCase().contains("mushroom")) {
+			if (inv.hasItemResource(mushroomBoxAR)) {
+				inv.retrieveItemResources(mushroomBoxAR, 1);
+				inv.addItemDemand(mushroomBoxAR, 2);
+				Storage.retrieveAnResource(growingArea *.5, cropWasteAR, inv, true);
+			}
+		}
+	}
+	
 	public double getLightingPower() {
 		return 	lightingPower;
 	}
@@ -511,7 +511,7 @@ public class Crop implements Serializable {
 	// Called by Farming.java's addWork()
 	public double addWork(Unit unit, double workTime) {
 		
-		double remainingWorkTime = workTime;
+		double remainingTime = workTime;
 		int current = getCurrentPhaseNum();
 		int length = phases.size();
 		//if (current == -1)
@@ -529,10 +529,10 @@ public class Crop implements Serializable {
 
 		if (current == 0 && current == 1) {
 			// at a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += remainingWorkTime;
+			currentPhaseWorkCompleted += remainingTime;
 
-			if (currentPhaseWorkCompleted >= w) {
-				remainingWorkTime = currentPhaseWorkCompleted - w;
+			if (currentPhaseWorkCompleted >= w * 1.01) {
+				remainingTime = currentPhaseWorkCompleted - w;
 				currentPhaseWorkCompleted = 0D;
 				phaseType = phases.get(current + 1).getPhaseType();
 				logger.info(capitalizedCropName + "'s phaseType has become " + phaseType 
@@ -540,33 +540,33 @@ public class Crop implements Serializable {
 						+ "   Work Required is " + Math.round(w*10D)/10D);
 			}
 			else
-				remainingWorkTime = 0D;
+				remainingTime = 0D;
 		}
 
 		else if (current < length - 2) {
 			// at a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += remainingWorkTime;
+			currentPhaseWorkCompleted += remainingTime;
 
-			if (currentPhaseWorkCompleted >= w) {
-				remainingWorkTime = currentPhaseWorkCompleted - w;
+			if (currentPhaseWorkCompleted >= w * 1.01) {
+				remainingTime = currentPhaseWorkCompleted - w;
 				currentPhaseWorkCompleted = 0D;
 				//phaseType = phases.get(current + 1).getPhaseType();
 			}
 			else
-				remainingWorkTime = 0D;
+				remainingTime = 0D;
 		}
 		
 		// TODO: for leaves crop, one should be able to harvest leaves ANYTIME and NOT to have to wait until harvest
 		else if (current == length - 2) {
 			// at the harvesting phase
-			currentPhaseWorkCompleted += remainingWorkTime;
+			currentPhaseWorkCompleted += remainingTime;
 			//logger.info(capitalizedCropName + " is in the Harvesting phase"); //+ "     currentPhaseWorkCompleted : " + currentPhaseWorkCompleted + "    Work Required : " + w);
-			if (currentPhaseWorkCompleted >= w) {
+			if (currentPhaseWorkCompleted >= w * 1.01) {
 				// Harvest is over. Close out this phase
 				//logger.info("addWork() : done harvesting. remainingWorkTime is " + Math.round(remainingWorkTime));
 				double overWorkTime = currentPhaseWorkCompleted - w;
 				// 2014-10-07 modified parameter list to include crop name
-				double lastHarvest = actualHarvest * (remainingWorkTime - overWorkTime) / w;
+				double lastHarvest = actualHarvest * (remainingTime - overWorkTime) / w;
 				
 				if (lastHarvest > 0) {
 					// Store the crop harvest
@@ -587,10 +587,10 @@ public class Crop implements Serializable {
 						// thus no crop waste
 						generateCropWaste(lastHarvest);
 					// 2015-10-13 Check to see if a botany lab is available
-					if (!checkBotanyLab())
+					if (!farm.checkBotanyLab(this.getCropType()))
 						logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName);
 	
-					remainingWorkTime = overWorkTime;
+					remainingTime = overWorkTime;
 					
 				}
 				
@@ -620,33 +620,33 @@ public class Crop implements Serializable {
 					}
 					
 					//logger.info(unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
-					//		+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
+					//		+ " kg of " + capitalizedCropName + " in " + farmName
 					//		+ " at " + settlement.getName());
 					
 				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
 				    		unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
-							+ " kg of " + capitalizedCropName + " in " + farm.getBuilding().getNickName()
+							+ " kg of " + capitalizedCropName + " in " + farmName
 							+ " at " + settlement.getName()
 							, null);
 				    
-					remainingWorkTime = 0D;
+					remainingTime = 0D;
 
 				}
 			}
 		}
 		
 
-		return remainingWorkTime;
+		return remainingTime;
 	}
 
 	/*
 	 * Checks to see if a botany lab with an open research slot is available and performs cell tissue extraction
-	 */
+
 	public boolean checkBotanyLab() {
 		// 2015-10-13 Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
 		boolean done = false;
-		Research lab0 = (Research) farm.getBuilding().getFunction(FunctionType.RESEARCH);
+		Research lab0 = building.getResearch();//.getFunction(FunctionType.RESEARCH);
 		// Check to see if the local greenhouse has a research slot
 		if (lab0.hasSpecialty(ScienceType.BOTANY)) {
 			hasEmptySpace = lab0.checkAvailability();
@@ -669,7 +669,7 @@ public class Crop implements Serializable {
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
-				Research lab1 = (Research) building.getFunction(FunctionType.RESEARCH);
+				Research lab1 = building.getResearch();
 				if (lab1.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab1.checkAvailability();
 					if (hasEmptySpace) {
@@ -699,7 +699,7 @@ public class Crop implements Serializable {
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
-				Research lab2 = (Research) building.getFunction(FunctionType.RESEARCH);
+				Research lab2 = building.getResearch();
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
@@ -712,10 +712,11 @@ public class Crop implements Serializable {
 
 		return done;
 	}
-
+*/
+	
     /**
      * Compute the amount of crop tissues extracted
-     */
+ 
 	//2015-10-13 Changed to preserveCropTissue();
 	public void preserveCropTissue(Research lab, boolean hasSpace) {
 		// Added the contributing factor based on the health condition
@@ -733,23 +734,25 @@ public class Crop implements Serializable {
 		// 2015-10-13 if no dedicated research space is available, work can still be performed but productivity is cut half
 		if (hasSpace) {
 			logger.info(amount + " kg " + capitalizedCropName + " " + TISSUE_CULTURE + " extracted & cryo-preserved in "
-					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
+					+ farmName + " at " + settlement.getName());
 		}
 		else {
 			amount = amount / 2D;
 			logger.info("Not enough botany research space. Only " + amount + " kg (at reduced capacity) "
 					+ capitalizedCropName + " " + TISSUE_CULTURE
 					+ " extracted & cryo-preserved in "
-					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
+					+ farmName + " at " + settlement.getName());
 		}
 	}
-
+    */
+	
     /**
      * Compute the amount of crop waste generated
      */
 	public void generateCropWaste(double harvestMass) {
 		// 2015-02-06 Added Crop Waste
-		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
+		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() 
+				+ cropType.getEdibleBiomass());
 		if (amountCropWaste > 0)
 			Storage.storeAnResource(amountCropWaste, cropWasteAR, inv, "::generateCropWaste");
 		//logger.info("addWork() : " + cropName + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
@@ -976,7 +979,7 @@ public class Crop implements Serializable {
 	public void computeTemperature() {
 		
 		double temperatureModifier = 0;
-		double t_now = farm.getBuilding().getCurrentTemperature();
+		double t_now = building.getCurrentTemperature();
 
 		if (t_now > (t_initial + T_TOLERANCE))
 			temperatureModifier = t_initial / t_now;
@@ -1180,7 +1183,7 @@ public class Crop implements Serializable {
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		double uPAR = 0;
 		
-		if (cropName.contains("mushroom")) {
+		if (cropCategoryType == CropCategoryType.FUNGI) {//cropName.contains("mushroom")) {
 			environment[0] = 1D;
 			// set uPAR to zero since mushrooms are fungi and consume O2 and release CO2
 			uPAR = 0;

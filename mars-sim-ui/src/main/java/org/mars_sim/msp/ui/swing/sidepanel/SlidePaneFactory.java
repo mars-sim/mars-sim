@@ -39,19 +39,22 @@ public class SlidePaneFactory extends Box {
     
 	private List<StateListener> listeList = new ArrayList<StateListener>();
 
+	private int themeCache;
 
-    private SlidePaneFactory(final boolean isGroup) {
+    private SlidePaneFactory(final boolean isGroup, int theme) {
         super(BoxLayout.Y_AXIS);
-        
-    	int theme = MainScene.getTheme();
 
-    	//if (theme == 0) // nimbus
-    	//	color = new Color(198, 217, 217);//Color(0xC6D9D9);//0xD6D9DF));
-    	//else if (theme == 6)
-    	//	color = new Color(198, 217, 217);//Color(0xC6D9D9);
-    	if (theme == 7)
-    		color = new Color(0xC1BF9D);
-
+    	if (themeCache != theme) {
+        	themeCache = theme;
+        	// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
+        	// pale grey : Color(214,217,223) = D6D9DF
+        	// pale mud : (193, 191, 157) = C1BF9D
+			if (theme == 7)
+				color = new Color(0xC1BF9D);
+	    	else
+	    		color = new Color(0xD6D9DF);
+    	}	
+    	
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -68,11 +71,13 @@ public class SlidePaneFactory extends Box {
             }
         });
     }
-public static SlidePaneFactory getInstance(boolean isGroup) {
-        return new SlidePaneFactory(isGroup);
+    
+public static SlidePaneFactory getInstance(boolean isGroup, int theme) {
+        return new SlidePaneFactory(isGroup, theme);
     }
-    public static SlidePaneFactory getInstance() {
-        return getInstance(false) ;
+
+    public static SlidePaneFactory getInstance(int theme) {
+        return getInstance(false, theme) ;
     }
 
     public void add(JComponent slideComponent) {
@@ -101,6 +106,7 @@ public static SlidePaneFactory getInstance(boolean isGroup) {
     }
     
     public void update(Color color) {
+    	
     	for (StateListener s : listeList) {
     		s.update(color);
     	}

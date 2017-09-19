@@ -29,7 +29,7 @@ public class ItemResourceUtil implements Serializable {
 	public static final String PIPE_WRENCH = "pipe wrench";
 
 	public static Part pneumaticDrillAR, backhoeAR, smallHammerAR, socketWrenchAR, pipeWrenchAR, 
-				fireExtinguisherAR, workGlovesAR;
+				fireExtinguisherAR, workGlovesAR, mushroomBoxAR;
 
 	private static Set<Part> partSet;
 
@@ -48,6 +48,7 @@ public class ItemResourceUtil implements Serializable {
 		pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
 		fireExtinguisherAR = (Part) findItemResource("fire extingusher");
 		workGlovesAR = (Part) findItemResource("work gloves");
+		mushroomBoxAR = (Part) findItemResource("mushroom containment kit");
 		
 	}
 

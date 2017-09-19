@@ -12,21 +12,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -36,42 +31,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.OneActivity;
-import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
-import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
-import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.structure.StormTrackingWindow;
-
-import net.java.balloontip.BalloonTip;
-import net.java.balloontip.CustomBalloonTip;
-import net.java.balloontip.styles.BalloonTipStyle;
-import net.java.balloontip.styles.ModernBalloonStyle;
-import net.java.balloontip.styles.TexturedBalloonStyle;
-import net.java.balloontip.utils.FadingUtils;
-import net.java.balloontip.utils.TimingUtils;
-import net.java.balloontip.utils.ToolTipUtils;
 
 
 /**
@@ -487,7 +463,6 @@ extends TabPanel {
 
 	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
 
-		private static final long serialVersionUID = 1L;
 		private String prompt;
 		//public boolean isOptimizedDrawingEnabled();
 		//private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
@@ -524,31 +499,28 @@ extends TabPanel {
 				// 131,172,234 pale sky blue
 
 				if (isSelected) {
-
-					if (theme == 6) {
-						result.setBackground(new Color(37,85,118,255)); // (37, 85, 118) navy blue
-				        result.setForeground(Color.white);//new Color(131,172,234)); // 131,172,234 pale sky blue
-					}
-					else {
+					if (theme == 7) {
 				        result.setBackground(new Color(184,134,11,255)); // 184,134,11 mud yellow
 						result.setForeground(Color.white);//new Color(255,229,204)); // 255,229,204 white-ish (super pale) yellow
 					}
+					else {//if (theme == 0 || theme == 6) {
+						result.setBackground(new Color(37,85,118,255)); // (37, 85, 118) navy blue
+				        result.setForeground(Color.white);//new Color(131,172,234)); // 131,172,234 pale sky blue
+					}
+
 
 		        } else {
 			          // unselected, and not the DnD drop location
-					if (theme == 6) {
-						result.setForeground(new Color(37,85,118));// (37, 85, 118) navy blue
-				        result.setBackground(new Color(131,172,234,40)); // 131,172,234 pale sky blue
-					}
-					else {
+					if (theme == 7) {
 				        result.setForeground(new Color(184,134,11)); // 184,134,11 mud yellow
 			        	result.setBackground(new Color(255,229,204,40)); // 255,229,204 white-ish (super pale) yellow
 					}
-
+					else {//if (theme == 0 || theme == 6) {
+						result.setForeground(new Color(37,85,118));// (37, 85, 118) navy blue
+				        result.setBackground(new Color(131,172,234,40)); // 131,172,234 pale sky blue
+					}
 		        }
-
 		        //result.setOpaque(false);
-
 		        return result;
 		    }
 	}

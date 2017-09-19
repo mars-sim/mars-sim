@@ -26,7 +26,7 @@ import javax.swing.JScrollPane;
     public class TestSlidingPanel extends JPanel {
 
     public TestSlidingPanel() {
-        SlidePaneFactory factory = SlidePaneFactory.getInstance();
+        SlidePaneFactory factory = SlidePaneFactory.getInstance(0);
         BookForm bookForm = new BookForm();
         factory.add(bookForm,"Slide1",new ImageIcon("title.png").getImage(), true);
 

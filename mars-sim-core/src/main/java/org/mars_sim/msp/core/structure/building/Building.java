@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,8 +40,10 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
@@ -187,6 +190,7 @@ LocalBoundedObject, InsidePathLocation {
 	private VehicleMaintenance garage;
 	private FoodProduction foodFactory;
 	private ResourceProcessing processing; 
+	private Research lab;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -261,6 +265,7 @@ LocalBoundedObject, InsidePathLocation {
 		if (hasFunction(FunctionType.LIVING_ACCOMODATIONS))
 			if (livingAccommodations == null)
 				livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
+		
 	}
 
 	/** Constructor 2
@@ -392,6 +397,19 @@ LocalBoundedObject, InsidePathLocation {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
 			//malfunctionManager.addScopeString(function.getFunctionType().getName());
+		}
+		
+		// Initialize lab space for storing crop tissue cultures
+		if (hasFunction(FunctionType.RESEARCH)) {
+			if (lab == null)
+				lab = (Research) getFunction(FunctionType.RESEARCH);
+			if (lab.hasSpecialty(ScienceType.BOTANY)) {
+				//&& building.getBuildingType().toLowerCase().contains("greenhouse")) {
+				Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
+				for (AmountResource ar : tissues) {
+					getInventory().addAmountResourceTypeCapacity(ar, 5);
+				}
+			}
 		}
 	}
 
@@ -543,6 +561,12 @@ LocalBoundedObject, InsidePathLocation {
 		if (processing == null)
 			processing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
 		return processing;
+	}
+	
+	public Research getResearch() {
+		if (lab == null)
+			lab = (Research) getFunction(FunctionType.RESEARCH);
+		return lab;
 	}
 	
     /**
@@ -1275,6 +1299,8 @@ LocalBoundedObject, InsidePathLocation {
 					}
 
 					HistoricalEvent newEvent = new MalfunctionEvent(this, meteor, false);
+					if (manager == null)
+						manager = settlement.getBuildingManager();
 					manager.getEventManager().registerNewEvent(newEvent);
 					
 					//check if someone under this roof may have seen/affected by the impact

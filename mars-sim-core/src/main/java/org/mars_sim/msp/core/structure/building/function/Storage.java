@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -93,7 +95,6 @@ implements Serializable {
 			//if (remainingCap >= 0)
 			//	inv.storeAmountResource(ar, 0, true);
 		}
-	
 	}
 
 	/**
@@ -246,7 +247,15 @@ implements Serializable {
 			try {
 				double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, true);
 	
-				if (remainingCapacity < amount) {
+				if (remainingCapacity == 0) {
+					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName , 
+							"(AR) No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
+							+ ar.getName() + " (or storage space has not been initialized yet).", null);
+					result = false;
+					// TODO: increase VP of barrel/bag/gas canister for storage to prompt for manufacturing them
+				}
+				
+				else if (remainingCapacity < amount) {
 				    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 					amount = remainingCapacity;
 					result = false;

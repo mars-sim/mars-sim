@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +26,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -45,17 +47,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 /**
  * The Farming class is a building function for greenhouse farming.
  */
-// 2014-10-15 Fixed the crash by checking if there is any food available
-// 	Added new method checkAmountOfFood() for CookMeal.java
-// 2014-10-14 Implemented new way of calculating amount of crop harvest in kg,
-// Crop Yield or Edible Biomass, based on NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941
-// 2014-11-06 Added if clause to account for soybean harvest
-// 2014-11-29 Added harvesting crops to turn into corresponding amount resource having the same name as the crop's name
-// 2014-12-09 Added crop queue
-// 2015-02-16 Added Germination phase and custom growing area
-// 2015-02-28 Added soil usage (and changed fertilizer usage) based on sq meter
-// 2015-09-30 Changed the algorithm of selecting a new crop to plant
-// 2016-06-28 Added incubation phase and required tissue culture for new crops
+
 public class Farming
 extends Function
 implements Serializable {
@@ -74,7 +66,7 @@ implements Serializable {
 	//public static final String GREY_WATER = "grey water";
     public static final String SOIL = "soil";
     public static final String CROP_WASTE = "crop waste";
-    public static final String TISSUE_CULTURE = "tissue culture";
+    public static final String TISSUE_CULTURE = " tissue culture";
 	//public static final String LED_KIT = "light emitting diode kit";
 	//public static final String HPS_LAMP = "high pressure sodium lamp";
 
@@ -83,6 +75,10 @@ implements Serializable {
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.01;
 	private static final double CROP_WASTE_PER_SQM_PER_SOL = .01; // .01 kg
 
+	private static final int NUM_INSPECTIONS = 5;
+	private static final int NUM_CLEANING = 5;
+
+	
 	/** The original list of crop types from CropConfig*/
     private static List<CropType> cropTypeList;
 
@@ -120,13 +116,20 @@ implements Serializable {
     //private Map<Unit, Crop> cropAssignment = new HashMap<Unit, Crop>();
     //private Map<Unit, ShiftType> shiftAssignment = new HashMap<Unit, ShiftType>();
 
-    private Inventory b_inv, inv;
+    private Map<String, Integer> cleaningMap, inspectionMap;
+    private List<String> inspectionList, cleaningList;
+
+    private static MarsClock marsClock;
+
+    private Inventory inv;//b_inv;
     private Settlement settlement;
     private Building building;
-    private MarsClock marsClock;
+    private Research lab;
     //private BeeGrowing beeGrowing;
 	//private GoodsManager goodsManager;
-
+    
+    
+    
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -143,10 +146,14 @@ implements Serializable {
 
         this.building = building;
         this.settlement = building.getBuildingManager().getSettlement();
+
 		//this.b_inv = building.getBuildingInventory();
 		this.inv = settlement.getInventory();
 		//this.goodsManager = settlement.getGoodsManager();
-
+	
+		setupInspection();
+		setupCleaning();
+		
         marsClock = Simulation.instance().getMasterClock().getMarsClock();
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
@@ -164,7 +171,7 @@ implements Serializable {
 
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
-        	CropType cropType = getNewCrop(true, false);
+        	CropType cropType = pickACrop(true, false);
         	if (cropType == null) break;// for avoiding NullPointerException during maven test
         	Crop crop = plantACrop(cropType, true, 0);
             crops.add(crop);
@@ -177,22 +184,56 @@ implements Serializable {
 
     }
 
+    public void setupInspection() {
+		inspectionMap = new HashMap<String,Integer>();
+    	inspectionList = new ArrayList<>();
+    	
+    	inspectionList.add("Environmental Control System");
+    	inspectionList.add("HVAC System");
+    	inspectionList.add("Waste Disposal System");
+    	inspectionList.add("Containment System");
+    	inspectionList.add("Any Traces of Contamination");
+    	inspectionList.add("Foundation");
+    	inspectionList.add("Structural Element");
+    	inspectionList.add("Thermal Budget");
+    	inspectionList.add("Water and Irrigation System");
 
+    	for (String s: inspectionList) {
+    		inspectionMap.put(s, 0);
+    	}
+    }
+
+    public void setupCleaning() {
+		cleaningMap = new HashMap<String,Integer>();
+    	cleaningList = new ArrayList<>();
+    	
+    	cleaningList.add("Floor");
+    	cleaningList.add("Curtains");
+    	cleaningList.add("Canopy");
+    	cleaningList.add("Equipment");
+    	cleaningList.add("Pipings");
+    	cleaningList.add("Trays");
+    	cleaningList.add("Valves");
+
+    	for (String s: cleaningList) {
+    		cleaningMap.put(s, 0);
+    	}
+    }
+    
 	/**
-	 * Gets a new crop type
-	 * @param isStartup - is it at the start of the sim
-	 * @return crop type
+	 * Picks a crop type
+	 * @param isStartup - true if it is called at the start of the sim
+	 * @return {@link CropType}
 	 */
-	public CropType getNewCrop(boolean isStartup, boolean noCorn) {
+	public CropType pickACrop(boolean isStartup, boolean noCorn) {
 		CropType ct = null;
 		boolean flag = true;
-		
 		// TODO: at the start of the sim, choose only from a list of staple food crop 
 		if (isStartup) {
 			while (flag) {
 				ct = getRandomCropType();
 				if (noCorn && ct.getName().equalsIgnoreCase("corn")) {
-					ct = getNewCrop(isStartup, noCorn);
+					ct = pickACrop(isStartup, noCorn);
 				}				
 	
 				if (ct == null)
@@ -203,9 +244,9 @@ implements Serializable {
 		
 		else {
 			while (flag) {
-				ct = selectNewCrop();
+				ct = selectVPCrop();
 				if (noCorn && ct.getName().equalsIgnoreCase("corn")) {
-					ct = getNewCrop(isStartup, noCorn);
+					ct = pickACrop(isStartup, noCorn);
 				}				
 	
 				if (ct == null)
@@ -219,11 +260,11 @@ implements Serializable {
 
 
 	/**
-	 * Selects a new crop currently having the highest priority to be planted
+	 * Selects a crop currently having the highest value point (VP)
 	 * @return CropType
 	 */
-	// 2015-09-30 Revised the decision branch on how the crop type is chosen
-	public CropType selectNewCrop() {
+	public CropType selectVPCrop() {
+		
 		CropType no_1_crop = null;
 		CropType no_2_crop = null;
 		CropType chosen = null;
@@ -250,7 +291,6 @@ implements Serializable {
 		String last2CT = null;
 		boolean compareVP = false;
 		
-
 		int size = plantedCrops.size();
 		if (size > 2) {
 			// get the last two planted crops
@@ -326,7 +366,10 @@ implements Serializable {
 			flag = containCrop(chosen.getName());
 		}
 			
-		//System.out.println("chosen : " + chosen.getName());
+		// if it's a mushroom, add increases the item demand of the mushroom containment kit before the crop is planted
+		if (chosen.getName().toLowerCase().contains("mushroom"))
+			inv.addItemDemand(ItemResourceUtil.mushroomBoxAR, 2);
+
 		return chosen;
 	}
 
@@ -460,8 +503,8 @@ implements Serializable {
 
     	double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
-    	String tissueName = cropType.getName() + " " + TISSUE_CULTURE;
-    	//String name = Conversion.capitalize(cropType.getName()) + " " + TISSUE_CULTURE;
+    	String tissueName = cropType.getName() + TISSUE_CULTURE;
+    	//String name = Conversion.capitalize(cropType.getName()) + TISSUE_CULTURE;
     	AmountResource tissueAR = ResourceUtil.findAmountResource(tissueName);
 
     	boolean available = false;
@@ -656,24 +699,26 @@ implements Serializable {
      * @throws Exception if error adding work.
      */
     public double addWork(double workTime, TendGreenhouse h, Unit unit) {
-        double workTimeRemaining = workTime;
+        double timeRemaining = workTime;
         Crop needyCropCache = null;
         Crop needyCrop = getNeedyCrop(needyCropCache);
         // Scott - I used the comparison criteria 00001D rather than 0D
         // because sometimes math anomalies result in workTimeRemaining
         // becoming very small double values and an endless loop occurs.
-        while (needyCrop != null && workTimeRemaining > .00001D) {
+        while (needyCrop != null && timeRemaining > .00001D) {
 
-        	workTimeRemaining = needyCrop.addWork(unit, workTimeRemaining);
+        	timeRemaining = needyCrop.addWork(unit, timeRemaining);
     		
         	needyCropCache = needyCrop;
             // Get a new needy crop
         	needyCrop = getNeedyCrop(needyCropCache);
         	
-        	if (needyCropCache != null && needyCrop != null && needyCropCache.equals(needyCrop)) {	
+        	//if (needyCropCache != null && needyCrop != null && needyCropCache.equals(needyCrop)) {	
+           	if (needyCrop != null && !needyCropCache.equals(needyCrop)) {	
         		// 2016-11-29 update the name of the crop being worked on in the task description
         		h.setCropDescription(needyCrop);
         	}
+        	
 /*
         	if (needyCropCache != null && needyCrop != null) {
             	//	logger.info("inside while loop. lastCrop is " + lastCrop.getCropType());
@@ -685,7 +730,7 @@ implements Serializable {
 */
         }
 
-        return workTimeRemaining;
+        return timeRemaining;
     }
 
     /**
@@ -803,6 +848,10 @@ implements Serializable {
 	    int solElapsed = marsClock.getMissionSol();
 	    if (solElapsed != solCache) {
 			solCache = solElapsed;
+			
+			for (String s : cleaningMap.keySet()) {
+				cleaningMap.put(s, 0);
+			}
 			// 2016-10-12 reset cumulativeDailyPAR
 			for (Crop c : crops)
 				c.resetPAR();
@@ -815,8 +864,6 @@ implements Serializable {
 
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
-        
-
         List<String> harvestedCrops = null;
         int numCrops2Plant = 0;
         while (i.hasNext()) {
@@ -860,18 +907,16 @@ implements Serializable {
         		}
           	} 
           	
-          	else {
-    			Iterator<String> k = harvestedCrops.iterator();
-        		while (k.hasNext()) {
-        			String s = k.next();
+          	else {	
+        		for (String s : harvestedCrops) {
         			// if the harvest crops contain corn, one cannot plant corn again 
         			// since corn depletes nitrogen quickly in the soil. 
         			if (s.equalsIgnoreCase("corn")) {
-                		cropType = getNewCrop(false, true);
+                		cropType = pickACrop(false, true);
             			break;
         			}
         			else {
-                		cropType = getNewCrop(false, false);
+                		cropType = pickACrop(false, false);
             			break;       				
         			}
         		}
@@ -1016,11 +1061,11 @@ implements Serializable {
 	 * Checks to see if a botany lab with an open research slot is available and performs cell tissue extraction
 	 * @param cropType
 	 * @return true if it has space
-	 */
+
 	// 2016-10-13 Check to see if a botany lab is available
 	public boolean checkBotanyLab(CropType type) {
 		boolean proceed = false;
-		Research lab0 = (Research) getBuilding().getFunction(FunctionType.RESEARCH);
+		Research lab0 = getBuilding().getResearch();
 		// Check to see if the local greenhouse has a research slot
 		if (lab0.hasSpecialty(ScienceType.BOTANY)) {
 			proceed = lab0.checkAvailability();
@@ -1030,67 +1075,171 @@ implements Serializable {
 			proceed = lab0.addResearcher();
 			if (proceed) {
 				proceed = growCropTissue(lab0, type);
+				System.out.println("proceed is " + proceed);
 				lab0.removeResearcher();
 			}
 		}
 
 		return proceed;
 	}
+	 */
+    
+	/**
+	 * Checks to see if a botany lab with an open research slot is available and performs cell tissue extraction
+	 * @param type
+	 */
+	public boolean checkBotanyLab(CropType type) {
+		// 2015-10-13 Check to see if a botany lab is available
+		
+		boolean hasEmptySpace = false;
+		boolean done = false;
+			
+		//List<String> tissues = lab0.getTissueCultureList();
+		
+		// Check to see if the local greenhouse has a research slot
+		if (lab == null)
+	        lab = building.getResearch();
+		if (lab.hasSpecialty(ScienceType.BOTANY)) {
+			hasEmptySpace = lab.checkAvailability();
+		}
+
+		if (hasEmptySpace) {
+			// check to see if it can accommodate another researcher
+			hasEmptySpace = lab.addResearcher();
+			
+			if (hasEmptySpace) {
+				growCropTissue(lab, type);//, true);
+				lab.removeResearcher();
+			}
+
+			done = true;
+		}
+
+		else {
+			// Check available research slot in another lab located in another greenhouse
+			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
+			Iterator<Building> i = laboratoryBuildings.iterator();
+			while (i.hasNext() && !hasEmptySpace) {
+				Building building = i.next();
+				Research lab1 = building.getResearch();
+				if (lab1.hasSpecialty(ScienceType.BOTANY)) {
+					hasEmptySpace = lab1.checkAvailability();
+					if (hasEmptySpace) {
+						hasEmptySpace = lab1.addResearcher();
+						if (hasEmptySpace) {
+							growCropTissue(lab1, type);//true);
+							lab.removeResearcher();
+						}
+
+						// TODO: compute research ooints to determine if it can be carried out.
+						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
+						done = true;
+					}
+				}
+			}
+		}
+
+		// check to see if a person can still "squeeze into" this busy lab to get lab time
+		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
+			growCropTissue(lab, type);//, false);
+			done = true;
+		}
+		else {
+
+			// Check available research slot in another lab located in another greenhouse
+			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
+			Iterator<Building> i = laboratoryBuildings.iterator();
+			while (i.hasNext() && !hasEmptySpace) {
+				Building building = i.next();
+				Research lab2 = building.getResearch();
+				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
+					hasEmptySpace = lab2.checkAvailability();
+					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
+						growCropTissue(lab2, type);//, false);
+						done = true;
+					}
+				}
+			}
+		}
+
+		return done;
+	}
 
 
     /**
-     * Grow crop tissues
+     * Grows crop tissue cultures
      * @param lab
      * @param croptype
      */
-	//2016-11-28 Added growCropTissue();
 	public boolean growCropTissue(Research lab, CropType cropType) {
-		// Added the contributing factor based on the health condition
-		// TODO: re-tune the amount of tissue culture based on not just based on the edible biomass (actualHarvest)
+		String cropName = cropType.getName();
+		String tissueName = cropName + TISSUE_CULTURE;		
+		// TODO: re-tune the amount of tissue culture not just based on the edible biomass (actualHarvest)
 		// but also the inedible biomass and the crop category
 		boolean isDone = false;
-		String cropName = cropType.getName();
-		AmountResource cropAR = AmountResource.findAmountResource(cropName);
-		String tissueName = cropName + " " + TISSUE_CULTURE;
-    	AmountResource tissueAR = AmountResource.findAmountResource(tissueName);
+		AmountResource cropAR = ResourceUtil.findAmountResource(cropName);
+    	AmountResource tissueAR = ResourceUtil.findAmountResource(tissueName);
         double amountAvailable = inv.getAmountResourceStored(tissueAR, false);
         double amountExtracted = 0;
+        
+		// Add the chosen tissue culture entry to the lab if it hasn't done it today.
+		boolean justAdded = lab.addTissueCulture(tissueName);
+		if (justAdded) {
+			lab.markChecked(tissueName);
+			
+			if (amountAvailable == 0) {
+			    	// if no tissue culture is available, go extract some tissues from the crop
+				double amount = inv.getAmountResourceStored(cropAR, false);
+				// TODO : Check for the health condition
+			    amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * 10; // 10 is the standard ratio
+			
+			    if (amount > amountExtracted) {
+			    	// assume an arbitrary 10% of the mass of crop kg extracted will be developed into tissue culture
+			    	Storage.retrieveAnResource(amountExtracted, cropAR, inv, true);
+			    	// store the tissues
+			 		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv);
+			  		//System.out.println("Storing " + STANDARD_AMOUNT_TISSUE_CULTURE + " kg of " + tissueName);
+			
+					LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+							"During sampling, " + cropName + TISSUE_CULTURE + " is not found in stock. "
+							+ "Extracting from " + cropName + " and cryo-preserving " 
+							+ STANDARD_AMOUNT_TISSUE_CULTURE + " kg in " 
+							+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
+			
+					isDone = true;
+			    }		
+			}
+		}
+		
+		else {
+	    	List<String> unchecked =  lab.getUncheckedTissues();
+	       	int size = unchecked.size();
+	    	if (size > 0) {
+		    	int rand = RandomUtil.getRandomInt(size-1);
+		    	String s = unchecked.get(rand);
+		    	// mark this tissue culture. At max of 3 marks for each culture per sol
+		    	lab.markChecked(s);
+		    	
+		        // if there is less than 1 kg of tissue culture
+		        if (amountAvailable > 0 && amountAvailable < 1) {  
+		        	// increase the amount of tissue culture by 10%
+		        	amountExtracted = amountAvailable * 1.1;
+		        	// store the tissues
+		        	if (amountExtracted > 0)
+		        		Storage.storeAnResource(amountExtracted, tissueAR, inv);
+		      		//System.out.println("Storing " + Math.round(amountExtracted*100000.0)/100000.0D + " kg of " + tissueName);
+					LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+							"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
+		    				+ cropName + TISSUE_CULTURE + " is restocked in "
+		    				+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
 
-        if (amountAvailable > 0 && amountAvailable < 1) {
-        	// increase the amount of tissue culture by 10%
-        	amountExtracted = amountAvailable * 1.1;
-        	// store the tissues
-      		Storage.storeAnResource(amountExtracted, tissueAR, inv);
-
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-					"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
-    				+ Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
-    				+ lab.getBuilding().getNickName() + " at " + settlement.getName(), null);
-
-    		isDone = true;
-        }
-
-        else if (amountAvailable < 0) {
-        	// if no tissue culture is available, go extract some tissues from the crop
-            double amount = inv.getAmountResourceStored(cropAR, false);
-
-            amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * 10;
-
-            if (amount > amountExtracted) {
-            	// assume an arbitrary 10% of the mass of crop kg extracted will be developed into tissue culture
-            	Storage.retrieveAnResource(amountExtracted, cropAR, inv, true);
-            	// store the tissues
-         		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv);
-
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-						"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0 + " kg " 
-						+ Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
-        				+ lab.getBuilding().getNickName() + " at " + settlement.getName(), null);
-
-        		isDone = true;
-            }
-
-        }
+		    		isDone = true;
+		        }
+		        
+	    	}
+	    	else
+	    		return false;
+		}
 
         return isDone;
 	}
@@ -1133,6 +1282,51 @@ implements Serializable {
 	public List<String> getPlantedCrops() {
 		return plantedCrops;
 	}
+
+	public Map<String, Integer> getCleaningMap() {
+		return cleaningMap;
+	}
+
+	public Map<String, Integer> getInspectionMap() {
+		return inspectionMap;
+	}
+
+	public List<String> getInspectionList() {
+		return inspectionList;
+	}
+	
+	public List<String> getCleaningList() {
+		return cleaningList;
+	}
+	
+	public List<String> getUninspected() {
+		List<String> uninspected = new ArrayList<>();
+		for (String s : inspectionMap.keySet()) {
+			if (inspectionMap.get(s) < NUM_INSPECTIONS)
+				uninspected.add(s);
+		}
+		return uninspected;
+	}
+
+	public List<String> getUncleaned() {
+		List<String> uncleaned = new ArrayList<>();
+		for (String s : cleaningMap.keySet()) {
+			if (cleaningMap.get(s) < NUM_CLEANING)
+				uncleaned.add(s);
+		}
+		return uncleaned;
+	}
+	
+
+
+	public void markInspected(String s) {
+		inspectionMap.put(s, inspectionMap.get(s) + 1); // .getOrDefault(s, 0)
+	}
+
+	public void markCleaned(String s) {
+		cleaningMap.put(s, cleaningMap.get(s) + 1);
+	}
+	
 
 	
     @Override

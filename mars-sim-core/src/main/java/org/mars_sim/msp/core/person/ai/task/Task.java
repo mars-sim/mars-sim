@@ -318,11 +318,11 @@ implements Serializable, Comparable<Task> {
             phase = newPhase;
 			if (person != null) {
 				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-	            //person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+	            person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
 			}
 			else if (robot != null) {
 				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-	            //robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+	            robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
 			}
 
         }
@@ -422,6 +422,8 @@ implements Serializable, Comparable<Task> {
 
 	        	// If task is effort-driven and person is incapacitated, end task.
 			    if (effortDriven && (person.getPerformanceRating() == 0D)) {
+			    	// "Resurrect" him a little to give him a chance to make amend
+			    	person.getPhysicalCondition().setPerformanceFactor(3);
 			    	endTask();
 
 	            } else {

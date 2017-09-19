@@ -90,6 +90,7 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double reading(double time) {
+        setDescription(Msg.getString("Task.description.read"));//$NON-NLS-1$
         return 0D;
     }
 

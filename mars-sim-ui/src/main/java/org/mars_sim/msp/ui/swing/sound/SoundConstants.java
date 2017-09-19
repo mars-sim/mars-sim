@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 3.08 2016-03-31
+ * @version 3.1.0 2017-09-18
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 

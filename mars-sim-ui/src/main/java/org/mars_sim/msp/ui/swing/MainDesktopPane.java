@@ -957,13 +957,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 * @param initialWindow true if window is opened at UI startup.
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
-		//logger.info("openUnitWindow is on " + Thread.currentThread().getName());
-
 		UnitWindow tempWindow = null;
 
-		Iterator<UnitWindow> i = unitWindows.iterator();
-		while (i.hasNext()) {
-			UnitWindow window = i.next();
+		for (UnitWindow window : unitWindows) {
 			if (window.getUnit() == unit) {
 				tempWindow = window;
 			}
@@ -979,7 +975,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			} catch (java.beans.PropertyVetoException e) {
 				logger.log(Level.SEVERE,Msg.getString("MainDesktopPane.log.problemReopening") + e); //$NON-NLS-1$
 			}
-		} else {
+		} 
+		
+		else {
 			// Create new window for unit.
 			tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
 
@@ -1035,7 +1033,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	public void playSound(Unit unit) {
 
 		if (mainScene != null) {
-			Platform.runLater(() -> {
+			//Platform.runLater(() -> {
 				//logger.info("playSound() is on " + Thread.currentThread().getName());
 				// Play sound for window.
 				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
@@ -1043,11 +1041,11 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 					soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
 				}
 				soundPlayer.play(soundFilePath);
-			});
+			//});
 		}
 
 		else {
-			SwingUtilities.invokeLater(() -> {
+			//SwingUtilities.invokeLater(() -> {
 				//logger.info("playSound() is on " + Thread.currentThread().getName());
 				// Play sound for window.
 				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
@@ -1055,7 +1053,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 					soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
 				}
 				soundPlayer.play(soundFilePath);
-			});
+			//});
 		}
 
 
@@ -1494,12 +1492,12 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		Iterator<UnitWindow> i = unitWindows.iterator();
 		while (i.hasNext()) {
 			UnitWindow window = i.next();
-			//SwingUtilities.updateComponentTreeUI(window);
-			window.validate();
-			window.repaint();
+			//window.validate();
+			//window.repaint();
 		   	//SwingUtilities.invokeLater(() -> {
 	            window.update();
 		   	//});
+			SwingUtilities.updateComponentTreeUI(window);    
 		}
 	}
 
