@@ -416,72 +416,127 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="regolith" capacity="1000.0" />
 
 				<resource-storage resource="chlorine" capacity="100.0" />
-				<resource-storage resource="Sodium Hypochlorite" capacity="100.0" />
-				<resource-storage resource="Acetic Acid Bacteria" capacity="100.0" />
+				<resource-storage resource="sodium hypochlorite" capacity="100.0" />
+				<resource-storage resource="acetic acid bacteria" capacity="100.0" />
 				<resource-storage resource="toilet tissue" capacity="100.0" />
 				<resource-storage resource="paper" capacity="100.0" />
 				<resource-storage resource="napkin" capacity="100.0" />
 
-				<resource-storage resource="Cane Fiber" capacity="500.0" />
-				<resource-storage resource="Yeast" capacity="500.0" />
-				<resource-storage resource="Epsom Salt" capacity="500.0" />
-				<resource-storage resource="Table Salt" capacity="500.0" />
-				<resource-storage resource="Sugar" capacity="500.0" />
-				<resource-storage resource="Rice Vinegar" capacity="500.0" />
-				<resource-storage resource="Soy Sauce" capacity="500.0" />
-				<resource-storage resource="Soymilk" capacity="500.0" />
-				<resource-storage resource="Soybean Oil" capacity="500.0" />
-				<resource-storage resource="Soy Flour" capacity="500.0" />
-				<resource-storage resource="Wheat Flour" capacity="500.0" />
-				<resource-storage resource="Granola Bar" capacity="500.0" />
-				<resource-storage resource="Honey" capacity="500.0" />
-				<resource-storage resource="Baking Powder" capacity="500.0" />
-				<resource-storage resource="Cranberry Juice" capacity="100.0" />
-				<resource-storage resource="Sugarcane Juice" capacity="100.0" />
-				<resource-storage resource="Blueberry Muffin" capacity="500.0" />
+				<resource-storage resource="cane fiber" capacity="500.0" />
+				<resource-storage resource="yeast" capacity="500.0" />
+				<resource-storage resource="epsom salt" capacity="500.0" />
+				<resource-storage resource="table salt" capacity="500.0" />
+				<resource-storage resource="sugar" capacity="500.0" />
+				<resource-storage resource="rice vinegar" capacity="500.0" />
+				<resource-storage resource="soy sauce" capacity="500.0" />
+				<resource-storage resource="soymilk" capacity="500.0" />
+				<resource-storage resource="soybean oil" capacity="500.0" />
+				<resource-storage resource="soy flour" capacity="500.0" />
+				<resource-storage resource="wheat flour" capacity="500.0" />
+				<resource-storage resource="granola bar" capacity="500.0" />
+				<resource-storage resource="honey" capacity="500.0" />
+				<resource-storage resource="baking Powder" capacity="500.0" />
+				<resource-storage resource="cranberry juice" capacity="100.0" />
+				<resource-storage resource="sugarcane juice" capacity="100.0" />
+				<resource-storage resource="blueberry muffin" capacity="500.0" />
 
-				<resource-storage resource="Soybean" capacity="100.0" />
-				<resource-storage resource="White Onion" capacity="100.0" />
-				<resource-storage resource="Rice" capacity="100.0" />
-				<resource-storage resource="Kidney Bean" capacity="100.0" />
-				<resource-storage resource="Wheat" capacity="100.0" />
-				<resource-storage resource="Cabbage" capacity="100.0" />
-				<resource-storage resource="Carrot" capacity="100.0" />
-				<resource-storage resource="Spring Onion" capacity="100.0" />
-				<resource-storage resource="Peanut" capacity="100.0" />
-				<resource-storage resource="Potato" capacity="100.0" />
-				<resource-storage resource="Sesame" capacity="100.0" />
-				<resource-storage resource="Garlic" capacity="100.0" />
-				<resource-storage resource="Lettuce" capacity="100.0" />
-				<resource-storage resource="Ginger" capacity="100.0" />
-				<resource-storage resource="Sugarcane" capacity="100.0" />
-				<resource-storage resource="Strawberry" capacity="100.0" />
-				<resource-storage resource="Quinoa" capacity="100.0" />
-				<resource-storage resource="Cranberry" capacity="100.0" />
-				<resource-storage resource="Blueberry" capacity="100.0" />
-				<resource-storage resource="Taro" capacity="100.0" />
+				<resource-storage resource="soybean" capacity="100.0" />
+				<resource-storage resource="white onion" capacity="100.0" />
+				<resource-storage resource="rice" capacity="100.0" />
+				<resource-storage resource="kidney bean" capacity="100.0" />
+				<resource-storage resource="wheat" capacity="100.0" />
+				<resource-storage resource="cabbage" capacity="100.0" />
+				<resource-storage resource="carrot" capacity="100.0" />
+				<resource-storage resource="spring onion" capacity="100.0" />
+				<resource-storage resource="peanut" capacity="100.0" />
+				<resource-storage resource="potato" capacity="100.0" />
+				<resource-storage resource="sesame" capacity="100.0" />
+				<resource-storage resource="garlic" capacity="100.0" />
+				<resource-storage resource="lettuce" capacity="100.0" />
+				<resource-storage resource="ginger" capacity="100.0" />
+				<resource-storage resource="sugarcane" capacity="100.0" />
+				<resource-storage resource="strawberry" capacity="100.0" />
+				<resource-storage resource="quinoa" capacity="100.0" />
+				<resource-storage resource="cranberry" capacity="100.0" />
+				<resource-storage resource="blueberry" capacity="100.0" />
+				<resource-storage resource="taro" capacity="100.0" />
 				<resource-storage resource="red beet" capacity="100.0" />
 				<resource-storage resource="morel mushroom" capacity="100.0" />
 				<resource-storage resource="radish" capacity="100.0" />
 				<resource-storage resource="swiss chard" capacity="100.0" />
 											
-				<resource-storage resource="Mustard" capacity="100.0" />
-				<resource-storage resource="Mustard Seed" capacity="100.0" />
-				<resource-storage resource="White Mustard" capacity="100.0" />
+				<resource-storage resource="mustard" capacity="100.0" />
+				<resource-storage resource="mustard seed" capacity="100.0" />
+				<resource-storage resource="white mustard" capacity="100.0" />
 				<resource-storage resource="yam" capacity="100.0" />
 
-				<resource-storage resource="Sesame Seed" capacity="100.0" />
-				<resource-storage resource="Sesame Oil" capacity="100.0" />
+				<resource-storage resource="sesame seed" capacity="100.0" />
+				<resource-storage resource="sesame oil" capacity="100.0" />
 
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially stored in this building. -->
 				<!-- amount: the amount (kg) of the resource. -->
 
-				<resource-initial resource="water" amount="1000.0" />
-				<resource-initial resource="oxygen" amount="1000.0" />
+				<!-- life support: 5000 kg  -->
+				<resource-initial resource="water" amount="2000.0" />
+				<resource-initial resource="oxygen" amount="2000.0" />
 				<resource-initial resource="food" amount="1000.0" />
 
+				<!-- other gases: 200 kg  -->
+				<resource-initial resource="nitrogen" amount="130.0" />
+				<resource-initial resource="argon" amount="50.0" />
+				<resource-initial resource="chlorine" amount="20.0" />
 
+				<!-- kitchen supplies: 600 kg -->				
+				<resource-initial resource="toilet tissue" amount="50.0" />
+				<resource-initial resource="paper" amount="50.0" />
+				<resource-initial resource="napkin" amount="50.0" />
+				<resource-initial resource="pulp" amount="50.0" />
+				<resource-initial resource="honey" amount="50.0" />
+				<resource-initial resource="yeast" amount="50.0" />
+				<resource-initial resource="epsom salt" amount="50.0" />
+				<resource-initial resource="table salt" amount="50.0" />
+				<resource-initial resource="sugar" amount="50.0" />
+				<resource-initial resource="mustard" amount="50.0" />
+				<resource-initial resource="sesame seed" amount="50.0" />
+				<resource-initial resource="sesame oil" amount="50.0" />
+				<resource-initial resource="garlic oil" amount="50.0" />
+				<resource-initial resource="peanut oil" amount="50.0" />
+											
+				<!-- chemicals: 210 kg  -->								
+				<resource-initial resource="bleaching chemical" amount="50.0" />
+				<resource-initial resource="baking powder" amount="50.0" />
+				<resource-initial resource="bisphenol-a" amount="50.0" />
+				<resource-initial resource="sodium hypochlorite" amount="50.0" />
+				<resource-initial resource="immune booster" amount="50.0" />
+				<resource-initial resource="lime" amount="10.0" />
+
+				<!-- organisms: 40 kg -->	
+				<resource-initial resource="acetic acid bacteria" amount="10.0" />
+				<resource-initial resource="nitrosomonas spp" amount="10.0" />
+				<resource-initial resource="nitrospira spp" amount="10.0" />
+				<resource-initial resource="rhizobia" amount="10.0" />
+
+				<!-- greenhouse supplies: 100 kg  -->
+				<resource-initial resource="fertilizer" amount="50.0" />
+				<resource-initial resource="soil" amount="50.0" />
+
+				<!-- Mars Direct Mission Plan : 
+				
+				(1). ERV - 
+			 	(a). Payload imported from Earth -
+				 	 Consumables : 3400 kg
+				 	 Hydrogen feedstock : 6300 kg
+				(b). Produced on Mars :
+					 water : 18900 kg
+					 Oxygen : 16080 kg
+					 Methane : 8400 kg
+	
+				(2). Hab -
+				(a). Payload imported from Earth -
+				 	 Consumables : 7000 kg			
+				 
+				 -->
 			</storage>
 
 			<!-- The building is capable of producing heat. -->
@@ -570,27 +625,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 
 			<storage stock-capacity="5000">
-				<resource-storage resource="fertilizer" capacity="500.0" />
+				<resource-storage resource="water" capacity="500.0" />
+
+				<!-- gases -->
+				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="nitrogen" capacity="500.0" />
 				<resource-storage resource="ammonia" capacity="500.0" />
+
+				<!-- soil related -->				
+				<!-- crop food -->				
+				<resource-storage resource="fertilizer" capacity="500.0" />
 				<resource-storage resource="nitrate" capacity="500.0" />
 				<resource-storage resource="nitrite" capacity="500.0" />
-
-				<resource-storage resource="soil" capacity="500.0" />
-				<resource-storage resource="compost" capacity="500.0" />
-				<resource-storage resource="crop Waste" capacity="500.0" />
 				<resource-storage resource="grey water" capacity="500.0" />
 
-				<resource-storage resource="water" capacity="500.0" />
-				<resource-storage resource="carbon Dioxide" capacity="500.0" />
+				<!-- soil related -->				
+				<resource-storage resource="soil" capacity="500.0" />
+				<resource-storage resource="compost" capacity="500.0" />				
+				<resource-storage resource="crop waste" capacity="500.0" />
 
-				<resource-initial resource="nitrogen" amount="50.0" />
-				<resource-initial resource="ammonia" amount="50.0" />
-				<resource-initial resource="nitrate" amount="50.0" />
-				<resource-initial resource="nitrite" amount="50.0" />
-				<resource-initial resource="fertilizer" amount="100.0" />
-				<resource-initial resource="soil" amount="100.0" />
-				<resource-initial resource="compost" amount="100.0" />
+				<!-- Supplies -->				
+				<resource-initial resource="carbon dioxide" amount="500.0" />
+				
 			</storage>
 
 			<thermal-generation>
@@ -672,29 +728,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<storage stock-capacity="10000">
 
-				<resource-storage resource="Fertilizer" capacity="1000.0" />
-				<resource-storage resource="Nitrogen" capacity="1000.0" />
-				<resource-storage resource="Ammonia" capacity="1000.0" />
-				<resource-storage resource="Nitrate" capacity="1000.0" />
-				<resource-storage resource="Nitrite" capacity="1000.0" />
+				<!-- gases -->
+				<resource-storage resource="carbon dioxide" capacity="1000.0" />
+				<resource-storage resource="nitrogen" capacity="1000.0" />
+				<resource-storage resource="ammonia" capacity="1000.0" />
 
-				<resource-storage resource="Soil" capacity="1000.0" />
-				<resource-storage resource="Compost" capacity="1000.0" />
-				<resource-storage resource="Crop Waste" capacity="1000.0" />
+				<!-- soil related -->				
+				<!-- crop food -->				
+				<resource-storage resource="fertilizer" capacity="1000.0" />
+				<resource-storage resource="nitrate" capacity="1000.0" />
+				<resource-storage resource="nitrite" capacity="1000.0" />
 				<resource-storage resource="grey water" capacity="1000.0" />
 
-				<resource-storage resource="water" capacity="1000.0" />
-				<resource-storage resource="carbon dioxide" capacity="1000.0" />
-				<resource-storage resource="food" capacity="500.0" />
+				<!-- soil related -->				
+				<resource-storage resource="soil" capacity="1000.0" />
+				<resource-storage resource="compost" capacity="1000.0" />				
+				<resource-storage resource="crop waste" capacity="1000.0" />
 
-				<resource-initial resource="water" amount="1000.0" />
-				<resource-initial resource="Nitrogen" amount="100.0" />
-				<resource-initial resource="Ammonia" amount="100.0" />
-				<resource-initial resource="Nitrate" amount="100.0" />
-				<resource-initial resource="Nitrite" amount="100.0" />
-				<resource-initial resource="Fertilizer" amount="200.0" />
-				<resource-initial resource="Soil" amount="200.0" />
-				<resource-initial resource="Compost" amount="200.0" />
+				<!-- Supplies -->				
+				<resource-initial resource="carbon dioxide" amount="1000.0" />
+				
 
 			</storage>
 
@@ -801,12 +854,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="10000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="methane" capacity="10000.0" />
-				<resource-storage resource="oxygen" capacity="10000.0" />
-				<resource-storage resource="water" capacity="10000.0" />
+				<resource-storage resource="oxygen" capacity="20000.0" />
+				<resource-storage resource="water" capacity="20000.0" />
 
-				<resource-initial resource="carbon dioxide" amount="5000.0" />
-				<resource-initial resource="hydrogen" amount="5000.0" />
-				<resource-initial resource="methane" amount="5000.0" />							
+				<!-- Payload imported from Earth 
+				resource-initial resource="hydrogen" amount="6300.0" /-->
+
+				<!-- Extracted on Mars -->
+				<resource-initial resource="carbon dioxide" amount="2000.0" />
+
+				<!-- Produced on Mars -->
+				<resource-initial resource="oxygen" amount="16080.0" />
+				<resource-initial resource="methane" amount="8400.0" />
+				<resource-initial resource="hydrogen" amount="2100.0" />
+				<resource-initial resource="water" amount="18900.0" />
+
+				<!-- Mars Direct Mission Plan : 
+				
+				(1). ERV - 
+			 	(a). Payload imported from Earth -
+				 	 Consumables : 3400 kg
+				 	 Hydrogen feedstock : 6300 kg
+				(b). Produced on Mars :
+					 water : 18900 kg
+					 Oxygen : 16080 kg
+					 Methane : 8400 kg
+	
+				(2). Hab -
+				(a). Payload imported from Earth -
+				 	 Consumables : 7000 kg			
+				 
+				 -->
 
 			</storage>
 		</functions>
@@ -847,12 +925,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="10000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="methane" capacity="10000.0" />
-				<resource-storage resource="oxygen" capacity="10000.0" />
-				<resource-storage resource="water" capacity="10000.0" />
+				<resource-storage resource="oxygen" capacity="20000.0" />
+				<resource-storage resource="water" capacity="20000.0" />
+
+				<!-- Payload imported from Earth 
+				resource-initial resource="hydrogen" amount="6300.0" /-->
+
+				<!-- Extracted on Mars -->
+				<resource-initial resource="carbon dioxide" amount="2000.0" />
+
+				<!-- Produced on Mars -->
+				<resource-initial resource="oxygen" amount="16080.0" />
+				<resource-initial resource="methane" amount="8400.0" />
+				<resource-initial resource="hydrogen" amount="2100.0" />
+				<resource-initial resource="water" amount="18900.0" />
+
+				<!-- Mars Direct Mission Plan : 
 				
-				<resource-initial resource="carbon dioxide" amount="5000.0" />
-				<resource-initial resource="hydrogen" amount="5000.0" />
-				<resource-initial resource="methane" amount="5000.0" />
+				(1). ERV - 
+			 	(a). Payload imported from Earth -
+				 	 Consumables : 3400 kg
+				 	 Hydrogen feedstock : 6300 kg
+				(b). Produced on Mars :
+					 water : 18900 kg
+					 Oxygen : 16080 kg
+					 Methane : 8400 kg
+	
+				(2). Hab -
+				(a). Payload imported from Earth -
+				 	 Consumables : 7000 kg			
+				 
+				 -->
 			</storage>
 		</functions>
 	</building>
@@ -2666,27 +2769,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 
 			<storage stock-capacity="5000">
-				<resource-storage resource="Fertilizer" capacity="500.0" />
-				<resource-storage resource="Nitrogen" capacity="500.0" />
-				<resource-storage resource="Ammonia" capacity="500.0" />
-				<resource-storage resource="Nitrate" capacity="500.0" />
-				<resource-storage resource="Nitrite" capacity="500.0" />
+				<!-- gases -->
+				<resource-storage resource="carbon dioxide" capacity="500.0" />
+				<resource-storage resource="nitrogen" capacity="500.0" />
+				<resource-storage resource="ammonia" capacity="500.0" />
 
-				<resource-storage resource="Soil" capacity="500.0" />
-				<resource-storage resource="Compost" capacity="500.0" />
-				<resource-storage resource="Crop Waste" capacity="500.0" />
+				<!-- soil related -->				
+				<!-- crop food -->				
+				<resource-storage resource="fertilizer" capacity="500.0" />
+				<resource-storage resource="nitrate" capacity="500.0" />
+				<resource-storage resource="nitrite" capacity="500.0" />
 				<resource-storage resource="grey water" capacity="500.0" />
 
-				<resource-storage resource="water" capacity="500.0" />
-				<resource-storage resource="carbon dioxide" capacity="500.0" />
+				<!-- soil related -->				
+				<resource-storage resource="soil" capacity="500.0" />
+				<resource-storage resource="compost" capacity="500.0" />				
+				<resource-storage resource="crop waste" capacity="500.0" />
 
-				<resource-initial resource="Nitrogen" amount="50.0" />
-				<resource-initial resource="Ammonia" amount="50.0" />
-				<resource-initial resource="Nitrate" amount="50.0" />
-				<resource-initial resource="Nitrite" amount="50.0" />
-				<resource-initial resource="Fertilizer" amount="50.0" />
-				<resource-initial resource="Soil" amount="100.0" />
-				<resource-initial resource="Compost" amount="100.0" />
+				<!-- Supplies -->				
+				<resource-initial resource="carbon dioxide" amount="500.0" />
+				
 			</storage>
 
 			<thermal-generation>

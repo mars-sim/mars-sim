@@ -407,7 +407,9 @@ LocalBoundedObject, InsidePathLocation {
 				//&& building.getBuildingType().toLowerCase().contains("greenhouse")) {
 				Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
 				for (AmountResource ar : tissues) {
-					getInventory().addAmountResourceTypeCapacity(ar, 5);
+					getInventory().addAmountResourceTypeCapacity(ar, 10);
+					getInventory().storeAmountResource(ar, .1, false);
+					getInventory().addAmountDemand(ar, .1);
 				}
 			}
 		}

@@ -344,16 +344,10 @@ implements Serializable, LifeSupportType, Objective {
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 	
 		// 2017-05-24 initialize inventory of this building for resource storage 
-		Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
-		Iterator<AmountResource> i3 = resources.iterator();
-		while (i3.hasNext()) {
-			AmountResource ar = i3.next();	
-			//logger.info("max is " + max);
+		for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
 			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
 			if (resourceCapacity >= 0) {
 				double max = getInventory().getTotalAmountResourcesStoredCache(false);
-				//System.out.println(ar.getName() + "'s max : " + max);
-				//getInventory().storeAmountResource(ar, 0, true);
 				getInventory().addAmountResourceTypeCapacity(ar, max);	
 			}
 		}

@@ -42,7 +42,6 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The Farming class is a building function for greenhouse farming.
@@ -1197,16 +1196,18 @@ implements Serializable {
 			    	// assume an arbitrary 10% of the mass of crop kg extracted will be developed into tissue culture
 			    	Storage.retrieveAnResource(amountExtracted, cropAR, inv, true);
 			    	// store the tissues
-			 		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv);
-			  		//System.out.println("Storing " + STANDARD_AMOUNT_TISSUE_CULTURE + " kg of " + tissueName);
-			
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-							"During sampling, " + cropName + TISSUE_CULTURE + " is not found in stock. "
-							+ "Extracting from " + cropName + " and cryo-preserving " 
-							+ STANDARD_AMOUNT_TISSUE_CULTURE + " kg in " 
-							+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
-			
-					isDone = true;
+			    	if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
+			    		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv, sourceName + "::growCropTissue");
+				  		//System.out.println("Storing " + STANDARD_AMOUNT_TISSUE_CULTURE + " kg of " + tissueName);
+				
+						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+								"During sampling, " + cropName + TISSUE_CULTURE + " is not found in stock. "
+								+ "Extracting from " + cropName + " and cryo-preserving " 
+								+ STANDARD_AMOUNT_TISSUE_CULTURE + " kg in " 
+								+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
+				
+						isDone = true;
+			    	}
 			    }		
 			}
 		}
@@ -1225,15 +1226,16 @@ implements Serializable {
 		        	// increase the amount of tissue culture by 10%
 		        	amountExtracted = amountAvailable * 1.1;
 		        	// store the tissues
-		        	if (amountExtracted > 0)
-		        		Storage.storeAnResource(amountExtracted, tissueAR, inv);
-		      		//System.out.println("Storing " + Math.round(amountExtracted*100000.0)/100000.0D + " kg of " + tissueName);
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-							"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
-		    				+ cropName + TISSUE_CULTURE + " is restocked in "
-		    				+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
-
-		    		isDone = true;
+		        	if (amountExtracted > 0) {
+		        		Storage.storeAnResource(amountExtracted, tissueAR, inv, sourceName + "::growCropTissue");
+			      		//System.out.println("Storing " + Math.round(amountExtracted*100000.0)/100000.0D + " kg of " + tissueName);
+						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+								"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
+			    				+ cropName + TISSUE_CULTURE + " is restocked in "
+			    				+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
+	
+			    		isDone = true;
+		        	}
 		        }
 		        
 	    	}

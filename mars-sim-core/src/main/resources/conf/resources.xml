@@ -147,7 +147,7 @@
 
 <!-- Imported food ingredient -->
 	<resource name="honey" phase="liquid" />
-	<resource name="propolis" phase="solid"> Propolis or bee glue is a resinous 
+	<resource name="propolis" phase="liquid"> Propolis or bee glue is a resinous 
 		mixture collected by honey bees from tree buds,	sap flows, or other 
 		botanical sources. Used as a sealant for unwanted open spaces in the 
 		hive. It's the focus of a large number of research projects published 
@@ -162,7 +162,6 @@
 -->
 
 <!-- Chemicals -->
-	<resource name="bisphenol-a" phase="solid"> The chemical used for reinforcing plastic and for making polycarbonate</resource>
 	<resource name="beeswax" phase="solid" />
 	<resource name="epsom salt" phase="solid">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
 	<resource name="fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
@@ -174,10 +173,14 @@
 	<resource name="polyester resin" phase="liquid" />
 	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.
 	</resource>
+	<resource name="styrene" phase="solid" />
+	<resource name="bisphenol-a" phase="solid"> The chemical used for reinforcing plastic and for making polycarbonate</resource>
+	
 	<resource name="sodium hypochlorite" phase="liquid">Sodium Hypochlorite is 
 		one of the bleaching chemical for sanitization of Soybean as well as pulp 
 		bleaching during paper making </resource>
-	<resource name="styrene" phase="solid" />
+		
+
 
 
 <!-- Mineral Compounds -->
@@ -205,7 +208,6 @@
 
 
 <!-- Paper related products. -->
-
 	<resource name="bleaching chemical" phase="liquid">Bleaching chemical 
 		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
 	<resource name="napkin" phase="solid" />
@@ -282,8 +284,6 @@
 	<resource name="titanium" phase="solid">An element.</resource>
 	<resource name="zinc" phase="solid">An element.</resource>
 	
-	
-	
 		
 <!-- Building Material -->
 	<resource name="cement" phase="solid" >A Building Material.</resource>
@@ -294,10 +294,10 @@
 	<resource name="immune booster" phase="solid" >A Drug.</resource>
 
 <!-- Bio-organisms -->
-	<resource name="Acetic Acid Bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>
-	<resource name="Nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate (NO3−) in the nitrification of waste water.</resource>
-	<resource name="Nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) to nitrite (NO2−) in the nitrification of waste water.</resource>
-	<resource name="Rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing bacteria that colonize the roots of their preferred plant
+	<resource name="acetic acid bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>
+	<resource name="nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate (NO3−) in the nitrification of waste water.</resource>
+	<resource name="nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) to nitrite (NO2−) in the nitrification of waste water.</resource>
+	<resource name="rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing bacteria that colonize the roots of their preferred plant
 	 partner and take nitrogen from the air and convert it into ammonia, a form of nitrogen
 	 that plants can use. In return, legumes feed the bacteria a steady diet of plant sugars. </resource>
     <!--

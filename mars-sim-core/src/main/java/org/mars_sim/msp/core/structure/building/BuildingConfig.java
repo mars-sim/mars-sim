@@ -173,9 +173,7 @@ public class BuildingConfig implements Serializable {
 	
 	private Set<String> buildingTypes;
 	private List<FunctionType> functions;
-	private Map<AmountResource, Double> storageCapacities;
-	private Map<AmountResource, Double> initialResources;
-	
+
 	/**
 	 * Constructor
 	 * @param buildingDoc DOM document with building configuration
@@ -786,21 +784,19 @@ public class BuildingConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	public Map<AmountResource, Double> getStorageCapacities(String buildingType) {
-		if (storageCapacities == null) {
-	    	storageCapacities = new HashMap<AmountResource, Double>();
-			Element buildingElement = getBuildingElement(buildingType);
-			Element functionsElement = buildingElement.getChild(FUNCTIONS);
-			Element storageElement = functionsElement.getChild(STORAGE);
-			List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
-			for (Element resourceStorageElement : resourceStorageNodes) {
-				String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
-	            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Double capacity = new Double(resourceStorageElement.getAttributeValue(CAPACITY));
-				storageCapacities.put(resource, capacity);
-			}
+		Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
+		Element buildingElement = getBuildingElement(buildingType);
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element storageElement = functionsElement.getChild(STORAGE);
+		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
+		for (Element resourceStorageElement : resourceStorageNodes) {
+			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
+            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+			Double capacity = new Double(resourceStorageElement.getAttributeValue(CAPACITY));
+			map.put(resource, capacity);
 		}
 		
-		return storageCapacities;
+		return map;
 	}
 
 	/**
@@ -832,21 +828,19 @@ public class BuildingConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	public Map<AmountResource, Double> getInitialResources(String buildingType) {
-    	if (initialResources == null) {
-    		initialResources = new HashMap<AmountResource, Double>();
-			Element buildingElement = getBuildingElement(buildingType);
-			Element functionsElement = buildingElement.getChild(FUNCTIONS);
-			Element storageElement = functionsElement.getChild(STORAGE);
-			List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
-			for (Element resourceInitialElement : resourceInitialNodes) {
-				String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
-	            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
-				initialResources.put(resource, amount);
-			}
-    	}
-    	
-		return initialResources;
+		Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
+		Element buildingElement = getBuildingElement(buildingType);
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element storageElement = functionsElement.getChild(STORAGE);
+		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
+		for (Element resourceInitialElement : resourceInitialNodes) {
+			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
+            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+			Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
+			map.put(resource, amount);
+		}
+	
+		return map;
 	}
 
 	/**

@@ -767,7 +767,7 @@ public class CompositionOfAir implements Serializable {
 			new_moles = old_moles - d_moles;
 			new_mass = old_mass - d_mass;
 			if (d_mass > 0)
-				Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar , b.getInventory(), true,
+				Storage.storeAnResource(d_mass * GAS_CAPTURE_EFFICIENCY, ar , b.getInventory(),
 						sourceName + "::pumpOrRecaptureGas"); 
 			if (new_moles < 0)
 				new_moles = 0;

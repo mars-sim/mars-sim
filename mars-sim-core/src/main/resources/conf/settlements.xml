@@ -96,7 +96,7 @@
 			<vehicle type="Light Utility Vehicle" number="1" />
 
 			<!-- Equipment -->
-			<equipment type="EVA Suit" number="12" />
+			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
@@ -106,49 +106,27 @@
 			<!-- Resources -->
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->
-			<resource type="food" amount="2000.0" />
-			<resource type="water" amount="4000.0" />	
 			
-			<resource type="black water" amount="25.0" />			
-			<resource type="grey water" amount="25.0" />			
-			<resource type="food waste" amount="25.0" />			
-			<resource type="solid waste" amount="25.0" />			
-			<resource type="crop waste" amount="25.0" />			
+			
+			<!-- Mars Direct Mission Plan : 
+			
+			(1). ERV - 
+		 	(a). Payload imported from Earth -
+			 	 Consumables : 3400 kg
+			 	 Hydrogen feedstock : 6300 kg
+			(b). Produced on Mars :
+				 water : 18900 kg
+				 Oxygen : 16080 kg
+				 Methane : 8400 kg
 
-			<resource type="nitrogen" amount="3000.0" />	
-			<resource type="hydrogen" amount="3000.0" />					
-			<resource type="methane" amount="3000.0" />			
-			<resource type="carbon dioxide" amount="10.0" />
-			<resource type="argon" amount="30.0" />		
-			
-			<resource type="fertilizer" amount="50.0" />
-			
-			<!-- Food Derived Items -->
-			<resource type="mustard" amount="50.0" />
-			
+			(2). Hab -
+			(a). Payload imported from Earth -
+			 	 Consumables : 7000 kg			
+			 
+			 -->
+		
 			<!-- Crop -->
 			<!-- No starting crops for this template -->
-
-			<!-- Kitchen Resources -->
-			<resource type="chlorine" amount="50.0" />
-			<resource type="Sodium Hypochlorite" amount="20.0" />
-			<resource type="Acetic Acid Bacteria" amount="20.0" />
-			<resource type="Nitrosomonas spp" amount="20.0" />
-			<resource type="Nitrospira spp" amount="20.0" />
-			<resource type="Rhizobia" amount="20.0" />
-
-			<resource type="bisphenol-a" amount="100.0" />
-			<resource type="toilet tissue" amount="100.0" />
-			<resource type="paper" amount="100.0" />
-			<resource type="napkin" amount="100.0" />
-			<resource type="bleaching chemical" amount="50.0" />
-			<resource type="Baking Powder" amount="100.0" />
-			<resource type="pulp" amount="100.0" />
-			<resource type="Honey" amount="100.0" />
-			<resource type="Yeast" amount="50.0" />
-			<resource type="Epsom Salt" amount="50.0" />
-			<resource type="Table Salt" amount="50.0" />
-			<resource type="Sugar" amount="50.0" />
 
 			<!-- Part packages (see part_packages.xml) -->
 			<!-- name: the part package name. -->
@@ -219,7 +197,7 @@
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			
-			<equipment type="EVA Suit" number="24" />
+			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
@@ -422,7 +400,7 @@
 			<vehicle type="Cargo Rover" number="1" />
 			<vehicle type="Light Utility Vehicle" number="2" />
 			
-			<equipment type="EVA Suit" number="36" />
+			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
@@ -722,7 +700,7 @@
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="3" />
 			
-			<equipment type="EVA Suit" number="72" />
+			<equipment type="EVA Suit" number="48" />
 			<equipment type="Gas Canister" number="160" />
 			<equipment type="Barrel" number="160" />
 			<equipment type="Bag" number="160" />
@@ -954,7 +932,7 @@
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 
-			<equipment type="EVA Suit" number="12" />
+			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="10" />
@@ -1115,7 +1093,7 @@
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="2" />
 
-			<equipment type="EVA Suit" number="12" />
+			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="10" />

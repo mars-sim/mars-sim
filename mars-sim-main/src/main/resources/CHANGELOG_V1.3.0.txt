@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4147) - 2017-09-19
+## v3.1.0-Preview 9 (build 4148) - 2017-09-19
 
 
 ### KNOWN LIMITATIONS :
@@ -18,8 +18,8 @@ https://github.com/mars-sim/mars-sim
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add checkbox to include non-power and non-heat generating buildings in Power
-   and Thermal Tab Panels.
+1. Add checkbox for showing non-power/non-heat generating buildings in 
+   Power/Thermal Tab Panels.
 
 2. Include gas diffusion laws and heat flow between adjacent buildings.
 

@@ -18,6 +18,8 @@ import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXToggleButton;
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+import com.nilo.plaf.nimrod.NimRODTheme;
 
 import org.controlsfx.control.MaskerPane;
 import org.fxmisc.wellbehaved.event.InputMap;
@@ -146,6 +148,7 @@ public class MainScene {
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
+	private static final int DEFAULT_THEME = 7;
 	private static final int SYSTEM_THEME = 0;
 	private static final int NIMROD_THEME = 1;
 	private static final int NIMBUS_THEME = 2;
@@ -648,11 +651,11 @@ public class MainScene {
 				//	setTheme(6);
 			}
 			else {
-				if (theme == 6) {
+				if (theme == 0 || theme == 6) {
 					setTheme(7);
 				}
 				else if (theme == 7) {
-					setTheme(6);
+					setTheme(0);
 				}
 			}
 		});
@@ -2475,7 +2478,7 @@ public class MainScene {
 			setTheme(7);
 		}
 */
-		setTheme(0); // 0 = nimbus
+		setTheme(DEFAULT_THEME); // 0 = nimbus
 		
 		//logger.info("done with MainScene's initializeTheme()");
 	}
@@ -2540,19 +2543,22 @@ public class MainScene {
 
 			}
 			
-			SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));
-			
-/*
+			//SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));		
+
 			SwingUtilities.invokeLater(() -> {
 				// 2016-06-17 Added checking for OS.
 				if (OS.contains("linux")) {
 					// Note: NIMROD theme lib doesn't work on linux
 					setLookAndFeel(NIMBUS_THEME);
 				}
-				else
-					setLookAndFeel(NIMROD_THEME);
+				else {
+					if (theme == 0 || theme == 6)
+						setLookAndFeel(NIMBUS_THEME);
+					else if (theme == 7)
+						setLookAndFeel(NIMROD_THEME);
+				}
 			});
-*/
+
 		}
 
 	
@@ -2576,7 +2582,7 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		} 
-/*		
+		
 		else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel"
 			try {
 				NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme"));
@@ -2591,7 +2597,7 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		}
-*/
+
 		else if (choice == NIMBUS_THEME) {
 			try {
 				boolean foundNimbus = false;

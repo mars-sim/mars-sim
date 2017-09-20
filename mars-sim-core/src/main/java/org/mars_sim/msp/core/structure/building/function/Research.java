@@ -38,7 +38,7 @@ implements Lab, Serializable {
 
     private static final FunctionType FUNCTION = FunctionType.RESEARCH;
 
-	private static final int NUM_INSPECTIONS = 5;
+	private static final int NUM_INSPECTIONS = 2;
 
     private int techLevel;
     private int researcherCapacity = 0;
