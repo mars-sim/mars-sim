@@ -849,7 +849,7 @@ public class GoodsManager implements Serializable {
         else if (Farming.TISSUE_CULTURE.equalsIgnoreCase(resource.getType())) {
             // Average use of tissue culture at greenhouse each orbit.
             //CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-            int numCropTypes = cropConfig.getCropList().size();
+            int numCropTypes = cropConfig.getCropNum();
             demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes) * averageGrowingCyclesPerOrbit;
         }
 
@@ -2748,7 +2748,7 @@ public class GoodsManager implements Serializable {
         vehicleBuyValueCache.clear();
         vehicleSellValueCache.clear();
     }
-
+    
     /**
      * Prepare object for garbage collection.
      */

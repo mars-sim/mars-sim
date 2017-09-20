@@ -605,10 +605,11 @@ extends JPanel {
      */
     public void update() {
         // Update each building function panel.
-	    Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
-	    while (i.hasNext())
-	    	i.next().update();
-
+	    //Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
+	    //while (i.hasNext())
+	    //	i.next().update();
+	    for (BuildingFunctionPanel p : functionPanels) 
+	    	p.update();
     }
     
 }

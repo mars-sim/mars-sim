@@ -50,16 +50,19 @@ implements Serializable {
 	private static final String DAILY_PAR = "daily-PAR";
 	//private static final String HARVEST_INDEX = "harvest-index";
 
-	private Document cropDoc;
-	private List<CropType> cropList;
-
-	private List<CropCategoryType> cropCategoryTypes = new ArrayList<CropCategoryType>(Arrays.asList(CropCategoryType.values()));
 
 	// for co2, o2, water
 	private double[] consumptionRates = new double[] {0,0,0};
 
 	private double conversionRate = 0;
 
+    private int cropNum;
+    
+	private List<CropType> cropList;
+	private List<CropCategoryType> cropCategoryTypes = new ArrayList<CropCategoryType>(Arrays.asList(CropCategoryType.values()));
+	
+	private Document cropDoc;
+	
 	/**
 	 * Constructor.
 	 * @param cropDoc the crop DOM document.
@@ -419,6 +422,12 @@ implements Serializable {
 		return cropCategoryTypes;
 	}
 
+    public int getCropNum() {
+    	if (cropNum == 0)
+    		cropNum = cropList.size();
+    	return cropNum;
+    }
+    
 	/**
 	 * Prepare object for garbage collection.
 	 */

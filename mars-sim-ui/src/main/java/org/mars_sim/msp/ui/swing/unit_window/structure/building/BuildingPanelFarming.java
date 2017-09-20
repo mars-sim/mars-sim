@@ -95,7 +95,7 @@ implements MouseListener {
 	private JComboBoxMW<CropType> comboBox;
 	private List<CropType> cropCache;
 	private JList<CropType> list;
-	private JButton opsButton;
+	//private JButton opsButton;
 
 	//private String cropInQueue;
 	private ListModel listModel;
@@ -109,7 +109,8 @@ implements MouseListener {
 	private CropType cropType;
 	private CropType deletingCropType;
 
-
+	private static List<CropType> cropTypeList;
+	
 	/**
 	 * Constructor.
 	 * @param farm {@link Farming} the farming building this panel is for.
@@ -123,19 +124,17 @@ implements MouseListener {
 
 		// Initialize data members
 		this.farm = farm;
-
+		CropConfig config = SimulationConfig.instance().getCropConfiguration();
+		cropTypeList = new ArrayList<>(config.getCropList());
+		
 		// Set panel layout
 		setLayout(new BorderLayout()); //new GridLayout(6, 1, 0, 0));//
 
 		// Create label panel
 		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
-		//labelPanel.setOpaque(false);
-		//labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Prepare farming label
-		// 2014-11-21 Changed font type, size and color and label text
-		// 2014-11-21 Added internationalization for the three labels
 		JLabel farmingLabel = new JLabel(Msg.getString("BuildingPanelFarming.title"), JLabel.CENTER);
 		JPanel farmingPanel = new JPanel(new FlowLayout());
 	    farmingPanel.add(farmingLabel);
@@ -166,7 +165,6 @@ implements MouseListener {
 	    cropsPanel.add(cropsLabel);
 		//balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
 		labelPanel.add(cropsPanel);
-
 
 /*
 		// 2015-09-19 Added opsPanel and opsButton
@@ -200,8 +198,6 @@ implements MouseListener {
 			// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
 			scrollPanel.setPreferredSize(new Dimension(200, 110)); // 110 is the best fit for 5 crops
 
-		//scrollPanel.setOpaque(false);
-		//scrollPanel.setBackground(new Color(0,0,0,128));
 		add(scrollPanel, BorderLayout.CENTER);
 
 		// Prepare crop table model
@@ -248,44 +244,25 @@ implements MouseListener {
 		cropTable.getColumnModel().getColumn(2).setPreferredWidth(40);
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
-		//cropTable.setOpaque(false);
-		//cropTable.setBackground(new Color(0,0,0,128));
-		TableStyle.setTableStyle(cropTable);
 
-		//cropTable = TableStyle.setTableStyle(cropTable);
+		TableStyle.setTableStyle(cropTable);
 		scrollPanel.setViewportView(cropTable);
 
 		JPanel queuePanel = new JPanel(new BorderLayout());
 	    add(queuePanel, BorderLayout.SOUTH);
-	    //queuePanel.setOpaque(false);
-	    //queuePanel.setBackground(new Color(0,0,0,128));
-
 	    JPanel selectPanel = new JPanel(new FlowLayout());
-	    //selectPanel.setOpaque(false);
-	    //selectPanel.setBackground(new Color(0,0,0,128));
-	    //JLabel selectLabel = new JLabel("Choose : ");
-	    //selectLabel.setFont(new Font("Serif", Font.BOLD, 16));
-	    //selectLabel.setForeground(new Color(102, 51, 0)); // dark brown
-	    //selectPanel.add(selectLabel);
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
-
 
 		//2014-12-09 Added addButton for adding a crop to queue
 		JPanel buttonPanel = new JPanel(new BorderLayout());
-		//buttonPanel.setOpaque(false);
-		//buttonPanel.setBackground(new Color(0,0,0,128));
 		JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 	    //balloonToolTip.createBalloonTip(addButton, "<html>Select a crop from <br> the left to add</html>");
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
-		//addButton.setOpaque(false);
-		//addButton.setBackground(new Color(0,0,0,128));
-		//addButton.setForeground(Color.ORANGE);
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				cropType = (CropType) comboBox.getSelectedItem();
 				farm.addCropListInQueue(cropType);
-            	//System.out.println("BuildingPanelFarming.java: Just added " + cropType );
 		        listUpdate();
 				repaint();
 			}
@@ -297,17 +274,12 @@ implements MouseListener {
 	    //balloonToolTip.createBalloonTip(delButton, "<html>Highlight a crop in <br> the queue below to delete </html>");
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
-		//delButton.setOpaque(false);
-		//delButton.setBackground(new Color(0,0,0,128));
-		//delButton.setForeground(Color.ORANGE);
 
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
 		           	selectCrop();
 	            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
-		           	//System.out.println("BuildingPanelFarming.java: Just deleted " + cropType );
-			        // 2015-01-06 Added listUpdate()
 	            	listUpdate();
 	            	repaint();
 				}
@@ -315,10 +287,7 @@ implements MouseListener {
 			});
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
-       	// 2014-12-09 Added crop combo box model.
-        CropConfig config = SimulationConfig.instance().getCropConfiguration();
-		List<CropType> cropTypeList = config.getCropList();
-		//2014-12-12 Enabled Collections.sorts by implementing Comparable<CropType>
+       	// Set up crop combo box model.
 		Collections.sort(cropTypeList);
 		cropCache = new ArrayList<CropType>(cropTypeList);
 		comboBoxModel = new DefaultComboBoxModel<CropType>();
@@ -335,8 +304,6 @@ implements MouseListener {
 	    	tooltipArray.add(buildCropToolTip(j, c).toString());
 	    	j++;
 		}
-    	//System.out.println("tooltipArray is "+ tooltipArray);
-		//cropType = cropTypeList.get(0);
 
 		// Create comboBox.
 		comboBox = new JComboBoxMW<CropType>(comboBoxModel);
@@ -345,32 +312,20 @@ implements MouseListener {
 	    ComboboxToolTipRenderer toolTipRenderer = new ComboboxToolTipRenderer();
 	    comboBox.setRenderer(toolTipRenderer);
 	    toolTipRenderer.setTooltips(tooltipArray);
-		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-		//comboBox.setRenderer(new PromptComboBoxRenderer("A list of crops"));
-		//comboBox.setSelectedIndex(-1);
 
-		//comboBox.setPrototypeDisplayValue("XXXXXXXXXXXXX");
-		//comboBox.setOpaque(false);
-		//comboBox.setBackground(new Color(51,25,0,128));
-		//comboBox.setBackground(Color.LIGHT_GRAY);
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	cropType = (CropType) comboBox.getSelectedItem();
-            	//System.out.println("BuildingPanelFarming.java: Selected cropType is " + cropType );
             }
-            });
+        });
 		comboBox.setMaximumRowCount(10);
 	    //balloonToolTip.createBalloonTip(comboBox, "<html>Select a crop from here</html>");
 	    selectPanel.add(comboBox);
 
-		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new FlowLayout(FlowLayout.CENTER));
-
-		//queueListPanel.setOpaque(false);
-		//queueListPanel.setBackground(new Color(0,0,0,128));
-		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout()); //new FlowLayout(FlowLayout.CENTER));
-		//queueButtonLabelPanel.setOpaque(false);
-		//queueButtonLabelPanel.setBackground(new Color(0,0,0,128));
-	    JLabel queueListLabel = new JLabel("     Crop Queue     ");//<html><center>Crop<br>Queue:</center></html>");
+		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout());
+	    JLabel queueListLabel = new JLabel("     Crop Queue     ");
+	    //<html><center>Crop<br>Queue:</center></html>");
 		//queueListLabel.setUI(new org.mars_sim.msp.ui.swing.tool.VerticalLabelUI(false));
 		queueListLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
 	    queueListLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
@@ -383,12 +338,6 @@ implements MouseListener {
 		listScrollPanel = new JScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(150, 150));
 		listScrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
-        //scrollPanel.setViewportBorder(null);
-        //scrollPanel.setBorder(BorderFactory.createEmptyBorder());
-		//listScrollPanel.getViewport().setOpaque(false);
-		//listScrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));
-		//listScrollPanel.setOpaque(false);
-		//listScrollPanel.setBackground(new Color(0, 0, 0, 128));
 
 		// Create list model
 		listModel = new ListModel(); //settlement);
@@ -400,17 +349,10 @@ implements MouseListener {
 			public void valueChanged(ListSelectionEvent event) {
 		        if (!event.getValueIsAdjusting() && event != null){
 					selectCrop();
-		            //JList source = (JList)event.getSource();
-		            //deletingCropIndex = source.getSelectedIndex();
-		            //deletingCrop = source.getSelectedValue().toString();
-					//if (listModel.getSize() > 0) listModel.removeElementAt(deletingCropIndex);
 		        }
 		    }
 		});
 		queueListPanel.add(listScrollPanel);
-		//list.setOpaque(false);
-		//list.setBackground(new Color(0, 0, 0, 128));
-
 	}
 
 	/*
@@ -889,7 +831,7 @@ implements MouseListener {
 		comboBoxModel= null;
 		comboBox= null;
 		list= null;
-		opsButton= null;
+		//opsButton= null;
 		listModel= null;
 		cropTableModel= null;
 		listScrollPanel= null;

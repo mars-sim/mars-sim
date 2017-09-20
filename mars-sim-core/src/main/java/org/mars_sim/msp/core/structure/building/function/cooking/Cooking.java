@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +166,7 @@ implements Serializable {
         loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
 		CropConfig cropConfig = simulationConfig.getCropConfiguration(); // need this to pass maven test
-		cropTypeList = cropConfig.getCropList();
+		cropTypeList = new ArrayList <>(cropConfig.getCropList());
 
     	MealConfig mealConfig = simulationConfig.getMealConfiguration(); // need this to pass maven test
         mealConfigMealList = mealConfig.getMealList();

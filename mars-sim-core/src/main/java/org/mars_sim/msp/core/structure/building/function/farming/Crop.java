@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -140,6 +141,8 @@ public class Crop implements Serializable {
 	/** The disease index of a crop */	
 	private double diseaseIndex = 0;
 
+	private static int cropNum;
+	
 	/**	The cache values of the pastor environment factors influencing the crop */
 	private Double[] environment = new Double[]{ 1.0,  // light
 											1.0,  // fertilizer
@@ -149,6 +152,9 @@ public class Crop implements Serializable {
 											1.0}; // co2
 			
 	private String cropName, capitalizedCropName, farmName;
+
+	/** The list of crop types from CropConfig. */
+    private static List<CropType> cropTypeList;
 
 	/** Current phase of crop. */
 	private PhaseType phaseType;
@@ -165,7 +171,7 @@ public class Crop implements Serializable {
 	private static MasterClock masterClock;
 	private static CropConfig cropConfig;
 
-	private AmountResource cropAR, tissueAR;
+	private AmountResource cropAR, seedAR;  //tissueAR,
 
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
@@ -176,8 +182,6 @@ public class Crop implements Serializable {
 
 	private static Part mushroomBoxAR = ItemResourceUtil.mushroomBoxAR;
 			
-	private static AmountResource seedAR;
-
 	private Map<Integer, Phase> phases = new HashMap<>();
 
 	DecimalFormat fmt = new DecimalFormat("0.00000");
@@ -221,6 +225,9 @@ public class Crop implements Serializable {
 			p.setHarvestFactor(1);
 		}
 		
+		cropTypeList = new ArrayList <>(cropConfig.getCropList());
+		cropNum = cropTypeList.size();
+	
 		cropName = cropType.getName();
 		String tissue = cropName + " " + TISSUE_CULTURE;
 		dailyPARRequired = cropType.getDailyPAR();
@@ -241,16 +248,16 @@ public class Crop implements Serializable {
 
 		if (hasSeed) {
 			ratio = cropType.getInedibleBiomass()/cropType.getEdibleBiomass();
-			seedAR = AmountResource.findAmountResource("Mustard Seed");
+			seedAR = ResourceUtil.findAmountResource("Mustard Seed");
 		}
 
 		if (isSeedPlant) {
 			ratio = cropType.getInedibleBiomass()/cropType.getEdibleBiomass();
-			seedAR = AmountResource.findAmountResource(cropName + " Seed");
+			seedAR = ResourceUtil.findAmountResource(cropName + " Seed");
 		}
 
-		cropAR = AmountResource.findAmountResource(cropName);
-		tissueAR = AmountResource.findAmountResource(tissue);
+		cropAR = ResourceUtil.findAmountResource(cropName);
+		//tissueAR = ResourceUtil.findAmountResource(tissue);
 
 	    averageWaterNeeded = cropConfig.getWaterConsumptionRate();
 	    averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
@@ -1230,12 +1237,10 @@ public class Crop implements Serializable {
 	 * @throws Exception if error reading crop config.
 	 */
 	public static double getAverageCropGrowingTime() {
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-		double totalGrowingTime = 0D;
-		List<CropType> cropTypes = cropConfig.getCropList();
-		Iterator<CropType> i = cropTypes.iterator();
-		while (i.hasNext()) totalGrowingTime += i.next().getGrowingTime();
-		return totalGrowingTime / cropTypes.size();
+		double totalGrowingTime = 0D;	
+		for (CropType ct : cropTypeList) 	
+			totalGrowingTime += ct.getGrowingTime();
+		return totalGrowingTime / cropNum;
 	}
 
 	public int getCurrentPhaseNum() {
@@ -1283,7 +1288,7 @@ public class Crop implements Serializable {
 		cropCategoryType = null;
 		
 		cropAR = null;
-		tissueAR = null;
+		//tissueAR = null;
 		
 		cropType = null;
 		farm = null;

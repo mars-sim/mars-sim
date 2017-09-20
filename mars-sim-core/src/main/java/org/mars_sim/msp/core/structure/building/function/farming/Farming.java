@@ -78,7 +78,7 @@ implements Serializable {
 	private static final int NUM_CLEANING = 5;
 
 	
-	/** The original list of crop types from CropConfig*/
+	/** The list of crop types from CropConfig. */
     private static List<CropType> cropTypeList;
 
 	//private static ItemResource LED_Item;
@@ -161,7 +161,8 @@ implements Serializable {
         remainingGrowingArea = maxGrowingArea;
 
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-		if (cropTypeList == null) cropTypeList = cropConfig.getCropList();
+		if (cropTypeList == null) 
+			cropTypeList = new ArrayList <>(cropConfig.getCropList());
 		size = cropTypeList.size();
         cropNum = buildingConfig.getCropNum(building.getBuildingType());
 
@@ -664,14 +665,13 @@ implements Serializable {
         double neededFoodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
 
         // Determine average amount (kg) of food produced per farm area (m^2).
-        CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+        //CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
         double totalFoodPerSolPerArea = 0D;
-        List<CropType> cropList = cropConfig.getCropList();
-        for (CropType c : cropList)
+        for (CropType c : cropTypeList)
             // Crop type average edible biomass (kg) per Sol.
             totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
 
-        double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropList.size();
+        double producedFoodPerSolPerArea = totalFoodPerSolPerArea / size;
 
         return neededFoodPerSol / producedFoodPerSolPerArea;
     }

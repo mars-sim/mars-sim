@@ -173,7 +173,9 @@ public class BuildingConfig implements Serializable {
 	
 	private Set<String> buildingTypes;
 	private List<FunctionType> functions;
-
+	private Map<String, Map<AmountResource, Double>> storageCapacities;
+	private Map<String, Map<AmountResource, Double>> initialResources;
+	
 	/**
 	 * Constructor
 	 * @param buildingDoc DOM document with building configuration
@@ -182,6 +184,14 @@ public class BuildingConfig implements Serializable {
 		this.buildingDoc = buildingDoc;
 
 		generateBuildingFunctions();
+		
+		if (storageCapacities == null) {
+			storageCapacities = new HashMap<String, Map<AmountResource, Double>>();
+		}
+
+		if (initialResources == null) {
+			initialResources = new HashMap<String, Map<AmountResource, Double>>();
+		}
 	}
 
 	public List<FunctionType> getBuildingFunctions() {
@@ -784,19 +794,24 @@ public class BuildingConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	public Map<AmountResource, Double> getStorageCapacities(String buildingType) {
-		Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
-		Element buildingElement = getBuildingElement(buildingType);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element storageElement = functionsElement.getChild(STORAGE);
-		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
-		for (Element resourceStorageElement : resourceStorageNodes) {
-			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
-            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-			Double capacity = new Double(resourceStorageElement.getAttributeValue(CAPACITY));
-			map.put(resource, capacity);
+		if (storageCapacities.containsKey(buildingType)) {
+			return storageCapacities.get(buildingType);
 		}
-		
-		return map;
+		else {	
+    		Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
+			Element buildingElement = getBuildingElement(buildingType);
+			Element functionsElement = buildingElement.getChild(FUNCTIONS);
+			Element storageElement = functionsElement.getChild(STORAGE);
+			List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
+			for (Element resourceStorageElement : resourceStorageNodes) {
+				String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
+	            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				Double capacity = new Double(resourceStorageElement.getAttributeValue(CAPACITY));
+				map.put(resource, capacity);
+			}
+			storageCapacities.put(buildingType, map);
+			return map;
+		}
 	}
 
 	/**
@@ -828,19 +843,23 @@ public class BuildingConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	public Map<AmountResource, Double> getInitialResources(String buildingType) {
-		Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
-		Element buildingElement = getBuildingElement(buildingType);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element storageElement = functionsElement.getChild(STORAGE);
-		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
-		for (Element resourceInitialElement : resourceInitialNodes) {
-			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
-            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-			Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
-			map.put(resource, amount);
+		if (initialResources.containsKey(buildingType)) {
+			return initialResources.get(buildingType);
 		}
-	
-		return map;
+		else {	   	
+    		Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
+			Element buildingElement = getBuildingElement(buildingType);
+			Element functionsElement = buildingElement.getChild(FUNCTIONS);
+			Element storageElement = functionsElement.getChild(STORAGE);
+			List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
+			for (Element resourceInitialElement : resourceInitialNodes) {
+				String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
+	            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
+				map.put(resource, amount);
+			}
+			return map;
+    	}
 	}
 
 	/**
