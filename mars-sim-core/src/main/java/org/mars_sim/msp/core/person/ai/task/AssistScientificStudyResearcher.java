@@ -72,6 +72,8 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
         
+        setFunction(FunctionType.RESEARCH);
+        
         // Determine researcher
         researcher = determineResearcher();
         if (researcher != null) {

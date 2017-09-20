@@ -163,7 +163,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if enough beds for patient.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+            MedicalCare medicalCare = building.getMedical();
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
 
@@ -326,7 +326,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
         if (!medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
             medicalAid.requestTreatment(healthProblem);
             medicalAid.startTreatment(healthProblem, duration);
-            logger.info(person.getName() + " is self-treating " + healthProblem.getIllness().getType().toString());
+            logger.info(person.getName() + " is self-treating " + healthProblem.getIllness().getType().toString().toLowerCase());
 
             // Create starting task event if needed.
             if (getCreateEvents()) {
@@ -426,7 +426,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " injuried onself during medical self-treatment.");
+            logger.info(person.getName() + " injuried oneself during a medical self-treatment.");
 
             entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
         }

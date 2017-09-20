@@ -65,7 +65,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
-        logger.finest(person.getName() + " has a new health problem of " + complaint.getType().toString());
+        logger.finest(person.getName() + " has a new health problem of " + complaint.getType().toString().toLowerCase());
     }
 
     /**
@@ -215,7 +215,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
 
-		logger.info("Begins treating " + getSufferer().getName() + " for " + toString());
+		logger.info("Begins treating " + getSufferer().getName() + " for " + toString().toLowerCase());
     }
 
     /**

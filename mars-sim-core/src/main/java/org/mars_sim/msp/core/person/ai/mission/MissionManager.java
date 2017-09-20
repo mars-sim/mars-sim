@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -157,7 +158,7 @@ implements Serializable {
 	 * @param newTask
 	 */
 	// 2015-10-22 Added recordMission()
-	public void recordMission(MissionMember member) {//Mission newMission) {
+	public void recordMission(MissionMember member) {
 		Mission newMission = null;
 		Person p = null;
 		Robot r = null;
@@ -186,12 +187,13 @@ implements Serializable {
 
 				String desc = newMission.getDescription();
 				String name = newMission.getName();
-
+				FunctionType type = FunctionType.UNKNOWN;//newMission.getFunction();
+				
 				if (p != null) {
-					p.getTaskSchedule().recordTask(name, desc, phaseDescription);
+					p.getTaskSchedule().recordTask(name, desc, phaseDescription, type);
 				}
 				else if (r != null) {
-					r.getTaskSchedule().recordTask(name, desc, phaseDescription);
+					r.getTaskSchedule().recordTask(name, desc, phaseDescription, type);
 				}
 
 				phaseDescriptionCache = phaseDescription;

@@ -269,12 +269,18 @@ public abstract class UnitWindow extends JInternalFrame {
         centerPanel = new JideTabbedPane();
         centerPanel.setPreferredSize(new Dimension(465,480));
         centerPanel.setBorder(null);
-        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
+
         centerPanel.setBoldActiveTab(true);
         centerPanel.setScrollSelectedTabOnWheel(true);
         centerPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
-        centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
-
+		if (MainScene.getTheme() == 7) {
+	        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
+			centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
+		}
+		else {
+	        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
+			centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
+		}
         // Setting foreground color for tab text.
         centerPanel.setForeground(Color.DARK_GRAY);
         //centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);

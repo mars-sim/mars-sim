@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * quotationConfig.java
- * @version 3.08 2016-06-08
+ * @version 3.1.0 2017-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.quotation;
@@ -20,7 +20,8 @@ import java.util.Map;
  */
 public class QuotationConfig implements Serializable {
 
-    // Element names
+	private static final long serialVersionUID = 1L;
+	// Element names
     private static final String QUOTATION_LIST = "quotation-list";	
     private static final String QUOTATION = "quotation";
     private static final String TEXT = "text";

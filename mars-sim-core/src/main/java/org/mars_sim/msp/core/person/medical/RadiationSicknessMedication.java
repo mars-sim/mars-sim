@@ -16,6 +16,9 @@ import java.io.Serializable;
  */
 public class RadiationSicknessMedication extends Medication implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
     // The name of the medication.
     public static final String NAME = "Radiation Sickness Medication";
     

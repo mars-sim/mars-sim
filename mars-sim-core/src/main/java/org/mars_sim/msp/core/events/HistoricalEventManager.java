@@ -42,7 +42,7 @@ public class HistoricalEventManager implements Serializable {
 	private List<HistoricalEventListener> listeners = new ArrayList<HistoricalEventListener>();
 	private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();
 	
-	private MarsClock marsClock;
+	private static MarsClock marsClock;
 
 	
 	/**

@@ -911,7 +911,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
 			}
-			else if ((type == UnitEventType.TASK_DESC_EVENT) ||
+			else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) ||
 					(type == UnitEventType.TASK_EVENT) ||
 					(type == UnitEventType.TASK_ENDED_EVENT) ||
 					(type == UnitEventType.TASK_SUBTASK_EVENT) ||

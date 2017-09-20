@@ -1076,7 +1076,7 @@ implements Serializable {
                             LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
                             		"A meal will be expired soon. Converting "
                                     + dryMassPerServing  + " kg "
-                                    + meal.getName()
+                                    + meal.getName().toLowerCase()
                                     + " into preserved food at "
                                     + getBuilding().getNickName()
                                     + " in " + settlement.getName()

@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -79,6 +78,8 @@ implements Serializable, Comparable<Task> {
 	protected Task subTask;
 	/** Phase of task completion. */
 	private TaskPhase phase;
+	/** FunctionType of the task. */	
+	private FunctionType functionType = FunctionType.UNKNOWN;
 	/** Amount of time required to complete current phase. (in millisols) */
 	protected double phaseTimeRequired;
 	/** Amount of time completed on the current phase. (in millisols) */
@@ -271,14 +272,44 @@ implements Serializable, Comparable<Task> {
         if (!this.description.equals(description)) {
             this.description = description;
             if (person != null) {
-                person.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+                person.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, description);
             }
             else if (robot != null) {
-                robot.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+                robot.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, description);
             }
         }
     }
 
+    public FunctionType getFunction() {
+        if ((subTask != null) && !subTask.done) {
+            return subTask.getFunction();
+        }
+        else {
+            return functionType;
+        }
+    }
+    
+    public FunctionType getFunction(boolean allowSubtask) {
+        if (allowSubtask && (subTask != null) && !subTask.done) {
+            return subTask.getFunction();
+        }
+        else {
+            return functionType;
+        }
+    }
+    
+    protected void setFunction(FunctionType type) {
+        if (!this.functionType.equals(type)) {
+            this.functionType = type;
+            if (person != null) {
+                person.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, type);
+            }
+            else if (robot != null) {
+                robot.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, type);
+            }
+        }
+    }
+    
     /** Returns a boolean whether this task should generate events
      *  @return boolean flag.
      */

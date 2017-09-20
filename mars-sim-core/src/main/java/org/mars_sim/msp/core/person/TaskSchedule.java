@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -58,6 +59,8 @@ public class TaskSchedule implements Serializable {
 	private String doAction;
 	private String phase;
 	
+	private FunctionType functionType;
+	
 	private ShiftType shiftType, shiftTypePrevious;
 
 	//private Map <Integer, List<OneTask>> schedules;
@@ -66,6 +69,7 @@ public class TaskSchedule implements Serializable {
 	private Map <String, Integer> taskDescriptions;
 	private Map <String, Integer> taskNames;
 	private Map <String, Integer> taskPhases;
+	private Map <String, Integer> functions;
 
 	private List<OneActivity> todayActivities;
 	
@@ -88,7 +92,8 @@ public class TaskSchedule implements Serializable {
 		taskDescriptions = new ConcurrentHashMap <String, Integer>();
 		taskNames = new ConcurrentHashMap <String, Integer>();
 		taskPhases = new ConcurrentHashMap <String, Integer>();
-
+		functions = new ConcurrentHashMap <String, Integer>();
+		
 		if (Simulation.instance().getMasterClock() != null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
@@ -108,7 +113,8 @@ public class TaskSchedule implements Serializable {
 		taskDescriptions = new ConcurrentHashMap <String, Integer>();
 		taskNames = new ConcurrentHashMap <String, Integer>();
 		taskPhases = new ConcurrentHashMap <String, Integer>();
-
+		functions = new ConcurrentHashMap <String, Integer>();
+		
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
@@ -117,10 +123,11 @@ public class TaskSchedule implements Serializable {
 	 * @param taskName
 	 * @param description
 	 */
-	public void recordTask(String taskName, String description, String phase) {
+	public void recordTask(String taskName, String description, String phase, FunctionType functionType) {
 		this.taskName = taskName;
 		this.doAction = description;
 		this.phase = phase;
+		this.functionType = functionType;
 
 		int startTime = (int) marsClock.getMillisol();
 		int solElapsed = marsClock.getMissionSol();
@@ -150,8 +157,9 @@ public class TaskSchedule implements Serializable {
 		int id0 = getID(taskNames, taskName);
 		int id1 = getID(taskDescriptions, description);
 		int id2 = getID(taskPhases, phase);
+		int id3 = getID(functions, functionType.toString());
 
-		todayActivities.add(new OneActivity(startTime, id0, id1, id2));
+		todayActivities.add(new OneActivity(startTime, id0, id1, id2, id3));
 
 	}
 
@@ -214,7 +222,7 @@ public class TaskSchedule implements Serializable {
 	    		if (size != 0) {
 	    			OneActivity lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
 	    			// Carry over and save the last yestersol task as the first task on today's schedule
-	    			todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
+	    			todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase(), lastTask.getFunction()));
 	    		}
     		}
     	}
@@ -432,12 +440,14 @@ public class TaskSchedule implements Serializable {
 		private int description;
 		private int phase;
 		private int startTime;
+		private int function;
 
-		public OneActivity(int startTime, int taskName, int description, int phase) {
+		public OneActivity(int startTime, int taskName, int description, int phase, int function) {
 			this.taskName = taskName;
 			this.description = description;
 			this.startTime = startTime;
 			this.phase = phase;
+			this.function = function;
 		}
 
 		/**
@@ -471,6 +481,10 @@ public class TaskSchedule implements Serializable {
 		 */
 		public int getPhase() {
 			return phase;
+		}
+		
+		public int getFunction() {
+			return function;
 		}
 	}
 

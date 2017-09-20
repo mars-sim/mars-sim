@@ -93,7 +93,7 @@ implements ResearchScientificStudy, Serializable {
             }
         }
         else {
-        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + "'s study was interrupted.", null);
+        	//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + " can't find a research collaboration.", null);
             endTask();
         }
 
@@ -157,9 +157,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Add all collaborative studies with mathematics and in research phase.
-        Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
-        while (i.hasNext()) {
-            ScientificStudy collabStudy = i.next();
+        for (ScientificStudy collabStudy :  manager.getOngoingCollaborativeStudies(person)) {
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
@@ -231,11 +229,8 @@ implements ResearchScientificStudy, Serializable {
     private static List<Building> getSettlementLabsWithAvailableSpace(
             List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
-
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+        for (Building building : buildingList) {
+            Research lab = building.getResearch();
             if (lab.getResearcherNum() < lab.getLaboratorySize()) {
                 result.add(building);
             }
@@ -256,10 +251,8 @@ implements ResearchScientificStudy, Serializable {
 
         ScienceType mathematicsScience = ScienceType.MATHEMATICS;
 
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+        for (Building building : buildingList) {
+            Research lab = building.getResearch();
             if (lab.hasSpecialty(mathematicsScience)) {
                 result.add(building);
             }
@@ -449,49 +442,9 @@ implements ResearchScientificStudy, Serializable {
         addExperience(modelingTime);
 
         // Check for lab accident.
-        checkForAccident(time);
+        //checkForAccident(time);
 
         return 0D;
-    }
-
-    /**
-     * Check for accident in laboratory.
-     * @param time the amount of time researching (in millisols)
-     */
-    private void checkForAccident(double time) {
-/*
-        double chance = .001D;
-
-        // Mathematics skill modification.
-        int skill = getEffectiveSkillLevel();
-        if (skill <= 3) {
-            chance *= (4 - skill);
-        }
-        else {
-            chance /= (skill - 2);
-        }
-
-        Malfunctionable entity = null;
-        if (lab instanceof Research) {
-            entity = ((Research) lab).getBuilding();
-        }
-        else {
-            entity = person.getVehicle();
-        }
-
-        if (entity != null) {
-
-            // Modify based on the entity's wear condition.
-            chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-            if (RandomUtil.lessThanRandPercent(chance * time)) {
-                logger.info(person.getName() + " has a lab accident while performing " +
-                        "mathematical modeling");
-
-                entity.getMalfunctionManager().createAccident();
-            }
-        }
-*/
     }
 
     /**

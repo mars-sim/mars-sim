@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalConfig.java
- * @version 3.07 2014-11-13
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.medical;

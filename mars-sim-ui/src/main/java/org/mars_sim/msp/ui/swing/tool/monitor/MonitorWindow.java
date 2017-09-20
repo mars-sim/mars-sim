@@ -118,13 +118,9 @@ implements TableModelListener, ActionListener {
 		this.desktop = desktop;
 
 		if (desktop.getMainScene() != null)
-			this.mainScene = desktop.getMainScene();
+			mainScene = desktop.getMainScene();
 		else if (desktop.getMainWindow() != null)
-			this.mainWindow = desktop.getMainWindow();
-
-		//this.setOpaque(true);
-		//this.setBackground(new Color(205, 133, 63, 50));//Color.ORANGE);
-		//this.setBackground(new Color(0, 0, 0, 0));
+			mainWindow = desktop.getMainWindow();
 
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -204,8 +200,12 @@ implements TableModelListener, ActionListener {
 		// Create tabbed pane for the table
 		tabsSection = new JideTabbedPane(JideTabbedPane.TOP);
 		//tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
-		if (MainScene.OS.contains("win"))
-			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.EXTENSION_STYLE_OFFICE2007);//.OFFICE2003_STYLE);
+		if (MainScene.OS.contains("win")) {
+			if (MainScene.getTheme() == 7)
+				LookAndFeelFactory.installJideExtension(LookAndFeelFactory.EXTENSION_STYLE_OFFICE2007);//.OFFICE2003_STYLE);
+			else 
+				LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
+		}
 		else if (MainScene.OS.contains("mac"))
 			LookAndFeelFactory.installJideExtension();//.OFFICE2003_STYLE);
 		else if (MainScene.OS.contains("linux"))
@@ -421,28 +421,33 @@ implements TableModelListener, ActionListener {
 			buttonFilter.setEnabled(false);
 
 			if (newTab instanceof UnitTab) {
+				buttonBar.setEnabled(false);
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				table = ((UnitTab) newTab).getTable();
 			}
 			else if (newTab instanceof MissionTab) {
+				buttonBar.setEnabled(true);
 				buttonMap.setEnabled(true);
 				buttonMissions.setEnabled(true);
 				table = ((MissionTab) newTab).getTable();
 			}
 			else if (newTab instanceof EventTab) {
+				buttonBar.setEnabled(false);
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
 				table = ((EventTab) newTab).getTable();
 			}
 			else if (newTab instanceof FoodInventoryTab) {
+				buttonBar.setEnabled(true);
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
 				table = ((FoodInventoryTab) newTab).getTable();
 			}
 			else if (newTab instanceof TradeTab) {
+				buttonBar.setEnabled(true);
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);

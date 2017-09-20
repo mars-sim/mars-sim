@@ -121,7 +121,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** Person's mind. */
 	private Mind mind;
 	/** Person's physical condition. */
-	private PhysicalCondition health;
+	private PhysicalCondition condition;
 	/** Person's circadian clock. */	
 	private CircadianClock circadian;
 			
@@ -269,7 +269,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				
 		circadian = new CircadianClock(this);
 
-		health = new PhysicalCondition(this);
+		condition = new PhysicalCondition(this);
 
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
 
@@ -806,15 +806,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void timePassing(double time) {
 
 		// If Person is dead, then skip
-		if (!health.isDead()) {// health.getDeathDetails() == null) {
+		if (!condition.isDead()) {// health.getDeathDetails() == null) {
 
 			support = getLifeSupportType();
 			
 			circadian.timePassing(time, support);
 			// Pass the time in the physical condition first as this may result in death.
-			health.timePassing(time, support);
+			condition.timePassing(time, support);
 
-			if (!health.isDead()) {
+			if (!condition.isDead()) {
 
 				// 2015-06-29 Added calling preference
 				preference.timePassing(time);
@@ -845,8 +845,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		else if (!isBuried) {
 
-			if (health.getDeathDetails() != null)
-				if (health.getDeathDetails().getBodyRetrieved())
+			if (condition.getDeathDetails() != null)
+				if (condition.getDeathDetails().getBodyRetrieved())
 					buryBody();
 
 		}
@@ -870,7 +870,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return The value is between 0 -> 1.
 	 */
 	public double getPerformanceRating() {
-		return health.getPerformanceFactor();
+		return condition.getPerformanceFactor();
 	}
 
 	/**
@@ -879,7 +879,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's physical condition
 	 */
 	public PhysicalCondition getPhysicalCondition() {
-		return health;
+		return condition;
 	}
 
 	/**
@@ -1115,7 +1115,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if vehicle operator is fit.
 	 */
 	public boolean isFitForOperatingVehicle() {
-		return !health.hasSeriousMedicalProblems();
+		return !condition.hasSeriousMedicalProblems();
 	}
 
 	/**
@@ -1299,11 +1299,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	public double getFatigue() {
-		return health.getFatigue();
+		return condition.getFatigue();
 	}
 
 	public double getStress() {
-		return health.getStress();
+		return condition.getStress();
 	}
 
 	public int[] getBestKeySleepCycle() {
@@ -1393,8 +1393,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		attributes = null;
 		mind.destroy();
 		mind = null;
-		health.destroy();
-		health = null;
+		condition.destroy();
+		condition = null;
 		gender = null;
 		birthTimeStamp = null;
 		associatedSettlement = null;

@@ -60,7 +60,7 @@ implements Serializable {
 	 * @throws Exception when malfunction list could not be found.
 	 */
 	public MalfunctionFactory(MalfunctionConfig config)  {
-		 MalfunctionFactory.config = config;
+		 this.config = config;
 		 //logger.info("start calling config.getMalfunctionList()");
 
 		 malfunctions = config.getMalfunctionList();
@@ -79,25 +79,21 @@ implements Serializable {
 		// 2017-09-12 The total probability will be dynamically updated as the field reliability data trickles in
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction temp = i.next();
-				if (temp.unitScopeMatch(scope) && !temp.getName().equals(METEORITE_IMPACT_DAMAGE)) 
-					totalProbability += temp.getProbability();
+			for (Malfunction m : malfunctions) {
+				if (m.unitScopeMatch(scope) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) 
+					totalProbability += m.getProbability();
 			}
 		}
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
 
-		Iterator<Malfunction> i = malfunctions.iterator();
-		while (i.hasNext()) {
-			Malfunction temp = i.next();
-			double probability = temp.getProbability();
+		for (Malfunction m : malfunctions) {
+			double probability = m.getProbability();
 			// will only pick one malfunction at a time
-			if (temp.unitScopeMatch(scope) && (result == null) && !temp.getName().equals(METEORITE_IMPACT_DAMAGE)) {
+			if (m.unitScopeMatch(scope) && (result == null) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
 				if (r < probability) {
 					try {
-						result = temp.getClone();
+						result = m.getClone();
 						result.determineRepairParts();
 					}
 					catch (Exception e) {
@@ -131,9 +127,7 @@ implements Serializable {
 
 		Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
-			Iterator<Unit> i = inventoryUnits.iterator();
-			while (i.hasNext()) {
-				Unit unit = i.next();
+			for (Unit unit : inventoryUnits) {
 				if ((unit instanceof Malfunctionable) && !entities.contains(unit)) {
 					entities.add((Malfunctionable)unit);
 				}
@@ -158,9 +152,7 @@ implements Serializable {
 
 		Collection<Unit> inventoryUnits = robot.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
-			Iterator<Unit> i = inventoryUnits.iterator();
-			while (i.hasNext()) {
-				Unit unit = i.next();
+			for (Unit unit : inventoryUnits) {
 				if ((unit instanceof Malfunctionable) && !entities.contains(unit)) {
 					entities.add((Malfunctionable)unit);
 				}
@@ -176,7 +168,7 @@ implements Serializable {
 	 * @return collection of malfunctionables.
 	 */
 	public static Collection<Malfunctionable> getMalfunctionables(Settlement settlement) {
-
+/*
 		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
 
 		// Add all buildings within the settlement.
@@ -184,13 +176,17 @@ implements Serializable {
 		while (i.hasNext()) {
 			entities.add(i.next());
 		}
-
+		
+		for (Building b : settlement.getBuildingManager().getBuildings()) {
+			entities.add(b);
+		}
+*/
+		Collection<Malfunctionable> entities = new ArrayList<>(settlement.getBuildingManager().getBuildings());
+		
 		// Add all malfunctionable entities in settlement inventory.
 		Collection<Unit> inventoryUnits = settlement.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
-			Iterator<Unit> j = inventoryUnits.iterator();
-			while (j.hasNext()) {
-				Unit unit = j.next();
+			for (Unit unit : inventoryUnits) {
 				if ((unit instanceof Malfunctionable) && (!entities.contains(unit))) {
 					entities.add((Malfunctionable)unit);
 				}
@@ -213,9 +209,7 @@ implements Serializable {
 
 		Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
-			Iterator<Unit> i = inventoryUnits.iterator();
-			while (i.hasNext()) {
-				Unit unit = i.next();
+			for (Unit unit : inventoryUnits) {
 				if (unit instanceof Malfunctionable) {
 					entities.add((Malfunctionable)unit);
 				}
@@ -236,10 +230,7 @@ implements Serializable {
 		Collection<Malfunctionable> entities = getMalfunctionables(settlement);
 
 		// Add all associated rovers out on missions and their inventories.
-		Iterator<Mission> i = Simulation.instance().getMissionManager()
-				.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
+		for (Mission mission : Simulation.instance().getMissionManager().getMissionsForSettlement(settlement)) {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
@@ -249,18 +240,14 @@ implements Serializable {
 
 
 		// Get entities carried by robots
-		Iterator<Robot> jj = settlement.getAllAssociatedRobots().iterator();
-		while (jj.hasNext()) {
-			Robot robot = jj.next();
+		for (Robot robot : settlement.getAllAssociatedRobots()) {
 			if (robot.getLocationSituation() == LocationSituation.OUTSIDE)
 				entities.addAll(getMalfunctionables(robot));
 		}
 
 		// TODO: how to ask robots first and only ask people if robots are not available so that the tasks are not duplicated ?
 		// Get entities carried by people on EVA.
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			Person person = j.next();
+		for (Person person : settlement.getAllAssociatedPeople()) {
 			if (person.getLocationSituation() == LocationSituation.OUTSIDE)
 				entities.addAll(getMalfunctionables(person));
 		}
@@ -277,16 +264,14 @@ implements Serializable {
 	Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) {
 		Map<Part, Double> result = new HashMap<Part, Double>();
 
-		Iterator<Malfunction> i = malfunctions.iterator();
-		while (i.hasNext()) {
-			Malfunction malfunction = i.next();
-			if (malfunction.unitScopeMatch(scope)) {
-				double malfunctionProbability = malfunction.getProbability() / 100D;
+		for (Malfunction m : malfunctions) {
+			if (m.unitScopeMatch(scope)) {
+				double malfunctionProbability = m.getProbability() / 100D;
 
-				String[] partNames = config.getRepairPartNamesForMalfunction(malfunction.getName());
+				String[] partNames = config.getRepairPartNamesForMalfunction(m.getName());
 				for (String partName : partNames) {
-					double partProbability = config.getRepairPartProbability(malfunction.getName(), partName) / 100D;
-					int partNumber = config.getRepairPartNumber(malfunction.getName(), partName);
+					double partProbability = config.getRepairPartProbability(m.getName(), partName) / 100D;
+					int partNumber = config.getRepairPartNumber(m.getName(), partName);
 					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 					Part part = (Part) ItemResource.findItemResource(partName);
@@ -309,12 +294,8 @@ implements Serializable {
 	Map<Part, Double> getMaintenancePartProbabilities(Collection<String> scope) {
 		Map<Part, Double> result = new HashMap<Part, Double>();
 
-		Iterator<String> i = scope.iterator();
-		while (i.hasNext()) {
-			String entity = i.next();
-			Iterator<Part> j = Part.getParts().iterator();
-			while (j.hasNext()) {
-				Part part = j.next();
+		for (String entity : scope) {
+			for (Part part : Part.getParts()) {
 				if (part.hasMaintenanceEntity(entity)) {
 					double prob = part.getMaintenanceProbability(entity) / 100D;
 					int partNumber = part.getMaintenanceMaximumNumber(entity);
@@ -336,10 +317,7 @@ implements Serializable {
 	 */
 	public static Malfunction getMeteoriteImpactMalfunction(String malfunctionName) {
 		if (meteoriteMalfunction == null) {
-			List<Malfunction> list = config.getMalfunctionList();
-			Iterator<Malfunction> i = list.iterator();
-			while (i.hasNext()) {
-				Malfunction m = i.next();
+			for (Malfunction m : config.getMalfunctionList()) {
 				if (m.getName().equals(malfunctionName))
 					meteoriteMalfunction = m;
 			}

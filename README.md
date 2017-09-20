@@ -7,7 +7,7 @@
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 
 # mars-sim
-The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars with a higher level of fidelity than computer games. 
+The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars with a higher level of fidelity than typical PC strategy games. 
 
 
 ## Modeling and Simulation

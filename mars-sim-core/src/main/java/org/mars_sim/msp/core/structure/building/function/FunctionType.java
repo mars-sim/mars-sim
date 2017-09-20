@@ -37,6 +37,9 @@ public enum FunctionType {
 	STORAGE						(Msg.getString("FunctionType.storage")),  //$NON-NLS-1$
 	THERMAL_GENERATION			(Msg.getString("FunctionType.thermalGeneration")), //$NON-NLS-1$
 	WASTE_DISPOSAL				(Msg.getString("FunctionType.wasteDisposal")), //$NON-NLS-1$
+
+	FIELD_STUDY					(Msg.getString("FunctionType.fieldStudy")), //$NON-NLS-1$
+	UNKNOWN						(Msg.getString("FunctionType.unknown")), //$NON-NLS-1$
 	;
 
 	private String name;

@@ -148,11 +148,13 @@ public class MainScene {
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
-	private static final int DEFAULT_THEME = 7;
-	private static final int SYSTEM_THEME = 0;
-	private static final int NIMROD_THEME = 1;
-	private static final int NIMBUS_THEME = 2;
 
+	private static final int SYSTEM_THEME = -1;
+	private static final int NIMROD_THEME = 7;
+	private static final int NIMBUS_THEME = 0;
+
+	private static int choice_theme = NIMBUS_THEME;
+	
 	public static final int MAIN_TAB = 0;
 	public static final int MAP_TAB = 1;
 	public static final int HELP_TAB = 2;
@@ -2478,7 +2480,7 @@ public class MainScene {
 			setTheme(7);
 		}
 */
-		setTheme(DEFAULT_THEME); // 0 = nimbus
+		setTheme(choice_theme); // 0 = nimbus
 		
 		//logger.info("done with MainScene's initializeTheme()");
 	}

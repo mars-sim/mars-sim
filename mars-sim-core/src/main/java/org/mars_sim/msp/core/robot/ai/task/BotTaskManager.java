@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.SystemCondition;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -150,6 +151,15 @@ implements Serializable {
 		}
 	}
 	
+	public FunctionType getFunction(boolean subTask) {
+		if (currentTask != null) {
+			return currentTask.getFunction(subTask);
+		} 
+		else {
+			return FunctionType.UNKNOWN;
+		}
+	}
+	
 	/**
 	 * Returns the current task phase if there is one.
 	 * Returns null if current task has no phase.
@@ -192,7 +202,8 @@ implements Serializable {
 		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
-
+		FunctionType functionType = getFunction(true);
+		
 		if (!taskName.toLowerCase().contains("walk")) {//equals("WalkRoverInterior")
 				//&& !taskName.equals("WalkSettlementInterior")
 				//&& !taskName.equals("WalkSteps")) { // filter off Task phase "Walking" due to its excessive occurrences
@@ -210,7 +221,7 @@ implements Serializable {
 					
 				}
 				
-				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, functionType);
 				taskDescriptionCache = taskDescription;
 			}
 		}

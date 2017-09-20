@@ -71,7 +71,7 @@ implements Serializable {
 
 	/** amount of crop tissue culture needed for each square meter of growing area */
     public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
-	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.01;
+	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
 	private static final double CROP_WASTE_PER_SQM_PER_SOL = .01; // .01 kg
 
 	private static final int NUM_INSPECTIONS = 5;
@@ -1190,10 +1190,10 @@ implements Serializable {
 			    	// if no tissue culture is available, go extract some tissues from the crop
 				double amount = inv.getAmountResourceStored(cropAR, false);
 				// TODO : Check for the health condition
-			    amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * 10; // 10 is the standard ratio
+			    amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * RandomUtil.getRandomInt(5, 15); 
 			
 			    if (amount > amountExtracted) {
-			    	// assume an arbitrary 10% of the mass of crop kg extracted will be developed into tissue culture
+			    	// assume extracting an arbitrary 5 to 15% of the mass of crop will be developed into tissue culture
 			    	Storage.retrieveAnResource(amountExtracted, cropAR, inv, true);
 			    	// store the tissues
 			    	if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
@@ -1201,9 +1201,9 @@ implements Serializable {
 				  		//System.out.println("Storing " + STANDARD_AMOUNT_TISSUE_CULTURE + " kg of " + tissueName);
 				
 						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-								"During sampling, " + cropName + TISSUE_CULTURE + " is not found in stock. "
-								+ "Extracting from " + cropName + " and cryo-preserving " 
-								+ STANDARD_AMOUNT_TISSUE_CULTURE + " kg in " 
+								"During sampling, " + cropName + TISSUE_CULTURE + " is not in stock. "
+								+ "Extract " 
+								+ STANDARD_AMOUNT_TISSUE_CULTURE + " kg from " + cropName + " and restock in " 
 								+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
 				
 						isDone = true;
@@ -1223,15 +1223,15 @@ implements Serializable {
 		    	
 		        // if there is less than 1 kg of tissue culture
 		        if (amountAvailable > 0 && amountAvailable < 1) {  
-		        	// increase the amount of tissue culture by 10%
-		        	amountExtracted = amountAvailable * 1.1;
+		        	// increase the amount of tissue culture by 20%
+		        	amountExtracted = amountAvailable * 0.2;
 		        	// store the tissues
 		        	if (amountExtracted > 0) {
 		        		Storage.storeAnResource(amountExtracted, tissueAR, inv, sourceName + "::growCropTissue");
 			      		//System.out.println("Storing " + Math.round(amountExtracted*100000.0)/100000.0D + " kg of " + tissueName);
 						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-								"During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " 
-			    				+ cropName + TISSUE_CULTURE + " is restocked in "
+								"During sampling, " + Math.round(amountExtracted*1000.0)/1000.0D + " kg " 
+			    				+ cropName + TISSUE_CULTURE + " is cloned and restocked in "
 			    				+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
 	
 			    		isDone = true;

@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.location.LocationState;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -29,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -188,6 +188,16 @@ implements Serializable {
 			return "";
 		}
 	}
+	
+	public FunctionType getFunction(boolean subTask) {
+		if (currentTask != null) {
+			return currentTask.getFunction(subTask);
+		} 
+		else {
+			return FunctionType.UNKNOWN;
+		}
+	}
+	
 
 	/**
 	 * Returns the current task phase if there is one.
@@ -241,7 +251,8 @@ implements Serializable {
 	public void recordTask() {
 		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//getTaskClassName();//currentTask.getTaskName(); //
-
+		FunctionType functionType = getFunction(true);
+		
 		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior, WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
 		if (!taskName.toLowerCase().contains("walk")
@@ -264,7 +275,7 @@ implements Serializable {
 		    if (ts == null)
 		    	ts = person.getTaskSchedule();
 		    
-			ts.recordTask(taskName, taskDescription, taskPhaseName);
+			ts.recordTask(taskName, taskDescription, taskPhaseName, functionType);
 			taskDescriptionCache = taskDescription;
 
 		}
@@ -387,7 +398,6 @@ implements Serializable {
 	}
 
 	private boolean doingAirlockTask() {
-		
 		// Check if person is performing an airlock task.
 		boolean hasAirlockTask = false;
 		Task task = currentTask;
@@ -594,78 +604,6 @@ implements Serializable {
 		    boolean isOff = (st == ShiftType.OFF);
 		    boolean isShiftHour = true;
 
-/*
-		    //2016-10-04 Checked if the job is changed
-		    List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
-		    String newJob = "";
-		    boolean jobChanged = false;
-		    int num = list.size();
-		    if (num == 0) {
-		    	System.out.println(" list is zero");
-		    }
-		    else {
-			    newJob = person.getJobHistory().getJobAssignmentList().get(num-1).getJobType();
-			    //System.out.println("newJob is " + newJob);
-			    if (!oldJob.equals(newJob)) {
-			    	jobChanged = true;
-			    	oldJob = newJob;
-			    }
-		    }
-
-		    List<MetaTask> newAnyHourTasks, newNonWorkTasks, newWorkTasks;
-		    // if there's a job change, do the following
-		    //if (jobChanged) {
-		    //	newAllWorkTasks = MetaTaskUtil.getAllWorkHourTasks();
-		    //	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
-		    //	oldAllWorkTasks = newAllWorkTasks;
-		    //	oldNonWorkTasks = newNonWorkTasks;
-		    //}
-		    //else {
-		    //}
-
-		    if (isOnCall) {
-		    	if (jobChanged) {
-			    	newAnyHourTasks = MetaTaskUtil.getAnyHourTasks();
-		    		if (newAnyHourTasks != null)
-		    			oldAnyHourTasks = newAnyHourTasks;
-		    	}
-		    	mtList = oldAnyHourTasks;
-		    	//mtList = MetaTaskUtil.getAllWorkHourTasks();
-		    }
-		    else if (isOff) {
-		    	if (jobChanged) {
-			    	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
-		    		if (newNonWorkTasks != null)
-		    			oldNonWorkTasks = newNonWorkTasks;
-		    	}
-		    	mtList = oldNonWorkTasks;
-		    	//mtList = MetaTaskUtil.getNonWorkHourTasks();
-		    }
-		    else {
-		    	// is the person off the shift ?
-		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-
-			    if (isShiftHour) {
-			    	if (jobChanged) {
-				    	newWorkTasks = MetaTaskUtil.getWorkHourTasks();
-			    		if (newWorkTasks != null)
-			    			oldWorkTasks = newWorkTasks;
-			    	}
-			    	mtList = oldWorkTasks;
-			    	//mtList = MetaTaskUtil.getWorkHourTasks();
-			    }
-			    else {
-			    	if (jobChanged) {
-				    	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
-			    		if (newNonWorkTasks != null)
-			    			oldNonWorkTasks = newNonWorkTasks;
-			    	}
-			    	mtList = oldNonWorkTasks;
-			    	//mtList = MetaTaskUtil.getNonWorkHourTasks();
-			    }
-		    }
-*/
-
 		    if (isOnCall) {
 		    	mtList = MetaTaskUtil.getAllMetaTasks();//getAnyHourTasks();
 		    }
@@ -685,8 +623,7 @@ implements Serializable {
 		    }
 
 		    if (mtListCache != mtList && mtList != null) {
-		    	//System.out.println("mtListCache : " + mtListCache);
-		    	//System.out.println("mtList : " + mtList);
+		    	// TODO: is there a better way to compare them this way ?
 		    	mtListCache = mtList;
 		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
 		    }

@@ -166,14 +166,14 @@ extends ModalInternalFrame {
 		//select.setModal(true);
 		//return select.getSelectedColumns();
 		int columns[] = select.getSelectedColumns();
-		if (columns.length > 0) {
+		//if (columns.length > 0) {
 			//System.out.println("createBarSelector() : columns is not null");
 			return columns;
-		}
-		else {
+		//}
+		//else {
 			//System.out.println("createBarSelector() : columns is " + columns);
-			return columns;
-		}
+		//	return columns;
+		//}
 	}
 
 	/**

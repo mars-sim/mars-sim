@@ -50,8 +50,9 @@ public enum UnitEventType {
 
 	// from Task.java
 	TASK_NAME_EVENT					("task name"),
-	TASK_DESC_EVENT					("task name"),
-	TASK_PHASE_EVENT				("task name"),
+	TASK_DESCRIPTION_EVENT			("task description"),
+	TASK_FUNCTION_EVENT				("task function"),
+	TASK_PHASE_EVENT				("task phase"),
 	TASK_ENDED_EVENT				("task ended"),
 	TASK_SUBTASK_EVENT				("subtask"),
 

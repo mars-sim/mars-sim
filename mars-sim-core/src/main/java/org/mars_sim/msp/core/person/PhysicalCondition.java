@@ -844,7 +844,7 @@ implements Serializable {
         if ((complaint != null) && !problems.containsKey(complaint)) {
             HealthProblem problem = new HealthProblem(complaint, person);
             problems.put(complaint, problem);
-            String n = complaint.getType().getName();
+            String n = complaint.getType().getName().toLowerCase();
             if (n.equalsIgnoreCase("starvation"))
                 LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
                 		person + " is starving in " + person.getAssociatedSettlement(), null);            	

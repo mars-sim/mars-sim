@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
-import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
@@ -17,7 +16,7 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 
 public class TableStyle extends ZebraJTable{
 
-	private static JTableHeader theHeader;
+	//private static JTableHeader theHeader;
 	//private static TableHeaderRenderer theRenderer;
 	private static Color border;// = Color.orange;
 	private static Color hBack;// = new Color(205, 133, 63); // 205, 133, 63 mud orange
@@ -160,11 +159,13 @@ public class TableStyle extends ZebraJTable{
 	    //theHeader = table.getTableHeader();
 	    //theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
 	    //theHeader.setDefaultRenderer(theRenderer);
+    	
 	    // 2017-01-19 disable this will allow a gradient color on the header
 	    //theHeader.setOpaque(false);
 		//theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 		//theHeader.setBorder(BorderFactory.createLineBorder(border, 1));
 		//theHeader.setBorder(new MatteBorder(1, 1, 0, 0, TableStyle.getBorderColor()));
+    	
     	// TODO: why is it NOT working?
 		//if (hBack != null) theHeader.setBackground(hBack);
 		//if (hFore != null) theHeader.setForeground(hFore);
