@@ -7,9 +7,9 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,7 +63,8 @@ implements Serializable {
 		resourceCapacities = config.getStorageCapacities(building.getBuildingType());
 
 		// Initialize resource capacities for this building.
-		for (AmountResource ar : resourceCapacities.keySet()) {	
+		Set<AmountResource> capSet = resourceCapacities.keySet();
+		for (AmountResource ar : capSet) {	
 			double capacity = resourceCapacities.get(ar);
 			// Note : A capacity of a resource in a settlement is the sum of the capacity of the same resource 
 			// in all buildings of that settlement
@@ -73,16 +74,18 @@ implements Serializable {
 		}
 
 	    double stockCapacity = config.getStockCapacity(building.getBuildingType());
+	    inv.addGeneralCapacity(stockCapacity);
 		// Initialize stock capacities for all resource 
-		for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
+		//for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
 			//if (ar.getName().equals("hydrogen")) System.out.println("H2 stock cap : " + stockCapacity + " for " + building.getNickName());
-			if (!ar.getName().toLowerCase().contains("storage bin"))
-				inv.addAmountResourceTypeCapacity(ar, stockCapacity);
-		}
+		//	if (!building.getBuildingType().toLowerCase().contains("storage bin"))
+		//		inv.addAmountResourceTypeCapacity(ar, stockCapacity);
+		//}
 		
 		// Fill up initial resources for this building.
 		Map<AmountResource, Double> initialResources = config.getInitialResources(building.getBuildingType());
-		for (AmountResource ar : initialResources.keySet()) {		
+		Set<AmountResource> initialSet = initialResources.keySet();
+		for (AmountResource ar : initialSet) {		
 			double initialAmount = initialResources.get(ar);
 			double remainingCap = inv.getAmountResourceRemainingCapacity(ar, true, false);
 
@@ -90,6 +93,7 @@ implements Serializable {
 				initialAmount = remainingCap;
 			//if (ar.getName().equals("hydrogen")) System.out.println("H2 remaining cap : " + remainingCap + " for " + building.getNickName());			
 			//if (ar.getName().equals("hydrogen")) System.out.println("H2 initialAmount : " + initialAmount + " for " + building.getNickName());			
+			inv.addAmountResourceTypeCapacity(ar, initialAmount);
 			inv.storeAmountResource(ar, initialAmount, true);
 		}
 

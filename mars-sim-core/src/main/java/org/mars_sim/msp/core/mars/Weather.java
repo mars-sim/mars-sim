@@ -737,7 +737,8 @@ implements Serializable {
 			// more often observed from mid-southern summer, between 241 deg and 270 deg Ls, with a peak period at 255 deg Ls.
 
 			// Note : The Mars dust storm season begins just after perihelion at around Ls = 260°.
-			int L_s_int = (int)Math.round(orbitInfo.getL_s());
+			double L_s = Math.round(orbitInfo.getL_s()*10.0)/10.0;
+			int L_s_int = (int)L_s;
 			
 			if (L_s_cache != L_s_int) {
 				L_s_cache = L_s_int;
@@ -762,12 +763,12 @@ implements Serializable {
 				// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is closed to Mars.
 
 				// All of the observed storms have begun within 50-60 degrees of Ls of perihelion (Ls ~ 250);
-				createDustDevils(probability, L_s_int); 
+				createDustDevils(probability, L_s); 
 			}
 			
 			else if (dustDevils.size() <= 20 && checkStorm < 200) {
 
-				createDustDevils(probability, L_s_int); 
+				createDustDevils(probability, L_s); 
 			}
 			
 			checkOnPlanetEncirclingStorms();
@@ -803,7 +804,7 @@ implements Serializable {
 	 * @param probability
 	 * @param L_s_int
 	 */
-	public void createDustDevils(double probability, int L_s_int) {
+	public void createDustDevils(double probability, double L_s) {
 		List<Settlement> settlements = new ArrayList<>(Simulation.instance().getUnitManager().getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
@@ -827,7 +828,7 @@ implements Serializable {
 					newStormID++;
 					
 					int sol = marsClock.getMissionSol();
-					logger.info("On Sol " + sol + " (L_s = " + L_s_int + "), " + ds.getName() 
+					logger.info("On Sol " + sol + " (L_s = " + Math.round(L_s*10.0)/10.0 + "), " + ds.getName() 
 						+ " has been spotted near " + s + ".");
 
 				}
@@ -859,8 +860,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
-				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
@@ -898,8 +899,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
-				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
@@ -940,8 +941,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
-				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
@@ -970,8 +971,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of sol " + solCache + ", " + ds.getName() + " at size " + ds.getSize() 
-				+ " with windpeed " + ds.getSpeed() + " m/s has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 

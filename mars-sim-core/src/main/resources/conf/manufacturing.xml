@@ -1901,7 +1901,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="rover control panel manufacturing" tech="4" skill="4" work-time="400" process-time="400"
+	<process name="manufacture rover control panel" tech="4" skill="4" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
 			<resource name="polyethylene" amount="3.0" />
@@ -2086,7 +2086,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="cargo rover assembly" tech="4" skill="4" work-time="1200" process-time="100"
+	<process name="assemble cargo rover" tech="4" skill="4" work-time="1200" process-time="100"
 			power-required="4.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
@@ -2788,7 +2788,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Manufacturing a steel drill pipe. -->
-	<process name="manufacturing bore drill pipe" tech="2" skill="3" work-time="100" process-time="150"
+	<process name="manufacture bore drill pipe" tech="2" skill="3" work-time="100" process-time="150"
 			power-required=".2">
 		<inputs>
 			<part name="steel sheet" number="3" />
@@ -3504,6 +3504,8 @@ oxide fuel cells, at 5 kWe. -->
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="steel scrap" number="4" />		
+		<part-salvage name="aluminum scrap" number="7" />		
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
@@ -3532,6 +3534,8 @@ oxide fuel cells, at 5 kWe. -->
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="steel scrap" number="5" />		
+		<part-salvage name="aluminum scrap" number="7" />		
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
@@ -3560,6 +3564,8 @@ oxide fuel cells, at 5 kWe. -->
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="steel scrap" number="4" />		
+		<part-salvage name="aluminum scrap" number="8" />		
 	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
@@ -3574,6 +3580,8 @@ oxide fuel cells, at 5 kWe. -->
 		<part-salvage name="lubricant bottle" number="1" />
 		<part-salvage name="small wheel" number="4" />
 		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="steel scrap" number="1" />		
+		<part-salvage name="aluminum scrap" number="2" />	
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->

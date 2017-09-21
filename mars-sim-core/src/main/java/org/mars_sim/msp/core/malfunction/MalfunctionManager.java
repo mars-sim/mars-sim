@@ -70,7 +70,7 @@ implements Serializable {
 	private static double WEAR_MALFUNCTION_FACTOR = 2D;//9D;
 
 	/** Factor for chance of accident due to wear condition. */
-	private static double WEAR_ACCIDENT_FACTOR = 1D;
+	private static double WEAR_ACCIDENT_FACTOR = .5;//1D;
 
 	private static final String OXYGEN = "Oxygen";
 	private static final String WATER = "Water";
@@ -379,13 +379,17 @@ implements Serializable {
 	/**
 	 * Select a malfunction randomly to the unit (if possible).
 	 */
-	private void selectMalfunction() {
+	private boolean selectMalfunction() {
+		boolean result = false;
 		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		Malfunction malfunction = factory.pickAMalfunction(scopes);
 		if (malfunction != null) {
 			addMalfunction(malfunction, true);
 			numberMalfunctions++;
+			result = true;
 		}
+		
+		return result; 
 	}
 
 	/**
@@ -747,12 +751,13 @@ implements Serializable {
 	public void determineNumOfMalfunctions(int score) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
+		boolean hasMal = false;
 		boolean done = false;
 		double chance = 100D;
 		double mod = score/50;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
-				selectMalfunction();
+				hasMal = selectMalfunction();
 				chance = chance / 3D * mod;
 			}
 			else {
@@ -760,12 +765,14 @@ implements Serializable {
 			}
 		}
 
-		// Add stress to people affected by the accident.
-		Collection<Person> people = entity.getAffectedPeople();
-		Iterator<Person> i = people.iterator();
-		while (i.hasNext()) {
-			PhysicalCondition condition = i.next().getPhysicalCondition();
-			condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
+		if (hasMal) {
+			// Add stress to people affected by the accident.
+			Collection<Person> people = entity.getAffectedPeople();
+			Iterator<Person> i = people.iterator();
+			while (i.hasNext()) {
+				PhysicalCondition condition = i.next().getPhysicalCondition();
+				condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
+			}
 		}
 	}
 
@@ -775,11 +782,12 @@ implements Serializable {
 	public void determineNumOfMalfunctions() {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
+		boolean hasMal = false;
 		boolean done = false;
 		double chance = 100D;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
-				selectMalfunction();
+				hasMal = selectMalfunction();
 				chance /= 3D;
 			}
 			else {
@@ -787,12 +795,14 @@ implements Serializable {
 			}
 		}
 
-		// Add stress to people affected by the accident.
-		Collection<Person> people = entity.getAffectedPeople();
-		Iterator<Person> i = people.iterator();
-		while (i.hasNext()) {
-			PhysicalCondition condition = i.next().getPhysicalCondition();
-			condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
+		if (hasMal) {
+			// Add stress to people affected by the accident.
+			Collection<Person> people = entity.getAffectedPeople();
+			Iterator<Person> i = people.iterator();
+			while (i.hasNext()) {
+				PhysicalCondition condition = i.next().getPhysicalCondition();
+				condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
+			}
 		}
 	}
 	/**

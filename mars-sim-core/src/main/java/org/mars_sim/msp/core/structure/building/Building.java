@@ -1301,9 +1301,7 @@ LocalBoundedObject, InsidePathLocation {
 					}
 
 					HistoricalEvent newEvent = new MalfunctionEvent(this, meteor, false);
-					if (manager == null)
-						manager = settlement.getBuildingManager();
-					manager.getEventManager().registerNewEvent(newEvent);
+					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 					
 					//check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {

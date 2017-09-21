@@ -86,8 +86,8 @@ implements Serializable {
     private boolean ignoreEndEVA;
 
 	// 2017-03-22 WARNING: cannot use oxygenAR and waterAR in AmountResource or resulting in null.
-	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//.findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;//.findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
 
     /**
      * Constructor.

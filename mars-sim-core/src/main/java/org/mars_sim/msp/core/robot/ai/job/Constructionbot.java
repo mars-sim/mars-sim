@@ -73,7 +73,7 @@ implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
 		// Add number of buildings currently at settlement.
-		result += settlement.getBuildingManager().getBuildingNum() / 10D;
+		result += settlement.getBuildingManager().getNumBuilding() / 10D;
 		return result;
 	}
 

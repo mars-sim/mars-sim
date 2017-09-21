@@ -751,7 +751,7 @@ implements Serializable, Transportable {
             // If not successful, try again 10m from each building and continue out at 10m increments
             // until a location is found.
             BuildingManager buildingManager = settlement.getBuildingManager();
-            if (buildingManager.getBuildingNum() > 0) {
+            if (buildingManager.getNumBuilding() > 0) {
                 for (int x = BUILDING_CENTER_SEPARATION; newPosition == null; x = x + 2) {
                     List<Building> allBuildings = buildingManager.getACopyOfBuildings();
                     //System.out.println("allBuildings.size() is "+ allBuildings.size());

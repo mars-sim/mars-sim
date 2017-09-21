@@ -1,7 +1,6 @@
 package org.mars_sim.msp.ui.javafx.config;
 
 import java.io.IOException;
-import java.net.URL;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -26,6 +25,7 @@ import javafx.stage.StageStyle;
  *
  * @author cdea
  */
+@SuppressWarnings("restriction")
 public class ScenarioEditor extends Application{
 
 
@@ -41,13 +41,14 @@ public class ScenarioEditor extends Application{
        
     }
     
-    @Override
+    @SuppressWarnings("restriction")
+	@Override
     public void start(final Stage primaryStage) throws IOException {
         System.setProperty("sampler.mode", "true");        
         //URL url = ScenarioEditor.class.getResource("ScenarioEditor.fxml");
         //AnchorPane mainViewPane = FXMLLoader.load(url);
  		
-        Parent parent = null;// = null;
+        Parent parent = null;
         //AnchorPane pane;
         AnchorPane anchorpane = null;
         //AnchorPane mainViewPane = null;
@@ -55,11 +56,10 @@ public class ScenarioEditor extends Application{
 
 		try {
 			fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ScenarioEditor.fxml"));
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/MainMenu2.fxml"));//ScenarioEditor.fxml"));
             fxmlLoader.setController(this);
             parent = (Parent) fxmlLoader.load();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
               
@@ -80,7 +80,7 @@ public class ScenarioEditor extends Application{
 
        // application area
        @SuppressWarnings("restriction")
-	Rectangle applicationArea = RectangleBuilder.create()
+       Rectangle applicationArea = RectangleBuilder.create()
                 .width(sceneWidth - 10)
                 .height(sceneHeight - 10)
                 .arcWidth(20)
@@ -91,6 +91,7 @@ public class ScenarioEditor extends Application{
                 .strokeWidth(2)
                 .stroke(Color.rgb(255, 255, 255, .70))
                 .build();
+       
        root.getChildren().add(applicationArea);
        anchorpane.setLayoutX(10);
        anchorpane.setLayoutY(10);
@@ -152,6 +153,7 @@ public class ScenarioEditor extends Application{
         
         primaryStage.setScene(scene);
         primaryStage.show();
+        
         previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY()); 
     }
     

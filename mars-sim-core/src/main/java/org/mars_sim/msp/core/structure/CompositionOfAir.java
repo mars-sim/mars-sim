@@ -6,11 +6,8 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -48,11 +45,11 @@ public class CompositionOfAir implements Serializable {
 
 	private static final double AIRLOCK_VOLUME_IN_LITER = Building.AIRLOCK_VOLUME_IN_CM / 1000D; // [in liters] 12 cm^3 -> .012 L
 	
-	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = .95;
+	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = -.02;
 	
-	private static final double UPPER_THRESHOLD_GAS_COMPOSITION = 1.05;
+	private static final double UPPER_THRESHOLD_GAS_COMPOSITION = .02;
 	
-	private static final double GAS_CAPTURE_EFFICIENCY = .9D;
+	private static final double GAS_CAPTURE_EFFICIENCY = .7D;
 	
 	// Astronauts aboard the International Space Station preparing for extra-vehicular activity (EVA) 
 	// "camp out" at low atmospheric pressure, 10.2 psi (0.70 bar), spending eight sleeping hours 
@@ -62,24 +59,30 @@ public class CompositionOfAir implements Serializable {
 	// reduction, and hence the risk of DCS.[72]
 	// see https://en.wikipedia.org/wiki/Decompression_sickness
 	
-	//private static final double CO2_PERCENT = 0;//0.0407;
-	//private static final double ARGON_PERCENT = 0;//0.9340;
-	//private static final double N2_PERCENT = 0;//78.084;
-	//private static final double O2_PERCENT = 0;//20.946;
-	//private static final double H2O_PERCENT = 0;//0.0047;
 
-	private static final double[] STANDARD_GAS_PERCENT = new double[] {.0407, .934, 78.0043, 20.021, 1}; // assuming having 1% of moisture
+	private static final double[] STANDARD_GAS_PERCENT = new double[] {.0407, .934, 76.0043, 21.021, 2}; 
+	// assuming having a minimum 2% of water moisture
 	
-	// Mars has 0.13% of O2 
-	
+	// Note : Mars has only 0.13% of O2 
+
+    public static final double psi_per_atm = 14.7;  
+    public static final double mmHg_per_atm = 760;  
+    public static final double kPa_per_atm = 101.325;  
+    // The standard atmosphere (i.e. 1 atm) = 101325 Pa or 1 kPa = 0.00986923267 atm
+    
 	// Note that the fractional/partial pressure below are added up to the value of 1 for
 	// the simplicity of calculation. 
-	private static final double CO2_PARTIAL_PRESSURE = 0.000407;
-	private static final double ARGON_PARTIAL_PRESSURE = 0.00934;
-	private static final double N2_PARTIAL_PRESSURE = .780043;
-	private static final double O2_PARTIAL_PRESSURE = .20021;
-	private static final double H2O_PARTIAL_PRESSURE = 0.01;
+	private static final double CO2_PARTIAL_PRESSURE = STANDARD_GAS_PERCENT[0]/100; // [in atm] 
+	private static final double ARGON_PARTIAL_PRESSURE = STANDARD_GAS_PERCENT[1]/100; // [in atm] 
+	private static final double N2_PARTIAL_PRESSURE = STANDARD_GAS_PERCENT[2]/100; // [in atm] 
+	private static final double O2_PARTIAL_PRESSURE = STANDARD_GAS_PERCENT[3]/100; // [in atm] 
+	private static final double H2O_PARTIAL_PRESSURE = STANDARD_GAS_PERCENT[4]/100; // [in atm] 
 	// https://en.wikipedia.org/wiki/Vapour_pressure_of_water
+	
+	/** The upper safe limit of the partial pressure [in atm] of O2 */
+	private static final double O2_UPPER_LIMIT_PRESSURE = 1.5;// [in atm] 
+	/** The lower safe limit of the partial pressure [in atm] of O2 */
+	private static final double O2_LOWER_LIMIT_PRESSURE = 0.15;// [in atm] 
 	
 	
 	public static final double CO2_MOLAR_MASS = 44.0095 /1000D; // [in kg/mol]
@@ -91,11 +94,8 @@ public class CompositionOfAir implements Serializable {
 	public static final double CH4_MOLAR_MASS = 16.04276; // [in g/mol] 
 	public static final double H2_MOLAR_MASS = 2.016; // [in g/mol] 
 	
-	private static final int MILLISOLS_PER_UPDATE = 50 ;
+	private static final int MILLISOLS_PER_UPDATE = 20;
 	
-    public static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; 
-    // 1 kilopascal = 0.00986923267 atm
-    // The standard atmosphere (i.e. 1 atm) = 101325 Pa
     private static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
     // alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
     // see https://en.wikipedia.org/wiki/Gas_constant
@@ -136,9 +136,9 @@ public class CompositionOfAir implements Serializable {
 	//private int solCache = 0;
 
 	private double [] fixedVolume; // [in liter] note: // 1 Cubic Meter = 1,000 Liters
-	private double [] totalPressure;
+	private double [] totalPressure; // in atm
 	private double [] totalMoles;
-	private double [] totalMass;
+	private double [] totalMass; // in kg
 	//private double [] totalPercent;
 	//private double [] buildingTemperature;
 	
@@ -152,16 +152,16 @@ public class CompositionOfAir implements Serializable {
 
 	//private Map<Integer, Double> emissivityMap;
 
-	private static Weather weather;
+	//private static Weather weather;
 	private static MasterClock masterClock;
 	private static MarsClock clock;
-	private static SurfaceFeatures surfaceFeatures;
+	//private static SurfaceFeatures surfaceFeatures;
 	private static PersonConfig personConfig;
 
 	private Settlement settlement;
- 	private ThermalSystem thermalSystem;
+ 	//private ThermalSystem thermalSystem;
  	private BuildingManager buildingManager;
-	private Coordinates location;
+	//private Coordinates location;
 	
 	private List<Building> buildings;
 
@@ -176,7 +176,7 @@ public class CompositionOfAir implements Serializable {
 
 		masterClock = Simulation.instance().getMasterClock();
 		clock = masterClock.getMarsClock();
-		weather = Simulation.instance().getMars().getWeather();
+		//weather = Simulation.instance().getMars().getWeather();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		
 		o2Consumed = personConfig.getHighO2ConsumptionRate() /1000D; // divide by 1000 to convert to [kg/millisol] 
@@ -222,7 +222,7 @@ public class CompositionOfAir implements Serializable {
 		// Part 1 : set up initial conditions at the start of sim
 		for (int id = 0; id < numIDs; id++) {
 
-			partialPressure [0][id] = CO2_PARTIAL_PRESSURE ;
+			partialPressure [0][id] = CO2_PARTIAL_PRESSURE;
 			partialPressure [1][id] = ARGON_PARTIAL_PRESSURE;
 			partialPressure [2][id] = N2_PARTIAL_PRESSURE;
 			partialPressure [3][id] = O2_PARTIAL_PRESSURE;
@@ -245,21 +245,21 @@ public class CompositionOfAir implements Serializable {
 						
 			int id = b.getInhabitableID();
 			double t = C_TO_K  + b.getCurrentTemperature();
+			double vol = b.getWidth() * b.getLength() * HEIGHT * 1000D; // 1 Cubic Meter = 1,000 Liters
 
+			fixedVolume [id] = vol;
+			
 			double sum1 = 0, sum2 = 0, sum3 = 0;//, sum4 = 0;
 			
 			for (int gas = 0; gas < numGases; gas++) {
 						
 				double molecularMass = getMolecularMass(gas);
-				double vol = b.getWidth() * b.getLength() * HEIGHT * 1000D; // 1 Cubic Meter = 1,000 Liters
 
 				double p = partialPressure [gas][id];
 				double nm = p * vol / R_GAS_CONSTANT / t;
 				double m = molecularMass * nm;
 				
-				fixedVolume [id] = vol;
-				temperature [gas][id] = t;
-				
+				temperature [gas][id] = t;			
 				numMoles [gas][id] = nm;
 				mass [gas][id] = m;
 
@@ -443,7 +443,7 @@ public class CompositionOfAir implements Serializable {
 			double t = C_TO_K  + b.getCurrentTemperature();
 			
 			for (int gas = 0; gas < numGases; gas++) {
-				double pt = percent [gas][id] ;
+				double old_percent = percent [gas][id] ;
 				
 				double molecularMass = getMolecularMass(gas);
 
@@ -453,7 +453,7 @@ public class CompositionOfAir implements Serializable {
 				//[3] = O2
 				//[4] = H2O
 				
-				double d_percent = STANDARD_GAS_PERCENT[gas] - pt; // d_percent is +ve if not enough gas ; d_percent is -ve if too much gas is present 
+				double d_percent = STANDARD_GAS_PERCENT[gas] - old_percent; // d_percent is +ve if not enough gas ; d_percent is -ve if too much gas is present 
 				double part = d_percent/STANDARD_GAS_PERCENT[gas];
 				// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air composition
 				if (part < LOWER_THRESHOLD_GAS_COMPOSITION
@@ -602,11 +602,6 @@ public class CompositionOfAir implements Serializable {
 				new_partialPressure [3][id] = O2_PARTIAL_PRESSURE;
 				new_partialPressure [4][id] = H2O_PARTIAL_PRESSURE;
 				
-				//new_percent [0][id] = CO2_PERCENT;
-				//new_percent [1][id] = ARGON_PERCENT;
-				//new_percent [2][id] = N2_PERCENT;
-				//new_percent [3][id] = O2_PERCENT;
-				//new_percent [4][id] = H2O_PERCENT;
 			}
 
 			List<Building> newList = new ArrayList<>();
@@ -626,20 +621,20 @@ public class CompositionOfAir implements Serializable {
 				
 				double t = C_TO_K  + b.getCurrentTemperature();
 				double sum_nm = 0, sum_p = 0, sum_mass = 0;//, sum_t = 0;
+				double vol = b.getWidth() * b.getLength() * HEIGHT * 1000D;
+		
+				new_volume [id] = vol;
 				
 				// calculate for each gas the new volume, # of moles and total # of moles
 				for (int gas = 0; gas < numGases; gas++) {
 					
 					double molecularMass = getMolecularMass(gas);
 					
-					double vol = b.getWidth() * b.getLength() * HEIGHT * 1000D;
 					double p = new_partialPressure [gas][id];
 					double nm = p * vol / R_GAS_CONSTANT / t;
 					double m = molecularMass * nm;
 					
-					new_volume [id] = vol;
 					new_temperature [gas][id] = t ;
-					
 					new_numMoles [gas][id] = nm;
 					new_mass [gas][id] = m;
 					new_partialPressure [gas][id] = p;
@@ -833,13 +828,13 @@ public class CompositionOfAir implements Serializable {
 	
 	public void destroy() {
 		buildingManager = null;
-	 	thermalSystem = null;
-		weather = null;
-		location = null;
+	 	//thermalSystem = null;
+		//weather = null;
+		//location = null;
 		settlement = null;
 		masterClock = null;
 		clock = null;
-		surfaceFeatures = null;
+		//surfaceFeatures = null;
 		personConfig = null;
 		buildings = null;
 		//fmt = null;

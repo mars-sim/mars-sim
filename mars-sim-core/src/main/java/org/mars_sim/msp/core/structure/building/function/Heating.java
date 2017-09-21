@@ -733,8 +733,8 @@ implements Serializable {
 	 */
 	public double heatGainVentilation(double t, double time) {
 		double total_gain = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
-		boolean tooLow = t < (t_initial - 2.0 * T_LOWER_SENSITIVITY );
-		boolean tooHigh = t > (t_initial + 2.0 * T_UPPER_SENSITIVITY );
+		boolean tooLow = t < (t_initial - 6.0 * T_LOWER_SENSITIVITY );
+		boolean tooHigh = t > (t_initial + 6.0 * T_UPPER_SENSITIVITY );
 		double speed_factor = .01 * time * CFM;
 		
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
@@ -1011,12 +1011,13 @@ implements Serializable {
 	public void cycleThermalControl(double time) {
 		//System.out.println("Calling adjustThermalControl()");
 
-		// Detect temperature change based on heat gain and heat loss
-		double t = currentTemperature;
+		// Detect temperatures
+		double old_t = currentTemperature;
+		double new_t = 0;
 		double t_out = settlement.getOutsideTemperature();
 
 		// STEP 1 : CALCULATE HEAT GAIN/LOSS AND RELATE IT TO THE TEMPERATURE CHANGE
-		double dt = determineDeltaTemperature(t, time);
+		double dt = determineDeltaTemperature(old_t, time);
 		
 		// limit the abrupt change of temperature, for sanity sake
 		if (dt < -20)
@@ -1026,19 +1027,20 @@ implements Serializable {
 		
 		// STEP 2 : ADJUST THE CURRENT TEMPERATURE
 		// Adjust the current temperature
-		t += dt;
+		new_t = old_t + dt;
 		// Safeguard against anomalous dt that would have crashed mars-sim
-		if (t > 60)
-			t = 60;
-		else if (t < t_out)
-			t = t_out;
-		
-		currentTemperature = t;
+		if (new_t > 60)
+			new_t = 60;
+		else if (new_t < t_out)
+			new_t = t_out;
 		
 		// STEP 3 : CHANGE THE HEAT MODE
 		// Turn heat source off if reaching certain temperature thresholds
 		adjustHeatMode();
 
+		// Stabilize the temperature by getting the time average value
+		currentTemperature = (old_t + new_t)/2D;
+		
 	}
 
 	/**

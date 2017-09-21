@@ -46,6 +46,8 @@ implements Serializable {
 	// Data members
 	private static int newIncidentNum = 0;
 	
+	private static int numMal;
+	
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
 
@@ -61,10 +63,8 @@ implements Serializable {
 	 */
 	public MalfunctionFactory(MalfunctionConfig config)  {
 		 this.config = config;
-		 //logger.info("start calling config.getMalfunctionList()");
-
 		 malfunctions = config.getMalfunctionList();
-		 //logger.info("Done with calling config.getMalfunctionList()");
+		 numMal = malfunctions.size();
 	}
 
 	/**
@@ -75,8 +75,9 @@ implements Serializable {
 	public Malfunction pickAMalfunction(Collection<String> scope) {
 
 		Malfunction result = null;
-
+		
 		// 2017-09-12 The total probability will be dynamically updated as the field reliability data trickles in
+		
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
 			for (Malfunction m : malfunctions) {
@@ -84,6 +85,9 @@ implements Serializable {
 					totalProbability += m.getProbability();
 			}
 		}
+		
+		double maxProb = totalProbability/numMal;
+		//System.out.println("maxProb : " + maxProb);
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
 
@@ -104,6 +108,8 @@ implements Serializable {
 					r -= probability;
 			}
 		}
+		
+		
 
 		return result;
 	}

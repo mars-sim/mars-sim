@@ -206,10 +206,11 @@ public class MainWindow extends JComponent {
 
 	//	    BasicToolBarUI ui = new BasicToolBarUI();
 	//	    unitToolbar.setUI(ui);
-		    unitToolbar.setOpaque(false);
-		    unitToolbar.setBackground(new Color(0,0,0,0));
+		    //unitToolbar.setOpaque(false);
+		    //unitToolbar.setBackground(new Color(0,0,0,0));
+		    unitToolbar.setBorder(new MarsPanelBorder());
 		    // Remove the toolbar border, to blend into figure contents
-		    unitToolbar.setBorderPainted(false);
+		    unitToolbar.setBorderPainted(true);
 
 			mainPane.add(bottomPane, BorderLayout.SOUTH);
 			bottomPane.add(unitToolbar, BorderLayout.CENTER);

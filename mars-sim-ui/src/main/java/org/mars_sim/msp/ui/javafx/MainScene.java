@@ -1915,9 +1915,6 @@ public class MainScene {
 	 */
 	@SuppressWarnings("restriction")
 	public void createJFXTabs() {
-		// logger.info("MainScene's createJFXTabs() is on " +
-		// Thread.currentThread().getName() + " Thread");
-
 		jfxTabPane = new JFXTabPane();
 		jfxTabPane.setPrefSize(sceneHeight.get(), sceneWidth.get());
 
@@ -1950,17 +1947,7 @@ public class MainScene {
 		minimapNode.setContent(navWin);
 		minimapStackPane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
-		/*
-		 * miniMapBtn = new JFXButton(); setQuickToolTip(miniMapBtn,
-		 * "Open Mars Navigator Minimap below"); miniMapBtn.setOnAction(e -> {
-		 * 
-		 * if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-		 * desktop.closeToolWindow(NavigatorWindow.NAME);
-		 * mapAnchorPane.getChildren().remove(minimapStackPane);
-		 * minimapButton.setSelected(false); minimapButton.setText("Minimap Off"); }
-		 * 
-		 * else { openMinimap(); } });
-		 */
+
 		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapPanel = settlementWindow.getMapPanel();
 
@@ -1997,56 +1984,6 @@ public class MainScene {
 			}
 		});
 
-		// desktop.openToolWindow(MonitorWindow.NAME);
-		// desktop.openToolWindow(MissionWindow.NAME);
-		// desktop.openToolWindow(ResupplyWindow.NAME);
-		// desktop.openToolWindow(ScienceWindow.NAME);
-
-		// set up monitor tab
-		// MonitorWindow monWin = (MonitorWindow)
-		// desktop.getToolWindow(MonitorWindow.NAME);
-		// monNode = new SwingNode();
-		// monNode.setContent(monWin);
-		// monPane = new StackPane(monNode);
-
-		// desktop.openToolWindow(MonitorWindow.NAME);
-
-		/*
-		 *
-		 * // set up mission tab MissionWindow missionWin = (MissionWindow)
-		 * desktop.getToolWindow(MissionWindow.NAME); missionNode = new SwingNode();
-		 * JDesktopPane d1 = desktops.get(1); d1.add(missionWin);
-		 * missionNode.setContent(d1); StackPane missionPane = new
-		 * StackPane(missionNode); Tab missionTab = new Tab();
-		 * missionTab.setText("Mission"); missionTab.setContent(missionPane);
-		 * 
-		 * //desktop.openToolWindow(MissionWindow.NAME);
-		 * 
-		 * 
-		 * // set up resupply tab ResupplyWindow resupplyWin = (ResupplyWindow)
-		 * desktop.getToolWindow(ResupplyWindow.NAME); resupplyNode = new SwingNode();
-		 * JDesktopPane d2 = desktops.get(2); d2.add(resupplyWin);
-		 * resupplyNode.setContent(d2); StackPane resupplyPane = new
-		 * StackPane(resupplyNode); Tab resupplyTab = new Tab();
-		 * resupplyTab.setText("Resupply"); resupplyTab.setContent(resupplyPane);
-		 * 
-		 * //desktop.openToolWindow(ResupplyWindow.NAME);
-		 * 
-		 * // set up science tab ScienceWindow sciWin = (ScienceWindow)
-		 * desktop.getToolWindow(ScienceWindow.NAME); sciNode = new SwingNode(); //
-		 * Note: don't need to create a DesktopPane for scienceWin //JDesktopPane d4 =
-		 * desktops.get(4); //d4.add(scienceWin); //scienceNode.setContent(d4);
-		 * sciNode.setContent(sciWin); StackPane sciencePane = new StackPane(sciNode);
-		 * Tab scienceTab = new Tab(); scienceTab.setText("Science");
-		 * scienceTab.setContent(sciencePane);
-		 * 
-		 * //desktop.openToolWindow(ScienceWindow.NAME);
-		 */
-
-		// set up help tab
-		// GuideWindow guideWin = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-		// guideNode = new SwingNode();
-		// guideNode.setContent(guideWin);
 
 		BrowserJFX helpBrowser = desktop.getBrowserJFX();
 		// StackPane guidePane = new StackPane(guideNode);
@@ -2055,58 +1992,17 @@ public class MainScene {
 		guideTab.setText("Help");
 		guideTab.setContent(guidePane);
 
-		// desktop.openToolWindow(GuideWindow.NAME);
-
-		jfxTabPane.getTabs().addAll(mainTab, mapTab,
-				// monTab,
-				// missionTab,
-				// resupplyTab,
-				// scienceTab,
-				guideTab);
+		jfxTabPane.getTabs().addAll(mainTab, mapTab, guideTab);
 
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
 			if (newTab == mainTab) {
 				mainAnchorPane.requestFocus();
 				closeMaps();
-				desktop.closeToolWindow(GuideWindow.NAME);
-				// anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-				// anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
-			/*
-			 * else if (newTab == monTab) { if
-			 * (!desktop.isToolWindowOpen(MonitorWindow.NAME)) {
-			 * desktop.openToolWindow(MonitorWindow.NAME); //monNode.setContent(monWin); }
-			 * 
-			 * anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			 * anchorMapTabPane.getChildren().removeAll(cacheButton);
-			 * 
-			 * }
-			 */
+
 			else if (newTab == mapTab) {
 
-				/*
-				 * if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-				 * System.out.println("settlement map was closed"); if (isCacheButtonOn())
-				 * mapBtn.fire(); }
-				 * 
-				 * if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-				 * System.out.println("minimap was closed"); if (isCacheButtonOn()) {
-				 * miniMapBtn.fire(); if (nw == null) nw = (NavigatorWindow)
-				 * desktop.getToolWindow(NavigatorWindow.NAME);
-				 * nw.getGlobeDisplay().drawSphere();//updateDisplay(); } }
-				 */
-
-				/*
-				 * AnchorPane.setRightAnchor(mapBtn, 125.0); if (OS.contains("win"))
-				 * AnchorPane.setTopAnchor(mapBtn, 0.0); else AnchorPane.setTopAnchor(mapBtn,
-				 * -3.0); rootAnchorPane.getChildren().addAll(mapBtn);
-				 * 
-				 * AnchorPane.setRightAnchor(miniMapBtn, 165.0); if (OS.contains("win"))
-				 * AnchorPane.setTopAnchor(miniMapBtn, 0.0); else
-				 * AnchorPane.setTopAnchor(miniMapBtn, -3.0);
-				 * rootAnchorPane.getChildren().addAll(miniMapBtn);
-				 */
 				AnchorPane.setRightAnchor(cacheToggle, 25.0);
 				AnchorPane.setTopAnchor(cacheToggle, 45.0); // 55.0
 
@@ -2120,8 +2016,6 @@ public class MainScene {
 
 				desktop.closeToolWindow(GuideWindow.NAME);
 
-				// rootAnchorPane.getChildren().remove(monPane);
-				// desktop.closeToolWindow(MonitorWindow.NAME);
 			}
 
 			else if (newTab == guideTab) {
@@ -2130,36 +2024,10 @@ public class MainScene {
 					desktop.openToolWindow(GuideWindow.NAME);
 
 				closeMaps();
-				// anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-				// anchorMapTabPane.getChildren().removeAll(cacheButton);
+
 			}
-			/*
-			 * else if (newTab == missionTab) { if
-			 * (!desktop.isToolWindowOpen(MissionWindow.NAME)) {
-			 * desktop.openToolWindow(MissionWindow.NAME);
-			 * //missionNode.setContent(missionWin); }
-			 * 
-			 * anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			 * anchorMapTabPane.getChildren().removeAll(cacheButton); }
-			 * 
-			 * else if (newTab == resupplyTab) { if
-			 * (!desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
-			 * desktop.openToolWindow(ResupplyWindow.NAME);
-			 * //resupplyNode.setContent(resupplyWin); }
-			 * 
-			 * anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			 * anchorMapTabPane.getChildren().removeAll(cacheButton); }
-			 * 
-			 * else if (newTab == scienceTab) { if
-			 * (!desktop.isToolWindowOpen(ScienceWindow.NAME)) {
-			 * desktop.openToolWindow(ScienceWindow.NAME); //sciNode.setContent(scienceWin);
-			 * }
-			 * 
-			 * anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			 * anchorMapTabPane.getChildren().removeAll(cacheButton); }
-			 */
+
 			else {
-				// rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
 				mapAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
 			}
 
@@ -2175,21 +2043,7 @@ public class MainScene {
 	}
 
 	public void openMinimap() {
-		// System.out.println("openMinimap()");
-		// if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 		desktop.openToolWindow(NavigatorWindow.NAME);
-		// System.out.println("navWin : " + navWin.hashCode());
-
-		// navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
-		// System.out.println("navWin : " + navWin.hashCode());
-		// minimapNode.setContent(navWin);
-		// minimapNode.setStyle("-fx-background-color: black; ");
-		/*
-		 * minimapNode = new SwingNode(); minimapStackPane = new StackPane(minimapNode);
-		 * minimapNode.setContent(navWin);
-		 * minimapStackPane.setStyle("-fx-background-color: black; ");
-		 * minimapNode.setStyle("-fx-background-color: black; ");
-		 */
 
 		AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
 		AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0
@@ -2200,6 +2054,7 @@ public class MainScene {
 				break;
 			}
 		}
+		
 		if (!flag)
 			mapAnchorPane.getChildren().addAll(minimapStackPane);
 		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
@@ -2209,7 +2064,7 @@ public class MainScene {
 		minimapToggle.setSelected(true);
 		minimapToggle.setText("Minimap On");
 		minimapToggle.toFront();
-		// }
+
 	}
 
 	public void openSettlementMap() {
@@ -2295,7 +2150,6 @@ public class MainScene {
 	}
 
 	public void closeMinimap() {
-		// System.out.println("closeMinimap()");
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
 			// addNavWin();
@@ -2304,7 +2158,6 @@ public class MainScene {
 			minimapToggle.setText("Minimap Off");
 			jfxTabPane.requestFocus();
 		});
-		// System.out.println("closing minimap...");
 	}
 
 	public void closeSettlementMap() {
@@ -2326,14 +2179,13 @@ public class MainScene {
 			Platform.runLater(() -> {
 				mapAnchorPane.getChildren().removeAll(minimapStackPane, mapStackPane, zoomSlider, rotateCWBtn,
 						rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
-				// System.out.println("closing both maps...");
 				minimapToggle.setSelected(false);
 				minimapToggle.setText("Minimap Off");
 				mapToggle.setSelected(false);
 				mapToggle.setText("Settlement Map Off");
 			});
 		}
-		jfxTabPane.requestFocus(); // rootAnchorPane //jfxTabPane
+		jfxTabPane.requestFocus(); 
 	}
 
 	public boolean isCacheButtonOn() {
@@ -2527,11 +2379,9 @@ public class MainScene {
 				// SwingUtilities.updateComponentTreeUI(desktop);
 				// desktop.updateAnnouncementWindowLF();
 				// desktop.updateTransportWizardLF();
-				// System.out.println("just updated UI");
 			}
 		}
-		// logger.info("MainScene's setLookAndFeel() is on " +
-		// Thread.currentThread().getName() + " Thread");
+
 	}
 
 	/*
@@ -2676,29 +2526,20 @@ public class MainScene {
 
 	/**
 	 * Creates and returns a {@link Flyout}
-	 * 
 	 * @return a new {@link Flyout}
 	 */
-	// 2015-11-11 Added createFlyout()
 	public JFXPopup createFlyout() {
 		marsNetBtn = new JFXButton();
 		// marsNetBtn.getStyleClass().add("menu-button");//"button-raised");
 		marsNetIcon = new IconNode(FontAwesome.COMMENTING_O);
 		marsNetIcon.setIconSize(20);
-		// marsNetIcon.setStroke(Color.WHITE);
-
-		// marsNetButton.setId("marsNetButton");
 		// marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this
 		// significantly reduce the size of the button image
 		setQuickToolTip(marsNetBtn, "Click to open MarsNet Chat Box");
 
 		marsNetBox = new JFXPopup(createChatBox());
-		// rootAnchorPane.getChildren().add(marsNetBox);
 		marsNetBox.setOpacity(.9);
-		// marsNetBox.setPopupContainer(rootAnchorPane);
-		// marsNetBox.setSource(marsNetBtn);
 
-		// chatBox.update();
 		marsNetBtn.setOnAction(e -> {
 			if (!flag)
 				chatBox.update();
@@ -2725,28 +2566,14 @@ public class MainScene {
 		marsNetBox.show(marsNetBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
 	}
 
-	// public void ToggleMarsNetButton(boolean value) {
-	// marsNetButton.setSelected(value);
-	// }
-
-	// public boolean isToggleMarsNetButtonSelected() {
-	// return marsNetButton.isSelected();
-	// }
-
-	// public void fireMarsNetButton() {
-	// marsNetButton.fire();
-	// }
-
 	public JFXPopup getFlyout() {
 		return marsNetBox;
 	}
 
 	/*
 	 * Creates a chat box
-	 * 
 	 * @return StackPane
 	 */
-	// 2015-11-11 Added createChatBox()
 	public StackPane createChatBox() {
 		chatBox = new ChatBox(this);
 		chatBox.getAutoFillTextBox().getTextbox().requestFocus();
@@ -2776,9 +2603,6 @@ public class MainScene {
 	 * Creates the time bar for MainScene
 	 */
 	public void createLastSaveBar() {
-		// lastSaveBar = new HBox();
-		// lastSaveBar.setPadding(new Insets(5,5,5,5));
-
 		// 2016-09-15 Added oldLastSaveStamp
 		oldLastSaveStamp = sim.getLastSave();
 		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
@@ -2786,7 +2610,6 @@ public class MainScene {
 		lastSaveLabel = new Label();
 		lastSaveLabel.setId("save-label");
 		lastSaveLabel.setMaxWidth(Double.MAX_VALUE);
-		// lastSaveLabel.setMinWidth(220);
 		if (OS.contains("linux")) {
 			lastSaveLabel.setMinWidth(LINUX_WIDTH);
 			lastSaveLabel.setPrefSize(LINUX_WIDTH, 29);
@@ -2797,87 +2620,14 @@ public class MainScene {
 			lastSaveLabel.setMinWidth(WIN_WIDTH);
 			lastSaveLabel.setPrefSize(WIN_WIDTH, 33);
 		}
-		// lastSaveLabel.setPrefSize(220, 20);
+
 		lastSaveLabel.setAlignment(Pos.CENTER_LEFT);
 		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
 		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
 
 		setQuickToolTip(lastSaveLabel, "Last time when the sim was (auto)saved");
 
-		// lastSaveBar.getChildren().add(lastSaveLabel);
-		/*
-		 * memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-		 * memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
-		 * memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-		 * memUsed = memTotal - memFree;
-		 */
-
 	}
-
-	/*
-	 * Creates the status bar for MainScene
-	 * 
-	 * public StatusBar createStatusBar() { if (statusBar == null) { statusBar = new
-	 * StatusBar(); statusBar.setText(""); }
-	 * 
-	 * //2016-09-15 Added oldLastSaveStamp oldLastSaveStamp =
-	 * sim.instance().getLastSave(); oldLastSaveStamp =
-	 * oldLastSaveStamp.replace("_", " ");
-	 * 
-	 * lastSaveText = new Label(); lastSaveText.setText("Last Saved : " +
-	 * oldLastSaveStamp + " ");
-	 * lastSaveText.setStyle("-fx-text-inner-color: orange;");
-	 * lastSaveText.setTooltip(new Tooltip
-	 * ("Time last saved/autosaved on your machine"));
-	 * 
-	 * statusBar.getLeftItems().add(new Separator(VERTICAL));
-	 * statusBar.getLeftItems().add(lastSaveText); statusBar.getLeftItems().add(new
-	 * Separator(VERTICAL));
-	 * 
-	 * memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-	 * memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
-	 * memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-	 * memUsed = memTotal - memFree;
-	 * 
-	 * statusBar.getRightItems().add(new Separator(VERTICAL));
-	 * 
-	 * if (masterClock == null) { masterClock =
-	 * Simulation.instance().getMasterClock(); }
-	 * 
-	 * if (earthClock == null) { earthClock = masterClock.getEarthClock(); }
-	 * 
-	 * timeText = new Label(); timeText.setText("  " + timeStamp + "  ");
-	 * timeText.setStyle("-fx-text-inner-color: orange;"); timeText.setTooltip(new
-	 * Tooltip ("Earth Date/Time"));
-	 * 
-	 * statusBar.getRightItems().add(timeText); statusBar.getRightItems().add(new
-	 * Separator(VERTICAL));
-	 * 
-	 * return statusBar; }
-	 * 
-	 * 
-	 * public NotificationPane getNotificationPane() { return notificationPane; }
-	 * 
-	 * public Node createNotificationPane() { // wrap the dndTabPane inside
-	 * notificationNode notificationPane = new NotificationPane(mainAnchorPane);
-	 * 
-	 * String imagePath =
-	 * getClass().getResource("/notification/notification-pane-warning.png").
-	 * toExternalForm(); ImageView image = new ImageView(imagePath);
-	 * notificationPane.setGraphic(image); notificationPane.getActions().addAll(new
-	 * Action("Close", ae -> { // do sync, then hide... notificationPane.hide(); }
-	 * ));
-	 * 
-	 * notificationPane.setShowFromTop(false);
-	 * notificationPane.setText("Breaking news for mars-simmers !!"); return
-	 * notificationPane; }
-	 * 
-	 * 
-	 * public String getSampleName() { return "Notification Pane"; }
-	 * 
-	 * public String getControlStylesheetURL() { return
-	 * "/org/controlsfx/control/notificationpane.css"; }
-	 */
 
 	/*
 	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
@@ -2913,10 +2663,10 @@ public class MainScene {
 
 		if (L_s > 68 && L_s < 72) {
 			noteLabel.setText(NOTE_MARS + APHELION);
-			// noteLabel.setEffect(blend);
+
 		} else if (L_s > 248 && L_s < 252) {
 			noteLabel.setText(NOTE_MARS + PERIHELION);
-			// noteLabel.setEffect(blend);
+
 		} else
 			noteLabel.setEffect(null);
 
@@ -2932,27 +2682,24 @@ public class MainScene {
 		e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF1());
 		earthTimeButton.setText(e.toString());
 
-		// 2017-05-03 Add triggering the display of pause pane when autosaving
 		if (masterClock.getAutosave()) {
 			saveSimulation(Simulation.AUTOSAVE);
 			masterClock.setAutosave(false);
 		}
 
-		// 2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
 		if (sim.getJustSaved()) {
 			String newLastSaveStamp = sim.getLastSave();
 			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
 				sim.setJustSaved(false);
 				oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
 				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
-				// System.out.print("updated last save time stamp");
+
 			}
 		}
 	}
 
 	/**
 	 * Gets the main desktop panel.
-	 * 
 	 * @return desktop
 	 */
 	public MainDesktopPane getDesktop() {
@@ -2967,9 +2714,6 @@ public class MainScene {
 	 * Create a new simulation.
 	 */
 	public void newSimulation() {
-		// logger.info("MainScene's newSimulation() is on " +
-		// Thread.currentThread().getName() + " Thread");
-
 		if ((newSimThread == null) || !newSimThread.isAlive()) {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
 				@Override
@@ -2990,8 +2734,6 @@ public class MainScene {
 	 * Performs the process of creating a new simulation.
 	 */
 	private void newSimulationProcess() {
-		// logger.info("MainScene's newSimulationProcess() is on " +
-		// Thread.currentThread().getName() + " Thread");
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Starting new sim");
 		alert.setHeaderText(Msg.getString("MainScene.new.header"));
@@ -3006,8 +2748,7 @@ public class MainScene {
 
 		if (result.get() == buttonTypeOne) {
 			saveOnExit();
-			// } else if (result.get() == buttonTypeTwo) {
-			// endSim();
+
 		} else if (result.get() == buttonTypeCancel) {// !result.isPresent())
 			return;
 		}
@@ -3016,13 +2757,9 @@ public class MainScene {
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
-	 *
 	 * @param type
 	 */
 	public void saveSimulation(int type) {
-		// logger.info("MainScene's saveSimulation() is on " +
-		// Thread.currentThread().getName() + " Thread");
-		// boolean previous = startPause();
 		if (!masterClock.isPaused()) {
 			// hideWaitStage(PAUSED);
 			if (type == Simulation.SAVE_DEFAULT || type == Simulation.SAVE_AS)
@@ -3054,7 +2791,6 @@ public class MainScene {
 	/**
 	 * Performs the process of saving a simulation.
 	 */
-	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
 		// logger.info("MainScene's saveSimulationProcess() is on " +
 		// Thread.currentThread().getName() + " Thread");
@@ -3064,7 +2800,6 @@ public class MainScene {
 
 		hideWaitStage(PAUSED);
 
-		// 2015-01-25 Added autosave
 		if (type == Simulation.AUTOSAVE) {
 			dir = Simulation.AUTOSAVE_DIR;
 			masterClock.setSaveSim(Simulation.AUTOSAVE, null);
@@ -3074,7 +2809,7 @@ public class MainScene {
 			masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
 
 		} else if (type == Simulation.SAVE_AS) {
-			// masterClock.setPaused(true);
+
 			Platform.runLater(() -> {
 				FileChooser chooser = new FileChooser();
 				dir = Simulation.DEFAULT_DIR;
@@ -3089,13 +2824,12 @@ public class MainScene {
 				chooser.getExtensionFilters().addAll(simFilter, allFilter);
 				File selectedFile = chooser.showSaveDialog(stage);
 				if (selectedFile != null)
-					fileLocn = selectedFile;// + Simulation.DEFAULT_EXTENSION;
+					fileLocn = selectedFile;
 				else {
 					hideWaitStage(PAUSED);
 					return;
 				}
 
-				// hideWaitStage(PAUSED);
 				showWaitStage(SAVING);
 
 				Task<Void> task = new Task<Void>() {
@@ -3167,7 +2901,6 @@ public class MainScene {
 
 	/**
 	 * Creates the pause box to be displayed on the root pane.
-	 * 
 	 * @return VBox
 	 */
 	// 2017-04-12 Add pause pane
@@ -3186,9 +2919,6 @@ public class MainScene {
 		label1.setAlignment(Pos.CENTER);
 		label1.setPadding(new Insets(2));
 		label1.setStyle(" -fx-font: bold 11pt 'Corbel'; -fx-text-fill: cyan;");
-		// label.setMaxWidth(250);
-		// label1.setWrapText(true);
-
 		vbox.getChildren().addAll(label, label1);
 		vbox.setAlignment(Pos.CENTER);
 
@@ -3245,8 +2975,6 @@ public class MainScene {
 	 * the main menu running
 	 */
 	private void endSim() {
-		// logger.info("MainScene's endSim() is on " + Thread.currentThread().getName()
-		// + " Thread");
 		Simulation.instance().endSimulation();
 		Simulation.instance().getSimExecutor().shutdownNow();
 		mainSceneExecutor.shutdownNow();
@@ -3258,8 +2986,6 @@ public class MainScene {
 	 * Exits the current simulation and the main menu.
 	 */
 	public void exitSimulation() {
-		// logger.info("MainScene's exitSimulation() is on " +
-		// Thread.currentThread().getName() + " Thread");
 		logger.info("Exiting the simulation. Bye!");
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
@@ -3287,34 +3013,11 @@ public class MainScene {
 		return swingNode;
 	}
 
-	/**
-	 * Creates an Alert Dialog to confirm ending or exiting the simulation or MSP
-	 * 
-	 * public boolean alertOnExit() {
-	 * 
-	 * Alert alert = new Alert(AlertType.CONFIRMATION); alert.setTitle("Leaving the
-	 * sim"); alert.initOwner(stage);
-	 * alert.setHeaderText(Msg.getString("MainScene.exit.header"));
-	 * alert.setContentText(Msg.getString("MainScene.exit.content")); ButtonType
-	 * buttonTypeOne = new ButtonType("Save & Exit"); //ButtonType buttonTypeTwo =
-	 * new ButtonType("End Sim"); ButtonType buttonTypeThree = new ButtonType("Exit
-	 * Sim"); ButtonType buttonTypeCancel = new ButtonType("Back to Sim",
-	 * ButtonData.CANCEL_CLOSE); alert.getButtonTypes().setAll(buttonTypeOne,
-	 * //buttonTypeTwo, buttonTypeThree, buttonTypeCancel); Optional<ButtonType>
-	 * result = alert.showAndWait();
-	 * 
-	 * if (result.get() == buttonTypeOne) { saveOnExit(); return true;
-	 * 
-	 * } else if (result.get() == buttonTypeThree) { endSim(); exitSimulation();
-	 * Platform.exit(); System.exit(0); return true;
-	 * 
-	 * } else { return false; } }
-	 */
 
 	/**
 	 * Open the exit dialog box
 	 */
-	public void dialogOnExit() {// StackPane pane) {
+	public void dialogOnExit() {
 		jfxTabPane.getSelectionModel().select(mainTab);
 		isShowingDialog = true;
 		Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
@@ -3368,8 +3071,6 @@ public class MainScene {
 	 * Initiates the process of saving a simulation.
 	 */
 	public void saveOnExit() {
-		// logger.info("MainScene's saveOnExit() is on " +
-		// Thread.currentThread().getName() + " Thread");
 		showWaitStage(SAVING);
 		desktop.getTimeWindow().enablePauseButton(false);
 		// Save the simulation as default.sim
@@ -3406,10 +3107,6 @@ public class MainScene {
 	}
 
 	public void openInitialWindows() {
-		// logger.info("MainScene's openInitialWindows() is on " +
-		// Thread.currentThread().getName() + " Thread");
-		// String OS = System.getProperty("os.name").toLowerCase();
-		// System.out.println("OS is " + OS);
 		if (OS.contains("mac")) {
 			// SwingUtilities needed below for MacOSX
 			SwingUtilities.invokeLater(() -> {
@@ -3529,13 +3226,6 @@ public class MainScene {
 			savingScene = new Scene(asPane);// , 150, 150);
 			savingScene.setFill(Color.TRANSPARENT);
 			savingStage.setScene(savingScene);
-
-			// savingStage.xProperty().addListener((observable, oldValue, newValue) ->
-			// savingStage.setX(scene.getX()));
-			// savingStage.yProperty().addListener((observable, oldValue, newValue) ->
-			// savingStage.setY(scene.getY()));
-			// savingStage.setY(scene.getY() + .5 * (scene.getHeight() -
-			// savingStage.getHeight()));
 			savingStage.hide();
 
 		}
@@ -3572,7 +3262,6 @@ public class MainScene {
 
 	/**
 	 * Starts the wait stage in an executor thread
-	 * 
 	 * @param type
 	 */
 	public void showWaitStage(int type) {
@@ -3587,7 +3276,6 @@ public class MainScene {
 
 	/*
 	 * Set up a wait stage
-	 * 
 	 * @param type
 	 */
 	class LoadWaitStageTask implements Runnable {
@@ -3675,8 +3363,6 @@ public class MainScene {
 
 	// 2016-10-01 Added mainSceneExecutor for executing wait stages
 	private void startMainSceneExecutor() {
-		// logger.info("Simulation's startSimExecutor() is on " +
-		// Thread.currentThread().getName() + " Thread");
 		// INFO: Simulation's startSimExecutor() is on JavaFX-Launcher Thread
 		mainSceneExecutor = Executors.newSingleThreadExecutor();
 	}
@@ -3722,7 +3408,6 @@ public class MainScene {
 	 */
 	/**
 	 * Sets up the JavaFX's tooltip
-	 * 
 	 * @param n
 	 *            Node
 	 * @param s
@@ -3735,15 +3420,8 @@ public class MainScene {
 		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); // I position
-																											// the
-																											// tooltip
-																											// at bottom
-																											// right of
-																											// the node
-																											// (see
-																											// below for
-																											// explanation)
+				// position tooltip at bottom right of the node
+				Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); 
 				tt.show(n, p.getX(), p.getY());
 			}
 		});

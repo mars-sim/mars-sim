@@ -8,26 +8,19 @@
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import javafx.animation.*;
-import javafx.application.Application;
-//import javafx.geometry.Pos;
-//import javafx.application.Platform;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-import javafx.scene.Scene;
-//import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.DropShadow;
-//import javafx.scene.effect.Effect;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+//import javafx.scene.image.Image;
+//import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-//import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -38,7 +31,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.StarfieldFX;
 
 @SuppressWarnings("restriction")
-public class MenuApp extends Application {
+public class MenuApp {
 
     private static final int WIDTH = MainMenu.WIDTH;
     private static final int HEIGHT = MainMenu.HEIGHT;
@@ -46,7 +39,7 @@ public class MenuApp extends Application {
     private static final int Y_OFFSET = 240;
 
 
-    private Pane root = new Pane();
+    private AnchorPane root = new AnchorPane();
     private VBox menuBox;
     private HBox optionMenu = new HBox();
     private Line line;
@@ -77,7 +70,7 @@ public class MenuApp extends Application {
         );
     }    
     
-    Parent createContent() {
+    AnchorPane createContent() {
         //addBackground();
     	addRect();
     	addStarfield();
@@ -94,7 +87,7 @@ public class MenuApp extends Application {
 
     private void addRect() {
         Rectangle rect = new Rectangle(WIDTH, HEIGHT);
-        
+        rect.setFill(Color.rgb(0, 0, 0, .80));
         root.getChildren().add(rect);
     }
 
@@ -114,6 +107,7 @@ public class MenuApp extends Application {
         root.getChildren().add(globe);	
     }
     
+/*    
     private void addBackground() {
         ImageView imageView = new ImageView(new Image(this.getClass().getResource("/images/mainMenu/mars.jpg").toExternalForm()));
         imageView.setFitWidth(WIDTH);
@@ -121,7 +115,7 @@ public class MenuApp extends Application {
 
         root.getChildren().add(imageView);
     }
-
+*/
     private void addTitle() {
         MenuTitle title = new MenuTitle("Mars Simulation Project", 36, Color.LIGHTGOLDENRODYELLOW, true);//DARKGOLDENROD);
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
@@ -247,15 +241,4 @@ public class MenuApp extends Application {
     	return menuData;
     }
     
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Scene scene = new Scene(createContent());
-        primaryStage.setTitle("mars-sim Main Menu");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 }

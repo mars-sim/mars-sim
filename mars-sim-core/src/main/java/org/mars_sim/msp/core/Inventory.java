@@ -1107,9 +1107,9 @@ implements Serializable {
             }
         }
         else {
-        	//throw new IllegalStateException(
-    	    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::storeUnit",
-    	    		"Unit: " + unit + " could not be stored.", null);
+        	throw new IllegalStateException("Unit: " + unit + " could not be stored.");
+    	    //LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::storeUnit",
+    	    // 		"Unit: " + unit + " could not be stored.", null);
         }
     }
 
@@ -1155,9 +1155,9 @@ implements Serializable {
         if (retrieved) {
             unit.setContainerUnit(null); // this can cause person.getSettlement() = null
         } else {
-            //throw new IllegalStateException
-    	    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::retrieveUnit",
-    	    		"Unit: " + unit + " could not be retrieved.", null);
+            throw new IllegalStateException("Unit: " + unit + " could not be retrieved.");
+    	    //LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::retrieveUnit",
+    	    //		"Unit: " + unit + " could not be retrieved.", null);
         }
     }
 

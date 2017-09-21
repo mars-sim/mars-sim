@@ -65,6 +65,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -152,7 +153,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	private double currentTemperature = 22.5;
 	
-	private double currentPressure = NORMAL_AIR_PRESSURE; //[in Pascal], not kPa
+	private double currentPressure = NORMAL_AIR_PRESSURE; //[in kPa], not Pascal
+	
 	/** Amount of time (millisols) that the settlement has had zero population.  */
 	private double zeroPopulationTime;
 
@@ -828,9 +830,10 @@ implements Serializable, LifeSupportType, Objective {
 			double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
-			getInventory().retrieveAmountResource(waterAR, waterTaken);
-			getInventory().addAmountDemandTotalRequest(waterAR);
-			getInventory().addAmountDemand(waterAR, waterTaken);
+			Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//, sourceName + "::provideWater");
+			//getInventory().retrieveAmountResource(waterAR, waterTaken);
+			//getInventory().addAmountDemandTotalRequest(waterAR);
+			//getInventory().addAmountDemand(waterAR, waterTaken);
 		}
 	    catch (Exception e) {
 	    	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing H2O needs: " + e.getMessage(), null);
@@ -840,20 +843,31 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Computes the air pressure of the life support system.
+	 * Computes the average air pressure of the life support system.
 	 * @return air pressure [kPa]
 	 */
-	public double computeTotalPressure() {
-		double total_area = 0, total_p_area = 0;
+	public double computeAveragePressure() {
+		double total = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
-		//int size = buildings.size();
+		int size = buildings.size();
         for (Building b : buildings) { 
 			int id = b.getInhabitableID();
-			total_area += b.getFloorArea();
-			total_p_area += compositionOfAir.getTotalPressure()[id] * b.getFloorArea();
+			total += compositionOfAir.getTotalPressure()[id] ;
+		}
+		// convert from atm to kPascal
+		return total * CompositionOfAir.kPa_per_atm / size;
+/*		
+		double total_area = 0, total_p_area = 0;
+		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
+        for (Building b : buildings) { 
+			int id = b.getInhabitableID();
+			double area = b.getFloorArea();
+			total_area += area;
+			total_p_area += compositionOfAir.getTotalPressure()[id] * area;
 		}
 		// convert from atm to kPascal
 		return total_p_area * CompositionOfAir.kPASCAL_PER_ATM / total_area;
+*/		
 	}
 
 	/**
@@ -872,46 +886,28 @@ implements Serializable, LifeSupportType, Objective {
 	 * Computes the average temperature in the settlement (from the life support system of all buildings)
 	 * @return temperature (degrees C)
 	 */
-	public double computeTemperature() {
-/*
+	public double computeAverageTemperature() {
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
-
-		double sum = 0;
+		int size = buildings.size();
+		double total = 0;
         for (Building b : buildings) {
-            sum += b.getCurrentTemperature();
+            total += b.getCurrentTemperature();
         }
-				
-		return sum/buildings.size();
-*/
+
+        return total / size;
+ /*
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
 
 		double total_t_area = 0, total_area = 0;
 		
         for (Building b : buildings) {    
             double a = b.getFloorArea();
-            double t = b.getCurrentTemperature();
             total_area += a;
-            total_t_area += a*t;
+            total_t_area += b.getCurrentTemperature() * a;
         }
 
         return total_t_area / total_area;
- 
-        
-/*
-		double result = NORMAL_TEMP; // (malfunctionManager.getTemperatureModifier() / 100D);
-		//double result = getLifeSupport().getTemperature();
-		if (weather == null)
-			weather = sim.getMars().getWeather();
-		double ambient = weather.getTemperature(getCoordinates());
-
-		if (result < ambient)
-			return ambient;
-		else
-			return result;
-
-		return result;
-*/
-
+ */
 	}
 
 
@@ -1042,9 +1038,9 @@ implements Serializable, LifeSupportType, Objective {
 	    // 2015-12-29 Added CompositionOfAir
 	    compositionOfAir.timePassing(time);
 
-	    currentPressure = computeTotalPressure() ;
+	    currentPressure = computeAveragePressure() ;
 	    
-	    currentTemperature = computeTemperature();
+	    currentTemperature = computeAverageTemperature();
 
 		outside_temperature = weather.getTemperature(location);
 

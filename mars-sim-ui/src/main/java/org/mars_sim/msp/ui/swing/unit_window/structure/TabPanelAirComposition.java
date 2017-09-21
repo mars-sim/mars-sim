@@ -308,7 +308,7 @@ extends TabPanel {
 		else if (pressure_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%1.2f", v * CompositionOfAir.kPASCAL_PER_ATM);
+			return String.format("%1.2f", v * CompositionOfAir.kPa_per_atm);
 		}
 		//else if (moles_btn.isSelected()) {
 		//	v = air.getTotalMoles()[row];
@@ -347,14 +347,7 @@ extends TabPanel {
 		}
 		else {
 
-			double o2 = getOverallComposition(3);
-			if (o2Cache != o2) {
-				o2Cache = o2;
-				o2Label.setText(
-					Msg.getString("TabPanelAirComposition.label.percent", //$NON-NLS-1$
-					fmt2.format(o2Cache))+"   "
-					);
-			}
+
 
 			double cO2 = getOverallComposition(0);
 			if (cO2Cache != cO2) {
@@ -365,14 +358,15 @@ extends TabPanel {
 					);
 			}
 
-			double h2O = getOverallComposition(1);
-			if (h2OCache != h2O) {
-				h2OCache = h2O;
-				h2OLabel.setText(
+			double ar = getOverallComposition(1);
+			if (arCache != ar) {
+				arCache = ar;
+				arLabel.setText(
 					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
-					fmt2.format(h2O))+"   "
+					fmt2.format(ar))+"   "
 					);
 			}
+			
 
 			double n2 =  getOverallComposition(2);
 			if (n2Cache != n2) {
@@ -383,16 +377,26 @@ extends TabPanel {
 					);
 			}
 
-			double ar = getOverallComposition(4);
-			if (arCache != ar) {
-				arCache = ar;
-				arLabel.setText(
-					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
-					fmt2.format(ar))+"   "
+
+
+			double o2 = getOverallComposition(3);
+			if (o2Cache != o2) {
+				o2Cache = o2;
+				o2Label.setText(
+					Msg.getString("TabPanelAirComposition.label.percent", //$NON-NLS-1$
+					fmt2.format(o2Cache))+"   "
 					);
 			}
 
-
+			double h2O = getOverallComposition(4);
+			if (h2OCache != h2O) {
+				h2OCache = h2O;
+				h2OLabel.setText(
+					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
+					fmt2.format(h2O))+"   "
+					);
+			}
+			
 			double averageTemperature = Math.round(settlement.getTemperature()*1000.0)/1000.0; // convert to kPascal by multiplying 1000
 			if (averageTemperatureCache != averageTemperature) {
 				averageTemperatureCache = averageTemperature;
@@ -530,7 +534,7 @@ extends TabPanel {
 			if (percent_btn.isSelected())
 				return air.getPercentComposition()[gas][id];
 			else if (pressure_btn.isSelected())
-				return air.getPartialPressure()[gas][id] * CompositionOfAir.kPASCAL_PER_ATM;
+				return air.getPartialPressure()[gas][id] * CompositionOfAir.kPa_per_atm;
 			//else if (temperature_btn.isSelected())
 			//	return air.getTemperature()[gas][id] - CompositionOfAir.C_TO_K;
 			//else if (moles_btn.isSelected())

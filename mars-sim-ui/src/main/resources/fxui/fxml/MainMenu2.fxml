@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768" prefWidth="1024" style="-fx-background-color:  rgba(0,0,0,0);" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+    <Text layoutX="27.0" layoutY="49.0" stroke="BLACK" text="Mars Simulation Project">
+      <effect>
+        <DropShadow color="#bfbfbf" height="18.217261904761905" radius="8.798363095238095" width="18.976190476190474" />
+      </effect>
+      <fill>
+        <Color blue="0.020" green="0.804" red="1.000" fx:id="x3" />
+      </fill>
+      <font>
+        <Font name="Arial Black" size="32.0" />
+      </font>
+    </Text>
+   <Text fill="$x3" layoutX="670.0" layoutY="41.0" stroke="$x3" text="Version 3.1.0" />
+   
+    <!--Hyperlink fx:id="carlfxHyperlink" fill="$x3" layoutX="478.0" layoutY="565.0" 
+    		stroke="$x3" text="mars-sim.sourceforge.net" /-->
+    
+    <Text fill="$x3" layoutX="580.0" layoutY="565.0" stroke="$x3" text="https://mars-sim.github.io/">
+       <font>
+        <Font size="16.0" />
+      </font>
+    </Text>
+    <!--Hyperlink fx:id="carlfxHyperlink" font="$x4" layoutX="200.0" layoutY="59.0" text="Version 3.08" textFill="WHITE" />-->
+  </children>
+</AnchorPane>

@@ -1128,7 +1128,7 @@ implements Serializable {
             // If not successful, try again 10m from each building and continue out at 10m increments
             // until a location is found.
             BuildingManager buildingManager = settlement.getBuildingManager();
-            if (buildingManager.getBuildingNum() > 0) {
+            if (buildingManager.getNumBuilding() > 0) {
                 for (int x = 10; !goodPosition; x+= 10) {
                     List<Building> allBuildings = buildingManager.getACopyOfBuildings();
                     Collections.shuffle(allBuildings);

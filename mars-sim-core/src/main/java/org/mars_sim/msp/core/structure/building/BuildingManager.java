@@ -97,6 +97,7 @@ public class BuildingManager implements Serializable {
     //private static List<BuildingFunction> buildingFunctions; 
     
     // Data members
+    private int numBuildings;
 	private int solCache = 0;
     private int millisolCache = -5;
 	private double probabilityOfImpactPerSQMPerSol;
@@ -173,7 +174,8 @@ public class BuildingManager implements Serializable {
         //    logger.info("Calling setupBuildingFunctionsMap() within BuildingManager constructor");
     	setupBuildingFunctionsMap();
     	//}
-        //numBuildingsCache = getBuildingNum();
+       
+    	numBuildings = getNumBuilding();
 
 /*
         // 2016-10-16 Create buildingFunctionsMap
@@ -741,13 +743,20 @@ public class BuildingManager implements Serializable {
 
     /**
      * Gets the number of buildings at the settlement.
-     *
      * @return number of buildings
      */
-    public int getBuildingNum() {
+    public int countBuildingNum() {
         return buildings.size();
     }
 
+    /**
+     * Gets the number of buildings at the settlement.
+     * @return number of buildings
+     */
+    public int getNumBuilding() {
+        return numBuildings;
+    }
+    
     /**
      * Time passing for all buildings.
      *
@@ -770,12 +779,16 @@ public class BuildingManager implements Serializable {
         	meteorite.startMeteoriteImpact(this);
         }
 
+       	numBuildings = countBuildingNum();
+       	
         for (Building b : buildings) {
         //Iterator<Building> i = buildings.iterator();
         //while (i.hasNext()) {
             //i.next().timePassing(time);
             b.timePassing(time);
         }
+        
+
 /*
         int m = (int) marsClock.getMillisol();
         if (millisolCache != m) {
