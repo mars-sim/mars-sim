@@ -135,7 +135,7 @@ implements Serializable, LifeSupportType, Objective {
 	private int initialPopulation;
 	private int initialNumOfRobots;
 	private int scenarioID;
-	private int solCache = 1;//, counter30 = 1;
+	private int solCache = 0;//, counter30 = 1;
 	private int numShift;
 	private int numA; // number of people with work shift A
 	private int numB; // number of people with work shift B
@@ -247,7 +247,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	private Coordinates location; 
 	
-	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
+	private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
@@ -343,14 +343,18 @@ implements Serializable, LifeSupportType, Objective {
 		updateAllAssociatedRobots();
 
 		// Set inventory total mass capacity.
-		getInventory().addGeneralCapacity(Double.MAX_VALUE);
-	
+		getInventory().addGeneralCapacity(Double.MAX_VALUE); //10_000_000);//
+		
+		double max = 500;
 		// 2017-05-24 initialize inventory of this building for resource storage 
 		for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
 			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
 			if (resourceCapacity >= 0) {
-				double max = getInventory().getTotalAmountResourcesStoredCache(false);
 				getInventory().addAmountResourceTypeCapacity(ar, max);	
+				//double cap = getInventory().getAmountResourceCapacity(ar, false);
+				//double storedCache = getInventory().getTotalAmountResourcesStoredCache(false);
+				//System.out.println(ar.getName() + "'s cap : " + cap + "   storedCache : " + storedCache);
+				
 			}
 		}
 
@@ -1253,7 +1257,8 @@ implements Serializable, LifeSupportType, Objective {
 	public void performEndOfDayTasks() {
 		// check for the passing of each day
 		int solElapsed = marsClock.getMissionSol();
-		if (solElapsed != solCache) {
+		if (solCache != solElapsed) {
+			
 			// getFoodEnergyIntakeReport();
 
 			reassignWorkShift();
@@ -3300,10 +3305,7 @@ implements Serializable, LifeSupportType, Objective {
     public int waterRationLevel() {
         int result = 0;
 
-        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double storedWater = getInventory().getAmountResourceStored(waterAR, false);
-
-        //PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
         double requiredDrinkingWaterOrbit = water_consumption * getNumCurrentPopulation() *
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 

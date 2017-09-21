@@ -185,6 +185,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
 				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf	
 				 					
+				 					
+				It uses the state-of-the-art forward osmosis secondary treatment 
+				system (FOST) as well as Synthetic Biological Membrane (SBM)
+				developed at NASA Ames.  					
+				 					
 				We assume a waste processor capable of daily processsing
 				40 kg grey water (with .5 kg Cl2) and generate 38 kg clean 
 				water and 2 kg of solid waste. Note that .5 kg of water is lost 
@@ -232,16 +237,32 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				for treatment. 
 													
 				We assume a urine/fece processor capable of daily processsing
-				20 kg black water and generate 17 kg clean water and 
+				20 kg black water and generate 17 kg grey water and 
 				2 kg of toxic waste. There is a lost of 1 kg of water.
 				-->
 					
 				<process name="Black Water Processor" power-required=".315" default="on">
 					<input resource="black water" rate="20" ambient="false" />
 					<input resource="chlorine" rate="0.1" ambient="false" />
-					<output resource="water" rate="17" ambient="false" />
-					<output resource="toxic waste" rate="2" ambient="false" />
+					<input resource="nitrospira spp" rate="0.02" ambient="false" />
+					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />	
+					<input resource="chlorine" rate="0.5" ambient="false" />								
+					<output resource="grey water" rate="17" ambient="false" />
+					<output resource="toxic waste" rate="1" ambient="false" />
+					<output resource="nitrogen" rate=".5" ambient="false" />
+					<output resource="nitrite" rate=".5" ambient="false" />
+					<output resource="nitrate" rate=".5" ambient="false" />
+					<output resource="phosphorus" rate=".5" ambient="false" />					
 				</process>
+
+<!-- TODO: chemist can isolate these bacteria and grow them in the lab
+ Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira. Nitrospira are nitrite-oxidizing bacteria that are important
+ for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
+ If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
+
+ Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
+ All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
+-->
 
 				<!-- The precursor technology is based on an experimental device
 				being researched in by NASA called Vortical Oxidative Reactor 
@@ -410,7 +431,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
-				<resource-storage resource="nitrogen" capacity="500.0" />
+				<resource-storage resource="nitrogen" capacity="1000.0" />
 
 				<resource-storage resource="ice" capacity="1000.0" />
 				<resource-storage resource="regolith" capacity="1000.0" />
@@ -422,56 +443,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="paper" capacity="100.0" />
 				<resource-storage resource="napkin" capacity="100.0" />
 
-				<resource-storage resource="cane fiber" capacity="500.0" />
-				<resource-storage resource="yeast" capacity="500.0" />
-				<resource-storage resource="epsom salt" capacity="500.0" />
-				<resource-storage resource="table salt" capacity="500.0" />
-				<resource-storage resource="sugar" capacity="500.0" />
-				<resource-storage resource="rice vinegar" capacity="500.0" />
-				<resource-storage resource="soy sauce" capacity="500.0" />
-				<resource-storage resource="soymilk" capacity="500.0" />
-				<resource-storage resource="soybean oil" capacity="500.0" />
-				<resource-storage resource="soy flour" capacity="500.0" />
-				<resource-storage resource="wheat flour" capacity="500.0" />
-				<resource-storage resource="granola bar" capacity="500.0" />
-				<resource-storage resource="honey" capacity="500.0" />
-				<resource-storage resource="baking Powder" capacity="500.0" />
-				<resource-storage resource="cranberry juice" capacity="100.0" />
-				<resource-storage resource="sugarcane juice" capacity="100.0" />
-				<resource-storage resource="blueberry muffin" capacity="500.0" />
 
-				<resource-storage resource="soybean" capacity="100.0" />
-				<resource-storage resource="white onion" capacity="100.0" />
-				<resource-storage resource="rice" capacity="100.0" />
-				<resource-storage resource="kidney bean" capacity="100.0" />
-				<resource-storage resource="wheat" capacity="100.0" />
-				<resource-storage resource="cabbage" capacity="100.0" />
-				<resource-storage resource="carrot" capacity="100.0" />
-				<resource-storage resource="spring onion" capacity="100.0" />
-				<resource-storage resource="peanut" capacity="100.0" />
-				<resource-storage resource="potato" capacity="100.0" />
-				<resource-storage resource="sesame" capacity="100.0" />
-				<resource-storage resource="garlic" capacity="100.0" />
-				<resource-storage resource="lettuce" capacity="100.0" />
-				<resource-storage resource="ginger" capacity="100.0" />
-				<resource-storage resource="sugarcane" capacity="100.0" />
-				<resource-storage resource="strawberry" capacity="100.0" />
-				<resource-storage resource="quinoa" capacity="100.0" />
-				<resource-storage resource="cranberry" capacity="100.0" />
-				<resource-storage resource="blueberry" capacity="100.0" />
-				<resource-storage resource="taro" capacity="100.0" />
-				<resource-storage resource="red beet" capacity="100.0" />
-				<resource-storage resource="morel mushroom" capacity="100.0" />
-				<resource-storage resource="radish" capacity="100.0" />
-				<resource-storage resource="swiss chard" capacity="100.0" />
-											
-				<resource-storage resource="mustard" capacity="100.0" />
-				<resource-storage resource="mustard seed" capacity="100.0" />
-				<resource-storage resource="white mustard" capacity="100.0" />
-				<resource-storage resource="yam" capacity="100.0" />
-
-				<resource-storage resource="sesame seed" capacity="100.0" />
-				<resource-storage resource="sesame oil" capacity="100.0" />
 
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially stored in this building. -->
@@ -608,7 +580,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level=".5">
-				<process name="carbon dioxide Pump" power-required="2.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
 					<input resource="carbon dioxide" rate="20.0" ambient="true" />
 					<output resource="carbon dioxide" rate="20.0" ambient="false" />
 				</process>
@@ -706,7 +678,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level=".5">
-				<process name="carbon dioxide Pump" power-required="5.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
 					<input resource="carbon dioxide" rate="50.0" ambient="true" />
 					<output resource="carbon dioxide" rate="50.0" ambient="false" />
 				</process>
@@ -779,7 +751,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="BIOLOGY" />
 			</research>
 			<resource-processing power-down-level=".5">
-				<process name="carbon dioxide Pump" power-required="5.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
 					<input resource="carbon dioxide" rate="50.0" ambient="true" />
 					<output resource="carbon dioxide" rate="50.0" ambient="false" />
 				</process>
@@ -1032,21 +1004,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />		
 			<resource-processing power-down-level=".5">
-			    <!-- The grey water processor below is 5 times more powerful 
+			    <!-- The grey water processor below is 3 times more powerful 
 			         than the one fund in Lander Hab or Outpost Hub  -->
 				<process name="Grey Water Processor" power-required="1" default="on">			
 					<input resource="grey water" rate="120.0" ambient="false" />
-					<input resource="chlorine" rate="2.5" ambient="false" />
-					<output resource="water" rate="110" ambient="false" />
-					<output resource="solid waste" rate="10" ambient="false" />
+					<input resource="chlorine" rate="1.5" ambient="false" />
+					<output resource="water" rate="114" ambient="false" />
+					<output resource="solid waste" rate="6" ambient="false" />
 				</process>
-				<!-- The black water processor below is 4 times more powerful 
+				<!-- The black water processor below is 3 times more powerful 
 				     than the one found in Lander Hab or Outpost Hub  -->
-				<process name="Black Water Processor" power-required=".315" default="on">
-					<input resource="black water" rate="80" ambient="false" />
-					<input resource="chlorine" rate="0.4" ambient="false" />
-					<output resource="water" rate="76" ambient="false" />
-					<output resource="toxic waste" rate="1" ambient="false" />
+				<process name="Black Water Processor" power-required="0.8" default="on">
+					<input resource="black water" rate="60" ambient="false" />
+					<input resource="chlorine" rate="0.3" ambient="false" />
+					<input resource="nitrospira spp" rate="0.06" ambient="false" />
+					<input resource="nitrosomonas spp" rate="0.06" ambient="false" />	
+					<input resource="chlorine" rate="1.5" ambient="false" />								
+					<output resource="grey water" rate="51" ambient="false" />
+					<output resource="toxic waste" rate="3" ambient="false" />
+					<output resource="nitrogen" rate="1.5" ambient="false" />
+					<output resource="nitrite" rate="1.5" ambient="false" />
+					<output resource="nitrate" rate="1.5" ambient="false" />
+					<output resource="phosphorus" rate="1.5" ambient="false" />					
 				</process>
 
 				<!-- The Solid Waste Management below is 4 times more powerful 
@@ -2374,8 +2353,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<process name="Black Water Processor" power-required=".315" default="on">
 					<input resource="black water" rate="20" ambient="false" />
 					<input resource="chlorine" rate="0.1" ambient="false" />
-					<output resource="water" rate="17" ambient="false" />
-					<output resource="toxic waste" rate="2" ambient="false" />
+					<input resource="nitrospira spp" rate="0.02" ambient="false" />
+					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />	
+					<input resource="chlorine" rate="0.5" ambient="false" />								
+					<output resource="grey water" rate="17" ambient="false" />
+					<output resource="toxic waste" rate="1" ambient="false" />
+					<output resource="nitrogen" rate=".5" ambient="false" />
+					<output resource="nitrite" rate=".5" ambient="false" />
+					<output resource="nitrate" rate=".5" ambient="false" />
+					<output resource="phosphorus" rate=".5" ambient="false" />
 				</process>
 
 					<process name= "Solid Waste Management" power-required=".3" default="on">
@@ -2418,143 +2404,75 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000">
 				<!-- The building's storage capacity for a variety of resource. -->
+				<resource-storage resource="toxic waste" capacity="1000.0" />
+				<resource-storage resource="solid waste" capacity="1000.0" />
+				<resource-storage resource="food waste" capacity="1000.0" />
+				<resource-storage resource="grey water" capacity="2000.0" />
+				<resource-storage resource="black water" capacity="2000.0" />
 
-				<resource-storage resource="toxic waste" capacity="500.0" />
-				<resource-storage resource="solid waste" capacity="500.0" />
-				<resource-storage resource="food waste" capacity="500.0" />
-				<resource-storage resource="grey water" capacity="500.0" />
-				<resource-storage resource="black water" capacity="500.0" />
-
-				<resource-storage resource="food" capacity="500.0" />
-				<resource-storage resource="water" capacity="500.0" />
-				<resource-storage resource="oxygen" capacity="500.0" />
+				<resource-storage resource="food" capacity="1000.0" />
+				<resource-storage resource="water" capacity="3000.0" />
+				<resource-storage resource="oxygen" capacity="1000.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
-				<resource-storage resource="nitrogen" capacity="500.0" />
-				<resource-storage resource="hydrogen" capacity="500.0" />
-					
-				<resource-storage resource="ice" capacity="500.0" />
-				<resource-storage resource="regolith" capacity="500.0" />
+				<resource-storage resource="nitrogen" capacity="1000.0" />
+
+				<resource-storage resource="ice" capacity="1000.0" />
+				<resource-storage resource="regolith" capacity="1000.0" />
 
 				<resource-storage resource="chlorine" capacity="100.0" />
-
-				<resource-storage resource="Sodium Hypochlorite" capacity="100.0" />
-				<resource-storage resource="Acetic Acid Bacteria" capacity="100.0" />
-
+				<resource-storage resource="sodium hypochlorite" capacity="100.0" />
+				<resource-storage resource="acetic acid bacteria" capacity="100.0" />
 				<resource-storage resource="toilet tissue" capacity="100.0" />
 				<resource-storage resource="paper" capacity="100.0" />
 				<resource-storage resource="napkin" capacity="100.0" />
 
-				<resource-storage resource="Cane Fiber" capacity="500.0" />
-				<resource-storage resource="Yeast" capacity="500.0" />
-				<resource-storage resource="Epsom Salt" capacity="500.0" />
-				<resource-storage resource="Table Salt" capacity="500.0" />
-				<resource-storage resource="Sugar" capacity="500.0" />
-				<resource-storage resource="Rice Vinegar" capacity="500.0" />
-				<resource-storage resource="Soy Sauce" capacity="500.0" />
-				<resource-storage resource="Soymilk" capacity="500.0" />
-				<resource-storage resource="Soybean Oil" capacity="500.0" />
-				<resource-storage resource="Soy Flour" capacity="500.0" />
-				<resource-storage resource="Wheat Flour" capacity="500.0" />
-				<resource-storage resource="Granola Bar" capacity="500.0" />
-				<resource-storage resource="Honey" capacity="500.0" />
-				<resource-storage resource="Baking Powder" capacity="500.0" />
-				<resource-storage resource="Cranberry Juice" capacity="100.0" />
-				<resource-storage resource="Sugarcane Juice" capacity="100.0" />
-				<resource-storage resource="Blueberry Muffin" capacity="500.0" />
 
-				<resource-storage resource="Soybean" capacity="100.0" />
-				<resource-storage resource="White Onion" capacity="100.0" />
-				<resource-storage resource="Rice" capacity="100.0" />
-				<resource-storage resource="Kidney Bean" capacity="100.0" />
-				<resource-storage resource="Wheat" capacity="100.0" />
-				<resource-storage resource="Cabbage" capacity="100.0" />
-				<resource-storage resource="Carrot" capacity="100.0" />
-				<resource-storage resource="Spring Onion" capacity="100.0" />
-				<resource-storage resource="Peanut" capacity="100.0" />
-				<resource-storage resource="Potato" capacity="100.0" />
-				<resource-storage resource="Sesame" capacity="100.0" />
-				<resource-storage resource="Garlic" capacity="100.0" />
-				<resource-storage resource="Lettuce" capacity="100.0" />
-				<resource-storage resource="Ginger" capacity="100.0" />
-				<resource-storage resource="Sugarcane" capacity="100.0" />
-				<resource-storage resource="Strawberry" capacity="100.0" />
-				<resource-storage resource="Quinoa" capacity="100.0" />
-				<resource-storage resource="Cranberry" capacity="100.0" />
-				<resource-storage resource="Blueberry" capacity="100.0" />
-				<resource-storage resource="Taro" capacity="100.0" />
-				<resource-storage resource="red beet" capacity="100.0" />
-				<resource-storage resource="morel mushroom" capacity="100.0" />
-				<resource-storage resource="radish" capacity="100.0" />
-				<resource-storage resource="swiss chard" capacity="100.0" />								
-							
-				<resource-storage resource="Mustard" capacity="100.0" />
-				<resource-storage resource="Mustard Seed" capacity="100.0" />
-				<resource-storage resource="White Mustard" capacity="100.0" />
-				<resource-storage resource="yam" capacity="100.0" />
-				
+				<!-- life support: 5000 kg  -->
+				<resource-initial resource="water" amount="2000.0" />
+				<resource-initial resource="oxygen" amount="2000.0" />
+				<resource-initial resource="food" amount="1000.0" />
 
-				<resource-storage resource="Sesame Seed" capacity="100.0" />
-				<resource-storage resource="Sesame Oil" capacity="100.0" />
+				<!-- other gases: 200 kg  -->
+				<resource-initial resource="nitrogen" amount="130.0" />
+				<resource-initial resource="argon" amount="50.0" />
+				<resource-initial resource="chlorine" amount="20.0" />
 
-				<!-- The initial resources in the building. -->
-
-
-				<resource-initial resource="water" amount="1000.0" />
-				<resource-initial resource="oxygen" amount="1500.0" />
-
-				<resource-initial resource="chlorine" amount="50.0" />
-				<resource-initial resource="Sodium Hypochlorite" amount="20.0" />
-				<resource-initial resource="Acetic Acid Bacteria" amount="20.0" />
-				<resource-initial resource="Nitrosomonas spp" amount="20.0" />
-				<resource-initial resource="Nitrospira spp" amount="20.0" />
-				<resource-initial resource="Rhizobia" amount="20.0" />
-
-				<resource-initial resource="food" amount="300.0" />
-
-				<resource-initial resource="toilet tissue" amount="100.0" />
-				<resource-initial resource="paper" amount="100.0" />
-				<resource-initial resource="napkin" amount="100.0" />
+				<!-- kitchen supplies: 600 kg -->				
+				<resource-initial resource="toilet tissue" amount="50.0" />
+				<resource-initial resource="paper" amount="50.0" />
+				<resource-initial resource="napkin" amount="50.0" />
+				<resource-initial resource="pulp" amount="50.0" />
+				<resource-initial resource="honey" amount="50.0" />
+				<resource-initial resource="yeast" amount="50.0" />
+				<resource-initial resource="epsom salt" amount="50.0" />
+				<resource-initial resource="table salt" amount="50.0" />
+				<resource-initial resource="sugar" amount="50.0" />
+				<resource-initial resource="mustard" amount="50.0" />
+				<resource-initial resource="sesame seed" amount="50.0" />
+				<resource-initial resource="sesame oil" amount="50.0" />
+				<resource-initial resource="garlic oil" amount="50.0" />
+				<resource-initial resource="peanut oil" amount="50.0" />
+											
+				<!-- chemicals: 210 kg  -->								
 				<resource-initial resource="bleaching chemical" amount="50.0" />
-				<resource-initial resource="pulp" amount="100.0" />
+				<resource-initial resource="baking powder" amount="50.0" />
+				<resource-initial resource="bisphenol-a" amount="50.0" />
+				<resource-initial resource="sodium hypochlorite" amount="50.0" />
+				<resource-initial resource="immune booster" amount="50.0" />
+				<resource-initial resource="lime" amount="10.0" />
 
-				<resource-initial resource="Cane Fiber" amount="100.0" />
-				<resource-initial resource="Yeast" amount="50.0" />
-				<resource-initial resource="Epsom Salt" amount="50.0" />
-				<resource-initial resource="Table Salt" amount="50.0" />
-				<resource-initial resource="Sugar" amount="50.0" />
-				<resource-initial resource="Rice Vinegar" amount="50.0" />
-				<resource-initial resource="Soy Sauce" amount="50.0" />
-				<resource-initial resource="Soymilk" amount="50.0" />
-				<resource-initial resource="Soybean Oil" amount="50.0" />
-				<resource-initial resource="Soy Flour" amount="50.0" />
-				<resource-initial resource="Wheat Flour" amount="50.0" />
-				<resource-initial resource="Granola Bar" amount="10.0" />
-				<resource-initial resource="Honey" amount="100.0" />
-				<resource-initial resource="Baking Powder" amount="100.0" />
+				<!-- organisms: 40 kg -->	
+				<resource-initial resource="acetic acid bacteria" amount="10.0" />
+				<resource-initial resource="nitrosomonas spp" amount="10.0" />
+				<resource-initial resource="nitrospira spp" amount="10.0" />
+				<resource-initial resource="rhizobia" amount="10.0" />
 
-				<resource-initial resource="Soybean" amount="50.0" />
-				<resource-initial resource="White Onion" amount="50.0" />
-				<resource-initial resource="Rice" amount="50.0" />
-				<resource-initial resource="Kidney Bean" amount="50.0" />
-				<resource-initial resource="Wheat" amount="50.0" />
-				<resource-initial resource="Cabbage" amount="50.0" />
-				<resource-initial resource="Carrot" amount="50.0" />
-				<resource-initial resource="Spring Onion" amount="50.0" />
-				<resource-initial resource="Peanut" amount="50.0" />
-				<resource-initial resource="Potato" amount="50.0" />
-				<resource-initial resource="Sesame" amount="50.0" />
-				<resource-initial resource="Garlic" amount="50.0" />
-				<resource-initial resource="Lettuce" amount="50.0" />
-				<resource-initial resource="Ginger" amount="50.0" />
-				<resource-initial resource="Sugarcane" amount="50.0" />
-				<resource-initial resource="Strawberry" amount="50.0" />
-				<resource-initial resource="Quinoa" amount="50.0" />
-				<resource-initial resource="Cranberry" amount="50.0" />
-				<resource-initial resource="Blueberry" amount="50.0" />
-				<resource-initial resource="Cucumber" amount="50.0" />
-				<resource-initial resource="Green Bell Pepper" amount="50.0" />
+				<!-- greenhouse supplies: 100 kg  -->
+				<resource-initial resource="fertilizer" amount="50.0" />
+				<resource-initial resource="soil" amount="50.0" />
+
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
@@ -2751,7 +2669,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level=".5">
-				<process name="carbon dioxide Pump" power-required="2.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
 					<input resource="carbon dioxide" rate="20.0" ambient="true" />
 					<output resource="carbon dioxide" rate="20.0" ambient="false" />
 				</process>

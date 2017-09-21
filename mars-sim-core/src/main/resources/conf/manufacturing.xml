@@ -22,15 +22,18 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			power-required="0.1">
 		<description>Process for extracting iron oxide from regolith.</description>
 
-		<!-- List of inputs for the process (resources and parts). -->
+		<!-- List of inputs for the process -->
 		<inputs>
-
+		<!-- Note : proper order of precedence :
+			(1) resources, (2) parts, (3) equipment and (4) vehicles). -->
 			<!-- amount - The amount of the resource in kilograms. -->
 			<resource name="regolith" amount="50.0" />
 		</inputs>
 
-		<!-- List of outputs from the process (resources, parts, equipment and vehicles). -->
+		<!-- List of outputs from the process -->
 		<outputs>
+		<!-- Note : proper order of precedence :
+			(1) resources, (2) parts, (3) equipment and (4) vehicles). -->		
 			<resource name="iron oxide" amount="7.0" />
 			<resource name="sand" amount="40.0" />
 		</outputs>
@@ -120,58 +123,8 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 		</outputs>
 	</process>
 
-<!-- TODO: chemist can isolate these bacteria and grow them in the lab
- Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira. Nitrospira are nitrite-oxidizing bacteria that are important
- for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
- If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
 
- Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
- All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
--->
 
-	<process name="extract nitrogen compounds from black water"
-			tech="1" skill="2"
-			work-time="20"
-			process-time="200"
-			power-required="0.1">
-		<inputs>
-			<resource name="crop waste" amount="1.0" />
-			<resource name="Black Water" amount="10.0" />
-			<resource name="sodium hypochlorite" amount="0.002" />
-			<resource name="Nitrospira spp" amount="0.02" />
-			<resource name="Nitrosomonas spp" amount="0.02" />
-
-		</inputs>
-		<outputs>
-			<resource name="Nitrate" amount="0.1" />
-			<resource name="Nitrite" amount="0.02" />
-			<resource name="Nitrogen" amount="0.5" />
-			<resource name="Ammonia" amount="0.5" />
-			<resource name="Grey Water" amount="10.0" />
-		</outputs>
-	</process>
-
-	<process name="extract nitrogen compounds from black water (large batch)"
-			tech="1" skill="2"
-			work-time="80"
-			process-time="800"
-			power-required=".5">
-		<inputs>
-			<resource name="crop waste" amount="10" />
-			<resource name="Black Water" amount="100" />
-			<resource name="sodium hypochlorite" amount="0.02" />
-			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
-			<resource name="Nitrospira spp" amount="0.2" />
-			<resource name="Nitrosomonas spp" amount="0.2" />
-		</inputs>
-		<outputs>
-			<resource name="Nitrate" amount="1" />
-			<resource name="Nitrite" amount="0.2" />
-			<resource name="Nitrogen" amount="5" />
-			<resource name="Ammonia" amount="5" />
-			<resource name="Grey Water" amount="100.0" />
-		</outputs>
-	</process>
 
 	<process name="turn compost into soil"
 			tech="2" skill="2"
@@ -210,7 +163,9 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			<resource name="water" amount="1" />
 		</inputs>
 		<outputs>
-			<resource name="pulp" amount="5" />
+			<resource name="pulp" amount="5.5" />
+			<resource name="grey water" amount=".4" />
+			<resource name="solid waste" amount=".1" />			
 		</outputs>
 	</process>
 
@@ -225,7 +180,9 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			<resource name="water" amount="10" />
 		</inputs>
 		<outputs>
-			<resource name="pulp" amount="50" />
+			<resource name="pulp" amount="55" />
+			<resource name="grey water" amount="4" />
+			<resource name="solid waste" amount="1" />
 		</outputs>
 	</process>
 
@@ -545,14 +502,15 @@ Note: 1 kg of H2 is 14.13 liter
 			work-time="50"
 			process-time="200"
 			power-required=".2">
-		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt; -> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
+		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt; 
+		-> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
 		<inputs>
 			<resource name="iron oxide" amount="50.0" />
 			<resource name="hydrogen" amount="2.5" />
 		</inputs>
 		<outputs>
 			<resource name="iron powder" amount="34.9" />
-			<resource name="water" amount="16.9" />
+			<resource name="grey water" amount="16.9" />
 		</outputs>
 	</process>
 
@@ -561,14 +519,15 @@ Note: 1 kg of H2 is 14.13 liter
 			work-time="250"
 			process-time="1000"
 			power-required="1">
-		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt; -> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
+		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt; 
+		-> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
 		<inputs>
 			<resource name="iron oxide" amount="500.0" />
 			<resource name="hydrogen" amount="25.0" />
 		</inputs>
 		<outputs>
 			<resource name="iron powder" amount="349.0" />
-			<resource name="water" amount="169.0" />
+			<resource name="grey water" amount="169.0" />
 		</outputs>
 	</process>
 
@@ -927,7 +886,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="ethylene" amount="50.0" />
-			<resource name="water" amount="64.2" />
+			<resource name="grey water" amount="64.2" />
 			<resource name="iron powder" amount="1.0" />
 		</outputs>
 	</process>
@@ -945,7 +904,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="ethylene" amount="500.0" />
-			<resource name="water" amount="642" />
+			<resource name="grey water" amount="642" />
 			<resource name="iron powder" amount="10.0" />
 		</outputs>
 	</process>
@@ -1093,7 +1052,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="calcium carbonate" amount="29.0" />
 			<resource name="carbon dioxide" amount="12.7" />
-			<resource name="water" amount="5.2" />
+			<resource name="grey water" amount="5.2" />
 		</outputs>
 	</process>
 
@@ -1111,7 +1070,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="calcium carbonate" amount="290.0" />
 			<resource name="carbon dioxide" amount="127.0" />
-			<resource name="water" amount="52.0" />
+			<resource name="grey water" amount="52.0" />
 		</outputs>
 	</process>
 
@@ -1129,7 +1088,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="calcium carbonate" amount="29.0" />
 			<resource name="carbon dioxide" amount="38.1" />
-			<resource name="water" amount="5.2" />
+			<resource name="grey water" amount="5.2" />
 		</outputs>
 	</process>
 
@@ -1147,7 +1106,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="calcium carbonate" amount="290.0" />
 			<resource name="carbon dioxide" amount="381.0" />
-			<resource name="water" amount="52.0" />
+			<resource name="grey water" amount="52.0" />
 		</outputs>
 	</process>
 
@@ -1165,7 +1124,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="calcium carbonate" amount="29.0" />
-			<resource name="water" amount="26.0" />
+			<resource name="grey water" amount="26.0" />
 		</outputs>
 	</process>
 
@@ -1183,7 +1142,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="calcium carbonate" amount="290.0" />
-			<resource name="water" amount="260.0" />
+			<resource name="grey water" amount="260.0" />
 		</outputs>
 	</process>
 
@@ -2224,7 +2183,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="copper" amount="28.7" />
 			<resource name="carbon dioxide" amount="19.9" />
-			<resource name="water" amount="4.1" />
+			<resource name="grey water" amount="4.1" />
 		</outputs>
 	</process>
 
@@ -2627,7 +2586,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="water" amount="1.0" />
 		</inputs>
 		<outputs>
-			<part name="brick" number="10" />
+			<resource name="grey water" amount="0.6" />			
+			<part name="brick" number="10" />		
 		</outputs>
 	</process>
 
@@ -2639,6 +2599,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="water" amount="1.0" />
 		</inputs>
 		<outputs>
+			<resource name="grey water" amount="0.6" />	
 			<part name="brick" number="10" />
 		</outputs>
 	</process>
@@ -2651,7 +2612,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="water" amount="10.0" />
 		</inputs>
 		<outputs>
-			<part name="brick" number="100" />
+			<resource name="grey water" amount="6" />			
+			<part name="brick" number="100" />			
 		</outputs>
 	</process>
 
@@ -2663,35 +2625,38 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="water" amount="10.0" />
 		</inputs>
 		<outputs>
-			<part name="brick" number="100" />
+			<resource name="grey water" amount="6" />			
+			<part name="brick" number="100" />			
 		</outputs>
 	</process>
 
-	<!-- Melting permafrost ice and filtering the water. -->
+	<!-- Melting permafrost ice and filtering the water. 
+	     Note : Melt ice requires 450kJ/kg exraction energy
+	     -->
 	<process name="melt and filter ice" tech="1" skill="0" work-time="10" process-time="50"
-			power-required=".2">
+			power-required="4.5">
 		<inputs>
-			<resource name="ice" amount="100.0" />
+			<resource name="ice" amount="10.0" />
 		</inputs>
 		<outputs>
-			<resource name="water" amount="80.0" />
-			<resource name="regolith" amount="15.0" />
+			<resource name="grey water" amount="8.0" />
+			<resource name="regolith" amount="1.5" />
 			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
-			<resource name="Rock Salt" amount="5.0" />
+			<resource name="Rock Salt" amount=".5" />
 		</outputs>
 	</process>
 
 		<!-- Melting permafrost ice and filtering the water (large batch). -->
 	<process name="melt and filter ice (large batch)" tech="1" skill="0" work-time="10.0" process-time="50"
-			power-required="1.0">
+			power-required="22.5">
 		<inputs>
-			<resource name="ice" amount="1000.0" />
+			<resource name="ice" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="water" amount="800.0" />
-			<resource name="regolith" amount="150.0" />
+			<resource name="grey water" amount="40.0" />
+			<resource name="regolith" amount="7.5" />
 			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
-			<resource name="Rock Salt" amount="50.0" />
+			<resource name="Rock Salt" amount="2.5" />
 		</outputs>
 	</process>
 

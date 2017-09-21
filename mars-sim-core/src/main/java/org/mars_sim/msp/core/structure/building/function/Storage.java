@@ -74,8 +74,11 @@ implements Serializable {
 		}
 
 	    double stockCapacity = config.getStockCapacity(building.getBuildingType());
+	    //System.out.print ("getGeneralCapacity : " + inv.getGeneralCapacity());
 	    inv.addGeneralCapacity(stockCapacity);
-		// Initialize stock capacities for all resource 
+	    //System.out.println("  -> " + inv.getGeneralCapacity());
+
+	    // Initialize stock capacities for all resource 
 		//for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
 			//if (ar.getName().equals("hydrogen")) System.out.println("H2 stock cap : " + stockCapacity + " for " + building.getNickName());
 		//	if (!building.getBuildingType().toLowerCase().contains("storage bin"))

@@ -76,12 +76,12 @@ implements Serializable {
 
 		Malfunction mal = null;
 			
-		int num = 0;
+		//int num = 0;
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
 			for (Malfunction m : malfunctions) {
 				if (m.isMatched(scopes) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
-					num++;
+					//num++;
 					totalProbability += m.getProbability();
 					//System.out.println(m.getName() + " : " + m.getProbability());
 				}
