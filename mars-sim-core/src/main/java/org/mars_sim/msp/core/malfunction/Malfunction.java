@@ -237,17 +237,13 @@ public class Malfunction implements Serializable {
      * with the malfunction's scope strings.
      * @return true if any matches
      */
-    public boolean unitScopeMatch(Collection<String> unitScope) {
+    public boolean isMatched(Collection<String> scopes) {
         boolean result = false;
 
-        if ((systems.size() > 0) && (unitScope.size() > 0)) {
-            Iterator<String> i1 = systems.iterator();
-            while (i1.hasNext()) {
-                String scopeString = i1.next();
-                Iterator<String> i2 = unitScope.iterator();
-                while (i2.hasNext()) {
-                    String unitScopeString = i2.next();
-            	    if (scopeString.equalsIgnoreCase(unitScopeString)) 
+        if ((systems.size() > 0) && (scopes.size() > 0)) {
+            for (String s : systems) {
+                for (String u : scopes) {
+            	    if (s.equalsIgnoreCase(u)) 
             	    	result = true;
                 }
             }

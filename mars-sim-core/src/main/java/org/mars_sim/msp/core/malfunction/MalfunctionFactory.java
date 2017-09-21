@@ -64,41 +64,45 @@ implements Serializable {
 	public MalfunctionFactory(MalfunctionConfig config)  {
 		 this.config = config;
 		 malfunctions = config.getMalfunctionList();
-		 numMal = malfunctions.size();
+		 numMal = malfunctions.size(); // = 39 in total
 	}
 
 	/**
 	 * Picks a malfunction from a given unit scope.
-	 * @param scope a collection of scope strings defining the unit.
+	 * @param scopes a collection of scope strings defining the unit.
 	 * @return a randomly-picked malfunction or null if there are none available.
 	 */
-	public Malfunction pickAMalfunction(Collection<String> scope) {
+	public Malfunction pickAMalfunction(Collection<String> scopes) {
 
-		Malfunction result = null;
-		
-		// 2017-09-12 The total probability will be dynamically updated as the field reliability data trickles in
-		
+		Malfunction mal = null;
+			
+		int num = 0;
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
 			for (Malfunction m : malfunctions) {
-				if (m.unitScopeMatch(scope) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) 
+				if (m.isMatched(scopes) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
+					num++;
 					totalProbability += m.getProbability();
+					//System.out.println(m.getName() + " : " + m.getProbability());
+				}
 			}
 		}
 		
-		double maxProb = totalProbability/numMal;
-		//System.out.println("maxProb : " + maxProb);
+		//double maxProb = totalProbability/num;
+		//System.out.print("   totalProbability : " + totalProbability);
+		//System.out.print("   num : " + num);
+		//System.out.println("   maxProb : " + maxProb);
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
 
 		for (Malfunction m : malfunctions) {
 			double probability = m.getProbability();
 			// will only pick one malfunction at a time
-			if (m.unitScopeMatch(scope) && (result == null) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
+			if (m.isMatched(scopes) && (mal == null) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
 				if (r < probability) {
 					try {
-						result = m.getClone();
-						result.determineRepairParts();
+						mal = m.getClone();
+						mal.determineRepairParts();
 					}
 					catch (Exception e) {
 						e.printStackTrace(System.err);
@@ -109,9 +113,14 @@ implements Serializable {
 			}
 		}
 		
+		double failure_rate = mal.getProbability();
+		// Note : the composite probability of a malfunction is dynamically updated as the field reliability data trickles in
 		
+		if (RandomUtil.lessThanRandPercent(failure_rate))
+			return mal;
+		else
+			return null;
 
-		return result;
 	}
 
 	/**
@@ -271,7 +280,7 @@ implements Serializable {
 		Map<Part, Double> result = new HashMap<Part, Double>();
 
 		for (Malfunction m : malfunctions) {
-			if (m.unitScopeMatch(scope)) {
+			if (m.isMatched(scope)) {
 				double malfunctionProbability = m.getProbability() / 100D;
 
 				String[] partNames = config.getRepairPartNamesForMalfunction(m.getName());
