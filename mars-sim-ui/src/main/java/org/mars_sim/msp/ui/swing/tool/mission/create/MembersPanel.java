@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 
@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel to select mission members.
@@ -45,9 +46,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 class MembersPanel
 extends WizardPanel
 implements ActionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** The wizard panel name. */
 	private final static String NAME = "Members";
@@ -103,6 +101,7 @@ implements ActionListener {
 
 		// Create the people table.
 		peopleTable = new JTable(peopleTableModel);
+		TableStyle.setTableStyle(peopleTable);
 		peopleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(peopleTableModel));
 		peopleTable.setRowSelectionAllowed(true);
 		peopleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

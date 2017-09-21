@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -554,17 +553,13 @@ implements Serializable {
 
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			for (Malfunction malfunction : malfunctions) {
 				if (malfunction.isFixed()) fixedMalfunctions.add(malfunction);
 			}
 		}
 
 		if (fixedMalfunctions.size() > 0) {
-			Iterator<Malfunction> i = fixedMalfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction item = i.next();
+			for (Malfunction item : fixedMalfunctions) {	
 				malfunctions.remove(item);
 
 				try {
@@ -609,9 +604,7 @@ implements Serializable {
 
 		// Make any life support modifications.
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			for (Malfunction malfunction : malfunctions) {
 				if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
 					if (effects.get(OXYGEN) != null)
@@ -647,9 +640,7 @@ implements Serializable {
 	public void depleteResources(double time) {
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			for (Malfunction malfunction : malfunctions) {
 				if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
 					Map<AmountResource, Double> effects = malfunction.getResourceEffects();
 					Iterator<AmountResource> i2 = effects.keySet().iterator();

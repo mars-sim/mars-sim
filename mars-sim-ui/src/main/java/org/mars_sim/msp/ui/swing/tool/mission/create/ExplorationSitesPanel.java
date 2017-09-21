@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
 import javax.swing.*;
@@ -29,9 +30,6 @@ import java.util.List;
  * This is a wizard panel for selecting exploration sites for the mission.
  */
 class ExplorationSitesPanel extends WizardPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** Wizard panel name. */
 	private final static String NAME = "Exploration Sites";
@@ -175,6 +173,7 @@ class ExplorationSitesPanel extends WizardPanel {
         
         // Create mineral legend table.
         JTable mineralLegendTable = new JTable(mineralTableModel);
+		TableStyle.setTableStyle(mineralLegendTable);
         mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 50));
         mineralLegendTable.setCellSelectionEnabled(false);
         mineralLegendTable.setDefaultRenderer(Color.class, new ColorTableCellRenderer());

@@ -844,17 +844,16 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return air pressure [kPa]
 	 */
 	public double computeTotalPressure() {
-		double result = 0;
+		double total_area = 0, total_p_area = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
-		int size = buildings.size();
+		//int size = buildings.size();
         for (Building b : buildings) { 
 			int id = b.getInhabitableID();
-			double [] tp = compositionOfAir.getTotalPressure();
-			double p = tp[id];
-			result += p;
+			total_area += b.getFloorArea();
+			total_p_area += compositionOfAir.getTotalPressure()[id] * b.getFloorArea();
 		}
 		// convert from atm to kPascal
-		return result * CompositionOfAir.kPASCAL_PER_ATM / size;
+		return total_p_area * CompositionOfAir.kPASCAL_PER_ATM / total_area;
 	}
 
 	/**
@@ -874,6 +873,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return temperature (degrees C)
 	 */
 	public double computeTemperature() {
+/*
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
 
 		double sum = 0;
@@ -882,21 +882,20 @@ implements Serializable, LifeSupportType, Objective {
         }
 				
 		return sum/buildings.size();
-/*
+*/
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
 
-		double total_t_area = 0;
-		double total_area = 0;
+		double total_t_area = 0, total_area = 0;
 		
         for (Building b : buildings) {    
             double a = b.getFloorArea();
             double t = b.getCurrentTemperature();
-            total_area = total_area + a;
-            total_t_area = total_t_area + a*t;
+            total_area += a;
+            total_t_area += a*t;
         }
 
         return total_t_area / total_area;
- */
+ 
         
 /*
 		double result = NORMAL_TEMP; // (malfunctionManager.getTemperatureModifier() / 100D);

@@ -1,14 +1,12 @@
 /**
  * Mars Simulation Project
  * ElectricHeatSource.java
- * @version 3.07 2014-10-17
+ * @version 3.1.0 2017-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -59,7 +57,10 @@ implements Serializable {
 		return getMaxHeat()/2D;
 	}
 
-
+	public double getCurrentHeat() {
+		return max * factor;
+	}
+	
 	@Override
 	public double getCurrentPower(Building building) {
 		// TODO Auto-generated method stub

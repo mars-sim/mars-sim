@@ -33,7 +33,7 @@ extends HistoricalEvent implements Serializable {
 			HistoricalEventCategory.MALFUNCTION,
 			(fixed ? EventType.MALFUNCTION_FIXED : EventType.MALFUNCTION_UNFIXED), 
 			entity,
-			malfunction.getName() + (fixed? " fixed" : " occurred")
+			malfunction.getName() + (fixed? " Fixed" : " Occurred")
 		);
 	}
 }

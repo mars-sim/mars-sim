@@ -16,9 +16,6 @@ import javax.swing.*;
 abstract class WizardPanel
 extends JPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members.
 	protected CreateMissionWizard wizard;
 	

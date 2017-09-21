@@ -303,10 +303,10 @@ extends MonitorTab {
         }
 
         // 2014-12-29 Added ColumnResizer
-     	SwingUtilities.invokeLater(() -> {
+     	//SwingUtilities.invokeLater(() -> {
             TableStyle.setTableStyle(table);
 	     	adjustColumnPreferredWidths(table);
-	    });
+	    //});
 
     	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
         //TableStyle.setTableStyle(table);
@@ -321,6 +321,7 @@ extends MonitorTab {
 
 		// 2015-06-08 Added RowNumberTable
         JTable rowTable = new RowNumberTable(table);
+        TableStyle.setTableStyle(rowTable);
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
         //scroller.setBorder(new MarsPanelBorder());

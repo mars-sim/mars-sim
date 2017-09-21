@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-09-20
  * @author Manny Kung
  */
 
@@ -45,9 +45,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 class BotMembersPanel
 extends WizardPanel
 implements ActionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** The wizard panel name. */
 	private final static String NAME = "Members";

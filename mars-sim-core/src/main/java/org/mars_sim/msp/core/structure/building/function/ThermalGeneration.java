@@ -53,9 +53,11 @@ implements Serializable {
 	
 	private HeatSource heatSource;
 	
-	private PowerMode powerMode;
+	//private PowerMode powerMode;
 	
 	private List<HeatSource> heatSources;
+	
+	private static BuildingConfig buildingConfig;
 	
 	/**
 	 * Constructor
@@ -68,11 +70,10 @@ implements Serializable {
 		heating = new Heating(building);
 
 		// Determine heat sources.
-		BuildingConfig config = SimulationConfig.instance()
-				.getBuildingConfiguration();
-		heatSources = config.getHeatSources(building.getBuildingType());
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		heatSources = buildingConfig.getHeatSources(building.getBuildingType());
 
-		powerMode = building.getPowerMode();
+		//powerMode = building.getPowerMode();
 	}
 
 	/**
@@ -87,19 +88,16 @@ implements Serializable {
 			boolean newBuilding, Settlement settlement) {
 
 		double demand = settlement.getThermalSystem().getRequiredHeat();
-
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-				FUNCTION).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+
+		for (Building building : settlement.getBuildingManager().getBuildings(FUNCTION)) {
 			if (!newBuilding
 					&& building.getBuildingType().equalsIgnoreCase(buildingName)
 					&& !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				ThermalGeneration heatFunction = (ThermalGeneration) building.getFunction(FUNCTION);
+				ThermalGeneration heatFunction = building.getThermalGeneration();
 				double wearModifier = (building.getMalfunctionManager()
 						.getWearCondition() / 100D) * .75D + .25D;
 				supply += getHeatSourceSupply(heatFunction.heatSources,
@@ -109,10 +107,7 @@ implements Serializable {
 
 		double existingHeatValue = demand / (supply + 1D);
 
-		BuildingConfig config = SimulationConfig.instance()
-				.getBuildingConfiguration();
-		double heatSupply = getHeatSourceSupply(config
-				.getHeatSources(buildingName), settlement);
+		double heatSupply = getHeatSourceSupply(buildingConfig.getHeatSources(buildingName), settlement);
 
 		return heatSupply * existingHeatValue;
 	}
@@ -128,9 +123,7 @@ implements Serializable {
 			Settlement settlement) {
 		double result = 0D;
 
-		Iterator<HeatSource> j = heatSources.iterator();
-		while (j.hasNext()) {
-			HeatSource source = j.next();
+		for (HeatSource source : heatSources) {
 /*
 			if (source instanceof ElectricHeatSource) {
 				result += source.getMaxHeat();
@@ -143,7 +136,7 @@ implements Serializable {
 			}
 			else
 */				
-				result += source.getMaxHeat();//.getAverageHeat(settlement);
+				result += source.getMaxHeat();
 		}
 
 		return result;
@@ -161,27 +154,21 @@ implements Serializable {
 
 	/**
 	 * Gets the total amount of heat that this building is capable of producing (regardless malfunctions).
-	 * @return heat generated in kJ/s (heat flow rate)
+	 * @return heat generated in kW (heat flow rate)
 	 */
-	// get heat from HeatSource.java
-	//2014-10-24 Added getHeatGenerationCapacity()
-	// Note: NOT affected by HeatMode.POWER_DOWN
 	public double getHeatGenerationCapacity() {
 		double result = 0D;
-		Iterator<HeatSource> i = heatSources.iterator();
-		while (i.hasNext()) {
-			result += i.next().getMaxHeat();//.getCurrentHeat(getBuilding());
+		
+		for (HeatSource source : heatSources) {
+			result += source.getMaxHeat();
 		}
-		//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
 		return result;
 	}
 
 	/**
 	 * Gets the total amount of heat that this building is CURRENTLY producing
-	 * @return heat generated in kJ/s (heat flow rate)
+	 * @return heat generated in kW (heat flow rate)
 	 */
-	// get heat from HeatSource.java
-	// 2014-10-24 Modified getGeneratedHeat()
 	public double getGeneratedHeat() {
 		return heatGeneratedCache; // = 0.0 if heatMode == HeatMode.POWER_DOWN
 	}
@@ -395,10 +382,8 @@ implements Serializable {
 		double powerGenerated = 0;
 		
 		// Set heatGenerated at the building the furnace belongs
-		if (powerMode == PowerMode.FULL_POWER) {
-			
-			heatGenerated = calculateGeneratedHeat(time);
-			
+		if (building.getPowerMode() == PowerMode.FULL_POWER) {
+			heatGenerated = calculateGeneratedHeat(time);		
 			powerGenerated = calculateGeneratedPower();
 		}
 		
@@ -564,18 +549,14 @@ implements Serializable {
 
 		// add the need of electric heat
 		double result = 0;
-		Iterator<HeatSource> i = heatSources.iterator();
-		while (i.hasNext()) {
-			HeatSource source = i.next();
+
+		for (HeatSource source : heatSources) {
 			if (source instanceof ElectricHeatSource) {
 				// if it needs to be ON, use getMaxHeat() since it's the max power needed before counting in the heater efficiency 
-				result = result + source.getMaxHeat()/source.getEfficiency(); 
+				result = result + ((ElectricHeatSource)source).getCurrentHeat();///source.getEfficiency(); 
 			}
 		}
 		
-		if (heatMode == HeatMode.HALF_HEAT)
-			return result/2D;
-			
 		return result;
 	}
 
@@ -591,18 +572,6 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	/**
-	 * Gets the amount of heat required when function is at full power.
-	 * @return heat (J)
-	 */
-	// 2014-11-02: temporarily set getFullHeatRequired() = heatGenerated
-	// thus getGeneratedHeat() = getFullHeatRequired()
-	// will consolidate them into one in near future
-	//public double getFullHeatRequired() {
-	//	return 0;//heatGenerated;
-	//}
-
 	
 	@Override
 	public void destroy() {

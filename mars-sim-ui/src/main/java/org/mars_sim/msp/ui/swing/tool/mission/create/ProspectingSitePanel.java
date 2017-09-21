@@ -23,9 +23,6 @@ import java.awt.event.MouseMotionAdapter;
  */
 class ProspectingSitePanel extends WizardPanel {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
 	// Wizard panel name.
 	private final static String NAME = "Prospecting Site";
 	

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * LeadResearcherPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -29,15 +28,13 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel to select a lead researcher the science mission.
  */
 public class LeadResearcherPanel
 extends WizardPanel {
-
-    /** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// The wizard panel name.
     private final static String NAME = "Lead Researcher";
@@ -82,6 +79,7 @@ extends WizardPanel {
         
         // Create the researcher table.
         researcherTable = new JTable(researcherTableModel);
+		TableStyle.setTableStyle(researcherTable);
         researcherTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(researcherTableModel));
         researcherTable.setRowSelectionAllowed(true);
         researcherTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

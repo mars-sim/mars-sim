@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -33,15 +32,13 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel to select a scientific study for the mission.
  */
 public class StudyPanel
 extends WizardPanel {
-
-	/** default serial id.*/
-	private static final long serialVersionUID = 1L;
 
 	// The wizard panel name.
 	private final static String NAME = "Scientific Study";
@@ -88,6 +85,7 @@ extends WizardPanel {
 
 		// Create the study table.
 		studyTable = new JTable(studyTableModel);
+		TableStyle.setTableStyle(studyTable);
 		studyTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 			/** default serial id. */
 			private static final long serialVersionUID = 1L;

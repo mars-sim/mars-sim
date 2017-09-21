@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageProjectPanel.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 
@@ -39,12 +39,10 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 public class SalvageProjectPanel
 extends WizardPanel {
-
-    /** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** The wizard panel name. */
     private final static String NAME = "Salvage Project";
@@ -133,6 +131,7 @@ extends WizardPanel {
         
         // Create the parts table.
         partsTable = new JTable(partsTableModel);
+		TableStyle.setTableStyle(partsTable);
         partsTable.setRowSelectionAllowed(false);
         partsTableScrollPane.setViewportView(partsTable);
         

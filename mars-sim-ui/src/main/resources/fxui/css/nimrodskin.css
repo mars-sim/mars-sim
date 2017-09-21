@@ -305,7 +305,7 @@
 	-fx-fill : black;
 }
 
-.jfx-slider:disabled {
+.jfx-slider: disabled {
 	-fx-opacity: 0.4;
 }
 
@@ -316,8 +316,8 @@
 
 .jfx-slider > .track {
 	-fx-background-color: gray;
-	-fx-pref-height: 5px;
-	-fx-pref-width: 5px;
+	-fx-pref-height: 2px;
+	-fx-pref-width: 2px;
 }
 
 .jfx-slider > .sliderValue {

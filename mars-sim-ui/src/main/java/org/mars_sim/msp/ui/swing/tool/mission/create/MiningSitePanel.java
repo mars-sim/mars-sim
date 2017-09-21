@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
@@ -53,9 +54,6 @@ import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
  * A wizard panel for the mining site.
  */
 public class MiningSitePanel extends WizardPanel {
-
-    /** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** Wizard panel name. */
 	private final static String NAME = "Mining Site";
@@ -190,6 +188,7 @@ public class MiningSitePanel extends WizardPanel {
 				getMineralMap().getMineralTypeNames();
         for (String mineralType : mineralTypes) concentrationTableModel.addRow(new Object[]{mineralType, 0D});
 		JTable mineralConcentrationTable = new JTable(concentrationTableModel);
+		TableStyle.setTableStyle(mineralConcentrationTable);
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(2));
 		selectedSitePane.add(mineralConcentrationTable.getTableHeader());
 		selectedSitePane.add(mineralConcentrationTable);

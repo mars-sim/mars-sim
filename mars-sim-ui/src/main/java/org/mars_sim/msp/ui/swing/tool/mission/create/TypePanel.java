@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TypePanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 
@@ -14,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -21,6 +21,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -28,9 +31,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  * A wizard panel for selecting mission type.
  */
 public class TypePanel extends WizardPanel implements ItemListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** The wizard panel name. */
 	private final static String NAME = "Mission Type";
@@ -144,7 +144,15 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	public void itemStateChanged(ItemEvent e) {
 		String selectedMission = (String) typeSelect.getSelectedItem();
 		// 2015-12-15 Added "..."
-		descriptionField.setText(MissionDataBean.getMissionDescription(selectedMission) + "...");
+		int num = 1;
+	    MissionManager manager = Simulation.instance().getMissionManager();
+	    List<Mission> missions = manager.getMissions();
+		for (Mission m : missions) {
+			if (m.getName().equals(selectedMission))
+				num++;
+		}
+		String suffix = " (" + num + ")";
+		descriptionField.setText(MissionDataBean.getMissionDescription(selectedMission) + suffix);
 		boolean enableDescription = (typeSelect.getSelectedIndex() != 0);
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);

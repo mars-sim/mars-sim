@@ -823,9 +823,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
 		<description> The starting ERV base was sent ahead of the arrival
 			of the human crew. It supplies the settlement with H2 that can be
-			converted into CH4 and H2O via Sabatier Process. It can perform 
-			Water Electrolysis to turn water into H2 and O2. It can also carry 
-			out CO2 Reduction that converts CO2 into O2 and CO.
+			converted into CH4 and H2O via Sabatier with RWGS. It performs also 
+			water electrolysis to generate H2 and O2.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2"/>
 
@@ -893,10 +892,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
-		<description> The Earth Return Vehicle (ERV) is a flight-ready space 
-		vehicle. If not used for the return trip, it can be retrofitted for 
-		critical resource processing functions as it carried similar equipment 
-		package as those found in the Starting ERV Base.
+		<description> The Earth Return Vehicle (ERV) Base is a flight-ready space 
+		vehicle. It arrives on Mars with a Lander Hab. It provides the backup
+		for generating in-situ resources as it carries similar equipment package 
+		as those in Starting ERV Base. If not used for the return for the next 
+		crew, it can be reconfigured to provide for habitation space.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2"/>
 
@@ -928,17 +928,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="oxygen" capacity="20000.0" />
 				<resource-storage resource="water" capacity="20000.0" />
 
-				<!-- Payload imported from Earth 
-				resource-initial resource="hydrogen" amount="6300.0" /-->
+				<!-- Payload imported from Earth -->
+				<resource-initial resource="hydrogen" amount="6300.0" />
 
-				<!-- Extracted on Mars -->
-				<resource-initial resource="carbon dioxide" amount="2000.0" />
+				<!-- To be extracted on Mars -->
+				<!-- resource-initial resource="carbon dioxide" amount="2000.0" /-->
 
-				<!-- Produced on Mars -->
-				<resource-initial resource="oxygen" amount="16080.0" />
+				<!-- To be produced on Mars -->
+				<!-- resource-initial resource="oxygen" amount="16080.0" />
 				<resource-initial resource="methane" amount="8400.0" />
 				<resource-initial resource="hydrogen" amount="2100.0" />
-				<resource-initial resource="water" amount="18900.0" />
+				<resource-initial resource="water" amount="18900.0" /-->
 
 				<!-- Mars Direct Mission Plan : 
 				
@@ -946,7 +946,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			 	(a). Payload imported from Earth -
 				 	 Consumables : 3400 kg
 				 	 Hydrogen feedstock : 6300 kg
-				(b). Produced on Mars :
+				(b). To be produced on Mars :
 					 water : 18900 kg
 					 Oxygen : 16080 kg
 					 Methane : 8400 kg

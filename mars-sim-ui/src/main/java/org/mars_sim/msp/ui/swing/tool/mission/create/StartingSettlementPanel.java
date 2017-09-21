@@ -46,14 +46,12 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel for selecting the mission's starting settlement.
  */
 class StartingSettlementPanel extends WizardPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** The wizard panel name. */
 	private final static String NAME = "Starting Settlement";
@@ -100,6 +98,7 @@ class StartingSettlementPanel extends WizardPanel {
 
 		// Create the settlement table.
 		settlementTable = new JTable(settlementTableModel);
+		TableStyle.setTableStyle(settlementTable);
 		settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

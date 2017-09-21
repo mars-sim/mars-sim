@@ -7,15 +7,12 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,7 +24,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -39,18 +35,13 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
-import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -152,11 +143,6 @@ extends TabPanel {
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		powerGridLabelPanel.add(titleLabel);
 
-		// Prepare power label.
-		//JPanel powerLabelPanel = new JPanel(new FlowLayout());
-		//powerLabelPanel.setBorder(new MarsPanelBorder());
-		//topContentPanel.add(powerLabelPanel);
-
 		// Prepare spring layout power info panel.
 		JPanel powerInfoPanel = new JPanel(new SpringLayout());//GridLayout(6, 2, 0, 0));
 		powerInfoPanel.setBorder(new MarsPanelBorder());
@@ -218,8 +204,8 @@ extends TabPanel {
 		solarCellEfficiencyCache = getAverageEfficiency();
 		electricEfficiencyLabel = new JLabel(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
 		electricEfficiencyLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
-		//		("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a single junction solar cell is only 33.7%. "
-		//		+ "For a tandem structure or multi-junction p-n cells, the limit can be as high as ~68% for unconcentrated sunlight.</p></html>");
+		//	("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a single junction solar cell is only 33.7%. "
+		//	+ "For a tandem structure or multi-junction p-n cells, the limit can be as high as ~68% for unconcentrated sunlight.</p></html>");
 		powerInfoPanel.add(electricEfficiencyLabel);
 
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -282,14 +268,7 @@ extends TabPanel {
 		//resizable automatically when its Panel resizes
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		//powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		// 2015-06-08 Added sorting
 		powerTable.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        //	powerTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-
-		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
@@ -302,7 +281,7 @@ extends TabPanel {
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(powerInfoPanel,
 		                                6, 2, //rows, cols
-		                                80, 10,        //initX, initY
+		                                20, 10,        //initX, initY
 		                                10, 1);       //xPad, yPad
 
 	}
@@ -370,8 +349,9 @@ extends TabPanel {
 		// Update power used TF.
 		double req = powerGrid.getRequiredPower();
 		if (powerUsedCache != req) {
+			double average = .5*(powerUsedCache + req);
 			powerUsedCache = req;
-			powerUsedTF.setText(formatter.format(powerUsedCache) + kW);
+			powerUsedTF.setText(formatter.format(average) + kW);
 		}
 
 		// Update power storage capacity TF.

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageVehiclePanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 
@@ -20,6 +19,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -90,6 +90,7 @@ public class SalvageVehiclePanel extends WizardPanel {
         
         // Create the vehicle table.
         vehicleTable = new JTable(vehicleTableModel);
+		TableStyle.setTableStyle(vehicleTable);
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

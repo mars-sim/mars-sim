@@ -46,7 +46,9 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DigLocalIce.class.getName());
-
+	
+    private static String sourceName = logger.getName();
+    
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
@@ -75,6 +77,8 @@ implements Serializable {
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
         super(NAME, person, false, 0D);
+
+        sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
         settlement = person.getAssociatedSettlement();
 
@@ -306,7 +310,7 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
-	    LogConsolidated.log(logger, Level.INFO, 5000, logger.getName(), 
+	    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
 	    		person.getName() + " collected " + Math.round(iceCollected*10D)/10D 
 	    		+ " kg of ice outside " + person.getAssociatedSettlement(), null);
  

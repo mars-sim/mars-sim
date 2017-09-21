@@ -19,6 +19,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -40,7 +42,9 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 123L;
 
-    //private static Logger logger = Logger.getLogger(Inventory.class.getName());
+    private static Logger logger = Logger.getLogger(Inventory.class.getName());
+    
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
@@ -1103,7 +1107,9 @@ implements Serializable {
             }
         }
         else {
-            throw new IllegalStateException("Unit: " + unit + " could not be stored.");
+        	//throw new IllegalStateException(
+    	    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::storeUnit",
+    	    		"Unit: " + unit + " could not be stored.", null);
         }
     }
 
@@ -1149,7 +1155,9 @@ implements Serializable {
         if (retrieved) {
             unit.setContainerUnit(null); // this can cause person.getSettlement() = null
         } else {
-            throw new IllegalStateException("Unit: " + unit + " could not be retrieved.");
+            //throw new IllegalStateException
+    	    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::retrieveUnit",
+    	    		"Unit: " + unit + " could not be retrieved.", null);
         }
     }
 

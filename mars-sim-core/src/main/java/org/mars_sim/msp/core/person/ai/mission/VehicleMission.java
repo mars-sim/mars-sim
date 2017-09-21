@@ -489,10 +489,10 @@ implements UnitListener {
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement,
 				vehicle, resources, equipment, getPeopleNumber(), tripTime);
 		if (!vehicleCapacity) {
-			logger.info("Vehicle doesn't have capacity.");
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, "Vehicle doesn't have capacity.", null);
 		}
 		if (!settlementSupplies) {
-			logger.info("Settlement doesn't have supplies.");
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, "Settlement doesn't have supplies.", null);
 		}
 
 		return vehicleCapacity && settlementSupplies;
@@ -773,9 +773,7 @@ implements UnitListener {
 			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
 			Map<Part, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
-			Iterator<Part> i = parts.keySet().iterator();
-			while (i.hasNext()) {
-				Part part = i.next();
+			for (Part part : parts.keySet()) {
 				int number = (int) Math.round(parts.get(part)
 						* numberMalfunctions * PARTS_NUMBER_MODIFIER);
 				if (number > 0) {
@@ -820,12 +818,7 @@ implements UnitListener {
 				    	String newLog = vehicle.getName() + " does not have enough " + resource +
 				                " to continue with " + getName() + " (Required: " + Math.round(amount*100D)/100D +
 				                " kg. Stored: " + Math.round(amountStored*100D)/100D + " kg)";
-
-				    	//if (!logCache[0].equals(newLog)) {
-					    //	logCache[0] = newLog;
-						    LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
-				    	//}
-
+				    	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
 				        result = false;
 				    }
 				}
@@ -838,12 +831,7 @@ implements UnitListener {
 				    	String newLog = vehicle.getName() + " does not have enough " + resource +
 								" to continue with " + getName() + " (Required: " + num +
 								". Stored: " + numStored + ")";
-
-				    	//if (!logCache[1].equals(newLog)) {
-					    //	logCache[1] = newLog;
-						    LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
-				    	//}
-
+				    	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
 						result = false;
 					}
 				}
@@ -895,8 +883,7 @@ implements UnitListener {
 					HistoricalEvent newEvent = new MissionHistoricalEvent(
 							member, this,
 							EventType.MISSION_EMERGENCY_DESTINATION);
-					Simulation.instance().getEventManager().registerNewEvent(
-							newEvent);
+					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
 					// Set the new destination as the travel mission's next and final navpoint.
 					clearRemainingNavpoints();
@@ -961,10 +948,8 @@ implements UnitListener {
 		Coordinates location = getCurrentMissionLocation();
 		double closestDistance = Double.MAX_VALUE;
 
-		Iterator<Settlement> i = Simulation.instance().getUnitManager()
-				.getSettlements().iterator();
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
+		for (Settlement settlement : Simulation.instance().getUnitManager()
+				.getSettlements()) {
 			double distance = settlement.getCoordinates().getDistance(location);
 			if (distance < closestDistance) {
 				result = settlement;

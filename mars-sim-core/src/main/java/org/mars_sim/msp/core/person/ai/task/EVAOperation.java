@@ -256,7 +256,6 @@ implements Serializable {
 
             // If not outside, create walk outside subtask.
             if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
-
                 setPhase(getOutsideSitePhase());
             }
             else {

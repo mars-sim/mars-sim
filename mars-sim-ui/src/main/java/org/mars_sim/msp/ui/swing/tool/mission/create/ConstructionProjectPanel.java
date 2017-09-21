@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @version 3.08 2015-03-02
-
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -48,15 +47,13 @@ import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel for selecting the mission's
  * construction project information.
  */
 class ConstructionProjectPanel extends WizardPanel {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
 
     /** The wizard panel name. */
     private final static String NAME = "Construction Project";
@@ -208,6 +205,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         // Create the materials table.
         materialsTable = new JTable(materialsTableModel);
+		TableStyle.setTableStyle(materialsTable);
         materialsTable.setRowSelectionAllowed(false);
         materialsTable.setDefaultRenderer(Object.class,
                 new DefaultTableCellRenderer() {

@@ -1074,7 +1074,7 @@ implements Serializable {
                             // Convert the meal into preserved food.
                             preserveFood();
                             LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-                            		"A meal will be expired soon. Converting "
+                            		"A meal is expiring. Convert "
                                     + dryMassPerServing  + " kg "
                                     + meal.getName().toLowerCase()
                                     + " into preserved food at "

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementSettlementPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -28,9 +27,6 @@ import java.util.Iterator;
  */
 public class SalvageSettlementPanel
 extends WizardPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// The wizard panel name.
 	private final static String NAME = "Salvage Settlement";

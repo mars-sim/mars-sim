@@ -48,12 +48,10 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 class TradeGoodsPanel
 extends WizardPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private boolean buyGoods;
 	private JLabel errorMessageLabel;
@@ -105,6 +103,7 @@ extends WizardPanel {
 		availableGoodsPane.add(goodsScrollPane, BorderLayout.CENTER);
 		goodsTableModel = new GoodsTableModel();
 		goodsTable = new JTable(goodsTableModel);
+		TableStyle.setTableStyle(goodsTable);
 		goodsTable.setRowSelectionAllowed(true);
 		goodsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		goodsTable.getSelectionModel().addListSelectionListener(

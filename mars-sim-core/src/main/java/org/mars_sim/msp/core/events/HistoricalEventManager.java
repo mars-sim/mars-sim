@@ -30,7 +30,6 @@ public class HistoricalEventManager implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
 	/**
 	 * This defines the maximum number of events that are stored.
 	 * It should be a standard property.

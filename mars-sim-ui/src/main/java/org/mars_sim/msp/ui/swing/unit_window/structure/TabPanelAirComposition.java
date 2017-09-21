@@ -11,21 +11,19 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -37,10 +35,9 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
-
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -56,19 +53,17 @@ extends TabPanel {
 
 	// Data cache
 	private int numBuildingsCache;
-	private double o2Cache, cO2Cache, n2Cache, h2OCache, arCache, totalPressureCache;
+	private double o2Cache, cO2Cache, n2Cache, h2OCache, arCache, totalPressureCache, averageTemperatureCache;
 
 	private List<Building> buildingsCache;
 
-	private JLabel o2Label, cO2Label, n2Label, h2OLabel, arLabel, totalPressureLabel;
+	private JLabel o2Label, cO2Label, n2Label, h2OLabel, arLabel, totalPressureLabel, averageTemperatureLabel;
 
 	private JTable table ;
 
-	private JRadioButton percent_btn, pressure_btn, mass_btn, moles_btn, temperature_btn;
+	private JRadioButton percent_btn, pressure_btn, mass_btn;//, moles_btn, temperature_btn;
 	
 	private JScrollPane scrollPane;
-	
-	private JCheckBox checkbox;
 	
 	private ButtonGroup bG;
 	
@@ -113,47 +108,79 @@ extends TabPanel {
 		label.setFont(new Font("Serif", Font.BOLD, 16));
 		labelPanel.add(label);
 
-		// Prepare heat info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(9, 1, 0, 0));
-		infoPanel.setBorder(new MarsPanelBorder());
+		// Prepare  info panel.
+		JPanel ptPanel = new JPanel(new SpringLayout());
+		//ptPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(ptPanel);
+
+		JLabel t = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), JLabel.RIGHT);
+		ptPanel.add(t);
+		averageTemperatureCache = settlement.getTemperature();
+		averageTemperatureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", fmt2.format(averageTemperatureCache)), JLabel.LEFT); //$NON-NLS-1$
+		ptPanel.add(averageTemperatureLabel);
+		
+		JLabel p = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.title"), JLabel.RIGHT);
+		ptPanel.add(p);
+		totalPressureCache = settlement.getAirPressure();
+		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure", fmt2.format(totalPressureCache)), JLabel.LEFT); //$NON-NLS-1$
+		ptPanel.add(totalPressureLabel);
+		
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(ptPanel,
+		                                2, 2, //rows, cols
+		                                5, 5,        //initX, initY
+		                                10, 1);       //xPad, yPad
+		
+		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
+		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelAirComposition.label"), JLabel.CENTER);
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titlePanel.add(titleLabel);
+		topContentPanel.add(titlePanel); //$NON-NLS-1$
+
+		JPanel infoPanel = new JPanel(new SpringLayout());
+		//infoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(infoPanel);
 
-		totalPressureCache = settlement.getAirPressure()/1000D; // convert to kPascal by multiplying 1000
-		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure", fmt2.format(totalPressureCache)), JLabel.CENTER); //$NON-NLS-1$
-		infoPanel.add(totalPressureLabel);
-
-		// add an empty label for separation
-		infoPanel.add(new JLabel(""));
-
-		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
-
-		infoPanel.add(new JLabel(Msg.getString("TabPanelAirComposition.label"), JLabel.CENTER)); //$NON-NLS-1$
-
+		JLabel co2 = new JLabel(Msg.getString("TabPanelAirComposition.cO2.title"), JLabel.RIGHT);
+		infoPanel.add(co2);
 		cO2Cache = getOverallComposition(0);
-		cO2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.cO2", fmt3.format(cO2Cache)), JLabel.CENTER); //$NON-NLS-1$
+		cO2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt3.format(cO2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
 		infoPanel.add(cO2Label);
 
+		JLabel ar = new JLabel(Msg.getString("TabPanelAirComposition.ar.title"), JLabel.RIGHT);
+		infoPanel.add(ar);
 		arCache = getOverallComposition(1);
-		arLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.ar", fmt2.format(arCache)), JLabel.CENTER); //$NON-NLS-1$
+		arLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(arCache))+"   ", JLabel.LEFT); //$NON-NLS-1$
 		infoPanel.add(arLabel);
 		
+		JLabel n2 = new JLabel(Msg.getString("TabPanelAirComposition.n2.title"), JLabel.RIGHT);
+		infoPanel.add(n2);
 		n2Cache = getOverallComposition(2);
-		n2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.n2", fmt1.format(n2Cache)), JLabel.CENTER); //$NON-NLS-1$
+		n2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt1.format(n2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
 		infoPanel.add(n2Label);
 
+		JLabel o2 = new JLabel(Msg.getString("TabPanelAirComposition.o2.title"), JLabel.RIGHT);
+		infoPanel.add(o2);
 		o2Cache = getOverallComposition(3);
-		o2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.o2", fmt2.format(o2Cache)), JLabel.CENTER); //$NON-NLS-1$
+		o2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(o2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
 		infoPanel.add(o2Label);
 
+		JLabel h2O = new JLabel(Msg.getString("TabPanelAirComposition.h2O.title"), JLabel.RIGHT);
+		infoPanel.add(h2O);
 		h2OCache = getOverallComposition(4);
-		h2OLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.h2O", fmt2.format(h2OCache)), JLabel.CENTER); //$NON-NLS-1$
+		h2OLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(h2OCache))+"   ", JLabel.LEFT); //$NON-NLS-1$
 		infoPanel.add(h2OLabel);
-
-		// add an empty label for separation
 		infoPanel.add(new JLabel(""));
-
+		infoPanel.add(new JLabel(""));
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(infoPanel,
+		                                2, 6, //rows, cols
+		                                5, 5,        //initX, initY
+		                                10, 1);       //xPad, yPad
+		
 		// Create override check box panel.
-		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		topContentPanel.add(radioPane, BorderLayout.SOUTH);
 		
 	    percent_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.percent")); //$NON-NLS-1$
@@ -258,18 +285,15 @@ extends TabPanel {
 	
 	public double getOverallComposition(int gas) {
 		double result = 0;
-		//List<Building> buildings = manager.getBuildingsWithLifeSupport();
 		int size = buildingsCache.size();
-		Iterator<Building> k = buildingsCache.iterator();
-		while (k.hasNext()) {
-			Building b = k.next();
+		for (Building b : buildingsCache) {
 			int id = b.getInhabitableID();
 			double [][] vol = air.getPercentComposition();
 			//System.out.println("vol.length : " + vol.length + "  vol[].length : " + vol[0].length);
 			double percent = vol[gas][id];
 			result += percent;
 		}
-		return result/size;
+		return Math.round(result/size*100.0)/100.0;
 	}
 
 	public String getSubtotal(int row) {
@@ -327,49 +351,58 @@ extends TabPanel {
 			if (o2Cache != o2) {
 				o2Cache = o2;
 				o2Label.setText(
-					Msg.getString("TabPanelAirComposition.label.o2", //$NON-NLS-1$
-					fmt2.format(o2Cache)
-					));
+					Msg.getString("TabPanelAirComposition.label.percent", //$NON-NLS-1$
+					fmt2.format(o2Cache))+"   "
+					);
 			}
 
 			double cO2 = getOverallComposition(0);
 			if (cO2Cache != cO2) {
 				cO2Cache = cO2;
 				cO2Label.setText(
-					Msg.getString("TabPanelAirComposition.label.cO2", //$NON-NLS-1$
-					fmt3.format(cO2Cache)
-					));
+					Msg.getString("TabPanelAirComposition.label.percent", //$NON-NLS-1$
+					fmt3.format(cO2Cache))+"   "
+					);
 			}
 
 			double h2O = getOverallComposition(1);
 			if (h2OCache != h2O) {
 				h2OCache = h2O;
 				h2OLabel.setText(
-					Msg.getString("TabPanelAirComposition.label.h2O",  //$NON-NLS-1$
-					fmt2.format(h2O)
-					));
+					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
+					fmt2.format(h2O))+"   "
+					);
 			}
 
 			double n2 =  getOverallComposition(2);
 			if (n2Cache != n2) {
 				n2Cache = n2;
 				n2Label.setText(
-					Msg.getString("TabPanelAirComposition.label.n2",  //$NON-NLS-1$
-					fmt1.format(n2)
-					));
+					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
+					fmt1.format(n2))+"   "
+					);
 			}
 
 			double ar = getOverallComposition(4);
 			if (arCache != ar) {
 				arCache = ar;
 				arLabel.setText(
-					Msg.getString("TabPanelAirComposition.label.ar",  //$NON-NLS-1$
-					fmt2.format(ar)
-					));
+					Msg.getString("TabPanelAirComposition.label.percent",  //$NON-NLS-1$
+					fmt2.format(ar))+"   "
+					);
 			}
 
 
-			double totalPressure = Math.round(settlement.getAirPressure()/1000D*1000.0)/1000.0; // convert to kPascal by multiplying 1000
+			double averageTemperature = Math.round(settlement.getTemperature()*1000.0)/1000.0; // convert to kPascal by multiplying 1000
+			if (averageTemperatureCache != averageTemperature) {
+				averageTemperatureCache = averageTemperature;
+				averageTemperatureLabel.setText(
+					Msg.getString("TabPanelAirComposition.label.averageTemperature",  //$NON-NLS-1$
+					fmt2.format(averageTemperatureCache)
+					));
+			}
+			
+			double totalPressure = Math.round(settlement.getAirPressure()*1000.0)/1000.0; // convert to kPascal by multiplying 1000
 			if (totalPressureCache != totalPressure) {
 				totalPressureCache = totalPressure;
 				totalPressureLabel.setText(

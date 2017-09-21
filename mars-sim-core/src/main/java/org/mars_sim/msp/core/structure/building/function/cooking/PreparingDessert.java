@@ -717,7 +717,7 @@ implements Serializable {
                             // Refrigerate prepared dessert.
                             refrigerateFood(dessert);
                             LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-                            		"A dessert will be expired soon. Refrigerating "
+                            		"A dessert is expiring. Refrigerate "
                                     + getDryMass(dessert.getName()) + " kg "
                                     + dessert.getName()
                                     +  " at " + getBuilding().getNickName()

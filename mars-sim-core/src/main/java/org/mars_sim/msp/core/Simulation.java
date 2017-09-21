@@ -734,9 +734,7 @@ implements ClockListener, Serializable {
 	    		//System.out.println("previous is true. now is false. Unpaused sim");
 			}
 		}
-
     }
-
 
 
     /**

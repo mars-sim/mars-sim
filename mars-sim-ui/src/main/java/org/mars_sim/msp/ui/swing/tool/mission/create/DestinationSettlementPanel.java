@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * DestinationSettlementPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
 
@@ -11,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -26,9 +26,6 @@ import java.util.Iterator;
  * This is a wizard panel for selecting the mission destination settlement.
  */
 class DestinationSettlementPanel extends WizardPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** Wizard panel name. */
 	private final static String NAME = "Destination Settlement";
@@ -73,6 +70,7 @@ class DestinationSettlementPanel extends WizardPanel {
         
         // Create the settlement table.
         settlementTable = new JTable(settlementTableModel);
+		TableStyle.setTableStyle(settlementTable);
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
         settlementTable.setRowSelectionAllowed(true);
         settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

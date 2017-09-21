@@ -49,14 +49,13 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel for getting emergency supplies information.
  */
 public class EmergencySupplyPanel extends WizardPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	// Data members.
 	private JLabel errorMessageLabel;
 	private JTable supplyTable;
@@ -98,6 +97,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		availableSupplyPane.add(supplyScrollPane, BorderLayout.CENTER);
 		supplyTableModel = new SupplyTableModel();
 		supplyTable = new JTable(supplyTableModel);
+		TableStyle.setTableStyle(supplyTable);
 		supplyTable.setRowSelectionAllowed(true);
 		supplyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		supplyTable.getSelectionModel().addListSelectionListener(

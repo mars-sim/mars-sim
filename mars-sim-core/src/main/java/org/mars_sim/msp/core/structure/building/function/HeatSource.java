@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HeatSource.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;

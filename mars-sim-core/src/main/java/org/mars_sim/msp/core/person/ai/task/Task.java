@@ -53,49 +53,59 @@ implements Serializable, Comparable<Task> {
 	/** default logger. */
     private static Logger logger = Logger.getLogger(Task.class.getName());
 
-	private static final double JOB_STRESS_MODIFIER = .5D; // if that task is an a.i. task within a person's job, then the stress effect is 1/2
+	private static final double JOB_STRESS_MODIFIER = .5D; 
+	// if that task is an a.i. task within a person's job, then the stress effect is 1/2
+	
 	private static final double SKILL_STRESS_MODIFIER = .1D;
 
 	// Data members
-	/** The name of the task. */
-	private String name;
-	/** The person performing the task. */
-	protected Person person = null;
-	/** The robot performing the task. */
-	protected Robot robot = null;
 
 	/** True if task is finished. */
 	private boolean done;
 	/** True if task has a time duration. */
 	protected boolean hasDuration;
-	/** The time duration (in millisols) of the task. */
-	private double duration;
-	/** The current amount of time spent on the task (in millisols). */
-	private double timeCompleted;
-	/** Description of the task. */
-	private String description;
-	/** Sub-task of the current task. */
-	protected Task subTask;
-	/** Phase of task completion. */
-	private TaskPhase phase;
-	/** FunctionType of the task. */	
-	private FunctionType functionType = FunctionType.UNKNOWN;
-	/** Amount of time required to complete current phase. (in millisols) */
-	protected double phaseTimeRequired;
-	/** Amount of time completed on the current phase. (in millisols) */
-	protected double phaseTimeCompleted;
 	/** Is this task effort driven. */
 	protected boolean effortDriven;
 	/** Task should create Historical events. */
 	private boolean createEvents;
+	
+
+	/** Amount of time required to complete current phase. (in millisols) */
+	protected double phaseTimeRequired;
+	/** Amount of time completed on the current phase. (in millisols) */
+	protected double phaseTimeCompleted;
 	/** Stress modified by person performing task per millisol. */
 	protected double stressModifier;
+	/** The time duration (in millisols) of the task. */
+	private double duration;
+	/** The current amount of time spent on the task (in millisols). */
+	private double timeCompleted;
+	
+	/** The name of the task. */
+	private String name;
+	/** Description of the task. */
+	private String description;
+
 	/** The person teaching this task if any. */
 	private Person teacher;
+	/** The person performing the task. */
+	protected Person person = null;
+	/** The robot performing the task. */
+	protected Robot robot = null;
+	/** Sub-task of the current task. */
+	protected Task subTask;
+	/** Phase of task completion. */
+	private TaskPhase phase;
+	
+	private PhysicalCondition condition;
+	
+	/** FunctionType of the task. */	
+	private FunctionType functionType = FunctionType.UNKNOWN;
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
-	
-	private HistoricalEventManager eventManager;
+
+	/** An instance of the event manager */
+	private static HistoricalEventManager eventManager;
 
 	/**
 	 * Constructs a Task object.
@@ -135,6 +145,7 @@ implements Serializable, Comparable<Task> {
         if (unit instanceof Person) {
          	person = (Person) unit;
          	this.person = person;
+         	condition = person.getPhysicalCondition();
         }
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
@@ -156,11 +167,11 @@ implements Serializable, Comparable<Task> {
 
 		if (person != null) { 
 			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-	        //person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 
+	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 
 		}
 		else if (robot != null) {
 			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-			//robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
+			robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 		}
 
 
@@ -454,7 +465,7 @@ implements Serializable, Comparable<Task> {
 	        	// If task is effort-driven and person is incapacitated, end task.
 			    if (effortDriven && (person.getPerformanceRating() == 0D)) {
 			    	// "Resurrect" him a little to give him a chance to make amend
-			    	person.getPhysicalCondition().setPerformanceFactor(3);
+			    	condition.setPerformanceFactor(3);
 			    	endTask();
 
 	            } else {
@@ -566,8 +577,6 @@ implements Serializable, Comparable<Task> {
      * @param time the time performing the task.
      */
     private void modifyStress(double time) {
-
-    	 PhysicalCondition condition = person.getPhysicalCondition();
 
 		if (person != null) {
 	        double effectiveStressModifier = stressModifier;

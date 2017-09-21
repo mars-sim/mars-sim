@@ -11,7 +11,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
-import org.mars_sim.msp.ui.swing.tool.mission.edit.InfoPanel;
 
 import javax.swing.*;
 
@@ -32,16 +31,19 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// Data members
+	private int displayPanelIndex;
+	
 	private JPanel infoPane;
 	private JButton prevButton;
 	private JButton nextButton;
 	private JButton finalButton;
+	
 	private MissionDataBean missionBean;
-	private List<WizardPanel> wizardPanels;
-	private int displayPanelIndex;
 	private TypePanel typePanel;
 	private MissionWindow missionWindow;
 	
+	private List<WizardPanel> wizardPanels;
+
 	/**
 	 * Constructor.
 	 * @param owner The owner frame.
