@@ -1,19 +1,29 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMissionMeta.java
- * @version 3.1.0 2017-09-04
+ * @version 3.1.0 2017-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 
+import java.util.Collection;
+
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 
 
 /**
@@ -43,10 +53,11 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
         double result = 0D;
 
-        //if (Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
-        //	return 0;
+        if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() 
+        		< BuildingConstructionMission.FIRST_AVAILABLE_SOL)
+        	return 0;
 
-/*
+
         // Check if person is in a settlement.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
@@ -54,16 +65,15 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             boolean go = true;
 
             int availablePeopleNum = 0;
-
+/*
             // No construction until after the first ten sols of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
-
-            Iterator<Person> i = settlement.getInhabitants().iterator();
-            while (i.hasNext()) {
-                Person member = i.next();
+*/
+            Collection<Person> list = settlement.getInhabitants();
+            for (Person member : list) {
                 boolean noMission = !member.getMind().hasActiveMission();
                 boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
                 if (noMission && isFit)
@@ -83,9 +93,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             	go = false;
 
             // No construction until after the first ten sols of the simulation.
-
-            else if (totalTimeSols < FIRST_AVAILABLE_SOL)
-            	go = false;
+            //else if (totalTimeSols < FIRST_AVAILABLE_SOL)
+            //	go = false;
 
             // Check if min number of EVA suits at settlement.
         	else if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
@@ -96,10 +105,10 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
             if (go) {
             //if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
-
+                ConstructionManager manager = settlement.getConstructionManager();
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-                    ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
+                    ConstructionValues values =  manager.getConstructionValues();
 
                     // Add construction profit for existing or new construction sites.
                     double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
@@ -116,15 +125,13 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
                         if (newSiteProfit > existingSiteProfit) {
                             // Divide profit by 10 to the power of the number of existing construction sites.
-                            ConstructionManager manager = settlement.getConstructionManager();
                             int numSites = manager.getConstructionSites().size();
 
                             // 2016-06-06 Added considering the size of the settlement population
-                            int numPeople = person.getSettlement().getCurrentPopulationNum();
+                            int numPeople = settlement.getNumCurrentPopulation();
                             int limit = (int)(2D * numSites - numPeople/24D);
 
                             result = result/Math.pow(10, 2 + limit) /5D;
-
 
                         }
 
@@ -142,8 +149,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                 result *= job.getStartMissionProbabilityModifier(BuildingConstructionMission.class);
             }
         }
-*/
-        //if (result > 1.1) System.out.println("result : "+ result);
+
+        if (result > 1.1) System.out.println("result : "+ result);
         return result;
     }
 

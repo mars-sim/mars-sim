@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -32,36 +33,9 @@ public class RobotMapLayer implements SettlementMapLayer {
 
 	// Data members
 	private SettlementMapPanel mapPanel;
+	
+	private static UnitManager unitMgr;
 
-	/**
-	 * Gets a list of robots to display on a settlement map.
-	 * @param settlement the settlement
-	 * @return list of robots to display.
-	 */
-	public static List<Robot> getRobotsToDisplay(Settlement settlement) {
-
-		List<Robot> result = new ArrayList<Robot>();
-
-		if (settlement != null) {
-			Iterator<Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
-			while (i.hasNext()) {
-				Robot robot = i.next();
-
-				// Only select functional robots.
-				if (!robot.getSystemCondition().isInoperable()) {
-
-					// Select a robot that is at the settlement location.
-					Coordinates settlementLoc = settlement.getCoordinates();
-					Coordinates personLoc = robot.getCoordinates();
-					if (personLoc.equals(settlementLoc)) {
-						result.add(robot);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Constructor
@@ -70,6 +44,8 @@ public class RobotMapLayer implements SettlementMapLayer {
 	public RobotMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
+		unitMgr = Simulation.instance().getUnitManager();
+		
 	}
 
 	@Override
@@ -100,6 +76,37 @@ public class RobotMapLayer implements SettlementMapLayer {
 		g2d.setTransform(saveTransform);
 	}
 
+
+	/**
+	 * Gets a list of robots to display on a settlement map.
+	 * @param settlement the settlement
+	 * @return list of robots to display.
+	 */
+	public static List<Robot> getRobotsToDisplay(Settlement settlement) {
+
+		List<Robot> result = new ArrayList<Robot>();
+
+		if (settlement != null) {
+			Iterator<Robot> i = unitMgr.getRobots().iterator();
+			while (i.hasNext()) {
+				Robot robot = i.next();
+
+				// Only select functional robots.
+				if (!robot.getSystemCondition().isInoperable()) {
+
+					// Select a robot that is at the settlement location.
+					Coordinates settlementLoc = settlement.getCoordinates();
+					Coordinates personLoc = robot.getCoordinates();
+					if (personLoc.equals(settlementLoc)) {
+						result.add(robot);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Draw robots at a settlement.
 	 * @param g2d the graphics context.

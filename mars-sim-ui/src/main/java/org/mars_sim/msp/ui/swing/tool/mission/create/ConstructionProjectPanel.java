@@ -202,10 +202,11 @@ class ConstructionProjectPanel extends WizardPanel {
 
         // Create the materials table model.
         materialsTableModel = new MaterialsTableModel();
-
+ 
         // Create the materials table.
         materialsTable = new JTable(materialsTableModel);
 		TableStyle.setTableStyle(materialsTable);
+		materialsTable.setAutoCreateRowSorter(true);
         materialsTable.setRowSelectionAllowed(false);
         materialsTable.setDefaultRenderer(Object.class,
                 new DefaultTableCellRenderer() {

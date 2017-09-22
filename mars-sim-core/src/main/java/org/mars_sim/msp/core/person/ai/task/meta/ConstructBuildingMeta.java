@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**

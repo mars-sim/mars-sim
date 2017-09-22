@@ -24,7 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.JTableHeader;
@@ -45,12 +44,11 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
  */
 abstract class TableTab
 extends MonitorTab {
+	
 	private JTableHeader header;
-	//private TableHeaderRenderer theRenderer;
-
 	private TableCellRenderer tableCellRenderer;
-
 	private TableProperties propsWindow;
+	
 	/**
 	 * This internal class provides a fixed image icon that is drawn using a Graphics
 	 * object. It represents an arrow Icon that can be other ascending or
@@ -466,4 +464,12 @@ extends MonitorTab {
             sortedModel.sortByColumn(sortedColumn, sortAscending);
         }
     }
+    
+	public void destroy() {
+		//super.destroy();
+		header = null;
+		tableCellRenderer = null;
+		propsWindow = null;
+
+	}
 }

@@ -80,6 +80,7 @@ extends WizardPanel {
         // Create the researcher table.
         researcherTable = new JTable(researcherTableModel);
 		TableStyle.setTableStyle(researcherTable);
+		researcherTable.setAutoCreateRowSorter(true);  
         researcherTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(researcherTableModel));
         researcherTable.setRowSelectionAllowed(true);
         researcherTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

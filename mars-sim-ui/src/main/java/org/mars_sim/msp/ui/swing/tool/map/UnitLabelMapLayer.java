@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitLabelMapLayer.java
- * @version 3.07 2014-10-13
+ * @version 3.1.0 2017-09-22
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 	 * @param mapCenter the location center of the map.
 	 * @param mapType the type of map.
 	 * @param g the graphics context.
-	 */
+	 */ 
 	protected void displayUnit(Unit unit, Coordinates mapCenter, String mapType, Graphics g) {
 		
         IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, mapType);

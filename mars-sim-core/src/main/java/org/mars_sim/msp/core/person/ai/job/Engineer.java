@@ -129,7 +129,7 @@ implements Serializable {
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture workshop = building.getManufacture();
 			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 2D;
 		}
 

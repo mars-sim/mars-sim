@@ -47,7 +47,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
     /** 1/5 of chance of going to a restroom per frame */
     public final static int TOILET_CHANCE = 5;
-	private static int solCache = 0;
+	private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
 
     
     private int beds; // max # of beds
@@ -275,7 +275,7 @@ public class LivingAccommodations extends Function implements Serializable {
         int level = settlement.waterRationLevel();
         if (level != 0)
             usage = usage / 1.5D / level / 2D;
-
+ 
         //System.out.println("numBed : " + numBed);
         //System.out.println("level : " + level);
         //System.out.println("usage : " + usage);

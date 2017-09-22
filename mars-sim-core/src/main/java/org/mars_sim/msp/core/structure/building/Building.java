@@ -191,6 +191,7 @@ LocalBoundedObject, InsidePathLocation {
 	private FoodProduction foodFactory;
 	private ResourceProcessing processing; 
 	private Research lab;
+	private Manufacture workshop;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -569,6 +570,12 @@ LocalBoundedObject, InsidePathLocation {
 		if (lab == null)
 			lab = (Research) getFunction(FunctionType.RESEARCH);
 		return lab;
+	}
+	
+	public Manufacture getManufacture() {
+		if (workshop == null)
+			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);
+		return workshop;
 	}
 	
     /**

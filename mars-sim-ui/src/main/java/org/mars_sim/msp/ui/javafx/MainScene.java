@@ -138,7 +138,7 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
  */
 @SuppressWarnings("restriction")
 public class MainScene {
-
+ 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	public static String OS = Simulation.OS.toLowerCase();
@@ -614,20 +614,24 @@ public class MainScene {
 		Nodes.addInputMap(root, ctrlDown);
 
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)),
-				e -> {
-					boolean isMute = menuBar.getMuteItem().isSelected();
-					if (isMute) {
-						menuBar.getMuteItem().setSelected(false);
-						soundPlayer.setMute(true);
-						soundSlider.setValue(0);
-						muteBox.setSelected(true);
-					} else {
-						menuBar.getMuteItem().setSelected(true);
-						soundPlayer.setMute(false);
-						soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
-						muteBox.setSelected(false);
+				e -> {			
+					if (!masterClock.isPaused()) {
+						boolean isMute = menuBar.getMuteItem().isSelected();
+						if (isMute) {
+							menuBar.getMuteItem().setSelected(false);
+							soundPlayer.setMute(true);
+							soundSlider.setValue(0);
+							muteBox.setSelected(true);
+						} else {
+							menuBar.getMuteItem().setSelected(true);
+							soundPlayer.setMute(false);
+							soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+							muteBox.setSelected(false);
+						}
 					}
-
+					else {
+						logger.info("It's not allowed to mute or unmute while sim is on pause!");
+					}
 				});
 		Nodes.addInputMap(root, ctrlM);
 
@@ -1373,15 +1377,21 @@ public class MainScene {
 		// cb.setPadding(new Insets(0,0,0,5));
 		muteBox.setAlignment(Pos.CENTER_RIGHT);
 		muteBox.setOnAction(s -> {
-			if (muteBox.isSelected()) {
-				// mute it
-				sliderCache = soundSlider.getValue();
-				soundSlider.setValue(0);
-				menuBar.getMuteItem().setSelected(false);
-			} else {
-				// unmute it
-				soundSlider.setValue(sliderCache);
-				menuBar.getMuteItem().setSelected(true);
+			if (!masterClock.isPaused()) {
+				if (muteBox.isSelected()) {
+					// mute it
+					sliderCache = soundSlider.getValue();
+					soundSlider.setValue(0);
+					menuBar.getMuteItem().setSelected(false);
+				} else {
+					// unmute it
+					soundSlider.setValue(sliderCache);
+					menuBar.getMuteItem().setSelected(true);
+				}
+			}
+			else {
+				muteBox.setSelected(!muteBox.isSelected());
+				logger.info("It's not allowed to mute or unmute while sim is on pause!");
 			}
 		});
 
@@ -2149,6 +2159,10 @@ public class MainScene {
 
 	}
 
+	public boolean isMapOn() {
+		return mapToggle.isSelected();
+	}
+	
 	public void closeMinimap() {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
@@ -3369,6 +3383,10 @@ public class MainScene {
 
 	public JFXTabPane getJFXTabPane() {
 		return jfxTabPane;
+	}
+	
+	public boolean isMapTabOpen() {
+		return jfxTabPane.getSelectionModel().isSelected(MainScene.MAP_TAB);
 	}
 
 	public Pane getRoot() {

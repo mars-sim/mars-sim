@@ -22,29 +22,23 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 
-import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.embed.swing.SwingNode;
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.stage.StageStyle;
-import javafx.stage.Popup;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.ImageCursor;
-import javafx.scene.Node;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -55,30 +49,35 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.demo.Dash;
-import org.mars_sim.msp.ui.javafx.demo.FrostedPanel;
+
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
-
+/*
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 
+import javafx.application.Application;
+import javafx.scene.shape.Circle;
+import javafx.embed.swing.SwingNode;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
+import javafx.scene.SnapshotParameters;
+import javafx.stage.Popup;
+import javafx.scene.Group;
+import javafx.scene.ImageCursor;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-
+*/
 
 // TODO: is extending to JInternalFrame better?
+@SuppressWarnings("restriction")
 public class PopUpUnitMenu extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;

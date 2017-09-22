@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionTabPanel.java
- * @version 3.07 2014-12-03
+ * @version 3.1.0 2017-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -23,8 +23,6 @@ import java.awt.event.ActionListener;
 public class TabPanelConstruction
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private Settlement settlement;

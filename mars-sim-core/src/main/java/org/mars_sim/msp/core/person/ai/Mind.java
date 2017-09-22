@@ -188,7 +188,10 @@ implements Serializable {
         }
     }
 
-    //  first called by UnitManager at the start of the sim
+    /**
+     * Assigns the first job at the start of the sim
+     * @param assignedBy the authority that assigns the job
+     */
     public void getInitialJob(String assignedBy) {
     	Job newJob = JobManager.getNewJob(person);
     	setJob(newJob, true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
@@ -505,7 +508,7 @@ implements Serializable {
                     missionManager.addMission(newMission);
                     setMission(newMission);
                 }
-
+ 
                 return;
             }
             else {

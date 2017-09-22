@@ -141,7 +141,8 @@ public final class JobManager implements Serializable {
 	 * @return settlement need minus total job capability of inhabitants with job.
 	 */
 	public static double getRemainingSettlementNeed(Settlement settlement, Job job) {
-		if (job == null) System.out.println("JobManager : job is null");
+		if (job == null) 
+			logger.warning("job is null !");
 		double result = job.getSettlementNeed(settlement);
 
 		// Check all people associated with the settlement.

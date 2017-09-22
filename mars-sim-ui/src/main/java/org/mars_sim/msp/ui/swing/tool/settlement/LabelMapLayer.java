@@ -26,6 +26,7 @@ import java.util.Map;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
@@ -40,7 +41,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class LabelMapLayer
 implements SettlementMapLayer {
-
+ 
 	// Static members
 	private static final Color HALLWAY_LABEL_COLOR = Color.gray;; //Color.blue;//new Color (79, 108, 44); // dull sage green
 	private static final Color BUILDING_LABEL_COLOR = new Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
@@ -80,6 +81,9 @@ implements SettlementMapLayer {
 
 	// Data members
 	private SettlementMapPanel mapPanel;
+	
+	private static UnitManager unitMgr;
+	
 	private Map<String, BufferedImage> labelImageCache;
 
 	/**
@@ -89,6 +93,7 @@ implements SettlementMapLayer {
 	public LabelMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
+		unitMgr = Simulation.instance().getUnitManager();
 		labelImageCache = new HashMap<String, BufferedImage>(30);
 	}
 
@@ -150,10 +155,10 @@ implements SettlementMapLayer {
 			while (i.hasNext()) {
 				Building building = i.next();
 				String name = building.getNickName();
+				String words[] = name.split(" ");
+				int size = words.length;
 				if (name.contains("Hallway")) {
 					// 2016-09-25 Shrank the size of a hallway label.
-					String words[] = name.split(" ");
-					int size = words.length;
 					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "H " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
@@ -161,17 +166,17 @@ implements SettlementMapLayer {
 				}
 				else if (name.contains("Tunnel")) {
 					// 2016-09-25 Shrank the size of a hallway label.
-					String words[] = name.split(" ");
-					int size = words.length;
 					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "T " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
 							HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 12);
 				}
 				else {
-					// 2015-12-15 Split up the name into multiple lines
-					String words[] = name.split(" ");
-					int size = words.length;
+					String last_1 = words[size-1];
+					String last_2 = words[size-2];		
+					words[size-2] = last_2 + " " + last_1;
+					size = size-1;
+					// Split up the name into multiple lines
 					if (name.contains("Reactor") || name.contains("Solar")
 							|| name.contains("Wind") || name.contains("Power")
 							|| name.contains("Generator") || name.contains("Battery")
@@ -246,7 +251,7 @@ implements SettlementMapLayer {
 			}
 		}
 	}
-
+ 
 	/**
 	 * Draw labels for all of the construction sites in the settlement.
 	 * @param g2d the graphics context.
@@ -261,12 +266,34 @@ implements SettlementMapLayer {
 			while (i.hasNext()) {
 				ConstructionSite site = i.next();
 				String siteLabel = getConstructionLabel(site);
-				// 2015-12-15 Splitted up the name into multiple lines
+				// Split up the name into multiple lines except with the whitespace after character 'm'
 				String words[] = siteLabel.split(" ");
 				int size = words.length;
-				for (int j = 0; j < size; j++) {
-					drawLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
+				String last_1 = words[size-1];
+				String last_2 = words[size-2];
+				String last_3 = words[size-3];
+				//System.out.print("last_1 : " + last_1 + "   last_2 : " + last_2);
+				//System.out.print(" [" + last_3 + " " + last_2 + " " + last_1 + "] ");
+				int size_1 = last_1.length();
+				String test_1 = last_1.substring(size_1-1);
+				int size_2 = last_2.length();
+				String test_2 = last_2.substring(size_2-1);
+				int size_3 = last_3.length();
+				String test_3 = last_3.substring(size_3-1);
+				//System.out.println("   test_1 : " + test_1 + "   test_2 : " + test_2);
+				words[size-3] = last_3 + " " + last_2 + " " + last_1;
+				size = size-2;
+				if (test_1.equalsIgnoreCase("m") && test_2.equalsIgnoreCase("x") && test_3.equalsIgnoreCase("m")) {
+					for (int j = 0; j < size; j++) {
+						drawLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
 							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * 12);
+					}
+				}
+				else {
+					for (int j = 0; j < size; j++) {
+						drawLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
+							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * 12);
+					}
 				}
 			}
 		}
@@ -308,7 +335,7 @@ implements SettlementMapLayer {
 	private void drawVehicleLabels(Graphics2D g2d, Settlement settlement) {
 		if (settlement != null) {
 			// Draw all vehicles that are at the settlement location.
-			Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+			Iterator<Vehicle> i = unitMgr.getVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				// Draw vehicles that are at the settlement location.

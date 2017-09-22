@@ -15,7 +15,9 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -33,35 +35,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	// Data members
 	private SettlementMapPanel mapPanel;
 
-	/**
-	 * Gets a list of people to display on a settlement map.
-	 * @param settlement the settlement
-	 * @return list of people to display.
-	 */
-	public static List<Person> getPeopleToDisplay(Settlement settlement) {
-
-		List<Person> result = new ArrayList<Person>();
-
-		if (settlement != null) {
-			Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
-			while (i.hasNext()) {
-				Person person = i.next();
-
-				// Only select living people.
-				if (!person.getPhysicalCondition().isDead()) {
-
-					// Select a person that is at the settlement location.
-					Coordinates settlementLoc = settlement.getCoordinates();
-					Coordinates personLoc = person.getCoordinates();
-					if (personLoc.equals(settlementLoc)) {
-						result.add(person);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
+	private static UnitManager unitMgr;
 
 	/**
 	 * Constructor
@@ -70,8 +44,9 @@ public class PersonMapLayer implements SettlementMapLayer {
 	public PersonMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
+		unitMgr = Simulation.instance().getUnitManager();	
 	}
-
+	
 	@Override
 	// 2014-11-04 Added building parameter
 	public void displayLayer(
@@ -99,6 +74,38 @@ public class PersonMapLayer implements SettlementMapLayer {
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 	}
+
+	
+	/**
+	 * Gets a list of people to display on a settlement map.
+	 * @param settlement the settlement
+	 * @return list of people to display.
+	 */
+	public static List<Person> getPeopleToDisplay(Settlement settlement) {
+
+		List<Person> result = new ArrayList<Person>();
+
+		if (settlement != null) {
+			Iterator<Person> i = unitMgr.getPeople().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+
+				// Only select living people.
+				if (!person.getPhysicalCondition().isDead()) {
+
+					// Select a person that is at the settlement location.
+					Coordinates settlementLoc = settlement.getCoordinates();
+					Coordinates personLoc = person.getCoordinates();
+					if (personLoc.equals(settlementLoc)) {
+						result.add(person);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * Draw people at a settlement.

@@ -139,7 +139,7 @@ implements Serializable {
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.BOTANY)) {
 				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
 			}
@@ -150,7 +150,7 @@ implements Serializable {
 		Iterator<Building> j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
+			Farming farm = building.getFarming();
 			result += (farm.getGrowingArea() / 25D);
 		}
 

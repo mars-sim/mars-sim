@@ -75,7 +75,7 @@ implements Serializable {
      */
     public ConstructBuilding(Person person) {
         // Use EVAOperation parent constructor.
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 20D);
 
         BuildingConstructionMission mission = getMissionNeedingAssistance();
         if ((mission != null) && canConstruct(person, mission.getConstructionSite())) {
@@ -98,7 +98,7 @@ implements Serializable {
     }
     public ConstructBuilding(Robot robot) {
         // Use EVAOperation parent constructor.
-        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 20D);
 
         BuildingConstructionMission mission = getMissionNeedingAssistance();
         if ((mission != null) && canConstruct(robot, mission.getConstructionSite())) {
@@ -129,7 +129,7 @@ implements Serializable {
     public ConstructBuilding(Person person, ConstructionStage stage,
             ConstructionSite site, List<GroundVehicle> vehicles) {
         // Use EVAOperation parent constructor.
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 20D);
 
         // Initialize data members.
         this.stage = stage;
@@ -146,7 +146,7 @@ implements Serializable {
     public ConstructBuilding(Robot robot, ConstructionStage stage,
             ConstructionSite site, List<GroundVehicle> vehicles) {
         // Use EVAOperation parent constructor.
-        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 20D);
 
         // Initialize data members.
         this.stage = stage;

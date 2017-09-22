@@ -14,7 +14,7 @@
 		</foundation>
 
 		<foundation name="surface foundation 5m x 5m" width="5.0" length="5.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="2.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="1.5" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
@@ -22,13 +22,40 @@
 		</foundation>
 	
 		<foundation name="surface foundation 10m x 5m" width="5.0" length="10.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="4.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="2.5" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
 		
+		
+		<!-- round surface foundation 7m x 7m is setting for round modular frame. -->
+		<foundation name="round surface foundation 7m x 7m" width="7.0" length="9.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="2.5" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+			
+		<!-- medium surface foundation 7m x 9m is setting for medium modular frame. work-time = 3.0 -->
+		<foundation name="medium surface foundation 7m x 9m" width="7.0" length="9.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+						
+		<foundation name="large surface foundation 12m x 18m" width="12.0" length="18.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="8.0" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+						
 		<foundation name="subsurface foundation 5m x 5m x 3m" width="5.0" length="5.0" base-level="-1" 
 		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
 			<resource name="concrete" amount="500.0" />
@@ -37,11 +64,18 @@
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="backhoe" />
 			</vehicle>
+		</foundation>	
+
+		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="100.0" skill-required="3" >
+		 	<resource name="water" amount="100.0" />
+		 	<part name="bore drill bit" number="1" />
+		 	<part name="bore drill pipe" number="20" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="crane boom" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
 		</foundation>
-		
-		<!-- Unprepared surface foundation has width and length that is dynamically set. -->
-		<foundation name="unprepared surface foundation" width="-1.0" length="-1.0" base-level="0" 
-		 constructable="false" salvagable="true" work-time="0.0" skill-required="0" />
 		 
 		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" base-level="0" 
 		 constructable="true" salvagable="true" work-time="100.0" skill-required="3" >
@@ -117,6 +151,7 @@
 
 	</foundation-list>
 
+
 	<frame-list>
 	
 		<frame name="steel frame tower" width="5.0" length="5.0" base-level="0" constructable="true" 
@@ -171,9 +206,9 @@
 			</vehicle>
 		</frame>
 		
-		<!-- Note: the lander hab frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="lander hab frame" width="9.0" length="9.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+		<!-- Note: the round hab frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="round hab frame" width="9.0" length="9.0" base-level="0" constructable="false" 
+		 salvagable="true" work-time="200.0" skill-required="2" foundation="medium surface foundation 7m x 9m" >
 			<part name="steel scrap" number="50" />
 			<part name="aluminum scrap" number="50" />
 			<part name="plastic pipe" number="20" />
@@ -186,11 +221,11 @@
 			<part name="solar panel" number="4" />
 		</frame>
 		
-		<!-- Note: the transparent inflatable frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="transparent inflatable frame" width="6.0" length="9.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="100.0" skill-required="2" foundation="unprepared surface foundation" >
+		<!-- Note: the inflatable frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="inflatable frame" width="6.0" length="9.0" base-level="0" constructable="false" 
+		 salvagable="true" work-time="100.0" skill-required="2" foundation="medium surface foundation 7m x 9m" >
 			<part name="aluminum scrap" number="5" />
-			<part name="plastic sheet" number="100" />
+			<part name="plastic sheet" number="50" />
 			<part name="plastic pipe" number="5" />
 			<part name="valve" number="3" />
 			<part name="gasket" number="3" />
@@ -199,42 +234,10 @@
 			<part name="power cable" number="2" />
 		</frame>
 		
-		<!-- Note: the md1 nuclear reactor frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="md1 nuclear reactor frame" width="4.0" length="6.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="3" foundation="unprepared surface foundation" >
-			<part name="steel scrap" number="50" />
-			<part name="steel pipe" number="10" />
-			<part name="valve" number="10" />
-			<part name="gasket" number="10" />
-		</frame>
-		
-		<!-- Note: the erv base frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="erv base frame" width="10.0" length="10.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
-			<part name="steel scrap" number="50" />
-			<part name="aluminum scrap" number="50" />
-			<part name="plastic pipe" number="20" />
-			<part name="valve" number="10" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="power cable" number="10" />
-			<part name="steel pipe" number="4" />
-			<part name="gasket" number="10" />
-			<part name="solar panel" number="4" />
-		</frame>
-		
-		<!-- Note: the md4 nuclear reactor frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="md4 nuclear reactor frame" width="10.0" base-level="0" length="15.0" constructable="false" 
-		 salvagable="true" work-time="400.0" skill-required="3" foundation="unprepared surface foundation" >
-			<part name="steel scrap" number="100" />
-			<part name="steel pipe" number="20" />
-			<part name="valve" number="20" />
-			<part name="gasket" number="20" />
-		</frame>
 		
 		<!-- Note: the atmospheric processor frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="atmospheric processor frame" width="8.0" length="11.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="300.0" skill-required="3" foundation="unprepared surface foundation" >
+		 salvagable="true" work-time="180.0" skill-required="3" foundation="medium surface foundation 7m x 9m" >
 			<part name="steel scrap" number="100" />
 			<part name="aluminum scrap" number="100" />
 			<part name="plastic pipe" number="50" />
@@ -246,9 +249,9 @@
 			<part name="gasket" number="20" />
 		</frame>
 		
-		<!-- Note: the large habitation frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="large habitation frame" width="7.0" length="9.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+		<!-- Note: the medium modular frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="medium modular frame" width="7.0" length="9.0" base-level="0" constructable="false" 
+		 salvagable="true" work-time="150.0" skill-required="2" foundation="medium surface foundation 7m x 9m" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -261,7 +264,7 @@
 		
 		<!-- Note: the large greenhouse frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="large greenhouse frame" width="12.0" length="18.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="300.0" skill-required="3" foundation="unprepared surface foundation" >
+		 salvagable="true" work-time="300.0" skill-required="3" foundation="large surface foundation 12m x 18m" >
 			<part name="steel scrap" number="10" />
 			<part name="aluminum scrap" number="15" />
 			<part name="glass sheet" number="20" />
@@ -273,9 +276,9 @@
 			<part name="power cable" number="6" />
 		</frame>
 		
-		<!-- Note: the garage frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="garage frame" width="12.0" length="16.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+		<!-- Note: the medium garage frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="medium garage frame" width="12.0" length="16.0" base-level="0" constructable="false" 
+		 salvagable="true" work-time="200.0" skill-required="2" foundation="large surface foundation 12m x 18m" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -286,9 +289,9 @@
 			<part name="gasket" number="4" />
 		</frame>
 		
-		<!-- Note: the observatory frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="observatory frame" width="7.0" length="7.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+		<!-- Note: the round modular frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="round modular frame" width="7.0" length="7.0" base-level="0" constructable="false" 
+		 salvagable="true" work-time="200.0" skill-required="2" foundation="round surface foundation 7m x 7m" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -321,21 +324,21 @@
 			</vehicle>
 		</frame>
 		
-		<frame name="small vaulted brick frame" width="10.0" length="10.0" base-level="-1" constructable="true" 
+		<frame name="round vaulted brick frame" width="10.0" length="10.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="80.0" skill-required="2" foundation="subsurface foundation 10m x 10m x 3m" >
-			<resource name="mortar" amount="24000.0" />
-			<resource name="water" amount="24000.0" />
-			<part name="brick" number="24000" />
+			<resource name="mortar" amount="2400.0" />
+			<resource name="water" amount="2400.0" />
+			<part name="brick" number="2400" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</frame>
 		
-		<frame name="garage brick frame" width="15.0" length="18.0" base-level="-1" constructable="true" 
+		<frame name="large garage brick frame" width="15.0" length="18.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="100.0" skill-required="3" foundation="ramped subsurface foundation 15m x 18m x 5m" >
-			<resource name="mortar" amount="40000.0" />
-			<resource name="water" amount="40000.0" />
-			<part name="brick" number="40000" />
+			<resource name="mortar" amount="4000.0" />
+			<resource name="water" amount="4000.0" />
+			<part name="brick" number="4000" />
 			<part name="steel truss" number="2" />
 			<part name="steel sheet" number="5" />
 			<part name="aluminum sheet" number="5" />
@@ -352,9 +355,9 @@
 		
 		<frame name="vaulted glass brick frame" width="5.0" length="10.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="100.0" skill-required="3" foundation="subsurface foundation 5m x 10m x 3m" >
-			<resource name="mortar" amount="7000.0" />
-			<resource name="water" amount="7000.0" />
-			<part name="brick" number="7000" />
+			<resource name="mortar" amount="700.0" />
+			<resource name="water" amount="700.0" />
+			<part name="brick" number="700" />
 			<part name="steel truss" number="4" />
 			<part name="aluminum sheet" number="7" />
 			<part name="glass sheet" number="10" />
@@ -372,17 +375,17 @@
 		<!-- Note hallway frame length is variable. -->
 		<frame name="hallway frame" width="2.0" length="-1.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="3.0" skill-required="1" foundation="surface foundation variable size" >
-			<resource name="concrete" amount="10.0" />
-			<resource name="water" amount="4.0" />
+			<resource name="concrete" amount="100.0" />
+			<resource name="water" amount="40.0" />
 			<part name="steel post" number="5" />
 		</frame>
 		
 		<!-- Note brick tunnel frame length is variable. -->
 		<frame name="brick tunnel frame" width="3.0" length="-1.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="20.0" skill-required="1" foundation="subsurface foundation variable size" >
-			<resource name="mortar" amount="2000.0" />
-			<resource name="water" amount="2000.0" />
-			<part name="brick" number="2000" />
+			<resource name="mortar" amount="200.0" />
+			<resource name="water" amount="200.0" />
+			<part name="brick" number="200" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -542,7 +545,7 @@
 		
 		<!-- Lander hab building project for refitting or salvaging. -->
 		<building name="lander hab" width="9.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+		 salvagable="true" work-time="100.0" skill-required="2" frame="round hab frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -561,7 +564,7 @@
 		
 		<!-- Storage hab building project that is a modified lander hab. -->
 		<building name="storage hab" width="9.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+		 salvagable="true" work-time="100.0" skill-required="2" frame="round hab frame" >
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="3.0" />
 			<resource name="polyethylene" amount="20.0" />
@@ -578,7 +581,7 @@
 		
 		<!-- Research hab building project that is a modified lander hab. -->
 		<building name="research hab" width="9.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+		 salvagable="true" work-time="100.0" skill-required="2" frame="round hab frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -594,7 +597,7 @@
 		
 		<!-- Residential hab building project that is a modified lander hab. -->
 		<building name="residential hab" width="9.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="50.0" skill-required="2" frame="lander hab frame" >
+		 salvagable="true" work-time="50.0" skill-required="2" frame="round hab frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -610,7 +613,7 @@
 		
 		<!-- Medical hab building project that is a modified lander hab. -->
 		<building name="medical hab" width="9.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+		 salvagable="true" work-time="100.0" skill-required="2" frame="round hab frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -626,7 +629,7 @@
 		
 		<!-- Machinery hab building project that is a modified lander hab. -->
 		<building name="machinery hab" width="9.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+		 salvagable="true" work-time="100.0" skill-required="2" frame="round hab frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -642,7 +645,7 @@
 		
 		<!-- Inflatable greenhouse building project for refitting or salvaging. -->
 		<building name="inflatable greenhouse" width="6.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="50.0" skill-required="2" frame="transparent inflatable frame" >
+		 salvagable="true" work-time="50.0" skill-required="2" frame="inflatable frame" >
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="1.0" />
 			<resource name="polyethylene" amount="10.0" />
@@ -655,62 +658,7 @@
 			<part name="wire connector" number="5" />
 		</building>
 		
-		<!-- MD1 nuclear reactor building project for salvaging (cannot be refitted). -->
-		<building name="md1 nuclear reactor" width="4.0" length="6.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="100.0" skill-required="4" frame="md1 nuclear reactor frame" >
-			<part name="steel sheet" number="20" />
-			<part name="aluminum sheet" number="3" />
-			<part name="fiberglass" number="10" />
-			<part name="steel pipe" number="5" />
-			<part name="valve" number="5" />
-			<part name="copper wire" number="100" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-		</building>
-		
-		<!-- Starting ERV base building project for salvaging (cannot be refitted). -->
-		<building name="starting erv base" width="10.0" length="10.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="75.0" skill-required="2" frame="erv base frame" >
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="steel pipe" number="10" />
-			<part name="copper pipe" number="5" />
-			<part name="plastic pipe" number="5" />
-			<part name="valve" number="20" />
-			<part name="electrical wire" number="25" />
-			<part name="wire connector" number="25" />
-		</building>
-		
-		<!-- ERV base building project for refitting or salvaging. -->
-		<building name="erv base" width="10.0" length="10.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="75.0" skill-required="2" frame="erv base frame" >
-			<part name="steel sheet" number="10" />
-			<part name="aluminum sheet" number="10" />
-			<part name="fiberglass" number="5" />
-			<part name="plastic pipe" number="7" />
-			<part name="steel pipe" number="10" />
-			<part name="copper pipe" number="5" />
-			<part name="plastic pipe" number="5" />
-			<part name="valve" number="20" />
-			<part name="electrical wire" number="25" />
-			<part name="wire connector" number="25" />
-		</building>
-		
-		<!-- MD4 nuclear reactor building project for salvaging (cannot be refitted). -->
-		<building name="md4 nuclear reactor" width="10.0" length="15.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="400.0" skill-required="5" frame="md4 nuclear reactor frame" >
-			<part name="steel sheet" number="40" />
-			<part name="aluminum sheet" number="6" />
-			<part name="fiberglass" number="20" />
-			<part name="steel pipe" number="10" />
-			<part name="valve" number="10" />
-			<part name="copper wire" number="200" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-		</building>
-		
+
 		<!-- Atmospheric processor building project for refitting or salvaging. -->
 		<building name="atmospheric processor" width="8.0" length="11.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="400.0" skill-required="5" frame="atmospheric processor frame" >
@@ -727,8 +675,9 @@
 		</building>
 		
 		<!-- Residential quarters building project for refitting or salvaging. -->
-		<building name="residential quarters" width="7.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="3" frame="large habitation frame" >
+		<building name="residential quarters" width="7.0" length="9.0"
+	base-level="0" constructable="true" salvagable="true" work-time="100.0"
+	skill-required="3" frame="medium modular frame">
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -744,7 +693,7 @@
 		
 		<!-- Lounge building project for refitting or salvaging. -->
 		<building name="lounge" width="7.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="3" frame="large habitation frame" >
+		 salvagable="true" work-time="100.0" skill-required="3" frame="medium modular frame" >
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="5.0" />
 			<resource name="polyethylene" amount="10.0" />
@@ -757,7 +706,7 @@
 		
 		<!-- Infirmary building project for refitting or salvaging. -->
 		<building name="infirmary" width="7.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium modular frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -773,7 +722,7 @@
 		
 		<!-- Command and control building project for refitting or salvaging. -->
 		<building name="command and control" width="7.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium modular frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -819,7 +768,7 @@
 -->
 		<!-- Laboratory building project for refitting or salvaging. -->
 		<building name="laboratory" width="7.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium modular frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -836,7 +785,7 @@
 		
 		<!-- Garage building project for refitting or salvaging. -->
 		<building name="garage" width="12.0" length="16.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="3" frame="garage frame" >
+		 salvagable="true" work-time="100.0" skill-required="3" frame="medium garage frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -852,7 +801,7 @@
 		
 		<!-- Workshop building project for refitting or salvaging. -->
 		<building name="workshop" width="7.0" length="9.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium modular frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -868,7 +817,7 @@
 		
 		<!-- Astronomy observatory building project for refitting or salvaging. -->
 		<building name="astronomy observatory" width="7.0" length="7.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="2300.0" skill-required="5" frame="observatory frame" >
+		 salvagable="true" work-time="2300.0" skill-required="5" frame="round modular frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -924,7 +873,7 @@
 		</building>
 		
 		<building name="outpost hub" width="10.0" length="10.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="60.0" skill-required="3" frame="small vaulted brick frame" >
+		 salvagable="true" work-time="60.0" skill-required="3" frame="round vaulted brick frame" >
 			<part name="steel pipe" number="6" />
 			<part name="plastic pipe" number="8" />
 			<part name="valve" number="10" />
@@ -959,7 +908,7 @@
 		</building>
 		
 		<building name="loading dock garage" width="15.0" length="18.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="80.0" skill-required="4" frame="garage brick frame" >
+		 salvagable="true" work-time="80.0" skill-required="4" frame="large garage brick frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />

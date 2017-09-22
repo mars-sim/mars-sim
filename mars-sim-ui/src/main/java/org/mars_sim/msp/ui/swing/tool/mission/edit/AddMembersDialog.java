@@ -131,7 +131,7 @@ class AddMembersDialog extends ModalInternalFrame {
         			}
 				});
 		buttonPane.add(cancelButton);
-		
+		 
 		// Finish and display dialog.
 		//pack();
 		//setLocationRelativeTo(owner);

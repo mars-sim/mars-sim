@@ -822,7 +822,7 @@ implements UnitListener {
 				        result = false;
 				    }
 				}
-
+ 
 				else if (resource instanceof ItemResource) {
 					int num = (Integer) neededResources.get(resource);
 					int numStored = inv.getItemResourceNum((ItemResource) resource);

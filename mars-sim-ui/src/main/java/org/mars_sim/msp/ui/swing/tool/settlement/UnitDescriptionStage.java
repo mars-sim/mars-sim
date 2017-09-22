@@ -7,52 +7,20 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LayoutManager;
-import java.awt.RenderingHints;
-
 import javafx.scene.layout.BorderPane;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-//import javafx.scene.paint.Color;
-//import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Parent;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
 
+@SuppressWarnings("restriction")
 public class UnitDescriptionStage {
 
 	private MainDesktopPane desktop;

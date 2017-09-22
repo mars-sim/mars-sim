@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
+import javax.swing.SingleSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
@@ -38,7 +39,10 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javafx.scene.control.Tab;
 
 /**
  * A panel for displaying the settlement map.
@@ -47,14 +51,11 @@ public class SettlementMapPanel
 extends JPanel
 implements ClockListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// default logger.
 	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
-	private static final double PERIOD_IN_MILLISOLS = 15_000D / MarsClock.SECONDS_IN_MILLISOL;
+	private static final int PERIOD_IN_MILLISOLS = 4;//500D / MarsClock.SECONDS_IN_MILLISOL;
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
@@ -83,15 +84,12 @@ implements ClockListener {
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
 
+	private MainScene mainScene;
 	private Building building;
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
 	private SettlementTransparentPanel settlementTransparentPanel;
-
-	private Graphics dbg;
-	//private Graphics2D g2d;
-	private Image dbImage = null;
 
 	/** Constructor 1
 	 * 	A panel for displaying a settlement map.
@@ -99,7 +97,8 @@ implements ClockListener {
 	public SettlementMapPanel(MainDesktopPane desktop, final SettlementWindow settlementWindow) {
 		super();
 		this.settlementWindow = settlementWindow;
-
+		this.mainScene = desktop.getMainScene();
+		
 		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
 
 		setLayout(new BorderLayout());
@@ -161,6 +160,7 @@ implements ClockListener {
 				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
 
+			
 	}
 
 	/** Constructor 2
@@ -192,62 +192,68 @@ implements ClockListener {
 	}
 
 	public void detectMouseMovement() {
-/*
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent evt) {
-				//setCursor(new Cursor(Cursor.HAND_CURSOR));
-				if (evt.getButton() == MouseEvent.BUTTON3) {
-					// Set initial mouse drag position.
-					xLast = evt.getX();
-					yLast = evt.getY();
+
+		if (mainScene == null) {
+			
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent evt) {
+					//setCursor(new Cursor(Cursor.HAND_CURSOR));
+					if (evt.getButton() == MouseEvent.BUTTON3) {
+						// Set initial mouse drag position.
+						xLast = evt.getX();
+						yLast = evt.getY();
+					}
 				}
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent evt) {
-				// Select person if clicked on.
-				setCursor(new Cursor(Cursor.HAND_CURSOR));
-				selectPersonAt(evt.getX(), evt.getY());
-				selectRobotAt(evt.getX(), evt.getY());
-			}
-
-		});
-*/
-		addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent evt) {
-				if (evt.getButton() == MouseEvent.BUTTON3) {
-					double xDiff = evt.getX() - xLast;
-					double yDiff = evt.getY() - yLast;
-					xLast = evt.getX();
-					yLast = evt.getY();
-					//System.out.println("button3");
-					setCursor(new Cursor(Cursor.MOVE_CURSOR));
-					// Move map center based on mouse drag difference.
-					moveCenter(xDiff, yDiff);
-
+	
+				@Override
+				public void mouseClicked(MouseEvent evt) {
+					// Select person if clicked on.
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+					selectPersonAt(evt.getX(), evt.getY());
+					selectRobotAt(evt.getX(), evt.getY());
 				}
-
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent evt) {
-				//System.out.println("mouseDragged()");
-				if (evt.getButton() == MouseEvent.BUTTON3) {
-					double xDiff = evt.getX() - xLast;
-					double yDiff = evt.getY() - yLast;
-					xLast = evt.getX();
-					yLast = evt.getY();
-					//System.out.println("button3");
-					setCursor(new Cursor(Cursor.MOVE_CURSOR));
-					// Move map center based on mouse drag difference.
-					moveCenter(xDiff, yDiff);
-
+	
+			});
+	
+		}
+		
+		else {
+			addMouseMotionListener(new MouseMotionAdapter() {
+				@Override
+				public void mouseDragged(MouseEvent evt) {
+					if (evt.getButton() == MouseEvent.BUTTON3) {
+						double xDiff = evt.getX() - xLast;
+						double yDiff = evt.getY() - yLast;
+						xLast = evt.getX();
+						yLast = evt.getY();
+						//System.out.println("button3");
+						setCursor(new Cursor(Cursor.MOVE_CURSOR));
+						// Move map center based on mouse drag difference.
+						moveCenter(xDiff, yDiff);
+	
+					}
+	
 				}
-			}
-		});
-
+	
+				@Override
+				public void mouseMoved(MouseEvent evt) {
+					//System.out.println("mouseDragged()");
+					if (evt.getButton() == MouseEvent.BUTTON3) {
+						double xDiff = evt.getX() - xLast;
+						double yDiff = evt.getY() - yLast;
+						xLast = evt.getX();
+						yLast = evt.getY();
+						//System.out.println("button3");
+						setCursor(new Cursor(Cursor.MOVE_CURSOR));
+						// Move map center based on mouse drag difference.
+						moveCenter(xDiff, yDiff);
+	
+					}
+				}
+			});
+		}
+	
 		//2014-11-22 Added PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
 
@@ -1018,30 +1024,48 @@ implements ClockListener {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
+/*
 		// Display all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {
 			// 2014-11-04 Added building parameter
 			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
-
-//				long endTime = System.nanoTime();
-//				double timeDiff = (endTime - startTime) / 1000000D;
-//				System.out.println("SMT paint time: " + (int) timeDiff + " ms");
-
+*/
+		for (int i = 0; i < 7; i++) {
+			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+		}
+		
+//		long endTime = System.nanoTime();
+//		double timeDiff = (endTime - startTime) / 1000000D;
+//		System.out.println("SMT paint time: " + (int) timeDiff + " ms");
 
 	}
 
 
 	@Override
 	public void clockPulse(double time) {
-		timeCache = timeCache + time;
-		if (timeCache > PERIOD_IN_MILLISOLS) {
-			//System.out.println("calling SettlementMapPanel's clockPulse()");
-			// Repaint map panel
-			repaint();
-			timeCache = 0;
+		if (mainScene != null) {
+			if (mainScene.isMapTabOpen()) {
+				if (mainScene.isMapOn()) {
+					timeCache += time;
+					if (timeCache > PERIOD_IN_MILLISOLS * time) {
+						//logger.info("repaint");
+						// Repaint map panel
+						repaint();
+						timeCache = 0;
+					}
+				}
+			}
+		}
+		else {
+			timeCache += time;
+			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				//logger.info("repaint");
+				// Repaint map panel
+				repaint();
+				timeCache = 0;
+			}
 		}
 	}
 
@@ -1066,13 +1090,19 @@ implements ClockListener {
 		selectedPerson = null;
 		building = null;
 		settlementWindow = null;
+		
 		// Destroy all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
 
-		dbg = null;
-		dbImage = null;
+		mapLayers = null;
+		selectedRobot = null;
+		mainScene = null;
+		building = null;
+		settlementTransparentPanel = null;
+
+
 	}
 }

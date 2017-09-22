@@ -737,7 +737,7 @@ implements Serializable {
 			if (startingMember.getSettlement() != null)
 			    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
 						startingMember.getName() + " ended the '" + missionName + "' at "  
-			    		+ startingMember.getSettlement() + ". Reason : " + reason, null);
+ 			    		+ startingMember.getSettlement() + ". Reason : " + reason, null);
 			else
 			    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 		        		startingMember.getName() + " ended the '" + missionName + ". Reason : " + reason, null);
@@ -745,29 +745,28 @@ implements Serializable {
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");
-
-
 			
 			if (members != null) {
 				if (!members.isEmpty()) {	
 				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 				    		"Mission members removed : " + members, null);
-	                for (Object o : members.toArray()) {
-	                	//performMission((MissionMember) o);
-	                    removeMember((MissionMember) o);
+				    Iterator<MissionMember> i = members.iterator();
+					while (i.hasNext()) {
+	                    removeMember(i.next());
                   
+/*	                    
 	                    if (o instanceof Person) {
 	        		        Person person = (Person) o;
 	        		        person.setMission(null);
-	        		        
 	        				//performDisembarkToSettlementPhase(person, person.getAssociatedSettlement());
 		                    //person.getAssociatedSettlement().getInventory().storeUnit(person);
 	        		    }
+	                    
 	                    //else if (o instanceof Robot) {
 	                    //	Robot robot = (Robot) o;
 	                    	//robot.getAssociatedSettlement().getInventory().storeUnit(robot);
 	        		    //}
-     		    
+*/
 	                }
 				}
 			}

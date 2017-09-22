@@ -835,14 +835,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					solCache = solElapsed;
 				}
 			}
-
-			else if (!declaredDead) {
-				setDead();
-				mind.setInactive();
-			}
-
 		}
 
+		else if (!declaredDead) {
+			setDead();
+			mind.setInactive();
+		}
+		
 		else if (!isBuried) {
 
 			if (condition.getDeathDetails() != null)

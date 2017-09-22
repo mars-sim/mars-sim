@@ -47,6 +47,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * source of the list is the Unit Manager. It maps key attributes of the Person
  * into Columns.
  */
+@SuppressWarnings("restriction")
 public class PersonTableModel extends UnitTableModel {
 
 	/** default serial id. */
@@ -345,17 +346,20 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	public void unitUpdate(UnitEvent event) {
 		
-		if (desktop.getMainScene() != null) {
-			Platform.runLater(
-				new PersonTableUpdater(event, this)
-			);
+		// WARNING : the instance of desktop is NOT guarantee
+		
+		//if (desktop.getMainScene() != null) {
+		//	Platform.runLater(
+		//		new PersonTableUpdater(event, this)
+		//	);
 				
-		}
-		else {
+		//}
+		//else {
+		// WARNING : the use of SwingUtilities below seems to create stackoverflow from time to time in eclipse
 			SwingUtilities.invokeLater(
 				new PersonTableUpdater(event, this)
 			);
-		}
+		//}
 		
 		/*
 		 * String eventType = event.getType();

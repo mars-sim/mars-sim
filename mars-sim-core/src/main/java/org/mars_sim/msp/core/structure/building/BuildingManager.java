@@ -723,7 +723,7 @@ public class BuildingManager implements Serializable {
     	
  		return buildings
 				.stream()
-				.filter(b-> b.getBuildingType().equals(buildingType))
+				.filter(b-> b.getBuildingType().toLowerCase().equals(buildingType))
 				.collect(Collectors.toList());
 
   /*

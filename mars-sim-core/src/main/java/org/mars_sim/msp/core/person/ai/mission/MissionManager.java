@@ -405,7 +405,7 @@ implements Serializable {
 	 * @return mission or null if none.
 	 */
 	public Mission getMissionForVehicle(Vehicle vehicle) {
-
+ 
 		if (vehicle == null) {
 			throw new IllegalArgumentException("vehicle is null");
 		}
@@ -441,6 +441,7 @@ implements Serializable {
 					if (construction.getConstructionVehicles() != null) {
 						if (construction.getConstructionVehicles().contains(vehicle)) {
 							result = mission;
+							//logger.info(vehicle.getName() + " has been reserved for the building construction mission.");
 						}
 					}
 					//else {

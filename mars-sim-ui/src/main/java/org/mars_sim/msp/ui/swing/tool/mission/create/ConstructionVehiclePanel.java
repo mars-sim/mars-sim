@@ -87,7 +87,7 @@ class ConstructionVehiclePanel extends WizardPanel {
         vehiclePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
         vehiclePane.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(vehiclePane);
-        
+         
         // Create scroll panel for vehicle list.
         JScrollPane vehicleScrollPane = new JScrollPane();
         vehicleScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -99,6 +99,7 @@ class ConstructionVehiclePanel extends WizardPanel {
         // Create the vehicle table.
         vehicleTable = new JTable(vehicleTableModel);
 		TableStyle.setTableStyle(vehicleTable);
+		vehicleTable.setAutoCreateRowSorter(true);		
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

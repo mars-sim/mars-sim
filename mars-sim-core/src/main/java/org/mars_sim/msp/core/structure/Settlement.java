@@ -135,7 +135,7 @@ implements Serializable, LifeSupportType, Objective {
 	private int initialPopulation;
 	private int initialNumOfRobots;
 	private int scenarioID;
-	private int solCache = 0;//, counter30 = 1;
+	private int solCache = 0;//, counter30 = 1; // NOTE: can't be static since each settlement needs to keep tracking of it
 	private int numShift;
 	private int numA; // number of people with work shift A
 	private int numB; // number of people with work shift B
@@ -3399,7 +3399,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		// TODO: check if a particular building has existed, if yes, build the next relevant building
 		if (objectiveType == ObjectiveType.CROP_FARM)
-			return "inground greenhouse";//"Inflatable Greenhouse";
+			return "inflatable greenhouse";//"inground greenhouse";//"Inflatable Greenhouse";
 		// alternatives : "Large Greenhouse"
 		else if (objectiveType == ObjectiveType.MANUFACTURING)
 			return "manufacturing shed" ;//"Workshop";

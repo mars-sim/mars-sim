@@ -102,6 +102,7 @@ implements ActionListener {
 		// Create the people table.
 		peopleTable = new JTable(peopleTableModel);
 		TableStyle.setTableStyle(peopleTable);
+		peopleTable.setAutoCreateRowSorter(true);
 		peopleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(peopleTableModel));
 		peopleTable.setRowSelectionAllowed(true);
 		peopleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -233,6 +234,8 @@ implements ActionListener {
 
 		// Create the members table.
 		membersTable = new JTable(membersTableModel);
+		TableStyle.setTableStyle(membersTable);
+		membersTable.setAutoCreateRowSorter(true);
 		membersTable.setRowSelectionAllowed(true);
 		membersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		membersTable.getSelectionModel().addListSelectionListener(

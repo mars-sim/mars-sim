@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.08 2015-12-23
+ * @version 3.1.0 2017-09-21
  * @author Scott Davis
  */
 
@@ -70,7 +70,7 @@ implements Serializable, LocalBoundedObject {
     private Settlement settlement;
     private ConstructionStageInfo stageInfo;
 
-
+ 
     /**
      * Constructor
      */

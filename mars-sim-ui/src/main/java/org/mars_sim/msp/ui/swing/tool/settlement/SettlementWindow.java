@@ -75,9 +75,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 public class SettlementWindow
 extends ToolWindow {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// default logger.
 	//private static Logger logger = Logger.getLogger(SettlementWindow.class.getName());
 

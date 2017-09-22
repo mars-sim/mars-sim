@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4155) - 2017-09-21
+## v3.1.0-Preview 9 (build 4156) - 2017-09-22
 
 
 ### KNOWN LIMITATIONS :
@@ -85,6 +85,8 @@ https://github.com/mars-sim/mars-sim
 9. Set botanists' chance of sampling crop tissues to 50% if there's time
    remaining after tending a greenhouse.	 
 	
+10. Fix user initiated construction mission.
+
 
 -----------------------------------------------------------------------------------------
 

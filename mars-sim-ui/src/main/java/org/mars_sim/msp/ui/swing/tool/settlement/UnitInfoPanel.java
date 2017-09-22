@@ -14,32 +14,27 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.LayoutManager;
 import java.awt.RenderingHints;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
 
-@SuppressWarnings("serial")
 public class UnitInfoPanel extends JPanel {
-// JDialog {
 
 	private JEditorPane pane;
 
     public UnitInfoPanel(MainDesktopPane desktop) {
 		super();
     	setOpaque(false);
-    	//setBackground(new Color(51,25,0,128));
     	setBackground(new Color(0,0,0,0));
     }
 
@@ -67,10 +62,6 @@ public class UnitInfoPanel extends JPanel {
 
     public void init(String unitName, String unitType, String unitDescription) {
 
-    	//JPanel panel = new JPanel(new BorderLayout(20, 10));
-    	//LayoutManager mgr = new LayoutManager();
-    	//this.setContentPane(panel);
-    	//JLayeredPane lp = getLayeredPane();
     	this.setOpaque(false);
         this.setBackground(new Color(0,0,0,128));
         this.setLayout(new BorderLayout(20, 10));
@@ -79,19 +70,16 @@ public class UnitInfoPanel extends JPanel {
         JPanel mainPanel = new JPanel(new FlowLayout());//new BorderLayout());
         mainPanel.setOpaque(false);
         mainPanel.setBackground(new Color(0,0,0,128));
-        //setMinimumSize()
         this.add(mainPanel, BorderLayout.NORTH);
 
         JPanel westPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));//new BorderLayout());
         westPanel.setOpaque(false);
         westPanel.setBackground(new Color(0,0,0,128));
-        //setMinimumSize()
         this.add(westPanel, BorderLayout.WEST);
 
         JPanel eastPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));//new BorderLayout());
         eastPanel.setOpaque(false);
         eastPanel.setBackground(new Color(0,0,0,128));
-        //setMinimumSize()
         this.add(eastPanel, BorderLayout.EAST);
 
         // Creating the text Input
@@ -111,55 +99,27 @@ public class UnitInfoPanel extends JPanel {
 
         mainPanel.add(tf1);
 
-        //JTextArea ta = new JTextArea();//290, 300);
         pane = new JEditorPane("text/html", "");  
         pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-/*        DefaultStyledDocument document = new DefaultStyledDocument();
-        StyleContext context = new StyleContext();
-        // build a style
-        Style style = context.addStyle("test", null);
-        // set some style properties
-        StyleConstants.setForeground(style, Color.ORANGE);
-        // add some data to the document
-        try {
-			document.insertString(0, "", style);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-*/
         pane.setEditable(false);
-        //String type = "<html><b>TYPE: </b></html>";
-        //String description = "<html><b>DESCRIPTION: </b></html>";
+
         String type = "<b>TYPE: </b>";
         String description = "<b>DESCRIPTION: </b>";
-        //Font font = pane.getFont();  
-        //pane.setFont(font.deriveFont(Font.ITALIC));
 
         pane.setEnabled(true);
         pane.setDisabledTextColor(Color.BLACK);
         pane.requestFocusInWindow();
         
-        //ta.setLineWrap(true);
-        //pane.setFocusable(false);
-        //ta.setWrapStyleWord(true);
         pane.setText("<html><font color='orange'>" + type + "<br>" 
         		+ unitType + "<br><br>"
         		+ description + "<br>"
         		+ unitDescription + "</font></html>");
-        
-        //append(unitType + "\n\n");
-        //append(description + "\n");
-        //append(unitDescription);
-        //pane.setForeground(Color.ORANGE); // orange font
-        //pane.setFont( new Font( "Dialog", Font.PLAIN, 14 ) );
         pane.setFont( new Font("MONOSPACED", Font.PLAIN, 14 ) );
-
         pane.setOpaque(false);
         pane.setBackground(new Color(0, 0, 0, 128)); //0
 
         CustomScroll scr = new CustomScroll(pane);
         this.add(scr, BorderLayout.CENTER);
-
         this.setVisible(true);
 
     }

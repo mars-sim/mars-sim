@@ -672,7 +672,7 @@ public abstract class Vehicle extends Unit implements Serializable,
                 		getName() + " is NOT mission reserved but is on a mission.", null);
             }
         }
-
+ 
         // If operator is dead, remove operator and stop vehicle.
         VehicleOperator operator = vehicleOperator;
         if ((operator != null) && (operator instanceof Person)) {

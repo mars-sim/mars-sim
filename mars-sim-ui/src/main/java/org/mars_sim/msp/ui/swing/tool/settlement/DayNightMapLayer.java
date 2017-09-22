@@ -42,9 +42,9 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	private BufferedImage shadingImage, darkImage;
 
     public DayNightMapLayer(SettlementMapPanel mapPanel) {
-        surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 		// Initialize data members.
 		this.mapPanel = mapPanel;
+        surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
     }
 
 	@Override
@@ -60,7 +60,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 			// the corresponding location instance of the new settlement will be reloaded
 			// in order to get the correct day light effect.
 
-			location = mapPanel.getSettlement().getCoordinates(); // new Coordinates(0D, 0D);
+			location = settlement.getCoordinates(); // new Coordinates(0D, 0D);
 
 	        // normalized to  590 W/m2
 	        double sunlight = Math.round(surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 100D)/100D;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionWizard.java
- * @version 3.1.0 2017-04-13
+ * @version 3.1.0 2017-09-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.construction;
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -74,9 +75,6 @@ import java.util.logging.Logger;
 @SuppressWarnings("restriction")
 public class ConstructionWizard {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ConstructionWizard.class.getName());
 
@@ -87,6 +85,14 @@ public class ConstructionWizard {
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = BuildingConstructionMission.DEFAULT_VARIABLE_BUILDING_WIDTH;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = BuildingConstructionMission.DEFAULT_VARIABLE_BUILDING_LENGTH;
 
+	public static final double DEFAULT_HAB_BUILDING_DISTANCE = 5D;
+
+	public static final double DEFAULT_SMALL_GREENHOUSE_DISTANCE = 5D;
+
+	public static final double DEFAULT_LARGE_GREENHOUSE_DISTANCE = 5D;
+
+	public static final double DEFAULT_RECT_DISTANCE = 5D;
+	
 	// Default distance between buildings for construction.
 	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = BuildingConstructionMission.DEFAULT_INHABITABLE_BUILDING_DISTANCE;
 	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = BuildingConstructionMission.DEFAULT_NONINHABITABLE_BUILDING_DISTANCE;
@@ -96,20 +102,20 @@ public class ConstructionWizard {
 
     private final static String TITLE = "Construction Wizard";
 
-    private static int wait_time_in_secs = 30; // in seconds
+    private static int wait_time_in_secs = 90; // in seconds
 
     private double xLast, yLast;
 
-	//private ConstructionStage constructionStage;
-
-	private MainDesktopPane desktop;
 	//private Settlement settlement;
-	private SettlementWindow settlementWindow;
-	private SettlementMapPanel mapPanel;
-	private MainScene mainScene;
-	private MarsClock sitePreparationStartTime;
-	private BuildingConfig buildingConfig;
-
+	private static SettlementWindow settlementWindow;
+	private static SettlementMapPanel mapPanel;
+	private static MainScene mainScene;
+	
+	//private static MarsClock sitePreparationStartTime;
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	private static MissionManager missionManager = Simulation.instance().getMissionManager(); 
+  
+	private static MainDesktopPane desktop;
 
 	/**
 	 * Constructor 1.
@@ -117,11 +123,10 @@ public class ConstructionWizard {
 	 * @param desktop the main desktop pane.
 	 */
 	public ConstructionWizard(final MainDesktopPane desktop) {
-		this.desktop = desktop;
-		this.mainScene = mainScene;
-		this.settlementWindow = desktop.getSettlementWindow();
-		this.mapPanel = settlementWindow.getMapPanel();
-		this.buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		ConstructionWizard.desktop = desktop;
+		ConstructionWizard.mainScene = desktop.getMainScene();
+		ConstructionWizard.settlementWindow = desktop.getSettlementWindow();
+		ConstructionWizard.mapPanel = settlementWindow.getMapPanel();
 	}
 
 	/**
@@ -130,11 +135,10 @@ public class ConstructionWizard {
 	 * @param mainScene the main scene
 	 */
 	public ConstructionWizard(final MainScene mainScene, MainDesktopPane desktop) {
-		this.desktop = desktop;
-		this.mainScene = mainScene;
+		ConstructionWizard.desktop = desktop;
+		ConstructionWizard.mainScene = desktop.getMainScene();
 		//this.settlementWindow = desktop.getSettlementWindow();
 		//this.mapPanel = settlementWindow.getMapPanel();
-		this.buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
 	public synchronized void selectSite(BuildingConstructionMission mission) {
@@ -145,22 +149,21 @@ public class ConstructionWizard {
     	if (mapPanel == null)
     		mapPanel = settlementWindow.getMapPanel();
 
-		ConstructionSite constructionSite = mission.getConstructionSite();
-	    Settlement settlement = constructionSite.getSettlement();
-	    ConstructionManager constructionManager = settlement.getConstructionManager();
-
+		ConstructionSite site = mission.getConstructionSite();
+	    Settlement settlement = site.getSettlement();
+	    ConstructionManager mgr = settlement.getConstructionManager();
 
 		if (mainScene != null) {
-			mainScene.setSettlement(constructionManager.getSettlement());
+			mainScene.setSettlement(mgr.getSettlement());
 		}
 		else {
 			// Select the relevant settlement
 			desktop.openToolWindow(SettlementWindow.NAME);
-			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(constructionManager.getSettlement());
+			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox()
+				.setSelectedItem(mgr.getSettlement());
 		}
 
-	    ConstructionStageInfo stageInfo = constructionSite.getStageInfo();
-	    int constructionSkill = constructionSite.getSkill();
+
 		boolean isSitePicked = mission.getConstructionSite().getSitePicked();
 	    boolean manual = mission.getConstructionSite().getManual();
 
@@ -180,74 +183,88 @@ public class ConstructionWizard {
 	    	// A settler initiated the construction mission.
 	    	// The site building had been pre-selected and approved by the settlement
 	    	// Construction initiated by a starting member. Building picked by settlement. Site to be automatically picked.
-	    	// Site NOT picked. NOT manual.
-	    	case 1: constructionSite = executeCase1(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
+	    
+	    
+	    	// Site Picked. Automatic (NOT Manual).
+    		//case 0: constructionSite = executeCase0(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
+	    	//break;
+	    
+	    
+	    	// Site NOT Picked. Automatic (NOT Manual).
+	    	case 1: site = executeCase1(mission);
 		    	break;
-		    // Site picked. Manual.
-		    case 2: constructionSite = executeCase2(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
+		    	
+		    // Site Picked. Manual.
+		    case 2: site = executeCase2(mission);
 		    	break;
+		    	
 		    // Use Mission Tool to create a construction mission.
-		    // Site NOT picked. Manual.
-		    case 3: constructionSite = executeCase3(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
+		    // Site NOT Picked. Manual.
+		    case 3: site = executeCase3(mission);
 		    	break;
 	    }
 
 	    if (mainScene != null)
 	    	mainScene.endPause(previous);
 
-	    settlement.fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, constructionSite);
+	    settlement.fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, site);
 	}
-
-	public ConstructionSite executeCase1(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
-			ConstructionSite constructionSite, int constructionSkill) {
-	    ConstructionValues values = constructionManager.getConstructionValues();
+ 
+	public ConstructionSite executeCase1(BuildingConstructionMission mission) {
+		ConstructionSite site = mission.getConstructionSite();
+		ConstructionStageInfo info = site.getStageInfo();
+	    Settlement s = site.getSettlement();
+	    ConstructionManager mgr = s.getConstructionManager();
+	    int skill = site.getSkill();
+	    
+	    ConstructionValues values = mgr.getConstructionValues();
         values.clearCache();
 
-        constructionSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+        site = positionNewSite(site, info, skill);
 
         // Determine construction site location and facing.
 	    //stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
-        stageInfo = constructionSite.getStageInfo();
+        info = site.getStageInfo();
 
-	    if (stageInfo != null) {
+	    if (info != null) {
 
 	        // Set construction site size.
-	        if (stageInfo.getWidth() > 0D) {
-	            constructionSite.setWidth(stageInfo.getWidth());
+	        if (info.getWidth() > 0D) {
+	            site.setWidth(info.getWidth());
 	        }
 	        else {
 	            // Set initial width value that may be modified later.
-	            constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
+	            site.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
 	        }
 
-	        if (stageInfo.getLength() > 0D) {
-	            constructionSite.setLength(stageInfo.getLength());
+	        if (info.getLength() > 0D) {
+	            site.setLength(info.getLength());
 	        }
 	        else {
 	            // Set initial length value that may be modified later.
-	            constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
+	            site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 	        }
 
 	        //modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
 	        //confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
-	        confirmSiteLocation(constructionSite, constructionManager, true, stageInfo, constructionSkill);
+	        confirmSiteLocation(site, mgr, true, info, skill);
 
-		    System.out.println("ConstructionWizard's executeCase1() : stageInfo is " + stageInfo.getName() );
+	        logger.info("ConstructionWizard's executeCase1() : stageInfo is " + info.getName() );
 
-	        logger.log(Level.INFO, "New construction site added at " + constructionSite.getSettlement().getName());
+	        logger.log(Level.INFO, "New construction site added at " + site.getSettlement().getName());
 	    }
 	    else {
 
-	        confirmSiteLocation(constructionSite, constructionManager, true, stageInfo, constructionSkill);
+	        confirmSiteLocation(site, mgr, true, info, skill);
 
-	        stageInfo = constructionSite.getStageInfo();
+	        info = site.getStageInfo();
 
-	        if (stageInfo != null)
-	        	System.out.println("ConstructionWizard's executeCase1() : stageInfo is no longer null");
+	        if (info != null)
+	        	logger.info("ConstructionWizard's executeCase1() : stageInfo is no longer null");
 
 	        else {
 		        //endMission("New construction stage could not be determined.");
-		        System.out.println("ConstructionWizard's executeCase1() : new construction stageInfo could not be determined.");
+	        	logger.info("ConstructionWizard's executeCase1() : new construction stageInfo could not be determined.");
 	        	// TODO: determine what needs to be done right here
 	        }
 	    }
@@ -256,17 +273,17 @@ public class ConstructionWizard {
 	    // 2015-12-28 Needed to get back to the original thread that started the BuildingConstructionMission instance
 	    Simulation.instance().getMasterClock().getClockListenerExecutor().execute(new SiteTask(
 				//modifiedSite, stageInfo, constructionSkill, values, mission));
-	    		constructionSite, stageInfo, constructionSkill, values, mission));
+	    		site, info, skill, values, mission));
 
-	    return constructionSite;
+	    return site;
 	}
 
 	//2015-12-28 Added SiteTask
 	class SiteTask implements Runnable {
 
-		ConstructionSite modifiedSite;
-		ConstructionStageInfo stageInfo;
-		int constructionSkill;
+		ConstructionSite m_site;
+		ConstructionStageInfo info;
+		int skill;
 		ConstructionValues values;
 		BuildingConstructionMission mission;
 
@@ -275,9 +292,9 @@ public class ConstructionWizard {
 				int constructionSkill,
 				ConstructionValues values,
 				BuildingConstructionMission mission) {
-			this.modifiedSite = modifiedSite;
-			this.stageInfo = stageInfo;
-			this.constructionSkill = constructionSkill;
+			this.m_site = modifiedSite;
+			this.info = stageInfo;
+			this.skill = constructionSkill;
 			this.values = values;
 			this.mission = mission;
 
@@ -287,66 +304,90 @@ public class ConstructionWizard {
 		   	//logger.info("ConstructionWizard's SiteTask's run() is on " + Thread.currentThread().getName() + " Thread");
 			// it's now on pool-3-thread-1 Thread
 
-		   	mission.init_case_1_step_2(modifiedSite, stageInfo, constructionSkill, values);
+		   	mission.init_case_1_step_2(m_site, info, skill, values);
 		    mission.init_case_1_step_3();
 		    mission.selectSitePhase();
 		}
     }
 
-	public ConstructionSite  executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
-			ConstructionSite constructionSite, int constructionSkill) {
+	public ConstructionSite  executeCase2(BuildingConstructionMission mission) {
+		ConstructionSite site = mission.getConstructionSite();
+		ConstructionStageInfo info = site.getStageInfo();
+	    Settlement s = site.getSettlement();
+	    ConstructionManager mgr = s.getConstructionManager();
+	    int skill = site.getSkill();
+	    
+		ConstructionSite m_site = site;
+		confirmSiteLocation(m_site, mgr, true, info, skill);
 
-	    //System.out.println("ConstructionWizard : Case 2. stageInfo is " + stageInfo.getName() );
+	    info = m_site.getStageInfo();
 
-		ConstructionSite modifiedSite = constructionSite;
-		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
-
-	    stageInfo = modifiedSite.getStageInfo();
-
-	    if (stageInfo != null) {
-	    	System.out.println("ConstructionWizard's executeCase2() : stageInfo is " + stageInfo.getName() );
+	    if (info != null) {
+	    	logger.info("ConstructionWizard's executeCase2() : stageInfo is " + info.getName() );
 	    }
 	    else {
-	        System.out.println("ConstructionWizard's executeCase2() : new construction stageInfo could not be determined.");
+	    	logger.info("ConstructionWizard's executeCase2() : new construction stageInfo could not be determined.");
 	    }
-
-        mission.init_2(modifiedSite, stageInfo);
+	    
+	    logger.info("Participating members are : " + mission.getMembers());
+	    
 	    // Reserve construction vehicles.
 	    mission.reserveConstructionVehicles();
+	    
+        mission.initialize(m_site, info); 
+        
+        missionManager.addMission(mission);
     	// Retrieve construction LUV attachment parts.
         mission.retrieveConstructionLUVParts();
-        mission.useTwoPhases();
+        
+        mission.startPhase();
 
-
-	    return constructionSite;
+	    return site;
 	}
 
 
-	public ConstructionSite executeCase3(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
-			ConstructionSite constructionSite, int constructionSkill) {
-	    //System.out.println("ConstructionWizard : Case 3. stageInfo is " + stageInfo.getName() );
+	public ConstructionSite executeCase3(BuildingConstructionMission mission) {
+		ConstructionSite site = mission.getConstructionSite();
+		ConstructionStageInfo stageInfo = site.getStageInfo();
+	    Settlement s = site.getSettlement();
+	    ConstructionManager mgr = s.getConstructionManager();
+	    int skill = site.getSkill();
+	    
+		ConstructionSite m_site = positionNewSite(site, stageInfo, skill);
+		confirmSiteLocation(m_site, mgr, true, stageInfo, skill);
 
-		ConstructionSite modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
-		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
-
-	    stageInfo = modifiedSite.getStageInfo();
+	    stageInfo = m_site.getStageInfo();
 
 	    if (stageInfo != null) {
-	    	System.out.println("ConstructionWizard's executeCase3() : stageInfo is " + stageInfo.getName() );
+	    	logger.info("ConstructionWizard's executeCase3() : stageInfo is " + stageInfo.getName() );
 	    }
 	    else {
-	        System.out.println("ConstructionWizard's executeCase3() : new construction stageInfo could not be determined.");
+	    	logger.info("ConstructionWizard's executeCase3() : new construction stageInfo could not be determined.");
 	        // TODO: this will cause NullPOinterException in init_2()
 	    }
-
-        mission.init_2(modifiedSite, stageInfo);
-	    // Reserve construction vehicles.
+        
+	    logger.info("NOTE : Make sure someone has a reasonably good construction skill to head this project. ");
+	    logger.info("Participating members are : " + mission.getMembers());
+        // Add this mission to mission manager
+        missionManager.addMission(mission);
+	    // Set members' mission 
+        mission.setMembers();
+        // Set the site and stage        
+        mission.initialize(m_site, stageInfo);
+       
+        // Reserve construction (specifically LUV) vehicles.
 	    mission.reserveConstructionVehicles();
-    	// Retrieve construction LUV attachment parts.
+        // Retrieve vehicles
+        //mission.retrieveVehicles(); // NOTE: should reserve LUV only and not any rovers
+	    // Retrieve construction LUV attachment parts.
         mission.retrieveConstructionLUVParts();
-        mission.useTwoPhases();
+	    // Add and set phase
+        mission.startPhase();
 
-	    return constructionSite;
+
+
+	    
+	    return site;
 	}
 
 	@SuppressWarnings("restriction")
@@ -367,7 +408,8 @@ public class ConstructionWizard {
 			}
 			else {
     			//desktop.openToolWindow(SettlementWindow.NAME);
-				settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(constructionManager.getSettlement());
+				settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox()
+					.setSelectedItem(constructionManager.getSettlement());
 			}
 		}
   		// set up the Settlement Map Tool to display the suggested location of the building
@@ -422,7 +464,7 @@ public class ConstructionWizard {
 			else {
 				//constructionManager.removeConstructionSite(site);
 				//site = new ConstructionSite();
-				site = positionNewConstructionSite(site, stageInfo, constructionSkill);
+				site = positionNewSite(site, stageInfo, constructionSkill);
 				confirmSiteLocation(site, constructionManager, false, stageInfo, constructionSkill);
 			}
 
@@ -497,8 +539,8 @@ public class ConstructionWizard {
 		} else if (result.isPresent() && result.get() == buttonTypeNo) {
 			//constructionManager.removeConstructionSite(site);
 	    	//System.out.println("just removing building");
-			site = positionNewConstructionSite(site, stageInfo, constructionSkill);
-			confirmSiteLocation(site, constructionManager,false, stageInfo, constructionSkill);
+			site = positionNewSite(site, stageInfo, constructionSkill);
+			confirmSiteLocation(site, constructionManager, false, stageInfo, constructionSkill);
 
 		} else if (result.isPresent() && result.get() == buttonTypeMouseKB) {
 			placementDialog(title,header, site);
@@ -847,7 +889,7 @@ public class ConstructionWizard {
      * @param skill the architect's construction skill.
      * @return construction stage info.
      * @throws Exception if error determining construction stage info.
-     */
+ 
     private ConstructionStageInfo determineNewStageInfo(ConstructionSite site, int skill) {
 		//logger.info("ConstructionWizard's determineNewStageInfo() is in " + Thread.currentThread().getName() + " Thread");
 
@@ -862,74 +904,113 @@ public class ConstructionWizard {
 
         return result;
     }
-
+*/
+/*
+    private double computeDist(String buildingType) {
+    	if (buildingType.toLowerCase().equals("inflatable greenhouse")
+    			|| buildingType.toLowerCase().equals("inground greenhouse"))
+    		return 3;
+    	
+    	return 3;
+    }
+ */   
+    public boolean determineSite(String buildingType, double dist, ConstructionSite site) {
+    	boolean goodPosition = false;
+        // Try to put building next to the same building type.
+        List<Building> sameBuildings = site.getSettlement().getBuildingManager().getBuildingsOfSameType(buildingType);
+        Collections.shuffle(sameBuildings);
+        for (Building b : sameBuildings) {
+        	logger.info("Positioning next to " + b.getNickName());
+            goodPosition = positionNextToBuilding(site, b, dist, false);
+            if (goodPosition) {
+                break;
+            }
+        }
+        return goodPosition;
+    }
+    
     /**
      * Determines and sets the position of a new construction site.
      * @param site the new construction site.
-     * @param foundationStageInfo the site's foundation stage info.
-     * @param constructionSkill the mission starter's construction skill.
+     * @param info the site's foundation stage info.
+     * @param skill the mission starter's construction skill.
      * @return modified construction site
      */
-    private ConstructionSite positionNewConstructionSite(ConstructionSite site, ConstructionStageInfo foundationStageInfo,
-            int constructionSkill) {
-		//logger.info("ConstructionWizard's positionNewConstructionSite() is in " + Thread.currentThread().getName() + " Thread");
+    private ConstructionSite positionNewSite(ConstructionSite site, ConstructionStageInfo info,
+            int skill) {
         boolean goodPosition = false;
-        String buildingType = determinePreferredConstructedBuildingType(site, foundationStageInfo, constructionSkill);
-
-		//if (foundationStageInfo != null) {
-		//}
-		//else {
-		//}
-
-      	if (buildingType == null) {
-			Settlement settlement = site.getSettlement();
-			// 2016-05-08 Added the use of getObjectiveBuildingType() to determine the desired building type
-	        buildingType = settlement.getObjectiveBuildingType();
-	        System.out.println("ConstructionWizard's positionNewConstructionSite() : using the length and width from Settlement Objective's " + buildingType);
-        }
-
-        //if (buildingType == null || buildingType.isEmpty())
-        // Determine preferred building type from foundation stage info.
-        //	buildingType = determinePreferredConstructedBuildingType(site, foundationStageInfo, constructionSkill);
-        //System.out.println("ConstructionWizard's positionNewConstructionSite() buildingType : " + buildingType);
+        Settlement s = site.getSettlement();
+		// Use settlement's objective to determine the desired building type
+        String buildingType = s.getObjectiveBuildingType();
 
         if (buildingType != null) {
-            //buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
             site.setWidth(buildingConfig.getWidth(buildingType));
             site.setLength(buildingConfig.getLength(buildingType));
             boolean isBuildingConnector = buildingConfig.hasBuildingConnection(buildingType);
             boolean hasLifeSupport = buildingConfig.hasLifeSupport(buildingType);
+
             if (isBuildingConnector) {
+            	//logger.info("isBuildingConnector : " + isBuildingConnector);
                 // Try to find best location to connect two buildings.
                 goodPosition = positionNewBuildingConnectorSite(site, buildingType);
             }
             else if (hasLifeSupport) {
-                // Try to put building next to another inhabitable building.
-                List<Building> inhabitableBuildings = site.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
-                Collections.shuffle(inhabitableBuildings);
-                Iterator<Building> i = inhabitableBuildings.iterator();
-                while (i.hasNext()) {
-                    goodPosition = positionNextToBuilding(site, i.next(), DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
-                    if (goodPosition) {
-                        break;
-                    }
+            	logger.info("hasLifeSupport : " + hasLifeSupport);
+            	if (buildingType.toLowerCase().equals("inflatable greenhouse")) {
+            		goodPosition = determineSite(buildingType, DEFAULT_SMALL_GREENHOUSE_DISTANCE, site);
+            	}
+            	
+            	else if (buildingType.toLowerCase().equals("inground greenhouse")) {
+            		goodPosition = determineSite(buildingType, DEFAULT_SMALL_GREENHOUSE_DISTANCE, site);
+            	}
+            	
+            	else if (buildingType.toLowerCase().equals("large greenhouse")) {
+            		goodPosition = determineSite(buildingType, DEFAULT_LARGE_GREENHOUSE_DISTANCE, site);
+            	}
+            	
+            	else {
+                	logger.info("trying to match floor area.");
+	                // Try to put building next to another inhabitable building.
+	                List<Building> inhabitableBuildings = s.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
+	                Collections.shuffle(inhabitableBuildings);
+	                for (Building b : inhabitableBuildings) {
+	                	// Match the floor area (e.g look more organize to put all 7m x 9m next to one another)
+		                if (b.getFloorArea() == site.getWidth()*site.getLength()) {
+		                	logger.info("Positioning next to " + b.getNickName());
+		                    goodPosition = positionNextToBuilding(site, b, DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
+		                    if (goodPosition) {
+		                        break;
+		                    }
+		                }
+	                }
                 }
             }
+            
             else {
+            	logger.info("no Life Support");
                 // Try to put building next to the same building type.
-                List<Building> sameBuildings = site.getSettlement().getBuildingManager().getBuildingsOfSameType(buildingType);
-                Collections.shuffle(sameBuildings);
-                Iterator<Building> j = sameBuildings.iterator();
-                while (j.hasNext()) {
-                    goodPosition = positionNextToBuilding(site, j.next(), DEFAULT_NONINHABITABLE_BUILDING_DISTANCE, false);
+            	goodPosition = determineSite(buildingType, DEFAULT_NONINHABITABLE_BUILDING_DISTANCE, site);
+            }
+        }
+        
+        else {
+        	logger.info("buildingType : " + buildingType);
+            // Try to put building next to another inhabitable building.
+            List<Building> inhabitableBuildings = s.getBuildingManager().getBuildings();//FunctionType.LIFE_SUPPORT);
+            Collections.shuffle(inhabitableBuildings);
+            for (Building b : inhabitableBuildings) {
+            	// Match the floor area (e.g look more organize to put all 7m x 9m next to one another)
+                if (b.getFloorArea() == site.getWidth()*site.getLength()) {
+                    goodPosition = positionNextToBuilding(site, b, DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
                     if (goodPosition) {
                         break;
                     }
                 }
             }
         }
-
+        
         if (!goodPosition) {
+        	logger.info("goodPosition : " + goodPosition);
             // Try to put building next to another building.
             // If not successful, try again 10m from each building and continue out at 10m increments
             // until a location is found.
@@ -948,9 +1029,10 @@ public class ConstructionWizard {
                 }
             }
             else {
+            	
                 // If no buildings at settlement, position new construction site at 0,0 with random facing.
-                site.setXLocation(0D);
-                site.setYLocation(0D);
+                site.setXLocation(0); 
+                site.setYLocation(12D); // arbitrarily move to below the Lander Hab 1 on the map
                 site.setFacing(RandomUtil.getRandomDouble(360D));
             }
         }
@@ -962,23 +1044,22 @@ public class ConstructionWizard {
 
     /**
      * Determines the preferred construction building type for a given foundation.
-     * @param foundationStageInfo the foundation stage info.
-     * @param constructionSkill the mission starter's construction skill.
+     * @param info the foundation stage info.
+     * @param skill the mission starter's construction skill.
      * @return preferred building type or null if none found.
      */
-    private String determinePreferredConstructedBuildingType(ConstructionSite site,
-    		ConstructionStageInfo foundationStageInfo, int constructionSkill) {
+    private String determinePrefType(ConstructionSite site, ConstructionStageInfo info, int skill) {
 		//logger.info("ConstructionWizard's determinePreferredConstructedBuildingType() is in " + Thread.currentThread().getName() + " Thread");
 
         String result = null;
 
         ConstructionValues values = site.getConstructionManager().getConstructionValues();
-        List<String> constructableBuildings = ConstructionUtil.getConstructableBuildingNames(foundationStageInfo);
+        List<String> constructableBuildings = ConstructionUtil.getConstructableBuildingNames(info);
         Iterator<String> i = constructableBuildings.iterator();
         double maxBuildingValue = Double.NEGATIVE_INFINITY;
         while (i.hasNext()) {
             String buildingType = i.next();
-            double buildingValue = values.getConstructionStageValue(foundationStageInfo, constructionSkill);
+            double buildingValue = values.getConstructionStageValue(info, skill);
             if (buildingValue > maxBuildingValue) {
                 maxBuildingValue = buildingValue;
                 result = buildingType;
@@ -1213,9 +1294,10 @@ public class ConstructionWizard {
             double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
             double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
 
+            BuildingManager mgr = site.getSettlement().getBuildingManager();
             // Check to see if proposed new site position intersects with any existing buildings
             // or construction sites.
-            if (site.getSettlement().getBuildingManager().isBuildingLocationOpen(rectCenterX,
+            if (mgr.isBuildingLocationOpen(rectCenterX,
                     rectCenterY, site.getWidth(), site.getLength(), rectRotation, site)) {
                 // Set the new site here.
                 site.setXLocation(rectCenterX);

@@ -139,7 +139,7 @@ class MissionDataBean {
 	    MissionManager manager = Simulation.instance().getMissionManager();
 	    manager.addMission(mission);
 	}
-
+ 
 	/**
 	 * Gets mission types.
 	 * @return array of mission type strings.

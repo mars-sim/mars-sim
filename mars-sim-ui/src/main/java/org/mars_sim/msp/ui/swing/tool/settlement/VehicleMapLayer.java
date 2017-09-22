@@ -19,8 +19,10 @@ import java.util.Map;
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -49,12 +51,17 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private Map<Double, Map<GraphicsNode, BufferedImage>> svgImageCache;
 	private double scale;
 
+	private static MissionManager missionMgr;
+	private static UnitManager unitMgr;
+	
 	/**
 	 * Constructor
 	 * @param mapPanel the settlement map panel.
 	 */
 	public VehicleMapLayer(SettlementMapPanel mapPanel) {
-
+		missionMgr = Simulation.instance().getMissionManager();
+		unitMgr = Simulation.instance().getUnitManager();
+		
 		// Initialize data members.
 		this.mapPanel = mapPanel;
 		svgImageCache = new HashMap<Double, Map<GraphicsNode, BufferedImage>>(21);
@@ -102,14 +109,12 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		if (settlement != null) {
 
 			// Draw all vehicles that are at the settlement location.
-			Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+			Iterator<Vehicle> i = unitMgr.getVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
-
 				// Draw vehicles that are at the settlement location.
-				Coordinates settlementLoc = settlement.getCoordinates();
 				Coordinates vehicleLoc = vehicle.getCoordinates();
-				if (vehicleLoc.equals(settlementLoc)) {
+				if (vehicleLoc.equals(settlement.getCoordinates())) {
 					drawVehicle(vehicle, g2d);
 				}
 			}
@@ -200,7 +205,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		boolean result = false;
 
 		// For vehicle missions, check if vehicle is loading or unloading for the mission.
-		Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+		Mission mission = missionMgr.getMissionForVehicle(vehicle);
 		if ((mission != null) && (mission instanceof VehicleMission)) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
 			MissionPhase missionPhase = vehicleMission.getPhase();
@@ -215,7 +220,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 		// Otherwise, check if someone is actively loading or unloading the vehicle at a settlement.
 		if (!result) {
-			Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+			Iterator<Person> i = unitMgr.getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
 				if (!person.getPhysicalCondition().isDead()) {

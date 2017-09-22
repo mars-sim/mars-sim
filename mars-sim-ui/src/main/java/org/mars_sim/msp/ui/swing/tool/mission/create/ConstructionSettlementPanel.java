@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -75,6 +76,8 @@ class ConstructionSettlementPanel extends WizardPanel {
         
         // Create the settlement table.
         settlementTable = new JTable(settlementTableModel);
+		TableStyle.setTableStyle(settlementTable);
+		settlementTable.setAutoCreateRowSorter(true);        
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
         settlementTable.setRowSelectionAllowed(true);
         settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
