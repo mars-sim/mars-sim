@@ -6,7 +6,7 @@
 	<foundation-list>
 
 		<foundation name="surface foundation 3m x 2m" width="2.0" length="3.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time=".5" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="0.4" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
@@ -14,7 +14,7 @@
 		</foundation>
 
 		<foundation name="surface foundation 5m x 5m" width="5.0" length="5.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="1.5" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="0.8" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
@@ -22,7 +22,7 @@
 		</foundation>
 	
 		<foundation name="surface foundation 10m x 5m" width="5.0" length="10.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="2.5" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
@@ -30,26 +30,34 @@
 		</foundation>
 		
 		
-		<!-- round surface foundation 7m x 7m is setting for round modular frame. -->
-		<foundation name="round surface foundation 7m x 7m" width="7.0" length="9.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="2.5" skill-required="1" >
-			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
-			</vehicle>
-		</foundation>
-			
-		<!-- medium surface foundation 7m x 9m is setting for medium modular frame. work-time = 3.0 -->
-		<foundation name="medium surface foundation 7m x 9m" width="7.0" length="9.0" base-level="0" 
+		<!-- surface foundation 7m x 7m is setting for round modular frame. -->
+		<foundation name="surface foundation 7m x 7m" width="7.0" length="9.0" base-level="0" 
 		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
-						
-		<foundation name="large surface foundation 12m x 18m" width="12.0" length="18.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="8.0" skill-required="1" >
+			
+		<!-- surface foundation 7m x 9m is setting for medium modular frame. work-time = 3.0 -->
+		<foundation name="surface foundation 7m x 9m" width="7.0" length="9.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+
+		<foundation name="surface foundation 11m x 11m" width="11.0" length="11.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="1.6" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+								
+		<foundation name="surface foundation 12m x 18m" width="12.0" length="18.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="2.4" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
@@ -57,7 +65,7 @@
 		</foundation>
 						
 		<foundation name="subsurface foundation 5m x 5m x 3m" width="5.0" length="5.0" base-level="-1" 
-		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="8.0" skill-required="1" >
 			<resource name="concrete" amount="500.0" />
 			<resource name="water" amount="200.0" />
 			<vehicle type="light utility vehicle" >    
@@ -65,42 +73,9 @@
 				<attachment-part name="backhoe" />
 			</vehicle>
 		</foundation>	
-
-		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="100.0" skill-required="3" >
-		 	<resource name="water" amount="100.0" />
-		 	<part name="bore drill bit" number="1" />
-		 	<part name="bore drill pipe" number="20" />
-			<vehicle type="light utility vehicle" >    
-				<attachment-part name="crane boom" />
-				<attachment-part name="drilling rig" />
-			</vehicle>
-		</foundation>
-		 
-		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="100.0" skill-required="3" >
-		 	<resource name="water" amount="100.0" />
-		 	<part name="bore drill bit" number="1" />
-		 	<part name="bore drill pipe" number="20" />
-			<vehicle type="light utility vehicle" >    
-				<attachment-part name="crane boom" />
-				<attachment-part name="drilling rig" />
-			</vehicle>
-		</foundation>
-		
-		<foundation name="deep borehole drilling site" width="10.0" length="15.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="300.0" skill-required="4" >
-		 	<resource name="water" amount="200.0" />
-		 	<part name="bore drill bit" number="4" />
-		 	<part name="bore drill pipe" number="60" />
-			<vehicle type="light utility vehicle" >    
-				<attachment-part name="crane boom" />
-				<attachment-part name="drilling rig" />
-			</vehicle>
-		</foundation>
 		
 		<foundation name="subsurface foundation 10m x 10m x 3m" width="10.0" length="10.0" base-level="-1" 
-		 constructable="true" salvagable="true" work-time="40.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="15.0" skill-required="1" >
 			<resource name="concrete" amount="2500.0" />
 			<resource name="water" amount="800.0" />
 			<vehicle type="light utility vehicle" >    
@@ -110,7 +85,7 @@
 		</foundation>
 		
 		<foundation name="ramped subsurface foundation 15m x 18m x 5m" width="10.0" length="10.0" base-level="-1" 
-		 constructable="true" salvagable="true" work-time="40.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
 			<resource name="concrete" amount="2500.0" />
 			<resource name="water" amount="800.0" />
 			<vehicle type="light utility vehicle" >    
@@ -120,7 +95,7 @@
 		</foundation>
 		
 		<foundation name="subsurface foundation 5m x 10m x 3m" width="5.0" length="10.0" base-level="-1" 
-		 constructable="true" salvagable="true" work-time="30.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="12.0" skill-required="1" >
 			<resource name="concrete" amount="1200.0" />
 			<resource name="water" amount="400.0" />
 			<vehicle type="light utility vehicle" >    
@@ -129,10 +104,33 @@
 			</vehicle>
 		</foundation>
 		
+		
+		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="10.0" skill-required="3" >
+		 	<resource name="water" amount="100.0" />
+		 	<part name="bore drill bit" number="1" />
+		 	<part name="bore drill pipe" number="20" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="crane boom" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
+		 
+		<foundation name="deep borehole drilling site" width="10.0" length="15.0" base-level="0" 
+		 constructable="true" salvagable="true" work-time="15.0" skill-required="4" >
+		 	<resource name="water" amount="200.0" />
+		 	<part name="bore drill bit" number="4" />
+		 	<part name="bore drill pipe" number="60" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="crane boom" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
+		
 		<!-- Surface foundation with a variable width and length is dynamically set. -->
 		<!-- (Used for hallway construction) -->
 		<foundation name="surface foundation variable size" width="-1.0" length="-1.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="5.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
@@ -142,7 +140,7 @@
 		<!-- Subsurface foundation with a variable width and length that is dynamically set. -->
 		<!-- (Used for tunnel construction)	-->
 		<foundation name="subsurface foundation variable size" width="-1.0" length="-1.0" base-level="-1" 
-		 constructable="true" salvagable="true" work-time="15.0" skill-required="1" >
+		 constructable="true" salvagable="true" work-time="2.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="backhoe" />
@@ -208,7 +206,7 @@
 		
 		<!-- Note: the round hab frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="round hab frame" width="9.0" length="9.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="medium surface foundation 7m x 9m" >
+		 salvagable="true" work-time="10.0" skill-required="2" foundation="subsurface foundation 10m x 10m x 3m" >
 			<part name="steel scrap" number="50" />
 			<part name="aluminum scrap" number="50" />
 			<part name="plastic pipe" number="20" />
@@ -223,7 +221,7 @@
 		
 		<!-- Note: the inflatable frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="inflatable frame" width="6.0" length="9.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="100.0" skill-required="2" foundation="medium surface foundation 7m x 9m" >
+		 salvagable="true" work-time="10.0" skill-required="2" foundation="surface foundation 7m x 9m" >
 			<part name="aluminum scrap" number="5" />
 			<part name="plastic sheet" number="50" />
 			<part name="plastic pipe" number="5" />
@@ -237,7 +235,7 @@
 		
 		<!-- Note: the atmospheric processor frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="atmospheric processor frame" width="8.0" length="11.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="180.0" skill-required="3" foundation="medium surface foundation 7m x 9m" >
+		 salvagable="true" work-time="12.0" skill-required="3" foundation="surface foundation 11m x 11m" >
 			<part name="steel scrap" number="100" />
 			<part name="aluminum scrap" number="100" />
 			<part name="plastic pipe" number="50" />
@@ -251,7 +249,7 @@
 		
 		<!-- Note: the medium modular frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="medium modular frame" width="7.0" length="9.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="150.0" skill-required="2" foundation="medium surface foundation 7m x 9m" >
+		 salvagable="true" work-time="10.0" skill-required="2" foundation="surface foundation 7m x 9m" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -264,7 +262,7 @@
 		
 		<!-- Note: the large greenhouse frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="large greenhouse frame" width="12.0" length="18.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="300.0" skill-required="3" foundation="large surface foundation 12m x 18m" >
+		 salvagable="true" work-time="16.0" skill-required="3" foundation="surface foundation 12m x 18m" >
 			<part name="steel scrap" number="10" />
 			<part name="aluminum scrap" number="15" />
 			<part name="glass sheet" number="20" />
@@ -278,7 +276,7 @@
 		
 		<!-- Note: the medium garage frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="medium garage frame" width="12.0" length="16.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="large surface foundation 12m x 18m" >
+		 salvagable="true" work-time="14.0" skill-required="2" foundation="surface foundation 12m x 18m" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -291,7 +289,7 @@
 		
 		<!-- Note: the round modular frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="round modular frame" width="7.0" length="7.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="round surface foundation 7m x 7m" >
+		 salvagable="true" work-time="8.0" skill-required="2" foundation="surface foundation 7m x 7m" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -303,7 +301,7 @@
 		</frame>
 		
 		<frame name="small areothermal well frame" width="5.0" length="10.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="2" foundation="shallow borehole drilling site" >
+		 salvagable="true" work-time="7.0" skill-required="2" foundation="shallow borehole drilling site" >
 			<resource name="concrete" amount="25.0" />
 			<resource name="water" amount="10.0" />
 			<part name="steel truss" number="10" />
@@ -314,7 +312,7 @@
 		</frame>
 		
 		<frame name="large areothermal well frame" width="10.0" length="15.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="400.0" skill-required="3" foundation="deep borehole drilling site" >
+		 salvagable="true" work-time="12.0" skill-required="3" foundation="deep borehole drilling site" >
 			<resource name="concrete" amount="75.0" />
 			<resource name="water" amount="30.0" />
 			<part name="steel truss" number="30" />
@@ -325,7 +323,7 @@
 		</frame>
 		
 		<frame name="round vaulted brick frame" width="10.0" length="10.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="80.0" skill-required="2" foundation="subsurface foundation 10m x 10m x 3m" >
+		 salvagable="true" work-time="10.0" skill-required="2" foundation="subsurface foundation 10m x 10m x 3m" >
 			<resource name="mortar" amount="2400.0" />
 			<resource name="water" amount="2400.0" />
 			<part name="brick" number="2400" />
@@ -335,7 +333,7 @@
 		</frame>
 		
 		<frame name="large garage brick frame" width="15.0" length="18.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="3" foundation="ramped subsurface foundation 15m x 18m x 5m" >
+		 salvagable="true" work-time="15.0" skill-required="3" foundation="ramped subsurface foundation 15m x 18m x 5m" >
 			<resource name="mortar" amount="4000.0" />
 			<resource name="water" amount="4000.0" />
 			<part name="brick" number="4000" />
@@ -354,7 +352,7 @@
 		</frame>
 		
 		<frame name="vaulted glass brick frame" width="5.0" length="10.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="3" foundation="subsurface foundation 5m x 10m x 3m" >
+		 salvagable="true" work-time="7.0" skill-required="3" foundation="subsurface foundation 5m x 10m x 3m" >
 			<resource name="mortar" amount="700.0" />
 			<resource name="water" amount="700.0" />
 			<part name="brick" number="700" />
@@ -382,7 +380,7 @@
 		
 		<!-- Note brick tunnel frame length is variable. -->
 		<frame name="brick tunnel frame" width="3.0" length="-1.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="20.0" skill-required="1" foundation="subsurface foundation variable size" >
+		 salvagable="true" work-time="6.0" skill-required="1" foundation="subsurface foundation variable size" >
 			<resource name="mortar" amount="200.0" />
 			<resource name="water" amount="200.0" />
 			<part name="brick" number="200" />
