@@ -3386,7 +3386,10 @@ public class MainScene {
 	}
 	
 	public boolean isMapTabOpen() {
-		return jfxTabPane.getSelectionModel().isSelected(MainScene.MAP_TAB);
+		if (jfxTabPane != null)
+			return jfxTabPane.getSelectionModel().isSelected(MainScene.MAP_TAB);
+		else
+			return false;
 	}
 
 	public Pane getRoot() {

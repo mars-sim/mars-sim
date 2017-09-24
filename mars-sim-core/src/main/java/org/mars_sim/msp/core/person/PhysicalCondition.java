@@ -109,7 +109,7 @@ implements Serializable {
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
 
     /** The amount of water this person would consume each time (assuming drinking water 8 times a day) */
-    private double waterConsumedEach; 
+    private double waterConsumed; 
     
 	private int solCache = 0;
 
@@ -118,6 +118,8 @@ implements Serializable {
     private boolean isStressedOut = false;
     
     private boolean isCollapsed = false;
+    
+    private boolean isDehydrated = false;
     
     /** True if person is alive. */
     private boolean alive;
@@ -141,13 +143,17 @@ implements Serializable {
     
     private double inclination_factor;
 
-    private double personStarvationTime;
+    private double starvationStartTime;
    
+    private double dehydrationStartTime;
+    
     private double personalMaxEnergy;
     
     private double foodDryMassPerServing;
     
     private String name;
+    
+    private double bodyMassFactor;
 
     private static EatMealMeta eatMealMeta = new EatMealMeta();
     
@@ -218,15 +224,12 @@ implements Serializable {
         
         appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;		
 		
-
-        // 2017-03-08 Add rates
-        //o2_consumption = personConfig.getNominalO2ConsumptionRate();
         h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
         
-        // assuming a person drinks 8 times a day, each time 375 mL
-        waterConsumedEach = h2o_consumption / 8D 
-        		* person.getBaseMass()/Person.AVERAGE_WEIGHT
-        		* person.getHeight()/Person.AVERAGE_HEIGHT; //[in g]
+        bodyMassFactor = person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT; 
+        
+        // assuming a person drinks 8 times a day, each time ~375 mL
+        waterConsumed = h2o_consumption * bodyMassFactor / 8D; 
         
         minimum_air_pressure = personConfig.getMinAirPressure();
         min_temperature = personConfig.getMinTemperature();
@@ -239,10 +242,10 @@ implements Serializable {
 
         foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
+       	starvationStartTime =  1000D * (personConfig.getStarvationStartTime() * bodyMassFactor);
+        			//+ RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
 
-       	personStarvationTime =  1000D * (personConfig.getStarvationStartTime()
-        			+ RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
-
+       	dehydrationStartTime =  1000D * (personConfig.getDehydrationStartTime() * bodyMassFactor);
     }
 
     public RadiationExposure getRadiationExposure() {
@@ -294,11 +297,11 @@ implements Serializable {
 	    	
 	        // Check life support system
 	        try {
-	        	//System.out.println("o2_consumption : " + o2_consumption * time / 1000D);
+
 	            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
 	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient oxygen.", null);
-	            if (consumeWater(support, h2o_consumption * (time / 1000D)))
-	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient water.", null);
+	            //if (consumeWater(support, h2o_consumption * (time / 1000D)))
+	            //	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient water.", null);
 	            if (requireAirPressure(support, minimum_air_pressure))
 	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " is under insufficient air pressure.", null);
 	            if (requireTemperature(support, min_temperature, max_temperature))
@@ -338,11 +341,15 @@ implements Serializable {
 	                    if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
 	                    	isCollapsed = false;
 
-	                    else if (c.getType() == ComplaintType.PANIC_ATTACK)
+	                    else if (c.getType() == ComplaintType.PANIC_ATTACK
+	                    		|| c.getType() == ComplaintType.DEPRESSION)
 	                    	isStressedOut = false;
 
-	                    else if (c.getType() == ComplaintType.DEPRESSION)
-	                    	isStressedOut = false;
+	                    else if (c.getType() == ComplaintType.DEHYDRATION)
+	                    	isDehydrated = false;
+	                    
+	                    else if (c.getType() == ComplaintType.STARVATION)
+	                    	isStarving = false;
 	                }
 
 
@@ -384,9 +391,9 @@ implements Serializable {
 	        }
 
 	        // Build up fatigue & hunger for given time passing.
-	        setThirst(thirst + time);
+	        setThirst(thirst + time* bodyMassFactor);
 	        setFatigue(fatigue + time);
-	        setHunger(hunger + time);
+	        setHunger(hunger + time* bodyMassFactor);
 
 	        // normal bodily function consume a minute amount of energy
 	        // even if a person does not perform any tasks
@@ -396,6 +403,7 @@ implements Serializable {
 	        //reduceEnergy(time);
 
 	        checkStarvation(hunger);
+	        checkHydration(thirst);
 	        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
 
 	        // If person is at high stress, check for mental breakdown.
@@ -582,9 +590,10 @@ implements Serializable {
 
         Complaint starvation = getMedicalManager().getStarvation();
 
-        if (hunger > personStarvationTime && (kJoules < 150D)) {
+        if (hunger > starvationStartTime && (kJoules < 120D)) {
             if (!problems.containsKey(starvation)) {
                 addMedicalComplaint(starvation);
+                isStarving = true;
                 //LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
                 //		person + " is starving. Hunger level : " 
                 //				+ Math.round(hunger*10.0)/10.0 + ".", null);
@@ -621,6 +630,38 @@ implements Serializable {
 
     }
 
+    /**
+     * Checks if a person is starving or no longer starving
+     * @param hunger
+     */
+    public void checkHydration(double thirst) {
+
+        Complaint dehydrated = getMedicalManager().getDehydration();
+
+        if (thirst > dehydrationStartTime) {
+            if (!problems.containsKey(dehydrated)) {
+                addMedicalComplaint(dehydrated);
+                isDehydrated = true;
+                person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+            }
+            
+            TaskManager mgr = person.getMind().getTaskManager();
+            //Stop any on-going tasks
+            mgr.clearTask();
+            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+                // go eat a meal
+                mgr.addTask(new EatMeal(person));
+            }
+            
+        }
+
+        else if (thirst < 150D) {
+            HealthProblem illness = problems.get(dehydrated);
+            if (illness != null) {
+                illness.startRecovery();
+            }
+        }
+    }
 
  
     /**
@@ -641,9 +682,8 @@ implements Serializable {
      * Checks if person has an anxiety attack due to too much stress.
      * @param time the time passing (millisols)
      */
-    // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
     private void checkForStressBreakdown(double time) {
-
+        // Expanded Anxiety Attack into either Panic Attack or Depression
     	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
     	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
     	// a person is limited to have only one of them at a time
@@ -655,45 +695,24 @@ implements Serializable {
 
             // 0 (strong) to 1 (weak)
             double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
-            //System.out.println("checkForStressBreakdown()'s resilienceModifier : " + resilienceModifier);
-/*
-            double chance = 0;
-            try {
-            	// 0 to 100
-            	chance = stressBreakdownChance;
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
-            }
-*/
             double value = stressBreakdownChance / 10D * resilienceModifier;
-            //System.out.println("checkForStressBreakdown()'s value : " + value);
-            //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
+
             if (RandomUtil.lessThanRandPercent(value)) {
 
             	isStressedOut = true;
-/*
-               	if (fatigue < 200)
-            		fatigue = fatigue * 4;
-            	else if (fatigue < 400)
-            		fatigue = fatigue * 2;
-            	else if (fatigue < 600)
-            		fatigue = fatigue * 1.2;
-*/
+
             	double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
 
             	if (rand < 0.5) {
 
-            		//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
                     if (panicAttack != null) {
                     	if (inclination_factor > -.5)
                     		inclination_factor = inclination_factor - .05;
 
                     	addMedicalComplaint(panicAttack);
-                        //illnessEvent = true;
+ 
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         logger.info(name + " suffers from a panic attack.");
-                        //System.out.println(name + " has a panic attack.");
 
                     }
                     else
@@ -701,15 +720,12 @@ implements Serializable {
 
             	} else {
 
-                    //Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
                     if (depression != null) {
                     	if (inclination_factor < .5)
                     		inclination_factor = inclination_factor + .05;
                     	addMedicalComplaint(depression);
-                        //illnessEvent = true;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         logger.info(name + " has an episode of depression.");
-                        //System.out.println(name + " has an episode of depression.");
                     }
                     else
                     	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
@@ -717,12 +733,6 @@ implements Serializable {
 
 
             } else {
-/*
-               	if (fatigue < 200)
-            		fatigue = fatigue * 2;
-            	else if (fatigue < 400)
-            		fatigue = fatigue * 1.5;
-*/
             }
         }
     }
@@ -731,7 +741,6 @@ implements Serializable {
      * Checks if person has very high fatigue.
      * @param time the time passing (millisols)
      */
-    // 2016-03-01 checkForHighFatigue
     private void checkForHighFatigueCollapse(double time) {
     	Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
         if (!problems.containsKey(highFatigue)) {
@@ -742,35 +751,14 @@ implements Serializable {
 
             // a person with high endurance will be less likely to be collapse
             double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
-            //System.out.println("checkForHighFatigueCollapse()'s modifier :" + modifier);
-/*
-            double chance = 0;
 
-            try {
-            	chance = personConfig.getHighFatigueCollapseChance();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
-            }
-*/
             double value = highFatigueCollapseChance /5D * modifier;
 
             if (RandomUtil.lessThanRandPercent(value)) {
-                //System.out.println("checkForHighFatigueCollapse()'s value :" + value);
             	isCollapsed = true;
-            	//Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-/*
-             	if (stress < 10)
-             		stress = stress * 1.8;
-            	else if (stress < 30)
-            		stress = stress * 1.5;
-            	else if (stress < 50)
-            		stress = stress * 1.2;
-*/
 
                 if (highFatigue != null) {
                     addMedicalComplaint(highFatigue);
-                    //illnessEvent = true;
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     logger.info(name + " collapses because of high fatigue exhaustion.");
                 }
@@ -779,14 +767,6 @@ implements Serializable {
             }
             else {
 
-/*
-            	if (stress < 10)
-             		stress = stress * 1.5;
-            	else if (stress < 30)
-            		stress = stress * 1.3;
-            	else if (stress < 50)
-            		stress = stress * 1.1;
-*/
             }
         }
     }
@@ -1127,6 +1107,10 @@ implements Serializable {
     public boolean isStarving() {
         return isStarving;
     }
+    
+    public boolean isDeydrated() {
+    	return isDehydrated;
+    }
 
     /**
      * Get a string description of the most serious health situation.
@@ -1320,7 +1304,7 @@ implements Serializable {
     }
 
     public double getWaterConsumedEach() {
-    	return waterConsumedEach;
+    	return waterConsumed;
     }
     
     /**

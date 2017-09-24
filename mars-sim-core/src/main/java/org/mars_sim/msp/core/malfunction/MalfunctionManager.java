@@ -67,10 +67,10 @@ implements Serializable {
 	private static double MAINTENANCE_MALFUNCTION_FACTOR = .000000001D;
 
 	/** Factor for chance of malfunction due to wear condition. */
-	private static double WEAR_MALFUNCTION_FACTOR = 9D;
+	private static double WEAR_MALFUNCTION_FACTOR = 10D;
 
 	/** Factor for chance of accident due to wear condition. */
-	private static double WEAR_ACCIDENT_FACTOR = 1D;
+	private static double WEAR_ACCIDENT_FACTOR = 5D;
 
 	private static final String OXYGEN = "Oxygen";
 	private static final String WATER = "Water";

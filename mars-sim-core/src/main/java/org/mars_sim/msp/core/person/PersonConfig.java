@@ -65,10 +65,14 @@ implements Serializable {
 
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
 	private static final String DESSERT_CONSUMPTION_RATE = "dessert-consumption-rate";
+	
 	private static final String OXYGEN_DEPRIVATION_TIME = "oxygen-deprivation-time";
 	private static final String WATER_DEPRIVATION_TIME = "water-deprivation-time";
 	private static final String FOOD_DEPRIVATION_TIME = "food-deprivation-time";
+
+	private static final String DEHYDRATION_START_TIME = "dehydration-start-time";
 	private static final String STARVATION_START_TIME = "starvation-start-time";
+	
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String DECOMPRESSION_TIME = "decompression-time";
 	private static final String MIN_TEMPERATURE = "min-temperature";
@@ -120,7 +124,7 @@ implements Serializable {
 	// for stress breakdown and high fatigue collapse chance
 	private double[] chance = new double[] {0,0};
 	// for various time values
-	private double[] time = new double[] {0,0,0,0,0,0};
+	private double[] time = new double[] {0,0,0,0,0,0,0};
 	// for min and max temperature
 	private double[] temperature = new double[] {0,0};
 
@@ -742,16 +746,30 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets the dehydration start time.
+	 * @return dehydration time in sols.
+	 * @throws Exception if dehydration start time could not be found.
+	 */
+	public double getDehydrationStartTime() {
+		if (time[2] != 0)
+			return time[2];
+		else {
+			time[2] = getValueAsDouble(DEHYDRATION_START_TIME);
+			return time[2];
+		}
+	}
+	
+	/**
 	 * Gets the food deprivation time.
 	 * @return food time in sols.
 	 * @throws Exception if food deprivation time could not be found.
 	 */
 	public double getFoodDeprivationTime() {
-		if (time[2] != 0)
-			return time[2];
+		if (time[3] != 0)
+			return time[3];
 		else {
-			time[2] = getValueAsDouble(FOOD_DEPRIVATION_TIME);
-			return time[2];
+			time[3] = getValueAsDouble(FOOD_DEPRIVATION_TIME);
+			return time[3];
 		}
 	}
 
@@ -761,14 +779,16 @@ implements Serializable {
 	 * @throws Exception if starvation start time could not be found.
 	 */
 	public double getStarvationStartTime() {
-		if (time[3] != 0)
-			return time[3];
+		if (time[4] != 0)
+			return time[4];
 		else {
-			time[3] = getValueAsDouble(STARVATION_START_TIME);
-			return time[3];
+			time[4] = getValueAsDouble(STARVATION_START_TIME);
+			return time[4];
 		}
 	}
 
+
+	
 	/**
 	 * Gets the required air pressure.
 	 * @return air pressure in Pa.
@@ -789,11 +809,11 @@ implements Serializable {
 	 * @throws Exception if decompression time could not be found.
 	 */
 	public double getDecompressionTime() {
-		if (time[4] != 0)
-			return time[4];
+		if (time[5] != 0)
+			return time[5];
 		else {
-			time[4] = getValueAsDouble(DECOMPRESSION_TIME);
-			return time[4];
+			time[5] = getValueAsDouble(DECOMPRESSION_TIME);
+			return time[5];
 		}
 	}
 
@@ -831,11 +851,11 @@ implements Serializable {
 	 * @throws Exception if freezing time could not be found.
 	 */
 	public double getFreezingTime() {
-		if (time[5] != 0)
-			return time[5];
+		if (time[6] != 0)
+			return time[6];
 		else {
-			time[5] = getValueAsDouble(FREEZING_TIME);
-			return time[5];
+			time[6] = getValueAsDouble(FREEZING_TIME);
+			return time[6];
 		}
 	}
 

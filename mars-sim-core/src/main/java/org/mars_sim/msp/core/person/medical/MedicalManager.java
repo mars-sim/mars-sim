@@ -123,13 +123,12 @@ implements Serializable {
 
 		// Somewhat serious complaint
 		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 40, 
-				personConfig.getWaterDeprivationTime() * 1000D, 5, 40, false);
+				(personConfig.getWaterDeprivationTime() - personConfig.getDehydrationStartTime()) * 1000D, 5, 40, false);
 
 
 		// Least serious complaint
 		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 20, 
-				(personConfig.getFoodDeprivationTime() 
-						- personConfig.getStarvationStartTime()) * 1000D, 1, 20, false);
+				(personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D, 1, 20, false);
 
 	}
 	

@@ -46,17 +46,12 @@ implements Serializable {
 	private static final double EXTREME_COLD = 120D; // [ in deg Kelvin] or -153.17 C 
 
 	/** Viking 1's longitude (49.97 W) in millisols  */
-	private static final double VIKING_LONGITUDE_OFFSET_IN_MILLISOLS = 138.80D; 	// = 49.97W/180 deg * 500 millisols;
+	//private static final double VIKING_LONGITUDE_OFFSET_IN_MILLISOLS = 138.80D; 	// = 49.97W/180 deg * 500 millisols;
 	private static final double VIKING_LATITUDE = 22.48D; // At 22.48E
 
 	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_MARS = 0.57D; 	// in kPa
 	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_EARTH = 0.035D; 	// in kPa
 	public static final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 	// in kPa. under Earth's atmosphere, at 25 C, 50% relative humidity
-
-	private static final int TEMPERATURE = 0;
-	private static final int AIR_PRESSURE = 1;
-	private static final int AIR_DENSITY = 2;
-	private static final int WIND_SPEED = 3;
 
 	private static final int MILLISOLS_PER_UPDATE = 5 ; // one update per x millisols
 
@@ -68,8 +63,8 @@ implements Serializable {
 
 	private int checkStorm = 0;
 
-	/** Current sol since the start of sim. */
-	private int solCache = 1;
+	/** The cache value of sol since the start of sim. */
+	private int solCache = 0;
 
 	private int L_s_cache = 0;
 	
@@ -97,11 +92,6 @@ implements Serializable {
 	private transient Map<Coordinates, Double> windSpeedCacheMap;
 	private transient Map<Coordinates, Integer> windDirCacheMap;
 
-	//private static Map<Integer, DustStorm> planetEncirclingDustStormMap = new ConcurrentHashMap<>();
-	//private static Map<Integer, DustStorm> regionalDustStormMap = new ConcurrentHashMap<>();
-	//private static Map<Integer, DustStorm> localDustStormMap = new ConcurrentHashMap<>();
-	//private static Map<Integer, DustStorm> dustDevilMap = new ConcurrentHashMap<>();
-
 	private static List<DustStorm> planetEncirclingDustStorms = new ArrayList<>();
 	private static List<DustStorm> regionalDustStorms = new ArrayList<>();
 	private static List<DustStorm> localDustStorms = new ArrayList<>();
@@ -118,11 +108,9 @@ implements Serializable {
 
 	/** Constructs a Weather object */
 	public Weather() {
-		//System.out.println("Starting Weather constructor");
-
+	
 		viking_dt = 28D - 15D * Math.sin(2 * Math.PI/180D * VIKING_LATITUDE + Math.PI/2D) - 13D;
 		viking_dt = Math.round (viking_dt * 100.0)/ 100.00;
-		//System.out.print("  viking_dt: " + viking_dt );
 
 		// Opportunity Rover landed at coordinates 1.95 degrees south, 354.47 degrees east.
 		// From the chart, it has an average of 8 C temperature variation on the maximum and minimum temperature curves
@@ -140,7 +128,7 @@ implements Serializable {
 			if (sim.getMasterClock() != null)
 				masterClock = sim.getMasterClock();
 		}
-		//orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+
 	}
 
 	/**
@@ -198,8 +186,8 @@ implements Serializable {
 			
 		    // check for the passing of each day
 		    int newSol = marsClock.getMissionSol();
-			if (newSol != solCache) {
-
+			if (solCache != newSol) {
+				//solCache = newSol;
 				double ds_speed = 0;
 				
 				List<Settlement> settlements = new ArrayList<>(Simulation.instance().getUnitManager().getSettlements());
@@ -827,8 +815,7 @@ implements Serializable {
 					s.setDustStorm(ds);
 					newStormID++;
 					
-					int sol = marsClock.getMissionSol();
-					logger.info("On Sol " + sol + " (L_s = " + Math.round(L_s*10.0)/10.0 + "), " + ds.getName() 
+					logger.info("At L_s = " + Math.round(L_s*100.0)/100.0 + "), " + ds.getName() 
 						+ " has been spotted near " + s + ".");
 
 				}
@@ -860,8 +847,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
@@ -899,8 +886,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
@@ -941,8 +928,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
@@ -971,8 +958,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("By the end of Sol " + solCache + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ "  windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
 		}
 	}
 
@@ -981,44 +968,10 @@ implements Serializable {
 		return planetEncirclingDustStorms;
 	}
 	
-	//public int getNumRegionalDustStorm() {
-	//	return numRegionalDustStorm;
-	//}
-
-	//public int getNumPlanetEncirclingDustStorm() {
-	//	return numPlanetEncirclingDustStorm;
-	//}
 
 	public double getDailyVariationAirPressure(Coordinates location) {
 		return dailyVariationAirPressure;
 	}
-
-/*
-	public void computeDailyVariationAirPressure() {
-    	coordinateList.forEach(location -> {
-
-    		List<DailyWeather> list = dailyRecordMap.get(solCache-1);
-			int i = 0;
-    		list.forEach( d -> {
-
-    			if (solCache > 1)
-    				if (d.getSol() == solCache - 1)
-    					sum += d.getPressure();
-
-    		});
-    		double ave = sum ;
-	    	DailyWeather d = list.get(list.size()-1);
-	    	d.getPressure();
-
-    		//
-    		//t = ;
-    		//p;
-    		//d;
-    		//s;
-    		//d.setDailyAverage(double t, double p, double d, double s);
-    	});
-	}
-*/
 
 	/**
 	 * Prepare object for garbage collection.

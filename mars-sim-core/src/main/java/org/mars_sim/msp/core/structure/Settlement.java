@@ -834,7 +834,7 @@ implements Serializable, LifeSupportType, Objective {
 			double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
-			Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//, sourceName + "::provideWater");
+			//Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//, sourceName + "::provideWater");
 			//getInventory().retrieveAmountResource(waterAR, waterTaken);
 			//getInventory().addAmountDemandTotalRequest(waterAR);
 			//getInventory().addAmountDemand(waterAR, waterTaken);

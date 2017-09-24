@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -267,6 +266,9 @@ public class EatMeal extends Task implements Serializable {
                     setPhase(PICK_UP_DESSERT);//EATING_DESSERT);
                     remainingTime = time;
                 }
+                else {
+                	consumeWater();
+                }
             }     
         }
 
@@ -276,6 +278,9 @@ public class EatMeal extends Task implements Serializable {
         if (eatingTime < time) {
             setPhase(PICK_UP_DESSERT);//EATING_DESSERT);
             remainingTime = time - eatingTime;
+        }
+        else {
+        	consumeWater();
         }
  
         return remainingTime;
@@ -520,6 +525,9 @@ public class EatMeal extends Task implements Serializable {
         consumeWater(dryMass);
     }
 
+    /**
+     * Calculates the amount of water to consume during a dessert
+     */
     public void consumeWater(double dryMass) {
         double waterEach = condition.getWaterConsumedEach() *1000D;
         double average = (thirst + waterEach)/2D;
@@ -545,6 +553,31 @@ public class EatMeal extends Task implements Serializable {
 	    if (t > 0)
 	    	Storage.retrieveAnResource(t/1000D, ResourceUtil.waterAR, person.getTopContainerUnit().getInventory(), true);  
     }
+    
+    /**
+     * Calculates the amount of water to consume after a meal
+     */
+    public void consumeWater() {
+        double waterEach = condition.getWaterConsumedEach() *1000D;
+        double average = (thirst + waterEach)/2D;
+
+        double waterFinal = Math.min(average, thirst);
+
+    	if (waterFinal > thirst) {
+    		waterFinal = thirst;
+    		condition.setThirst(0);
+    	}
+    	else {
+        	double newThirst = thirst - waterFinal;
+    		condition.setThirst(newThirst);
+    	}
+        
+	    if (waterFinal > 0)
+	    	Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, person.getTopContainerUnit().getInventory(), true);  
+    }
+    
+    
+    
     /**
      * Eat an unprepared dessert.
      * @param eatingTime the amount of time (millisols) to eat.

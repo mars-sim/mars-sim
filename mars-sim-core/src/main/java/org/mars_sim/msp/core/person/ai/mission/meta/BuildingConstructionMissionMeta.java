@@ -150,7 +150,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             }
         }
 
-        if (result > 1.1) System.out.println("result : "+ result);
+        if (result > 1.1) 
+        	logger.info("probability : "+ result);
         return result;
     }
 

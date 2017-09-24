@@ -82,13 +82,13 @@ implements Serializable {
             "Mission.phase.construction")); //$NON-NLS-1$
 
 	// Number of mission members.
-	public static final int MIN_PEOPLE = 2;
+	public static final int MIN_PEOPLE = 3;
 	public static final int MAX_PEOPLE = 10;
 
     public static int FIRST_AVAILABLE_SOL = 2;
 
 	/** Time (millisols) required to prepare construction site for stage. */
-	public static final double SITE_PREPARE_TIME = 200D;
+	public static final double SITE_PREPARE_TIME = 100D;
 
 	// Default distance between buildings for construction.
 	public static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
@@ -181,8 +181,14 @@ implements Serializable {
 	        }
 	        else {
 
-	        	init_case_1_step_3();
+	    	    // Reserve construction vehicles.
+	    	    reserveConstructionVehicles();
+	    	    // Retrieve construction LUV attachment parts.
+	    	    retrieveConstructionLUVParts();
 
+	            addPhase(PREPARE_SITE_PHASE);
+	            addPhase(CONSTRUCTION_PHASE);
+	            
 	        	setPhase(PREPARE_SITE_PHASE);
 	            setPhaseDescription(Msg.getString(
 	            		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
@@ -192,15 +198,15 @@ implements Serializable {
 
     }
 
-	public void init_case_1_step_1(int constructionSkill) {
+	public void init_case_1_step_1(int skill) {
 		// a settler initiates this mission
-		//System.out.println("init_1a");
+		logger.info("Calling init_case_1_step_1()");
         ConstructionManager manager = settlement.getConstructionManager();
         ConstructionValues values = manager.getConstructionValues();
         values.clearCache();
-        double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
-        double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
-        ConstructionStageInfo stageInfo = null;
+        double existingSitesProfit = values.getAllConstructionSitesProfit(skill);
+        double newSiteProfit = values.getNewConstructionSiteProfit(skill);
+        ConstructionStageInfo info = null;
 
 		if (existingSitesProfit > newSiteProfit) {
 
@@ -208,10 +214,10 @@ implements Serializable {
 		    double topSiteProfit = 0D;
 		    Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
 		    while (i.hasNext()) {
-		        ConstructionSite site = i.next();
-		        double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
+		        ConstructionSite _site = i.next();
+		        double siteProfit = values.getConstructionSiteProfit(_site, skill);
 		        if (siteProfit > topSiteProfit) {
-		            this.site = site;
+		            this.site = _site;
 		            topSiteProfit = siteProfit;
 		        }
 		    }
@@ -219,14 +225,13 @@ implements Serializable {
 
 		else if (newSiteProfit > 0D) {
 
-		    if (Simulation.getUseGUI())  { // false) { //
+		    if (Simulation.getUseGUI())  {
 				logger.info("Case 1 : Construction initiated by a starting member. Building picked by settlement. Site to be 'automatically' picked.");
 		    	// if GUI is in use
-		    	site = new ConstructionSite(settlement);//, manager);
-		    	site.setSkill(constructionSkill);
+		    	site = new ConstructionSite(settlement);
+		    	site.setSkill(skill);
 		    	site.setSitePicked(false);
 		    	site.setManual(false);
-		    	//constructionSite.setManual(true);
 		    	//constructionSite.setStageInfo(stageInfo);
 				manager.getSites().add(site);
 				settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
@@ -237,23 +242,23 @@ implements Serializable {
 			    site = manager.createNewConstructionSite();
 
 			    // Determine construction site location and facing.
-			    stageInfo = determineNewStageInfo(site, constructionSkill);
+			    info = determineNewStageInfo(site, skill);
 
-			    if (stageInfo != null) {
+			    if (info != null) {
 			        // Set construction site size.
-			        if (stageInfo.getWidth() > 0D)
-			            site.setWidth(stageInfo.getWidth());
+			        if (info.getWidth() > 0D)
+			            site.setWidth(info.getWidth());
 			        else
 			            // Set initial width value that may be modified later.
 			            site.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
 
-			        if (stageInfo.getLength() > 0D)
-			            site.setLength(stageInfo.getLength());
+			        if (info.getLength() > 0D)
+			            site.setLength(info.getLength());
 			        else
 			            // Set initial length value that may be modified later.
 			            site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 
-			        positionNewSite(site, stageInfo, constructionSkill);
+			        positionNewSite(site, info, skill);
 
 			        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
 			    }
@@ -261,7 +266,7 @@ implements Serializable {
 			    	System.out.println("New construction stage could not be determined.");
 			        //endMission("New construction stage could not be determined.");
 
-			    init_case_1_step_2(site, stageInfo, constructionSkill, values); //ConstructionSite constructionSite, ConstructionStageInfo stageInfo,
+			    init_case_1_step_2(site, info, skill, values); 
 			    //init_case_1_step_3();
 
 			}
@@ -273,8 +278,7 @@ implements Serializable {
 	public void init_case_1_step_2(ConstructionSite m_site, ConstructionStageInfo info, 
 			int constructionSkill, ConstructionValues values) {
     	this.site = m_site;
-    	//ConstructionStageInfo stageInfo = info;
-		//System.out.println("init_1b");
+    	logger.info("Calling init_case_1_step_2()");
 
         //System.out.println("constructionSite is " + constructionSite.getDescription()
 	    ////	+ " x is " + constructionSite.getXLocation()
@@ -354,6 +358,12 @@ implements Serializable {
 
         int bestConstructionSkill = 0;
 
+        setMissionCapacity(MAX_PEOPLE);
+        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
+        if (availableSuitNum < getMissionCapacity()) {
+            setMissionCapacity(availableSuitNum);
+        }
+        
         Iterator<MissionMember> i = members.iterator();
 
         while (i.hasNext()) {
@@ -489,7 +499,7 @@ implements Serializable {
     public void initialize(ConstructionSite modSite, ConstructionStageInfo info) {
     	this.site = modSite;
 	    logger.info("stageInfo is " + info.toString());
-    	ConstructionStageInfo stageInfo = info;
+    	//ConstructionStageInfo stageInfo = info;
         //System.out.println("x is " + constructionSite.getXLocation()
 	    //	+ "  y is " + constructionSite.getYLocation()
         //	+ "  w is " + constructionSite.getWidth()
@@ -501,7 +511,7 @@ implements Serializable {
             logger.log(Level.INFO, "Using existing construction stage: " + stage);
         }
         else {
-            stage = new ConstructionStage(stageInfo, site);
+            stage = new ConstructionStage(info, site);
             logger.log(Level.INFO, "Starting new construction stage: " + stage);
             try {
                 site.addNewStage(stage);
@@ -764,7 +774,8 @@ implements Serializable {
     private void prepareSitePhase() {
     	//System.out.println("starting prepareSitePhase()");
         // Load all available materials needed for construction.
-        loadAvailableConstructionMaterials();
+        if (!site.getStageInfo().getType().equals(ConstructionStageInfo.FOUNDATION))
+        	loadAvailableConstructionMaterials();
 
         // Check if site preparation time has expired.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -841,7 +852,9 @@ implements Serializable {
         }
 
         // Load available construction materials into construction site.
-        loadAvailableConstructionMaterials();
+        //if (site.getNextStageType().equals(ConstructionStageInfo.FRAME))
+        if (!site.getStageInfo().getType().equals(ConstructionStageInfo.FOUNDATION))	
+        	loadAvailableConstructionMaterials();
 
         // Check if further work can be done on construction stage.
         if (stage.getCompletableWorkTime() <= stage.getCompletedWorkTime()) {

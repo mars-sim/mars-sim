@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
-import org.mars_sim.msp.core.time.MarsClock;
+
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
@@ -63,7 +63,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -317,10 +316,8 @@ public class ConstructionWizard {
 	    ConstructionManager mgr = s.getConstructionManager();
 	    int skill = site.getSkill();
 	    
-		ConstructionSite m_site = site;
-		confirmSiteLocation(m_site, mgr, true, info, skill);
-
-	    info = m_site.getStageInfo();
+		confirmSiteLocation(site, mgr, true, info, skill);
+	    info = site.getStageInfo();
 
 	    if (info != null) {
 	    	logger.info("ConstructionWizard's executeCase2() : stageInfo is " + info.getName() );
@@ -328,7 +325,7 @@ public class ConstructionWizard {
 	    else {
 	    	logger.info("ConstructionWizard's executeCase2() : new construction stageInfo could not be determined.");
 	    }
-	    
+/*	    
 	    logger.info("Participating members are : " + mission.getMembers());
 	    
 	    // Reserve construction vehicles.
@@ -341,6 +338,24 @@ public class ConstructionWizard {
         mission.retrieveConstructionLUVParts();
         
         mission.startPhase();
+*/
+	    logger.info("NOTE : Make sure someone has a reasonably good construction skill to head this project. ");
+	    logger.info("Participating members are : " + mission.getMembers());
+        // Add this mission to mission manager
+        missionManager.addMission(mission);
+	    // Set members' mission 
+        mission.setMembers();
+        // Set the site and stage        
+        mission.initialize(site, info);
+       
+        // Reserve construction (specifically LUV) vehicles.
+	    mission.reserveConstructionVehicles();
+        // Retrieve vehicles
+        //mission.retrieveVehicles(); // NOTE: should reserve LUV only and not any rovers
+	    // Retrieve construction LUV attachment parts.
+        mission.retrieveConstructionLUVParts();
+	    // Add and set phase
+        mission.startPhase();
 
 	    return site;
 	}
@@ -348,18 +363,17 @@ public class ConstructionWizard {
 
 	public ConstructionSite executeCase3(BuildingConstructionMission mission) {
 		ConstructionSite site = mission.getConstructionSite();
-		ConstructionStageInfo stageInfo = site.getStageInfo();
+		ConstructionStageInfo info = site.getStageInfo();
 	    Settlement s = site.getSettlement();
 	    ConstructionManager mgr = s.getConstructionManager();
 	    int skill = site.getSkill();
 	    
-		ConstructionSite m_site = positionNewSite(site, stageInfo, skill);
-		confirmSiteLocation(m_site, mgr, true, stageInfo, skill);
+		site = positionNewSite(site, info, skill);
+	    info = site.getStageInfo();
+		confirmSiteLocation(site, mgr, true, info, skill);
 
-	    stageInfo = m_site.getStageInfo();
-
-	    if (stageInfo != null) {
-	    	logger.info("ConstructionWizard's executeCase3() : stageInfo is " + stageInfo.getName() );
+	    if (info != null) {
+	    	logger.info("ConstructionWizard's executeCase3() : stageInfo is " + info.getName() );
 	    }
 	    else {
 	    	logger.info("ConstructionWizard's executeCase3() : new construction stageInfo could not be determined.");
@@ -373,7 +387,7 @@ public class ConstructionWizard {
 	    // Set members' mission 
         mission.setMembers();
         // Set the site and stage        
-        mission.initialize(m_site, stageInfo);
+        mission.initialize(site, info);
        
         // Reserve construction (specifically LUV) vehicles.
 	    mission.reserveConstructionVehicles();
@@ -384,9 +398,6 @@ public class ConstructionWizard {
 	    // Add and set phase
         mission.startPhase();
 
-
-
-	    
 	    return site;
 	}
 
@@ -940,7 +951,21 @@ public class ConstructionWizard {
             int skill) {
         boolean goodPosition = false;
         Settlement s = site.getSettlement();
-		// Use settlement's objective to determine the desired building type
+
+        // Try to put building next to another inhabitable building.
+        List<Building> inhabitableBuildings = s.getBuildingManager().getBuildings();//FunctionType.LIFE_SUPPORT);
+        Collections.shuffle(inhabitableBuildings);
+        for (Building b : inhabitableBuildings) {
+        	// Match the floor area (e.g look more organize to put all 7m x 9m next to one another)
+            if (b.getFloorArea() == site.getWidth()*site.getLength()) {
+                goodPosition = positionNextToBuilding(site, b, DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
+                if (goodPosition) {
+                    break;
+                }
+            }
+        }
+/*        
+        // Use settlement's objective to determine the desired building type
         String buildingType = s.getObjectiveBuildingType();
 
         if (buildingType != null) {
@@ -1008,7 +1033,7 @@ public class ConstructionWizard {
                 }
             }
         }
-        
+*/        
         if (!goodPosition) {
         	logger.info("goodPosition : " + goodPosition);
             // Try to put building next to another building.

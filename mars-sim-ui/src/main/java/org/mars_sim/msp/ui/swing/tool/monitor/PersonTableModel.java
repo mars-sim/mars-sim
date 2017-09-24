@@ -403,8 +403,9 @@ public class PersonTableModel extends UnitTableModel {
 		if (rowIndex < getUnitNumber()) {
 			Person person = (Person) getUnit(rowIndex);
 
-			Boolean isDead = person.getPhysicalCondition().isDead();
-			Boolean isStarving = person.getPhysicalCondition().isStarving();
+			boolean isDead = person.getPhysicalCondition().isDead();
+			boolean isStarving = person.getPhysicalCondition().isStarving();
+			boolean isDeydrated = person.getPhysicalCondition().isDeydrated();
 
 			switch (columnIndex) {
 
@@ -462,6 +463,8 @@ public class PersonTableModel extends UnitTableModel {
 					result = "";
 				else if (isStarving)
 					result = "Starving";
+				else if (isDeydrated)
+					result = "Deydrated";
 				else
 					result = getHungerStatus(hunger, energy);
 			}

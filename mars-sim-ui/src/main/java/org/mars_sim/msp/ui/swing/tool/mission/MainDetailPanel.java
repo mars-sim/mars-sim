@@ -499,7 +499,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			String phaseText = mission.getPhaseDescription();
 
 			phaseLabel.setToolTipText(phaseText);
-			if (phaseText.length() > 45) phaseText = phaseText.substring(0, 45) + "...";
+			if (phaseText.length() > 48) phaseText = phaseText.substring(0, 48) + "...";
 			phaseLabel.setText(phaseText); //$NON-NLS-1$
 
 

@@ -1,10 +1,14 @@
 <!ELEMENT people-configuration (low-activity-metaboic-load-o2-consumption-rate, 
-nominal-activity-metaboic-load-o2-consumption-rate, high-activity-metaboic-load-o2-consumption-rate, 
+nominal-activity-metaboic-load-o2-consumption-rate, 
+high-activity-metaboic-load-o2-consumption-rate, 
 co2-expelled-rate, water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
-dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, water-deprivation-time,
-food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time,
-min-temperature, max-temperature, freezing-time, stress-breakdown-chance, high-fatigue-collapse-chance,
-gender-male-percentage, personality-types, person-name-list, first-name-list, last-name-list, person-list)>
+dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, 
+water-deprivation-time, dehydration-start-time,
+food-deprivation-time, starvation-start-time, decompression-time, min-air-pressure,
+min-temperature, max-temperature, freezing-time, stress-breakdown-chance, 
+high-fatigue-collapse-chance,
+gender-male-percentage, personality-types, person-name-list, first-name-list, 
+last-name-list, person-list)>
 
 <!ELEMENT low-activity-metaboic-load-o2-consumption-rate EMPTY>
 <!ATTLIST low-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
@@ -39,17 +43,20 @@ gender-male-percentage, personality-types, person-name-list, first-name-list, la
 <!ELEMENT water-deprivation-time EMPTY>
 <!ATTLIST water-deprivation-time value CDATA #REQUIRED>
 
+<!ELEMENT dehydration-start-time EMPTY>
+<!ATTLIST dehydration-start-time value CDATA #REQUIRED>
+
 <!ELEMENT food-deprivation-time EMPTY>
 <!ATTLIST food-deprivation-time value CDATA #REQUIRED>
 
 <!ELEMENT starvation-start-time EMPTY>
 <!ATTLIST starvation-start-time value CDATA #REQUIRED>
 
-<!ELEMENT min-air-pressure EMPTY>
-<!ATTLIST min-air-pressure value CDATA #REQUIRED>
-
 <!ELEMENT decompression-time EMPTY>
 <!ATTLIST decompression-time value CDATA #REQUIRED>
+
+<!ELEMENT min-air-pressure EMPTY>
+<!ATTLIST min-air-pressure value CDATA #REQUIRED>
 
 <!ELEMENT min-temperature EMPTY>
 <!ATTLIST min-temperature value CDATA #REQUIRED>

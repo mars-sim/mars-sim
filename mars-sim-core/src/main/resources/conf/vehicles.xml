@@ -94,11 +94,15 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<!-- The toxic waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="toxic waste" value="20.0" />	
-			
-<!--
-			<capacity resource="grey water" value="100.0" />
-			<capacity resource="black water" value="100.0" />
--->			
+
+			<!-- The grey water capacity of the rover (kg) -->
+			<!-- Default: varies according to the type of vehicle  -->
+			<capacity resource="grey water" value="80.0" />	
+
+			<!-- The black water capacity of the rover (kg) -->
+			<!-- Default: varies according to the type of vehicle  -->
+			<capacity resource="black water" value="40.0" />	
+	
 		</cargo>
 
 		<!-- Sickbay -->
@@ -152,6 +156,9 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<capacity resource="solid waste" value="160.0" />
 			<capacity resource="toxic waste" value="40.0" />	
 			
+			<capacity resource="grey water" value="160.0" />
+			<capacity resource="black water" value="80.0" />
+			
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75"
@@ -186,6 +193,9 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 			<capacity resource="food waste" value="20.0" />
 			<capacity resource="solid waste" value="40.0" />
 			<capacity resource="toxic waste" value="10.0" />	
+			
+			<capacity resource="grey water" value="40.0" />
+			<capacity resource="black water" value="20.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0"

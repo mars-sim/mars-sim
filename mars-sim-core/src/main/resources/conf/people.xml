@@ -100,28 +100,30 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default: 3.38 -->
 	<oxygen-deprivation-time value="3.38" />
 
-	<!-- Number of sols a person can survive without water -->
-	<!-- Default: 6.0 -->
-	<water-deprivation-time value="6.0" />
+	<!-- Number of sols a person can go without food before dying -->
+	<!-- Default: 7.0 -->
+	<water-deprivation-time value="7.0" />
 
-	<!-- Number of sols a person can survive without food -->
+	<!-- Number of sols without water before dehydration kicks in -->
+	<!-- Default: 1.0 -->
+	<dehydration-start-time value="1.0" />
+
+	<!-- Number of sols a person can go without food before dying -->
 	<!-- Default: 30.0 -->
 	<food-deprivation-time value="30.0" />
 
-	<!-- Number of sols a person can go without food before starvation sets in -->
-	<!-- Default: 1.5 -->
-	<starvation-start-time value="1.5" />
-
-	<!-- Minimum air pressure (kPa) a person can withstand without harm -->
-	<!-- Default: 25.33125 -->
-	<min-air-pressure value="25.33125" />
+	<!-- Number of sols without food before starvation kicks in -->
+	<!-- Default: 2.0 -->
+	<starvation-start-time value="2.0" />
 
 	<!-- Number of millisols a person can survive in decompression -->
 	<!-- Note: 1 millisol = 88.77 seconds -->
 	<!-- Default: 10.0 )-->
 	<decompression-time value="10.0" />
-
-
+	
+	<!-- Minimum air pressure (kPa) a person can withstand without harm -->
+	<!-- Default: 25.33125 -->
+	<min-air-pressure value="25.33125" />
 
 	<!-- Minimum temperature (degrees celsius) a person can withstand without harm -->
 	<!-- Default: 0 degrees celsius -->

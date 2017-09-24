@@ -2631,10 +2631,31 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Melting permafrost ice and filtering the water. 
-	     Note : Melt ice requires 450kJ/kg exraction energy
+	     Note : Melting ice requires 450kJ/kg exraction energy
+	     
+		Specific heat capacity of ice is 2.09 J/g/C
+		
+		e.g. For 1 mol of ice, from -25 C to 0 C
+		= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
+
+		.941 kJ /mol
+
+		To transition from ice to liquid, it takes a total of 6.02 kJ/mol
+		
+		Specific heat capacity of water is 4.18 J/g/C
+		
+		To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
+				
+		It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
+		
+		For 1 kg, heating for 25 millisols, 
+		Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg 
+
+		or 1.3939 kW for 8 kg of ice
+		
 	     -->
-	<process name="melt and filter ice" tech="1" skill="0" work-time="10" process-time="50"
-			power-required="4.5">
+	<process name="melt and filter ice" tech="1" skill="0" work-time="5" process-time="25"
+			power-required="1.39">
 		<inputs>
 			<resource name="ice" amount="10.0" />
 		</inputs>
@@ -2642,13 +2663,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="grey water" amount="8.0" />
 			<resource name="regolith" amount="1.5" />
 			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
-			<resource name="Rock Salt" amount=".5" />
+			<resource name="rock Salt" amount=".5" />
 		</outputs>
 	</process>
 
 		<!-- Melting permafrost ice and filtering the water (large batch). -->
-	<process name="melt and filter ice (large batch)" tech="1" skill="0" work-time="10.0" process-time="50"
-			power-required="22.5">
+	<process name="melt and filter ice (large batch)" tech="1" skill="0" work-time="5" process-time="25"
+			power-required="6.97">
 		<inputs>
 			<resource name="ice" amount="50.0" />
 		</inputs>
@@ -2656,7 +2677,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="grey water" amount="40.0" />
 			<resource name="regolith" amount="7.5" />
 			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
-			<resource name="Rock Salt" amount="2.5" />
+			<resource name="rock Salt" amount="2.5" />
 		</outputs>
 	</process>
 
