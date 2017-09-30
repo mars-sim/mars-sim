@@ -49,6 +49,11 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        LocationSituation ls = person.getLocationSituation();
+        
+        if (LocationSituation.OUTSIDE == ls)
+        	return 0;	
+        
         // Only doctor job allowed to perform this task.
         Job job = person.getMind().getJob();
         if (job instanceof Doctor) {

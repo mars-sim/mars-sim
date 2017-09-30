@@ -275,8 +275,10 @@ implements ActionListener {
 		}
 
 		// Have each building panel update.
-		Iterator<BuildingPanel> i = buildingPanels.iterator();
-		while (i.hasNext()) i.next().update();
+		//Iterator<BuildingPanel> i = buildingPanels.iterator();
+		//while (i.hasNext()) i.next().update();
+		for (BuildingPanel p : buildingPanels)
+			p.update();
 	}
 
 	/** 

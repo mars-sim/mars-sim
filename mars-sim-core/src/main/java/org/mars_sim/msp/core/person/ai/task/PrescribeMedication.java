@@ -79,16 +79,15 @@ implements Serializable {
             // Determine medication to prescribe.
             medication = determineMedication(patient);
 
+            LocationSituation ls = person.getLocationSituation();
+            if (LocationSituation.OUTSIDE == ls)
+            	endTask();
             // If in settlement, move doctor to building patient is in.
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+            if (LocationSituation.IN_SETTLEMENT == ls) {
                 // Walk to patient's building.
                 walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
 
-            logger.info(person.getName() + " is prescribing " + medication.getName()
-                    + " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-                    + " at " + patient.getSettlement());
         }
         else {
             endTask();
@@ -234,6 +233,10 @@ implements Serializable {
                         // Medicate patient.
                         condition.addMedication(medication);
 
+                        logger.info(person.getName() + " is prescribing " + medication.getName()
+                        + " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
+                        + " at " + patient.getSettlement());
+                        
                         produceMedicalWaste();
                     }
                 }

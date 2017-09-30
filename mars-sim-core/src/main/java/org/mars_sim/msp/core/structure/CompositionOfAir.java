@@ -60,7 +60,7 @@ public class CompositionOfAir implements Serializable {
 	// see https://en.wikipedia.org/wiki/Decompression_sickness
 	
 
-	private static final double[] STANDARD_GAS_PERCENT = new double[] {.0407, .934, 76.0043, 21.021, 2}; 
+	private static final double[] STANDARD_GAS_PERCENT = new double[] {.0407, .934, 77.0043, 21.021, 1}; 
 	// assuming having a minimum 2% of water moisture
 	
 	// Note : Mars has only 0.13% of O2 

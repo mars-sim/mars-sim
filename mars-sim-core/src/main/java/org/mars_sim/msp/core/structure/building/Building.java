@@ -709,12 +709,11 @@ LocalBoundedObject, InsidePathLocation {
 		// Set storage function.
 		if (buildingConfig.hasStorage(buildingType)) buildingFunctions.add(new Storage(this));
 
-		//2014-10-17 Set thermal generation function.
+		// Set thermal generation function.
 		if (buildingConfig.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
 
-		//2014-10-17  Added and imported ThermalStorage
 		// Set thermal storage function.
-		//if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
+		// if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
 
 		return buildingFunctions;
 	}

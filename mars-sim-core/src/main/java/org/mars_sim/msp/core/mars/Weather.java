@@ -815,8 +815,8 @@ implements Serializable {
 					s.setDustStorm(ds);
 					newStormID++;
 					
-					logger.info("At L_s = " + Math.round(L_s*100.0)/100.0 + "), " + ds.getName() 
-						+ " has been spotted near " + s + ".");
+					logger.info("On L_s = " + Math.round(L_s*100.0)/100.0 + ", " + ds.getName() 
+						+ " was first spotted near " + s + ".");
 
 				}
 			}
