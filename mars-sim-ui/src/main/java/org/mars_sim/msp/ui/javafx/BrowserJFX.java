@@ -1,6 +1,6 @@
 /* Mars Simulation Project
  * BrowserJFX.java
- * @version 3.1.0 2016-10-07
+ * @version 3.1.0 2017-09-24
  * @author Manny Kung
  */
 
@@ -45,8 +45,11 @@ import org.w3c.dom.Text;
 
 import com.jfoenix.controls.JFXButton;
 
-import de.jensd.fx.fontawesome.AwesomeDude;
-import de.jensd.fx.fontawesome.AwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+
+//import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+//import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -89,8 +92,8 @@ public class BrowserJFX {
 
     public static final int WIDTH = 25;
 
-    public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
-    public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
+    //public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
+    //public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
 
     private static final String CSS =
     		"a, a:link, a:visited, a:hover{color:rgb(184, 134, 11); text-decoration:none;}"
@@ -107,20 +110,12 @@ public class BrowserJFX {
 
 
 	private boolean isLocalHtml = true;
-	//private Point2D pLimit;
-	//private double width, height;
+
     public volatile String textInputCache, addressURLText, statusBarURLText, inputCache;
 
     private JFXPanel jfxPanel = new JFXPanel();
     private JPanel panel = new JPanel(new BorderLayout());
-
     private JLabel statusBarLbl = new JLabel();
-
-    //private JButton btnGo = new JButton("Go");
-    //private JButton btnForward = new JButton(">");
-    //private JButton btnBack = new JButton("<");
-    //private JTextField urlTF = new JTextField();
-
     private JProgressBar progressBar = new JProgressBar();
 
     private Button reloadButton = new Button('\u27F3' + "");
@@ -134,9 +129,9 @@ public class BrowserJFX {
 
     private MainScene mainScene;
     private MainDesktopPane desktop;
-    private WebView view;// = new WebView();
-    private WebEngine engine;// = view.getEngine();
-    private WebHistory history;// = engine.getHistory();
+    private WebView view;
+    private WebEngine engine;
+    private WebHistory history;
     private GuideWindow ourGuide;
 
 	private ObservableList<WebHistory.Entry> entryList;// = history.getEntries();
@@ -245,11 +240,11 @@ public class BrowserJFX {
         history = engine.getHistory();
         entryList = history.getEntries();
         ssm = comboBox.getSelectionModel();
-    	logger.info("Web Engine supported : " + engine.getUserAgent());
+    	//logger.info("Web Engine supported : " + engine.getUserAgent());
     	// For JDK 131, it prints the following :
     	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
     	highlight();
-        // 2017-04-27 Disable context menu (copy option)
+        // Disable context menu (copy option)
         view.setContextMenuEnabled(false);
 
 /*
@@ -327,9 +322,11 @@ public class BrowserJFX {
         });
 
     	//reloadButton.setPadding(new Insets(0, 3, 0, 3));
+        reloadButton.setPrefHeight(WIDTH);
         reloadButton.setMinWidth(WIDTH+5);
         reloadButton.getStyleClass().add("menu-button");
-        AwesomeDude.setIcon(reloadButton, AwesomeIcon.REFRESH, "12.0");
+        //FontAwesomeIconView refresh = new FontAwesomeIconView(FontAwesomeIcon.REFRESH);
+        //reloadButton.setGraphic(refresh);
         reloadButton.setTooltip(new Tooltip("Reload this page"));
         reloadButton.setOnAction(e -> {
     		goLoad(tf.getText().trim());
@@ -338,29 +335,28 @@ public class BrowserJFX {
         });
 
         //backButton.setPadding(new Insets(0, 3, 0, 3));
+        backButton.setPrefHeight(WIDTH);
         backButton.setMinWidth(WIDTH+5);
         backButton.getStyleClass().add("menu-button");
-        AwesomeDude.setIcon(backButton, AwesomeIcon.BACKWARD, "12.0");
+        //AwesomeDude.setIcon(backButton, AwesomeIcon.BACKWARD, "12.0");
+        //FontAwesomeIconView backward = new FontAwesomeIconView(FontAwesomeIcon.BACKWARD);
+       // backButton.setGraphic(backward);
         backButton.setTooltip(new Tooltip("Go back"));
         backButton.setOnAction(e -> {
-        	//System.out.println("backward");
-        	//System.out.println("i : " + history.getCurrentIndex());
         	engine.executeScript("history.back()");
 	    	int i = history.getCurrentIndex();
-	    	//ssm.select(i); // question : will it load the url the 2nd time ?
-        	//System.out.println("i : " + history.getCurrentIndex());
 	    	if (i > 0)
 	    		textInputCache = entryList.get(i-1).getUrl();
-	    	//System.out.println("textInputCache : " + textInputCache);
         	showFormattedURL();
-        	//System.out.println("i : " + history.getCurrentIndex());
-        	//System.out.println();
         });
 
         //forwardButton.setPadding(new Insets(0, 3, 0, 3));
+        forwardButton.setPrefHeight(WIDTH);
         forwardButton.setMinWidth(WIDTH+5);
         forwardButton.getStyleClass().add("menu-button");
-        AwesomeDude.setIcon(forwardButton, AwesomeIcon.FORWARD, "12.0");
+        //AwesomeDude.setIcon(forwardButton, AwesomeIcon.FORWARD, "12.0");
+        //FontAwesomeIconView forward = new FontAwesomeIconView(FontAwesomeIcon.FORWARD);
+        //forwardButton.setGraphic(forward);
         forwardButton.setTooltip(new Tooltip("Go forward"));
         forwardButton.setOnAction(e -> {
         	//System.out.println("forward");
@@ -369,22 +365,11 @@ public class BrowserJFX {
             int i = history.getCurrentIndex();
         	int size = entryList.size();
             //ssm.select(i);
-        	//System.out.println("i : " + history.getCurrentIndex());
 	    	if (i + 1 < size && size > 1)
 	    		textInputCache = entryList.get(i+1).getUrl();
-	    	//System.out.println("textInputCache : " + textInputCache);
             showFormattedURL();
         	//System.out.println("i : " + history.getCurrentIndex());
-        	//System.out.println();
         });
-
-
-        //Google.setOnAction(e -> webEngine.load("http://www.google.com"));
-        //Yahoo.setOnAction(e -> webEngine.load("http://www.yahoo.com"));
-        //Bing.setOnAction(e -> webEngine.load("http://www.bing.com"));
-        //Facebook.setOnAction(e -> webEngine.load("http://www.facebook.com"));
-        //Twitter.setOnAction(e -> webEngine.load("http://www.twitter.com"));
-        //YouTube.setOnAction(e -> webEngine.load("http://www.youtube.com"));
 
         entryList.addListener((Change<? extends Entry> c) -> {
             c.next();
@@ -417,8 +402,6 @@ public class BrowserJFX {
         tf.setMaxHeight(WIDTH);
         tf.setMinHeight(WIDTH);
         tf.setPrefHeight(WIDTH);
-        //tf.setMinWidth(1024);
-        //tf.setPrefWidth(1024);
         
         if (mainScene != null) {
         	tf.prefWidthProperty().bind(mainScene.getStage().widthProperty()//getScene().widthProperty()
@@ -439,14 +422,6 @@ public class BrowserJFX {
             }
         });
 
-/*
-        VBox statusBar = new VBox();
-        progressBar.setPreferredSize(new Dimension(150, 18));
-        progressBar.setStringPainted(true);
-        statusBar.getChildren().add(progressBar);
-        //sp.getChildren().addAll(comboBox, Google, Yahoo, Bing, Facebook, Twitter, YouTube);
-        //ap.setTop(sp);
-*/
         bar.getChildren().addAll(comboBox, tf, backButton, reloadButton, forwardButton);
         vbox.getChildren().addAll(topButtonBar, bar);
 

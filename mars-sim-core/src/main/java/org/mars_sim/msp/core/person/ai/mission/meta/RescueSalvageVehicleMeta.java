@@ -42,10 +42,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 
         double missionProbability = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // Check if mission is possible for person based on their circumstance.
-            //boolean missionPossible = true;
+        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
 
             Settlement settlement = person.getSettlement();
 
@@ -59,12 +56,12 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 if (vehicle != null) {
                     vehicleTarget = RescueSalvageVehicle.findAvailableBeaconVehicle(settlement,
                             vehicle.getRange());
-                    if (vehicleTarget == null) {
+                    if (vehicle == vehicleTarget)
                         return 0;
-                    }
-                    else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
+                    else if (vehicleTarget == null)
                         return 0;
-                    }
+                    else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
+                        return 0;  
                 }
             }
             catch (Exception e) {

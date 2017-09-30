@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.tool;
 import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JTable;
-import javax.swing.table.JTableHeader;
 
 import org.mars_sim.msp.ui.javafx.MainScene;
 
@@ -82,7 +81,7 @@ public class TableStyle extends ZebraJTable{
     		selBack = new Color(110,139,61); // 110,139,61	pale olive green
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-    		//border = Color.GRAY;
+    		border = Color.WHITE;//Color.GRAY;
     		themeName = "LightTabaco";
     	}
     	else if (theme == 2) { // Burdeos
@@ -151,7 +150,7 @@ public class TableStyle extends ZebraJTable{
     		selBack = new Color(189,183,107); // 189,183,107 darkkhaki
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-    		border = new Color(243, 247, 136);//Color.WHITE; //new Color(101,75,0); //Color.orange;
+    		border = Color.WHITE;//new Color(243, 247, 136);//Color.WHITE; //new Color(101,75,0); //Color.orange;
     		themeName = "Mud Orange"; //Standard Nimrod";
     	}
 
@@ -181,7 +180,7 @@ public class TableStyle extends ZebraJTable{
 		//table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
 		table.setShowGrid(true);
 		table.setShowVerticalLines(true);
-		table.setBorder(BorderFactory.createLineBorder(border, 1));
+		//table.setBorder(BorderFactory.createLineBorder(border, 1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.repaint();

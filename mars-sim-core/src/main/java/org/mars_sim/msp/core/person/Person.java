@@ -1264,9 +1264,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	// 2017-03-08 Added setCurrentBuilding()
 	public Building computeCurrentBuilding() {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = getSettlement().getBuildingManager();
-			currentBuilding = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(), getYLocation());
 		}
+		else
+			currentBuilding = null;
 
 		return currentBuilding;
 	}

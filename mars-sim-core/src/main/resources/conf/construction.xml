@@ -29,34 +29,32 @@
 			</vehicle>
 		</foundation>
 		
-		
-		<!-- surface foundation 7m x 7m is setting for round modular frame. -->
-		<foundation name="surface foundation 7m x 7m" width="7.0" length="9.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
-			<vehicle type="light utility vehicle" >
-				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
-			</vehicle>
-		</foundation>
-			
 		<!-- surface foundation 7m x 9m is setting for medium modular frame. work-time = 3.0 -->
-		<foundation name="surface foundation 7m x 9m" width="7.0" length="9.0" base-level="0" 
+		<foundation name="surface foundation 7m x 9m" width="9.0" length="7.0" base-level="0" 
 		 constructable="true" salvagable="true" work-time="1.2" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
-
-		<foundation name="surface foundation 11m x 11m" width="11.0" length="11.0" base-level="0" 
-		 constructable="true" salvagable="true" work-time="1.6" skill-required="1" >
-			<vehicle type="light utility vehicle" >
+		
+		<foundation name="surface foundation 9m x 9m" width="9.0" length="9.0" base-level="-1" 
+		 constructable="true" salvagable="true" work-time="1.4" skill-required="1" >
+			<vehicle type="light utility vehicle" >    
 				<attachment-part name="bulldozer blade" />
-				<attachment-part name="soil compactor" />
+				<attachment-part name="backhoe" />
 			</vehicle>
 		</foundation>
-								
-		<foundation name="surface foundation 12m x 18m" width="12.0" length="18.0" base-level="0" 
+
+		<foundation name="surface foundation 8m x 11m" width="8.0" length="11.0" base-level="-1" 
+		 constructable="true" salvagable="true" work-time="1.8" skill-required="1" >
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+			</vehicle>
+		</foundation>
+						
+		<foundation name="surface foundation 12m x 18m" width="18.0" length="12.0" base-level="0" 
 		 constructable="true" salvagable="true" work-time="2.4" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
@@ -83,8 +81,8 @@
 				<attachment-part name="backhoe" />
 			</vehicle>
 		</foundation>
-		
-		<foundation name="ramped subsurface foundation 15m x 18m x 5m" width="10.0" length="10.0" base-level="-1" 
+				
+		<foundation name="ramped subsurface foundation 15m x 18m x 5m" width="18.0" length="15.0" base-level="-1" 
 		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
 			<resource name="concrete" amount="2500.0" />
 			<resource name="water" amount="800.0" />
@@ -206,7 +204,7 @@
 		
 		<!-- Note: the round hab frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="round hab frame" width="9.0" length="9.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="10.0" skill-required="2" foundation="subsurface foundation 10m x 10m x 3m" >
+		 salvagable="true" work-time="10.0" skill-required="2" foundation="surface foundation 9m x 9m" >
 			<part name="steel scrap" number="50" />
 			<part name="aluminum scrap" number="50" />
 			<part name="plastic pipe" number="20" />
@@ -235,7 +233,7 @@
 		
 		<!-- Note: the atmospheric processor frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="atmospheric processor frame" width="8.0" length="11.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="12.0" skill-required="3" foundation="surface foundation 11m x 11m" >
+		 salvagable="true" work-time="12.0" skill-required="3" foundation="surface foundation 8m x 11m" >
 			<part name="steel scrap" number="100" />
 			<part name="aluminum scrap" number="100" />
 			<part name="plastic pipe" number="50" />
@@ -274,22 +272,9 @@
 			<part name="power cable" number="6" />
 		</frame>
 		
-		<!-- Note: the medium garage frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="medium garage frame" width="12.0" length="16.0" base-level="0" constructable="false" 
+		<!-- Note: the garage frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="garage frame" width="12.0" length="16.0" base-level="0" constructable="false" 
 		 salvagable="true" work-time="14.0" skill-required="2" foundation="surface foundation 12m x 18m" >
-			<part name="steel scrap" number="25" />
-			<part name="aluminum scrap" number="25" />
-			<part name="plastic pipe" number="10" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="power cable" number="2" />
-			<part name="gasket" number="4" />
-		</frame>
-		
-		<!-- Note: the round modular frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="round modular frame" width="7.0" length="7.0" base-level="0" constructable="false" 
-		 salvagable="true" work-time="8.0" skill-required="2" foundation="surface foundation 7m x 7m" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -783,7 +768,7 @@
 		
 		<!-- Garage building project for refitting or salvaging. -->
 		<building name="garage" width="12.0" length="16.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="100.0" skill-required="3" frame="medium garage frame" >
+		 salvagable="true" work-time="100.0" skill-required="3" frame="garage frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -815,7 +800,7 @@
 		
 		<!-- Astronomy observatory building project for refitting or salvaging. -->
 		<building name="astronomy observatory" width="7.0" length="7.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="2300.0" skill-required="5" frame="round modular frame" >
+		 salvagable="true" work-time="2300.0" skill-required="5" frame="medium modular frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />

@@ -80,19 +80,19 @@ public class CompositionOfAir implements Serializable {
 	// https://en.wikipedia.org/wiki/Vapour_pressure_of_water
 	
 	/** The upper safe limit of the partial pressure [in atm] of O2 */
-	private static final double O2_UPPER_LIMIT_PRESSURE = 1.5;// [in atm] 
+	private static final double O2_PRESSURE_UPPER_LIMIT = 1.5;// [in atm] 
 	/** The lower safe limit of the partial pressure [in atm] of O2 */
-	private static final double O2_LOWER_LIMIT_PRESSURE = 0.15;// [in atm] 
+	private static final double O2_PRESSURE_LOWER_LIMIT = 0.15;// [in atm] 
 	
 	
-	public static final double CO2_MOLAR_MASS = 44.0095 /1000D; // [in kg/mol]
-	public static final double ARGON_MOLAR_MASS = 39.948 /1000D; // [in kg/mol]
-	public static final double N2_MOLAR_MASS = 28.02 /1000D; // [in kg/mol]
-	public static final double O2_MOLAR_MASS = 32.00 /1000D; // [in kg/mol]
-	public static final double H2O_MOLAR_MASS = 18.02 /1000D; // [in kg/mol] 
+	public static final double CO2_MOLAR_MASS = 44.0095 / 1000;; // [in kg/mol]
+	public static final double ARGON_MOLAR_MASS = 39.948 / 1000;; // [in kg/mol]
+	public static final double N2_MOLAR_MASS = 28.02 / 1000;; // [in kg/mol]
+	public static final double O2_MOLAR_MASS = 32.00 / 1000;; // [in kg/mol]
+	public static final double H2O_MOLAR_MASS = 18.02 / 1000;; // [in kg/mol] 
 	
-	public static final double CH4_MOLAR_MASS = 16.04276; // [in g/mol] 
-	public static final double H2_MOLAR_MASS = 2.016; // [in g/mol] 
+	public static final double CH4_MOLAR_MASS = 16.04276 / 1000;; // [in kg/mol] 
+	public static final double H2_MOLAR_MASS = 2.016 / 1000;; // [in kg/mol] 
 	
 	private static final int MILLISOLS_PER_UPDATE = 20;
 	
@@ -135,7 +135,7 @@ public class CompositionOfAir implements Serializable {
 	private int numIDsCache;
 	//private int solCache = 0;
 
-	private double [] fixedVolume; // [in liter] note: // 1 Cubic Meter = 1,000 Liters
+	private double [] fixedVolume; // [in liter]; Note: 1 Cubic Meter = 1,000 Liters
 	private double [] totalPressure; // in atm
 	private double [] totalMoles;
 	private double [] totalMass; // in kg
@@ -159,11 +159,7 @@ public class CompositionOfAir implements Serializable {
 	private static PersonConfig personConfig;
 
 	private Settlement settlement;
- 	//private ThermalSystem thermalSystem;
  	private BuildingManager buildingManager;
-	//private Coordinates location;
-	
-	private List<Building> buildings;
 
 	/**
 	 * Constructor.
@@ -198,8 +194,6 @@ public class CompositionOfAir implements Serializable {
 		// This estimate gives 400ml of water lost per day
 		// Thus, a person loses about 800ml of water per day, half through the skin
 		// and half through respiration.
-
-		buildings = buildingManager.getBuildingsWithLifeSupport();
 
 		int numIDs = buildingManager.getLargestInhabitableID() + 1;
 		numIDsCache = numIDs;
@@ -241,6 +235,7 @@ public class CompositionOfAir implements Serializable {
 		
 		//double t =  22.5 + C_TO_K ;
 	
+		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
 		for (Building b: buildings) {
 						
 			int id = b.getInhabitableID();
@@ -836,7 +831,7 @@ public class CompositionOfAir implements Serializable {
 		clock = null;
 		//surfaceFeatures = null;
 		personConfig = null;
-		buildings = null;
+		//buildings = null;
 		//fmt = null;
 	}
 

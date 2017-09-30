@@ -6,25 +6,27 @@
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 
+
 # mars-sim
-The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars with a higher level of fidelity than typical PC strategy games. 
+The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars with a higher level of simulation fidelity than a typical PC strategy game. 
 
 
 ## Modeling and Simulation
-mars-sim is a semi-social and professional simulation that portrays the interaction between the settlers and their environment. 
-
-Each settler is a computer agent possessing certain pre-defined properties. Based on these properties and the environmental characteristics, they make decisions and interact with one another in the settlement and on the surface of Mars.
-
 Both the paradigm of Discrete Event Simulation and the Agent-based Modeling are implemented in guiding the everyday decisions of the settlers in mars-sim.
 
-A settler has a well-defined job, a role, a bunch of technical skills, a set of personality, natural attributes, and task preferences (likes and dislikes). They build relationship with one another as they strive on Mars. 
+Each settler is a computer agent possessing certain properties. Based on these properties and the external characteristics imposed on them, they make decisions and interact with one another in a constraint environment.
+
+For instance, each settler has a well-defined job, a role, a bunch of technical skills, a set of personality, natural attributes, and task preferences (likes and dislikes). They build relationship with one another as they strive on Mars. 
+
 
 ## Settlement Development 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial landing base; a mining depot near sites with high mineral concentration; or a full-blown, self-contained colony hosting higher functions with 48+ settlers having an elected mayor. 
+Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial base (somewhat loosely following the Mars Direct Mission Plan by Robert Zubrin);
+a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
 
 
 ## Economics
-There is no currency exchange but in terms of economic modeling, the simulation dynamically computes the Value Points (VP) for each resource, based on its supply and demand. Traders are the one who initiates Trading Missions and set up trade deals with neighboring settlements.
+In terms of economic modeling, mars-sim implements a value point (VP) system, which keeps track of the supply and demand on each resource. There is no standard currency established yet. Traders barter trades with neighboring settlements and the surplus/ deficit based on the 
+VPs of the resources in exchanged would be computed in each trading session.
 
 
 ## Tasks and Missions
@@ -32,13 +34,16 @@ Settlers spend much of their time learning to "live off the land". They engage i
 
 Settlers will also go out on field missions to explore and study surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements. They may even decide to migrate from one settlment to another.
 
+
 ## Reliability and Malfunctions
 The perils of living on Mars are very real. There are close to 30 types of malfunctions that can strike. The failure rate (such as the Mean Time Between Failure (MTBF)) and reliability of parts are tracked real-time and updated dynamically based on field available data during the simulation.
+
 
 ## Summary
 Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents, equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together, improve their survival skills and balance individual versus settlement needs. The reward of
 
 As the settlers learn how to survive the hardship and build up their settlements, players are rewarded with the pure joy of participating in this grand social experiment of creating a new branch of human society on another planetary surface.
+
 
 ## Webpage
 For a more detail description of this project, see our project website at at https://mars-sim.github.io/
@@ -63,16 +68,17 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 * Linux (cannot input text in text fields)
 
 
-## Development Prerequisites
-If you would like to contribute to the project, see our [developer wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment). 
-We will help you and answer your questions in our new [Gitter chatroom](https://gitter.im/mokun/mars-sim). 
-
-
-## Java Environment Setup
-* Windows
+## OS Environment Setup
+* Requires Java 8u77 or above
+* For Windows OS, may need to manually set up the following : 
   - Edit the `JAVA_HOME` and `PATH` in System's Environment Variables in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_144` or `C:\Program Files\Java\jdk1.8.0_144`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`          
+
+
+## Development Prerequisites
+If you would like to contribute to the project, see our [developer wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment). 
+We will help you and answer your questions in our new [Gitter chatroom](https://gitter.im/mokun/mars-sim). 
 
 
 ## Official Codebase

@@ -289,7 +289,7 @@ extends TabPanel {
 			add(mainPanel);
 
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-			lastLabel = new JLabel("Last Completed: " + lastCompletedCache + " Sols", JLabel.LEFT);
+			lastLabel = new JLabel("Last completed : " + lastCompletedCache + " sols ago", JLabel.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);
 
 			// Prepare progress bar panel.
@@ -340,7 +340,7 @@ extends TabPanel {
 			int lastCompleted = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			if (lastCompleted != lastCompletedCache) {
 				lastCompletedCache = lastCompleted;
-				lastLabel.setText("Last Completed: " + lastCompletedCache + " Sols");
+				lastLabel.setText("Last completed : " + lastCompletedCache + " sols ago");
 			}
 
 			Map<Part, Integer> parts = manager.getMaintenanceParts();

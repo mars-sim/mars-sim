@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4157) - 2017-09-22
+## v3.1.0-Preview 9 (build 4159) - 2017-09-29
 
 
 ### KNOWN LIMITATIONS :
@@ -49,7 +49,7 @@ https://github.com/mars-sim/mars-sim
 
 14. Shrink down 30% the file size of a saved sim.
 
-15. Add basic thirst modeling.
+15. Add thirst indicator and track if a person is dehydrated.
 
 16. Add ability for settlers to tag one's own EVA suit(s).
 

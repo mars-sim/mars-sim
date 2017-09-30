@@ -118,9 +118,21 @@ LocalBoundedObject, InsidePathLocation {
 	 * The thickness of the Aluminum wall of a building in meter.
 	 * Typically between 10^-5 (.00001) and 10^-2 (.01) [in m]
 	 */
-	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; //
+	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254;
+	
+	// inflatable greenhouse : 4.815E-4 or 0.0004815
+	// large greenhouse : 9.63E-4 or 0.000963
+	
 	/** The thickness of the wall of a greenhouse building in meter */
-	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211; 
+	public static double wall_thickness_inflatable;//= 0.0000211; 
+	/** The safety factor when determining the wall/canopy thickness for an inflatable greenhouse. */
+	private static double safety_factor = 1.5D;
+	/** The design pressure when determining the wall/canopy thickness for an inflatable greenhouse. */
+	private static double design_pressure = 14.7 - 4; // [in psi]
+	/** The diameter of the canopy thickness for an inflatable greenhouse. */
+	private static double diameter;
+	/** The tensile strength of the composite material when determining the wall/canopy thickness for an inflatable greenhouse. */
+	private static double kevlar_tensile_strength = 100000; // [in psi] assume kevlar 49/epoxy
 
 	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
 	
@@ -196,13 +208,15 @@ LocalBoundedObject, InsidePathLocation {
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
-
+	private static Malfunction mal_meteor;
+	
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
 	private DecimalFormat fmt = new DecimalFormat("###.####");
 
-
+	
+	
 	/** Constructor 1.
 	 * Constructs a Building object.
 	 * @param template the building template.
@@ -318,6 +332,25 @@ LocalBoundedObject, InsidePathLocation {
 			b_inv.addGeneralCapacity(100_000);
 		}
 */
+		
+
+		if (buildingType.toLowerCase().contains("greenhouse")) {
+			
+			if (buildingType.equalsIgnoreCase("inflatable greenhouse"))	
+				diameter = 6;
+			else if (buildingType.equalsIgnoreCase("inground greenhouse"))	
+				diameter = 5;
+			else if (buildingType.equalsIgnoreCase("large greenhouse"))	
+				diameter = 12;
+			
+			wall_thickness_inflatable = diameter * safety_factor * design_pressure  
+											/ ( 2 * kevlar_tensile_strength);
+			//System.out.println("wall_thickness_inflatable : " + wall_thickness_inflatable);
+			// inflatable greenhouse : 4.815E-4 or 0.0004815
+			// large greenhouse : 9.63E-4 or 0.000963
+		}
+		
+		
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
@@ -1283,36 +1316,33 @@ LocalBoundedObject, InsidePathLocation {
 
 				double wallThickness = 0;
 
-				if (this.getBuildingType().toLowerCase().contains("greenhouse"))
+				if (buildingType.toLowerCase().contains("greenhouse"))
 					// if it's a greenhouse
-					wallThickness = WALL_THICKNESS_INFLATABLE;
+					wallThickness = wall_thickness_inflatable;
 				else
 					wallThickness = WALL_THICKNESS_ALUMINUM;
 
-				//System.out.println(getNickName() + "'s penetrated_length : " + penetrated_length);
-				//System.out.println(getNickName() + "'s WALL_THICKNESS_INFLATABLE : " + WALL_THICKNESS_INFLATABLE);
-				//System.out.println(getNickName() + "'s WALL_THICKNESS_ALUMINUM : " + WALL_THICKNESS_ALUMINUM);
-
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
-
-		        	Malfunction meteor = MalfunctionFactory.getMeteoriteImpactMalfunction(
+					if (mal_meteor == null)
+						mal_meteor = MalfunctionFactory.getMeteoriteImpactMalfunction(
 		        			MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 
 		        	// Simulate the meteorite impact as a malfunction event for now
 					try {
-						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, meteor);
+						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, mal_meteor);
 					}
 					catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
 
-					HistoricalEvent newEvent = new MalfunctionEvent(this, meteor, false);
+					HistoricalEvent newEvent = new MalfunctionEvent(this, mal_meteor, false);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 					
 					//check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
-						if (RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
+						if (person.getBuildingLocation() == this 
+								&& RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
 
 							// TODO: someone got hurt, declare medical emergency
 							// TODO: delineate the accidents from those listed in malfunction.xml
@@ -1327,9 +1357,9 @@ LocalBoundedObject, InsidePathLocation {
 
 							logger.info(person.getName() + " witnessed the latest meteorite impact in " + this + " at " + settlement);
 						}
-						else {
+						//else {
 							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
-						}
+						//}
 					}
 				}
 			}

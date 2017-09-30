@@ -263,12 +263,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>jide-oss</artifactId>
 			<version>3.6.18</version>
 		</dependency>
-<!-- 		<dependency>
+ 		<dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</artifactId>
 		    <version>8.9</version>
 		</dependency>
--->
+		<!--dependency>
+		  <groupId>de.jensd</groupId>
+		  <artifactId>fontawesomefx-commons</artifactId>
+		  <version>8.15</version>
+		</dependency-->
 	    <!-- https://github.com/TestFX/TestFX-->
 	    <!-- https://mvnrepository.com/artifact/org.testfx/testfx-junit -->
 	    <!-- <dependency>
@@ -506,11 +510,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		flow : 97 KB
 		core : 37 KB 
 		me.tatarka.retrolambda 3.6.1 : -->
-		<dependency>
+		<!-- dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</artifactId>
 		    <version>8.0.13</version>
-		</dependency>
+		</dependency-->
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>datafx</artifactId>
@@ -739,6 +743,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+  		<repository>
+	        <id>jerady</id>
+	        <url>https://dl.bintray.com/jerady/maven/</url>
+	    </repository>     
 	    <repository>
 	    <!-- jcenter required by ikonli-javafx -->
 	        <id>central</id>

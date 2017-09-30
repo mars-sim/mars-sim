@@ -839,7 +839,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
-							ssm.select(MainScene.MAIN_TAB);//.RESUPPLY_TAB);
+							ssm.select(MainScene.MAIN_TAB);
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
 
