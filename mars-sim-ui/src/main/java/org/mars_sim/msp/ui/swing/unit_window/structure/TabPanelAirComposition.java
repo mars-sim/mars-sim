@@ -11,12 +11,14 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,6 +37,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -53,6 +56,7 @@ extends TabPanel {
 
 	// Data cache
 	private int numBuildingsCache;
+	
 	private double o2Cache, cO2Cache, n2Cache, h2OCache, arCache, totalPressureCache, averageTemperatureCache;
 
 	private List<Building> buildingsCache;
@@ -61,7 +65,8 @@ extends TabPanel {
 
 	private JTable table ;
 
-	private JRadioButton percent_btn, pressure_btn, mass_btn;//, moles_btn, temperature_btn;
+	private JRadioButton percent_btn, mass_btn;//, moles_btn, temperature_btn;
+	private JRadioButton kPa_btn, atm_btn, psi_btn, mb_btn;
 	
 	private JScrollPane scrollPane;
 	
@@ -100,95 +105,107 @@ extends TabPanel {
 		buildingsCache = manager.getBuildingsWithLifeSupport();
 		numBuildingsCache = buildingsCache.size();
 
-		// Prepare heating System label panel.
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(labelPanel);
+		// Prepare label panel.
+		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(titlePanel);
 
-		JLabel label = new JLabel(Msg.getString("TabPanelAirComposition.title"), JLabel.CENTER); //$NON-NLS-1$
-		label.setFont(new Font("Serif", Font.BOLD, 16));
-		labelPanel.add(label);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelAirComposition.title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titlePanel.add(titleLabel);
 
-		// Prepare  info panel.
-		JPanel ptPanel = new JPanel(new SpringLayout());
-		//ptPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(ptPanel);
+		// Prepare info panel.
+		JPanel topPanel = new JPanel(new SpringLayout());
+		//topPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(topPanel);
 
-		JLabel t = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), JLabel.RIGHT);
-		ptPanel.add(t);
+		JLabel t_label = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), JLabel.RIGHT);
+		topPanel.add(t_label);
 		averageTemperatureCache = settlement.getTemperature();
 		averageTemperatureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", fmt2.format(averageTemperatureCache)), JLabel.LEFT); //$NON-NLS-1$
-		ptPanel.add(averageTemperatureLabel);
+		topPanel.add(averageTemperatureLabel);
 		
-		JLabel p = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.title"), JLabel.RIGHT);
-		ptPanel.add(p);
+		JLabel p_label = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.title"), JLabel.RIGHT);
+		topPanel.add(p_label);
 		totalPressureCache = settlement.getAirPressure();
 		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure", fmt2.format(totalPressureCache)), JLabel.LEFT); //$NON-NLS-1$
-		ptPanel.add(totalPressureLabel);
+		topPanel.add(totalPressureLabel);
 		
 		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(ptPanel,
+		SpringUtilities.makeCompactGrid(topPanel,
 		                                2, 2, //rows, cols
 		                                5, 5,        //initX, initY
 		                                10, 1);       //xPad, yPad
 		
+		JPanel gasesPanel = new JPanel(new GridLayout(2,1));
+		gasesPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(gasesPanel); 
+		
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
-		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelAirComposition.label"), JLabel.CENTER);
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titlePanel.add(titleLabel);
-		topContentPanel.add(titlePanel); //$NON-NLS-1$
+		JPanel gasTitle = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JLabel gasLabel = new JLabel(Msg.getString("TabPanelAirComposition.label"), JLabel.CENTER);
+		gasLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		gasTitle.add(gasLabel);
+		gasesPanel.add(gasTitle);
 
-		JPanel infoPanel = new JPanel(new SpringLayout());
-		//infoPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(infoPanel);
+		JPanel gasPanel = new JPanel(new SpringLayout());
+		//gasPanel.setBorder(new MarsPanelBorder());
+		gasesPanel.add(gasPanel);
 
 		JLabel co2 = new JLabel(Msg.getString("TabPanelAirComposition.cO2.title"), JLabel.RIGHT);
-		infoPanel.add(co2);
+		gasPanel.add(co2);
 		cO2Cache = getOverallComposition(0);
 		cO2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt3.format(cO2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
-		infoPanel.add(cO2Label);
+		gasPanel.add(cO2Label);
 
 		JLabel ar = new JLabel(Msg.getString("TabPanelAirComposition.ar.title"), JLabel.RIGHT);
-		infoPanel.add(ar);
+		gasPanel.add(ar);
 		arCache = getOverallComposition(1);
 		arLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(arCache))+"   ", JLabel.LEFT); //$NON-NLS-1$
-		infoPanel.add(arLabel);
+		gasPanel.add(arLabel);
 		
 		JLabel n2 = new JLabel(Msg.getString("TabPanelAirComposition.n2.title"), JLabel.RIGHT);
-		infoPanel.add(n2);
+		gasPanel.add(n2);
 		n2Cache = getOverallComposition(2);
 		n2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt1.format(n2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
-		infoPanel.add(n2Label);
+		gasPanel.add(n2Label);
 
 		JLabel o2 = new JLabel(Msg.getString("TabPanelAirComposition.o2.title"), JLabel.RIGHT);
-		infoPanel.add(o2);
+		gasPanel.add(o2);
 		o2Cache = getOverallComposition(3);
 		o2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(o2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
-		infoPanel.add(o2Label);
+		gasPanel.add(o2Label);
 
 		JLabel h2O = new JLabel(Msg.getString("TabPanelAirComposition.h2O.title"), JLabel.RIGHT);
-		infoPanel.add(h2O);
+		gasPanel.add(h2O);
 		h2OCache = getOverallComposition(4);
 		h2OLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(h2OCache))+"   ", JLabel.LEFT); //$NON-NLS-1$
-		infoPanel.add(h2OLabel);
-		infoPanel.add(new JLabel(""));
-		infoPanel.add(new JLabel(""));
+		gasPanel.add(h2OLabel);
+		gasPanel.add(new JLabel(""));
+		gasPanel.add(new JLabel(""));
 		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(infoPanel,
+		SpringUtilities.makeCompactGrid(gasPanel,
 		                                2, 6, //rows, cols
-		                                5, 5,        //initX, initY
+		                                70, 1,        //initX, initY
 		                                10, 1);       //xPad, yPad
 		
 		// Create override check box panel.
-		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(radioPane, BorderLayout.SOUTH);
 		
 	    percent_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.percent")); //$NON-NLS-1$
 	    percent_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.percent.tooltip")); //$NON-NLS-1$
-	    pressure_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.pressure")); //$NON-NLS-1$
-	    pressure_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.pressure.tooltip")); //$NON-NLS-1$
 	    mass_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mass")); //$NON-NLS-1$
 	    mass_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.mass.tooltip")); //$NON-NLS-1$
+   
+	    kPa_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.kPa")); //$NON-NLS-1$
+	    kPa_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.kPa.tooltip")); //$NON-NLS-1$
+	    atm_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.atm")); //$NON-NLS-1$
+	    atm_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.atm.tooltip")); //$NON-NLS-1$
+	    psi_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.psi")); //$NON-NLS-1$
+	    psi_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.psi.tooltip")); //$NON-NLS-1$
+	    mb_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mb")); //$NON-NLS-1$
+	    mb_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.mb.tooltip")); //$NON-NLS-1$
+
 	    //moles_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.moles")); //$NON-NLS-1$
 	    //moles_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.moles.tooltip")); //$NON-NLS-1$
 	    //temperature_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.temperature")); //$NON-NLS-1$
@@ -199,7 +216,22 @@ extends TabPanel {
 				tableModel.update();
 			}
 		});
-	    pressure_btn.addActionListener(new ActionListener() {
+	    kPa_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tableModel.update();
+			}
+		});
+	    atm_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tableModel.update();
+			}
+		});
+	    mb_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tableModel.update();
+			}
+		});
+	    psi_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				tableModel.update();
 			}
@@ -222,15 +254,35 @@ extends TabPanel {
 		});
 */	    
 	    percent_btn.setSelected(true);
-		radioPane.add(percent_btn);
-		radioPane.add(pressure_btn);
-		radioPane.add(mass_btn);
+	    
+		JPanel vol_p = new JPanel(new FlowLayout());
+		vol_p.setBorder(BorderFactory.createTitledBorder("Volume"));
+		vol_p.add(percent_btn);
+		radioPane.add(vol_p);
+
+		JPanel mass_p = new JPanel(new FlowLayout());
+		mass_p.setBorder(BorderFactory.createTitledBorder("Mass"));
+		mass_p.add(mass_btn);
+		radioPane.add(mass_p);
+
 		//radioPane.add(moles_btn);
 		//radioPane.add(temperature_btn);
 		
+		JPanel pressure_p = new JPanel(new FlowLayout());
+		pressure_p.setBorder(BorderFactory.createTitledBorder("Pressure"));
+		pressure_p.add(kPa_btn);
+		pressure_p.add(atm_btn);
+		pressure_p.add(mb_btn);
+		pressure_p.add(psi_btn);
+		radioPane.add(pressure_p);
+		
+		
 	    bG = new ButtonGroup();
 	    bG.add(percent_btn);
-	    bG.add(pressure_btn);
+	    bG.add(kPa_btn);
+	    bG.add(atm_btn);
+	    bG.add(mb_btn);
+	    bG.add(psi_btn);
 	    bG.add(mass_btn);		
 	   // bG.add(moles_btn);
 	    //bG.add(temperature_btn);
@@ -244,20 +296,20 @@ extends TabPanel {
 
 		tableModel = new TableModel(settlement);
 		table = new ZebraJTable(tableModel);
-	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
+	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
 
 		table.setCellSelectionEnabled(false);
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		table.getColumnModel().getColumn(0).setPreferredWidth(55);
-		table.getColumnModel().getColumn(1).setPreferredWidth(35);
-		table.getColumnModel().getColumn(2).setPreferredWidth(25);
+		table.getColumnModel().getColumn(0).setPreferredWidth(60);
+		table.getColumnModel().getColumn(1).setPreferredWidth(25);
+		table.getColumnModel().getColumn(2).setPreferredWidth(20);
 		table.getColumnModel().getColumn(3).setPreferredWidth(20);
 		table.getColumnModel().getColumn(4).setPreferredWidth(20);
 		table.getColumnModel().getColumn(5).setPreferredWidth(20);
 		table.getColumnModel().getColumn(6).setPreferredWidth(20);
 
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.setAutoCreateRowSorter(true);
 		//if (!MainScene.OS.equals("linux")) {
@@ -305,10 +357,25 @@ extends TabPanel {
 			}			
 			return String.format("%1.3f", v/air.getTotalPressure()[row] *100D);
 		}
-		else if (pressure_btn.isSelected()) {
+		else if (kPa_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%1.2f", v * CompositionOfAir.kPa_per_atm);
+			return String.format("%2.2f", v * CompositionOfAir.kPa_per_atm);
+		}
+		else if (atm_btn.isSelected()) {
+			v = air.getTotalPressure()[row];
+			// convert from atm to kPascal
+			return String.format("%1.3f", v);
+		}
+		else if (mb_btn.isSelected()) {
+			v = air.getTotalPressure()[row];
+			// convert from atm to kPascal
+			return String.format("%3.1f", v * CompositionOfAir.mb_per_atm);
+		}
+		else if (psi_btn.isSelected()) {
+			v = air.getTotalPressure()[row];
+			// convert from atm to kPascal
+			return String.format("%2.1f", v * CompositionOfAir.psi_per_atm);
 		}
 		//else if (moles_btn.isSelected()) {
 		//	v = air.getTotalMoles()[row];
@@ -509,8 +576,14 @@ extends TabPanel {
 					return "N/A";
 				else if (percent_btn.isSelected())
 					return String.format("%1.3f", amt); 
-				else if (pressure_btn.isSelected())
-					return String.format("%1.2f", amt); 
+				else if (kPa_btn.isSelected())
+					return String.format("%2.2f", amt); 
+				else if (atm_btn.isSelected())
+					return String.format("%1.3f", amt); 
+				else if (mb_btn.isSelected())
+					return String.format("%3.1f", amt); 
+				else if (psi_btn.isSelected())
+					return String.format("%2.1f", amt); 
 				//else if (moles_btn.isSelected())
 				//	return String.format("%1.1e", amt).replaceAll("e+0", "e"); 
 				else if (mass_btn.isSelected())
@@ -533,8 +606,14 @@ extends TabPanel {
 			//double[][] value = new double[CompositionOfAir.numGases][size];
 			if (percent_btn.isSelected())
 				return air.getPercentComposition()[gas][id];
-			else if (pressure_btn.isSelected())
+			else if (kPa_btn.isSelected())
 				return air.getPartialPressure()[gas][id] * CompositionOfAir.kPa_per_atm;
+			else if (atm_btn.isSelected())
+				return air.getPartialPressure()[gas][id];
+			else if (mb_btn.isSelected())
+				return air.getPartialPressure()[gas][id] * CompositionOfAir.mb_per_atm;
+			else if (psi_btn.isSelected())
+				return air.getPartialPressure()[gas][id] * CompositionOfAir.psi_per_atm;
 			//else if (temperature_btn.isSelected())
 			//	return air.getTemperature()[gas][id] - CompositionOfAir.C_TO_K;
 			//else if (moles_btn.isSelected())

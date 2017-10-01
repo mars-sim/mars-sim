@@ -67,7 +67,9 @@ public class CompositionOfAir implements Serializable {
 
     public static final double psi_per_atm = 14.7;  
     public static final double mmHg_per_atm = 760;  
-    public static final double kPa_per_atm = 101.325;  
+    public static final double kPa_per_atm = 101.32501;  
+    public static final double mb_per_atm = 1013.2501;  
+
     // The standard atmosphere (i.e. 1 atm) = 101325 Pa or 1 kPa = 0.00986923267 atm
     
 	// Note that the fractional/partial pressure below are added up to the value of 1 for

@@ -73,6 +73,8 @@ implements ClockListener {
 	/** Last Y mouse drag position. */
 	private int yLast;
 
+	private int size;
+	
 	private boolean showBuildingLabels;
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
@@ -155,6 +157,8 @@ implements ClockListener {
 		mapLayers.add(new LabelMapLayer(this));
 		mapLayers.add(new DayNightMapLayer(this));
 		
+		size = mapLayers.size();
+		
 		//SwingUtilities.invokeLater(() -> {
 			if (desktop.getMainScene() == null)
 				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
@@ -180,9 +184,10 @@ implements ClockListener {
 		this.building = building;
 
 		mapLayers = new ArrayList<SettlementMapLayer>(1);
-		StructureMapLayer layer = new StructureMapLayer(this);
-		mapLayers.add(layer);
+		mapLayers.add(new StructureMapLayer(this));
 
+		size = mapLayers.size();
+		
 		// Set preferred size.
 		setPreferredSize(new Dimension(100, 100));
 
@@ -1032,7 +1037,7 @@ implements ClockListener {
 			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
 */
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < size; i++) {
 			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
 		
