@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
@@ -101,8 +102,9 @@ LocalBoundedObject, InsidePathLocation {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
+	public static final double HEIGHT = 2.5; // assume an uniform height of 2.5 meters in all buildings
 	/** The volume of an airlock in cubic meters*/
-	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
+	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; //3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
 	public static final double kW_EVA_HEATER = .5D; //
 	// Assuming 20% chance for each person to witness or be conscious of the meteorite impact in an affected building
@@ -905,6 +907,14 @@ LocalBoundedObject, InsidePathLocation {
 		return floorArea;
 	}
 
+	/** 
+	 * Returns the volume of the building in liter
+	 * @return volume in liter 
+	 */
+	public double getVolumeInLiter() {
+		return floorArea * HEIGHT * 1000; // 1 Cubic Meter = 1,000 Liters
+	}
+	
 	@Override
 	public double getXLocation() {
 		return xLoc;

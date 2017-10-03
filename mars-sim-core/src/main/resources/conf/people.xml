@@ -122,8 +122,9 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<decompression-time value="10.0" />
 	
 	<!-- Minimum air pressure (kPa) a person can withstand without harm -->
-	<!-- Default: 25.33125 -->
-	<min-air-pressure value="25.33125" />
+	<!-- At least 170 mb, "How To Live On Mars" per Zubrin, P.91 -->
+	<!-- Default: 16.7-->
+	<min-air-pressure value="16.7" />
 
 	<!-- Minimum temperature (degrees celsius) a person can withstand without harm -->
 	<!-- Default: 0 degrees celsius -->

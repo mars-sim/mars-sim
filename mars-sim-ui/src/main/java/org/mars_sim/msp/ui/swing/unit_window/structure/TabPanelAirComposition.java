@@ -26,7 +26,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -39,7 +38,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -256,14 +254,10 @@ extends TabPanel {
 	    percent_btn.setSelected(true);
 	    
 		JPanel vol_p = new JPanel(new FlowLayout());
-		vol_p.setBorder(BorderFactory.createTitledBorder("Volume"));
+		vol_p.setSize(60, 40);
+		vol_p.setBorder(BorderFactory.createTitledBorder("Composition"));
 		vol_p.add(percent_btn);
 		radioPane.add(vol_p);
-
-		JPanel mass_p = new JPanel(new FlowLayout());
-		mass_p.setBorder(BorderFactory.createTitledBorder("Mass"));
-		mass_p.add(mass_btn);
-		radioPane.add(mass_p);
 
 		//radioPane.add(moles_btn);
 		//radioPane.add(temperature_btn);
@@ -276,6 +270,11 @@ extends TabPanel {
 		pressure_p.add(psi_btn);
 		radioPane.add(pressure_p);
 		
+		JPanel mass_p = new JPanel(new FlowLayout());
+		mass_p.setBorder(BorderFactory.createTitledBorder("Mass"));
+		mass_p.add(mass_btn);
+		radioPane.add(mass_p);
+
 		
 	    bG = new ButtonGroup();
 	    bG.add(percent_btn);
@@ -360,7 +359,7 @@ extends TabPanel {
 		else if (kPa_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%2.2f", v * CompositionOfAir.kPa_per_atm);
+			return String.format("%2.2f", v * CompositionOfAir.KPA_PER_ATM);
 		}
 		else if (atm_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
@@ -370,12 +369,12 @@ extends TabPanel {
 		else if (mb_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%3.1f", v * CompositionOfAir.mb_per_atm);
+			return String.format("%3.1f", v * CompositionOfAir.MB_PER_ATM);
 		}
 		else if (psi_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%2.1f", v * CompositionOfAir.psi_per_atm);
+			return String.format("%2.1f", v * CompositionOfAir.PSI_PER_ATM);
 		}
 		//else if (moles_btn.isSelected()) {
 		//	v = air.getTotalMoles()[row];
@@ -607,13 +606,13 @@ extends TabPanel {
 			if (percent_btn.isSelected())
 				return air.getPercentComposition()[gas][id];
 			else if (kPa_btn.isSelected())
-				return air.getPartialPressure()[gas][id] * CompositionOfAir.kPa_per_atm;
+				return air.getPartialPressure()[gas][id] * CompositionOfAir.KPA_PER_ATM;
 			else if (atm_btn.isSelected())
 				return air.getPartialPressure()[gas][id];
 			else if (mb_btn.isSelected())
-				return air.getPartialPressure()[gas][id] * CompositionOfAir.mb_per_atm;
+				return air.getPartialPressure()[gas][id] * CompositionOfAir.MB_PER_ATM;
 			else if (psi_btn.isSelected())
-				return air.getPartialPressure()[gas][id] * CompositionOfAir.psi_per_atm;
+				return air.getPartialPressure()[gas][id] * CompositionOfAir.PSI_PER_ATM;
 			//else if (temperature_btn.isSelected())
 			//	return air.getTemperature()[gas][id] - CompositionOfAir.C_TO_K;
 			//else if (moles_btn.isSelected())

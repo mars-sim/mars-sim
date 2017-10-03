@@ -35,6 +35,11 @@ public class BuildingAirlock extends Airlock {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
+	public static final double HEIGHT = 2; // assume an uniform height of 2 meters in all airlocks
+	
+	/** The volume of an airlock in cubic meters. */
+	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
+	
     // Data members.
     private Building building; // The building this airlock is for.
     private Point2D airlockInsidePos;

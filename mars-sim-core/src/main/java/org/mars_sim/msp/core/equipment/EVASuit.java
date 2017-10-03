@@ -15,13 +15,17 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 
@@ -52,8 +56,14 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	private static final double CO2_CAPACITY = 1D;
 	/** Water capacity (kg.). */
 	private static final double WATER_CAPACITY = 4D;
-	/** Normal air pressure (Pa). */
-	private static final double NORMAL_AIR_PRESSURE = 101325D/3;
+	/** Normal air pressure (Pa) inside EVA suit is around 20 kPa. */
+	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_IN_KPA; //101325D;
+	// Ref : https://en.wikipedia.org/wiki/Space_suit
+	// Generally, to supply enough oxygen for respiration, a space suit using pure oxygen must have a pressure of about 
+	// 32.4 kPa (240 Torr; 4.7 psi), equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen in the Earth's
+	// atmosphere at sea level, plus 5.3 kPa (40 Torr; 0.77 psi) CO2 and 6.3 kPa (47 Torr; 0.91 psi) water vapor 
+	//pressure, both of which must be subtracted from the alveolar pressure to get alveolar oxygen partial pressure 
+	// in 100% oxygen atmospheres, by the alveolar gas equation.
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** 334 Sols (1/2 orbit). */
@@ -62,6 +72,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	private static final double MAINTENANCE_TIME = 20D;
 
 	// Data members
+	
+	private double minimum_air_pressure;
+	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 	private static Weather weather ;
@@ -93,6 +106,10 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		getInventory().addAmountResourceTypeCapacity(oxygenAR, OXYGEN_CAPACITY);
 		getInventory().addAmountResourceTypeCapacity(waterAR, WATER_CAPACITY);
 		getInventory().addAmountResourceTypeCapacity(carbonDioxideAR, CO2_CAPACITY);
+		
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();		
+		minimum_air_pressure = personConfig.getMinAirPressure();
+
 	}
 
 	/**
@@ -134,7 +151,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 			}
 
 			double p = getAirPressure();
-			if (p > NORMAL_AIR_PRESSURE * 1.3 || p < NORMAL_AIR_PRESSURE * .7) {
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) { 
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 						this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D, null);
 				return false;

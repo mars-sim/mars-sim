@@ -65,7 +65,6 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -92,7 +91,7 @@ implements Serializable, LifeSupportType, Objective {
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	/** Normal air pressure [in kPa] */
-	private static final double NORMAL_AIR_PRESSURE = 101.325D;
+	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_IN_KPA;//101.325D;
 	
 	/** Normal temperature (celsius) */
 	//private static final double NORMAL_TEMP = 22.5D;
@@ -122,7 +121,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	public static final double SAFETY_TEMPERATURE = 7;
 	
-	public static final double SAFETY_PRESSURE = 20;
+	//public static final double SAFETY_PRESSURE = 20;
 	
 	public static double water_consumption;
 
@@ -754,7 +753,8 @@ implements Serializable, LifeSupportType, Objective {
 			//if (p <= minimum_air_pressure) {// 25331.25)// NORMAL_AIR_PRESSURE) ?
 			//System.out.println("life_support_req[0][0] is " + life_support_req[0][0]);
 			//System.out.println("life_support_req[1][0] is " + life_support_req[1][0]);
-			if (p < life_support_value[0][0] - SAFETY_PRESSURE || p > life_support_value[1][0] + SAFETY_PRESSURE) {	
+			//if (p < life_support_value[0][0] - SAFETY_PRESSURE || p > life_support_value[1][0] + SAFETY_PRESSURE) {	
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) { 	
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D + " kPa", null);
 				return false;
 			}
@@ -859,7 +859,7 @@ implements Serializable, LifeSupportType, Objective {
 			total += compositionOfAir.getTotalPressure()[id] ;
 		}
 		// convert from atm to kPascal
-		return total * CompositionOfAir.kPa_per_atm / size;
+		return total * CompositionOfAir.KPA_PER_ATM / size;
 /*		
 		double total_area = 0, total_p_area = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();

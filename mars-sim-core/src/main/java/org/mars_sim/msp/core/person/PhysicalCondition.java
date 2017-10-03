@@ -93,8 +93,9 @@ implements Serializable {
     public static final double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
     //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
     public static final double ENERGY_FACTOR = 0.8D;
-
-
+    /** The maximum air pressure a person can live without harm */
+    public static final double MAXIMUM_AIR_PRESSURE = 680D; // in kPa // Assume 10,000 psi or 680 kPa time dependent and somewhat arbitrary
+    
  	private static double o2_consumption;
  	private static double h2o_consumption;
  	private static double minimum_air_pressure;
@@ -1336,6 +1337,10 @@ implements Serializable {
     Person getPerson() {
         return person;
     }
+    
+    //public double getMinAirPressure() {
+    //	return minimum_air_pressure;
+    //}
     
     /**
      * Prepare object for garbage collection.
