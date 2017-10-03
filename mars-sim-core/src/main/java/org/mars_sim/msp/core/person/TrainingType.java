@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TrainingType.java
- * @version 3.08 2015-05-22
+ * @version 3.1.0 2017-10-03
  * @author Manny Kung
  */
 

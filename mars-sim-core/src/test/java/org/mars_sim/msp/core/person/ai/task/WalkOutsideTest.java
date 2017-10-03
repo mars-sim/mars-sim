@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonBuilderImpl;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
@@ -68,7 +68,7 @@ extends TestCase {
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// 2017-04-11 Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
-								.setGender(PersonGender.MALE)
+								.setGender(GenderType.MALE)
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
@@ -143,7 +143,7 @@ extends TestCase {
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// 2017-04-11 Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
-								.setGender(PersonGender.MALE)
+								.setGender(GenderType.MALE)
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
@@ -250,7 +250,7 @@ extends TestCase {
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// 2017-04-11 Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
-								.setGender(PersonGender.MALE)
+								.setGender(GenderType.MALE)
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
@@ -337,7 +337,7 @@ extends TestCase {
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// 2017-04-11 Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
-								.setGender(PersonGender.MALE)
+								.setGender(GenderType.MALE)
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();

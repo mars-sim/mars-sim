@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlementUtil.java
- * @version 3.07 2015-01-21
+ * @version 3.1.0 2017-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;

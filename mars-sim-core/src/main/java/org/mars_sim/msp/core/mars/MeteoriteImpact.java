@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MeteoriteImpact.java
- * @version 3.08 2015-06-04
+ * MeteoriteImpactImpl.java
+ * @version 3.1.0 2017-10-03
  * @author Manny Kung
  */
 

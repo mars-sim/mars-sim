@@ -59,9 +59,10 @@ implements Serializable {
 	private static final double EMISSIVITY_INSULATED = 0.05 ;
 	private static final double STEFAN_BOLTZMANN_CONSTANT = 0.0000000567 ; // in W / (m^2 K^4)
 
-	private static final double INSULATION_BLANKET = 0.025;//100D; [in kW]
-	private static final double INSULATION_CANOPY =  0.0586;//200D; [in kW]
-	private static final double HALLWAY_INSULATION = 0.0125;//50D; [in kW]
+	private static final double LARGE_INSULATION_CANOPY = 0.2; // [in kW]
+	private static final double INSULATION_BLANKET = 0.1; // [in kW]
+	private static final double INSULATION_CANOPY =  0.125; // [in kW]
+	private static final double HALLWAY_INSULATION = 0.075; // [in kW]
 	
     // Thermostat's temperature allowance
     private static final double T_UPPER_SENSITIVITY = 1D;
@@ -326,18 +327,14 @@ implements Serializable {
 			//System.out.println( i + " : " + emissivity);
 			emissivityMap.put(i, emissivity);
 		}
-
-		
 	}
-
-
 
 	/**
      * Is this building a hallway or tunnel.
      * @return true or false
      */
     public boolean isHallway() {
-    	return buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel");
+    	return buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel");
     }
 
 	/**
@@ -345,7 +342,7 @@ implements Serializable {
      * @return true or false
      */
     public boolean isLargeGreenhouse() {
-		return buildingType.toLowerCase().contains("large greenhouse");
+		return buildingType.equalsIgnoreCase("large greenhouse");
     }
     
 	/**
@@ -361,7 +358,7 @@ implements Serializable {
      * @return true or false
      */
     public boolean isLoadingDockGarage() {
-		return buildingType.toLowerCase().equalsIgnoreCase("loading dock garage");
+		return buildingType.equalsIgnoreCase("loading dock garage");
     }
 
 	/**
@@ -369,7 +366,7 @@ implements Serializable {
      * @return true or false
      */
     public boolean isGarage() {
-		return buildingType.toLowerCase().equalsIgnoreCase("garage");
+		return buildingType.equalsIgnoreCase("garage");
     }
     
 	/**
@@ -482,61 +479,98 @@ implements Serializable {
 
 		if (isGreenhouse) {
 			solarHeatGain +=  I * transmittance_greenhouse * floorArea;
-			
-			if (I < 25) {
-				// whenever the sun goes down, put on the canopy over the inflatable ceiling to prevent heat loss
-				if (t_in_C <= 20)
-					solarHeatGain += .5 * INSULATION_CANOPY; 
-	
-				else if (t_in_C <= 15)
-					solarHeatGain += .75 * INSULATION_CANOPY; 
-				
-				else if (t_in_C <= 10)
-					solarHeatGain += INSULATION_CANOPY; 		
-			}
 		}
 		
 		else if (isHallway) {
-			solarHeatGain +=  I * transmittance_window * 4 * .5 * .5;
-			
-			if (I < 25) {
-				if (t_in_C < 15) 
-					solarHeatGain += .5 * HALLWAY_INSULATION ; 
-	
-				else if (t_in_C < 10)
-					solarHeatGain += .75* HALLWAY_INSULATION ; 
-	
-				else if (t_in_C < 5)
-					solarHeatGain += HALLWAY_INSULATION ; 
-			}
+			solarHeatGain +=  I * transmittance_window * floorArea / 2 * .5 * .5;
 		}
 		
 		else {
 			solarHeatGain +=  I * transmittance_window * 4 * .5 * .5;
-			
-			if (I < 25) {
-				if (t_in_C < 15) 
-					solarHeatGain += .5 * INSULATION_BLANKET ; 
-	
-				else if (t_in_C < 10)
-					solarHeatGain += .75* INSULATION_BLANKET ; 
-	
-				else if (t_in_C < 5)
-					solarHeatGain += INSULATION_BLANKET ; 
-			}
-			//System.out.println(building.getNickName() + " is using insulation blanket around windows to regain " 
-			//		+ Math.round(solarHeatGain*100D)/100D + " kW of heat.");
-			
 		}		
 		
+		// (1e) CALCULATE INSULATION HEAT GAIN
+		double canopyHeatGain = 0;
+	
+		if (I < 25) {
+				
+			if (isLargeGreenhouse()) {
+				canopyHeatGain = LARGE_INSULATION_CANOPY;
+			}
+			
+			else if (isGreenhouse) {
+				canopyHeatGain = INSULATION_CANOPY;
+			}
+			
+			else if (isHallway)  {
+				canopyHeatGain = HALLWAY_INSULATION;
+			}
+			
+			else {
+				canopyHeatGain = INSULATION_BLANKET;
+			}
+		
+			// whenever the sun goes down, put on the canopy over the inflatable ceiling to prevent heat loss
+			if (isGreenhouse) {	
+				if (t_in_C <= 23.25)
+					canopyHeatGain *= .1; 
+				else if (t_in_C <= 22.25)
+					canopyHeatGain *= .2; 				
+			}
+
+			if (t_in_C <= 21.25)
+				canopyHeatGain *= .3; 				
+
+			else if (t_in_C <= 20.25)
+				canopyHeatGain *= .35; 
+
+			else if (t_in_C <= 19.25)
+				canopyHeatGain *= .4; 
+
+			else if (t_in_C <= 18.25)
+				canopyHeatGain *= .45; 
+
+			else if (t_in_C <= 17.25)
+				canopyHeatGain *= .5; 
+			
+			else if (t_in_C <= 16.25)
+				canopyHeatGain *= .55; 
+
+			else if (t_in_C <= 15.25)
+				canopyHeatGain *= .6; 
+
+			else if (t_in_C <= 14.25)
+				canopyHeatGain *= .65; 
+			
+			else if (t_in_C <= 13.25)
+				canopyHeatGain *= .7; 
+			
+			else if (t_in_C <= 12.25)
+				canopyHeatGain *= .75; 		
+
+			else if (t_in_C <= 11.25)
+				canopyHeatGain *= .8; 		
+
+			else if (t_in_C <= 10.25)
+				canopyHeatGain *= .85; 		
+
+			else if (t_in_C <= 9.25)
+				canopyHeatGain *= .9; 		
+
+			else if (t_in_C <= 8.25)
+				canopyHeatGain *= .95; 		
+
+			else if (t_in_C <= 7.25)
+				canopyHeatGain *= 1; 		
+
+		}
+			
 		//if (isGreenhouse && solarHeatGain > 0) 
 		//	System.out.println(building.getNickName() + "'s solarHeatGain : " 
 		//			+ Math.round(solarHeatGain*10_000D)/10_000D + " kW");
 		
-		// (1e) ADD HEAT GAIN BY EQUIPMENT
-		// see heatGainEqiupment below
-		
-		// (1f) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
+
+		// (1g) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
 		double lightingGain = 0;
 		
 		if (isGreenhouse) {
@@ -549,10 +583,12 @@ implements Serializable {
 			//if (isGreenhouse) System.out.println(building.getNickName() + "'s lightingGain : " + Math.round(lightingGain*10_000D)/10_000D + " kW");
 		}	
 		
-		// (1e) CALCULATE TOTAL HEAT GAIN 
-		double heatGain = heatGainFromEVAHeater + heatPumpedIn + solarHeatGain + lightingGain 
-				+ heatGainOccupants 
-				+ heatGainEqiupment; 		
+		// (1f) ADD HEAT GAIN BY EQUIPMENT
+		// see heatGainEqiupment below
+		
+		// (1h) CALCULATE TOTAL HEAT GAIN 
+		double heatGain = heatPumpedIn + heatGainOccupants + heatGainFromEVAHeater + solarHeatGain 
+				+ canopyHeatGain + lightingGain + heatGainEqiupment; 		
 		
 		//if (isGreenhouse && heatGain > 0) 
 		//	System.out.println(building.getNickName() + "'s heatGain : " 

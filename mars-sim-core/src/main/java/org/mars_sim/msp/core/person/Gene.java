@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Gene.java
- * @version 3.08 2016-01-12
+ * @version 3.1.0 2017-10-03
  * @author Manny Kung
  */
 

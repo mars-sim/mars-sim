@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-10-03
  * @author Scott Davis
  */
 
@@ -29,6 +28,9 @@ import java.util.logging.Logger;
  * A randomly generated mineral map of Mars.
  */
 public class RandomMineralMap implements Serializable, MineralMap {
+
+	/** default serial id.*/
+	private static final long serialVersionUID = 1L;
 
 	private static String CLASS_NAME = 
 		"org.mars_sim.msp.simulation.mars.RandomMineralMap";

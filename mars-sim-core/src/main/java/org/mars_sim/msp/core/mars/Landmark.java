@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Landmark.java
- * @version 3.07 2014-11-28
+ * @version 3.1.0 2017-10-03
  * @author Dalen Kruse
  */
 

@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.reportingAuthority;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.medical.ComplaintType;
 
 public enum ReportingAuthorityType {
 

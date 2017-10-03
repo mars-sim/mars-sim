@@ -10,12 +10,7 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The Chatter class holds the comment of a settler 

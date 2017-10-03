@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LandmarkConfig.java
- * @version 3.07 2014-11-18
+ * @version 3.1.0 2017-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -20,6 +20,9 @@ import java.util.List;
  * get the information.
  */
 public class LandmarkConfig implements Serializable {
+	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     // Element names
     private static final String LANDMARK = "landmark";

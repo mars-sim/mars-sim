@@ -75,7 +75,6 @@ implements Serializable {
 	private static final String SETTLEMENT_NAME_LIST = "settlement-name-list";
 	private static final String SETTLEMENT_NAME = "settlement-name";
 	private static final String VALUE = "value";
-	//2016-08-23 Added sponsor
 	private static final String SPONSOR = "sponsor";
 	private static final String RESUPPLY = "resupply";
 	private static final String RESUPPLY_MISSION = "resupply-mission";
@@ -86,10 +85,6 @@ implements Serializable {
 	private static final String PART_PACKAGE = "part-package";
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
-
-	// 2015-10-03 Added MAX_MSD and MSD_NUMBER
-	//private static final String SPONSOR = "max-MSD";
-	//private static final String NAME = "number";
 
 	// Random value indicator.
 	public static final String RANDOM = "random";
@@ -122,9 +117,6 @@ implements Serializable {
 		settlementTemplates = new ArrayList<SettlementTemplate>();
 		initialSettlements = new ArrayList<InitialSettlement>();
 		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
-		//settlementNames = new ArrayList<String>();
-		//existingSettlements = new ArrayList<ExistingSettlement>();
-
 		//loadMissionControl(settlementDoc);
 		loadSettlementNames(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);

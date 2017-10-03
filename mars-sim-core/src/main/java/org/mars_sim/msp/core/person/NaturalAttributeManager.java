@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-10-03
  * @author Scott Davis
  */
 
@@ -59,10 +59,10 @@ implements Serializable {
 
 		// Adjust certain attributes reflective of differences between the genders.
 		// TODO: Do more research on this and cite references if possible.
-		if (person.getGender() == PersonGender.MALE) {
+		if (person.getGender() == GenderType.MALE) {
 			addAttributeModifier(NaturalAttribute.STRENGTH, 20);
 		}
-		else if (person.getGender() == PersonGender.FEMALE) {
+		else if (person.getGender() == GenderType.FEMALE) {
 			addAttributeModifier(NaturalAttribute.STRENGTH, -20);
 			addAttributeModifier(NaturalAttribute.ENDURANCE, 20);
 		}

@@ -22,6 +22,9 @@ import java.util.Map;
  */
 public class ExploredLocation implements Serializable {
 
+	/** default serial id.*/
+	private static final long serialVersionUID = 1L;
+
 	// Private members.
 	private Coordinates location;
 	private Map<String, Double> estimatedMineralConcentrations;

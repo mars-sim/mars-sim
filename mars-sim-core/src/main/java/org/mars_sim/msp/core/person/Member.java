@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Member implements Serializable {

@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 
 public interface PersonBuilder<T> {
 
-	public PersonBuilder<Person> setGender(PersonGender g);
+	public PersonBuilder<Person> setGender(GenderType g);
 
 	public PersonBuilder<Person> setName(String name);
 

@@ -12,8 +12,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;

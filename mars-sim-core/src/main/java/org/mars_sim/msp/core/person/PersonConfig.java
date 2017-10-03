@@ -17,10 +17,7 @@ import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Provides configuration information about people units.
@@ -566,19 +563,19 @@ implements Serializable {
 	/**
 	 * Gets the gender of a given person name.
 	 * @param name the name of the person
-	 * @return {@link PersonGender} the gender of the person name
+	 * @return {@link GenderType} the gender of the person name
 	 * @throws Exception if person names could not be found.
 	 */
 	@SuppressWarnings("unchecked")
-	public PersonGender getPersonGender(String name) {
-		PersonGender result = PersonGender.UNKNOWN;
+	public GenderType getPersonGender(String name) {
+		GenderType result = GenderType.UNKNOWN;
 
 		Element root = personDoc.getRootElement();
 		Element personNameList = root.getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
 		for (Element nameElement : personNames ) {
 			String personName = nameElement.getAttributeValue(VALUE);
-			if (personName.equals(name)) result = PersonGender.valueOfIgnoreCase(nameElement.getAttributeValue(GENDER));
+			if (personName.equals(name)) result = GenderType.valueOfIgnoreCase(nameElement.getAttributeValue(GENDER));
 		}
 
 		return result;
@@ -1063,14 +1060,14 @@ implements Serializable {
 	/**
 	 * Gets the configured person's gender.
 	 * @param index the person's index.
-	 * @return {@link PersonGender} or null if not found.
+	 * @return {@link GenderType} or null if not found.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public PersonGender getConfiguredPersonGender(int index, int crew_id) {
+	public GenderType getConfiguredPersonGender(int index, int crew_id) {
 		if (roster.get(crew_id).getTeam().get(index).getGender() != null)
-			return PersonGender.valueOfIgnoreCase(roster.get(crew_id).getTeam().get(index).getGender());//alphaCrewGender.get(index)) ;
+			return GenderType.valueOfIgnoreCase(roster.get(crew_id).getTeam().get(index).getGender());//alphaCrewGender.get(index)) ;
 		else
-			return PersonGender.valueOfIgnoreCase(getValueAsString(index,GENDER));
+			return GenderType.valueOfIgnoreCase(getValueAsString(index,GENDER));
 	}
 
 	/**

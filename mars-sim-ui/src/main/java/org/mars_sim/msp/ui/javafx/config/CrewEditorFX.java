@@ -70,7 +70,7 @@ import org.controlsfx.validation.Validator;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -597,7 +597,7 @@ public class CrewEditorFX {
 
 		String s[] = new String[SIZE_OF_CREW];
 		for (int j = 0; j < SIZE_OF_CREW; j++) {
-			PersonGender n = personConfig.getConfiguredPersonGender(j, ALPHA_CREW);
+			GenderType n = personConfig.getConfiguredPersonGender(j, ALPHA_CREW);
 			// convert MALE to M, FEMAL to F
 			s[j] = n.toString();
 			if (s[j].equals("MALE"))

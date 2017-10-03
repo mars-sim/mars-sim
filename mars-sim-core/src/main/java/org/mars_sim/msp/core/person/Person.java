@@ -111,7 +111,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String lastWord;
 	
 	/** The gender of the person (male or female). */
-	private PersonGender gender;
+	private GenderType gender;
 	/** The birth time of the person. */
 	private EarthClock birthTimeStamp;
 	/** The settlement the person is currently associated with. */
@@ -200,7 +200,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param name
 	 *            the person's name
 	 * @param gender
-	 *            {@link PersonGender} the person's gender
+	 *            {@link GenderType} the person's gender
 	 * @param country
 	 *            the person's country of origin
 	 * @param settlement
@@ -425,7 +425,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		double genetic_factor = .65;
 		double sex_factor = (AVERAGE_TALL_HEIGHT - AVERAGE_HEIGHT)/AVERAGE_HEIGHT; 
 		// 2017-04-11 Add Add arbitrary (US-based) sex and genetic factor
-		if (gender == PersonGender.MALE)
+		if (gender == GenderType.MALE)
 			height = Math.round((genetic_factor * dad_height + (1-genetic_factor) * mom_height * (1 + sex_factor))*100D)/100D;
 		else
 			height = Math.round(((1-genetic_factor) * dad_height + genetic_factor * mom_height * (1 - sex_factor))*100D)/100D;
@@ -463,7 +463,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		double sex_factor = (AVERAGE_HIGH_WEIGHT - AVERAGE_WEIGHT)/AVERAGE_WEIGHT; // for male
 		double height_factor = height/AVERAGE_HEIGHT;
 		// 2017-04-11 Add arbitrary (US-based) sex and genetic factor
-		if (gender == PersonGender.MALE)
+		if (gender == GenderType.MALE)
 			weight = Math.round(height_factor*(genetic_factor * dad_weight + (1-genetic_factor) * mom_weight * (1 + sex_factor))*100D)/100D;
 		else
 			weight = Math.round(height_factor*((1-genetic_factor) * dad_weight + genetic_factor * mom_weight * (1 - sex_factor))*100D)/100D;
@@ -1062,11 +1062,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return the gender
 	 */
-	public PersonGender getGender() {
+	public GenderType getGender() {
 		return gender;
 	}
 
-	public void setGender(PersonGender g) {
+	public void setGender(GenderType g) {
 		gender = g;
 	}
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Meteorite.java
- * @version 3.1.0 2016-10-05
+ * @version 3.1.0 2017-10-03
  * @author Manny Kung
  */
 
@@ -26,8 +26,6 @@ public class Meteorite implements Serializable {
 	}
 
 	public void startMeteoriteImpact(BuildingManager buildingManager) {
-		//System.out.println("startMeteoriteImpact() calling calculateMeteoriteProbability() next");
-		//System.out.println("meteoriteImpact : "+ meteoriteImpact);
 		meteoriteImpact.calculateMeteoriteProbability(buildingManager);
 	}
 

@@ -1,11 +1,14 @@
+/**
+ * Mars Simulation Project
+ * EventType.java
+ * @version 3.1.0 2017-10-03
+ * @author stpa
+ */
+
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.Msg;
 
-/**
- * @author stpa
- * 2014-03-21
- */
 public enum EventType {
 
 	MALFUNCTION_FIXED	(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$

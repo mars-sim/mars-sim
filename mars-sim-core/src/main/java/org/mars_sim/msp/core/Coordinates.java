@@ -687,21 +687,35 @@ implements Serializable {
 
 		try {
 			String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
-			if (numberString.endsWith(Msg.getString("direction.degreeSign"))) numberString = numberString.substring(0, numberString.length() - 1); //$NON-NLS-1$
-			// Replace comma with period from internationalization.
+			if (numberString.endsWith(Msg.getString("direction.degreeSign"))) 
+				numberString = numberString.substring(0, numberString.length() - 1); //$NON-NLS-1$
+			// Replace "comma" (in case of non-US locale) with "period" 
 			numberString = numberString.replace(',', '.');
 			longValue = Double.parseDouble(numberString);
 		}
-		catch(NumberFormatException e) {
+		catch (NumberFormatException e) {
 			throw new IllegalStateException("Longitude number invalid: " + longitude);
 		}
 
-		if ((longValue > 180D) || (longValue < 0)) throw new IllegalStateException("Longitude value out of range : " + longValue);
 
 		// TODO parse longitude depending on locale and validate
-		String direction = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
-		if (direction.compareToIgnoreCase(shortWest) == 0) longValue = 360D - longValue;
-		else if (direction.compareToIgnoreCase(shortEast) != 0) throw new IllegalStateException("Invalid Longitude direction : " + direction);
+		String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
+		
+		if ((longValue > 180D) || (longValue < 0)) {
+			//longValue = 180D - longValue;
+/*			
+			if (direction == "E")
+				direction = "W";
+			else if (direction == "W")
+				direction = "E";
+*/
+			throw new IllegalStateException("The value of longitude " + longValue + " needs to be between 0 and 180 degrees.");
+		}
+			
+		if (directionStr.compareToIgnoreCase(shortWest) == 0) 
+			longValue = 360D - longValue;
+		else if (directionStr.compareToIgnoreCase(shortEast) != 0) 
+			throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
 
 		double theta = (2 * Math.PI) * (longValue / 360D);
 		return theta;

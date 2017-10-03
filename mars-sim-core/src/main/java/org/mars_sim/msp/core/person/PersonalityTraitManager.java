@@ -9,11 +9,9 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 import java.util.Hashtable;
-import java.util.Map;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * The PersonalityTraitManager class manages a person's big five personalities.

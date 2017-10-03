@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BodyRegionType.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-10-03
  * @author Manny Kung
  */
 

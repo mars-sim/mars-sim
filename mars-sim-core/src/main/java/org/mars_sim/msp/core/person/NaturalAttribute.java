@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttribute.java
- * @version 3.08 2015-10-14
+ * @version 3.1.0 2017-10-03
  * @author stpa
  */
 

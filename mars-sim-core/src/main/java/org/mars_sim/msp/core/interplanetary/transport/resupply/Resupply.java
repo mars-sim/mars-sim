@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -499,9 +499,9 @@ implements Serializable, Transportable {
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
         for (int x = 0; x < getNewImmigrantNum(); x++) {
             PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-            PersonGender gender = PersonGender.FEMALE;
+            GenderType gender = GenderType.FEMALE;
             if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-                gender = PersonGender.MALE;
+                gender = GenderType.MALE;
             }
 
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);

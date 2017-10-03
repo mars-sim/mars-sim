@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -80,7 +80,7 @@ implements Serializable {
     /** Name of the most serious local emergency malfunction. */
     private String malfunction;
     /** gender at time of death. */
-    private PersonGender gender;
+    private GenderType gender;
 
     private RobotType robotType;
 

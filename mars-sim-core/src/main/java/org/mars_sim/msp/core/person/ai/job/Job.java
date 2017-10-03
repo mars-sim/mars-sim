@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -56,10 +56,10 @@ implements Serializable {
 	 * This uses directly the name of the class that extends {@link Job},
 	 * so take care not to rename those, or if you do then remember to
 	 * change the keys in <code>messages.properties</code> accordingly.
-	 * @param gender {@link PersonGender}
+	 * @param gender {@link GenderType}
 	 * @return name
 	 */
-	public String getName(PersonGender gender) {
+	public String getName(GenderType gender) {
 		StringBuffer key = new StringBuffer()
 		.append("job."); //$NON-NLS-1$
 		switch (gender) {

@@ -1,12 +1,15 @@
+/**
+ * Mars Simulation Project
+ * GenderType.java
+ * @version 3.1.0 2017-10-03
+ * @author stpa
+ */
+
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.Msg;
 
-/**
- * @author stpa
- * 2014-03-04
- */
-public enum PersonGender {
+public enum GenderType {
 
 	MALE (Msg.getString("PersonGender.male")), //$NON-NLS-1$
 	FEMALE (Msg.getString("PersonGender.female")), //$NON-NLS-1$
@@ -15,7 +18,7 @@ public enum PersonGender {
 	private String name;
 
 	/** hidden constructor. */
-	private PersonGender(String name) {
+	private GenderType(String name) {
 		this.name = name;
 	}
 
@@ -27,7 +30,7 @@ public enum PersonGender {
 		return this.name;
 	}
 
-	public static PersonGender valueOfIgnoreCase(String s) {
+	public static GenderType valueOfIgnoreCase(String s) {
 		return valueOf(s.toUpperCase().replace(' ','_'));
 	}
 }

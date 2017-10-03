@@ -3,88 +3,88 @@
   <!--Landmark coordinates from USGS Astrogeology Research Program-->
   <!--http://planetarynames.wr.usgs.gov/AdvancedSearch-->
   <!--Landmarks to be displayed in the user interface. -->
-  <landmark-list>
-    <landmark approvaldate="1973" diameter="43.05" latitude="5.14 S" longitude="0.05 E" name="Airy" origin="George B.; British astronomer (1801-1892)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="158.38" latitude="18.87 N" longitude="150.47 E" name="Albor Tholus" origin="Classical albedo feature name." type="TH"/>
-  	<landmark approvaldate="1991" diameter="52.51" latitude="29.81 S" longitude="86.65 E" name="Anseris Mons" origin="From albedo feature Anseris Fons." type="MO"/>
-  	<landmark approvaldate="1973" diameter="400.95" latitude="21.38 N" longitude="60.83 E" name="Antoniadi" origin="Eugène Michael; Turkish-born French astronomer (1870-1944)." type="AA"/>
-  	<landmark approvaldate="1997" diameter="32.39" latitude="17.64 S" longitude="175.75 E" name="Apollinaris Tholus" origin="Albedo feature name." type="TH"/>
-  	<landmark approvaldate="1973" diameter="470" latitude="8.26 S" longitude="120.09 W" name="Arsia Mons" origin="Arsia Silva-classical albedo feature name." type="MO"/>
-  	<landmark approvaldate="1973" diameter="456.4" latitude="11.92 N" longitude="104.08 W" name="Ascraeus Mons" origin="Ascraeus Lacus-classical albedo feature name." type="MO"/>
-  	<landmark approvaldate="1973" diameter="181.31" latitude="22.76 N" longitude="65.48 E" name="Baldet" origin="Fernand; French astronomer (1885-1964)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="165.23" latitude="21.89 N" longitude="7.94 W" name="Becquerel" origin="Antoine H.; French physicist (1852-1908)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="408.23" latitude="23.35 N" longitude="32.11 E" name="Cassini" origin="Giovanni; Italian astronomer (1625-1712)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="128.58" latitude="24 N" longitude="97.25 W" name="Ceraunius Tholus" origin="Classical albedo feature name." type="TH"/>
-  	<landmark approvaldate="1973" diameter="301.83" latitude="48.84 S" longitude="168.83 W" name="Copernicus" origin="Nicolaus; Polish astronomer (1473-1543)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="176.38" latitude="56.97 S" longitude="19.15 W" name="Darwin" origin="Charles R.; British naturalist (1809-1882) and George H.; British astronomer (1845-1912)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="185.32" latitude="9.11 S" longitude="38.06 E" name="Dawes" origin="William R.; British astronomer (1799-1868)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="159.71" latitude="17.43 S" longitude="33.52 E" name="Denning" origin="William F.; British astronomer (1848-1931)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="401" latitude="25.02 N" longitude="147.21 E" name="Elysium Mons" origin="Classical albedo feature name." type="MO"/>
-  	<landmark approvaldate="1991" diameter="4.6" latitude="35.92 N" longitude="85.13 W" name="E. Mareotis Tholus" origin="Classical albedo name." type="TH"/>
-  	<landmark approvaldate="2003" diameter="88.91" latitude="44.82 S" longitude="105.18 E" name="Euripus Mons" origin="Albedo feature name." type="MO"/>
-  	<landmark approvaldate="1973" diameter="173.7" latitude="25.22 N" longitude="48.28 E" name="Flammarion" origin="Camille; French astronomer (1842-1925)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="236.06" latitude="16.8 S" longitude="19.22 E" name="Flaugergues" origin="Honore; French astronomer (1755-1835)." type="AA"/>
-  	<landmark approvaldate="1991" diameter="154.08" latitude="5.37 S" longitude="137.81 E" name="Gale" origin="Walter F.; Australian astronomer (1865-1945)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="223.53" latitude="50.63 S" longitude="31 W" name="Galle" origin="Johann G.; German astronomer (1812-1910)." type="AA"/>
-  	<landmark approvaldate="1991" diameter="49.38" latitude="41.21 N" longitude="90.88 W" name="Gonnus Mons" origin="Classical town." type="MO"/>
-  	<landmark approvaldate="1973" diameter="182.07" latitude="52.3 S" longitude="8.54 W" name="Green" origin="Nathan E.; British astronomer (1823-1899)." type="AA"/>
-  	<landmark approvaldate="1976" diameter="158.12" latitude="14.53 S" longitude="175.52 E" name="Gusev" origin="Matvei M.; Russian astronomer (1826-1866)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="181.57" latitude="32.12 N" longitude="150.24 E" name="Hecates Tholus" origin="Classcial albedo feature name." type="TH"/>
-  	<landmark approvaldate="1973" diameter="167.57" latitude="10.79 N" longitude="23.45 E" name="Henry" origin="Paul; French astronomer (1848-1905). Prosper; French astronomer (1849-1903)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="297.92" latitude="14.48 S" longitude="129.89 E" name="Herschel" origin="John F.; British astronomer (1792-1871); William H.; British astronomer (1738-1822)." type="AA"/>
-  	<landmark approvaldate="1991" diameter="20.5" latitude="51.05 S" longitude="36.56 W" name="Horarum Mons" origin="Albedo name." type="MO"/>
-  	<landmark approvaldate="Nov 25, 2009" diameter="64.9" latitude="32.06 S" longitude="140.75 E" name="Horowitz" origin="Norman H.; American biologist and geneticist (1915-2005). " type="AA"/>
-  	<landmark approvaldate="1973" diameter="467.25" latitude="13.88 S" longitude="55.58 E" name="Huygens" origin="Christiaan; Dutch physicist-astronomer (1629-1695)." type="AA"/>
-  	<landmark approvaldate="1991" diameter="54.53" latitude="36.05 N" longitude="94.83 W" name="Issedon Tholus" origin="Classical albedo name." type="TH"/>
-  	<landmark approvaldate="1973" diameter="58.07" latitude="18.2 N" longitude="117.41 W" name="Jovis Tholus" origin="Classical albedo feature name." type="TH"/>
-  	<landmark approvaldate="1973" diameter="201.67" latitude="46.19 S" longitude="19.11 E" name="Kaiser" origin="Frederick; Dutch astronomer (1808-1872)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="228.24" latitude="46.69 S" longitude="140.98 E" name="Kepler" origin="Johannes; German astronomer (1571-1630)." type="AA"/>
-  	<landmark approvaldate="1985" diameter="296.67" latitude="29.56 S" longitude="141.54 W" name="Koval'sky" origin="M. A.; Russian astronomer (1821-1884)." type="AA"/>
-  	<landmark approvaldate="1994" diameter="42.78" latitude="37.48 N" longitude="75.86 W" name="Labeatis Mons" origin="Named for albedo feature Labeatis Lacus." type="MO"/>
-  	<landmark approvaldate="1973" diameter="202.22" latitude="51.96 S" longitude="81.5 W" name="Lowell" origin="Percival; American astronomer (1855-1916)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="221.53" latitude="50.47 N" longitude="29.34 E" name="Lyot" origin="Bernard; French astronomer (1897-1952)." type="AA"/>
-  	<landmark approvaldate="1967" diameter="156.58" latitude="34.68 S" longitude="164.24 W" name="Mariner" origin="Named for Mariner IV spacecraft." type="AA"/>
-  	<landmark approvaldate="1973" diameter="168.87" latitude="27.5 S" longitude="149.27 E" name="Molesworth" origin="Percy B.; British astronomer (1867-1908)." type="AA"/>
-  	<landmark approvaldate="1985" diameter="198.81" latitude="0.6 N" longitude="55.21 W" name="Mutch" origin="Dr. Thomas A.; American geologist, Viking Lander Imaging Team leader (1931-1980)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="254.13" latitude="24.27 S" longitude="1.04 E" name="Newcomb" origin="Simon; American astronomer (1835-1909)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="299.94" latitude="40.5 S" longitude="158.03 W" name="Newton" origin="Isaac; British physicist (1643-1727)." type="AA"/>
-  	<landmark approvaldate="1985" diameter="33.39" latitude="54.93 S" longitude="41.23 W" name="Oceanidum Mons" origin="Name change from Charitum Tholus." type="MO"/>
-  	<landmark approvaldate="1991" diameter="19.09" latitude="55.26 S" longitude="42.85 W" name="Octantis Mons" origin="Albedo name." type="MO"/>
-  	<landmark approvaldate="1973" diameter="610.13" latitude="18.65 N" longitude="133.8 W" name="Olympus Mons" origin="Classical albedo feature name." type="MO"/>
-  	<landmark approvaldate="1973" diameter="366.53" latitude="1.48 N" longitude="112.96 W" name="Pavonis Mons" origin="Classical albedo feature name." type="MO"/>
-  	<landmark approvaldate="1991" diameter="14.94" latitude="31.08 S" longitude="86.11 E" name="Peraea Mons" origin="Albedo feature name." type="MO"/>
-  	<landmark approvaldate="1973" diameter="185.45" latitude="66.34 S" longitude="44.89 W" name="Phillips" origin="John; British geologist (1800-1874). Theodore E.; British astronomer (1868-1942)." type="AA"/>
-  	<landmark approvaldate="1991" diameter="16.3" latitude="39.47 N" longitude="88.52 W" name="Pindus Mons" origin="Mountains near Vale of Tempe." type="MO"/>
-  	<landmark approvaldate="1973" diameter="172.56" latitude="47.63 S" longitude="29.72 E" name="Proctor" origin="Richard A.; British astronomer (1837-1888)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="165.18" latitude="45.88 S" longitude="157.6 W" name="Ptolemaeus" origin="Claudius; Greco-Egyptian astronomer (c. A.D. 90-160)." type="AA"/>
-  	<landmark approvaldate="2003" diameter="398.27" latitude="73.91 N" longitude="158.72 W" name="Scandia Tholi" origin="Named for classical albedo feature at 65N, 150W." type="TH"/>
-  	<landmark approvaldate="1973" diameter="458.52" latitude="2.71 S" longitude="16.77 E" name="Schiaparelli" origin="Giovanni V.; Italian astronomer (1835-1910)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="201.35" latitude="72.07 S" longitude="77.9 W" name="Schmidt" origin="Johann F.; German astronomer (1825-1884); Otto Y.; Russian geophysicist (1891-1956)." type="AA"/>
-  	<landmark approvaldate="1976" diameter="198.96" latitude="19.93 N" longitude="50.7 E" name="Schöner" origin="Johannes; German geographer (1477-1547)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="291.59" latitude="1.9 S" longitude="55.99 E" name="Schroeter" origin="Johann H.; German astronomer (1745-1816)." type="AA"/>
- 	<landmark approvaldate="1973" diameter="223.41" latitude="57.84 S" longitude="102.15 E" name="Secchi" origin="Angelo; Italian astronomer (1818-1878)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="161.37" latitude="69.61 S" longitude="138.51 W" name="Stoney" origin="George J.; Irish physicist (1826-1911)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="171.5" latitude="27.96 S" longitude="74.14 E" name="Terby" origin="Francois J.; Belgian astronomer (1846-1911)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="149.3" latitude="13.25 N" longitude="90.69 W" name="Tharsis Tholus" origin="Classical albedo feature name." type="TH"/>
-  	<landmark approvaldate="1985" diameter="343.7" latitude="13.28 N" longitude="35.93 E" name="Tikhonravov" origin="M. K.; Russian rocket scientist (1900-1974)." type="AA"/>
-  	<landmark approvaldate="Sep 19, 2007" diameter="269.77" latitude="21.63 S" longitude="105.88 E" name="Tyrrhenus Mons" origin="Classical albedo feature name." type="MO"/>
-  	<landmark approvaldate="1973" diameter="61.39" latitude="26.25 N" longitude="97.57 W" name="Uranius Tholus" origin="Classical albedo feature name." type="TH"/>
-  	<landmark approvaldate="1979" diameter="209.66" latitude="19.83 S" longitude="37.74 W" name="Vinogradov" origin="Aleksander P.; Soviet geochemist (1895-1975)." type="AA"/>
-  	<landmark approvaldate="1973" diameter="170.78" latitude="52.48 S" longitude="110.9 E" name="Wallace" origin="Alfred R.; British biologist (1823-1913)." type="AA"/>
-  	<landmark approvaldate="1991" diameter="13.19" latitude="35.56 N" longitude="87.96 W" name="W. Mareotis Tholus" origin="Classical albedo name." type="TH"/>
-  	<landmark approvaldate="1997" diameter="35.95" latitude="19.75 S" longitude="172.92 E" name="Zephyria Tholus" origin="Albedo feature name." type="TH"/>
-  	<!--Artificial Objects-->
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="10.6 N" longitude="90.0 E" name="Beagle 2 Lander" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="47.0 E" name="Mars 2 Lander" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="158.0 W" name="Mars 3 Lander" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="23.9 S" longitude="19.5 W" name="Mars 6 Lander" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="19.3 N" longitude="33.3 W" name="Mars Pathfinder Rover" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="76.7 S" longitude="164.7 E" name="Mars Polar Lander" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="4.3 S" longitude="137.2 E" name="MSL Curiosity Rover" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="14.57 S" longitude="175.47 E" name="MER Spirit Rover" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="1.95 S" longitude="5.53 W" name="MER Opportunity Rover" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="68.22 N" longitude="125.7 W" name="Phoenix Mars Lander" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="22.5 N" longitude="48.0 W" name="Viking Lander 1" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="47.9 N" longitude="133.7 E" name="Viking Lander 2" origin="N/A" type="AO"/>
-  	<landmark approvaldate="N/A" diameter="0.1" latitude="0.2 N" longitude="2.5 W" name="Schiaparelli EDM Lander" origin="N/A" type="AO"/>  
+	<landmark-list>
+	<landmark approvaldate="1973" diameter="43.05" latitude="5.14 S" longitude="0.05 E" name="Airy" origin="George B.; British astronomer (1801-1892)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="158.38" latitude="18.87 N" longitude="150.47 E" name="Albor Tholus" origin="Classical albedo feature name." type="TH"/>
+	  	<landmark approvaldate="1991" diameter="52.51" latitude="29.81 S" longitude="86.65 E" name="Anseris Mons" origin="From albedo feature Anseris Fons." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="400.95" latitude="21.38 N" longitude="60.83 E" name="Antoniadi" origin="Eugène Michael; Turkish-born French astronomer (1870-1944)." type="AA"/>
+	  	<landmark approvaldate="1997" diameter="32.39" latitude="17.64 S" longitude="175.75 E" name="Apollinaris Tholus" origin="Albedo feature name." type="TH"/>
+	  	<landmark approvaldate="1973" diameter="470" latitude="8.26 S" longitude="120.09 W" name="Arsia Mons" origin="Arsia Silva-classical albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="456.4" latitude="11.92 N" longitude="104.08 W" name="Ascraeus Mons" origin="Ascraeus Lacus-classical albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="181.31" latitude="22.76 N" longitude="65.48 E" name="Baldet" origin="Fernand; French astronomer (1885-1964)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="165.23" latitude="21.89 N" longitude="7.94 W" name="Becquerel" origin="Antoine H.; French physicist (1852-1908)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="408.23" latitude="23.35 N" longitude="32.11 E" name="Cassini" origin="Giovanni; Italian astronomer (1625-1712)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="128.58" latitude="24 N" longitude="97.25 W" name="Ceraunius Tholus" origin="Classical albedo feature name." type="TH"/>
+	  	<landmark approvaldate="1973" diameter="301.83" latitude="48.84 S" longitude="168.83 W" name="Copernicus" origin="Nicolaus; Polish astronomer (1473-1543)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="176.38" latitude="56.97 S" longitude="19.15 W" name="Darwin" origin="Charles R.; British naturalist (1809-1882) and George H.; British astronomer (1845-1912)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="185.32" latitude="9.11 S" longitude="38.06 E" name="Dawes" origin="William R.; British astronomer (1799-1868)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="159.71" latitude="17.43 S" longitude="33.52 E" name="Denning" origin="William F.; British astronomer (1848-1931)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="401" latitude="25.02 N" longitude="147.21 E" name="Elysium Mons" origin="Classical albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1991" diameter="4.6" latitude="35.92 N" longitude="85.13 W" name="E. Mareotis Tholus" origin="Classical albedo name." type="TH"/>
+	  	<landmark approvaldate="2003" diameter="88.91" latitude="44.82 S" longitude="105.18 E" name="Euripus Mons" origin="Albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="173.7" latitude="25.22 N" longitude="48.28 E" name="Flammarion" origin="Camille; French astronomer (1842-1925)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="236.06" latitude="16.8 S" longitude="19.22 E" name="Flaugergues" origin="Honore; French astronomer (1755-1835)." type="AA"/>
+	  	<landmark approvaldate="1991" diameter="154.08" latitude="5.37 S" longitude="137.81 E" name="Gale" origin="Walter F.; Australian astronomer (1865-1945)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="223.53" latitude="50.63 S" longitude="31 W" name="Galle" origin="Johann G.; German astronomer (1812-1910)." type="AA"/>
+	  	<landmark approvaldate="1991" diameter="49.38" latitude="41.21 N" longitude="90.88 W" name="Gonnus Mons" origin="Classical town." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="182.07" latitude="52.3 S" longitude="8.54 W" name="Green" origin="Nathan E.; British astronomer (1823-1899)." type="AA"/>
+	  	<landmark approvaldate="1976" diameter="158.12" latitude="14.53 S" longitude="175.52 E" name="Gusev" origin="Matvei M.; Russian astronomer (1826-1866)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="181.57" latitude="32.12 N" longitude="150.24 E" name="Hecates Tholus" origin="Classcial albedo feature name." type="TH"/>
+	  	<landmark approvaldate="1973" diameter="167.57" latitude="10.79 N" longitude="23.45 E" name="Henry" origin="Paul; French astronomer (1848-1905). Prosper; French astronomer (1849-1903)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="297.92" latitude="14.48 S" longitude="129.89 E" name="Herschel" origin="John F.; British astronomer (1792-1871); William H.; British astronomer (1738-1822)." type="AA"/>
+	  	<landmark approvaldate="1991" diameter="20.5" latitude="51.05 S" longitude="36.56 W" name="Horarum Mons" origin="Albedo name." type="MO"/>
+	  	<landmark approvaldate="Nov 25, 2009" diameter="64.9" latitude="32.06 S" longitude="140.75 E" name="Horowitz" origin="Norman H.; American biologist and geneticist (1915-2005). " type="AA"/>
+	  	<landmark approvaldate="1973" diameter="467.25" latitude="13.88 S" longitude="55.58 E" name="Huygens" origin="Christiaan; Dutch physicist-astronomer (1629-1695)." type="AA"/>
+	  	<landmark approvaldate="1991" diameter="54.53" latitude="36.05 N" longitude="94.83 W" name="Issedon Tholus" origin="Classical albedo name." type="TH"/>
+	  	<landmark approvaldate="1973" diameter="58.07" latitude="18.2 N" longitude="117.41 W" name="Jovis Tholus" origin="Classical albedo feature name." type="TH"/>
+	  	<landmark approvaldate="1973" diameter="201.67" latitude="46.19 S" longitude="19.11 E" name="Kaiser" origin="Frederick; Dutch astronomer (1808-1872)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="228.24" latitude="46.69 S" longitude="140.98 E" name="Kepler" origin="Johannes; German astronomer (1571-1630)." type="AA"/>
+	  	<landmark approvaldate="1985" diameter="296.67" latitude="29.56 S" longitude="141.54 W" name="Koval'sky" origin="M. A.; Russian astronomer (1821-1884)." type="AA"/>
+	  	<landmark approvaldate="1994" diameter="42.78" latitude="37.48 N" longitude="75.86 W" name="Labeatis Mons" origin="Named for albedo feature Labeatis Lacus." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="202.22" latitude="51.96 S" longitude="81.5 W" name="Lowell" origin="Percival; American astronomer (1855-1916)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="221.53" latitude="50.47 N" longitude="29.34 E" name="Lyot" origin="Bernard; French astronomer (1897-1952)." type="AA"/>
+	  	<landmark approvaldate="1967" diameter="156.58" latitude="34.68 S" longitude="164.24 W" name="Mariner" origin="Named for Mariner IV spacecraft." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="168.87" latitude="27.5 S" longitude="149.27 E" name="Molesworth" origin="Percy B.; British astronomer (1867-1908)." type="AA"/>
+	  	<landmark approvaldate="1985" diameter="198.81" latitude="0.6 N" longitude="55.21 W" name="Mutch" origin="Dr. Thomas A.; American geologist, Viking Lander Imaging Team leader (1931-1980)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="254.13" latitude="24.27 S" longitude="1.04 E" name="Newcomb" origin="Simon; American astronomer (1835-1909)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="299.94" latitude="40.5 S" longitude="158.03 W" name="Newton" origin="Isaac; British physicist (1643-1727)." type="AA"/>
+	  	<landmark approvaldate="1985" diameter="33.39" latitude="54.93 S" longitude="41.23 W" name="Oceanidum Mons" origin="Name change from Charitum Tholus." type="MO"/>
+	  	<landmark approvaldate="1991" diameter="19.09" latitude="55.26 S" longitude="42.85 W" name="Octantis Mons" origin="Albedo name." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="610.13" latitude="18.65 N" longitude="133.8 W" name="Olympus Mons" origin="Classical albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="366.53" latitude="1.48 N" longitude="112.96 W" name="Pavonis Mons" origin="Classical albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1991" diameter="14.94" latitude="31.08 S" longitude="86.11 E" name="Peraea Mons" origin="Albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="185.45" latitude="66.34 S" longitude="44.89 W" name="Phillips" origin="John; British geologist (1800-1874). Theodore E.; British astronomer (1868-1942)." type="AA"/>
+	  	<landmark approvaldate="1991" diameter="16.3" latitude="39.47 N" longitude="88.52 W" name="Pindus Mons" origin="Mountains near Vale of Tempe." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="172.56" latitude="47.63 S" longitude="29.72 E" name="Proctor" origin="Richard A.; British astronomer (1837-1888)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="165.18" latitude="45.88 S" longitude="157.6 W" name="Ptolemaeus" origin="Claudius; Greco-Egyptian astronomer (c. A.D. 90-160)." type="AA"/>
+	  	<landmark approvaldate="2003" diameter="398.27" latitude="73.91 N" longitude="158.72 W" name="Scandia Tholi" origin="Named for classical albedo feature at 65N, 150W." type="TH"/>
+	  	<landmark approvaldate="1973" diameter="458.52" latitude="2.71 S" longitude="16.77 E" name="Schiaparelli" origin="Giovanni V.; Italian astronomer (1835-1910)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="201.35" latitude="72.07 S" longitude="77.9 W" name="Schmidt" origin="Johann F.; German astronomer (1825-1884); Otto Y.; Russian geophysicist (1891-1956)." type="AA"/>
+	  	<landmark approvaldate="1976" diameter="198.96" latitude="19.93 N" longitude="50.7 E" name="Schöner" origin="Johannes; German geographer (1477-1547)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="291.59" latitude="1.9 S" longitude="55.99 E" name="Schroeter" origin="Johann H.; German astronomer (1745-1816)." type="AA"/>
+	 	<landmark approvaldate="1973" diameter="223.41" latitude="57.84 S" longitude="102.15 E" name="Secchi" origin="Angelo; Italian astronomer (1818-1878)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="161.37" latitude="69.61 S" longitude="138.51 W" name="Stoney" origin="George J.; Irish physicist (1826-1911)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="171.5" latitude="27.96 S" longitude="74.14 E" name="Terby" origin="Francois J.; Belgian astronomer (1846-1911)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="149.3" latitude="13.25 N" longitude="90.69 W" name="Tharsis Tholus" origin="Classical albedo feature name." type="TH"/>
+	  	<landmark approvaldate="1985" diameter="343.7" latitude="13.28 N" longitude="35.93 E" name="Tikhonravov" origin="M. K.; Russian rocket scientist (1900-1974)." type="AA"/>
+	  	<landmark approvaldate="Sep 19, 2007" diameter="269.77" latitude="21.63 S" longitude="105.88 E" name="Tyrrhenus Mons" origin="Classical albedo feature name." type="MO"/>
+	  	<landmark approvaldate="1973" diameter="61.39" latitude="26.25 N" longitude="97.57 W" name="Uranius Tholus" origin="Classical albedo feature name." type="TH"/>
+	  	<landmark approvaldate="1979" diameter="209.66" latitude="19.83 S" longitude="37.74 W" name="Vinogradov" origin="Aleksander P.; Soviet geochemist (1895-1975)." type="AA"/>
+	  	<landmark approvaldate="1973" diameter="170.78" latitude="52.48 S" longitude="110.9 E" name="Wallace" origin="Alfred R.; British biologist (1823-1913)." type="AA"/>
+	  	<landmark approvaldate="1991" diameter="13.19" latitude="35.56 N" longitude="87.96 W" name="W. Mareotis Tholus" origin="Classical albedo name." type="TH"/>
+	  	<landmark approvaldate="1997" diameter="35.95" latitude="19.75 S" longitude="172.92 E" name="Zephyria Tholus" origin="Albedo feature name." type="TH"/>
+	  	<!--Artificial Objects-->
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="10.6 N" longitude="90.0 E" name="Beagle 2 Lander" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="47.0 E" name="Mars 2 Lander" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="158.0 W" name="Mars 3 Lander" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="23.9 S" longitude="19.5 W" name="Mars 6 Lander" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="19.3 N" longitude="33.3 W" name="Mars Pathfinder Rover" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="76.7 S" longitude="164.7 E" name="Mars Polar Lander" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="4.3 S" longitude="137.2 E" name="MSL Curiosity Rover" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="14.57 S" longitude="175.47 E" name="MER Spirit Rover" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="1.95 S" longitude="5.53 W" name="MER Opportunity Rover" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="68.22 N" longitude="125.7 W" name="Phoenix Mars Lander" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="22.5 N" longitude="48.0 W" name="Viking Lander 1" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="47.9 N" longitude="133.7 E" name="Viking Lander 2" origin="N/A" type="AO"/>
+	  	<landmark approvaldate="N/A" diameter="0.1" latitude="0.2 N" longitude="2.5 W" name="Schiaparelli EDM Lander" origin="N/A" type="AO"/>  
 	</landmark-list>

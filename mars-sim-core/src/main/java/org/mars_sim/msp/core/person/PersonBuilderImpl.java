@@ -21,7 +21,7 @@ public class PersonBuilderImpl implements PersonBuilder<Person>{
 		person = new Person(name, settlement);
 	}
 
-	public PersonBuilder<Person> setGender(PersonGender g) {
+	public PersonBuilder<Person> setGender(GenderType g) {
 		person.setGender(g);
 		return this;
 	}

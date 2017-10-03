@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -210,10 +210,10 @@ public class UnitManager implements Serializable {
 			while (i.hasNext()) {
 
 				String name = i.next();
-				PersonGender gender = personConfig.getPersonGender(name);
-				if (gender == PersonGender.MALE) {
+				GenderType gender = personConfig.getPersonGender(name);
+				if (gender == GenderType.MALE) {
 					personMaleNames.add(name);
-				} else if (gender == PersonGender.FEMALE) {
+				} else if (gender == GenderType.FEMALE) {
 					personFemaleNames.add(name);
 				}
 
@@ -349,7 +349,7 @@ public class UnitManager implements Serializable {
 	 * @return new name
 	 * @throws IllegalArgumentException  if unitType is not valid.
 	 */
-	public String getNewName(UnitType unitType, String baseName, PersonGender gender, RobotType robotType) {
+	public String getNewName(UnitType unitType, String baseName, GenderType gender, RobotType robotType) {
 
 		List<String> initialNameList = null;
 		List<String> usedNames = new ArrayList<String>();
@@ -382,9 +382,9 @@ public class UnitManager implements Serializable {
 			}
 
 		} else if (unitType == UnitType.PERSON) {
-			if (PersonGender.MALE == gender) {
+			if (GenderType.MALE == gender) {
 				initialNameList = personMaleNames;
-			} else if (PersonGender.FEMALE == gender) {
+			} else if (GenderType.FEMALE == gender) {
 				initialNameList = personFemaleNames;
 			} else {
 				throw new IllegalArgumentException("Improper gender for person unitType: " + gender);
@@ -655,11 +655,11 @@ public class UnitManager implements Serializable {
 			}
 
 			// Get person's gender or randomly determine it if not configured.
-			PersonGender gender = personConfig.getConfiguredPersonGender(x, crew_id);
+			GenderType gender = personConfig.getConfiguredPersonGender(x, crew_id);
 			if (gender == null) {
-				gender = PersonGender.FEMALE;
+				gender = GenderType.FEMALE;
 				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-					gender = PersonGender.MALE;
+					gender = GenderType.MALE;
 				}
 			}
 
@@ -846,7 +846,7 @@ public class UnitManager implements Serializable {
 					}
 
 					boolean isUniqueName = false;
-					PersonGender gender = null;
+					GenderType gender = null;
 					Person person = null;
 					String fullname = null;
 					String country = getCountry(sponsor);
@@ -856,9 +856,9 @@ public class UnitManager implements Serializable {
 
 						isUniqueName = true;
 
-						gender = PersonGender.FEMALE;
+						gender = GenderType.FEMALE;
 						if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-							gender = PersonGender.MALE;
+							gender = GenderType.MALE;
 						}
 
 						String lastN = null;
@@ -919,7 +919,7 @@ public class UnitManager implements Serializable {
 			    			int rand0 = RandomUtil.getRandomInt(last_list.size()-1);
 			    			lastN = last_list.get(rand0);
 
-			    			if (gender == PersonGender.MALE) {
+			    			if (gender == GenderType.MALE) {
 				    			int rand1 = RandomUtil.getRandomInt(male_first_list.size()-1);
 			    				firstN = male_first_list.get(rand1);
 			    			}

@@ -20,17 +20,21 @@
 	</mission-control>
 
 	<!-- (NOT IMPLEMENTED YET) Typical atmospheric requirements for a closed-loop habitat  
-	     see http://www2.le.ac.uk/offices/safety-services/documents/pdfs/air-monitoring-guide.pdf -->
+	     see http://www2.le.ac.uk/offices/safety-services/documents/pdfs/air-monitoring-guide.pdf 
+	     
+	Note : a 340 mb or 34kPa indoor atmosphere is currently being implemented 
+	     
+    -->
 	<life-support-requirements>
 
 		<!-- recommended range of total air pressure in kPa -->				
-		<total-pressure low="99.9" high="102.7" />
+		<total-pressure low="32" high="36" />
 		<!-- recommended range of partial pressure for O2 in kPa -->		
-		<partial-pressure-of-oxygen low="19" high="23" />
+		<partial-pressure-of-oxygen low="18" high="22" />
 		<!-- recommended range of partial pressure for NO2 in kPa -->				
-		<partial-pressure-of-nitrogen low="74" high="82"/>
+		<partial-pressure-of-nitrogen low="10" high="14"/>
 		<!-- recommended range of partial pressure for CO2 in kPa -->		
-		<partial-pressure-of-carbon-dioxide low=".036" high="1.0" />
+		<partial-pressure-of-carbon-dioxide low="0.03" high="0.07" />
 		<!-- recommended range of temperatures [in degree celsius]-->
 		<temperature low="18" high="26"/>
 		<!-- humidity in %-->
@@ -79,16 +83,20 @@
 
 			<!-- Small nuclear reactor power generator. -->
 			<building id="3" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
+			
 			<building id="4" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
+			
+			<building id="5" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
+			
 
 			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
 			     hydrogen and carbon dioxide into methane, water and oxygen.
 			     The starting ERV base has a full load of hydrogen and has not reacted yet. -->
-			<building id="5" type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building id="6" type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
 
 			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
 			     hydrogen and carbon dioxide into methane, water and oxygen.  -->
-			<building id="6" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+			<building id="7" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
@@ -190,9 +198,11 @@
 			<building id="7" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
 			<building id="8" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
 			<building id="9" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
-			<building id="10" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
-			<building id="11" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
-			<building id="12" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+			<building id="10" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
+			
+			<building id="11" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building id="12" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building id="13" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
@@ -393,10 +403,14 @@
 			<building id="12" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
 			<building id="13" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
 			<building id="14" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
-			<building id="15" type="Starting ERV Base" x-location="70.0" y-location="15.0" facing="135.0" />
-			<building id="16" type="ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
-			<building id="17" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
-			<building id="18" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+			
+			<building id="15" type="MD4 Nuclear Reactor" x-location="-78.0" y-location="-53.0" facing="0.0" />
+			
+			<building id="16" type="Starting ERV Base" x-location="70.0" y-location="15.0" facing="135.0" />
+			
+			<building id="17" type="ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building id="18" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building id="19" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
@@ -524,7 +538,7 @@
 			</resupply>
 		</template>
 
-		<template id="3" name="Alpha Base (MD Phase 4)" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
+		<template id="3" name="Alpha Base (MDB Phase 4)" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -1137,22 +1151,25 @@
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
 
-		<settlement name="Alpha Base" template="Alpha Base (MD Phase 4)">
+		<settlement name="New Plymouth" template="Mars Direct Base (Phase 2)">
+			<location longitude="4.2 E" latitude="15.9 S" />
+			<population number="8" />
+			<number-of-robots number="4" />
+			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
+		</settlement>
+		
+		<settlement name="Alpha Base" template="Alpha Base (MDB Phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />
-			<!--max-MSD number="1" / -->
 			<sponsor name="Mars Society (MS)"/>
-
 		</settlement>
 
 		<settlement name="Schiaparelli Point" template="Mars Direct Base (Phase 1)">
 			<location longitude="16.0 E" latitude="3.0 S" />
 			<population number="4" />
 			<number-of-robots number="2" />
-			<!--max-MSD number="4" / -->
 			<sponsor name="Mars Society (MS)"/>
-
 		</settlement>
 
 	</initial-settlement-list>

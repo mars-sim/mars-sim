@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 
@@ -137,9 +137,9 @@ implements UnitDisplayInfo {
 
 		if (unit instanceof Person) {
 			Person person = (Person) unit;
-			if (PersonGender.MALE == person.getGender()) {
+			if (GenderType.MALE == person.getGender()) {
 				buttonIcon = ImageLoader.getIcon("MaleIcon");
-			} else if (PersonGender.FEMALE == person.getGender()) {
+			} else if (GenderType.FEMALE == person.getGender()) {
 				buttonIcon = ImageLoader.getIcon("FemaleIcon");
 			}
 		 }
@@ -155,7 +155,7 @@ implements UnitDisplayInfo {
 	public String getSound(Unit unit) {
 		Person person = (Person) unit;
 		String result = "";
-		boolean male = PersonGender.MALE == person.getGender();
+		boolean male = GenderType.MALE == person.getGender();
 		int randomSoundNum = RandomUtil.getRandomInt(1, 2);
 		if (person.getPhysicalCondition().isDead()) result = SoundConstants.SND_PERSON_DEAD;
 		else {

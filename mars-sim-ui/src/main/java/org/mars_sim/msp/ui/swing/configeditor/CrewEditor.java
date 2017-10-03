@@ -32,7 +32,7 @@ import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -275,7 +275,7 @@ public class CrewEditor implements ActionListener {
 
 		String s[] = new String[SIZE_OF_CREW];
 		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
-			PersonGender n = pc.getConfiguredPersonGender(j, ALPHA_CREW);
+			GenderType n = pc.getConfiguredPersonGender(j, ALPHA_CREW);
 			// convert MALE to M, FEMAL to F
 			s[j] = n.toString();
 			if (s[j].equals("MALE")) s[j] = "M";

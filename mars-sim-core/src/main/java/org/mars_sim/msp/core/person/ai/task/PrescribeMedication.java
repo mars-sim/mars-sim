@@ -233,10 +233,15 @@ implements Serializable {
                         // Medicate patient.
                         condition.addMedication(medication);
 
-                        logger.info(person.getName() + " is prescribing " + medication.getName()
-                        + " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-                        + " at " + patient.getSettlement());
-                        
+                		if (person != null)
+                			logger.info(person.getName() + " is prescribing " + medication.getName()
+                				+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
+                            	+ " at " + patient.getSettlement());
+               			else if (robot != null)
+                			logger.info(robot.getName() + " is prescribing " + medication.getName()
+                            	+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
+                            	+ " at " + patient.getSettlement());                        
+           
                         produceMedicalWaste();
                     }
                 }
@@ -261,10 +266,9 @@ implements Serializable {
 
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
-            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteAR, inv, sourceName + "::produceMedicalWaste");
-            //storeAnResource(AVERAGE_MEDICAL_WASTE, TOXIC_WASTE, inv);
-            //System.out.println("PrescribeMedication.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);
-	     }
+            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteAR, inv, 
+            		sourceName + "::produceMedicalWaste");
+        }
 	}
 
 /*

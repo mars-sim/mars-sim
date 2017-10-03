@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonBuilderImpl;
-import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
@@ -73,7 +73,7 @@ extends TestCase {
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// 2017-04-11 Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
-								.setGender(PersonGender.MALE)
+								.setGender(GenderType.MALE)
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
