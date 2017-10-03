@@ -266,7 +266,7 @@ implements Serializable {
 			    	System.out.println("New construction stage could not be determined.");
 			        //endMission("New construction stage could not be determined.");
 
-			    init_case_1_step_2(site, info, skill, values); 
+			    initCase1Step2(site, info, skill, values); 
 			    //init_case_1_step_3();
 
 			}
@@ -275,7 +275,7 @@ implements Serializable {
 
 	}
 
-	public void init_case_1_step_2(ConstructionSite m_site, ConstructionStageInfo info, 
+	public void initCase1Step2(ConstructionSite m_site, ConstructionStageInfo stageInfo, 
 			int constructionSkill, ConstructionValues values) {
     	this.site = m_site;
     	logger.info("Calling init_case_1_step_2()");
@@ -294,12 +294,12 @@ implements Serializable {
 		    }
 		    else {
 
-		        if (info == null) {
-		            info = determineNewStageInfo(site, constructionSkill);
+		        if (stageInfo == null) {
+		            stageInfo = determineNewStageInfo(site, constructionSkill);
 		        }
 
-		        if (info != null) {
-		            stage = new ConstructionStage(info, site);
+		        if (stageInfo != null) {
+		            stage = new ConstructionStage(stageInfo, site);
 		            site.addNewStage(stage);
 		            values.clearCache();
 		            logger.log(Level.INFO, "Starting new construction stage: " + stage);

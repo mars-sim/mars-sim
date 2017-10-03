@@ -45,12 +45,6 @@ import org.w3c.dom.Text;
 
 import com.jfoenix.controls.JFXButton;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-
-//import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-//import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.net.MalformedURLException;

@@ -12,7 +12,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
-import javax.swing.SingleSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
@@ -37,12 +35,10 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import javafx.scene.control.Tab;
 
 /**
  * A panel for displaying the settlement map.
@@ -1050,17 +1046,13 @@ implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		if (mainScene != null) {
-			if (mainScene.isMapTabOpen()) {
-				if (mainScene.isMapOn()) {
-					timeCache += time;
-					if (timeCache > PERIOD_IN_MILLISOLS * time) {
-						//logger.info("repaint");
-						// Repaint map panel
-						repaint();
-						timeCache = 0;
-					}
-				}
+		if (mainScene != null && mainScene.isMapTabOpen() && mainScene.isMapOn()) {
+			timeCache += time;
+			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				//logger.info("repaint");
+				// Repaint map panel
+				repaint();
+				timeCache = 0;
 			}
 		}
 		else {

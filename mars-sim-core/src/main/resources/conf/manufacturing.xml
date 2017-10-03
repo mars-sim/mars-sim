@@ -984,55 +984,47 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<!-- Gypsum is CaSO4 * 2H2O 
+	Besides being the mineral evidence that water may have flowed on Mars, 
+	gypsum deposit may indicate a less-acidic water supportive of microbial life.
+	https://arstechnica.com/science/2011/12/gypsum-deposit-on-mars-provides-definitive-evidence-of-water/
+	-->
 	<process name="extract gypsum from regolith" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O
-			Going with 20% gypsum in regolith.  Not sure if this is good estimate or not.
+			Going with 8% gypsum in regolith. Note that Calcium is found to be 
+			4.1% in average in Martian soil. Calcium Sulfate Dihydrate's 
+			molar mass is 172.1712 g/mol while Calcium's 40.0789 g/mol.
 		</description>
 		<inputs>
 			<resource name="regolith" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="gypsum" amount="10.0" />
+			<resource name="gypsum" amount="4.0" />
+			<resource name="sand" amount="20.0" />
+		<!-- According to http://canada.marssociety.org/winnipeg/soil.html
+			regolith is estimated to contain 11.3% sodium bicarbonate (baking
+			soda) and 1.15% of sodium chloride (table salt) -->
+			<resource name="baking powder" amount="4.0" />	
+			<resource name="table salt" amount="0.4" />	
 		</outputs>
 	</process>
 
 	<!-- Gypsum is CaSO4 * 2H2O -->
-	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
 	<process name="extract gypsum from regolith (large batch)" tech="1" skill="3" work-time="500" process-time="0"
 			power-required="0.5">
 		<inputs>
 			<resource name="regolith" amount="500.0" />
 		</inputs>
 		<outputs>
-			<resource name="gypsum" amount="100.0" />
+			<resource name="gypsum" amount="40.0" />
+			<resource name="sand" amount="200.0" />	
+			<resource name="baking powder" amount="40.0" />	
+			<resource name="table salt" amount="4.0" />						
 		</outputs>
 	</process>
 
-	<!-- Gypsum is CaSO4 * 2H2O -->
-	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
-	<process name="extract gypsum from sand" tech="1" skill="1" work-time="100" process-time="0"
-			power-required="0.1">
-		<inputs>
-			<resource name="sand" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="gypsum" amount="10.0" />
-		</outputs>
-	</process>
-
-	<!-- Gypsum is CaSO4 * 2H2O -->
-	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
-	<process name="extract gypsum from sand (large batch)" tech="1" skill="3" work-time="500" process-time="0"
-			power-required="0.5">
-		<inputs>
-			<resource name="sand" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="gypsum" amount="100.0" />
-		</outputs>
-	</process>
 
 	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
 	<process name="reduce gypsum to calcium carbonate with carbon" tech="1" skill="1" work-time="100"

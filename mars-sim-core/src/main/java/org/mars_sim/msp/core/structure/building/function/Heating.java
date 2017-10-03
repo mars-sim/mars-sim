@@ -49,9 +49,9 @@ implements Serializable {
 	// Revised ver at https://www.researchgate.net/publication/7890528_Engineering_concepts_for_inflatable_Mars_surface_greenhouses
 
 	// Data members
-	private static final double KG_TO_LB = 2.204623;
+	//private static final double KG_TO_LB = 2.204623;
 	private static final double DEFAULT_ROOM_TEMPERATURE = 22.5;
-	private static final double kW_TO_kBTU_PER_HOUR = 3.41214; // 1 kW = 3412.14 BTU/hr
+	//private static final double kW_TO_kBTU_PER_HOUR = 3.41214; // 1 kW = 3412.14 BTU/hr
 	private static final double C_TO_K = 273.15;
 	private static final double TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE = .55 ;
 	private static final double EMISSIVITY_DAY = 0.8 ;

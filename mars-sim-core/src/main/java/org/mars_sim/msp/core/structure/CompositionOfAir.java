@@ -40,7 +40,7 @@ public class CompositionOfAir implements Serializable {
 	
 	public static final int numGases = 5;
 	
-	private static final double HEIGHT = Building.HEIGHT; 
+	//private static final double HEIGHT = Building.HEIGHT; 
 	
 	private static final double AIRLOCK_VOLUME_IN_LITER = BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] 12 m^3
 	
@@ -157,7 +157,8 @@ public class CompositionOfAir implements Serializable {
 	private double [][] temperature;
 	private double [][] numMoles;
 	private double [][] mass;
-	
+
+	private double [][] standardMoles;
 
 	private static MasterClock masterClock;
 	private static MarsClock clock;
@@ -212,6 +213,7 @@ public class CompositionOfAir implements Serializable {
 		temperature = new double[numGases][numIDs];
 		numMoles = new double[numGases][numIDs];
 		mass = new double[numGases][numIDs];
+		standardMoles = new double[numGases][numIDs];
 		
 		fixedVolume = new double[numIDs];
 		totalPressure = new double[numIDs];
@@ -271,6 +273,7 @@ public class CompositionOfAir implements Serializable {
 				
 				temperature [gas][id] = t;			
 				numMoles [gas][id] = nm;
+				standardMoles[gas][id] = nm;
 				mass [gas][id] = m;
 
 				sum1 += nm;
@@ -289,9 +292,9 @@ public class CompositionOfAir implements Serializable {
 		}
 		
 		// Part 3 : calculate for each building the percent composition
-		for (int id = 0; id< numIDs; id++) {
+		for (int id = 0; id < numIDs; id++) {
 			// calculate for each gas the % composition
-			for (int gas= 0; gas< numGases; gas++) {
+			for (int gas= 0; gas < numGases; gas++) {
 				percent [gas][id] = partialPressure [gas][id] / totalPressure[id] * 100D;
 
 			}
@@ -455,9 +458,10 @@ public class CompositionOfAir implements Serializable {
 			double t = C_TO_K  + b.getCurrentTemperature();
 			
 			for (int gas = 0; gas < numGases; gas++) {
-				double old_p = percent [gas][id] ; // partialPressure[gas][id];//
-				
+
+				double current_moles = numMoles[gas][id];
 				double molecularMass = getMolecularMass(gas);
+				double standard_moles = standardMoles[gas][id];
 
 				//[0] = CO2
 				//[1] = ARGON
@@ -465,19 +469,21 @@ public class CompositionOfAir implements Serializable {
 				//[3] = O2
 				//[4] = H2O
 				
-				double standard = SKYLAB_AIR_COMPOSITION_IN_MB[gas]/SKYLAB_TOTAL_AIR_PRESSURE_IN_MB*100;
-				double delta = standard - old_p; // delta is +ve if not enough gas ; delta is -ve if too much gas is present 
-				double fraction = delta/standard;
-				if (b.getBuildingType().equals("Lander Hab"))
+				double delta = standard_moles - current_moles;
+				double diff =  delta/standard_moles;			
+				
+				//if (b.getBuildingType().equals("Lander Hab"))
 					//System.out.println("gas " + gas 
-					//		+ "'s standard : " + Math.round(standard*100.0)/100.0
-					//		+ "   old % : " + Math.round(old_p*100.0)/100.0
-					//		+ "   fraction : " + Math.round(fraction*100.0)/100.0);
+					//		+ "'s standard_moles : " + Math.round(standard_moles*100.0)/100.0
+					//		+ "   current_moles : " + Math.round(current_moles*100.0)/100.0
+					//		+ "   delta : " + Math.round(delta*100.0)/100.0
+					//		+ "   diff : " + Math.round(diff*100.0)/100.0);
+				
 				// if this gas has BELOW 98% or ABOVE 102% the standard percentage of air composition
-				if (fraction < LOWER_THRESHOLD_GAS_COMPOSITION || fraction > UPPER_THRESHOLD_GAS_COMPOSITION) {
+				if (diff < LOWER_THRESHOLD_GAS_COMPOSITION || diff > UPPER_THRESHOLD_GAS_COMPOSITION) {
 
-					double d_nm = totalMoles[id] * delta/100;
-					double d_mass = d_nm * molecularMass; // d_mass can be -ve; 
+					double d_new_moles = delta;
+					double d_mass = d_new_moles * molecularMass; // d_mass can be -ve; 
 					//if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to save the future effort
 					AmountResource ar = getGasAR(gas);
 					
@@ -489,19 +495,20 @@ public class CompositionOfAir implements Serializable {
 							Storage.storeAnResource(recaptured, ar , b.getInventory(), sourceName + "::monitorAir"); 
 					}
 						
-					double new_m = 0, new_nm = 0;
+					double new_m = 0;
+					double new_moles = 0;
 					
 					new_m = mass [gas][id] + d_mass;
-					new_nm = Math.abs(new_m) / molecularMass;
-					if (new_nm < 0)
-			            throw new IllegalStateException("new # of moles " + new_nm +
+					new_moles = Math.abs(new_m) / molecularMass;
+					if (new_moles < 0)
+			            throw new IllegalStateException("new # of moles " + new_moles +
 			                    " is not supposed to be negative in " + settlement);
 					
 					temperature [gas][id] = t;	
 					
-					partialPressure [gas][id] = new_nm * R_GAS_CONSTANT * t / fixedVolume [id];
+					partialPressure [gas][id] = new_moles * R_GAS_CONSTANT * t / fixedVolume [id];
 					mass [gas][id] = new_m ;
-					numMoles [gas][id] = new_nm;
+					numMoles [gas][id] = new_moles;
 				}
 			}
 		}

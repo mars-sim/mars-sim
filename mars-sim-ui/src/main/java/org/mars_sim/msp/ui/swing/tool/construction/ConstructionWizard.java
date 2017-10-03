@@ -219,7 +219,7 @@ public class ConstructionWizard {
 	    ConstructionValues values = mgr.getConstructionValues();
         values.clearCache();
 
-        site = positionNewSite(site, info, skill);
+        site = positionNewSite(site);//, skill);
 
         // Determine construction site location and facing.
 	    //stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
@@ -280,11 +280,11 @@ public class ConstructionWizard {
 	//2015-12-28 Added SiteTask
 	class SiteTask implements Runnable {
 
-		ConstructionSite m_site;
-		ConstructionStageInfo info;
-		int skill;
-		ConstructionValues values;
-		BuildingConstructionMission mission;
+		private ConstructionSite m_site;
+		private ConstructionStageInfo info;
+		private int skill;
+		private ConstructionValues values;
+		private BuildingConstructionMission mission;
 
 		SiteTask(ConstructionSite modifiedSite,
 				ConstructionStageInfo stageInfo,
@@ -303,7 +303,7 @@ public class ConstructionWizard {
 		   	//logger.info("ConstructionWizard's SiteTask's run() is on " + Thread.currentThread().getName() + " Thread");
 			// it's now on pool-3-thread-1 Thread
 
-		   	mission.init_case_1_step_2(m_site, info, skill, values);
+		   	mission.initCase1Step2(m_site, info, skill, values);
 		    mission.init_case_1_step_3();
 		    mission.selectSitePhase();
 		}
@@ -368,7 +368,7 @@ public class ConstructionWizard {
 	    ConstructionManager mgr = s.getConstructionManager();
 	    int skill = site.getSkill();
 	    
-		site = positionNewSite(site, info, skill);
+		site = positionNewSite(site);//, skill);
 	    info = site.getStageInfo();
 		confirmSiteLocation(site, mgr, true, info, skill);
 
@@ -475,7 +475,7 @@ public class ConstructionWizard {
 			else {
 				//constructionManager.removeConstructionSite(site);
 				//site = new ConstructionSite();
-				site = positionNewSite(site, stageInfo, constructionSkill);
+				site = positionNewSite(site);//, constructionSkill);
 				confirmSiteLocation(site, constructionManager, false, stageInfo, constructionSkill);
 			}
 
@@ -550,7 +550,7 @@ public class ConstructionWizard {
 		} else if (result.isPresent() && result.get() == buttonTypeNo) {
 			//constructionManager.removeConstructionSite(site);
 	    	//System.out.println("just removing building");
-			site = positionNewSite(site, stageInfo, constructionSkill);
+			site = positionNewSite(site);//, constructionSkill);
 			confirmSiteLocation(site, constructionManager, false, stageInfo, constructionSkill);
 
 		} else if (result.isPresent() && result.get() == buttonTypeMouseKB) {
@@ -918,8 +918,8 @@ public class ConstructionWizard {
 */
 /*
     private double computeDist(String buildingType) {
-    	if (buildingType.toLowerCase().equals("inflatable greenhouse")
-    			|| buildingType.toLowerCase().equals("inground greenhouse"))
+    	if (buildingType.equalsIgnoreCase("inflatable greenhouse")
+    			|| buildingType.equalsIgnoreCase("inground greenhouse"))
     		return 3;
     	
     	return 3;
@@ -943,12 +943,12 @@ public class ConstructionWizard {
     /**
      * Determines and sets the position of a new construction site.
      * @param site the new construction site.
-     * @param info the site's foundation stage info.
+     * @param stageInfo the site's foundation stage info.
      * @param skill the mission starter's construction skill.
      * @return modified construction site
      */
-    private ConstructionSite positionNewSite(ConstructionSite site, ConstructionStageInfo info,
-            int skill) {
+    private ConstructionSite positionNewSite(ConstructionSite site) { //ConstructionStageInfo stageInfo,
+            //int skill) {
         boolean goodPosition = false;
         Settlement s = site.getSettlement();
 
@@ -981,15 +981,15 @@ public class ConstructionWizard {
             }
             else if (hasLifeSupport) {
             	logger.info("hasLifeSupport : " + hasLifeSupport);
-            	if (buildingType.toLowerCase().equals("inflatable greenhouse")) {
+            	if (buildingType.equalsIgnoreCase("inflatable greenhouse")) {
             		goodPosition = determineSite(buildingType, DEFAULT_SMALL_GREENHOUSE_DISTANCE, site);
             	}
             	
-            	else if (buildingType.toLowerCase().equals("inground greenhouse")) {
+            	else if (buildingType.equalsIgnoreCase("inground greenhouse")) {
             		goodPosition = determineSite(buildingType, DEFAULT_SMALL_GREENHOUSE_DISTANCE, site);
             	}
             	
-            	else if (buildingType.toLowerCase().equals("large greenhouse")) {
+            	else if (buildingType.equalsIgnoreCase("large greenhouse")) {
             		goodPosition = determineSite(buildingType, DEFAULT_LARGE_GREENHOUSE_DISTANCE, site);
             	}
             	
@@ -1072,7 +1072,7 @@ public class ConstructionWizard {
      * @param info the foundation stage info.
      * @param skill the mission starter's construction skill.
      * @return preferred building type or null if none found.
-     */
+     
     private String determinePrefType(ConstructionSite site, ConstructionStageInfo info, int skill) {
 		//logger.info("ConstructionWizard's determinePreferredConstructedBuildingType() is in " + Thread.currentThread().getName() + " Thread");
 
@@ -1093,7 +1093,7 @@ public class ConstructionWizard {
 
         return result;
     }
-
+*/
 
     /**
      * Determine the position and length (for variable length sites) for a new building
