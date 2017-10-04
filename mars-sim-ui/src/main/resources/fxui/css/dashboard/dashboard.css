@@ -1,0 +1,51 @@
+
+.root{}
+
+.nav-button:hover{
+    -fx-background-color:#222D32;
+}
+.nav-button {
+    -fx-background-color:#2A3F54;
+}
+.nav-button:pressed {
+    -fx-background-color:#2A3F54;
+}
+.mprogress-bar>.track {
+	-fx-background-color: derive(rgb(200.0, 200.0, 200.0), 50.0%);
+	-fx-background-radius: 2.0;
+	-fx-padding: 0.0;
+}
+
+.mprogress-bar>.bar {
+	-fx-background-color: #26B99A;
+	-fx-background-radius: 2.0;
+	-fx-background-insets: 0.0;
+        -fx-pref-width:3;
+	-fx-border-width: 0.0;
+	-fx-effect: null;
+}
+
+.mprogress-bar:indeterminate>.bar {
+	-fx-background-color: derive(#26B99A, 50.0%);
+	-fx-background-radius: 2.0;
+	-fx-background-insets: 0.0;
+	-fx-border-width: 0.0;
+	-fx-effect: null;
+}
+
+.custom-progress-bar>.track {
+/*	-fx-background-color: derive(#D5D5D5, 50.0%);*/
+        -fx-background-color:#CDCDCD;
+	-fx-background-radius: 2.0;
+	-fx-padding: 0.0;
+}
+
+.custom-progress-bar>.bar {
+	-fx-background-color: #FFFFFF;
+	-fx-background-radius: 2.0;
+	-fx-background-insets: 0.0;
+        
+	-fx-border-width: 0.0;
+	-fx-effect: null;
+}
+

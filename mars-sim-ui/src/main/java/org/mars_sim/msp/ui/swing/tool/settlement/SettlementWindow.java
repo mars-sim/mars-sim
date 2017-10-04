@@ -264,9 +264,9 @@ extends ToolWindow {
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
 
 		if (mainScene != null) {
-			setSize(new Dimension((int)width.get(), (int)height.get()));
-			setPreferredSize(new Dimension((int)width.get(), (int)height.get()));
-			setMinimumSize(new Dimension(HORIZONTAL/2, VERTICAL/2));
+			//setSize(new Dimension((int)width.get(), (int)height.get()));
+			setPreferredSize(new Dimension(mainScene.getWidth(), mainScene.getHeight() - MainScene.TITLE_BAR_HEIGHT));
+			//setMinimumSize(new Dimension(mainScene.getHORIZONTAL/2, VERTICAL/2));
 			setClosable(false);
 			setResizable(true);
 			setMaximizable(true);

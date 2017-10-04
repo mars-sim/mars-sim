@@ -59,14 +59,14 @@ public class MenuApp {
     public void setupMenuData() {
     	
     	menuData = Arrays.asList(
-                new Pair<String, Runnable>("New Sim", () -> mainMenu.runOne()),
-                new Pair<String, Runnable>("Load Sim", () -> mainMenu.runTwo()),
+                new Pair<String, Runnable>("New Sim", () -> mainMenu.runNew()),
+                new Pair<String, Runnable>("Load Sim", () -> mainMenu.runLoad()),
                 //new Pair<String, Runnable>("Multiplayer", () -> {}),
                 new Pair<String, Runnable>("Tutorial", () -> {}),
                 new Pair<String, Runnable>("Benchmark", () -> {}),
-                new Pair<String, Runnable>("Game Options", () -> {}),
+                new Pair<String, Runnable>("Settings", () -> mainMenu.runSettings()),
                 new Pair<String, Runnable>("Credits", () -> {}),
-                new Pair<String, Runnable>("Exit to Desktop", () -> mainMenu.dialogOnExit(mainMenu.getPane()))   //Platform::exit)
+                new Pair<String, Runnable>("Exit", () -> mainMenu.dialogOnExit(mainMenu.getPane()))   //Platform::exit)
         );
     }    
     

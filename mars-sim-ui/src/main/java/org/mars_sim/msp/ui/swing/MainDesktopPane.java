@@ -179,9 +179,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		firstDisplay = true;
 
 		if (mainScene != null)
-			setPreferredSize(new Dimension(MainScene.DEFAULT_WIDTH, MainScene.DEFAULT_HEIGHT));
+			setPreferredSize(new Dimension(mainScene.getWidth(), mainScene.getHeight()));
 		else
-			setPreferredSize(new Dimension(1280, 768));
+			setPreferredSize(new Dimension(1366, 768-MainScene.TAB_PANEL_HEIGHT));
 
 		prepareListeners();
 

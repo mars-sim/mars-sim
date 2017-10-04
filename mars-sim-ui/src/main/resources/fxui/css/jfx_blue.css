@@ -29,7 +29,6 @@
     -fx-padding: 5 5 5 5;
 }
 
-/*
 .tab-pane > .tab-header-area > .headers-region > .tab:top {
     -fx-border-color: #a3a7a8;
     -fx-border-radius: 5 5 0 0;
@@ -69,5 +68,3 @@
     -fx-background-insets: 0;
     -fx-pref-height: 45px;
 }
-
-*/

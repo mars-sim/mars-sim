@@ -210,7 +210,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	            	bedMap.put(person, bed);
 	        		person.setBed(bed);
 	        		person.setQuarters(building);
-	            	logger.info(person + " has been designated a bed at (" + bed.getX() + ", " + bed.getY() 	+ ") in " + person.getQuarters());
+	            	//logger.info(person + " has been designated a bed at (" + bed.getX() + ", " + bed.getY() 	+ ") in " + person.getQuarters());
 	            	break;
 	            }
 	        }

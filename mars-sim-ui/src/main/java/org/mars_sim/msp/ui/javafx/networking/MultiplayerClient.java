@@ -467,7 +467,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 					multiplayerTray = new MultiplayerTray(this);
 					sendGetRecords(); // obtain the existing settlement list
 					// startTimer();
-					mainMenu.runOne();
+					mainMenu.runNew();
 					// prepareListeners(); // to be run in
 					// ScenarioConfigEditorFX
 				} else {

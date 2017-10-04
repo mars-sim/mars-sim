@@ -25,11 +25,14 @@ import org.fxmisc.wellbehaved.event.Nodes;
 
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.Background; 
+//import javafx.scene.layout.BackgroundFill; 
+//import javafx.scene.layout.CornerRadii; 
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import javafx.stage.Screen;
+//import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.animation.KeyFrame;
@@ -43,6 +46,7 @@ import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
@@ -56,7 +60,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
+//import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -80,8 +84,8 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.input.ScrollEvent;
 
-import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +110,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
+import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
@@ -153,29 +158,32 @@ public class MainScene {
 
 	private static int choice_theme = NIMBUS_THEME;
 
-	public static final int MAIN_TAB = 0;
-	public static final int MAP_TAB = 1;
-	public static final int HELP_TAB = 2;
+	public static final int DASHBOARD_TAB = 0;
+	public static final int MAIN_TAB = 1;
+	public static final int MAP_TAB = 2;
+	public static final int HELP_TAB = 3;
 
 	public static final int LOADING = 0;
 	public static final int SAVING = 1;
 	public static final int AUTOSAVING = 2;
 	public static final int PAUSED = 3;
 
-	public static final int DEFAULT_WIDTH = 1280;// 1366;
-	public static final int DEFAULT_HEIGHT = 768;
-
+	public static final int DEFAULT_WIDTH = 1920;//1366;
+	public static final int DEFAULT_HEIGHT = 1080;//768;
+	public static final int TAB_PANEL_HEIGHT = 35;
+	public static final int TITLE_BAR_HEIGHT = 25;
+		
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
-	private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
+	//private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
 
-	private static final String PAUSE = "PAUSE";
-	private static final String ESC_TO_RESUME = "ESC to resume";
-	private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
+	//private static final String PAUSE = "PAUSE";
+	//private static final String ESC_TO_RESUME = "ESC to resume";
+	//private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
 	private static final String EARTH_DATE_TIME = "EARTH  :  ";
 	private static final String MARS_DATE_TIME = "MARS  :  ";
-	private static final String UMST = " (UMST)";
+	//private static final String UMST = " (UMST)";
 	private static final String ONE_SPACE = " ";
 	private static final String MONTH = "    Month : ";
 	private static final String ORBIT = "Orbit : ";
@@ -206,6 +214,9 @@ public class MainScene {
 	public static boolean menuBarVisible = false;
 	static boolean isShowingDialog = false;
 
+	private int screen_width = DEFAULT_WIDTH;
+	private int screen_height = DEFAULT_HEIGHT;
+
 	private int solElapsedCache = 0;
 
 	private double newTimeRatio = 0;
@@ -227,14 +238,14 @@ public class MainScene {
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
-	private Pane root;
-	private StackPane mainAnchorPane, // monPane,
+	private Parent root;
+	private StackPane rootStackPane, mainStackPane, dashboardStackPane, // monPane,
 			mapStackPane, minimapStackPane, speedPane, soundPane, calendarPane, // farmPane,
 			settlementBox, chatBoxPane, pausePane, asPane, sPane;
 
 	// private FlowPane flowPane;
 	private AnchorPane anchorPane, mapAnchorPane;
-	private SwingNode swingNode, mapNode, minimapNode, guideNode;// monNode, missionNode, resupplyNode, sciNode,
+	private SwingNode swingNode, mapNode, minimapNode;//, guideNode;// monNode, missionNode, resupplyNode, sciNode,
 																	// guideNode ;
 	private Stage stage, loadingStage, savingStage;
 	private Scene scene, savingScene;
@@ -248,9 +259,9 @@ public class MainScene {
 	private Text LSText, monthText, yearText, northText, southText;
 	private Blend blend;
 	private VBox mapLabelBox, speedVBox, soundVBox;
-	private Tab mainTab;
+	private Tab mainTab, dashboardTab;
 
-	private Spinner spinner;
+	//private Spinner spinner;
 
 	private JFXComboBox<Settlement> sBox;
 	// private JFXBadge badgeIcon;
@@ -299,30 +310,29 @@ public class MainScene {
 
 	private OrbitInfo orbitInfo;
 
+	private boolean add;
+
 	// private List<DesktopPane> desktops;
 	// private ObservableList<Screen> screens;
 
 	/**
 	 * Constructor for MainScene
 	 */
-	public MainScene() {
-		// logger.info("MainScene's constructor() is on " +
-		// Thread.currentThread().getName() + " Thread");
+	public MainScene(int width, int height) {
+		screen_width = width;
+		screen_height = height;
+		sceneWidth = new SimpleDoubleProperty(width);
+		sceneHeight = new SimpleDoubleProperty(height-TAB_PANEL_HEIGHT);
+		
+		isMainSceneDoneLoading = false;
+
 		stage = new Stage();
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-		this.isMainSceneDoneLoading = false;
-
-		sceneWidth = new SimpleDoubleProperty(DEFAULT_WIDTH);
-		sceneHeight = new SimpleDoubleProperty(DEFAULT_HEIGHT);
-
-		// logger.info("OS is " + OS);
-		stage.setResizable(true);
-		stage.setMinWidth(sceneWidth.get());// 1024);
-		stage.setMinHeight(sceneHeight.get());// 480);
+		stage.setMinWidth(sceneWidth.get());
+		stage.setMinHeight(sceneHeight.get());
 		stage.setFullScreenExitHint(
 				"Use Ctrl+F (or Meta+C in macOS) to toggle between either the Full Screen mode and the Window mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
-
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
 			if (!isShowingDialog) {
@@ -351,6 +361,7 @@ public class MainScene {
 			setMonitor(stage);
 			stage.centerOnScreen();
 			stage.setTitle(Simulation.title);
+			stage.setResizable(false);
 			stage.show();
 			stage.requestFocus();
 
@@ -494,7 +505,7 @@ public class MainScene {
 			 * SwingUtilities.invokeLater(() -> desktop.openToolWindow(GuideWindow.NAME)); }
 			 */
 		});
-		Nodes.addInputMap(root, f1);
+		Nodes.addInputMap(rootStackPane, f1);
 
 		InputMap<KeyEvent> f2 = consume(keyPressed(F2), e -> {
 			if (desktop.isToolWindowOpen(SearchWindow.NAME))
@@ -504,7 +515,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(SearchWindow.NAME));
 			}
 		});
-		Nodes.addInputMap(root, f2);
+		Nodes.addInputMap(rootStackPane, f2);
 
 		InputMap<KeyEvent> f3 = consume(keyPressed(F3), e -> {
 			if (desktop.isToolWindowOpen(TimeWindow.NAME))
@@ -514,7 +525,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(TimeWindow.NAME));
 			}
 		});
-		Nodes.addInputMap(root, f3);
+		Nodes.addInputMap(rootStackPane, f3);
 
 		InputMap<KeyEvent> f4 = consume(keyPressed(F4), e -> {
 			if (desktop.isToolWindowOpen(MonitorWindow.NAME)) {
@@ -529,7 +540,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(MonitorWindow.NAME));
 			}
 		});
-		Nodes.addInputMap(root, f4);
+		Nodes.addInputMap(rootStackPane, f4);
 
 		InputMap<KeyEvent> f5 = consume(keyPressed(F5), e -> {
 			if (desktop.isToolWindowOpen(MissionWindow.NAME))
@@ -539,7 +550,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(MissionWindow.NAME));
 			}
 		});
-		Nodes.addInputMap(root, f5);
+		Nodes.addInputMap(rootStackPane, f5);
 
 		InputMap<KeyEvent> f6 = consume(keyPressed(F6), e -> {
 			if (desktop.isToolWindowOpen(ScienceWindow.NAME))
@@ -549,7 +560,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(ScienceWindow.NAME));
 			}
 		});
-		Nodes.addInputMap(root, f6);
+		Nodes.addInputMap(rootStackPane, f6);
 
 		InputMap<KeyEvent> f7 = consume(keyPressed(F7), e -> {
 			if (desktop.isToolWindowOpen(ResupplyWindow.NAME))
@@ -559,14 +570,14 @@ public class MainScene {
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(ResupplyWindow.NAME));
 			}
 		});
-		Nodes.addInputMap(root, f7);
+		Nodes.addInputMap(rootStackPane, f7);
 
 		InputMap<KeyEvent> ctrlQ = consume(keyPressed(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					popAQuote();
-					mainAnchorPane.requestFocus();
+					mainStackPane.requestFocus();
 				});
-		Nodes.addInputMap(root, ctrlQ);
+		Nodes.addInputMap(rootStackPane, ctrlQ);
 
 		InputMap<KeyEvent> ctrlN = consume(keyPressed(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)),
 				e -> {
@@ -579,7 +590,7 @@ public class MainScene {
 						desktop.getEventTableModel().setNoFiring(false);
 					}
 				});
-		Nodes.addInputMap(root, ctrlN);
+		Nodes.addInputMap(rootStackPane, ctrlN);
 
 		InputMap<KeyEvent> ctrlF = consume(keyPressed(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN)),
 				e -> {
@@ -595,7 +606,7 @@ public class MainScene {
 					}
 					isFullScreenCache = stage.isFullScreen();
 				});
-		Nodes.addInputMap(root, ctrlF);
+		Nodes.addInputMap(rootStackPane, ctrlF);
 
 		InputMap<KeyEvent> ctrlUp = consume(keyPressed(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN)),
 				e -> {
@@ -603,7 +614,7 @@ public class MainScene {
 					soundSlider.setValue(soundSlider.getValue() + .5);
 					// soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() +.05));
 				});
-		Nodes.addInputMap(root, ctrlUp);
+		Nodes.addInputMap(rootStackPane, ctrlUp);
 
 		InputMap<KeyEvent> ctrlDown = consume(
 				keyPressed(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN)), e -> {
@@ -611,7 +622,7 @@ public class MainScene {
 					soundSlider.setValue(soundSlider.getValue() - .5);
 					// soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() -.05));
 				});
-		Nodes.addInputMap(root, ctrlDown);
+		Nodes.addInputMap(rootStackPane, ctrlDown);
 
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)),
 				e -> {			
@@ -633,32 +644,32 @@ public class MainScene {
 						logger.info("It's not allowed to mute or unmute while sim is on pause!");
 					}
 				});
-		Nodes.addInputMap(root, ctrlM);
+		Nodes.addInputMap(rootStackPane, ctrlM);
 
 		// InputMap<KeyEvent> ctrlN = consume(keyPressed(new
 		// KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), e -> {
 		// newSimulation();
 		// });
 		// Nodes.addInputMap(root, ctrlN);
-
+ 
 		InputMap<KeyEvent> ctrlS = consume(keyPressed(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					saveSimulation(Simulation.SAVE_DEFAULT);
 				});
-		Nodes.addInputMap(root, ctrlS);
+		Nodes.addInputMap(rootStackPane, ctrlS);
 
 		InputMap<KeyEvent> ctrlE = consume(keyPressed(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					saveSimulation(Simulation.SAVE_AS);
 				});
-		Nodes.addInputMap(root, ctrlE);
+		Nodes.addInputMap(rootStackPane, ctrlE);
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					if (!isShowingDialog)
 						dialogOnExit();
 				});
-		Nodes.addInputMap(root, ctrlX);
+		Nodes.addInputMap(rootStackPane, ctrlX);
 
 		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)),
 				e -> {
@@ -675,7 +686,7 @@ public class MainScene {
 						}
 					}
 				});
-		Nodes.addInputMap(root, ctrlT);
+		Nodes.addInputMap(rootStackPane, ctrlT);
 
 	}
 
@@ -769,15 +780,14 @@ public class MainScene {
 	 */
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
-		// logger.info("MainScene's initializeScene() is on " +
-		// Thread.currentThread().getName() + " Thread");
+		IconFontFX.register(FontAwesome.getIconFont());
 
 		// see dpi scaling at
 		// http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
 		// "I guess we'll have to wait until Java 9 for more flexible DPI support.
 		// In the meantime I managed to get JavaFX DPI scale factor,
 		// but it is a hack (uses both AWT and JavaFX methods)"
-
+/*
 		// Number of actual horizontal lines (768p)
 		double trueHorizontalLines = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		// Number of scaled horizontal lines. (384p for 200%)
@@ -785,28 +795,22 @@ public class MainScene {
 		// DPI scale factor.
 		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
 		logger.info("DPI Scale Factor is " + dpiScaleFactor);
+*/
 
 		// Create group to hold swingNode which in turns holds the Swing desktop
 		swingNode = new SwingNode();
 		createSwingNode();
-
-		mainAnchorPane = new StackPane();
-		mainAnchorPane.getChildren().add(swingNode);
-		mainAnchorPane.setMinHeight(sceneHeight.get());
-		mainAnchorPane.setMinWidth(sceneWidth.get());
-		// 2016-11-25 Setup root for embedding key events
-		root = new Pane();// Group();
-
+		//JFXToolbar toolbar = new JFXToolbar();
+		
+		// Create an instance of soundPlayer after the instance of desktop is ready.
 		soundPlayer = desktop.getSoundPlayer();
-
-		// 2016-11-14 Setup key events using wellbehavedfx
-		setupKeyEvents();
-
-		IconFontFX.register(FontAwesome.getIconFont());
-
-		// 2015-11-11 Added createFlyout()
+				
+		// Setup root for embedding key events
+		root = new Pane();// Group();
+	
 		marsNetBox = createFlyout();
 		flag = false;
+		
 		// EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(),
 		// chatBox);
 		// Create ControlFX's StatusBar
@@ -820,7 +824,6 @@ public class MainScene {
 
 		createSpeedPanel();
 		createSoundPopup();
-
 		// createFarmPopup();
 
 		// Create menuBar
@@ -829,8 +832,6 @@ public class MainScene {
 		// createJFXSnackbar();
 		// Create jfxTabPane
 		createJFXTabs();
-
-		anchorPane = new AnchorPane();
 
 		pausePane = new StackPane();
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
@@ -883,29 +884,36 @@ public class MainScene {
 		AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 165);
 		AnchorPane.setRightAnchor(lastSaveLabel, marsTimeButton.getMinWidth() + marsTimeButton.getMinWidth() + 165);
 
+		anchorPane = new AnchorPane();
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeButton,
 				marsTimeButton, soundBtn);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
-		root.getChildren().addAll(anchorPane);
-
-		scene = new Scene(root, sceneWidth.get(), sceneHeight.get());// , Color.BROWN);
+		// Set up stackPane for anchoring the JFXDialog box and others
+		rootStackPane = new StackPane(anchorPane);
+		//rootStackPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+		
+		scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
 
 		// pausePane.prefWidthProperty().bind(scene.widthProperty());
 		// pausePane.prefHeightProperty().bind(scene.heightProperty());
 		pausePane.setLayoutX((sceneWidth.get() - pausePane.getPrefWidth()) / 2D);
 		pausePane.setLayoutY((sceneHeight.get() - pausePane.getPrefHeight()) / 2D);
 
-		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(35));//73));
+		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 
-		mainAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));
-		mainAnchorPane.prefWidthProperty().bind(scene.widthProperty());
+		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
+		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
 
+		mainStackPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
+		mainStackPane.prefWidthProperty().bind(scene.widthProperty());
+		
 		// anchorTabPane is within jfxTabPane
-		mapAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));// 73));
+		mapAnchorPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
 		mapAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 
-		mapStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));// 73));
+		// Setup key events using wellbehavedfx
+		setupKeyEvents();
 
 		return scene;
 	}
@@ -1123,7 +1131,7 @@ public class MainScene {
 		 */
 		// TODO: add pause radio box
 
-		spinner = new Spinner();
+		Spinner<Integer> spinner = new Spinner<Integer>();
 		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 		// spinner.setValueFactory(new SpinnerValueFactory.IntSpinnerValueFactory(0,
 		// 10));
@@ -1926,21 +1934,65 @@ public class MainScene {
 	@SuppressWarnings("restriction")
 	public void createJFXTabs() {
 		jfxTabPane = new JFXTabPane();
-		jfxTabPane.setPrefSize(sceneHeight.get(), sceneWidth.get());
-
+/*		
 		String cssFile = null;
 
 		if (theme == 0 || theme == 6)
 			cssFile = "/fxui/css/jfx_blue.css";
-		else
+		else if (theme == 7)
 			cssFile = "/fxui/css/jfx_orange.css";
 
 		jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		jfxTabPane.getStyleClass().add("jfx-tab-pane");
+*/
+		
+		mainStackPane = new StackPane();
+		mainStackPane.getChildren().add(swingNode);
+		
+		dashboardStackPane = new StackPane();
 
+		dashboardTab = new Tab();
+		dashboardTab.setText("Dashboard");
+		dashboardTab.setContent(dashboardStackPane);
+		
+		
+		Parent parent = null;
+		DashboardController controller = null;
+		FXMLLoader fxmlLoader = null;
+/*		
+		try {
+			fxmlLoader = new FXMLLoader();
+			parent = (Parent) fxmlLoader.load(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml"));
+			//fxmlLoader.setController(controller);
+			controller = (DashboardController) fxmlLoader.getController();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		
+*/
+ 
+		
+		try {
+			fxmlLoader = new FXMLLoader();
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml"));														// //
+			//fxmlLoader.setController(this);
+			parent = (Parent) fxmlLoader.load();
+			controller = (DashboardController)fxmlLoader.getController();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+
+		//AnchorPane anchorPane = (AnchorPane)parent.lookup("#anchorPane");
+		//anchorPane.setPrefSize(screen_width, screen_height);
+		
+		controller.setSize(screen_width, screen_height-TAB_PANEL_HEIGHT);
+		
+		dashboardStackPane.getChildren().add(parent);
+		
 		mainTab = new Tab();
 		mainTab.setText("Main");
-		mainTab.setContent(mainAnchorPane);
+		mainTab.setContent(mainStackPane);
 
 		// set up mapTab
 		mapAnchorPane = new AnchorPane();
@@ -2002,12 +2054,17 @@ public class MainScene {
 		guideTab.setText("Help");
 		guideTab.setContent(guidePane);
 
-		jfxTabPane.getTabs().addAll(mainTab, mapTab, guideTab);
+		jfxTabPane.getTabs().addAll(dashboardTab, mainTab, mapTab, guideTab);
 
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
-			if (newTab == mainTab) {
-				mainAnchorPane.requestFocus();
+			if (newTab == dashboardTab) {
+				dashboardStackPane.requestFocus();
+				closeMaps();
+			}
+
+			else if (newTab == mainTab) {
+				mainStackPane.requestFocus();
 				closeMaps();
 			}
 
@@ -2403,7 +2460,7 @@ public class MainScene {
 	 */
 	// 2015-08-29 Added updateThemeColor()
 	public void updateThemeColor(int theme, Color txtColor, Color txtColor2, String cssFile) {
-		mainAnchorPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		mainStackPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		if (!OS.contains("mac"))
 			menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 
@@ -2465,6 +2522,7 @@ public class MainScene {
 			// farmIcon.setFill(Color.YELLOW);
 			// farmBtn.setGraphic(farmIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_orange.css").toExternalForm());
+			jfxTabPane.getStyleClass().add("jfx-tab-pane");
 		}
 
 		else {
@@ -2483,6 +2541,7 @@ public class MainScene {
 			// farmIcon.setFill(Color.LAVENDER);
 			// farmBtn.setGraphic(farmIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
+			jfxTabPane.getStyleClass().add("jfx-tab-pane");
 		}
 
 		chatBox.update();
@@ -2882,7 +2941,7 @@ public class MainScene {
 			// messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER,
 			// PNotification.PAUSE_ICON)
 			boolean hasIt = false;
-			for (Node node : root.getChildrenUnmodifiable()) {
+			for (Node node : rootStackPane.getChildren()) {//root.getChildrenUnmodifiable()) {
 				if (node == pausePane) {
 					hasIt = true;
 					break;
@@ -2891,7 +2950,8 @@ public class MainScene {
 			if (!hasIt) {
 				pausePane.setLayoutX((scene.getWidth() - pausePane.getPrefWidth()) / 2D);
 				pausePane.setLayoutY((scene.getHeight() - pausePane.getPrefHeight()) / 2D);
-				root.getChildren().add(pausePane);
+				//root.getChildrenUnmodifiable().add(pausePane);
+				rootStackPane.getChildren().add(pausePane);
 			}
 		});
 
@@ -2901,14 +2961,15 @@ public class MainScene {
 		Platform.runLater(() -> {
 			// messagePopup.stop()
 			boolean hasIt = false;
-			for (Node node : root.getChildrenUnmodifiable()) {
+			for (Node node : rootStackPane.getChildren()) {//root.getChildrenUnmodifiable()) {
 				if (node == pausePane) {
 					hasIt = true;
 					break;
 				}
 			}
 			if (hasIt)
-				root.getChildren().remove(pausePane);
+				rootStackPane.getChildren().remove(pausePane);
+				//root.getChildrenUnmodifiable().remove(pausePane);
 		});
 
 	}
@@ -3032,7 +3093,6 @@ public class MainScene {
 	 * Open the exit dialog box
 	 */
 	public void dialogOnExit() {
-		jfxTabPane.getSelectionModel().select(mainTab);
 		isShowingDialog = true;
 		Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
 		l.setPadding(new Insets(10, 10, 10, 10));
@@ -3056,7 +3116,7 @@ public class MainScene {
 		sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
 		StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
 		JFXDialog dialog = new JFXDialog();
-		dialog.setDialogContainer(mainAnchorPane);
+		dialog.setDialogContainer(rootStackPane);
 		dialog.setContent(sp);
 		dialog.show();
 
@@ -3149,18 +3209,10 @@ public class MainScene {
 		return theme;
 	}
 
-	public double getWidth() {
-		return sceneWidth.get();
-	}
-
-	public double getHeight() {
-		return sceneHeight.get();
-	}
-
 	public AnchorPane getAnchorPane() {
 		return anchorPane;
 	}
-
+	
 	public MenuBar getMenuBar() {
 		return menuBar;
 	}
@@ -3358,6 +3410,8 @@ public class MainScene {
 			StackPane pane = new StackPane();// starfield);
 			pane.setPrefHeight(sceneWidth.get());
 			pane.setPrefWidth(sceneHeight.get());
+			//pane.prefHeightProperty().bind(scene.heightProperty());
+			//pane.prefWidthProperty().bind(scene.widthProperty());
 
 			startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());
 		} else {
@@ -3392,7 +3446,7 @@ public class MainScene {
 			return false;
 	}
 
-	public Pane getRoot() {
+	public Parent getRoot() {
 		return root;
 	}
 
@@ -3478,6 +3532,21 @@ public class MainScene {
 			soundSlider.setDisable(true);// .setValue(0);
 	}
 
+	public void setScreenSize(int w, int h) {
+		screen_width = w;
+		screen_height = h;
+	}
+	
+	public int getWidth() {
+		return screen_width;
+	}
+	
+	public int getHeight() {
+		return (int) sceneHeight.get();//screen_height;
+	}
+	
+	
+	
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;
@@ -3485,7 +3554,21 @@ public class MainScene {
 		marsNetBox = null;
 		marsNetBtn = null;
 		chatBox = null;
-		mainAnchorPane = null;
+		mapStackPane = null;
+		mainStackPane = null;
+		dashboardStackPane = null;
+		root = null;
+		rootStackPane = null; 
+		minimapStackPane = null; 
+		speedPane = null; 
+		soundPane = null; 
+		calendarPane = null; 
+		settlementBox = null; 
+		chatBoxPane = null; 
+		pausePane = null; 
+		asPane = null; 
+		sPane = null; 
+
 		anchorPane = null;
 		newSimThread = null;
 		stage = null;
