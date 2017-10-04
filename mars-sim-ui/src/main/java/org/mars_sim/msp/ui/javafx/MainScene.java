@@ -168,8 +168,8 @@ public class MainScene {
 	public static final int AUTOSAVING = 2;
 	public static final int PAUSED = 3;
 
-	public static final int DEFAULT_WIDTH = 1920;//1366;
-	public static final int DEFAULT_HEIGHT = 1080;//768;
+	public static final int DEFAULT_WIDTH = 1366; //1920;//
+	public static final int DEFAULT_HEIGHT = 768; //1080;//
 	public static final int TAB_PANEL_HEIGHT = 35;
 	public static final int TITLE_BAR_HEIGHT = 25;
 		
@@ -268,11 +268,11 @@ public class MainScene {
 	// private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; // calendarButton,
 	private static JFXSlider zoomSlider, soundSlider; // timeSlider,
-	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;// , farmBtn; //
-																								// miniMapBtn, mapBtn,
+	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;// , farmBtn; //																				// miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// , farmPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
-
+	private JFXDialog exitDialog;
+	
 	private CheckBox muteBox;
 	// private DndTabPane dndTabPane;
 	private ESCHandler esc = null;
@@ -310,10 +310,7 @@ public class MainScene {
 
 	private OrbitInfo orbitInfo;
 
-	private boolean add;
-
 	// private List<DesktopPane> desktops;
-	// private ObservableList<Screen> screens;
 
 	/**
 	 * Constructor for MainScene
@@ -335,9 +332,8 @@ public class MainScene {
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
-			if (!isShowingDialog) {
+			//if (!isShowingDialog)
 				dialogOnExit();
-			}
 			e.consume();
 		});
 
@@ -666,8 +662,9 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					if (!isShowingDialog)
+					//if (!isShowingDialog)
 						dialogOnExit();
+					e.consume();
 				});
 		Nodes.addInputMap(rootStackPane, ctrlX);
 
@@ -781,21 +778,6 @@ public class MainScene {
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
 		IconFontFX.register(FontAwesome.getIconFont());
-
-		// see dpi scaling at
-		// http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
-		// "I guess we'll have to wait until Java 9 for more flexible DPI support.
-		// In the meantime I managed to get JavaFX DPI scale factor,
-		// but it is a hack (uses both AWT and JavaFX methods)"
-/*
-		// Number of actual horizontal lines (768p)
-		double trueHorizontalLines = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		// Number of scaled horizontal lines. (384p for 200%)
-		double scaledHorizontalLines = Screen.getPrimary().getBounds().getHeight();
-		// DPI scale factor.
-		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
-		logger.info("DPI Scale Factor is " + dpiScaleFactor);
-*/
 
 		// Create group to hold swingNode which in turns holds the Swing desktop
 		swingNode = new SwingNode();
@@ -981,11 +963,7 @@ public class MainScene {
 	/**
 	 * Creates and returns the panel for simulation speed and time info
 	 */
-	// 2017-01-12 Added createSpeedPanel
-	@SuppressWarnings("unchecked")
 	public void createSpeedPanel() {
-		// logger.info("MainScene's createEarthTimeBox() is on " +
-		// Thread.currentThread().getName());
 
 		speedBtn = new JFXButton();
 		// speedBtn.setStyle(value);
@@ -1004,6 +982,7 @@ public class MainScene {
 			} else {
 				simSpeedPopup.show(speedBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
 			}
+			e.consume();
 		});
 
 		speedPane = new StackPane();
@@ -1312,11 +1291,7 @@ public class MainScene {
 	/**
 	 * Creates and returns the sound popup box
 	 */
-	// 2017-01-25 Added createSoundPopup()
 	public void createSoundPopup() {
-		// logger.info("MainScene's createSoundPopup() is on " +
-		// Thread.currentThread().getName());
-
 		soundBtn = new JFXButton();
 		// soundBtn.getStyleClass().add("menu-button");//"button-raised");
 		// Icon icon = new Icon("MUSIC");
@@ -1325,7 +1300,7 @@ public class MainScene {
 		// value.setPadding(new Insets(1));
 		// Label bell = createIconLabel("\uf0a2", 15);
 		// IconFontFX.register(FontAwesome.getIconFont());
-		soundIcon = new IconNode(FontAwesome.BELL_O);
+		soundIcon = new IconNode(FontAwesome.MUSIC);//.BELL_O);
 		soundIcon.setIconSize(20);
 		// soundIcon.setFill(Color.YELLOW);
 		// soundIcon.setStroke(Color.WHITE);
@@ -1340,6 +1315,7 @@ public class MainScene {
 			} else {
 				soundPopup.show(soundBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
 			}
+			e.consume();
 		});
 
 		soundPane = new StackPane();
@@ -1384,7 +1360,7 @@ public class MainScene {
 				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
 		muteBox.setAlignment(Pos.CENTER_RIGHT);
-		muteBox.setOnAction(s -> {
+		muteBox.setOnAction(e -> {
 			if (!masterClock.isPaused()) {
 				if (muteBox.isSelected()) {
 					// mute it
@@ -1401,6 +1377,8 @@ public class MainScene {
 				muteBox.setSelected(!muteBox.isSelected());
 				logger.info("It's not allowed to mute or unmute while sim is on pause!");
 			}
+			
+			e.consume();
 		});
 
 		// detect dragging
@@ -1548,30 +1526,10 @@ public class MainScene {
 		yearText = createBlendText(ORBIT + marsClock.getOrbitString());
 
 		setQuickToolTip(monthText, "the current Martian month. Each orbit has 24 months with either 27 or 28 Sols");
-		setQuickToolTip(yearText,
-				"the current Martian orbit (or year). Note : Martian Orbit 0015 coincides with Earth year 2043 CE"); // The
-																														// Martian
-																														// year
-																														// is
-																														// referred
-																														// to
-																														// as
-																														// an
-																														// "orbit".
-																														// Each
-																														// orbit
-																														// has
-																														// 668.59
-																														// Martian
-																														// sols.
-																														// It
-																														// is
-																														// 668.5921
-																														// Martian
-																														// days
-																														// ("Sols")
-																														// long.
-
+		setQuickToolTip(yearText, "the current Martian orbit (or year). "
+				+ "Orbit 0015 coincides with Earth year 2043 CE"); 
+		// The Martian year is referred to as an "orbit". Each orbit has 668.59 Martian sols and 
+		// is 668.5921 Martian days long.
 		HBox hBox = new HBox();
 		hBox.setPadding(new Insets(2, 15, 2, 15));
 		hBox.setAlignment(Pos.BOTTOM_CENTER);
@@ -1583,19 +1541,10 @@ public class MainScene {
 		orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();
 		LSText = createBlendText(Math.round(L_s * 100D) / 100D + Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		setQuickToolTip(LSText,
-				"L_s [in degrees] e.g. For Northern hemisphere, Spring equinox at L_s=0; Winter solstice at L_s=270.");// Summer
-																														// solstice
-																														// at
-																														// L_s
-																														// =
-																														// 90.
-																														// Autumn
-																														// equinox
-																														// at
-																														// L_s
-																														// =
-																														// 180.");
+		setQuickToolTip(LSText, "L_s in deg. For Northern hemisphere, "
+				+ "Spring equinox at L_s=0; Winter solstice at L_s=270."
+				+ "Summer solstice at L_s=90."																			
+				+ "Autumn equinox at L_s = 180.");
 
 		HBox LsBox = new HBox();
 		LsBox.setPadding(new Insets(2, 2, 2, 2));
@@ -1648,6 +1597,7 @@ public class MainScene {
 			} else {
 				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.RIGHT, -20, 25);
 			}
+			e.consume();
 		});
 
 		marsTimeButton.setId("rich-orange");
@@ -1676,7 +1626,7 @@ public class MainScene {
 			}
 
 			// minimapButton.toFront();
-
+			e.consume();
 		});
 
 		mapToggle = new JFXToggleButton();
@@ -1719,6 +1669,8 @@ public class MainScene {
 				mapToggle.toFront();
 			} else
 				cacheToggle.setText("Map Cache Off");
+			
+			e.consume();
 		});
 
 		rotateCWBtn = new JFXButton();
@@ -1733,6 +1685,7 @@ public class MainScene {
 		setQuickToolTip(rotateCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.clockwise"));
 		rotateCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);
+			e.consume();
 		});
 
 		rotateCCWBtn = new JFXButton();
@@ -1748,6 +1701,7 @@ public class MainScene {
 		setQuickToolTip(rotateCCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"));
 		rotateCCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);
+			e.consume();
 		});
 
 		recenterBtn = new JFXButton();
@@ -1764,6 +1718,7 @@ public class MainScene {
 		recenterBtn.setOnAction(e -> {
 			mapPanel.reCenter();
 			zoomSlider.setValue(0);
+			e.consume();
 		});
 
 	}
@@ -2622,7 +2577,7 @@ public class MainScene {
 			} else {
 				openChatBox();
 			}
-
+			e.consume();
 		});
 
 		return marsNetBox;
@@ -3004,17 +2959,21 @@ public class MainScene {
 	 * Pauses the marquee timer and pauses the simulation.
 	 */
 	public void pauseSimulation() {
-		isMuteCache = desktop.getSoundPlayer().isMute(false);
-		if (!isMuteCache)
-			desktop.getSoundPlayer().setMute(true);
-		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-		masterClock.setPaused(true);
+		if (exitDialog == null || !exitDialog.isVisible()) {
+			isShowingDialog = true;
+			isMuteCache = desktop.getSoundPlayer().isMute(false);
+			if (!isMuteCache)
+				desktop.getSoundPlayer().setMute(true);
+			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
+			masterClock.setPaused(true);
+		}
 	}
 
 	/**
 	 * Unpauses the marquee timer and unpauses the simulation.
 	 */
 	public void unpauseSimulation() {
+		isShowingDialog = false;
 		masterClock.setPaused(false);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 		if (!isMuteCache)
@@ -3092,52 +3051,69 @@ public class MainScene {
 	/**
 	 * Open the exit dialog box
 	 */
-	public void dialogOnExit() {
-		isShowingDialog = true;
-		Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
-		l.setPadding(new Insets(10, 10, 10, 10));
-		l.setFont(Font.font(null, FontWeight.BOLD, 14));
-		HBox hb = new HBox();
-		JFXButton b0 = new JFXButton("Save & Exit");
-		b0.setStyle("-fx-background-color: white;");
-		JFXButton b1 = new JFXButton("Exit");
-		b1.setStyle("-fx-background-color: white;");
-		JFXButton b2 = new JFXButton("Back");
-		b2.setStyle("-fx-background-color: white;");
-		// b0.setPadding(new Insets(2, 2, 2, 2));
-		hb.getChildren().addAll(b0, b1, b2);
-		HBox.setMargin(b0, new Insets(3, 3, 3, 3));
-		HBox.setMargin(b1, new Insets(3, 3, 3, 3));
-		HBox.setMargin(b2, new Insets(3, 3, 3, 3));
-		VBox vb = new VBox();
-		vb.setPadding(new Insets(5, 5, 5, 5));
-		vb.getChildren().addAll(l, hb);
-		StackPane sp = new StackPane(vb);
-		sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
-		StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
-		JFXDialog dialog = new JFXDialog();
-		dialog.setDialogContainer(rootStackPane);
-		dialog.setContent(sp);
-		dialog.show();
-
-		b0.setOnAction(e -> {
-			dialog.close();
-			saveOnExit();
-		});
-
-		b1.setOnAction(e -> {
-			dialog.close();
-			endSim();
-			exitSimulation();
-			Platform.exit();
-			System.exit(0);
-		});
-
-		b2.setOnAction(e -> {
-			dialog.close();
-			isShowingDialog = false;
-			e.consume();
-		});
+	public void dialogOnExit() {		
+		if (!masterClock.isPaused()) {
+			if (exitDialog == null) {
+				isShowingDialog = true;
+	
+				Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
+				l.setPadding(new Insets(10, 10, 10, 10));
+				l.setFont(Font.font(null, FontWeight.BOLD, 14));
+				
+				HBox hb = new HBox();
+				JFXButton b0 = new JFXButton("Save & Exit");
+				b0.setStyle("-fx-background-color: white;");
+				JFXButton b1 = new JFXButton("Exit");
+				b1.setStyle("-fx-background-color: white;");
+				JFXButton b2 = new JFXButton("Back");
+				b2.setStyle("-fx-background-color: white;");
+				// b0.setPadding(new Insets(2, 2, 2, 2));
+				
+				hb.getChildren().addAll(b0, b1, b2);
+				HBox.setMargin(b0, new Insets(3, 3, 3, 3));
+				HBox.setMargin(b1, new Insets(3, 3, 3, 3));
+				HBox.setMargin(b2, new Insets(3, 3, 3, 3));
+				
+				VBox vb = new VBox();
+				vb.setPadding(new Insets(5, 5, 5, 5));
+				vb.getChildren().addAll(l, hb);
+				StackPane sp = new StackPane(vb);
+				sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
+				StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
+				
+				exitDialog = new JFXDialog();
+				exitDialog.setDialogContainer(rootStackPane);
+				exitDialog.setContent(sp);
+				exitDialog.show();
+				
+				b0.setOnAction(e -> {
+					exitDialog.close();
+					saveOnExit();
+					e.consume();
+				});
+		
+				b1.setOnAction(e -> {
+					exitDialog.close();
+					endSim();
+					exitSimulation();
+					Platform.exit();
+					System.exit(0);
+					e.consume();
+				});
+		
+				b2.setOnAction(e -> {
+					isShowingDialog = false;
+					exitDialog.close();
+					e.consume();
+				});
+	
+			}
+			
+			else if (!exitDialog.isVisible()) {
+				isShowingDialog = true;
+				exitDialog.show();
+			}
+		}
 
 	}
 
@@ -3150,7 +3126,7 @@ public class MainScene {
 		// Save the simulation as default.sim
 		masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
 
-		Task task = new Task<Void>() {
+		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
 				try {
@@ -3218,12 +3194,20 @@ public class MainScene {
 	}
 
 	private MenuItem registerAction(MenuItem menuItem) {
+/*	
 		menuItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
 				// showPopup(borderPane, "You clicked the " + menuItem.getText() + " icon");
 				System.out.println("You clicked the " + menuItem.getText() + " icon");
+				?
 			}
 		});
+*/		
+		menuItem.setOnAction(e -> {
+			System.out.println("You clicked the " + menuItem.getText() + " icon");
+			e.consume();
+		});
+		
 		return menuItem;
 	}
 

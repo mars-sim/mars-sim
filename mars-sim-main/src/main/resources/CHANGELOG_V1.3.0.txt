@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4165) - 2017-10-03
+## v3.1.0-Preview 9 (build 4167) - 2017-10-04
 
 
 ### KNOWN LIMITATIONS :
@@ -61,6 +61,10 @@ https://github.com/mars-sim/mars-sim
 
 1. Add build # on the bottom right of the main menu.
 
+2. Detect the current screen resolution and set it as the default resolution.
+
+3. Add a list of supported resolutions in the main menu.
+
 
 ### FIXES :
 
@@ -70,7 +74,7 @@ https://github.com/mars-sim/mars-sim
 
 3. Fix bugs in solar/fuel/electric heating.
 
-4. Fix settlers being underweight and short height issue.  
+4. Fix settlers being under-weight and short-height issue.  
 
 5. Correct not being able to store resources after loading from a saved sim.
    

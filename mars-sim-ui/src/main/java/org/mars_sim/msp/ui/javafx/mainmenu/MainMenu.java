@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -99,13 +100,15 @@ public class MainMenu {
     private boolean isShowingDialog = false;
 	private boolean isExit = false;
 	
-	public int mainscene_width = 1920;//1366;
-	public int mainscene_height = 1080;//768;
+	public int mainscene_width = 1366; //1920;//
+	public int mainscene_height = 768; //1080;//
 
     //private double anchorX;
     //private double rate;
     //private int currentItem = 0;
     
+	private ObservableList<Screen> screens;
+
     private Point2D anchorPt;
     private Point2D previousLocation;
     
@@ -131,6 +134,31 @@ public class MainMenu {
     public MainMenu() {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	mainMenu = this;
+    	
+		// See DPI Scaling at
+		// http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
+		// "I guess we'll have to wait until Java 9 for more flexible DPI support.
+		// In the meantime I managed to get JavaFX DPI scale factor,
+		// but it is a hack (uses both AWT and JavaFX methods)"
+/*
+		// Number of actual horizontal lines (768p)
+		double trueHorizontalLines = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+		// Number of scaled horizontal lines. (384p for 200%)
+		double scaledHorizontalLines = Screen.getPrimary().getBounds().getHeight();
+		// DPI scale factor.
+		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
+		
+		logger.info("horizontal lines : " + trueHorizontalLines);
+		logger.info("DPI Scale Factor is " + dpiScaleFactor);
+*/
+		
+		Screen screen = Screen.getPrimary(); 
+		Rectangle2D bounds = screen.getVisualBounds();
+		
+		mainscene_width = (int) bounds.getWidth();
+		mainscene_height = (int) bounds.getHeight();
+       
+		logger.info("Your Current Resolution is " + mainscene_width + " x " + mainscene_height);
  	}
 
     /*
@@ -305,6 +333,7 @@ public class MainMenu {
        primaryStage.centerOnScreen();
        primaryStage.initStyle(StageStyle.TRANSPARENT);
        primaryStage.show();
+
 
    }
 	
@@ -731,14 +760,56 @@ public class MainMenu {
 	
 			final ToggleGroup group = new ToggleGroup();
 
-			JFXRadioButton r0 = new JFXRadioButton("1920 x 1024");
-		    r0.setToggleGroup(group);
-		    r0.setSelected(true);
-		    
-			JFXRadioButton r1 = new JFXRadioButton("1366 x 768");
+			JFXRadioButton r7 = new JFXRadioButton("2560 x 1600");
+		    r7.setToggleGroup(group);
+  
+			JFXRadioButton r6 = new JFXRadioButton("2560 x 1440");
+		    r6.setToggleGroup(group);
+  
+			JFXRadioButton r5 = new JFXRadioButton("1920 x 1080");
+		    r5.setToggleGroup(group);
+    
+			JFXRadioButton r4 = new JFXRadioButton("1600 x 900");
+		    r4.setToggleGroup(group);
+    
+			JFXRadioButton r3 = new JFXRadioButton("1366 x 768");
+		    r3.setToggleGroup(group);
+
+			JFXRadioButton r2 = new JFXRadioButton("1280 x 800");
+		    r2.setToggleGroup(group);
+
+			JFXRadioButton r1 = new JFXRadioButton("1280 × 720");
 		    r1.setToggleGroup(group);
-		    //r1.setSelected(true);
-   
+
+			JFXRadioButton r0 = new JFXRadioButton("1024 x 768");
+		    r0.setToggleGroup(group);
+		
+		    
+		    if (mainscene_width == 2560) {
+		    	if (mainscene_height == 1600) {
+				    r7.setSelected(true);
+		    	}
+		    	else if (mainscene_height == 1440) {
+				    r6.setSelected(true);
+		    	}
+		    }
+		    else if (mainscene_width == 1920)
+			    r5.setSelected(true);
+		    else if (mainscene_width == 1600)
+			    r4.setSelected(true);	 
+		    else if (mainscene_width == 1366)
+			    r3.setSelected(true);	    
+		    else if (mainscene_width == 1280) {	 
+		    	if (mainscene_height == 800) {
+				    r2.setSelected(true);
+		    	}
+		    	else if (mainscene_height == 720) {
+				    r1.setSelected(true);
+		    	}
+		    }
+		    else if (mainscene_width == 1024)
+			    r0.setSelected(true);
+		    
 		    group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 		        @Override
 		        public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
@@ -746,11 +817,23 @@ public class MainMenu {
 			        	 // Cast object to radio button
 			        	JFXRadioButton selected = (JFXRadioButton) group.getSelectedToggle();
 			            //System.out.println("Selected Radio Button - "+chk.getText());
-			        	
-		        		if (selected.equals(r1))
-		        			setScreenSize(1366, 768);	
-		        		else if (selected.equals(r0))
+
+		        		if (selected.equals(r7))
+		        			setScreenSize(2560, 1600);	
+		        		else if (selected.equals(r6))
+		        			setScreenSize(2560, 1440);	
+		        		else if (selected.equals(r5))
 		        			setScreenSize(1920, 1080);	
+		        		else if (selected.equals(r4))
+		        			setScreenSize(1600, 900);	
+		        		else if (selected.equals(r3))
+		        			setScreenSize(1366, 768);	
+		        		else if (selected.equals(r2))
+		        			setScreenSize(1280, 800);
+		        		else if (selected.equals(r1))
+		        			setScreenSize(1280, 720);	
+		        		else if (selected.equals(r0))
+		        			setScreenSize(1024, 768);	
 
 		        	}
 		        }
@@ -779,17 +862,29 @@ public class MainMenu {
 */		
 		    
 			HBox radio_hb = new HBox();
-			radio_hb.getChildren().addAll(r0, r1);
+			radio_hb.getChildren().addAll(r0, r1, r2, r3);
 			radio_hb.setAlignment(Pos.CENTER);
+
+			HBox radio_hb2 = new HBox();
+			radio_hb2.getChildren().addAll(r4, r5, r6, r7);
+			radio_hb2.setAlignment(Pos.CENTER);
+
 			
 			HBox.setMargin(r0, new Insets(5, 5, 5, 5));
 			HBox.setMargin(r1, new Insets(5, 5, 5, 5));
-			
+			HBox.setMargin(r2, new Insets(5, 5, 5, 5));
+			HBox.setMargin(r3, new Insets(5, 5, 5, 5));
+			HBox.setMargin(r4, new Insets(5, 5, 5, 5));
+			HBox.setMargin(r5, new Insets(5, 5, 5, 5));
+			HBox.setMargin(r6, new Insets(5, 5, 5, 5));
+			HBox.setMargin(r7, new Insets(5, 5, 5, 5));
+
+						
 			VBox vb = new VBox();
 			vb.setAlignment(Pos.CENTER);
 			vb.setPadding(new Insets(15, 15, 15, 15));
 			//vb.getChildren().addAll(l, hb0, hb1, hb2);
-			vb.getChildren().addAll(l, radio_hb, return_hb); 
+			vb.getChildren().addAll(l, radio_hb, radio_hb2, return_hb); 
 					
 			StackPane sp = new StackPane(vb);
 			sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");

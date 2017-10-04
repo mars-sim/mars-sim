@@ -31,7 +31,7 @@ A. Batch Mode
 - If you install mars-sim in windows OS with the provided installer, 
 a shortcut (with the icon showing a mars-sim lander hab) will be 
 given on your desktop. Click on the shortcut to automatically run 
-"mars-sim.bat" from the installed folder.
+"mars-sim.bat".
 
 
 B. Manual Mode

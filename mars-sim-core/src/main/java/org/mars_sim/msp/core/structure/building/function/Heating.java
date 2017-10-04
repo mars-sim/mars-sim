@@ -693,11 +693,11 @@ implements Serializable {
 		// (3c) USE HEAT SINK to reduce the value of d_heat
 		double d_heat2 = 0;//d_heat1;
 		
-		//if (t_in_C <= t_initial - .5 * T_LOWER_SENSITIVITY
-		//		|| t_in_C >= t_initial + .5 * T_LOWER_SENSITIVITY)	
+		if (t_in_C <= t_initial - .5 * T_LOWER_SENSITIVITY
+				|| t_in_C >= t_initial + .5 * T_LOWER_SENSITIVITY)	
 			d_heat2 = computeHeatSink(d_heat1, c_factor);
-		//else
-		//	d_heat2 = d_heat1;
+		else
+			d_heat2 = d_heat1;
 
 		//if (isGreenhouse) 
 		//	System.out.println(building.getNickName() + "'s d_heat : " 
@@ -707,9 +707,6 @@ implements Serializable {
 		// Using the equation : heat = mass * specific heat capacity * delta temperature
 		// d_t = d_heat / mass / C_s
 		double d_t_C = c_factor * d_heat2 ; 
-		// 5/9 = 1/convertCtoF ; // the difference between deg F and deg C . The term -32 got cancelled out
-		//°C  x  9/5 + 32 = °F
-		//(°F - 32)  x  5/9 = °C
 		//applyHeatBuffer(changeOfTinC);
 		//if (isGreenhouse) 
 		//	System.out.println(building.getNickName() + "'s d_t_C : " 
@@ -1140,10 +1137,10 @@ implements Serializable {
 			
 		// STEP 2 : LIMIT THE TEMPERATURE CHANGE
 		// Limit any spurious change of temperature for the sake of stability 
-		if (dt < -20)
-			dt = -20;
-		else if (dt > 20)
-			dt = 20;
+		if (dt < -10)
+			dt = -10;
+		else if (dt > 7)
+			dt = 7;
 		//System.out.println(building.getNickName() + "'s dt = " + Math.round(dt*10.0)/10.0);
 		// Limit the current temperature
 		new_t = old_t + dt;
