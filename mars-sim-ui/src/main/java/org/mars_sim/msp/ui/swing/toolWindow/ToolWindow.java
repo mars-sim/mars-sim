@@ -6,12 +6,8 @@
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
 
-import java.awt.Color;
-import java.awt.Dimension;
-
 import javax.swing.JInternalFrame;
 import javax.swing.JRootPane;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
@@ -20,27 +16,19 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
-import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
-import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.SingleSelectionModel;
 
 /**
  * The ToolWindow class is an abstract UI window for a tool.
  * Particular tool windows should be derived from this.
  */
+@SuppressWarnings("restriction")
 public abstract class ToolWindow
 extends JInternalFrame {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	/** The name of the tool the window is for. */
@@ -49,11 +37,11 @@ extends JInternalFrame {
 	private MainSceneMenu msm;
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
-	private  MasterClock masterClock = Simulation.instance().getMasterClock();
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 
 	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
-	private SingleSelectionModel ssm;
+	//private SingleSelectionModel<?> ssm;
 
 	/** True if window is open. */
 	protected boolean opened;

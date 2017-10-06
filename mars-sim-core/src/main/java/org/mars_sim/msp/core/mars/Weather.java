@@ -32,7 +32,7 @@ implements Serializable {
 	/* default logger. */
 	private static Logger logger = Logger.getLogger(Weather.class.getName());
 	
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Static data
 	/** Sea level air pressure in kPa. */

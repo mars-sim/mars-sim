@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -78,7 +77,7 @@ public class ConstructionWizard {
 	private static Logger logger = Logger.getLogger(ConstructionWizard.class.getName());
 
 	/** Time (millisols) required to prepare construction site for stage. */
-	private static final double SITE_PREPARE_TIME = BuildingConstructionMission.SITE_PREPARE_TIME;
+	//private static final double SITE_PREPARE_TIME = BuildingConstructionMission.SITE_PREPARE_TIME;
 
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = BuildingConstructionMission.DEFAULT_VARIABLE_BUILDING_WIDTH;
@@ -94,7 +93,7 @@ public class ConstructionWizard {
 	
 	// Default distance between buildings for construction.
 	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = BuildingConstructionMission.DEFAULT_INHABITABLE_BUILDING_DISTANCE;
-	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = BuildingConstructionMission.DEFAULT_NONINHABITABLE_BUILDING_DISTANCE;
+	//private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = BuildingConstructionMission.DEFAULT_NONINHABITABLE_BUILDING_DISTANCE;
 
     /** Minimum length of a building connector (meters). */
     private static final double MINIMUM_CONNECTOR_LENGTH = BuildingConstructionMission.MINIMUM_CONNECTOR_LENGTH;
@@ -111,7 +110,7 @@ public class ConstructionWizard {
 	private static MainScene mainScene;
 	
 	//private static MarsClock sitePreparationStartTime;
-	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	//private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	private static MissionManager missionManager = Simulation.instance().getMissionManager(); 
   
 	private static MainDesktopPane desktop;
@@ -616,11 +615,8 @@ public class ConstructionWizard {
 
 				mapPanel.setFocusable(true);
 				mapPanel.requestFocusInWindow();
-
 				mapPanel.addKeyListener(kb);
-
 				mapPanel.addMouseMotionListener(md);
-
 				mapPanel.addMouseListener(new MouseListener() {
 				    @Override
 				    public void mouseClicked(MouseEvent evt) {
@@ -695,10 +691,6 @@ public class ConstructionWizard {
 
 		@Override
 		public void keyPressed(java.awt.event.KeyEvent e) {
-		    int c = e.getKeyCode();
-		    //System.out.println("c is " + c);
-		    moveConstructionSite(site, c);
-		    mapPanel.repaint();
 			e.consume();
 		}
 
@@ -709,6 +701,11 @@ public class ConstructionWizard {
 
 		@Override
 		public void keyReleased(java.awt.event.KeyEvent e) {
+		    int c = e.getKeyCode();
+		    //System.out.println("c is " + c);
+		    moveConstructionSite(site, c);
+		    mapPanel.repaint();
+			e.consume();
 			e.consume();
 		}
 	}

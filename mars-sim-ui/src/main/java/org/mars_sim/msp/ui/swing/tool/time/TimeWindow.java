@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.1.0 2017-01-12
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 
@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
@@ -43,7 +42,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
-import javafx.application.Platform;
 
 /**
  * The TimeWindow is a tool window that displays the current Martian and Earth

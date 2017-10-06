@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.1.0 2017-01-24
+ * @version 3.1.0 2017-10-05
  * @author Lars Næsbye Christensen
  */
 
@@ -44,7 +44,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -219,8 +218,8 @@ public class MainScene {
 
 	private int solElapsedCache = 0;
 
-	private double newTimeRatio = 0;
-	private double initial_time_ratio = 0;
+	//private double newTimeRatio = 0;
+	//private double initial_time_ratio = 0;
 	private double sliderCache = 0;
 
 	private boolean isMuteCache;
@@ -261,7 +260,7 @@ public class MainScene {
 	private VBox mapLabelBox, speedVBox, soundVBox;
 	private Tab mainTab, dashboardTab;
 
-	//private Spinner spinner;
+	private Spinner<Integer> spinner;
 
 	private JFXComboBox<Settlement> sBox;
 	// private JFXBadge badgeIcon;
@@ -869,7 +868,7 @@ public class MainScene {
 		AnchorPane.setRightAnchor(earthTimeButton, sceneWidth.get()/2 - marsTimeButton.getPrefWidth());
 		
 		//AnchorPane.setRightAnchor(lastSaveLabel, marsTimeButton.getMinWidth() + marsTimeButton.getMinWidth() + 165);
-		AnchorPane.setRightAnchor(lastSaveLabel, 75.0);
+		AnchorPane.setRightAnchor(lastSaveLabel, 85.0);
 		
 		anchorPane = new AnchorPane();
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeButton,
@@ -969,7 +968,7 @@ public class MainScene {
 	 * Creates and returns the panel for simulation speed and time info
 	 */
 	public void createSpeedPanel() {
-
+		spinner = new Spinner<Integer>();
 		speedBtn = new JFXButton();
 		// speedBtn.setStyle(value);
 		// speedBtn.getStyleClass().add("menu-button");//"button-raised");
@@ -982,6 +981,9 @@ public class MainScene {
 		speedBtn.setGraphic(speedIcon);
 		setQuickToolTip(speedBtn, "Click to open Speed Panel");
 		speedBtn.setOnAction(e -> {
+			int current = (int) masterClock.getTimeRatio();
+			spinner.getValueFactory().setValue(current);
+			
 			if (simSpeedPopup.isShowing()) {
 				simSpeedPopup.hide();// close();
 			} else {
@@ -998,33 +1000,12 @@ public class MainScene {
 		speedPane.setPrefWidth(earthTimeButton.getPrefWidth());
 		simSpeedPopup = new JFXPopup(speedPane);
 
-		initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
-		/*
-		 * // Set up a settlement view zoom bar timeSlider = new JFXSlider();
-		 * //timeSlider.setEffect(blend); timeSlider.getStyleClass().add("jfx-slider");
-		 * timeSlider.setPrefHeight(25); timeSlider.setPadding(new Insets(2, 2, 2, 2));
-		 * //timeSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(
-		 * .3d)); timeSlider.setMin(0); // need to be zero
-		 * timeSlider.setMax(12);//initial_time_ratio*32D);//8D);
-		 * timeSlider.setValue(7);//initial_time_ratio);
-		 * timeSlider.setMajorTickUnit(1);//initial_time_ratio*4);
-		 * timeSlider.setMinorTickCount(1); //timeSlider.setShowTickLabels(true);
-		 * timeSlider.setShowTickMarks(true); timeSlider.setSnapToTicks(true);
-		 * timeSlider.setBlockIncrement(1);//initial_time_ratio/32D);//4D);
-		 * timeSlider.setOrientation(Orientation.HORIZONTAL);
-		 * timeSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
-		 * 
-		 * VBox timeSliderBox = new VBox(); timeSliderBox.setPadding(new Insets(2, 2, 2,
-		 * 2)); timeSliderBox.getChildren().add(timeSlider);
-		 * 
-		 * setQuickToolTip(timeSlider,
-		 * "adjust the time ratio (how fast the simulation runs)"); //$NON-NLS-1$
-		 */
-		// Label header_label = createHeader("SPEED PANEL");
+		//initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
+
 		Text header_label = createTextHeader("SPEED PANEL");
 
-		String DEFAULT = " (Default : ";
-		String CLOSE_PAR = ")";
+		//String DEFAULT = " (Default : ";
+		//String CLOSE_PAR = ")";
 		int default_ratio = (int) masterClock.getDefaultTimeRatio();
 		StringBuilder s0 = new StringBuilder();
 
@@ -1079,46 +1060,11 @@ public class MainScene {
 
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
-		// String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio);
-		// //$NON-NLS-1$
+		// String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 		s1.append(masterClock.getTimeTruncated(ratio));
 		real_time_label.setText(s1.toString());
-		/*
-		 * // detect dragging timeSlider.valueProperty().addListener(new
-		 * ChangeListener<Number>() { public void changed(ObservableValue<? extends
-		 * Number> ov, Number old_val, Number new_val) {
-		 * 
-		 * if (old_val != new_val) {
-		 * 
-		 * double sliderValue = new_val.doubleValue();
-		 * 
-		 * if (default_ratio <= 64) newTimeRatio = Math.pow(2, (int)sliderValue - 1);
-		 * else if (default_ratio <= 128) newTimeRatio = Math.pow(2, (int)sliderValue);
-		 * else if (default_ratio <= 256) newTimeRatio = Math.pow(2, (int)sliderValue +
-		 * 1); else if (default_ratio <= 512) newTimeRatio = Math.pow(2,
-		 * (int)sliderValue + 2);
-		 * 
-		 * //System.out.println("sliderValue : " + sliderValue + "  newTimeRatio : " +
-		 * newTimeRatio);
-		 * 
-		 * masterClock.setTimeRatio(newTimeRatio);
-		 * 
-		 * //StringBuilder s0 = new StringBuilder();
-		 * //s0.append((int)newTimeRatio).append(DEFAULT).append(default_ratio).append(
-		 * CLOSE_PAR); //time_ratio_label.setText(s0.toString());
-		 * 
-		 * StringBuilder s1 = new StringBuilder();
-		 * s1.append(masterClock.getTimeTruncated(newTimeRatio));
-		 * real_time_label.setText(s1.toString());
-		 * 
-		 * } } });
-		 */
-		// TODO: add pause radio box
 
-		Spinner<Integer> spinner = new Spinner<Integer>();
 		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-		// spinner.setValueFactory(new SpinnerValueFactory.IntSpinnerValueFactory(0,
-		// 10));
 
 		List<Integer> items = null;
 		if (default_ratio == 16)
@@ -1139,30 +1085,17 @@ public class MainScene {
 				+ "-fx-font-weight:bold;");
 		// spinner.setAlignment(Pos.CENTER);
 		spinner.getValueFactory().setValue(default_ratio);
-
 		spinner.valueProperty().addListener((o, old_val, new_val) -> {
-
+					
 			if (old_val != new_val) {
-
-				int value = (int) new_val;
-				/*
-				 * if (default_ratio <= 64) newTimeRatio = Math.pow(2, (int)value - 1); else if
-				 * (default_ratio <= 128) newTimeRatio = Math.pow(2, (int)value); else if
-				 * (default_ratio <= 256) newTimeRatio = Math.pow(2, (int)value + 1); else if
-				 * (default_ratio <= 512) newTimeRatio = Math.pow(2, (int)value + 2);
-				 */
-				newTimeRatio = value;
-
-				boolean flag = startPause();
-				masterClock.setTimeRatio(newTimeRatio);
-				endPause(flag);
-
-				// StringBuilder s2 = new StringBuilder();
-				// s2.append((int)newTimeRatio);//.append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
-				// default_ratio_label.setText(s2.toString());
+				//newTimeRatio = value;
+				int value = (int) new_val; 
+				boolean previous = startPause();
+				masterClock.setTimeRatio(value);
+				endPause(previous);
 
 				StringBuilder s3 = new StringBuilder();
-				s3.append(masterClock.getTimeTruncated(newTimeRatio));
+				s3.append(masterClock.getTimeTruncated(value));
 				real_time_label.setText(s3.toString());
 
 			}
@@ -2995,6 +2928,27 @@ public class MainScene {
 		return previous;
 	}
 
+	public double slowDownTimeRatio() {
+		double tr = masterClock.getTimeRatio();
+		masterClock.setTimeRatio(1.0);
+		return tr;
+	}
+
+	public void speedUpTimeRatio(double previous) {
+		double now = masterClock.getTimeRatio();
+		if (previous != 1.0) {
+			if (now == 1.0) {
+				masterClock.setTimeRatio(previous);
+			}
+		}
+		else {
+			if (now != 1) {
+				masterClock.setTimeRatio(1.0);
+			}
+		}
+		now = masterClock.getTimeRatio();
+	}
+	
 	public void endPause(boolean previous) {
 		boolean now = masterClock.isPaused();
 		if (!previous) {
@@ -3507,9 +3461,9 @@ public class MainScene {
 		return 20D * (x - .5);
 	}
 
-	public double getInitialTimeRatio() {
-		return initial_time_ratio;
-	}
+	//public double getInitialTimeRatio() {
+	//	return initial_time_ratio;
+	//}
 
 	public JFXButton getMarsNetBtn() {
 		return marsNetBtn;

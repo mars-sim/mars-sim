@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MapLayer.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 
@@ -16,8 +15,6 @@ import org.mars_sim.msp.core.Coordinates;
  * The MapLayer interface is a graphics layer painted on the map display.
  */
 public interface MapLayer {
-	//public final int MAP_X_OFFSET = 300;
-	//public final int MAP_Y_OFFSET = 300;
 	/**
      * Displays the layer on the map image.
      * @param mapCenter the location of the center of the map.

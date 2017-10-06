@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.1.0 2017-02-15
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -12,6 +12,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
@@ -35,9 +37,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
 
 
 /**
@@ -51,7 +55,7 @@ implements ClockListener {
 	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
-	private static final int PERIOD_IN_MILLISOLS = 4;//500D / MarsClock.SECONDS_IN_MILLISOL;
+	private static final int PERIOD_IN_MILLISOLS = 3;
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
@@ -63,6 +67,8 @@ implements ClockListener {
 	private double yPos;
 	private double rotation;
 	private double scale;
+	private int width;
+	private int height;
 
 	/** Last X mouse drag position. */
 	private int xLast;
@@ -82,6 +88,10 @@ implements ClockListener {
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
 
+	private Graphics dbg;
+	private Image dbImage = null;
+	
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 	private MainScene mainScene;
 	private Building building;
 	private SettlementWindow settlementWindow;
@@ -96,6 +106,14 @@ implements ClockListener {
 		super();
 		this.settlementWindow = settlementWindow;
 		this.mainScene = desktop.getMainScene();
+		if (mainScene != null) {
+			width = mainScene.getWidth();
+			height = mainScene.getHeight();
+		}
+		else {
+			width = SettlementWindow.HORIZONTAL;
+			height = SettlementWindow.VERTICAL;
+		}
 		
 		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
 
@@ -139,6 +157,9 @@ implements ClockListener {
 		//SwingUtilities.updateComponentTreeUI(this);
 
         setVisible(true);
+        
+        paintDoubleBuffer();
+		repaint();
 	}
 
 	// 2015-02-09 Added initLayers()
@@ -159,8 +180,9 @@ implements ClockListener {
 			if (desktop.getMainScene() == null)
 				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
-
 			
+		paintDoubleBuffer();
+		repaint();			
 	}
 
 	/** Constructor 2
@@ -392,7 +414,7 @@ implements ClockListener {
 			this.settlement = newSettlement;
 			if (settlementWindow != null && settlementWindow.getMarqueeTicker() != null)
 				settlementWindow.getMarqueeTicker().updateSettlement(newSettlement);
-			//paintDoubleBuffer();
+			paintDoubleBuffer();
 			repaint();
 		}
 	}
@@ -412,7 +434,7 @@ implements ClockListener {
 	public void setScale(double scale) {
 		this.scale = scale;
 
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -431,7 +453,7 @@ implements ClockListener {
 	public void setRotation(double rotation) {
 		this.rotation = rotation;
 
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -445,7 +467,7 @@ implements ClockListener {
 		setRotation(0D);
 		scale = DEFAULT_SCALE;
 
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -465,7 +487,7 @@ implements ClockListener {
 		xPos += realXDiff;
 		yPos += realYDiff;
 
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -496,7 +518,7 @@ implements ClockListener {
 			selectPerson(selectedPerson);
 
 
-			////paintDoubleBuffer();
+			paintDoubleBuffer();
 			repaint();
 		}
 		return selectedPerson;
@@ -528,7 +550,7 @@ implements ClockListener {
 		if (selectedRobot != null) {
 			selectRobot(selectedRobot);
 
-			////paintDoubleBuffer();
+			paintDoubleBuffer();
 			repaint();
 		}
 		return selectedRobot;
@@ -743,7 +765,7 @@ implements ClockListener {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 
-				////paintDoubleBuffer();
+				paintDoubleBuffer();
 				repaint();
 			}
 		}
@@ -785,7 +807,7 @@ implements ClockListener {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 
-				////paintDoubleBuffer();
+				paintDoubleBuffer();
 				repaint();
 			}
 		}
@@ -821,6 +843,7 @@ implements ClockListener {
 			}
 
 			// Repaint to refresh the label display.
+			paintDoubleBuffer();
 			repaint();
 		}
 	}
@@ -851,6 +874,7 @@ implements ClockListener {
 			}
 
 			// Repaint to refresh the label display.
+			paintDoubleBuffer();
 			repaint();
 		}
 	}
@@ -911,7 +935,7 @@ implements ClockListener {
 		this.showBuildingLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getBuildingLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getBuildingLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -931,7 +955,7 @@ implements ClockListener {
 		this.showConstructionLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getConstructionLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getConstructionLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -951,7 +975,7 @@ implements ClockListener {
 		this.showPersonLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getPersonLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getPersonLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -971,7 +995,7 @@ implements ClockListener {
 		this.showRobotLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getRobotLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getRobotLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 	/**
@@ -990,7 +1014,7 @@ implements ClockListener {
 		this.showVehicleLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getVehicleLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getVehicleLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		paintDoubleBuffer();
 		repaint();
 	}
 
@@ -1009,61 +1033,82 @@ implements ClockListener {
 	 */
 	public void setShowDayNightLayer(boolean showDayNightLayer) {
 		this.showDaylightLayer = showDayNightLayer;
-
-		////paintDoubleBuffer();
+		
+		paintDoubleBuffer();
 		repaint();
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		if (dbImage != null) {
+			g.drawImage(dbImage,  0, 0, null);
+		}
+	}
+	
+	/*
+	 * Uses double buffering to draws into its own graphics object dbg before calling paintComponent()
+	 */
+	public void paintDoubleBuffer() {
+		if (dbImage == null) {
+			dbImage = createImage(width, height);
+			if (dbImage == null) {
+				//System.out.println("dbImage is null");
+				return;
+			}
+			else
+				dbg = dbImage.getGraphics();
+		}
 
-		Graphics2D g2d = (Graphics2D) g;
-
-//				long startTime = System.nanoTime();
-
+        Graphics2D g2d = (Graphics2D) dbg;
+ 
+		//		long startTime = System.nanoTime();
+		
 		// Set graphics rendering hints.
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-/*
+		/*
 		// Display all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {
 			// 2014-11-04 Added building parameter
 			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
-*/
+		*/
 		for (int i = 0; i < size; i++) {
 			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
 		
-//		long endTime = System.nanoTime();
-//		double timeDiff = (endTime - startTime) / 1000000D;
-//		System.out.println("SMT paint time: " + (int) timeDiff + " ms");
+		//long endTime = System.nanoTime();
+		//double timeDiff = (endTime - startTime) / 1000000D;
+		//System.out.println("SMT paint time: " + (int) timeDiff + " ms");
 
-	}
+    }
 
 
 	@Override
 	public void clockPulse(double time) {
-		if (mainScene != null && mainScene.isMapTabOpen() && mainScene.isMapOn()) {
+		if (mainScene != null && mainScene.isMapTabOpen() && mainScene.isMapOn() && !masterClock.isPaused()) {
 			timeCache += time;
 			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				//logger.info("repaint");
 				// Repaint map panel
+				paintDoubleBuffer();
 				repaint();
 				timeCache = 0;
 			}
 		}
-		else {
+		else if (!masterClock.isPaused()) {
 			timeCache += time;
 			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				//logger.info("repaint");
 				// Repaint map panel
+				paintDoubleBuffer();
 				repaint();
 				timeCache = 0;
 			}
 		}
+		
 	}
 
 	@Override

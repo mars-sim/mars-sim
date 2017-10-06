@@ -41,7 +41,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	private JLabel descriptionLabel;
 	private JTextField descriptionField;
 	
-	private CreateMissionWizard wizard;
+	//private CreateMissionWizard wizard;
 	/**
 	 * Constructor.
 	 * @param wizard {@link CreateMissionWizard} the create mission wizard.

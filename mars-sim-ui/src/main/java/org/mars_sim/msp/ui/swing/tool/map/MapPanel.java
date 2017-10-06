@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapPanel.java
- * @version 3.1.0 2017-02-03
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 
@@ -19,7 +19,6 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,16 +29,11 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 public class MapPanel extends JPanel implements ClockListener {
-//Runnable,
-
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -51,7 +45,7 @@ public class MapPanel extends JPanel implements ClockListener {
 	public final static int MAP_BOX_WIDTH = 300;
 	private static int dragx, dragy;
 
-	private static double PERIOD_IN_MILLISOLS;
+	private static final int PERIOD_IN_MILLISOLS = 3;
 
 	// Data members
 	private double timeCache = 0;
@@ -68,6 +62,9 @@ public class MapPanel extends JPanel implements ClockListener {
 
 	//private Thread displayThread;
 	//private Thread createMapThread;
+	
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	
 	private Coordinates centerCoords;
 
 	private Image mapImage;
@@ -76,7 +73,7 @@ public class MapPanel extends JPanel implements ClockListener {
 
 	private Graphics dbg;
 	private Image dbImage = null;
-	private long refreshRate;
+	//private long refreshRate;
 	private double rho = CannedMarsMap.PIXEL_RHO;
 
 	private ThreadPoolExecutor executor;
@@ -88,8 +85,7 @@ public class MapPanel extends JPanel implements ClockListener {
 
 		Simulation.instance().getMasterClock().addClockListener(this);
 
-		this.refreshRate = refreshRate;
-		PERIOD_IN_MILLISOLS = refreshRate / MarsClock.SECONDS_IN_MILLISOL;
+		//this.refreshRate = refreshRate;
 
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
@@ -101,7 +97,6 @@ public class MapPanel extends JPanel implements ClockListener {
 		mapLayers = new ArrayList<MapLayer>();
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
-
 
 		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT ));
 		setBackground(Color.BLACK);
@@ -329,12 +324,6 @@ public class MapPanel extends JPanel implements ClockListener {
 		if (update) {
 			if (!executor.isTerminated() || !executor.isShutdown() )
 				executor.execute(new MapTask());
-        	//try {
-            //    Thread.sleep(refreshRate);
-            //}
-	        //catch (InterruptedException e) {}
-			//paintDoubleBuffer();
-	        //repaint();
         }
 	}
 
@@ -480,26 +469,16 @@ public class MapPanel extends JPanel implements ClockListener {
         g.drawString(message, x, y);
     }
 
-    /**
-     * Prepares map panel for deletion.
-     */
-    public void destroy() {
-    	map = null;
-    	surfMap = null;
-    	topoMap = null;
-    	update = false;
-		dbg = null;
-		dbImage = null;
-		mapImage = null;
-    }
-
 	@Override
 	public void clockPulse(double time) {
-		timeCache = timeCache + time;
-		if (timeCache > PERIOD_IN_MILLISOLS) {
-			//System.out.println("calling MapPanel's clockPulse()");
-			updateDisplay();
-			timeCache = 0;
+		if (!masterClock.isPaused()) {
+			timeCache += time;
+			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				//logger.info("repaint");
+				// Repaint map panel
+				updateDisplay();
+				timeCache = 0;
+			}	
 		}
 	}
 
@@ -509,4 +488,21 @@ public class MapPanel extends JPanel implements ClockListener {
 
 	}
 
+    /**
+     * Prepares map panel for deletion.
+     */
+    public void destroy() {
+		// Remove clock listener.
+		Simulation.instance().getMasterClock().removeClockListener(this);
+		mapLayers = null;
+		centerCoords = null;
+		executor = null;
+    	map = null;
+    	surfMap = null;
+    	topoMap = null;
+    	update = false;
+		dbg = null;
+		dbImage = null;
+		mapImage = null;
+    }
 }

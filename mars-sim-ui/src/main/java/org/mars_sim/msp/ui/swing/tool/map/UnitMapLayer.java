@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitMapLayer.java
- * @version 3.07 2014-10-13
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;

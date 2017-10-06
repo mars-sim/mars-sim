@@ -38,10 +38,11 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = "Mission Tool";
 
+	private double previous;
 	// Private members
 	private JList<Mission> missionList;
 	private NavpointPanel navpointPane;
-	private MainScene ms;
+	private MainScene mainScene;
 	private CreateMissionWizard createMissionWizard;
 	private EditMissionDialog editMissionDialog;
 	//private Mission mission;
@@ -54,7 +55,7 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-		ms = desktop.getMainScene();
+		mainScene = desktop.getMainScene();
 
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -176,19 +177,14 @@ extends ToolWindow {
 	 * Open wizard to create a new mission.
 	 */
 	private void createNewMission() {
-
-		if (ms != null)  {
-			// 2015-12-16 Track the current pause state
-			boolean previous = ms.startPause();
-
+		if (mainScene != null)  {
+			previous = mainScene.slowDownTimeRatio();
 			createMissionWizard = new CreateMissionWizard(desktop, this);
-
-			ms.endPause(previous);
-
-		} else
-
+			mainScene.speedUpTimeRatio(previous);
+		} 
+		else {
 			createMissionWizard = new CreateMissionWizard(desktop, this);
-
+		}
 
 	}
 

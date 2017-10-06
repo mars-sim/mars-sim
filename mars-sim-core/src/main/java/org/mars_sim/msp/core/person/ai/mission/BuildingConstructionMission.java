@@ -163,7 +163,7 @@ implements Serializable {
                 robot.getBotMind().setMission(this);
             }
 
-            init_case_1_step_1(constructionSkill);
+            initCase1Step1(constructionSkill);
         }
 
         if (!isDone()) {
@@ -198,9 +198,9 @@ implements Serializable {
 
     }
 
-	public void init_case_1_step_1(int skill) {
+	public void initCase1Step1(int skill) {
 		// a settler initiates this mission
-		logger.info("Calling init_case_1_step_1()");
+		logger.info("Calling initCase1Step1()");
         ConstructionManager manager = settlement.getConstructionManager();
         ConstructionValues values = manager.getConstructionValues();
         values.clearCache();
@@ -278,7 +278,7 @@ implements Serializable {
 	public void initCase1Step2(ConstructionSite m_site, ConstructionStageInfo stageInfo, 
 			int constructionSkill, ConstructionValues values) {
     	this.site = m_site;
-    	logger.info("Calling init_case_1_step_2()");
+    	logger.info("Calling initCase1Step2()");
 
         //System.out.println("constructionSite is " + constructionSite.getDescription()
 	    ////	+ " x is " + constructionSite.getXLocation()

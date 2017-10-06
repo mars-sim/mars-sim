@@ -191,19 +191,13 @@ public class TransportWizard {
 		}
 
         if (mainScene != null) {
-        	//try {
-				//FXUtilities.runAndWait(() -> {
 			boolean previous = mainScene.startPause();
-
 			determineEachBuildingPosition(mgr);
-
 			mainScene.endPause(previous);
-
 		}
         else {
         	// non-javaFX mode
         	determineEachBuildingPosition(mgr);
-
         }
 
         // 2015-11-12 Deliver the rest of the supplies and add people.

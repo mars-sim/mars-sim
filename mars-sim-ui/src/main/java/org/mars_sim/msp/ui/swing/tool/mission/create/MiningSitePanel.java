@@ -78,6 +78,8 @@ public class MiningSitePanel extends WizardPanel {
 	private ExploredLocation selectedSite;
 	private DefaultTableModel concentrationTableModel;
 	
+	private SurfaceFeatures surfaceFeatures;
+	
 	/**
 	 * Constructor
 	 * @param wizard the create mission wizard.
@@ -85,6 +87,8 @@ public class MiningSitePanel extends WizardPanel {
 	MiningSitePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
+		
+		surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 		
 		// Set the layout.
 		setLayout(new BorderLayout(20, 20));
@@ -184,8 +188,7 @@ public class MiningSitePanel extends WizardPanel {
 		concentrationTableModel = new DefaultTableModel();
 		concentrationTableModel.addColumn("Mineral");
 		concentrationTableModel.addColumn("Concentration %");
-		String[] mineralTypes = Simulation.instance().getMars().getSurfaceFeatures().
-				getMineralMap().getMineralTypeNames();
+		String[] mineralTypes = surfaceFeatures.getMineralMap().getMineralTypeNames();
         for (String mineralType : mineralTypes) concentrationTableModel.addRow(new Object[]{mineralType, 0D});
 		JTable mineralConcentrationTable = new JTable(concentrationTableModel);
 		TableStyle.setTableStyle(mineralConcentrationTable);
@@ -344,7 +347,6 @@ public class MiningSitePanel extends WizardPanel {
 			ExploredLocation closestSite = null;
 			double closestRange = Double.MAX_VALUE;
 			
-			SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 			Iterator<ExploredLocation> i = surfaceFeatures.getExploredLocations().iterator();
 			while (i.hasNext()) {
 				ExploredLocation site = i.next();

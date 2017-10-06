@@ -268,7 +268,7 @@ extends ToolWindow {
 			setPreferredSize(new Dimension(mainScene.getWidth(), mainScene.getHeight() - MainScene.TITLE_BAR_HEIGHT));
 			//setMinimumSize(new Dimension(mainScene.getHORIZONTAL/2, VERTICAL/2));
 			setClosable(false);
-			setResizable(true);
+			setResizable(false);
 			setMaximizable(true);
 		}
 		else {
@@ -276,7 +276,7 @@ extends ToolWindow {
 			setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 			setMinimumSize(new Dimension(HORIZONTAL/2, VERTICAL/2));
 			setClosable(true);
-			setResizable(true);
+			setResizable(false);
 			setMaximizable(true);
 		}
 

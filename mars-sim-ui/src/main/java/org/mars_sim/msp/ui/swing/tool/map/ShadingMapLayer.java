@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ShadingMapLayer.java
- * @version 3.08 2015-06-17
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 

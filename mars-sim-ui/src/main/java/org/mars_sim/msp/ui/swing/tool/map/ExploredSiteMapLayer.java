@@ -1,16 +1,13 @@
 /**
  * Mars Simulation Project
  * ExploredSiteMapLayer.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.util.Iterator;
-
 import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Coordinates;

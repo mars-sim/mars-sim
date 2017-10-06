@@ -430,8 +430,7 @@ public class MasterClock implements Serializable { // Runnable,
 	}
 
     /**
-     * setTimeRatio is for setting the Masterclock's time ratio directly. It is a double
-     * indicating the sim time to realtime ratio.
+     * Sets the simulation time ratio. 
      * @param ratio
      */
     public void setTimeRatio(double ratio) {
@@ -442,16 +441,14 @@ public class MasterClock implements Serializable { // Runnable,
         	else
         		timeBetweenUpdates = (long) (timeBetweenUpdates * .995); // decrement by .5%
 
-            timeRatio = ratio;//Math.round(ratio*100D)/100D;
-            //System.out.println("timeRatio : " + timeRatio + " ");
+            timeRatio = ratio;
         }
         else throw new IllegalArgumentException("Time ratio is out of bounds ");
     }
 
 
     /**
-     * Gets the real-time/simulation ratio.
-     *
+     * Gets the simulation time ratio.
      * @return ratio
      */
     public double getTimeRatio() {

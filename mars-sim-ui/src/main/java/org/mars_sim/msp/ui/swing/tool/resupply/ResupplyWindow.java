@@ -171,18 +171,12 @@ implements ListSelectionListener {
 	 * Opens a create dialog.
 	 */
 	private void createNewTransportItem() {
-
-
 		if (mainScene != null )  {
-			// 2015-12-16 Track the current pause state
-			boolean previous = mainScene.startPause();
-
+			double previous = mainScene.slowDownTimeRatio();	
 			new NewTransportItemDialog(desktop, this);
-
-			mainScene.endPause(previous);
-
-		} else {
-
+			mainScene.speedUpTimeRatio(previous);
+		} 
+		else {
 			new NewTransportItemDialog(desktop, this);
 		}
 
@@ -192,17 +186,11 @@ implements ListSelectionListener {
 	 * Determines if swing or javaFX is in used when loading the modify dialog
 	 */
 	private void modifyTransportItem() {
-
-		if (mainScene != null )  {
-			// 2015-12-16 Track the current pause state
-			boolean previous = mainScene.startPause();
-
+		if (mainScene != null)  {
+			double previous = mainScene.slowDownTimeRatio();	
 			modifyTransport();
-
-			mainScene.endPause(previous);
-
+			mainScene.speedUpTimeRatio(previous);
 		} else {
-
 			modifyTransport();
 		}
 

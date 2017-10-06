@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
-* @version 3.1.0 2016-10-03
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -31,7 +30,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -50,8 +48,6 @@ import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
-
-//import javafx.application.Platform;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
