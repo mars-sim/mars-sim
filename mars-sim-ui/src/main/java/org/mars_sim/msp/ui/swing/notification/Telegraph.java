@@ -313,9 +313,8 @@ public class Telegraph implements ClockListener {
 			timelineStay.resume();
 	}
 
-
-	// 2014-12-17 Added pauseChange()
-	public void pauseChange(boolean isPaused) {
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
 		// If the window is in position
 		isPaused = true;
 		if (timelineIntro.isDone() && !timelineStay.isDone())

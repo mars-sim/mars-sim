@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
@@ -41,7 +40,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
 
 
 /**
@@ -158,7 +156,7 @@ implements ClockListener {
 
         setVisible(true);
         
-        paintDoubleBuffer();
+        //paintDoubleBuffer();
 		repaint();
 	}
 
@@ -167,12 +165,13 @@ implements ClockListener {
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
+		mapLayers.add(new DayNightMapLayer(this));		
 		mapLayers.add(new StructureMapLayer(this));
-		mapLayers.add(new VehicleMapLayer(this));
+		mapLayers.add(new VehicleMapLayer(this));	
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
-		mapLayers.add(new DayNightMapLayer(this));
+
 		
 		size = mapLayers.size();
 		
@@ -181,7 +180,7 @@ implements ClockListener {
 				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
 			
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();			
 	}
 
@@ -414,7 +413,7 @@ implements ClockListener {
 			this.settlement = newSettlement;
 			if (settlementWindow != null && settlementWindow.getMarqueeTicker() != null)
 				settlementWindow.getMarqueeTicker().updateSettlement(newSettlement);
-			paintDoubleBuffer();
+			//paintDoubleBuffer();
 			repaint();
 		}
 	}
@@ -434,7 +433,7 @@ implements ClockListener {
 	public void setScale(double scale) {
 		this.scale = scale;
 
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -453,7 +452,7 @@ implements ClockListener {
 	public void setRotation(double rotation) {
 		this.rotation = rotation;
 
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -467,7 +466,7 @@ implements ClockListener {
 		setRotation(0D);
 		scale = DEFAULT_SCALE;
 
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -487,7 +486,7 @@ implements ClockListener {
 		xPos += realXDiff;
 		yPos += realYDiff;
 
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -518,8 +517,8 @@ implements ClockListener {
 			selectPerson(selectedPerson);
 
 
-			paintDoubleBuffer();
-			repaint();
+			////paintDoubleBuffer();
+			//repaint();
 		}
 		return selectedPerson;
 	}
@@ -550,8 +549,8 @@ implements ClockListener {
 		if (selectedRobot != null) {
 			selectRobot(selectedRobot);
 
-			paintDoubleBuffer();
-			repaint();
+			////paintDoubleBuffer();
+			//repaint();
 		}
 		return selectedRobot;
 	}
@@ -765,8 +764,8 @@ implements ClockListener {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 
-				paintDoubleBuffer();
-				repaint();
+				////paintDoubleBuffer();
+				//repaint();
 			}
 		}
 		return selectedVehicle;
@@ -807,7 +806,7 @@ implements ClockListener {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 
-				paintDoubleBuffer();
+				////paintDoubleBuffer();
 				repaint();
 			}
 		}
@@ -843,8 +842,8 @@ implements ClockListener {
 			}
 
 			// Repaint to refresh the label display.
-			paintDoubleBuffer();
-			repaint();
+			////paintDoubleBuffer();
+			//repaint();
 		}
 	}
 
@@ -874,8 +873,8 @@ implements ClockListener {
 			}
 
 			// Repaint to refresh the label display.
-			paintDoubleBuffer();
-			repaint();
+			////paintDoubleBuffer();
+			//repaint();
 		}
 	}
 
@@ -935,7 +934,7 @@ implements ClockListener {
 		this.showBuildingLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getBuildingLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getBuildingLabelMenuItem().setState(false);
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -955,7 +954,7 @@ implements ClockListener {
 		this.showConstructionLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getConstructionLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getConstructionLabelMenuItem().setState(false);
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -975,7 +974,7 @@ implements ClockListener {
 		this.showPersonLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getPersonLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getPersonLabelMenuItem().setState(false);
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -995,7 +994,7 @@ implements ClockListener {
 		this.showRobotLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getRobotLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getRobotLabelMenuItem().setState(false);
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 	/**
@@ -1014,7 +1013,7 @@ implements ClockListener {
 		this.showVehicleLabels = showLabels;
 		//if (showLabels) settlementTransparentPanel.getVehicleLabelMenuItem().setState(true);
 		//else settlementTransparentPanel.getVehicleLabelMenuItem().setState(false);
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -1034,20 +1033,22 @@ implements ClockListener {
 	public void setShowDayNightLayer(boolean showDayNightLayer) {
 		this.showDaylightLayer = showDayNightLayer;
 		
-		paintDoubleBuffer();
+		//paintDoubleBuffer();
 		repaint();
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+/*		
 		if (dbImage != null) {
 			g.drawImage(dbImage,  0, 0, null);
 		}
 	}
-	
+*/
 	/*
 	 * Uses double buffering to draws into its own graphics object dbg before calling paintComponent()
 	 */
+/*		
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
 			dbImage = createImage(width, height);
@@ -1058,8 +1059,9 @@ implements ClockListener {
 			else
 				dbg = dbImage.getGraphics();
 		}
-
-        Graphics2D g2d = (Graphics2D) dbg;
+		Graphics2D g2d = (Graphics2D) dbg;
+*/
+		Graphics2D g2d = (Graphics2D) g;
  
 		//		long startTime = System.nanoTime();
 		
@@ -1093,7 +1095,7 @@ implements ClockListener {
 			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				//logger.info("repaint");
 				// Repaint map panel
-				paintDoubleBuffer();
+				//paintDoubleBuffer();
 				repaint();
 				timeCache = 0;
 			}
@@ -1103,7 +1105,7 @@ implements ClockListener {
 			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				//logger.info("repaint");
 				// Repaint map panel
-				paintDoubleBuffer();
+				//paintDoubleBuffer();
 				repaint();
 				timeCache = 0;
 			}
@@ -1111,15 +1113,16 @@ implements ClockListener {
 		
 	}
 
-	@Override
-	public void pauseChange(boolean isPaused) {
-		// Do nothing
-	}
-
 	public SettlementTransparentPanel getSettlementTransparentPanel() {
 		return settlementTransparentPanel;
 	}
 
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
@@ -1147,4 +1150,5 @@ implements ClockListener {
 
 
 	}
+
 }

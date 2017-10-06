@@ -693,7 +693,8 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	@Override
-	public void pauseChange(boolean isPaused) {
-		// Do nothing
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -588,7 +588,7 @@ implements ClockListener, Serializable {
 		boolean previous = masterClock.isPaused();
 		// Pause simulation.
 		if (!previous) {
-			masterClock.setPaused(true);
+			masterClock.setPaused(true, false);
 			//System.out.println("previous2 is false. Paused sim");
 		}
 
@@ -725,12 +725,12 @@ implements ClockListener, Serializable {
 		boolean now = masterClock.isPaused();
 		if (!previous) {
 			if (now) {
-				masterClock.setPaused(false);
+				masterClock.setPaused(false, false);
 	    		//System.out.println("previous is false. now is true. Unpaused sim");
 			}
 		} else {
 			if (!now) {
-				masterClock.setPaused(false);
+				masterClock.setPaused(false, false);
 	    		//System.out.println("previous is true. now is false. Unpaused sim");
 			}
 		}
@@ -770,7 +770,7 @@ implements ClockListener, Serializable {
     private void halt() {
         if (masterClock != null) {
             masterClock.stop();
-            masterClock.setPaused(true);
+            masterClock.setPaused(true, false);
             masterClock.removeClockListener(this);
         }
     }
@@ -781,7 +781,7 @@ implements ClockListener, Serializable {
     public void proceed() {
         if (clockScheduler != null) {
             masterClock.addClockListener(this);
-            masterClock.setPaused(false);
+            masterClock.setPaused(false, false);
             masterClock.restart();
         }
     }
@@ -1104,7 +1104,7 @@ implements ClockListener, Serializable {
 	}
 
     @Override
-    public void pauseChange(boolean isPaused) {
+    public void pauseChange(boolean isPaused, boolean showPane) {
         // Do nothing
     }
 

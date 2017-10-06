@@ -702,20 +702,13 @@ implements Serializable {
 		String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
 		
 		if ((longValue > 180D) || (longValue < 0)) {
-			//longValue = 180D - longValue;
-/*			
-			if (direction == "E")
-				direction = "W";
-			else if (direction == "W")
-				direction = "E";
-*/
-			throw new IllegalStateException("The value of longitude " + longValue + " needs to be between 0 and 180 degrees.");
+			//throw new IllegalStateException("The value of longitude " + longValue + " needs to be between 0 and 180 degrees.");
+			if (directionStr.compareToIgnoreCase(shortWest) == 0) 
+				longValue = 360D - longValue;
+			else if (directionStr.compareToIgnoreCase(shortEast) != 0) 
+				throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
 		}
 			
-		if (directionStr.compareToIgnoreCase(shortWest) == 0) 
-			longValue = 360D - longValue;
-		else if (directionStr.compareToIgnoreCase(shortEast) != 0) 
-			throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
 
 		double theta = (2 * Math.PI) * (longValue / 360D);
 		return theta;

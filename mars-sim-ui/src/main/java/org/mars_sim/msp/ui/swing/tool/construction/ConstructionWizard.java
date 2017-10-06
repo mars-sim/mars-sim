@@ -52,6 +52,8 @@ import java.awt.Cursor;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -100,6 +102,12 @@ public class ConstructionWizard {
 
     private final static String TITLE = "Construction Wizard";
 
+    private boolean upKeyPressed = false;
+    private boolean downKeyPressed = false;
+    private boolean leftKeyPressed = false;
+    private boolean rightKeyPressed = false;
+    private boolean turnKeyPressed = false;
+    
     private static int wait_time_in_secs = 90; // in seconds
 
     private double xLast, yLast;
@@ -172,10 +180,11 @@ public class ConstructionWizard {
 	    		site_case = 3;
 	    }
 
-	    boolean previous = true;
+	    //previous = 0;
 
 	    if (mainScene != null)
-			previous = mainScene.startPause();
+	    	mainScene.pauseSimulation(false);
+			//previous = mainScene.slowDownTimeRatio();//.startPause();
 
 	    switch (site_case) {
 	    	// A settler initiated the construction mission.
@@ -203,7 +212,8 @@ public class ConstructionWizard {
 	    }
 
 	    if (mainScene != null)
-	    	mainScene.endPause(previous);
+	    	mainScene.unpauseSimulation();
+	    	//mainScene.speedUpTimeRatio(previous);//.endPause(previous);
 
 	    settlement.fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, site);
 	}
@@ -303,7 +313,7 @@ public class ConstructionWizard {
 			// it's now on pool-3-thread-1 Thread
 
 		   	mission.initCase1Step2(m_site, info, skill, values);
-		    mission.init_case_1_step_3();
+		    mission.initCase1Step3();
 		    mission.selectSitePhase();
 		}
     }
@@ -430,8 +440,8 @@ public class ConstructionWizard {
 
 		String header = null;
 		String title = null;
-		String message = "(1) Will default to \"Yes\" in 30 secs unless timer is cancelled."
-    			+ " (2) To manually place a site, click on \"Use Mouse/Keyboard Control\" button ";
+		String message = "(1) Will default to \"Yes\" in 90 secs unless timer is cancelled."
+    			+ " (2) To manually place a site, click on \"Use Mouse\" button.";
 		StringProperty msg = new SimpleStringProperty(message);
 		String name = null;
 
@@ -511,7 +521,7 @@ public class ConstructionWizard {
 
 		ButtonType buttonTypeYes = new ButtonType("Yes");
 		ButtonType buttonTypeNo = new ButtonType("No");
-		ButtonType buttonTypeMouseKB = new ButtonType("Use Mouse/Keyboard Control");
+		ButtonType buttonTypeMouseKB = new ButtonType("Use Mouse");
 		ButtonType buttonTypeCancelTimer = null;
 
 		Timer timer = null;
@@ -573,13 +583,20 @@ public class ConstructionWizard {
 	public void placementDialog(String title, String header, ConstructionSite site) {
     	// Platform.runLater(() -> {
 		// FXUtilities.runAndWait(() -> {
-			String msg = "Keyboard Control :\t(1) Press w/a/s/d, arrows, or num pad keys to move around" + System.lineSeparator()
+	/*
+		String msg = "Keyboard Control :\t(1) Press w/a/s/d, arrows, or num pad keys to move around" + System.lineSeparator()
 				+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise" + System.lineSeparator()
 				+ "   Mouse Control :\t(1) Press & Hold the left button on the site" + System.lineSeparator()
 				+ "\t\t\t\t(2) Move the cursor to the destination" + System.lineSeparator()
 				+ "\t\t\t\t(3) Release button to drop it off" + System.lineSeparator()
 				+ "\t\t\t\t(4) Hit \"Confirm Position\" button to proceed";
-
+	*/		
+			String msg = 
+			  "\t\t(1) Press & Hold the left button on the site" + System.lineSeparator()
+			+ "\t\t(2) Move the cursor to the destination" + System.lineSeparator()
+			+ "\t\t(3) Release button to drop it off" + System.lineSeparator()
+			+ "\t\t(4) Hit \"Confirm Position\" button to proceed";
+			
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			//alert.setOnCloseRequest((event) -> event.consume());
 			//alert.initStyle(StageStyle.UNDECORATED);
@@ -597,7 +614,7 @@ public class ConstructionWizard {
 			alert.setHeaderText(header);
 			alert.setContentText(msg);
 
-			ButtonType buttonTypeConfirm = new ButtonType("Confirm Position");
+			ButtonType buttonTypeConfirm = new ButtonType("Confirm Site Position");
 			alert.getButtonTypes().setAll(buttonTypeConfirm);
 
 			//double xLoc = site.getXLocation();
@@ -608,15 +625,35 @@ public class ConstructionWizard {
 
 			mainScene.getStage().requestFocus();
 
-			final KeyboardDetection kb = new KeyboardDetection(site);
-			final MouseDetection md = new MouseDetection(site);
-
-			SwingUtilities.invokeLater(() -> {
+			//final KeyAdapter kb = new KeyAdapter(site);
+			MouseDetection md = new MouseDetection(site);
+			//MouseListener ml = new MouseListener(site);
+			
+			//SwingUtilities.invokeLater(() -> {
 
 				mapPanel.setFocusable(true);
 				mapPanel.requestFocusInWindow();
-				mapPanel.addKeyListener(kb);
-				mapPanel.addMouseMotionListener(md);
+				//mapPanel.addMouseMotionListener(md);
+				mapPanel.addMouseListener(md);
+/*				
+				mapPanel.addKeyListener(new KeyAdapter() {
+					
+						public void keyPressed(java.awt.event.KeyEvent e) {
+						    int c = e.getKeyCode();
+						    System.out.println("Calling processKeyPress()");
+						    processKeyPress(site, c);
+						}
+
+						public void keyReleased(java.awt.event.KeyEvent e) {
+						    int c = e.getKeyCode();
+						    System.out.println("Calling processKeyRelease()");
+						    processKeyRelease(c);
+						}
+					}	
+				);
+*/	
+				
+/*				
 				mapPanel.addMouseListener(new MouseListener() {
 				    @Override
 				    public void mouseClicked(MouseEvent evt) {
@@ -648,26 +685,56 @@ public class ConstructionWizard {
 					}
 
 				});
-			});
-
+*/				
+			//});
 
 			Optional<ButtonType> result = alert.showAndWait();
 
 			if (result.isPresent() && result.get() == buttonTypeConfirm) {
-				mapPanel.removeKeyListener(kb);
-				mapPanel.removeMouseMotionListener(md);
+				//mapPanel.emoveKeyListener();
+				mapPanel.removeMouseListener(md);
 			}
 
 	}
 
 	// 2015-12-25 Added MouseDetection
-	public class MouseDetection implements MouseMotionListener{
+	public class MouseDetection implements MouseListener{
 		private ConstructionSite site;
 
 		MouseDetection(ConstructionSite site) {
 			this.site = site;
 		}
+		@Override
+	    public void mouseClicked(MouseEvent evt) {
+		//	Point location = MouseInfo.getPointerInfo().getLocation();
+	    }
 
+		@Override
+		public void mouseEntered(MouseEvent arg0) {}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {}
+
+		@Override
+		public void mousePressed(MouseEvent evt) {
+			if (evt.getButton() == MouseEvent.BUTTON1) {
+				//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				xLast = evt.getX();
+				yLast = evt.getY();
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent evt) {
+			if (evt.getButton() == MouseEvent.BUTTON1) {
+				//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				moveConstructionSiteAt(site, evt.getX(), evt.getY());
+			}
+			mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		}
+		
+/*
+		
 		@Override
 		public void mouseDragged(MouseEvent evt) {
 			if (evt.getButton() == MouseEvent.BUTTON1) {
@@ -678,37 +745,40 @@ public class ConstructionWizard {
 
 		@Override
 		public void mouseMoved(MouseEvent e) {}
-
+*/
+		
 	}
 
-	// 2015-12-25 Added KeyboardDetection
-	public class KeyboardDetection implements KeyListener{
+/*	
+	public class KeyAdapter implements KeyListener{
 		private ConstructionSite site;
 
-		KeyboardDetection(ConstructionSite site) {
+		KeyAdapter(ConstructionSite site) {
 			this.site = site;
 		}
 
-		@Override
+		//@Override
 		public void keyPressed(java.awt.event.KeyEvent e) {
-			e.consume();
+		    int c = e.getKeyCode();
+		    System.out.println("Calling processKeyPress()");
+		    processKeyPress(site, c);
 		}
 
-		@Override
-		public void keyTyped(java.awt.event.KeyEvent e) {
-			e.consume();
-		}
 
-		@Override
+		//@Override
 		public void keyReleased(java.awt.event.KeyEvent e) {
 		    int c = e.getKeyCode();
-		    //System.out.println("c is " + c);
-		    moveConstructionSite(site, c);
-		    mapPanel.repaint();
-			e.consume();
-			e.consume();
+		    System.out.println("Calling processKeyRelease()");
+		    processKeyRelease(c);
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
+*/	
 /*
 	public boolean checkLocation(ConstructionSite site, int distance) {
 		boolean goodPosition = true;
@@ -806,8 +876,7 @@ public class ConstructionWizard {
 	 * @param s
 	 * @param c
 	 */
-	// 2015-12-25 Added moveConstructionSite()
-	public void moveConstructionSite(ConstructionSite s, int c) {
+	public void processKeyPress(ConstructionSite s, int c) {
 		int facing = (int) s.getFacing();
 		double x = s.getXLocation();
 		double y = s.getYLocation();
@@ -816,47 +885,73 @@ public class ConstructionWizard {
 	    	|| c == java.awt.event.KeyEvent.VK_KP_UP
 	    	|| c == java.awt.event.KeyEvent.VK_W
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("up");
-			s.setYLocation(y + 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    	upKeyPressed = true;
 	    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
 	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN
 	    	|| c == java.awt.event.KeyEvent.VK_S
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("down");
-			s.setYLocation(y - 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    	downKeyPressed = true;
 	    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
 	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT
 	    	|| c == java.awt.event.KeyEvent.VK_A
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD4) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("left");
-			s.setXLocation(x + 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    	leftKeyPressed = true;
 	    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
 	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT
 	    	|| c == java.awt.event.KeyEvent.VK_D
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD6) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("right");
-			s.setXLocation(x - 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    	rightKeyPressed = true;
 	    } else if(c == java.awt.event.KeyEvent.VK_R
 	    	|| c == java.awt.event.KeyEvent.VK_F) {
-	    	//System.out.println("f : " + facing);
-	    	//System.out.println("turn 90");
+	    	turnKeyPressed = true;
+	    }
+	    
+	    if (upKeyPressed) s.setYLocation(y + 1);	
+	    if (downKeyPressed) s.setYLocation(y - 1);
+	    if (leftKeyPressed) s.setXLocation(x + 1);
+	    if (rightKeyPressed) s.setXLocation(x - 1);
+    	if (turnKeyPressed) {
 	    	facing = facing + 45;
 	    	if (facing >= 360)
 	    		facing = facing - 360;
 	    	s.setFacing(facing);
-	    	//System.out.println("f : " + s.getFacing());
 	    }
-
+	    
 	}
 
+	/**
+	 * Sets the new x and y location and facing of the site
+	 * @param c
+	 */
+	public void processKeyRelease(int c) {
+
+	    if (c == java.awt.event.KeyEvent.VK_UP // 38
+		    	|| c == java.awt.event.KeyEvent.VK_KP_UP
+		    	|| c == java.awt.event.KeyEvent.VK_W
+		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
+		    	upKeyPressed = false;
+		    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
+		    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN
+		    	|| c == java.awt.event.KeyEvent.VK_S
+		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
+		    	downKeyPressed = false;
+		    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
+		    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT
+		    	|| c == java.awt.event.KeyEvent.VK_A
+		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD4) {
+		    	leftKeyPressed = false;
+		    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
+		    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT
+		    	|| c == java.awt.event.KeyEvent.VK_D
+		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD6) {
+		    	rightKeyPressed = false;
+		    } else if(c == java.awt.event.KeyEvent.VK_R
+		    	|| c == java.awt.event.KeyEvent.VK_F) {
+		    	turnKeyPressed = false;
+		    }
+
+	}
+	
 /*
 	// for future use
 	public void moveMouse(Point p) {

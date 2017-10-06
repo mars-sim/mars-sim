@@ -608,8 +608,8 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		isPaused = false;
 	}
 
-	// 2014-12-17 Added pauseChange()
-	public void pauseChange(boolean isPaused) {
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
 		isPaused = true;
 	};
 }

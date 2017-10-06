@@ -340,7 +340,7 @@ implements Serializable {
 
             // Creating missing finishing event.
             //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
-            String location = member.getSettlement().getName();
+            String location = ((Person)member).getAssociatedSettlement().getName();
             if (location == null)
             	location = member.getCoordinates().toString();
             Simulation.instance().getEventManager().registerNewEvent(new MissionHistoricalEvent(member,

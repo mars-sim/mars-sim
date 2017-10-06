@@ -178,6 +178,7 @@ implements Serializable {
         if (loc == LocationSituation.IN_SETTLEMENT) {
             patientList = doctor.getSettlement().getInhabitants();
         }
+/*        
         else if (loc == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = doctor.getVehicle();
             if (vehicle instanceof Crewable) {
@@ -185,7 +186,7 @@ implements Serializable {
                 patientList = crewVehicle.getCrew();
             }
         }
-
+*/
         // Determine patient.
         if (patientList != null) {
             Iterator<Person> i = patientList.iterator();
@@ -224,7 +225,7 @@ implements Serializable {
 
         // If duration, provide medication.
         if (getDuration() <= (getTimeCompleted() + time)) {
-            if (patient != null) {
+            if (patient != null && patient.getSettlement() != null && patient.getBuildingLocation() != null) {
                 if (medication != null) {
                     PhysicalCondition condition = patient.getPhysicalCondition();
 
@@ -247,7 +248,9 @@ implements Serializable {
                 }
                 else throw new IllegalStateException("medication is null");
             }
-            else throw new IllegalStateException ("patient is null");
+            else 
+            	logger.info(patient.getName() + " is not in a proper place to receive medication.");
+            	//throw new IllegalStateException ("patient is null");
         }
 
         // Add experience.

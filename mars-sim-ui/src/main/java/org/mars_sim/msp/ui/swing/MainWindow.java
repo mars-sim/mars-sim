@@ -692,14 +692,14 @@ public class MainWindow extends JComponent {
 	 */
 	public void pauseSimulation() {
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
-		Simulation.instance().getMasterClock().setPaused(true);
+		Simulation.instance().getMasterClock().setPaused(true, false);
 	}
 
 	/**
 	 * Closes the announcement window and unpauses the simulation.
 	 */
 	public void unpauseSimulation() {
-		Simulation.instance().getMasterClock().setPaused(false);
+		Simulation.instance().getMasterClock().setPaused(false, false);
 		desktop.disposeAnnouncementWindow();
 	}
 

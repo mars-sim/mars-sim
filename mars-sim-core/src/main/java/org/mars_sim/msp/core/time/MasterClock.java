@@ -326,7 +326,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @param file the file to load from.
      */
     public void loadSimulation(File file) {
-        this.setPaused(false);
+        this.setPaused(false, false);
         loadSimulation = true;
         this.file = file;
     }
@@ -383,7 +383,7 @@ public class MasterClock implements Serializable { // Runnable,
      * Sets the exit program flag.
      */
     public void exitProgram() {
-        this.setPaused(true);
+        this.setPaused(true, false);
         exitProgram = true;
     }
 
@@ -642,7 +642,6 @@ public class MasterClock implements Serializable { // Runnable,
      */
     private void statusUpdate() {
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
-
         if (!isPaused) {
             // Update elapsed milliseconds.
             updateElapsedMilliseconds();
@@ -679,23 +678,6 @@ public class MasterClock implements Serializable { // Runnable,
             saveType = 0;
         }
 
-/*
-        else if (loadSimulation) {
-            // Load the simulation from a file.
-            if (file.exists() && file.canRead()) {
-                Simulation.instance().loadSimulation(file);
-               	//logger.info("just done running Simulation's loadSimulation().");
-                //Simulation.instance().start(false);
-            }
-            else {
-                logger.warning("Cannot access file " + file.getPath() + ", not reading");
-            }
-
-            loadSimulation = false;
-        }
-
-*/
-
         // Exit program if exitProgram flag is true.
         if (exitProgram) {
         	if (sim.getAutosaveTimer() != null)
@@ -720,10 +702,8 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Prepares clock listener tasks for setting up threads.
      */
-    // 2015-04-02 Added ClockListenerTask
 	public class ClockListenerTask implements Runnable {
 
-		//long SLEEP_TIME = 1;
 		double time;
 		private ClockListener listener;
 
@@ -732,9 +712,7 @@ public class MasterClock implements Serializable { // Runnable,
 		}
 
 		private ClockListenerTask(ClockListener listener) {
-			//logger.info("MasterClock's ClockListenerTask's constructor is on " + Thread.currentThread().getName() + " Thread");
 			this.listener = listener;
-
 		}
 
 		public void addTime(double time) {
@@ -744,11 +722,8 @@ public class MasterClock implements Serializable { // Runnable,
 		@Override
 		public void run() {
 			try {
-				//while (!clockListenerExecutor.isTerminated()){
-				//while (!isPaused)
-					listener.clockPulse(time);
-					//TimeUnit.SECONDS.sleep(SLEEP_TIME);
-			} catch (ConcurrentModificationException e) {} //Exception e) {}
+				listener.clockPulse(time);
+			} catch (ConcurrentModificationException e) {}
 		}
 	}
 
@@ -756,73 +731,15 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Fires the clock pulse to each clock listener
      */
-    // 2015-04-02 Modified fireClockPulse() to make use of ThreadPoolExecutor
 	public void fireClockPulse(double time) {
-		//logger.info("MasterClock's ClockListenerTask's constructor is on " + Thread.currentThread().getName() + " Thread");
-		// it's on pool-5-thread-1 Thread
-
-		// java 8 internal iterator style
-		//listeners.forEach(cl -> cl.clockPulse(time));
-
-/*	      synchronized (listeners) {
-	            Iterator<ClockListener> i = listeners.iterator();
-	            while (i.hasNext()) {
-	                ClockListener cl = i.next();
-	                try {
-	                    cl.clockPulse(time);
-	                    try {
-	                        Thread.yield();
-	                    }
-	                    catch (Exception e) {
-	                        logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
-	                    }
-	                } catch (Exception e) {
-	            		throw new IllegalStateException("Error while firing clock pulse", e);
-	                }
-	            }
-	       }
-
-		/////
-
-		if (!clockListenerTaskList.isEmpty() || clockListenerTaskList != null) {
-			// run all clockListener Tasks
-
-			clockListenerTaskList.forEach(t -> {
-				// TODO: check if the thread for t is running
-		  			try {
-		  		  		if ( t != null || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() ) {
-			  		  		t.addTime(time);
-		  		  			clockListenerExecutor.execute(t);
-		  		  		}
-		  		  		else
-		  		  			return;
-		  				//}
-	                } catch (Exception e) {
-	            		//throw new IllegalStateException("Error while firing clock pulse", e);
-	                }
-
-			});
-*/
-		Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
-		while (i.hasNext()) {
-			//try {
-				ClockListenerTask task = i.next();
-
-  		  		if ((task != null) && !(clockListenerExecutor.isTerminating() || clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown())) {
-	  		  		task.addTime(time);
-  		  			clockListenerExecutor.execute(task);
-  		  		}
-  		  		else
-  		  			return;
-  				//}
-            //} catch (Exception e) {
-			//	e.printStackTrace();
-        		//throw new IllegalStateException("Error while firing clock pulse", e);
-            //}
+		for (ClockListenerTask task : clockListenerTaskList) {
+	  		if ((task != null) && !(clockListenerExecutor.isTerminating() || clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown())) {
+  		  		task.addTime(time);
+	  			clockListenerExecutor.execute(task);
+	  		}
+	  		else
+	  			return;
         }
-
-	  	//endClockListenerExecutor();
-
     }
 
     /**
@@ -842,7 +759,7 @@ public class MasterClock implements Serializable { // Runnable,
      *
      * @param isPaused true if simulation is paused.
      */
-    public void setPaused(boolean isPaused) {
+    public void setPaused(boolean isPaused, boolean showPane) {
         //logger.info("MasterClock's setPaused() is on " + Thread.currentThread().getName());
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
@@ -854,7 +771,7 @@ public class MasterClock implements Serializable { // Runnable,
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.
-        firePauseChange();
+        firePauseChange(showPane);
     }
 
     /**
@@ -870,9 +787,9 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Send a pulse change event to all clock listeners.
      */
-    public void firePauseChange() {
+    public void firePauseChange(boolean showPane) {
 
-        listeners.forEach(cl -> cl.pauseChange(isPaused));
+        listeners.forEach(cl -> cl.pauseChange(isPaused, false));
 /*
         synchronized (listeners) {
             Iterator<ClockListener> i = listeners.iterator();

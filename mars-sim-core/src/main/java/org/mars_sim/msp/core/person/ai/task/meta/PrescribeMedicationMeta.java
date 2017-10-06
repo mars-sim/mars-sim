@@ -88,7 +88,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
 	            // Determine patient needing medication.
 	            Person patient = PrescribeMedication.determinePatient(robot);
-	            if (patient != null) {
+	            if (patient != null && patient.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
 	                result = 100D;
 	            }
 	        }

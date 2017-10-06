@@ -21,5 +21,5 @@ public interface ClockListener {
 	 * Change the pause state of the clock.
 	 * @param isPaused true if clock is paused.
 	 */
-	public void pauseChange(boolean isPaused);
+	public void pauseChange(boolean isPaused, boolean showPane);
 }

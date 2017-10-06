@@ -619,22 +619,22 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    }
 	}
 
-	// 2014-12-17 Added clockPulse()
-	public void clockPulse(double time) {
-
-	}
-
-	// 2014-12-17 Added pauseChange()
-	public void pauseChange(boolean value) {
-		noFiring = value;
-	}
-
 	public void setNoFiring(boolean value) {
 		noFiring = value;
 	}
 
 	public boolean isNoFiring() {
 		return noFiring;
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		noFiring = isPaused;
+	}
+	
+	// 2014-12-17 Added clockPulse()
+	public void clockPulse(double time) {
+
 	}
 
 	/**

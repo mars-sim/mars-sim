@@ -321,7 +321,7 @@ implements Serializable {
 
 	}
 
-	public void init_case_1_step_3() {
+	public void initCase1Step3() {
 	    // Reserve construction vehicles.
 	    reserveConstructionVehicles();
 	    // Retrieve construction LUV attachment parts.

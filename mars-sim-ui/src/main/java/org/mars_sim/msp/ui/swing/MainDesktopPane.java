@@ -1760,7 +1760,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 	@Override
-	public void pauseChange(boolean isPaused) {
+	public void pauseChange(boolean isPaused, boolean showPane) {
 		// TODO Auto-generated method stub
 
 	}

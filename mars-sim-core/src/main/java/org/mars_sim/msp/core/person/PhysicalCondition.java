@@ -552,9 +552,13 @@ implements Serializable {
      * Sets the performance factor.
      * @param newPerformance new performance (between 0 and 1).
      */
-    public void setPerformanceFactor(double newPerformance) {
-        if (performance != newPerformance)
-            performance = newPerformance;
+    public void setPerformanceFactor(double p) {
+	    if (p > 100D)
+	        p = 100D;
+	    else if (p < 0D)
+	        p = 0D;
+        if (performance != p)
+            performance = p;
 	    //person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
     }
 
@@ -1219,11 +1223,6 @@ implements Serializable {
             //LogConsolidated.log(logger, Level.INFO, 200, sourceName,
             //		"kJ < 400   " + old + " --> " + tempPerformance, null);
         }
-
-	    if (tempPerformance > 100D)
-	        tempPerformance = 100D;
-	    else if (tempPerformance < 0D)
-	        tempPerformance = 0D;
 	    
 	    setPerformanceFactor(tempPerformance);
 	    

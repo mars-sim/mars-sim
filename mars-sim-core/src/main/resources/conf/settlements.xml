@@ -1151,7 +1151,7 @@
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
 
-		<settlement name="New Plymouth" template="Mars Direct Base (Phase 2)">
+		<settlement name="Plymouth Base" template="Mars Direct Base (Phase 2)">
 			<location longitude="4.2 E" latitude="15.9 S" />
 			<population number="8" />
 			<number-of-robots number="4" />

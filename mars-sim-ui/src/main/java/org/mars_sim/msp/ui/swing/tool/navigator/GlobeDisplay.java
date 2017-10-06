@@ -664,12 +664,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		}
 	}
 
-	@Override
-	public void pauseChange(boolean isPaused) {
-		// TODO Auto-generated method stub
-
-	}
-
 	/**
 	 * Prepare globe for deletion.
 	 */
@@ -684,5 +678,11 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		dbg = null;
 		dbImage = null;
 		starfield = null;
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		// TODO Auto-generated method stub
+		
 	}
 }

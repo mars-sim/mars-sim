@@ -407,7 +407,7 @@ public class MainScene {
 				if (isOnPauseMode) {
 					unpauseSimulation();
 				} else {
-					pauseSimulation();
+					pauseSimulation(true);
 				}
 			}
 		}
@@ -463,21 +463,15 @@ public class MainScene {
 
 	/**
 	 * Pauses sim and opens the construction wizard
-	 * 
 	 * @param mission
 	 */
-	// 2015-12-16 Added openConstructionWizard()
-	public void openConstructionWizard(BuildingConstructionMission mission) { // ConstructionManager
-																				// constructionManager,
-		// logger.info("MainScene's openConstructionWizard() is in " +
-		// Thread.currentThread().getName() + " Thread");
-		// Note: make sure pauseSimulation() doesn't interfere with
-		// resupply.deliverOthers();
-		// 2015-12-16 Track the current pause state
+	public void openConstructionWizard(BuildingConstructionMission mission) {
 		Platform.runLater(() -> {
-			boolean previous = startPause();
+			//double previous = slowDownTimeRatio();
+			pauseSimulation(false);
 			constructionWizard.selectSite(mission);
-			endPause(previous);
+			unpauseSimulation();
+			//speedUpTimeRatio(previous);
 		});
 	}
 
@@ -1090,9 +1084,9 @@ public class MainScene {
 			if (old_val != new_val) {
 				//newTimeRatio = value;
 				int value = (int) new_val; 
-				boolean previous = startPause();
+				//boolean previous = startPause();
 				masterClock.setTimeRatio(value);
-				endPause(previous);
+				//endPause(previous);
 
 				StringBuilder s3 = new StringBuilder();
 				s3.append(masterClock.getTimeTruncated(value));
@@ -1671,8 +1665,8 @@ public class MainScene {
 		// zoom.setMinHeight(100);
 		// zoom.setMaxHeight(200);
 		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
-		zoomSlider.setMin(-10);
-		zoomSlider.setMax(10);
+		zoomSlider.setMin(-3);
+		zoomSlider.setMax(5);
 		zoomSlider.setValue(0);
 		zoomSlider.setMajorTickUnit(5);
 		zoomSlider.setShowTickLabels(true);
@@ -2896,14 +2890,14 @@ public class MainScene {
 	/**
 	 * Pauses the marquee timer and pauses the simulation.
 	 */
-	public void pauseSimulation() {
+	public void pauseSimulation(boolean showPane) {
 		if (exitDialog == null || !exitDialog.isVisible()) {
 			isShowingDialog = true;
 			isMuteCache = desktop.getSoundPlayer().isMute(false);
 			if (!isMuteCache)
 				desktop.getSoundPlayer().setMute(true);
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-			masterClock.setPaused(true);
+			masterClock.setPaused(true, showPane);
 		}
 	}
 
@@ -2912,7 +2906,7 @@ public class MainScene {
 	 */
 	public void unpauseSimulation() {
 		isShowingDialog = false;
-		masterClock.setPaused(false);
+		masterClock.setPaused(false, true);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 		if (!isMuteCache)
 			desktop.getSoundPlayer().setMute(false);
@@ -2921,10 +2915,10 @@ public class MainScene {
 	public boolean startPause() {
 		boolean previous = masterClock.isPaused();
 		if (!previous) {
-			pauseSimulation();
+			pauseSimulation(true);
 		}
 		// desktop.getTimeWindow().enablePauseButton(false);
-		masterClock.setPaused(true);
+		masterClock.setPaused(true, true);
 		return previous;
 	}
 

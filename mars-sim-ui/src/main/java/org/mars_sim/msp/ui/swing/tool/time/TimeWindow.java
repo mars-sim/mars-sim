@@ -265,7 +265,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				masterClock.setPaused(!masterClock.isPaused());
+				masterClock.setPaused(!masterClock.isPaused(), false);
 			}
 		});
 		pausePane.add(pauseButton);
@@ -617,23 +617,21 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or
 	// .play()
 	@Override
-	public void pauseChange(boolean isPaused) {
+	public void pauseChange(boolean isPaused, boolean showPane) {
 		// logger.info("TimeWindow : calling pauseChange()");
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
-			if (mainScene != null && !masterClock.isSavingSimulation())
-				//mainScene.showWaitStage(MainScene.PAUSED);
+			if (showPane && mainScene != null && !masterClock.isSavingSimulation())
 				mainScene.startPausePopup();
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-
-		} else {
+		
+		} 
+		else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-			if (mainScene != null)
-				//mainScene.hideWaitStage(MainScene.PAUSED);
+			if (showPane && mainScene != null)
 				mainScene.stopPausePopup();
-
 		}
 	}
 
