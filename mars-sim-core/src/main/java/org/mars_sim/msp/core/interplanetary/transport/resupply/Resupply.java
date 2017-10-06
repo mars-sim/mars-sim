@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -123,8 +122,10 @@ implements Serializable, Transportable {
      * Commits a set of modifications for the resupply mission.
      */
     public void commitModification() {
-        HistoricalEvent newEvent = new TransportEvent(this, EventType.TRANSPORT_ITEM_MODIFIED,
-                "Resupply mission modified");
+        HistoricalEvent newEvent = new TransportEvent(this, 
+        		EventType.TRANSPORT_ITEM_MODIFIED,
+        		settlement.getName(),
+                "Resupply mission modded");
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
 
@@ -1514,5 +1515,12 @@ implements Serializable, Transportable {
         newParts.clear();
         newParts = null;
     }
+
+
+	@Override
+	public String getSettlementName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

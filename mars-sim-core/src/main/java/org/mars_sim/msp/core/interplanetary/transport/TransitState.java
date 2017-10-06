@@ -1,11 +1,14 @@
+/**
+ * Mars Simulation Project
+ * TransitState.java
+ * @version 3.1.0 2017-10-03
+ * @author stpa
+ */
+
 package org.mars_sim.msp.core.interplanetary.transport;
 
 import org.mars_sim.msp.core.Msg;
 
-/**
- * @author stpa
- * 2014-03-06
- */
 public enum TransitState {
 
 	PLANNED (Msg.getString("TransitState.planned")), //$NON-NLS-1$

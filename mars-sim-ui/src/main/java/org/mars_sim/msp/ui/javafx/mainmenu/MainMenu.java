@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -107,7 +106,7 @@ public class MainMenu {
     //private double rate;
     //private int currentItem = 0;
     
-	private ObservableList<Screen> screens;
+	//private ObservableList<Screen> screens;
 
     private Point2D anchorPt;
     private Point2D previousLocation;

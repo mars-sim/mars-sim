@@ -94,9 +94,9 @@ implements Repair, Serializable {
         TaskEvent startingEvent = null ;
         if (getCreateEvents() && !isDone()) {
         	if (person != null)
-                startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
+                startingEvent = new TaskEvent(person, this, EventType.TASK_START, person.getAssociatedSettlement().getName(), "");
         	else if (robot != null)
-                startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");
+                startingEvent = new TaskEvent(robot, this, EventType.TASK_START, robot.getAssociatedSettlement().getName(), "");
 
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }

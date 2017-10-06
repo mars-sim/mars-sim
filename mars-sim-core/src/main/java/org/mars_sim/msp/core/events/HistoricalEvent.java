@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MSPEvent.java
- * @version 3.07 2014-12-06
+ * HistoricalEvent.java
+ * @version 3.1.0 2017-10-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.events;
@@ -33,6 +33,8 @@ public abstract class HistoricalEvent {
 	private MarsClock timestamp;
 	/** Source of event may be null. */
 	private Object source;
+	/** Location occurred. */	
+	private String location;
 
 	/**
 	 * Construct an event with the appropriate information. The time is not
@@ -44,10 +46,11 @@ public abstract class HistoricalEvent {
 	 * @param description Long description of event.
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
 	 */
-	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String description) {
+	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String location, String description) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
+		this.location = location;
 		this.description = description;
 		// need count++ next time: System.out.println("HistoricalEvent.java constructor");
 	}
@@ -76,6 +79,14 @@ public abstract class HistoricalEvent {
 		return source;
 	}
 
+	/**
+	 * Get the location.
+	 * @return Object as the location.
+	 */
+	public String getLocation() {
+		return location;
+	}
+	
 	/**
 	 * Get event time.
 	 * @return Time the event happened

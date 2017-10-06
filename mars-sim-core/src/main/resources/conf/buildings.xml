@@ -2554,7 +2554,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
-			featuring a brick loading dock for easy access. It has equipment for
+			featuring a brick loading dock for easy access. It hosts equipment for
 			building, repairing and modifying rovers and vehicles.
 		</description>
 		<power-required base-power="3.0" base-power-down-power="0.3" />

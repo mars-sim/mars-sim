@@ -135,7 +135,7 @@ implements Serializable {
 
 				// Create starting task event if needed.
 				if (getCreateEvents()) {
-					TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
+					TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, person.getAssociatedSettlement().getName(), "");
 					Simulation.instance().getEventManager().registerNewEvent(startingEvent);
 				}
 			}

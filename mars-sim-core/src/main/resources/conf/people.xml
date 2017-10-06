@@ -113,8 +113,8 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<food-deprivation-time value="30.0" />
 
 	<!-- Number of sols without food before starvation kicks in -->
-	<!-- Default: 2.0 -->
-	<starvation-start-time value="2.0" />
+	<!-- Default: 3.0 -->
+	<starvation-start-time value="3.0" />
 
 	<!-- Number of millisols a person can survive in decompression -->
 	<!-- Note: 1 millisol = 88.77 seconds -->

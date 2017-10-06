@@ -409,6 +409,7 @@ implements TableModelListener, ActionListener {
 		//System.out.println("tabChanged()");
 		MonitorTab newTab = getSelected();
 		JTable table = null;
+		
 		if (newTab != oldTab) {
 			newTab.getModel().addTableModelListener(this);
 			//if (oldTab != null) System.out.println("tabChanged() : oldTab is " + oldTab.getName());
@@ -454,15 +455,13 @@ implements TableModelListener, ActionListener {
 				table = ((TradeTab) newTab).getTable();
 			}
 
-			// Note: needed for periodic refreshing in ToolWindow
 			this.table = table;
-            TableStyle.setTableStyle(table);
-
+			
 			// 2015-09-25 Update skin theme using TableStyle's setTableStyle()
 			if (table != null) { // for pie and bar chart, skip the codes below
+				// Note: needed for periodic refreshing in ToolWindow
 	            //TableStyle.setTableStyle(new RowNumberTable(table));
-	            //System.out.println("Starting createSearchableBar() for "+ table);
-
+	            TableStyle.setTableStyle(table);       
 				//statusPanel.remove(_tableSearchableBar);
 	            if (reloadSearch)
 	            	createSearchableBar(table);
@@ -470,7 +469,6 @@ implements TableModelListener, ActionListener {
 
 			String status = newTab.getCountString();
 			rowCount.setText(status);
-
 
 
 			if (oldTab != null) {

@@ -838,34 +838,39 @@ public class MainScene {
 			AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 			AnchorPane.setTopAnchor(soundBtn, 3.0);
 			// AnchorPane.setTopAnchor(farmBtn, 3.0);
-			AnchorPane.setTopAnchor(earthTimeButton, 1.0);
-			AnchorPane.setTopAnchor(marsTimeButton, 1.0);
+			AnchorPane.setTopAnchor(earthTimeButton, 0.0);
+			AnchorPane.setTopAnchor(marsTimeButton, 0.0);
 		} else if (OS.contains("linux")) {
 			AnchorPane.setTopAnchor(speedBtn, 0.0);
 			AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 			AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 			AnchorPane.setTopAnchor(soundBtn, 0.0);
 			// AnchorPane.setTopAnchor(farmBtn, 0.0);
-			AnchorPane.setTopAnchor(earthTimeButton, 1.0);
-			AnchorPane.setTopAnchor(marsTimeButton, 1.0);
+			AnchorPane.setTopAnchor(earthTimeButton, 0.0);
+			AnchorPane.setTopAnchor(marsTimeButton, 0.0);
 		} else if (OS.contains("mac")) {
 			AnchorPane.setTopAnchor(speedBtn, 0.0);
 			AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 			AnchorPane.setTopAnchor(lastSaveLabel, 0.0);
 			AnchorPane.setTopAnchor(soundBtn, 0.0);
 			// AnchorPane.setTopAnchor(farmBtn, 0.0);
-			AnchorPane.setTopAnchor(earthTimeButton, 1.0);
-			AnchorPane.setTopAnchor(marsTimeButton, 1.0);
+			AnchorPane.setTopAnchor(earthTimeButton, 0.0);
+			AnchorPane.setTopAnchor(marsTimeButton, 0.0);
 		}
 
 		AnchorPane.setRightAnchor(speedBtn, 5.0);
 		AnchorPane.setRightAnchor(marsNetBtn, 45.0);
 		AnchorPane.setRightAnchor(soundBtn, 85.0);
 		// AnchorPane.setRightAnchor(farmBtn, 125.0);
-		AnchorPane.setRightAnchor(marsTimeButton, 165.0);
-		AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 165);
-		AnchorPane.setRightAnchor(lastSaveLabel, marsTimeButton.getMinWidth() + marsTimeButton.getMinWidth() + 165);
-
+		
+		//AnchorPane.setRightAnchor(marsTimeButton, 165.0);
+		//AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 165);
+		AnchorPane.setRightAnchor(marsTimeButton, sceneWidth.get()/2);
+		AnchorPane.setRightAnchor(earthTimeButton, sceneWidth.get()/2 - marsTimeButton.getPrefWidth());
+		
+		//AnchorPane.setRightAnchor(lastSaveLabel, marsTimeButton.getMinWidth() + marsTimeButton.getMinWidth() + 165);
+		AnchorPane.setRightAnchor(lastSaveLabel, 75.0);
+		
 		anchorPane = new AnchorPane();
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeButton,
 				marsTimeButton, soundBtn);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
@@ -937,14 +942,14 @@ public class MainScene {
 		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
 
 		if (OS.contains("linux")) {
-			earthTimeButton.setMinWidth(LINUX_WIDTH - 5);
-			earthTimeButton.setPrefSize(LINUX_WIDTH - 5, 29);
+			earthTimeButton.setPrefWidth(LINUX_WIDTH);
+			earthTimeButton.setPrefSize(LINUX_WIDTH, 29);
 		} else if (OS.contains("mac")) {
-			earthTimeButton.setMinWidth(MACOS_WIDTH - 10);
-			earthTimeButton.setPrefSize(MACOS_WIDTH - 10, 28);
+			earthTimeButton.setPrefWidth(MACOS_WIDTH);
+			earthTimeButton.setPrefSize(MACOS_WIDTH, 28);
 		} else {
-			earthTimeButton.setMinWidth(WIN_WIDTH - 15);
-			earthTimeButton.setPrefSize(WIN_WIDTH - 15, 33);
+			earthTimeButton.setPrefWidth(WIN_WIDTH);
+			earthTimeButton.setPrefSize(WIN_WIDTH, 35);
 		}
 
 		if (masterClock == null) {
@@ -955,9 +960,9 @@ public class MainScene {
 			earthClock = masterClock.getEarthClock();
 		}
 
-		earthTimeButton.setId("rich-blue");
+		earthTimeButton.setId("rich-green");
 		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
-		earthTimeButton.setAlignment(Pos.CENTER_LEFT);
+		earthTimeButton.setAlignment(Pos.CENTER);
 	}
 
 	/**
@@ -1484,14 +1489,14 @@ public class MainScene {
 
 		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			marsTimeButton.setMinWidth(LINUX_WIDTH);
+			marsTimeButton.setPrefWidth(LINUX_WIDTH);
 			marsTimeButton.setPrefSize(LINUX_WIDTH, 29);
 		} else if (OS.contains("mac")) {
-			marsTimeButton.setMinWidth(MACOS_WIDTH);
+			marsTimeButton.setPrefWidth(MACOS_WIDTH);
 			marsTimeButton.setPrefSize(MACOS_WIDTH, 28);
 		} else {
-			marsTimeButton.setMinWidth(WIN_WIDTH);
-			marsTimeButton.setPrefSize(WIN_WIDTH, 33);
+			marsTimeButton.setPrefWidth(WIN_WIDTH);
+			marsTimeButton.setPrefSize(WIN_WIDTH, 35);
 		}
 
 		if (masterClock == null) {
@@ -1600,9 +1605,9 @@ public class MainScene {
 			e.consume();
 		});
 
-		marsTimeButton.setId("rich-orange");
+		marsTimeButton.setId("rich-red");
 		// marsTimeButton.setTextAlignment(TextAlignment.LEFT);
-		marsTimeButton.setAlignment(Pos.CENTER_LEFT);
+		marsTimeButton.setAlignment(Pos.CENTER);
 		// setQuickToolTip(marsTime, "Click to see Quick Info on Mars");
 
 	}
@@ -2639,14 +2644,14 @@ public class MainScene {
 		lastSaveLabel.setId("save-label");
 		lastSaveLabel.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			lastSaveLabel.setMinWidth(LINUX_WIDTH);
+			lastSaveLabel.setPrefWidth(LINUX_WIDTH);
 			lastSaveLabel.setPrefSize(LINUX_WIDTH, 29);
 		} else if (OS.contains("mac")) {
-			lastSaveLabel.setMinWidth(MACOS_WIDTH);
+			lastSaveLabel.setPrefWidth(MACOS_WIDTH);
 			lastSaveLabel.setPrefSize(MACOS_WIDTH, 28);
 		} else {
-			lastSaveLabel.setMinWidth(WIN_WIDTH);
-			lastSaveLabel.setPrefSize(WIN_WIDTH, 33);
+			lastSaveLabel.setPrefWidth(WIN_WIDTH);
+			lastSaveLabel.setPrefSize(WIN_WIDTH, 35);
 		}
 
 		lastSaveLabel.setAlignment(Pos.CENTER_LEFT);
@@ -2707,7 +2712,7 @@ public class MainScene {
 		marsTimeButton.setText(m.toString());
 
 		StringBuilder e = new StringBuilder();
-		e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF1());
+		e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF0());
 		earthTimeButton.setText(e.toString());
 
 		if (masterClock.getAutosave()) {

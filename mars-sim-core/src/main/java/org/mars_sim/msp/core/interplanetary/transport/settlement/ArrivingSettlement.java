@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.1.0 2017-01-21
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -242,72 +241,10 @@ implements Transportable, Serializable {
 		HistoricalEvent newEvent = new TransportEvent(
 			this,
 			EventType.TRANSPORT_ITEM_MODIFIED,
-			"Arriving settlement modified"
+			landingLocation.toString(),
+			"Arriving settlement modded"
 		);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-	}
-
-	@Override
-	public void destroy() {
-		name = null;
-		template = null;
-		transitState = null;
-		launchDate = null;
-		arrivalDate = null;
-		landingLocation = null;
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer buff = new StringBuffer();
-		buff.append(getName());
-		buff.append(": ");
-		buff.append(getArrivalDate().getDateString());
-		return buff.toString();
-	}
-
-	@Override
-	public int compareTo(Transportable o) {
-		int result = 0;
-
-		double arrivalTimeDiff = MarsClock.getTimeDiff(arrivalDate, o.getArrivalDate());
-		if (arrivalTimeDiff < 0D) {
-			result = -1;
-		}
-		else if (arrivalTimeDiff > 0D) {
-			result = 1;
-		}
-		else {
-			// If arrival time is the same, compare by settlement name alphabetically.
-			result = name.compareTo(o.getName());
-		}
-
-		return result;
-	}
-
-	@Override
-	public synchronized void performArrival() {
-		// Create new settlement.
-		Settlement newSettlement = createNewSettlement();
-		//System.out.println("ArrivingSettlement.java : performArrival() : just done calling");
-
-		// Create new immigrants with arriving settlement.
-		createNewImmigrants(newSettlement);
-
-		// Create new robots.
-		createNewRobots(newSettlement);
-
-		// Create new equipment.
-		createNewEquipment(newSettlement);
-
-		// Create new parts.
-		createNewParts(newSettlement);
-
-		// Create new resources.
-		createNewResources(newSettlement);
-
-		// Create new vehicles.
-		createNewVehicles(newSettlement);
 	}
 
 	/**
@@ -527,4 +464,74 @@ implements Transportable, Serializable {
 			}
 		}
 	}
+	
+	@Override
+	public String getSettlementName() {
+		return name;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer buff = new StringBuffer();
+		buff.append(getName());
+		buff.append(": ");
+		buff.append(getArrivalDate().getDateString());
+		return buff.toString();
+	}
+
+	@Override
+	public int compareTo(Transportable o) {
+		int result = 0;
+
+		double arrivalTimeDiff = MarsClock.getTimeDiff(arrivalDate, o.getArrivalDate());
+		if (arrivalTimeDiff < 0D) {
+			result = -1;
+		}
+		else if (arrivalTimeDiff > 0D) {
+			result = 1;
+		}
+		else {
+			// If arrival time is the same, compare by settlement name alphabetically.
+			result = name.compareTo(o.getName());
+		}
+
+		return result;
+	}
+
+	@Override
+	public synchronized void performArrival() {
+		// Create new settlement.
+		Settlement newSettlement = createNewSettlement();
+		//System.out.println("ArrivingSettlement.java : performArrival() : just done calling");
+
+		// Create new immigrants with arriving settlement.
+		createNewImmigrants(newSettlement);
+
+		// Create new robots.
+		createNewRobots(newSettlement);
+
+		// Create new equipment.
+		createNewEquipment(newSettlement);
+
+		// Create new parts.
+		createNewParts(newSettlement);
+
+		// Create new resources.
+		createNewResources(newSettlement);
+
+		// Create new vehicles.
+		createNewVehicles(newSettlement);
+	}
+
+	
+	@Override
+	public void destroy() {
+		name = null;
+		template = null;
+		transitState = null;
+		launchDate = null;
+		arrivalDate = null;
+		landingLocation = null;
+	}
+
 }

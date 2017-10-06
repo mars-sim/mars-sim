@@ -415,39 +415,43 @@
 	-fx-text-fill: orange; /* #ff4081;	*/
 }
 
-#rich-blue {
+#rich-green {
     -fx-background-color:
-        #000000,
-        linear-gradient(#7ebcea, #2f4b8f),
-        linear-gradient(#426ab7, #263e75),
-        linear-gradient(#395cab, #223768);
-    -fx-background-insets: 0,1,2,3;
-    -fx-background-radius: 3,2,2,2;
-    -fx-padding: 3 10 3 10;
-    -fx-text-fill: #7ebcea;
+        linear-gradient(#2c9310 0%, #6ec10f 50%, #1b6307 100%),
+        linear-gradient(from 0% 5% to 50% 100%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-insets: 0,0,0,0;
+    -fx-background-radius: 2,2,2,2;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: dark-green;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
+    -fx-font-family: "Libeartion Mono";    
 }
-#rich-blue Text {
+
+#rich-green Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
 }
 
-#rich-orange {
+#rich-red {
     -fx-background-color:
-        #000000,
-        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ff845b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
         linear-gradient(#ffea6a, #efaa22),
-        linear-gradient(#ffe657 0%, #f8c202 50%, #EA8002 100%),
-        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
-    -fx-background-insets: 0,1,2,3;
-    -fx-background-radius: 3,2,2,2;
-    -fx-padding: 3 10 3 10;
-    -fx-text-fill: #654b00;
+        linear-gradient(from 100% 50% to 5% 0%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-insets: 0,0,0,0;
+    -fx-background-radius: 2,2,2,2;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: #cc6308;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
+    -fx-font-family: "Libeartion Mono";
 }
-#rich-orange Text {
+
+#rich-red Text {
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+}
+
+#rich-red Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
 }
 

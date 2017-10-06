@@ -359,7 +359,8 @@ implements Serializable {
         	setEmergencyBeacon(member, vehicleTarget, false);
 
         // Set mission event.
-        HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_RENDEZVOUS);
+        HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
+        		this, vehicleTarget.getCoordinates().toString(), EventType.MISSION_RENDEZVOUS);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
 
@@ -399,7 +400,8 @@ implements Serializable {
             inv.storeUnit(towedVehicle);
             towedVehicle.determinedSettlementParkedLocationAndFacing();
             logger.info(towedVehicle + " salvaged at " + disembarkSettlement.getName());
-            HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_SALVAGE_VEHICLE);
+            HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, 
+            		this, person.getSettlement().getName(), EventType.MISSION_SALVAGE_VEHICLE);
             Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
 
             // Unload any crew at settlement.
@@ -414,7 +416,8 @@ implements Serializable {
                     crewmember.setAssociatedSettlement(disembarkSettlement);
                     crewmember.getMind().getTaskManager().clearTask();
                     logger.info(crewmember.getName() + " rescued.");
-                    HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_RESCUE_PERSON);
+                    HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, 
+                    		this, person.getSettlement().getName(), EventType.MISSION_RESCUE_PERSON);
                     Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
                 }
             }

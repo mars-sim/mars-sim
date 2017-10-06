@@ -181,10 +181,10 @@ implements Serializable, Comparable<Task> {
         	TaskEvent endingEvent = null;
 
 			if (person != null) {
-	            endingEvent = new TaskEvent(person, this, EventType.TASK_FINISH, "");
+	            endingEvent = new TaskEvent(person, this,  EventType.TASK_FINISH, person.getAssociatedSettlement().getName(), "");
 			}
 			else if (robot != null) {
-	            endingEvent = new TaskEvent(robot, this, EventType.TASK_FINISH, "");
+	            endingEvent = new TaskEvent(robot, this, EventType.TASK_FINISH, robot.getAssociatedSettlement().getName(), "");
 			}
 
 			if (eventManager == null)

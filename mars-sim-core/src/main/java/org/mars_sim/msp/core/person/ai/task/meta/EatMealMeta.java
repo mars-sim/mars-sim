@@ -44,7 +44,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-        double result = 0D;
+        double result = 1D;
         
         LocationSituation ls = person.getLocationSituation();
         if (ls == LocationSituation.OUTSIDE)
@@ -102,7 +102,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         }
         
         else if (ls == LocationSituation.IN_VEHICLE) {
-        	result *= .8; // ration food a little bit just in case of running out of it
+        	result *= 1D; // ration food a little bit just in case of running out of it
         }
         
         else if (ls == LocationSituation.OUTSIDE) {

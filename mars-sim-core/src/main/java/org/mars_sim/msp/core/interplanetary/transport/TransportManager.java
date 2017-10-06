@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportManager.java
- * @version 3.1.0 2017-09-14
+ * @version 3.1.0 2017-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport;
@@ -61,7 +61,9 @@ implements Serializable {
 	 */
 	public void addNewTransportItem(Transportable transportItem) {
 	    transportItems.add(transportItem);
-	    HistoricalEvent newEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED,
+	    HistoricalEvent newEvent = new TransportEvent(transportItem, 
+	    		EventType.TRANSPORT_ITEM_CREATED,
+	    		transportItem.getSettlementName(),
             "Transport item created: " + transportItem.getName());
 	    Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	    logger.info("A new transport item was created ");// + transportItem.toString());
@@ -120,7 +122,9 @@ implements Serializable {
 	public void cancelTransportItem(Transportable transportItem) {
 		// 2014-10-04 by mkung -- confirmation dialog box--an UI element-- is relocated to ResupplyWindows.java
 		  transportItem.setTransitState(TransitState.CANCELED);
-          HistoricalEvent cancelEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CANCELLED,
+          HistoricalEvent cancelEvent = new TransportEvent(transportItem, 
+        		  EventType.TRANSPORT_ITEM_CANCELLED,
+        		  transportItem.getSettlementName(),
                   "Transport item cancelled");
           Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
           logger.info("A transport item was cancelled: ");// + transportItem.toString());
@@ -142,7 +146,9 @@ implements Serializable {
 			        // Transport item is launched.
 			        transportItem.setTransitState(TransitState.IN_TRANSIT);
 			        HistoricalEvent deliverEvent = new TransportEvent(transportItem,
-			        		EventType.TRANSPORT_ITEM_LAUNCHED, "Transport item launched");
+			        		EventType.TRANSPORT_ITEM_LAUNCHED, 
+			        		transportItem.getSettlementName(),
+			        		"Transport item launched");
 			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);
 			        logger.info("Transport item launched: " + transportItem.toString());
 			        continue;
@@ -154,7 +160,9 @@ implements Serializable {
                     transportItem.setTransitState(TransitState.ARRIVED);
                     transportItem.performArrival();
                     HistoricalEvent arrivalEvent = new TransportEvent(transportItem,
-                    		EventType.TRANSPORT_ITEM_ARRIVED, "Transport item arrived on Mars");
+                    		EventType.TRANSPORT_ITEM_ARRIVED, 
+                    		transportItem.getSettlementName(),
+                    		"Transport item arrived on Mars");
                     Simulation.instance().getEventManager().registerNewEvent(arrivalEvent);
                     logger.info("Transport item arrived at " + transportItem.toString());
                 }

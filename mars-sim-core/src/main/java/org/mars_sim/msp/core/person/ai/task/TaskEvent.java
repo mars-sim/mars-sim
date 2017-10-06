@@ -27,11 +27,16 @@ extends HistoricalEvent implements Serializable {
 	 * @param person The person performing the task.
 	 * @param task The task with the event.
 	 * @param eventType The type of event.
+	 * @param location The location of the event.
 	 * @param description Further description of the event (may be empty string).
 	 */
-	public TaskEvent(Unit unit, Task task, EventType eventType, String description) {
+	public TaskEvent(Unit unit, Task task, EventType eventType, String location, String description) {
 	
 		// Use HistoricalEvent constructor.
-		super(HistoricalEventCategory.TASK, eventType, unit, task.getDescription() + " " + description);
+		super(HistoricalEventCategory.TASK, 
+				eventType, 
+				unit, 
+				location, 
+				task.getDescription() + " " + description);
 	}
 }

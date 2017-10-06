@@ -8,13 +8,11 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.awt.geom.Point2D;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -41,7 +39,10 @@ public class BuildingAirlock extends Airlock {
 	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
 	
     // Data members.
+	private Settlement settlement;
     private Building building; // The building this airlock is for.
+    private Inventory inv;
+    
     private Point2D airlockInsidePos;
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
@@ -57,10 +58,14 @@ public class BuildingAirlock extends Airlock {
         super(capacity);
 
         this.building = building;
+        
+        settlement = building.getBuildingManager().getSettlement();
 
-        if (building == null) {
-            throw new IllegalArgumentException("building is null.");
-        }
+        inv = building.getSettlementInventory();
+        
+        //if (building == null) {
+        //    throw new IllegalArgumentException("building is null.");
+        //}
 
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
@@ -73,7 +78,7 @@ public class BuildingAirlock extends Airlock {
     }
 
     protected void exitAirlock(Person person) {
-        Inventory inv = building.getSettlementInventory();
+        //Inventory inv = building.getSettlementInventory();
 
         if (inAirlock(person)) {
 
@@ -92,8 +97,6 @@ public class BuildingAirlock extends Airlock {
                 	//		+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
-                    
-
 
                 }
                 else {
@@ -102,6 +105,7 @@ public class BuildingAirlock extends Airlock {
                             " from an airlock but is not outside.");
                 }
             }
+            
             else if (DEPRESSURIZED.equals(getState())) { 
             	// check if the airlock has been depressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
@@ -141,7 +145,8 @@ public class BuildingAirlock extends Airlock {
     }
 
     protected void exitAirlock(Robot robot) {
-        Inventory inv = building.getSettlementInventory();
+/*    	
+        //Inventory inv = building.getSettlementInventory();
 
         if (inAirlock(robot)) {
         	
@@ -188,10 +193,13 @@ public class BuildingAirlock extends Airlock {
         else {
             throw new IllegalStateException(robot.getName() + " not in airlock of " + getEntityName());
         }
+*/        
     }
+    
+    
     @Override
     public String getEntityName() {
-        Settlement settlement = building.getBuildingManager().getSettlement();
+        //Settlement settlement = building.getBuildingManager().getSettlement();
         //return settlement.getName() + ": " + building.getNickName();
         return building.getNickName() + " in " + settlement.getName();
 
@@ -199,7 +207,7 @@ public class BuildingAirlock extends Airlock {
 
     @Override
     public Inventory getEntityInventory() {
-        return building.getSettlementInventory();
+        return inv;//building.getSettlementInventory();
     }
 
     @Override

@@ -881,7 +881,7 @@ implements UnitListener {
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(
-							member, this,
+							member, this, vehicle.getCoordinates().toString(), 
 							EventType.MISSION_EMERGENCY_DESTINATION);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
@@ -914,7 +914,9 @@ implements UnitListener {
 	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn) {
 
 		// Creating mission emergency beacon event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_EMERGENCY_BEACON);
+		
+		HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
+				this, vehicle.getCoordinates().toString(), EventType.MISSION_EMERGENCY_BEACON);
 
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		if (beaconOn) {

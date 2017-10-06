@@ -31,6 +31,7 @@ implements Serializable {
 	private Airlock airlock;
 	
 	private static BuildingConfig config;
+	
 
 	/**
 	 * Constructor
@@ -42,14 +43,15 @@ implements Serializable {
 
 		config = SimulationConfig.instance().getBuildingConfiguration();
 
+		String buildingType = building.getBuildingType();
 		// Add a building airlock.
-		int airlockCapacity = config.getAirlockCapacity(building.getBuildingType());
-		double airlockXLoc = config.getAirlockXLoc(building.getBuildingType());
-		double airlockYLoc = config.getAirlockYLoc(building.getBuildingType());
-		double interiorXLoc = config.getAirlockInteriorXLoc(building.getBuildingType());
-		double interiorYLoc = config.getAirlockInteriorYLoc(building.getBuildingType());
-		double exteriorXLoc = config.getAirlockExteriorXLoc(building.getBuildingType());
-		double exteriorYLoc = config.getAirlockExteriorYLoc(building.getBuildingType());
+		int airlockCapacity = config.getAirlockCapacity(buildingType);
+		double airlockXLoc = config.getAirlockXLoc(buildingType);
+		double airlockYLoc = config.getAirlockYLoc(buildingType);
+		double interiorXLoc = config.getAirlockInteriorXLoc(buildingType);
+		double interiorYLoc = config.getAirlockInteriorYLoc(buildingType);
+		double exteriorXLoc = config.getAirlockExteriorXLoc(buildingType);
+		double exteriorYLoc = config.getAirlockExteriorYLoc(buildingType);
 
 		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc,
 				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
@@ -98,7 +100,6 @@ implements Serializable {
 
 		double airlockCapacityValue = demand / (supply + 1D);
 
-		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		double airlockCapacity = config.getAirlockCapacity(buildingName);
 
 		return airlockCapacity * airlockCapacityValue;
@@ -139,7 +140,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return airlock.getCapacity() * 30D;
+		return airlock.getCapacity() * 5D;
 	}
 
 	@Override
