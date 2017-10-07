@@ -1665,7 +1665,7 @@ public class MainScene {
 		// zoom.setMinHeight(100);
 		// zoom.setMaxHeight(200);
 		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
-		zoomSlider.setMin(-3);
+		zoomSlider.setMin(-2);
 		zoomSlider.setMax(5);
 		zoomSlider.setValue(0);
 		zoomSlider.setMajorTickUnit(5);

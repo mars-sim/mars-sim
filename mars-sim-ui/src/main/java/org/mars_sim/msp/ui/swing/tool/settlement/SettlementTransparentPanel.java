@@ -341,7 +341,7 @@ public class SettlementTransparentPanel extends JComponent {
             }
         });
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, -3, 5, 0);
+        zoomSlider = new JSlider(JSlider.VERTICAL, -2, 5, 0);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
         zoomSlider.setPreferredSize(new Dimension(50, 200));
         zoomSlider.setSize(new Dimension(50, 200));

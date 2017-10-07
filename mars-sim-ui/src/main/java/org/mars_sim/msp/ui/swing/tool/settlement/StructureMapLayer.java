@@ -6,9 +6,11 @@
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -35,9 +37,16 @@ public class StructureMapLayer implements SettlementMapLayer {
     // Static members
     private static final Color BUILDING_COLOR = Color.GREEN;
     private static final Color CONSTRUCTION_SITE_COLOR = new Color(119, 59, 0); // dark orange
+    private static final Color SELECTED_CONSTRUCTION_SITE_COLOR = new Color(119, 85, 0); // dark orange
+    
     private static final Color BUILDING_CONNECTOR_COLOR = Color.RED;
     private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.WHITE;
 
+    private static final Color SITE_BORDER_COLOR = Color.BLACK;
+    private final static float dash[] = { 1.0f };
+    private final static BasicStroke dashed = new BasicStroke(0.2f,
+    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+    
     // Data members
     private SettlementMapPanel mapPanel;
     private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
@@ -46,7 +55,7 @@ public class StructureMapLayer implements SettlementMapLayer {
  // 2014-11-04 Added building
     @SuppressWarnings("unused")
 	private Building building;
-    private String buildingType;
+    //private String buildingType;
 
     /**
      * Constructor
@@ -224,7 +233,6 @@ public class StructureMapLayer implements SettlementMapLayer {
      * @param g2d the graphics context.
      */
     private void drawConstructionSite(ConstructionSite site, Graphics2D g2d) {
-
         // Use SVG image for construction site if available.
         GraphicsNode svg = null;
         ConstructionStage stage = site.getCurrentConstructionStage();
@@ -232,8 +240,8 @@ public class StructureMapLayer implements SettlementMapLayer {
         if (stage != null) {
             svg = SVGMapUtil.getConstructionSiteSVG(stage.getInfo().getName().toLowerCase());
         }
+        
         if (svg != null) {
-
             // Determine construction site pattern SVG image if available.
             GraphicsNode patternSVG = SVGMapUtil
                     .getConstructionSitePatternSVG(
@@ -246,11 +254,16 @@ public class StructureMapLayer implements SettlementMapLayer {
                     );
         }
         else {
+        	Color color = SELECTED_CONSTRUCTION_SITE_COLOR;
             // Else draw colored rectangle for construction site.
+        	if (site.isMousePicked())
+        		color = SELECTED_CONSTRUCTION_SITE_COLOR;
+        	else
+        		color = CONSTRUCTION_SITE_COLOR;
             drawRectangleStructure(
                     g2d, site.getXLocation(), site.getYLocation(),
                     site.getWidth(), site.getLength(), site.getFacing(),
-                    CONSTRUCTION_SITE_COLOR
+                    color
                     );
         }
     }
@@ -443,11 +456,23 @@ public class StructureMapLayer implements SettlementMapLayer {
             }
         }
         else {
+            // Else draw colored rectangle for construction site.
+
             // Draw filled rectangle.
             newTransform.scale(scalingWidth, scalingLength);
             g2d.transform(newTransform);
             g2d.setColor(color);
             g2d.fill(bounds);
+            
+        	if (color == SELECTED_CONSTRUCTION_SITE_COLOR) {
+                // Draw the dashed border
+                g2d.setPaint(SITE_BORDER_COLOR);
+                g2d.setStroke(dashed);
+                g2d.draw(bounds);
+                Stroke oldStroke = g2d.getStroke();
+                g2d.setStroke(oldStroke);
+        	}
+              
         }
 
         // Restore original graphic transforms.

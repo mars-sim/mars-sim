@@ -191,9 +191,12 @@ public class TransportWizard {
 		}
 
         if (mainScene != null) {
-			boolean previous = mainScene.startPause();
+			//boolean previous = mainScene.startPause();
+        	mainScene.pauseSimulation(false);
 			determineEachBuildingPosition(mgr);
-			mainScene.endPause(previous);
+			//mainScene.endPause(previous);
+			mainScene.unpauseSimulation();
+			
 		}
         else {
         	// non-javaFX mode
@@ -403,11 +406,12 @@ public class TransportWizard {
     	//System.out.println("inside checkTemplateAddBuilding()");
     	// TODO: make use of the preconfigured boolean field to distinguish between the planned template loaded from xml vs. a newly created template
 	    mapPanel.repaint();
-    	boolean previous = true;
+    	//boolean previous = true;
 
 		// Pause simulation.
 		if (mainScene != null)
-			previous = mainScene.startPause();
+			mainScene.pauseSimulation(false);
+			//previous = mainScene.startPause();
 
     	// Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
     	boolean ok = isTemplatePositionClear(mgr, correctedTemplate);
@@ -426,7 +430,8 @@ public class TransportWizard {
 		}
 
 		if (mainScene != null)
-			mainScene.endPause(previous);
+			mainScene.unpauseSimulation();
+			//mainScene.endPause(previous);
 
     }
 

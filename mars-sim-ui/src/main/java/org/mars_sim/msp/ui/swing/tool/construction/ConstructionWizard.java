@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.construction;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -542,11 +543,11 @@ public class ConstructionWizard {
 	        	    button.fire();
 	        	}
 	        	msg.set("Notes: (1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
-	        			+ " (2) To manually place a site, use Mouse/Keyboard Control.");
+	        			+ " (2) To manually place a site, use Mouse Control.");
 			});
 		}
 		else {
-			msg.set("Note: To manually place a site, use Mouse/Keyboard Control.");
+			msg.set("Note: To manually place a site, use Mouse Control.");
 			alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
 		}
 
@@ -587,18 +588,18 @@ public class ConstructionWizard {
 		String msg = "Keyboard Control :\t(1) Press w/a/s/d, arrows, or num pad keys to move around" + System.lineSeparator()
 				+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise" + System.lineSeparator()
 				+ "   Mouse Control :\t(1) Press & Hold the left button on the site" + System.lineSeparator()
-				+ "\t\t\t\t(2) Move the cursor to the destination" + System.lineSeparator()
+				+ "\t\t\t\t(2) Move the cursor to the destination within a short distance" + System.lineSeparator()
 				+ "\t\t\t\t(3) Release button to drop it off" + System.lineSeparator()
 				+ "\t\t\t\t(4) Hit \"Confirm Position\" button to proceed";
 	*/		
 			String msg = 
 			  "\t\t(1) Press & Hold the left button on the site" + System.lineSeparator()
-			+ "\t\t(2) Move the cursor to the destination" + System.lineSeparator()
+			+ "\t\t(2) Move the cursor to the destination within a short distance" + System.lineSeparator()
 			+ "\t\t(3) Release button to drop it off" + System.lineSeparator()
 			+ "\t\t(4) Hit \"Confirm Position\" button to proceed";
 			
 			Alert alert = new Alert(AlertType.CONFIRMATION);
-			//alert.setOnCloseRequest((event) -> event.consume());
+			alert.setOnCloseRequest(e -> e.consume());
 			//alert.initStyle(StageStyle.UNDECORATED);
 			alert.initOwner(mainScene.getStage());
 			alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
@@ -627,13 +628,13 @@ public class ConstructionWizard {
 
 			//final KeyAdapter kb = new KeyAdapter(site);
 			MouseDetection md = new MouseDetection(site);
-			//MouseListener ml = new MouseListener(site);
+			MouseMotionDetection mmd = new MouseMotionDetection(site);
 			
 			//SwingUtilities.invokeLater(() -> {
 
 				mapPanel.setFocusable(true);
 				mapPanel.requestFocusInWindow();
-				//mapPanel.addMouseMotionListener(md);
+				mapPanel.addMouseMotionListener(mmd);
 				mapPanel.addMouseListener(md);
 /*				
 				mapPanel.addKeyListener(new KeyAdapter() {
@@ -693,60 +694,76 @@ public class ConstructionWizard {
 			if (result.isPresent() && result.get() == buttonTypeConfirm) {
 				//mapPanel.emoveKeyListener();
 				mapPanel.removeMouseListener(md);
+				mapPanel.removeMouseMotionListener(mmd);
 			}
 
 	}
 
-	// 2015-12-25 Added MouseDetection
 	public class MouseDetection implements MouseListener{
 		private ConstructionSite site;
 
 		MouseDetection(ConstructionSite site) {
 			this.site = site;
 		}
+		
 		@Override
-	    public void mouseClicked(MouseEvent evt) {
-		//	Point location = MouseInfo.getPointerInfo().getLocation();
+	    public void mouseClicked(MouseEvent e) {
 	    }
 
 		@Override
-		public void mouseEntered(MouseEvent arg0) {}
-
-		@Override
-		public void mouseExited(MouseEvent arg0) {}
-
-		@Override
-		public void mousePressed(MouseEvent evt) {
-			if (evt.getButton() == MouseEvent.BUTTON1) {
-				//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				xLast = evt.getX();
-				yLast = evt.getY();
-			}
+		public void mouseEntered(MouseEvent e) {
 		}
 
 		@Override
-		public void mouseReleased(MouseEvent evt) {
-			if (evt.getButton() == MouseEvent.BUTTON1) {
-				//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				moveConstructionSiteAt(site, evt.getX(), evt.getY());
-			}
-			mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		}
-		
-/*
-		
-		@Override
-		public void mouseDragged(MouseEvent evt) {
-			if (evt.getButton() == MouseEvent.BUTTON1) {
-				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				moveConstructionSiteAt(site, evt.getX(), evt.getY());
-			}
+		public void mouseExited(MouseEvent e) {
 		}
 
 		@Override
-		public void mouseMoved(MouseEvent e) {}
-*/
+		public void mousePressed(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+			}
+			else
+				site.setMousePicked(false);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+			}
+			else
+				site.setMousePicked(false);
+		}
 		
+	}
+	
+	public class MouseMotionDetection implements MouseMotionListener{
+		private ConstructionSite site;
+
+		MouseMotionDetection(ConstructionSite site) {
+			this.site = site;
+		}
+		
+		@Override
+		public synchronized void mouseDragged(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				moveSite(site, e.getX(), e.getY());
+			}
+			else
+				site.setMousePicked(false);
+			xLast = e.getX();
+			yLast = e.getY();
+		}
+
+		@Override
+		public synchronized void mouseMoved(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				highlightSite(site, e.getX(), e.getY());
+			}
+			else 
+				site.setMousePicked(false);
+			xLast = e.getX();
+			yLast = e.getY();
+		}		
 	}
 
 /*	
@@ -794,26 +811,42 @@ public class ConstructionWizard {
         return goodPosition;
 	}
 */
-	/**
-	 * Moves the site to a new position via the mouse's right drag
-	 * @param s
-	 * @param xPixel
-	 * @param yPixel
-	 */
-	// 2015-12-25 Added moveConstructionSiteAt()
-	public void moveConstructionSiteAt(ConstructionSite s, double xPixel, double yPixel) {
+	
+	public boolean isCollided(BoundedObject b0) {
+/*		
+		double x0 = s.getXLocation();
+    	double y0 = s.getYLocation();
+    	double w0 = s.getWidth();
+		double l0 = s.getLength();
+		double f0 = s.getFacing();
+		
+		b0 = new BoundedObject(x0, y0, w0, l0, f0);
+*/		
+		List<Building> buildings = settlementWindow.getMapPanel().getSettlement().getBuildingManager().getBuildings();
+        for (Building b : buildings) {
+	
+			double x1 = b.getXLocation();
+	    	double y1 = b.getYLocation();
+	    	double w1 = b.getWidth();
+			double l1 = b.getLength();
+			double f1 = b.getFacing();
+			BoundedObject b1 = new BoundedObject(x1, y1, w1, l1, f1);
+	
+	    	if (LocalAreaUtil.isTwoBoundedOjectsIntersected(b0, b1))
+	    		return true;
+	    	
+        }
+        
+        return false;
+	}
+	
+	public void highlightSite(ConstructionSite s, double xPixel, double yPixel) {
 		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
 
 		double xDiff = xPixel - xLast;
 		double yDiff = yPixel - yLast;
 
 		if (xDiff < mapPanel.getWidth() && yDiff < mapPanel.getHeight()) {
-			//System.out.println("xPixel : " + xPixel
-			//		+ "  yPixel : " + yPixel
-			//		+ "  xLast : " + xLast
-			//		+ "  yLast : " + yLast
-			//		+ "  xDiff : " + xDiff
-			//		+ "  yDiff : " + yDiff);
 
 			double width = s.getWidth();
 			double length = s.getLength();
@@ -854,21 +887,117 @@ public class ConstructionWizard {
 
 			double distanceX = Math.abs(x - pixel.getX());
 			double distanceY = Math.abs(y - pixel.getY());
+	
 			//System.out.println("distanceX : " + distanceX + "  distanceY : " + distanceY);
 
-
 			if (distanceX <= xx && distanceY <= yy) {
-				Point.Double last = mapPanel.convertToSettlementLocation((int)xLast, (int)yLast);
-				double new_x = Math.round(x + pixel.getX() - last.getX());
-				s.setXLocation(new_x);
-				double new_y = Math.round(y + pixel.getY() - last.getY());
-				s.setYLocation(new_y);
+				System.out.println("xx and yy is within the box");
+				s.setMousePicked(true);
+			}		
+			else
+				s.setMousePicked(false);
+		}
+		else
+			s.setMousePicked(false);
+	}
+	
+	/**
+	 * Moves the site to a new position via the mouse's left drag
+	 * @param s
+	 * @param xPixel
+	 * @param yPixel
+	 */
+	public void moveSite(ConstructionSite s, double xPixel, double yPixel) {
+		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
 
-				xLast = xPixel;
-				yLast = yPixel;
+		double dx = xPixel - xLast;
+		double dy = yPixel - yLast;
+
+		double width = s.getWidth();
+		double length = s.getLength();
+		int facing = (int) s.getFacing();
+		double x = s.getXLocation();
+		double y = s.getYLocation();
+
+			double xx = 0;
+			double yy = 0;
+
+			if (facing == 0) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 90){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			// Loading Dock Garage
+			if (facing == 180) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 270){
+				yy = width/2D;
+				xx = length/2D;
 			}
 
-		}
+			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+			// Fortunately, they both have the same width and length
+			else if (facing == 45){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			else if (facing == 135){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			double distanceX = Math.abs(x - pixel.getX());
+			double distanceY = Math.abs(y - pixel.getY());
+/*
+			System.out.println("xPixel : " + xPixel
+					+ "  yPixel: " + yPixel
+					+ "  xLast: " + xLast
+					+ "  yLast: " + yLast
+					+ "  dx: " + dx
+					+ "  dy: " + dy
+					+ "  xx: " + xx
+					+ "  yy: " + yy	
+					+ "  x: " + Math.round(x*10.0)/10.0
+					+ "  y: " + Math.round(y*10.0)/10.0
+					+ "  distanceX: " + Math.round(distanceX*10.0)/10.0
+					+ "  distanceY: " + Math.round(distanceY*10.0)/10.0
+					+ "  pixel.getX(): " + Math.round(pixel.getX()*10.0)/10.0
+					+ "  pixel.getY(): " + Math.round(pixel.getY()*10.0)/10.0
+					);
+*/
+			if (distanceX <= 2 * xx && distanceY <= 2 * yy) {
+				s.setMousePicked(true);
+				
+				//System.out.println("xx and yy is within range");
+				mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+				Point.Double last = mapPanel.convertToSettlementLocation((int)xLast, (int)yLast);
+				double new_x = Math.round(x + pixel.getX() - last.getX());	
+				double new_y = Math.round(y + pixel.getY() - last.getY());
+				
+		    	double w0 = s.getWidth();
+				double l0 = s.getLength();
+				double f0 = s.getFacing();
+				
+				BoundedObject b0 = new BoundedObject(new_x, new_y, w0, l0, f0);
+				
+				if (!isCollided(b0)) {
+					s.setYLocation(new_y);
+					s.setXLocation(new_x);
+				}
+				else
+					s.setMousePicked(false);
+			}
+			
+			else {
+				mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		//}
 	}
 
 	/**
@@ -905,16 +1034,45 @@ public class ConstructionWizard {
 	    	|| c == java.awt.event.KeyEvent.VK_F) {
 	    	turnKeyPressed = true;
 	    }
+	    	
+    	double w0 = s.getWidth();
+		double l0 = s.getLength();
+		double f0 = s.getFacing();
+		
+		BoundedObject b0 = null;
+		
+	    if (upKeyPressed) {
+	    	b0 = new BoundedObject(s.getXLocation(), s.getYLocation() + 3, w0, l0, f0);
+	    	if (!isCollided(b0))
+	    		s.setYLocation(y + 1);	
+	    }
 	    
-	    if (upKeyPressed) s.setYLocation(y + 1);	
-	    if (downKeyPressed) s.setYLocation(y - 1);
-	    if (leftKeyPressed) s.setXLocation(x + 1);
-	    if (rightKeyPressed) s.setXLocation(x - 1);
+	    if (downKeyPressed) {
+	    	b0 = new BoundedObject(s.getXLocation(), s.getYLocation() - 3, w0, l0, f0);
+	    	if (!isCollided(b0)) 
+	    		s.setYLocation(y - 1);
+	    }
+	    
+	    if (leftKeyPressed) {
+	    	b0 = new BoundedObject(s.getXLocation() + 3, s.getYLocation(), w0, l0, f0);
+	    	if (!isCollided(b0)) 
+	    		s.setXLocation(x + 1);
+	    }
+	    
+	    if (rightKeyPressed) {
+	    	b0 = new BoundedObject(s.getXLocation() - 3, s.getYLocation(), w0, l0, f0);
+	    	if (!isCollided(b0)) 
+	    		s.setXLocation(x - 1);
+	    }
+	    
     	if (turnKeyPressed) {
 	    	facing = facing + 45;
 	    	if (facing >= 360)
 	    		facing = facing - 360;
-	    	s.setFacing(facing);
+	    	b0 = new BoundedObject(s.getXLocation(), s.getYLocation(), w0, l0, facing);
+    		if (!isCollided(b0)) {    	
+		    	s.setFacing(facing);
+    		}
 	    }
 	    
 	}

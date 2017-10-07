@@ -597,6 +597,7 @@ public class CompositionOfAir implements Serializable {
 
 			double [][] new_partialPressure = createGasArray(partialPressure, numID);
 			double [][] new_numMoles = createGasArray(numMoles, numID);
+			double [][] new_standard_moles = createGasArray(standardMoles, numID);
 			double [][] new_mass = createGasArray(mass, numID);
 
 			//double [][] new_percent = Arrays.copyOf(percentComposition, percentComposition[0].length + diff);
@@ -655,6 +656,7 @@ public class CompositionOfAir implements Serializable {
 					
 					new_temperature [gas][id] = t ;
 					new_numMoles [gas][id] = nm;
+					new_standard_moles [gas][id] = nm;
 					new_mass [gas][id] = m;
 					new_partialPressure [gas][id] = p;
 									
@@ -688,6 +690,7 @@ public class CompositionOfAir implements Serializable {
 			partialPressure = new_partialPressure;
 
 			numMoles = new_numMoles;
+			standardMoles = new_standard_moles;
 			mass = new_mass;
 			
 			totalPressure = new_totalPressure;

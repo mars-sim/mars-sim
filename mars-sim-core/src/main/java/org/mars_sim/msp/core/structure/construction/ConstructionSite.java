@@ -57,6 +57,8 @@ implements Serializable, LocalBoundedObject {
     private boolean undergoingConstruction;
     private boolean undergoingSalvage;
     private boolean manual, isSitePicked;
+    
+    private boolean isMousePickedUp;
 
     private transient List<ConstructionListener> listeners;
 
@@ -529,4 +531,11 @@ implements Serializable, LocalBoundedObject {
 		this.isSitePicked = value;
 	}
 
+	public boolean isMousePicked() {
+		return isMousePickedUp;
+	}
+
+	public void setMousePicked(boolean value) {
+		isMousePickedUp = value;
+	}
 }
