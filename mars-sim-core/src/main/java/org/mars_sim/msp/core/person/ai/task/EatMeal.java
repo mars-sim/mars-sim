@@ -123,14 +123,20 @@ public class EatMeal extends Task implements Serializable {
         startingHunger = condition.getHunger();
         currentHunger = startingHunger;
         
+        if (thirst > 500 && energy > 1500 && currentHunger < 250) {
+        	consumeWater();
+        	endTask();
+        }
+        
         // Check if person is not in a settlement or vehicle.
         LocationSituation ls = person.getLocationSituation();
-        if ((ls != LocationSituation.IN_SETTLEMENT) && (ls != LocationSituation.IN_VEHICLE)) {
+        
+        if (LocationSituation.IN_SETTLEMENT != ls && LocationSituation.IN_VEHICLE != ls) {
 			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
-            		person + " was trying to eat a meal, but is not inside a settlement or vehicle.", null);
+            		person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
             endTask();
         }
-
+        
         // Initialize data members.
         double dur = getDuration();
         mealEatingDuration = dur * MEAL_EATING_PROPORTION;
@@ -550,8 +556,11 @@ public class EatMeal extends Task implements Serializable {
         else
         	t = waterFinal;
         
+        Inventory inv = person.getTopContainerUnit().getInventory();
+    	if (inv == null)
+    		logger.info("inv is null");
 	    if (t > 0)
-	    	Storage.retrieveAnResource(t/1000D, ResourceUtil.waterAR, person.getTopContainerUnit().getInventory(), true);  
+	    	Storage.retrieveAnResource(t/1000D, ResourceUtil.waterAR, inv, true);  
     }
     
     /**
@@ -571,9 +580,12 @@ public class EatMeal extends Task implements Serializable {
         	double newThirst = thirst - waterFinal;
     		condition.setThirst(newThirst);
     	}
-        
+    	
+        Inventory inv = person.getTopContainerUnit().getInventory();
+    	if (inv == null)
+    		logger.info("inv is null");
 	    if (waterFinal > 0)
-	    	Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, person.getTopContainerUnit().getInventory(), true);  
+	    	Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , true);  
     }
     
     

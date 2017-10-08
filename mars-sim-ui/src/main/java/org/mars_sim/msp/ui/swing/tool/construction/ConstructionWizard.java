@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.construction;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -53,9 +52,7 @@ import java.awt.Cursor;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -708,30 +705,31 @@ public class ConstructionWizard {
 		
 		@Override
 	    public void mouseClicked(MouseEvent e) {
+			// empty
 	    }
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
+			// empty
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
+			// empty
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (e.getButton() == MouseEvent.BUTTON1) {
-			}
-			else
+			if (e.getButton() != MouseEvent.BUTTON1) {				
 				site.setMousePicked(false);
+			}
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (e.getButton() == MouseEvent.BUTTON1) {
-			}
-			else
+			if (e.getButton() != MouseEvent.BUTTON1) {
 				site.setMousePicked(false);
+			}
 		}
 		
 	}
@@ -910,8 +908,8 @@ public class ConstructionWizard {
 	public void moveSite(ConstructionSite s, double xPixel, double yPixel) {
 		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
 
-		double dx = xPixel - xLast;
-		double dy = yPixel - yLast;
+		//double dx = xPixel - xLast;
+		//double dy = yPixel - yLast;
 
 		double width = s.getWidth();
 		double length = s.getLength();
@@ -1010,28 +1008,28 @@ public class ConstructionWizard {
 		double x = s.getXLocation();
 		double y = s.getYLocation();
 
-	    if (c == java.awt.event.KeyEvent.VK_UP // 38
-	    	|| c == java.awt.event.KeyEvent.VK_KP_UP
-	    	|| c == java.awt.event.KeyEvent.VK_W
-	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
+	    if (c == KeyEvent.VK_UP // 38
+	    	|| c == KeyEvent.VK_KP_UP
+	    	|| c == KeyEvent.VK_W
+	    	|| c == KeyEvent.VK_NUMPAD8) {
 	    	upKeyPressed = true;
-	    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
-	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN
-	    	|| c == java.awt.event.KeyEvent.VK_S
-	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
+	    } else if(c == KeyEvent.VK_DOWN // 40
+	    	|| c == KeyEvent.VK_KP_DOWN
+	    	|| c == KeyEvent.VK_S
+	    	|| c == KeyEvent.VK_NUMPAD2) {
 	    	downKeyPressed = true;
-	    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
-	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT
-	    	|| c == java.awt.event.KeyEvent.VK_A
-	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD4) {
+	    } else if(c == KeyEvent.VK_LEFT // 37
+	    	|| c == KeyEvent.VK_KP_LEFT
+	    	|| c == KeyEvent.VK_A
+	    	|| c == KeyEvent.VK_NUMPAD4) {
 	    	leftKeyPressed = true;
-	    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
-	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT
-	    	|| c == java.awt.event.KeyEvent.VK_D
-	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD6) {
+	    } else if(c == KeyEvent.VK_RIGHT // 39
+	    	|| c == KeyEvent.VK_KP_RIGHT
+	    	|| c == KeyEvent.VK_D
+	    	|| c == KeyEvent.VK_NUMPAD6) {
 	    	rightKeyPressed = true;
-	    } else if(c == java.awt.event.KeyEvent.VK_R
-	    	|| c == java.awt.event.KeyEvent.VK_F) {
+	    } else if(c == KeyEvent.VK_R
+	    	|| c == KeyEvent.VK_F) {
 	    	turnKeyPressed = true;
 	    }
 	    	
@@ -1083,28 +1081,28 @@ public class ConstructionWizard {
 	 */
 	public void processKeyRelease(int c) {
 
-	    if (c == java.awt.event.KeyEvent.VK_UP // 38
-		    	|| c == java.awt.event.KeyEvent.VK_KP_UP
-		    	|| c == java.awt.event.KeyEvent.VK_W
-		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
+	    if (c == KeyEvent.VK_UP // 38
+		    	|| c == KeyEvent.VK_KP_UP
+		    	|| c == KeyEvent.VK_W
+		    	|| c == KeyEvent.VK_NUMPAD8) {
 		    	upKeyPressed = false;
-		    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
-		    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN
-		    	|| c == java.awt.event.KeyEvent.VK_S
-		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
+		    } else if(c == KeyEvent.VK_DOWN // 40
+		    	|| c == KeyEvent.VK_KP_DOWN
+		    	|| c == KeyEvent.VK_S
+		    	|| c == KeyEvent.VK_NUMPAD2) {
 		    	downKeyPressed = false;
-		    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
-		    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT
-		    	|| c == java.awt.event.KeyEvent.VK_A
-		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD4) {
+		    } else if(c == KeyEvent.VK_LEFT // 37
+		    	|| c == KeyEvent.VK_KP_LEFT
+		    	|| c == KeyEvent.VK_A
+		    	|| c == KeyEvent.VK_NUMPAD4) {
 		    	leftKeyPressed = false;
-		    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
-		    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT
-		    	|| c == java.awt.event.KeyEvent.VK_D
-		    	|| c == java.awt.event.KeyEvent.VK_NUMPAD6) {
+		    } else if(c == KeyEvent.VK_RIGHT // 39
+		    	|| c == KeyEvent.VK_KP_RIGHT
+		    	|| c == KeyEvent.VK_D
+		    	|| c == KeyEvent.VK_NUMPAD6) {
 		    	rightKeyPressed = false;
-		    } else if(c == java.awt.event.KeyEvent.VK_R
-		    	|| c == java.awt.event.KeyEvent.VK_F) {
+		    } else if(c == KeyEvent.VK_R
+		    	|| c == KeyEvent.VK_F) {
 		    	turnKeyPressed = false;
 		    }
 

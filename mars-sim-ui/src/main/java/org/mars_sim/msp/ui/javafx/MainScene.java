@@ -777,7 +777,7 @@ public class MainScene {
 		createSwingNode();
 		//JFXToolbar toolbar = new JFXToolbar();
 		
-		// Create an instance of soundPlayer after the instance of desktop is ready.
+		// Load soundPlayer instance from desktop right after desktop has been instantiated.
 		soundPlayer = desktop.getSoundPlayer();
 				
 		// Setup root for embedding key events
@@ -862,7 +862,7 @@ public class MainScene {
 		AnchorPane.setRightAnchor(earthTimeButton, sceneWidth.get()/2 - marsTimeButton.getPrefWidth());
 		
 		//AnchorPane.setRightAnchor(lastSaveLabel, marsTimeButton.getMinWidth() + marsTimeButton.getMinWidth() + 165);
-		AnchorPane.setRightAnchor(lastSaveLabel, 85.0);
+		AnchorPane.setRightAnchor(lastSaveLabel, 95.0);
 		
 		anchorPane = new AnchorPane();
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeButton,
@@ -2594,14 +2594,12 @@ public class MainScene {
 	 */
 	public void updateTimeLabels() {
 
-		calendarDisplay.update();
-
-		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
-
-		upTimeLabel.setText(uptimer.getUptime());
-
-		benchmarkLabel.setText(masterClock.getDiffCache() + "");
-
+		if (simSpeedPopup.isShowing() || solElapsedCache == 0) {
+			TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
+			upTimeLabel.setText(uptimer.getUptime());	
+			benchmarkLabel.setText(masterClock.getDiffCache() + "");
+		}
+		
 		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solElapsedCache) {
 
@@ -2618,21 +2616,26 @@ public class MainScene {
 			solElapsedCache = solElapsed;
 		}
 
-		double L_s = orbitInfo.getL_s();
-		LSText.setText(Math.round(L_s * 100D) / 100D + Msg.getString("direction.degreeSign"));
+		if (marsCalendarPopup.isShowing() || solElapsedCache == 0) {
+			calendarDisplay.update();
 
-		if (L_s > 68 && L_s < 72) {
-			noteLabel.setText(NOTE_MARS + APHELION);
-
-		} else if (L_s > 248 && L_s < 252) {
-			noteLabel.setText(NOTE_MARS + PERIHELION);
-
-		} else
-			noteLabel.setEffect(null);
-
-		northText.setText(marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
-		southText.setText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
-
+			double L_s = orbitInfo.getL_s();
+			LSText.setText(Math.round(L_s * 100D) / 100D + Msg.getString("direction.degreeSign"));
+	
+			if (L_s > 68 && L_s < 72) {
+				noteLabel.setText(NOTE_MARS + APHELION);
+	
+			} else if (L_s > 248 && L_s < 252) {
+				noteLabel.setText(NOTE_MARS + PERIHELION);
+	
+			} else
+				noteLabel.setEffect(null);
+	
+			northText.setText(marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
+			southText.setText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
+	
+		}
+		
 		StringBuilder m = new StringBuilder();
 		m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(ONE_SPACE)
 				.append(marsClock.getTrucatedTimeStringUMST());
@@ -2641,12 +2644,15 @@ public class MainScene {
 		StringBuilder e = new StringBuilder();
 		e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF0());
 		earthTimeButton.setText(e.toString());
-
+		
+		// Check on whether autosave is due
 		if (masterClock.getAutosave()) {
+			// Trigger an autosave instance
 			saveSimulation(Simulation.AUTOSAVE);
 			masterClock.setAutosave(false);
 		}
 
+		// Check to see if the last save label needs to be updated
 		if (sim.getJustSaved()) {
 			String newLastSaveStamp = sim.getLastSave();
 			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
@@ -2656,6 +2662,10 @@ public class MainScene {
 
 			}
 		}
+		
+		// Check to see if a background sound track is being played.
+		if (!desktop.getSoundPlayer().isMute(false));
+			soundPlayer.playRandomBackgroundTrack();
 	}
 
 	/**

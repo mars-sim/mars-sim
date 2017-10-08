@@ -80,7 +80,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private int count = -100;
 
 	/** Flag for loading a new simulation. */
-	private transient volatile boolean loadSimulation;
+	//private transient volatile boolean loadSimulation;
 	/** Mode for saving a simulation. */
 	private transient volatile int saveType;
 	/** Flag for ending the simulation program. */
@@ -327,7 +327,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public void loadSimulation(File file) {
         this.setPaused(false, false);
-        loadSimulation = true;
+        //loadSimulation = true;
         this.file = file;
     }
 
@@ -653,7 +653,7 @@ public class MasterClock implements Serializable { // Runnable,
             if (timePulse > 0) {
 	            if (keepRunning) {
 	                // Add time pulse length to Earth and Mars clocks.
-	            	earthTime.addTime(timePulse);
+	            	earthTime.addTime(timePulse*MarsClock.SECONDS_IN_MILLISOL);
 	            	marsTime.addTime(timePulse);
 				  	if (!isPaused
 				  			|| !clockListenerExecutor.isTerminating()

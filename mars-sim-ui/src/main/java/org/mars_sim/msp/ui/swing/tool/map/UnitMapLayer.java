@@ -62,9 +62,7 @@ abstract class UnitMapLayer implements MapLayer {
             units = Simulation.instance().getUnitManager().getUnits();
         }
 
-        Iterator<Unit> i = units.iterator();
-        while (i.hasNext()) {
-            Unit unit = i.next();
+        for (Unit unit : units) {
             UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
             if (displayInfo.isMapDisplayed(unit)) {

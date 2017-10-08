@@ -464,7 +464,7 @@ public class StructureMapLayer implements SettlementMapLayer {
             g2d.setColor(color);
             g2d.fill(bounds);
             
-        	if (color == SELECTED_CONSTRUCTION_SITE_COLOR) {
+        	if (color.equals(SELECTED_CONSTRUCTION_SITE_COLOR)) {
                 // Draw the dashed border
                 g2d.setPaint(SITE_BORDER_COLOR);
                 g2d.setStroke(dashed);

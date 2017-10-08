@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -27,7 +26,7 @@ public class MarsClock implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(MarsClock.class.getName());
+	//private static Logger logger = Logger.getLogger(MarsClock.class.getName());
 
 	// The Mars tropical year is 686.9726 day or 668.5921 sol.
 	// A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds,
@@ -58,10 +57,10 @@ public class MarsClock implements Serializable {
 	// equinox and L_s=270 the winter solstice (all relative to the northern
 	// hemisphere).
 	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
-	private static final int SUMMER_SOLSTICE = 168; // (Ls = 90°)
-	private static final int AUTUMNAL_EQUINOX = 346; // (Ls = 180°)
-	private static final int WINTER_SOLSTICE = 489; // (Ls = 270°)
-	private static final int SPRING_EQUINOX = 643; // (Ls = 0°) or on the -25th
+	//private static final int SUMMER_SOLSTICE = 168; // (Ls = 90°)
+	//private static final int AUTUMNAL_EQUINOX = 346; // (Ls = 180°)
+	//private static final int WINTER_SOLSTICE = 489; // (Ls = 270°)
+	//private static final int SPRING_EQUINOX = 643; // (Ls = 0°) or on the -25th
 													// sols
 
 	// Mars is at aphelion (its greatest distance from the Sun, 249 million
@@ -73,7 +72,7 @@ public class MarsClock implements Serializable {
 	// The Mars dust storm season begins just after perihelion at around Ls =
 	// 260°
 
-	public static final int THE_FIRST_SOL = 9353;
+	//public static final int THE_FIRST_SOL = 9353;
 
 	// Martian/Gregorian calendar conversion
 	public static final double SECONDS_IN_MILLISOL = 88.775244; 
@@ -119,14 +118,14 @@ public class MarsClock implements Serializable {
 	// Data members
 	private int orbit;
 	private int month;
-	private int sol; // the sol in a month
+	private int sol; // the sol of a month
 	private double millisol;
 
 	private OrbitInfo orbitInfo;
 
-	private Simulation sim = Simulation.instance();
+	private Simulation sim;
 
-	private int missionSol = 1;
+	private int missionSol = 1; // the sol since the start of the sim
 
 	/**
 	 * Constructor with date string parameter.
@@ -165,6 +164,8 @@ public class MarsClock implements Serializable {
 		if (millisol < 0D)
 			throw new IllegalStateException("Invalid millisol number: " + millisol);
 
+		sim = Simulation.instance();
+		
 		if (orbitInfo == null)
 			orbitInfo = sim.getMars().getOrbitInfo();
 
@@ -187,6 +188,8 @@ public class MarsClock implements Serializable {
 		this.sol = sol;
 		this.millisol = millisol;
 
+		sim = Simulation.instance();
+		
 		if (orbitInfo == null)
 			orbitInfo = sim.getMars().getOrbitInfo();
 
@@ -843,5 +846,10 @@ public class MarsClock implements Serializable {
 	 */
 	public int hashCode() {
 		return orbit * month * sol + ((int) (millisol * 1000D));
+	}
+	
+	public void destroy() {
+		orbitInfo = null;
+		sim = null;
 	}
 }

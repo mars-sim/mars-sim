@@ -187,8 +187,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
-		soundPlayer.playInBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_MUSIC1); // play our intro music
-
+		//soundPlayer.playBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.ST_AREOLOGIE); // play our intro music
+		//soundPlayer.playRandomBackgroundTrack();
+		
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
 
@@ -1038,9 +1039,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				// Play sound for window.
 				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
 				if ((soundFilePath != null) && soundFilePath.length() != 0) {
-					soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+					//soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+					soundPlayer.playSound(soundFilePath);
 				}
-				soundPlayer.play(soundFilePath);
 			//});
 		}
 
@@ -1050,9 +1051,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				// Play sound for window.
 				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
 				if ((soundFilePath != null) && soundFilePath.length() != 0) {
-					soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+					//soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+					soundPlayer.playSound(soundFilePath);
 				}
-				soundPlayer.play(soundFilePath);
 			//});
 		}
 

@@ -39,22 +39,11 @@ public class OGGSoundClip {
 
 	private final int BUFSIZE = 4096 * 2;
 	private int convsize = BUFSIZE * 2;
-	private byte[] convbuffer = new byte[convsize];
-	private SyncState oy;
-	private StreamState os;
-	private Page og;
-	private Packet op;
-	private Info vi;
-	private Comment vc;
-	private DspState vd;
-	private Block vb;
-	private SourceDataLine outputLine;
 	private int rate;
 	private int channels;
-	private BufferedInputStream bitStream = null;
+
 	private byte[] buffer = null;
 	private int bytes = 0;
-	private Thread player = null;
 
 	private float balance;
 	private float gain = .8f;
@@ -63,6 +52,26 @@ public class OGGSoundClip {
 
 	private boolean mute;
 	private boolean paused;
+	private boolean isMasterGainSupported;
+
+	private byte[] convbuffer = new byte[convsize];
+	
+	private String name;
+
+	private static FloatControl floatControl;
+	private SourceDataLine outputLine;
+
+	private SyncState oy;
+	private StreamState os;
+	private Page og;
+	private Packet op;
+	private Info vi;
+	private Comment vc;
+	private DspState vd;
+	private Block vb;
+	private BufferedInputStream bitStream = null;
+	private Thread playerThread = null;
+
 
 	/**
 	 * Create a new clip based on a reference into the class path
@@ -74,8 +83,10 @@ public class OGGSoundClip {
 	 *             Indicated a failure to find the resource
 	 */
 	public OGGSoundClip(String ref) throws IOException {
+		name = ref;
+		
 		try {
-			init(Thread.currentThread().getContextClassLoader().getResourceAsStream(ref));
+			init(Thread.currentThread().getContextClassLoader().getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + ref));
 		} catch (IOException e) {
 			//throw new IOException("Couldn't find: " + ref);
 			logger.log(Level.SEVERE, "Couldn't find: " + ref);
@@ -170,14 +181,13 @@ public class OGGSoundClip {
 			// Note: control is supposed to be in decibel (dB)
 			//FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 
-			FloatControl control = null;
 			//DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
 			//SourceDataLine dataLine = (SourceDataLine) AudioSystem.getLine(info);
 			//outputLine.open();
 			// Adjust the volume on the output line.
-			if(outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+			if (isMasterGainSupported) {
 			    // If inside this if, the Master_Gain must be supported. Yes? // In ubuntu linux 17.04, it is not supported
-				control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+				//floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 			    // This line throws an exception. "Master_Gain not supported"
 				//control.setValue( 100.0F );
 
@@ -186,8 +196,8 @@ public class OGGSoundClip {
 				//  A negative gain attenuates (cuts) it.
 				// The gain setting defaults to a value of 0.0 dB, meaning the signal's loudness is unaffected.
 				// Note that gain measures dB, not amplitude.
-				float max = control.getMaximum();
-				float min = control.getMinimum();
+				float max = floatControl.getMaximum();
+				float min = floatControl.getMinimum();
 
 				float range = max - min;
 				float step = range/20f;
@@ -199,7 +209,7 @@ public class OGGSoundClip {
 				else if (value > max)
 					value = max;
 
-				control.setValue(value);
+				floatControl.setValue(value);
 
 				//System.out.println("max : " + max);
 				//System.out.println("min : " + min);
@@ -208,6 +218,7 @@ public class OGGSoundClip {
 				//System.out.println("value : " + value);
 			}
 			else {
+				// in case of some versions of linux in which MASTER_GAIN is not supported
 				MainScene.disableSound();
 			}
 
@@ -278,12 +289,12 @@ public class OGGSoundClip {
 	 *
 	 * @return True if the playback has been stopped
 	 */
-	private boolean checkState() {
-		while (paused && (player != null)) {
-			synchronized (player) {
-				if (player != null) {
+	boolean checkState() {
+		while (paused && (playerThread != null)) {
+			synchronized (playerThread) {
+				if (playerThread != null) {
 					try {
-						player.wait();
+						playerThread.wait();
 					} catch (InterruptedException e) {
 						// ignored
 					}
@@ -323,9 +334,9 @@ public class OGGSoundClip {
 
 		paused = false;
 
-		synchronized (player) {
-			if (player != null) {
-				player.notify();
+		synchronized (playerThread) {
+			if (playerThread != null) {
+				playerThread.notify();
 			}
 		}
 		setGain(oldGain);
@@ -337,7 +348,7 @@ public class OGGSoundClip {
 	 * @return True if the clip has been stopped
 	 */
 	public boolean stopped() {
-		return ((player == null) || (!player.isAlive()));
+		return ((playerThread == null) || (!playerThread.isAlive()));
 	}
 
 	/**
@@ -371,7 +382,7 @@ public class OGGSoundClip {
 			logger.log(Level.SEVERE, "IOException", e.getMessage());
 		}
 
-		player = new Thread() {
+		playerThread = new Thread() {
 			public void run() {
 				//try {
 					playStream(Thread.currentThread());
@@ -384,16 +395,16 @@ public class OGGSoundClip {
 					bitStream.reset();
 				} catch (IOException e) {
 					//e.printStackTrace();
-					logger.log(Level.SEVERE, "IOException", e.getMessage());
+					logger.log(Level.SEVERE, "Trouble reseting the bit stream for the audio file " + name, e.getMessage());
 				}
 			};
 		};
-		player.setDaemon(true);
-		player.start();
+		playerThread.setDaemon(true);
+		playerThread.start();
 	}
 
 	/**
-	 * Loop the clip - maybe for background music
+	 * Loop the clip - for background music
 	 */
 	public void loop() {
 		stop();
@@ -404,27 +415,29 @@ public class OGGSoundClip {
 			// ignore if no mark
 		}
 
-		player = new Thread() {
+		playerThread = new Thread() {
 			public void run() {
-				while (player == Thread.currentThread()) {
+				//while (playerThread == Thread.currentThread()) {
 					try {
 						playStream(Thread.currentThread());
 					} catch (Exception e) {
 					//	logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a speaker/headphone? "
 					//			+ "Please check your audio source.", e.getMessage());
 						//e.printStackTrace();
-						player = null;
+						playerThread = null;
 					}
 
 					try {
 						bitStream.reset();
 					} catch (IOException e) {
+						//e.printStackTrace();
+						logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name, e.getMessage());
 					}
-				}
+				//}
 			};
 		};
-		player.setDaemon(true);
-		player.start();
+		playerThread.setDaemon(true);
+		playerThread.start();
 	}
 
 	/**
@@ -435,7 +448,7 @@ public class OGGSoundClip {
 			return;
 		}
 
-		player = null;
+		playerThread = null;
 		outputLine.drain();
 	}
 
@@ -459,18 +472,27 @@ public class OGGSoundClip {
 					true, // PCM_Signed
 					false // littleEndian
 					);
+			
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
-			if (!AudioSystem.isLineSupported(info)) {
-				//throw new Exception("Line " + info + " not supported.");
-				logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a speaker/headphone? "
-						+ "Please check your audio source.");
-
-			}
 
 			try {
 				outputLine = (SourceDataLine) AudioSystem.getLine(info);
 				// outputLine.addLineListener(this);
 				outputLine.open(audioFormat);
+				
+				if (!AudioSystem.isLineSupported(info)) {
+					//throw new Exception("Line " + info + " not supported.");
+					logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a speaker/headphone? "
+							+ "Please check your audio source.");
+				}
+					
+				isMasterGainSupported = outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN);
+				if (!isMasterGainSupported) {
+					// in case of some versions of linux in which MASTER_GAIN is not supported
+					MainScene.disableSound();
+				}
+				floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+				
 			} catch (LineUnavailableException ex) {
 				//throw new Exception("Unable to open the sourceDataLine: " + ex);
 				logger.log(Level.SEVERE, "Unable to open the sourceDataLine: " + ex);
@@ -641,7 +663,7 @@ public class OGGSoundClip {
 
 			while (eos == 0) {
 				while (eos == 0) {
-					if (player != me) {
+					if (playerThread != me) {
 						return;
 					}
 
@@ -768,6 +790,10 @@ public class OGGSoundClip {
 		}
 
 	}
+	
+	public String toString() {
+		return name;
+	}
 /*
 	private class InternalException extends Exception {
 
@@ -782,4 +808,20 @@ public class OGGSoundClip {
 		}
 	}
 */
+	
+	public void destroy() {
+		oy = null;
+		os = null;
+		og = null;
+		op = null;
+		vi = null;
+		vc = null;
+		vd = null;
+		vb = null;
+		floatControl = null;
+		outputLine = null;
+		bitStream = null;
+		playerThread = null;
+	}
+	
 }

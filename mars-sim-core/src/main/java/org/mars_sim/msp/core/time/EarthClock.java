@@ -42,9 +42,9 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private final GregorianCalendar cal;
+	private GregorianCalendar cal;
 
-	private final SimpleDateFormat f0, f2, f1, f3;
+	private SimpleDateFormat f0, f2, f1, f3;
 
 	private SimpleTimeZone zone;
 
@@ -442,4 +442,12 @@ implements Serializable {
 		return s.toString();
 	}
 
+	public void destroy() {
+		cal = null;
+		f0 = null;
+		f2 = null;
+		f1 = null;
+		f3 = null;
+		zone = null;
+	}
 }

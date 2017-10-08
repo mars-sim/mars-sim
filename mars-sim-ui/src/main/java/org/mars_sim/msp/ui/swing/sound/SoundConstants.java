@@ -21,8 +21,16 @@ public interface SoundConstants {
 															// deleted
 
 	/** Music tracks */
-	public final static String SND_MUSIC1 = "Areologie.ogg";
-
+	public final static String ST_FANTASCAPE = "Fantascape.ogg";
+	public final static String ST_CITY = "City_Beneath_the_Waves.ogg";
+	public final static String ST_MISTY = "Misty_Bog.ogg";
+	public final static String ST_MOONLIGHT = "Moonlight_Flying.ogg";
+	public final static String ST_PUZZLE = "Puzzle_Game.ogg";
+	public final static String ST_DREAMY = "Some_Dreamy_Place.ogg";
+	public final static String ST_STRANGE = "Strange_Phenomenon.ogg";
+	public final static String ST_AREOLOGIE = "Areologie.ogg";
+	public final static String ST_MENU = "Game_Menu.ogg";
+	
 	/** Unit window sounds for equipment. */
 	public final static String SND_EQUIPMENT = "equipment.ogg";
 
