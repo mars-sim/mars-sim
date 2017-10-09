@@ -59,21 +59,16 @@ implements Serializable {
     private static String sourceName = logger.getName();
     
     private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
-    //private static final FunctionType RESEARCH_FUNCTION = FunctionType.RESEARCH;
-
+    
 	public static final String FERTILIZER = "fertilizer";
-	//public static final String GREY_WATER = "grey water";
     public static final String SOIL = "soil";
     public static final String CROP_WASTE = "crop waste";
     public static final String TISSUE_CULTURE = " tissue culture";
 	//public static final String LED_KIT = "light emitting diode kit";
 	//public static final String HPS_LAMP = "high pressure sodium lamp";
-
 	/** amount of crop tissue culture needed for each square meter of growing area */
     public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
-	private static final double CROP_WASTE_PER_SQM_PER_SOL = .01; // .01 kg
-
 	private static final int NUM_INSPECTIONS = 5;
 	private static final int NUM_CLEANING = 5;
 
@@ -98,6 +93,9 @@ implements Serializable {
     private double maxGrowingArea;
     private double remainingGrowingArea;
     private double totalMaxHarvest = 0;
+    
+    /** The amount of air moisture in the greenhouse */ 
+    private volatile double moisture;
 
 	//private boolean checkLED;
 
@@ -109,25 +107,18 @@ implements Serializable {
     private List<String> plantedCrops = new ArrayList<String>();
     /** List of crops the greenhouse is currently growing */
     private List<Crop> crops = new ArrayList<Crop>();
-    //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
-
-    // 2016-11-30 Added cropAssignment and shiftAssignment
-    //private Map<Unit, Crop> cropAssignment = new HashMap<Unit, Crop>();
-    //private Map<Unit, ShiftType> shiftAssignment = new HashMap<Unit, ShiftType>();
 
     private Map<String, Integer> cleaningMap, inspectionMap;
     private List<String> inspectionList, cleaningList;
 
+    private Map<String, List<Double>> cropDailyWaterUsage;
+    
     private static MarsClock marsClock;
-
-    private Inventory inv;//b_inv;
+    private Inventory inv;
     private Settlement settlement;
     private Building building;
     private Research lab;
-    //private BeeGrowing beeGrowing;
-	//private GoodsManager goodsManager;
-    
-    
+ 
     
     /**
      * Constructor.
@@ -182,6 +173,8 @@ implements Serializable {
         // TODO: write codes to incorporate the idea of bee growing
         // beeGrowing = new BeeGrowing(this);
 
+        cropDailyWaterUsage = new HashMap<>();
+        
     }
 
     public void setupInspection() {
@@ -1329,7 +1322,83 @@ implements Serializable {
 		cleaningMap.put(s, cleaningMap.get(s) + 1);
 	}
 	
+	/**
+	 * Adds air moisture to this farm
+	 * @param value the amount of air moisture in kg
+	 */
+	public synchronized void addMoisture(double value) {
+		moisture += value;
+	}
 
+	/**
+	 * Retrieves the air moisture from this farm
+	 * @return the amount of air moisture in kg
+	 */
+	public synchronized double retrieveMoisture() {
+		double m = moisture;
+		// Do NOT directly set to zero since a crop may be accessing the method addMoisture() and change the 
+		// value of moisture at the same time.
+		moisture = moisture - m; 
+		// Note : The amount of moisture will be monitored by the CompositionOfAir
+		return m;
+	}
+	
+	/** 
+	 * Records the average water usage on a particular crop 
+	 * @param cropName 
+	 * @param usage average water consumption in kg/m^2/sol
+	 */
+	public void addWaterUsage(String cropName, double usage) {
+		if (cropDailyWaterUsage.containsKey(cropName)) {
+			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName); //new HashMap<>();
+			cropWaterData.add(usage);
+		}
+		else {
+			List<Double> cropWaterData = new ArrayList<>();
+			cropWaterData.add(usage);
+			cropDailyWaterUsage.put(cropName, cropWaterData);	
+		}
+	}
+	
+	/** 
+	 * Computes the average water usage on a particular crop 
+	 * @return average water consumption in kg/m^2/sol
+	 */
+	public double computeCropWaterUsage(String cropName) {
+		if (cropDailyWaterUsage.containsKey(cropName)) {
+			double sum = 0;
+			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName); //new HashMap<>();
+			int size = cropWaterData.size();
+			for (double i : cropWaterData) {
+				sum += i;
+			}
+			if (size == 0)
+				return 0;
+			else
+				return Math.round(sum/size*10.0)/10.0;
+		}
+		return 0;
+	}
+	
+	/** 
+	 * Computes the average water usage on all crop 
+	 * @return average water consumption in kg/m^2/sol
+	 */
+	public double computeWaterUsage() {
+		double sum = 0;
+		int size = 0; //cropTypeList.size();
+		for (CropType ct : cropTypeList) {
+			String n = ct.getName();
+			Double ave = computeCropWaterUsage(n);
+			if (ave > 0)
+				size ++;
+			sum += ave;
+		}		
+		if (size == 0)
+			return 0;
+		else
+			return Math.round(sum/size*10.0)/10.0;
+	}
 	
     @Override
     public void destroy() {

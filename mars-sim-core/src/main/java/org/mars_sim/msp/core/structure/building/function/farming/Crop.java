@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,7 +44,6 @@ public class Crop implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
-	//private static org.apache.log4j.Logger log4j = LogManager.getLogger(Crop.class);
     private static String sourceName = logger.getName();
     
 	/** The limiting factor that determines how fast and how much PAR can be absorbed in one frame. */
@@ -145,6 +143,8 @@ public class Crop implements Serializable {
 	/** The disease index of a crop */	
 	private double diseaseIndex = 0;
 
+	private double cumulative_water_usage = 0;
+	
 	private static int cropNum;
 	
 	/**	The cache values of the pastor environment factors influencing the crop */
@@ -607,6 +607,7 @@ public class Crop implements Serializable {
 				}
 				
 				phaseType = PhaseType.FINISHED;
+				farm.addWaterUsage(cropName, cumulative_water_usage/growingArea);
 			}
 			
 			else { 	
@@ -1067,15 +1068,22 @@ public class Crop implements Serializable {
 				environment[1] = 1.1;
 			
 			totalWaterUsed = greyWaterAvailable + waterUsed;
+
 		}
+
 
 
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
 		// TODO: Modify harvest modifier according to the moisture level
-		double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
-		if (waterReclaimed > 0)
-			Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::computeWaterFertilizer");
-
+		//double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
+		//if (waterReclaimed > 0)
+		//	Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::computeWaterFertilizer");
+		
+		// Assume an universal rate of water vapor evaporation rate of 10%
+		farm.addMoisture(totalWaterUsed*.1);
+		// Record the amount of water taken up by the crop
+		cumulative_water_usage += totalWaterUsed *.9;
+		
 		environment[3] = .5 * waterModifier + .5 * environment[3];
 		if (environment[3] > 1.1)
 			environment[3] = 1.1;

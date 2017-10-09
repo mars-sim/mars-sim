@@ -789,7 +789,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public void firePauseChange(boolean showPane) {
 
-        listeners.forEach(cl -> cl.pauseChange(isPaused, false));
+        listeners.forEach(cl -> cl.pauseChange(isPaused, showPane));
 /*
         synchronized (listeners) {
             Iterator<ClockListener> i = listeners.iterator();

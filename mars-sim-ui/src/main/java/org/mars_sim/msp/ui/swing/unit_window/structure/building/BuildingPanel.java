@@ -16,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -79,7 +78,7 @@ extends JPanel {
 
 	private String newName;
 
-	private boolean isTranslucent = false;
+	//private boolean isTranslucent = false;
 	/** The function panels. */
 	private List<BuildingFunctionPanel> functionPanels;
 
@@ -126,7 +125,7 @@ extends JPanel {
         this.panelName = panelName;
         this.building = building;
         this.desktop = desktop;
-		this.isTranslucent = isTranslucent;
+		//this.isTranslucent = isTranslucent;
         if (isTranslucent) {
         	setOpaque(false);
         	setBackground(new Color(0,0,0,128));

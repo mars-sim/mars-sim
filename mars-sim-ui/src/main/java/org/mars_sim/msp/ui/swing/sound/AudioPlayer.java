@@ -153,13 +153,13 @@ public class AudioPlayer {
 							if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 								currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
 								currentBackgroundTrack.loop();
-								logger.info("Playing the sound track " + filepath);
+								if (num_times < 1) logger.info("Playing the sound track " + filepath);
 							}
 							else {
 								currentBackgroundTrack = new OGGSoundClip(filepath);
 								allOGGSoundClips.put(filepath, currentBackgroundTrack);
 								currentBackgroundTrack.loop();
-								logger.info("Playing the sound track " + filepath);
+								if (num_times < 1) logger.info("Playing the sound track " + filepath);
 							}
 						} catch (IOException e) {
 							//e.printStackTrace();
@@ -173,13 +173,13 @@ public class AudioPlayer {
 					try {
 						if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 							allBackgroundSoundTracks.get(filepath).loop();
-							logger.info("Playing the sound track " + filepath);
+							if (num_times < 1) logger.info("Playing the sound track " + filepath);
 						}
 						else {
 							currentBackgroundTrack = new OGGSoundClip(filepath);
 							allOGGSoundClips.put(filepath, currentBackgroundTrack);
 							currentBackgroundTrack.loop();
-							logger.info("Playing the sound track " + filepath);
+							if (num_times < 1) logger.info("Playing the sound track " + filepath);
 						}
 					} catch (IOException e) {
 						//e.printStackTrace();
@@ -369,16 +369,23 @@ public class AudioPlayer {
 	
 	public void playRandomBackgroundTrack() {
 		if (isBackgroundTrackStopped()) {
-			if (num_times < 3 && currentBackgroundTrack != null) {
+			// Since Areologie.ogg and Fantascape.ogg are 4 mins long. Don't need to repeat
+			if (currentBackgroundTrack != null
+					&& !currentBackgroundTrack.toString().equals("Areologie.ogg") 
+					&& !currentBackgroundTrack.toString().equals("Fantascape.ogg")	
+					&& num_times < 3) {
 				playBackground(currentBackgroundTrack.toString());
 				num_times++;
 			}
 			else {		
 				List<String> keys = new ArrayList<String>(soundTracks);
+				int rand = 0;
 				if (currentBackgroundTrack != null) {
 					keys.remove(currentBackgroundTrack.toString());
-				}
-				int rand = RandomUtil.getRandomInt(num_tracks-1);
+					rand = RandomUtil.getRandomInt(num_tracks-2);
+				} 
+				else
+					rand = RandomUtil.getRandomInt(num_tracks-1);
 				playBackground(keys.get(rand));
 				num_times = 1;
 			}

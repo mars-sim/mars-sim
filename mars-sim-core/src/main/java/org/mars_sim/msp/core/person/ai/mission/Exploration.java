@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -78,6 +77,8 @@ implements Serializable {
 	/** Maximum mineral concentration estimation diff from actual. */
 	private final static double MINERAL_ESTIMATION_CEILING = 20D;
 
+
+	
 	// Data members
 	/** Map of exploration sites and their completion. */
 	private Map<String, Double> explorationSiteCompletion;
@@ -581,21 +582,21 @@ implements Serializable {
 
         // Determine life support supplies needed for trip.
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
+        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * Mission.OXYGEN_MARGIN
                 * timeSols * crewNum;
         if (result.containsKey(oxygenAR))
             oxygenAmount += (Double) result.get(oxygenAR);
         result.put(oxygenAR, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double waterAmount = PhysicalCondition.getWaterConsumptionRate()
+        double waterAmount = PhysicalCondition.getWaterConsumptionRate() * Mission.WATER_MARGIN
                 * timeSols * crewNum;
         if (result.containsKey(waterAR))
             waterAmount += (Double) result.get(waterAR);
         result.put(waterAR, waterAmount);
 
        // AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        double foodAmount = PhysicalCondition.getFoodConsumptionRate()
+        double foodAmount = PhysicalCondition.getFoodConsumptionRate() * Mission.FOOD_MARGIN
                 * timeSols * crewNum;
         if (result.containsKey(foodAR))
             foodAmount += (Double) result.get(foodAR);

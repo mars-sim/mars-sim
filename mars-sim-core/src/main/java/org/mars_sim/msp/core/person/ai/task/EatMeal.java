@@ -116,6 +116,15 @@ public class EatMeal extends Task implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 		
+        // Check if person is not in a settlement or vehicle.
+        LocationSituation ls = person.getLocationSituation();
+        
+        if (LocationSituation.IN_SETTLEMENT != ls && LocationSituation.IN_VEHICLE != ls) {
+			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
+            		person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
+            endTask();
+        }
+        
         condition = person.getPhysicalCondition();
         
         thirst = condition.getThirst();
@@ -128,14 +137,7 @@ public class EatMeal extends Task implements Serializable {
         	endTask();
         }
         
-        // Check if person is not in a settlement or vehicle.
-        LocationSituation ls = person.getLocationSituation();
-        
-        if (LocationSituation.IN_SETTLEMENT != ls && LocationSituation.IN_VEHICLE != ls) {
-			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
-            		person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
-            endTask();
-        }
+
         
         // Initialize data members.
         double dur = getDuration();
@@ -535,57 +537,56 @@ public class EatMeal extends Task implements Serializable {
      * Calculates the amount of water to consume during a dessert
      */
     public void consumeWater(double dryMass) {
-        double waterEach = condition.getWaterConsumedEach() *1000D;
-        double average = (thirst + waterEach)/2D;
-
-        double waterFinal = Math.min(average, thirst);
-
-    	if (waterFinal > thirst) {
-    		waterFinal = thirst;
-    		condition.setThirst(0);
-    	}
-    	else {
-        	double newThirst = thirst - waterFinal;
-    		condition.setThirst(newThirst);
-    	}
-    	double t = 0;
-        double waterPortion = PreparingDessert.getDessertMassPerServing() - dryMass;
-        if (waterPortion > 0) {
-	    	t = waterFinal - waterPortion;
+    	Unit containerUnit = person.getTopContainerUnit();
+        if (containerUnit != null) {
+            Inventory inv = containerUnit.getInventory();
+	        double waterEach = condition.getWaterConsumedEach() *1000D;
+	        double average = (thirst + waterEach)/2D;
+	        double waterFinal = Math.min(average, thirst);
+	
+	    	if (waterFinal > thirst) {
+	    		waterFinal = thirst;
+	    		condition.setThirst(0);
+	    	}
+	    	else {
+	        	double newThirst = thirst - waterFinal;
+	    		condition.setThirst(newThirst);
+	    	}
+	    	double t = 0;
+	        double waterPortion = PreparingDessert.getDessertMassPerServing() - dryMass;
+	        if (waterPortion > 0) {
+		    	t = waterFinal - waterPortion;
+	        }
+	        else
+	        	t = waterFinal;
+	        
+		    if (t > 0)
+		    	Storage.retrieveAnResource(t/1000D, ResourceUtil.waterAR, inv, true);  
         }
-        else
-        	t = waterFinal;
-        
-        Inventory inv = person.getTopContainerUnit().getInventory();
-    	if (inv == null)
-    		logger.info("inv is null");
-	    if (t > 0)
-	    	Storage.retrieveAnResource(t/1000D, ResourceUtil.waterAR, inv, true);  
     }
     
     /**
      * Calculates the amount of water to consume after a meal
      */
     public void consumeWater() {
-        double waterEach = condition.getWaterConsumedEach() *1000D;
-        double average = (thirst + waterEach)/2D;
-
-        double waterFinal = Math.min(average, thirst);
-
-    	if (waterFinal > thirst) {
-    		waterFinal = thirst;
-    		condition.setThirst(0);
-    	}
-    	else {
-        	double newThirst = thirst - waterFinal;
-    		condition.setThirst(newThirst);
-    	}
-    	
-        Inventory inv = person.getTopContainerUnit().getInventory();
-    	if (inv == null)
-    		logger.info("inv is null");
-	    if (waterFinal > 0)
-	    	Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , true);  
+    	Unit containerUnit = person.getTopContainerUnit();
+        if (containerUnit != null) {
+            Inventory inv = containerUnit.getInventory();
+	        double waterEach = condition.getWaterConsumedEach() *1000D;
+	        double average = (thirst + waterEach)/2D;
+	        double waterFinal = Math.min(average, thirst);
+	
+	    	if (waterFinal > thirst) {
+	    		waterFinal = thirst;
+	    		condition.setThirst(0);
+	    	}
+	    	else {
+	        	double newThirst = thirst - waterFinal;
+	    		condition.setThirst(newThirst);
+	    	}
+		    if (waterFinal > 0)
+		    	Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , true);  
+        }
     }
     
     

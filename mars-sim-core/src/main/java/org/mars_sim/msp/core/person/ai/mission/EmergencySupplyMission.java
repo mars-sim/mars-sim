@@ -740,7 +740,7 @@ implements Serializable {
         int numPeople = settlement.getAllAssociatedPeople().size();
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
-        double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth;
+        double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth * Mission.OXYGEN_MARGIN;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenAR, false);
 
         inv.addAmountDemandTotalRequest(oxygenAR);
@@ -755,7 +755,7 @@ implements Serializable {
         }
 
         // Determine water amount needed.
-        double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth;
+        double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth * Mission.WATER_MARGIN;
         double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterAR, false);
 
         inv.addAmountDemandTotalRequest(waterAR);
@@ -770,7 +770,7 @@ implements Serializable {
         }
 
         // Determine food amount needed.
-        double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth;
+        double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth * Mission.FOOD_MARGIN;
         double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodAR, false);
 
         inv.addAmountDemandTotalRequest(foodAR);

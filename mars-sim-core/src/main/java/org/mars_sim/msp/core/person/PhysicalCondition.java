@@ -110,7 +110,7 @@ implements Serializable {
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
 
     /** The amount of water this person would consume each time (assuming drinking water 8 times a day) */
-    private double waterConsumed; 
+    private double waterConsumedPerServing; 
     
 	private int solCache = 0;
 
@@ -229,8 +229,8 @@ implements Serializable {
         
         bodyMassFactor = person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT; 
         
-        // assuming a person drinks 8 times a day, each time ~375 mL
-        waterConsumed = h2o_consumption * bodyMassFactor / 8D; 
+        // assuming a person drinks 10 times a day, each time ~375 mL
+        waterConsumedPerServing = h2o_consumption * bodyMassFactor / 10D; 
         
         minimum_air_pressure = personConfig.getMinAirPressure();
         min_temperature = personConfig.getMinTemperature();
@@ -1304,7 +1304,7 @@ implements Serializable {
     }
 
     public double getWaterConsumedEach() {
-    	return waterConsumed;
+    	return waterConsumedPerServing;
     }
     
     /**

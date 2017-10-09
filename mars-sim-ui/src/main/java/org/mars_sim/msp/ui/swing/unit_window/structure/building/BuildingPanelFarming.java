@@ -34,6 +34,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -44,6 +46,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
@@ -55,6 +58,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 
@@ -74,17 +78,23 @@ implements MouseListener {
 	private JLabel cropsLabel;
 	/** The label for the amount solar irradiance. */
 	private JLabel radLabel;
-
+	/** The label for the average water usage per sol per crop. */
+	private JLabel waterUsageLabel;
+	
+	private JTextField radTF, farmersTF, cropsTF, waterUsageTF;
+	
 	// Data cache
 	/** The number of farmers cache. */
 	private int farmersCache;
 	/** The number of crops cache. */
 	private int cropsCache;
 	/** The cache for the amount of solar irradiance. */
-	private int radCache;
+	private double radCache;
 
 	private int deletingCropIndex;
-
+	/** The cache value for the average water usage per sol per crop. */
+	private double waterUsageCache;
+	
 	//private String[] tooltipArray;
 	private ArrayList<String> tooltipArray;
 	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
@@ -108,7 +118,8 @@ implements MouseListener {
 	private Farming farm;
 	private CropType cropType;
 	private CropType deletingCropType;
-
+	private Coordinates location;
+	private SurfaceFeatures surface;
 	private static List<CropType> cropTypeList;
 	
 	/**
@@ -121,51 +132,100 @@ implements MouseListener {
 
 		// Use BuildingFunctionPanel constructor
 		super(farm.getBuilding(), desktop);
-
+		
 		// Initialize data members
 		this.farm = farm;
+		location = farm.getBuilding().getCoordinates();
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		CropConfig config = SimulationConfig.instance().getCropConfiguration();
 		cropTypeList = new ArrayList<>(config.getCropList());
 		
 		// Set panel layout
 		setLayout(new BorderLayout()); //new GridLayout(6, 1, 0, 0));//
 
-		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
-		add(labelPanel, BorderLayout.NORTH);
-
 		// Prepare farming label
 		JLabel farmingLabel = new JLabel(Msg.getString("BuildingPanelFarming.title"), JLabel.CENTER);
 		JPanel farmingPanel = new JPanel(new FlowLayout());
 	    farmingPanel.add(farmingLabel);
 		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		add(farmingLabel, BorderLayout.NORTH);
 		//farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(farmingPanel);
 
+		// Create label panel
+		JPanel labelPanel = new JPanel(new SpringLayout());//GridLayout(5, 1, 0, 0));
+		add(labelPanel, BorderLayout.CENTER);
+		
 		// Prepare solar irradiance label
-		radCache = farm.getFarmerNum();
-		JPanel radPanel = new JPanel(new FlowLayout());
-		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache),  JLabel.CENTER);
-	    radPanel.add(radLabel);
+		//JPanel radPanel = new JPanel(new FlowLayout());
+		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache),  JLabel.RIGHT);
+	    //radPanel.add(radLabel);
 		//balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
-		labelPanel.add(radPanel);
+		labelPanel.add(radLabel);
 
+		radCache = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		radTF = new JTextField(radCache + "");
+		radTF.setEditable(false);
+		radTF.setColumns(7);
+		radTF.setPreferredSize(new Dimension(120, 25));
+		wrapper1.add(radTF);
+		labelPanel.add(wrapper1);
+		
+		
 		// Prepare farmers label
-		farmersCache = farm.getFarmerNum();
-		JPanel farmersPanel = new JPanel(new FlowLayout());
-		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", farmersCache), JLabel.CENTER);
-	    farmersPanel.add(farmersLabel);
+		//JPanel farmersPanel = new JPanel(new FlowLayout());
+		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers.title"), JLabel.RIGHT);
+	    //farmersPanel.add(farmersLabel);
 		//balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
-		labelPanel.add(farmersPanel);
+		labelPanel.add(farmersLabel);
 
+		farmersCache = farm.getFarmerNum();
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		farmersTF = new JTextField(farmersCache + "");
+		farmersTF.setEditable(false);
+		farmersTF.setColumns(3);
+		farmersTF.setPreferredSize(new Dimension(120, 25));
+		wrapper2.add(farmersTF);
+		labelPanel.add(wrapper2);
+		
 		// Prepare crops label
-		cropsCache = farm.getCrops().size();
-		JPanel cropsPanel = new JPanel(new FlowLayout());
-		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops", cropsCache), JLabel.CENTER);
-	    cropsPanel.add(cropsLabel);
+		//JPanel cropsPanel = new JPanel(new FlowLayout());
+		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops.title"), JLabel.RIGHT);
+	    //cropsPanel.add(cropsLabel);
 		//balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
-		labelPanel.add(cropsPanel);
+		labelPanel.add(cropsLabel);
 
+		cropsCache = farm.getCrops().size();
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		cropsTF = new JTextField(cropsCache + "");
+		cropsTF.setEditable(false);
+		cropsTF.setColumns(3);
+		cropsTF.setPreferredSize(new Dimension(120, 25));
+		wrapper3.add(cropsTF);
+		labelPanel.add(wrapper3);
+		
+		//JPanel waterUsagePanel = new JPanel(new FlowLayout());
+		waterUsageLabel = new JLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), JLabel.RIGHT);
+		//waterUsagePanel.add(waterUsageLabel);
+		waterUsageLabel.setToolTipText(Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
+		labelPanel.add(waterUsageLabel);
+		
+		waterUsageCache = farm.computeWaterUsage();
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		waterUsageTF = new JTextField(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""));
+		waterUsageTF.setEditable(false);
+		waterUsageTF.setColumns(10);
+		waterUsageTF.setPreferredSize(new Dimension(120, 25));
+		wrapper4.add(waterUsageTF);
+		labelPanel.add(wrapper4);
+		
+		
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(labelPanel,
+		                                4, 2, //rows, cols
+		                                65, 20,        //initX, initY
+		                                3, 1);       //xPad, yPad
+		
 /*
 		// 2015-09-19 Added opsPanel and opsButton
 		JPanel opsPanel = new JPanel(new FlowLayout());
@@ -192,13 +252,13 @@ implements MouseListener {
 */
 		// Create scroll panel for crop table
 		JScrollPane scrollPanel = new JScrollPane();
-		if (farm.getBuilding().getName().equals("Large Greenhouse"))
+		if (farm.getBuilding().getBuildingType().equalsIgnoreCase("Large Greenhouse"))
 			scrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
 		else
 			// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
 			scrollPanel.setPreferredSize(new Dimension(200, 110)); // 110 is the best fit for 5 crops
 
-		add(scrollPanel, BorderLayout.CENTER);
+		add(scrollPanel, BorderLayout.SOUTH);
 
 		// Prepare crop table model
 		cropTableModel = new CropTableModel(farm);
@@ -464,7 +524,6 @@ implements MouseListener {
         listUpdate();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void listUpdate() {
 
 		listModel.update();
@@ -510,26 +569,33 @@ implements MouseListener {
 		// Update farmers label if necessary.
 		if (farmersCache != farm.getFarmerNum()) {
 			farmersCache = farm.getFarmerNum();
-			farmersLabel.setText("# Farmers: " + farmersCache);
+			farmersTF.setText(farmersCache + "");
 		    //balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
 		}
 
 		// Update crops label if necessary.
 		if (cropsCache != farm.getCrops().size()) {
 			cropsCache = farm.getCrops().size();
-			cropsLabel.setText("# Crops: " + cropsCache);
+			cropsTF.setText(cropsCache + "");
 		    //balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
 		}
 
-
 		// Update solar irradiance label if necessary.
-		Coordinates location = farm.getBuilding().getCoordinates();
-		int rad = (int) Simulation.instance().getMars().getSurfaceFeatures().getSolarIrradiance(location);
+		//Coordinates location = farm.getBuilding().getCoordinates();
+		double rad = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
 		if (radCache != rad) {
 			radCache = rad;
-			radLabel.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
+			radTF.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
 		    //balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
 		}
+
+		// Update the average water usage
+		double new_ave = farm.computeWaterUsage();
+		if (waterUsageCache != new_ave) {
+			waterUsageCache = new_ave;
+			waterUsageTF.setText(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache));
+		}
+
 
 		// Update crop table.
 		cropTableModel.update();

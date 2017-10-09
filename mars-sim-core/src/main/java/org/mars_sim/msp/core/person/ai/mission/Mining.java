@@ -874,7 +874,7 @@ extends RoverMission {
 
         // Check food capacity as time limit.
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        double foodConsumptionRate = config.getFoodConsumptionRate();
+        double foodConsumptionRate = config.getFoodConsumptionRate() * Mission.FOOD_MARGIN;
         double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit) {
@@ -892,7 +892,7 @@ extends RoverMission {
  */
         // Check water capacity as time limit.
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double waterConsumptionRate = config.getWaterConsumptionRate();
+        double waterConsumptionRate = config.getWaterConsumptionRate() * Mission.WATER_MARGIN;
         double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
@@ -902,7 +902,7 @@ extends RoverMission {
 
         // Check oxygen capacity as time limit.
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenConsumptionRate = config.getHighO2ConsumptionRate();
+        double oxygenConsumptionRate = config.getHighO2ConsumptionRate() * Mission.OXYGEN_MARGIN;
         double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);

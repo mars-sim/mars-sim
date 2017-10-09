@@ -85,7 +85,7 @@ implements Serializable {
 	public static final int MIN_PEOPLE = 3;
 	public static final int MAX_PEOPLE = 10;
 
-    public static int FIRST_AVAILABLE_SOL = 2;
+    public static int FIRST_AVAILABLE_SOL = 1000;
 
 	/** Time (millisols) required to prepare construction site for stage. */
 	public static final double SITE_PREPARE_TIME = 100D;

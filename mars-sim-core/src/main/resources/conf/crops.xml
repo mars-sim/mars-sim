@@ -6,19 +6,25 @@
 
 <crop-configuration>
 
-	<!-- The average amount of carbon dioxide (kg) needed by a crop per square meter area during the day-->
+	<!-- The average amount of carbon dioxide (kg) needed by a crop per square 
+	     meter area during the day-->
 	<!-- Default: 2.0 -->
 	<carbon-dioxide-consumption-rate value ="2.0" />
 
-	<!-- The average amount of oxygen (kg) needed by a crop per square meter area during the night -->
+	<!-- The average amount of oxygen (kg) needed by a crop per square meter 
+	     area during the night -->
 	<!-- Default: 1.0 -->
 	<oxygen-consumption-rate value="1.0" />
 
-	<!-- The average amount of water (kg) consumed by a crop per square meter area in each Martian Sol -->
+	<!-- The average amount of water (kg) consumed by a crop per square meter 
+	     area in each Martian Sol
+	Note : KSC has daily water makeup requirements of 0..7 to 10 L/sq m/day 
+	depending on type and maturity of the crop -->
 	<!-- Default: 3.0 -->
 	<water-consumption-rate value="3.0" />
 
-	<!-- The ratio of measured irradiance [ Wm^-2 to PPF on Mars. Useful for calculate the instantaneous PAR in Crop.java -->
+	<!-- The ratio of measured irradiance [ Wm^-2 to PPF on Mars. Useful for 
+	     calculating the instantaneous PAR in Crop.java -->
 	<!-- see http://physics.stackexchange.com/questions/52487/photometer-measured-irradiance-l-converted-to-photon-rate -->
     <!-- Default: 4.568 on Mar [in u mol / m2 /s / (W m^2)] (vs. 4.609 on Earth-->
 	<watt-to-photon-conversion-ratio value="4.568" />

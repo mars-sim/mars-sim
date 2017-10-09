@@ -808,6 +808,10 @@ public class MainMenu {
 		    }
 		    else if (mainscene_width == 1024)
 			    r0.setSelected(true);
+		    else 
+		    	// by default, set to 1024 x 768
+		    	r0.setSelected(true);
+		    
 		    
 		    group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 		        @Override

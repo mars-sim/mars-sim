@@ -72,7 +72,7 @@ implements Serializable {
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
-	private static MarsClock marsClock;
+	//private static MarsClock marsClock;
 	
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
@@ -94,13 +94,13 @@ implements Serializable {
         
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		//marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // Check if person is in a settlement or a rover.
         if (LocationSituation.IN_SETTLEMENT == ls) {
             interiorObject = BuildingManager.getBuilding(person);
             if (interiorObject == null) {
-                throw new IllegalStateException(person.getName() + " not in building.");
+                throw new IllegalStateException(person.getName() + " not in building and interiorObject is null.");
             }
             else {
                 // Add task phases.
@@ -114,7 +114,10 @@ implements Serializable {
         
         else if (LocationSituation.IN_VEHICLE == ls) {
             if (person.getVehicle() instanceof Rover) {
-                //interiorObject = (Rover) person.getVehicle();
+                interiorObject = (Rover) person.getVehicle();
+                if (interiorObject == null) {
+                    throw new IllegalStateException(person.getName() + " not in a vehicle and interiorObject is null.");
+                }
                 // Add task phases.
                 addPhase(WALK_TO_OUTSIDE_SITE);
                 addPhase(WALK_BACK_INSIDE);

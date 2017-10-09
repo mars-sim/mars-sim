@@ -62,7 +62,14 @@ implements Serializable {
 	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
 
+	/** The dimenion-less marginal factor for the amount of water to be brought during a mission. */
+	public final static double WATER_MARGIN = 1.4;
+	/** The dimenion-less marginal factor for the amount of oxygen to be brought during a mission. */
+	public final static double OXYGEN_MARGIN = 1.2;
+	/** The dimenion-less marginal factor for the amount of food to be brought during a mission. */
+	public final static double FOOD_MARGIN = 1.3;
 
+	
 	// Data members
 	/** Unique identifier */
 	private int identifier;

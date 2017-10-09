@@ -403,8 +403,7 @@ public class MainScene {
 
 		public void handle(KeyEvent t) {
 			if (t.getCode() == KeyCode.ESCAPE) {
-				boolean isOnPauseMode = masterClock.isPaused();
-				if (isOnPauseMode) {
+				if (masterClock.isPaused()) {
 					unpauseSimulation();
 				} else {
 					pauseSimulation(true);
@@ -862,7 +861,7 @@ public class MainScene {
 		AnchorPane.setRightAnchor(earthTimeButton, sceneWidth.get()/2 - marsTimeButton.getPrefWidth());
 		
 		//AnchorPane.setRightAnchor(lastSaveLabel, marsTimeButton.getMinWidth() + marsTimeButton.getMinWidth() + 165);
-		AnchorPane.setRightAnchor(lastSaveLabel, 95.0);
+		AnchorPane.setRightAnchor(lastSaveLabel, 105.0);
 		
 		anchorPane = new AnchorPane();
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeButton,
@@ -2581,8 +2580,8 @@ public class MainScene {
 			lastSaveLabel.setPrefSize(WIN_WIDTH, 35);
 		}
 
-		lastSaveLabel.setAlignment(Pos.CENTER_LEFT);
-		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
+		lastSaveLabel.setAlignment(Pos.CENTER_RIGHT);
+		lastSaveLabel.setTextAlignment(TextAlignment.RIGHT);
 		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
 
 		setQuickToolTip(lastSaveLabel, "Last time when the sim was (auto)saved");
@@ -2664,7 +2663,7 @@ public class MainScene {
 		}
 		
 		// Check to see if a background sound track is being played.
-		if (!desktop.getSoundPlayer().isMute(false));
+		if (!desktop.getSoundPlayer().isMute(false))
 			soundPlayer.playRandomBackgroundTrack();
 	}
 

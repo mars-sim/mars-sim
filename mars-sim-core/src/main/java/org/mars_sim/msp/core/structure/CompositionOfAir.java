@@ -372,6 +372,11 @@ public class CompositionOfAir implements Serializable {
 			moisture = numPeople * moisture;
 			//h2o = numPeople * h2o;
 			
+			// Extract the air moisture if it's a greenhouse
+			if (b.getBuildingType().toLowerCase().contains("greenhouse"))
+				moisture += b.getFarming().retrieveMoisture();
+	
+			
 			for (int gas = 0; gas < numGases; gas++) {
 
 				double molecularMass = getMolecularMass(gas);
