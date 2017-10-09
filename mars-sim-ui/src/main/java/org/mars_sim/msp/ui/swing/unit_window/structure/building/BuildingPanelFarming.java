@@ -12,7 +12,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -73,13 +72,13 @@ implements MouseListener {
 	// Data members
 
 	/** The number of farmers label. */
-	private JLabel farmersLabel;
+	//private JLabel farmersLabel;
 	/** The number of crops label. */
-	private JLabel cropsLabel;
+	//private JLabel cropsLabel;
 	/** The label for the amount solar irradiance. */
-	private JLabel radLabel;
+	//private JLabel radLabel;
 	/** The label for the average water usage per sol per crop. */
-	private JLabel waterUsageLabel;
+	//private JLabel waterUsageLabel;
 	
 	private JTextField radTF, farmersTF, cropsTF, waterUsageTF;
 	
@@ -157,7 +156,7 @@ implements MouseListener {
 		
 		// Prepare solar irradiance label
 		//JPanel radPanel = new JPanel(new FlowLayout());
-		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache),  JLabel.RIGHT);
+		JLabel radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache),  JLabel.RIGHT);
 	    //radPanel.add(radLabel);
 		//balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
 		labelPanel.add(radLabel);
@@ -174,7 +173,7 @@ implements MouseListener {
 		
 		// Prepare farmers label
 		//JPanel farmersPanel = new JPanel(new FlowLayout());
-		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers.title"), JLabel.RIGHT);
+		JLabel farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers.title"), JLabel.RIGHT);
 	    //farmersPanel.add(farmersLabel);
 		//balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
 		labelPanel.add(farmersLabel);
@@ -190,7 +189,7 @@ implements MouseListener {
 		
 		// Prepare crops label
 		//JPanel cropsPanel = new JPanel(new FlowLayout());
-		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops.title"), JLabel.RIGHT);
+		JLabel cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops.title"), JLabel.RIGHT);
 	    //cropsPanel.add(cropsLabel);
 		//balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
 		labelPanel.add(cropsLabel);
@@ -205,7 +204,7 @@ implements MouseListener {
 		labelPanel.add(wrapper3);
 		
 		//JPanel waterUsagePanel = new JPanel(new FlowLayout());
-		waterUsageLabel = new JLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), JLabel.RIGHT);
+		JLabel waterUsageLabel = new JLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), JLabel.RIGHT);
 		//waterUsagePanel.add(waterUsageLabel);
 		waterUsageLabel.setToolTipText(Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 		labelPanel.add(waterUsageLabel);

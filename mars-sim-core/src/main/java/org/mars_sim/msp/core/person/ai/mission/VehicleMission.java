@@ -326,8 +326,8 @@ implements UnitListener {
 
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (isUsableVehicle(vehicle)) {
+			Vehicle v = i.next();
+			if (!v.equals(vehicle) && isUsableVehicle(v)) {
 				result.add(vehicle);
 			}
 		}

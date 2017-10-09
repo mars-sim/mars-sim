@@ -607,7 +607,6 @@ public class Crop implements Serializable {
 				}
 				
 				phaseType = PhaseType.FINISHED;
-				farm.addWaterUsage(cropName, cumulative_water_usage/growingArea);
 			}
 			
 			else { 	
@@ -825,6 +824,11 @@ public class Crop implements Serializable {
 					// Modify actual harvest amount based on daily tending work.
 					actualHarvest += (dailyMaxHarvest * (dailyWorkCompleted - .5D));
 					
+					// Records the water usage in the farm
+					farm.addWaterUsage(cropName, cumulative_water_usage/growingArea);
+					// Reset the water usage
+					cumulative_water_usage = 0;
+					
 					if (actualHarvest < 0) {
 						phaseType = PhaseType.FINISHED;
 						actualHarvest = 0;
@@ -856,6 +860,7 @@ public class Crop implements Serializable {
 				}
 
 			}
+			
 		}
 
 		else if (phaseType == PhaseType.FINISHED) {
