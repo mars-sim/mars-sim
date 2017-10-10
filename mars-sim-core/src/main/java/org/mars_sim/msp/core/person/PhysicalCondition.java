@@ -171,11 +171,24 @@ implements Serializable {
 	
 	private CircadianClock circadian;
 
+	private Complaint dehydration;
+
+    private Complaint starvation;
+
+    private LocationSituation ls;
+    
+    private TaskManager taskMgr;
+    
+    private HealthProblem starved;
+    
+    private HealthProblem dehydrated;
+    
     /** List of medications affecting the person. */
     private List<Medication> medicationList;
     
     /** Injury/Illness effecting person. */
     private HashMap<Complaint, HealthProblem> problems;
+    
     
 
     /**
@@ -189,6 +202,18 @@ implements Serializable {
 
     	circadian = person.getCircadianClock();
     	
+    	dehydration = getMedicalManager().getDehydration();
+
+        starvation = getMedicalManager().getStarvation();
+        
+        //starved = problems.get(starvation);
+        
+        //dehydrated = problems.get(dehydration);
+        
+        ls = person.getLocationSituation();
+
+        taskMgr = person.getMind().getTaskManager();
+        
         //sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
@@ -594,7 +619,8 @@ implements Serializable {
      */
     public void checkStarvation(double hunger) {
 
-        Complaint starvation = getMedicalManager().getStarvation();
+    	if (starvation == null)
+    		starvation = getMedicalManager().getStarvation();
 
         if (hunger > starvationStartTime && (kJoules < 120D)) {
             if (!problems.containsKey(starvation)) {
@@ -606,20 +632,23 @@ implements Serializable {
                 person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
             }
               
-            LocationSituation ls = person.getLocationSituation();
-            TaskManager mgr = person.getMind().getTaskManager();
-            //Stop any on-going tasks
-            mgr.clearTask();
+            if (ls == null)
+            	ls = person.getLocationSituation();
+            if (taskMgr == null)
+            	taskMgr = person.getMind().getTaskManager();
+            
             // TODO : how to tell a person to walk back to the settlement ?
-            if (ls == LocationSituation.OUTSIDE) {
+            if (LocationSituation.OUTSIDE == ls) {
     	        //if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
     	        //    Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
     	        //    mgr.addSubTask(walkingTask);
     	        //}
             }
-            else { // in a settlement or on a vehicle
+            else { // in either a settlement or on a vehicle
+                //Stop any on-going tasks
+                taskMgr.clearTask();
                 // go eat a meal
-                mgr.addTask(new EatMeal(person));
+                taskMgr.addTask(new EatMeal(person));
             }
             
             // TODO : should check if a person is on a critical mission, 
@@ -627,9 +656,10 @@ implements Serializable {
         }
 
         else if (hunger < 500D && kJoules > 800D) {
-            HealthProblem illness = problems.get(starvation);
-            if (illness != null) {
-                illness.startRecovery();
+        	if (starved == null)
+        		starved = problems.get(starvation);
+            if (starved != null) {
+                starved.startRecovery();
 
             }
         }
@@ -642,29 +672,40 @@ implements Serializable {
      */
     public void checkHydration(double thirst) {
 
-        Complaint dehydrated = getMedicalManager().getDehydration();
+    	if (dehydration == null)
+    		dehydration = getMedicalManager().getDehydration();
 
         if (thirst > dehydrationStartTime) {
-            if (!problems.containsKey(dehydrated)) {
-                addMedicalComplaint(dehydrated);
+            if (!problems.containsKey(dehydration)) {
+                addMedicalComplaint(dehydration);
                 isDehydrated = true;
                 person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
             }
             
-            TaskManager mgr = person.getMind().getTaskManager();
-            //Stop any on-going tasks
-            mgr.clearTask();
-            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+            if (ls == null)
+            	ls = person.getLocationSituation();
+            if (taskMgr == null)
+            	taskMgr = person.getMind().getTaskManager();
+            
+
+            
+            if (LocationSituation.OUTSIDE == ls) {
+ 
+            }
+            else { // in either a settlement or on a vehicle
+                //Stop any on-going tasks
+                taskMgr.clearTask();
                 // go eat a meal
-                mgr.addTask(new EatMeal(person));
+                taskMgr.addTask(new EatMeal(person));
             }
             
         }
 
         else if (thirst < 150D) {
-            HealthProblem illness = problems.get(dehydrated);
-            if (illness != null) {
-                illness.startRecovery();
+        	if (dehydrated == null)
+        		dehydrated = problems.get(dehydration);
+            if (dehydrated != null) {
+                dehydrated.startRecovery();
             }
         }
     }
@@ -952,14 +993,15 @@ implements Serializable {
      * @param amount amount of water to consume (in kg)
      * @return new problem added.
      * @throws Exception if error consuming water.
-     */
+
     private boolean consumeWater(LifeSupportType support, double amount) {
         double amountReceived = support.provideWater(amount);
 
         return checkResourceConsumption(amountReceived, amount / 2D,
                 MIN_VALUE, getMedicalManager().getDehydration());
     }
-
+     */
+    
     /**
      * This method checks the consume values of a resource. If the
      * actual is less than the required then a HealthProblem is

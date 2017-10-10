@@ -109,7 +109,7 @@ public final class RandomUtil {
 		double totalWeight = 0D;
 		double weight = 1D;
 
-		for (int x=0; x < ceiling; x++) {
+		for (int x = 0; x < ceiling; x++) {
 			totalWeight += weight;
 			weight /= 2D;
 		}
@@ -119,7 +119,8 @@ public final class RandomUtil {
 		totalWeight = 0D;
 		weight = 1D;
 		int result = 0;
-		for (int x=0; x < ceiling; x++) {
+		
+		for (int x = 0; x < ceiling; x++) {
 			totalWeight += weight;
 			weight /= 2D;
 			if (randWeight < totalWeight) {

@@ -121,7 +121,7 @@ public class EatMeal extends Task implements Serializable {
         // Check if person is not in a settlement or vehicle.
         LocationSituation ls = person.getLocationSituation();
         
-        if (LocationSituation.IN_SETTLEMENT != ls && LocationSituation.IN_VEHICLE != ls) {
+        if (LocationSituation.OUTSIDE == ls) {
 			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
             		person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
             endTask();
@@ -135,7 +135,7 @@ public class EatMeal extends Task implements Serializable {
         currentHunger = startingHunger;
         
         if (thirst > 300 && energy > 2000 && currentHunger < 150) {
-        	consumeWater();
+        	consumeWater(true);
         	endTask();
         }
         
@@ -277,7 +277,7 @@ public class EatMeal extends Task implements Serializable {
                     remainingTime = time;
                 }
                 else {
-                	consumeWater();
+                	consumeWater(false);
                 }
             }     
         }
@@ -290,7 +290,7 @@ public class EatMeal extends Task implements Serializable {
             remainingTime = time - eatingTime;
         }
         else {
-        	consumeWater();
+        	consumeWater(false);
         }
  
         return remainingTime;
@@ -587,7 +587,7 @@ public class EatMeal extends Task implements Serializable {
     /**
      * Calculates the amount of water to consume after a meal
      */
-    public void consumeWater() {
+    public void consumeWater(boolean waterOnly) {
     	Unit containerUnit = person.getTopContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
@@ -603,7 +603,7 @@ public class EatMeal extends Task implements Serializable {
 		    		waterFinal = thirst;
 		    	}
 		    	else {
-		    		new_thirst = thirst - waterFinal;
+		    		new_thirst = (thirst - waterFinal)/2;
 		    	}
 		    	
 		    	// Test to see if there's enough water
@@ -611,7 +611,8 @@ public class EatMeal extends Task implements Serializable {
 		    	
 		    	if (haswater) {
 		    		condition.setThirst(new_thirst);
-		    		setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+		    		if (waterOnly)
+		    			setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
 		    		Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , true); 
 		    	}
 		    	else {
@@ -620,7 +621,8 @@ public class EatMeal extends Task implements Serializable {
 		    		if (haswater) {
 		    			new_thirst = new_thirst * RATION_FACTOR;
 			    		condition.setThirst(new_thirst);
-			    		setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+			    		if (waterOnly)
+			    			setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
 			    		Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterAR, inv , false);
 			    	}
 		    	}

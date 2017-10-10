@@ -297,6 +297,7 @@ extends ToolWindow {
 			statusBar.setId("status-bar");
 			statusBar.setText("");
 			setTheme(null);
+			//setStatusBarTheme(cssFile);
 			
 		}
 
@@ -531,13 +532,15 @@ extends ToolWindow {
 		return statusBar;
 	}
 
+/*	
 	public void setStatusBarTheme(String cssFile) {
 		if (statusBar != null) {
 			statusBar.getStylesheets().clear();
 			statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		}
 	}
-
+*/
+	
 	public void setXCoor(double x) {
 		this.xCoor = x;
 	}
@@ -546,6 +549,7 @@ extends ToolWindow {
 		this.yCoor = y;
 	}
 
+/*	
 	public Color checkTheme() {
 		int theme = MainScene.getTheme();
 		// orange theme : F4BA00
@@ -553,23 +557,43 @@ extends ToolWindow {
 		//String color = txtColor.replace("0x", "");
 		if (theme == 0 || theme == 6) {
 			css_file = "/fxui/css/snowBlue.css";
+			setStatusBarTheme(css_file);
 			return Color.rgb(0,107,184);
 		}
 		else if (theme == 7) {
 			css_file = "/fxui/css/nimrodskin.css";	
+			setStatusBarTheme(css_file);
 			return Color.rgb(156,77,0);
 		}
+		
 		else return null;
 	}
+*/
 	
 	public void setTheme(Color c) {
 		if (solLabel != null) {
 			
-			if (c == null)
-				c = checkTheme();
+			if (c == null) {
+				int theme = MainScene.getTheme();
+				// orange theme : F4BA00
+				// blue theme : 3291D2
+				//String color = txtColor.replace("0x", "");
+				if (theme == 0 || theme == 6) {
+					css_file = "/fxui/css/snowBlue.css";
+					c = Color.rgb(0,107,184);
+				}
+				else if (theme == 7) {
+					css_file = "/fxui/css/nimrodskin.css";	
+					c = Color.rgb(156,77,0);
+				}
 
-			setStatusBarTheme(css_file);
-
+			}
+			
+			if (statusBar != null) {
+				statusBar.getStylesheets().clear();
+				statusBar.getStylesheets().add(getClass().getResource(css_file).toExternalForm());
+			}
+			
 			solLabel.setTextFill(c);
 			popLabel.setTextFill(c);
 			capLabel.setTextFill(c);

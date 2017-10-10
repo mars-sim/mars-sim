@@ -2383,13 +2383,13 @@ public class MainScene {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
 			if (settlementWindow != null) {
 				settlementWindow.setTheme(txtColor);
-				settlementWindow.setStatusBarTheme(cssFile);
+				//settlementWindow.setStatusBarTheme(cssFile);
 			}
 		}
 
 		else {
 			settlementWindow.setTheme(txtColor);
-			settlementWindow.setStatusBarTheme(cssFile);
+			//settlementWindow.setStatusBarTheme(cssFile);
 		}
 
 		if (theme == 7) {
@@ -2582,9 +2582,9 @@ public class MainScene {
 
 		lastSaveLabel.setAlignment(Pos.CENTER_RIGHT);
 		lastSaveLabel.setTextAlignment(TextAlignment.RIGHT);
-		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
+		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + "     ");
 
-		setQuickToolTip(lastSaveLabel, "Last time when the sim was (auto)saved");
+		setQuickToolTip(lastSaveLabel, "Last time when the sim was saved or auto-saved");
 
 	}
 
@@ -2657,7 +2657,7 @@ public class MainScene {
 			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
 				sim.setJustSaved(false);
 				oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
-				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
+				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + "     ");
 
 			}
 		}

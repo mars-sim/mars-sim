@@ -44,7 +44,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-        double result = 1D;
+        double result = 0;
         
         LocationSituation ls = person.getLocationSituation();
         if (ls == LocationSituation.OUTSIDE)
@@ -61,13 +61,16 @@ public class EatMealMeta implements MetaTask, Serializable {
     	double leptin = cc.getSurplusLeptin();
         // Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ persson per sol
         
+    	if (thirst > 250) {
+    		 result = thirst/5;
+    	}
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
-        if (thirst > 200 || hunger > 250D || energy < 2525D || ghrelin-leptin > 300) {
-        	thirst = thirst / 10D;
-        	hunger = hunger / 10D;
-            energy = (2525D - energy) / 100D;
+    	else if (hunger > 250 || energy < 2525 || ghrelin-leptin > 300) {
+        	thirst = thirst / 10;
+        	hunger = hunger / 10;
+            energy = (2525 - energy) / 100;
             result = thirst + hunger + energy;// +  (ghrelin-leptin - 300);
-            if (result <= 0D)
+            if (result <= 0)
             	return 0;
         }
         
@@ -99,21 +102,18 @@ public class EatMealMeta implements MetaTask, Serializable {
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
             }
 	
+        	if (CookMeal.isMealTime(person.getCoordinates())) {
+        		result *= 4D;
+        	}
+        	else
+        		result *= .25D;    
+        	
         }
         
         else if (ls == LocationSituation.IN_VEHICLE) {
         	result *= 1D; // ration food a little bit just in case of running out of it
         }
         
-        else if (ls == LocationSituation.OUTSIDE) {
-        	return 0;
-        }
-        
-    	if (CookMeal.isMealTime(person.getCoordinates())) {
-    		result *= 4D;
-    	}
-    	else
-    		result *= .25D;    
     	
         // 2015-06-07 Added Preference modifier
         if (result > 0D) {
