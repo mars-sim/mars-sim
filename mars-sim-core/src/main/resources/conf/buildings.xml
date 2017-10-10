@@ -384,7 +384,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				into 2 kg H2 and 16 kg O2
 				
 				-->	
-				<process name="Oxygen Generation System" power-required="1" default="off">
+				<process name="Oxygen Generation System" power-required="1" default="on">
 					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
 					<input resource="water" rate="18" ambient="false" />
 					<output resource="hydrogen" rate="2" ambient="false" />
@@ -814,7 +814,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
-					<process name="Oxygen Generation System" power-required="1.5" default="off">
+					<process name="Oxygen Generation System" power-required="1.5" default="on">
 					<!-- input resource="carbon dioxide" rate="30" ambient="true" /-->					
 					<input resource="water" rate="54" ambient="false" />
 					<output resource="hydrogen" rate="6" ambient="false" />
@@ -886,7 +886,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
-				<process name="Oxygen Generation System" power-required="1.5" default="off">
+				<process name="Oxygen Generation System" power-required="1.5" default="on">
 					<!-- input resource="carbon dioxide" rate="30" ambient="true" /-->					
 					<input resource="water" rate="54" ambient="false" />
 					<output resource="hydrogen" rate="6" ambient="false" />
@@ -2383,7 +2383,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
 				
-				<process name="Oxygen Generation System" power-required="1" default="off">
+				<process name="Oxygen Generation System" power-required="1" default="on">
 					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
 					<input resource="water" rate="18" ambient="false" />
 					<output resource="hydrogen" rate="2" ambient="false" />

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -71,9 +72,13 @@ implements Serializable {
             "Mission.phase.rendezvous")); //$NON-NLS-1$
 
     // Data members
-    private Vehicle vehicleTarget;
     private boolean rescue = false;
-
+    
+    private Vehicle vehicleTarget;
+  
+    private static UnitManager unitManager;
+    private static MissionManager missionManager;
+    
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;
@@ -87,12 +92,16 @@ implements Serializable {
         // Use RoverMission constructor
         super(DEFAULT_DESCRIPTION, startingPerson, MIN_GOING_MEMBERS);
 
+        unitManager = Simulation.instance().getUnitManager();
+        missionManager = Simulation.instance().getMissionManager();
+        
         if (!isDone()) {
             setStartingSettlement(startingPerson.getSettlement());
             setMissionCapacity(MAX_GOING_MEMBERS);
 
             if (hasVehicle()) {
-                vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
+            	if (vehicleTarget == null)
+            		vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
                 int capacity = getRover().getCrewCapacity();
                 if (capacity < MAX_GOING_MEMBERS) {
@@ -160,6 +169,9 @@ implements Serializable {
         // Use RoverMission constructor.
         super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
+        unitManager = Simulation.instance().getUnitManager();
+        missionManager = Simulation.instance().getMissionManager();
+ 
         setStartingSettlement(startingSettlement);
         this.vehicleTarget = vehicleTarget;
         setMissionCapacity(getRover().getCrewCapacity());
@@ -209,19 +221,24 @@ implements Serializable {
         if (newVehicle != null) {
             boolean usable = true;
 
-            if (!(newVehicle instanceof Rover)) {
+        	//if (vehicleTarget == null)
+        	//	vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
+
+            //if (!vehicleTarget.equals(newVehicle))
+            //	return false;
+            
+            if (!(newVehicle instanceof Rover))
                 usable = false;
-            }
-            if (newVehicle.isReservedForMission()) {
+            
+            if (newVehicle.isReservedForMission())
                 usable = false;
-            }
+            
             String status = newVehicle.getStatus();
-            if (!status.equals(Vehicle.PARKED) && !status.equals(Vehicle.MAINTENANCE)) {
+            if (!status.equals(Vehicle.PARKED) && !status.equals(Vehicle.MAINTENANCE))
                 usable = false;
-            }
-            if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+            
+            if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D)
                 usable = false;
-            }
 
             return usable;
         }
@@ -322,25 +339,25 @@ implements Serializable {
         // If rescuing vehicle crew, load rescue life support resources into vehicle (if possible).
         if (rescue) {
             Map<Resource, Number> rescueResources = determineRescueResourcesNeeded(true);
-            Iterator<Resource> i = rescueResources.keySet().iterator();
-            while (i.hasNext()) {
-                AmountResource resource = (AmountResource) i.next();
-                double amount = (Double) rescueResources.get(resource);
+            //Iterator<Resource> i = rescueResources.keySet().iterator();
+            //while (i.hasNext()) {
+            for (Resource resource : rescueResources.keySet()) {//= (AmountResource) i.next();
+                double amount = (Double) rescueResources.get((AmountResource)resource);
                 Inventory roverInv = getRover().getInventory();
                 Inventory targetInv = vehicleTarget.getInventory();
-                double amountNeeded = amount - targetInv.getAmountResourceStored(resource, false);
+                double amountNeeded = amount - targetInv.getAmountResourceStored((AmountResource)resource, false);
 
                 // 2015-01-09 Added addDemandTotalRequest()
                 //targetInv.addDemandTotalRequest(resource);
 
-                if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource, false) >
-                amountNeeded)) {
-                    roverInv.retrieveAmountResource(resource, amountNeeded);
+                if ((amountNeeded > 0) 
+                		&& (roverInv.getAmountResourceStored((AmountResource)resource, false) > amountNeeded)) {
+                    roverInv.retrieveAmountResource((AmountResource)resource, amountNeeded);
 
                     // 2015-01-09 addDemandRealUsage()
                     //roverInv.addDemandRealUsage(resource,amountNeeded);
 
-                    targetInv.storeAmountResource(resource, amountNeeded, true);
+                    targetInv.storeAmountResource((AmountResource)resource, amountNeeded, true);
        			 	// 2015-01-15 Add addSupplyAmount()
                     //targetInv.addSupplyAmount(harvestCropAR, harvestAmount);
                 }
@@ -447,21 +464,21 @@ implements Serializable {
 
         // Determine life support supplies needed for trip.
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum;
+        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum * Mission.OXYGEN_MARGIN;
         if (useBuffer) {
             oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
         result.put(oxygenAR, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum;
+        double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum * Mission.WATER_MARGIN;
         if (useBuffer) {
             waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
         result.put(waterAR, waterAmount);
 
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;
+        double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum * Mission.FOOD_MARGIN;
         if (useBuffer) {
             foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
@@ -483,10 +500,12 @@ implements Serializable {
         Collection<Vehicle> emergencyBeaconVehicles = new ConcurrentLinkedQueue<Vehicle>();
         Collection<Vehicle> vehiclesNeedingRescue = new ConcurrentLinkedQueue<Vehicle>();
 
+        if (unitManager == null)
+        	unitManager = Simulation.instance().getUnitManager();
         // Find all available vehicles.
-        Iterator<Vehicle> iV = Simulation.instance().getUnitManager().getVehicles().iterator();
-        while (iV.hasNext()) {
-            Vehicle vehicle = iV.next();
+        //Iterator<Vehicle> iV = unitManager.getVehicles().iterator();
+        //while (iV.hasNext()) {
+        for (Vehicle vehicle : unitManager.getVehicles()) {// = iV.next();
             if (vehicle.isEmergencyBeacon() && !isVehicleAlreadyMissionTarget(vehicle)) {
                 emergencyBeaconVehicles.add(vehicle);
 
@@ -531,8 +550,10 @@ implements Serializable {
     private static boolean isVehicleAlreadyMissionTarget(Vehicle vehicle) {
         boolean result = false;
 
-        MissionManager manager = Simulation.instance().getMissionManager();
-        Iterator<Mission> i = manager.getMissions().iterator();
+        if (missionManager == null)
+        	missionManager = Simulation.instance().getMissionManager();
+        //MissionManager manager = Simulation.instance().getMissionManager();
+        Iterator<Mission> i = missionManager.getMissions().iterator();
         while (i.hasNext() && !result) {
             Mission mission = i.next();
             if (mission instanceof RescueSalvageVehicle) {
@@ -604,9 +625,9 @@ implements Serializable {
         // Include rescue resources if needed.
         if (rescue && (getRover().getTowedVehicle() == null)) {
             Map<Resource, Number> rescueResources = determineRescueResourcesNeeded(useBuffer);
-            Iterator<Resource> i = rescueResources.keySet().iterator();
-            while (i.hasNext()) {
-                Resource resource = i.next();
+            //Iterator<Resource> i = rescueResources.keySet().iterator();
+            //while (i.hasNext()) {
+            for (Resource resource : rescueResources.keySet()) {//= i.next();
                 if (resource instanceof AmountResource) {
                     double amount = (Double) rescueResources.get(resource);
                     if (result.containsKey(resource)) {
@@ -692,7 +713,7 @@ implements Serializable {
 
         double distance = thisSettlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
 
-        Iterator<Settlement> iS = Simulation.instance().getUnitManager().getSettlements().iterator();
+        Iterator<Settlement> iS = unitManager.getSettlements().iterator();
         while (iS.hasNext() && result) {
             Settlement settlement = iS.next();
             if (settlement != thisSettlement) {
@@ -746,5 +767,12 @@ implements Serializable {
         super.destroy();
 
         vehicleTarget = null;
+        
+        unitManager = null;
+        missionManager = null;
+        
+    	oxygenAR = null;
+    	waterAR = null;
+    	foodAR = null;
     }
 }

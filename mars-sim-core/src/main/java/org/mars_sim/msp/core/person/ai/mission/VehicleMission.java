@@ -81,7 +81,7 @@ implements UnitListener {
 	/** Description of the mission */
 	private String description;
 	/** Log cache array for storing previous log statements */
-	private String[] logCache = new String[] {"", ""};
+	//private String[] logCache = new String[] {"", ""};
 
 	// Data members
 	private Vehicle vehicle;
@@ -197,15 +197,16 @@ implements UnitListener {
 	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
 			boolean usable = true;
-			if (newVehicle.isReserved()) {
+
+			if (newVehicle.isReserved())
 				usable = false;
-			}
-			if (!newVehicle.getStatus().equals(Vehicle.PARKED)) {
+			
+			if (!newVehicle.getStatus().equals(Vehicle.PARKED))
 				usable = false;
-			}
-			if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+			
+			if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
-			}
+			
 			return usable;
 		} else {
 			throw new IllegalArgumentException(
@@ -250,22 +251,20 @@ implements UnitListener {
 		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
 
 		// Create list of best unreserved vehicles for the mission.
-		Iterator<Vehicle> i = getAvailableVehicles(member.getSettlement())
-				.iterator();
-		while (i.hasNext()) {
-			Vehicle availableVehicle = i.next();
+		//Iterator<Vehicle> i = getAvailableVehicles(member.getSettlement()).iterator();
+		//while (i.hasNext()) {
+		for (Vehicle v : getAvailableVehicles(member.getSettlement())) {//= i.next();
 			if (bestVehicles.size() > 0) {
-				int comparison = compareVehicles(availableVehicle,
-						(Vehicle) bestVehicles.toArray()[0]);
+				int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
 				if (comparison == 0) {
-					bestVehicles.add(availableVehicle);
+					bestVehicles.add(v);
 				}
 				else if (comparison == 1) {
 					bestVehicles.clear();
-					bestVehicles.add(availableVehicle);
+					bestVehicles.add(v);
 				}
 			} else
-				bestVehicles.add(availableVehicle);
+				bestVehicles.add(v);
 		}
 
 		// Randomly select from the best vehicles.
@@ -323,12 +322,11 @@ implements UnitListener {
 	 */
 	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle v = i.next();
-			if (!v.equals(vehicle) && isUsableVehicle(v)) {
-				result.add(vehicle);
+		//Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		//while (i.hasNext()) {
+		for (Vehicle v : settlement.getParkedVehicles()) {//= i.next();
+			if (isUsableVehicle(v)) {
+				result.add(v);
 			}
 		}
 
@@ -806,10 +804,9 @@ implements UnitListener {
 
 		if (vehicle != null) {
 			Inventory inv = vehicle.getInventory();
-
-			Iterator<Resource> iR = neededResources.keySet().iterator();
-			while (iR.hasNext() && result) {
-				Resource resource = iR.next();
+			//Iterator<Resource> iR = neededResources.keySet().iterator();
+			//while (iR.hasNext() && result) {
+			for (Resource resource : neededResources.keySet()) {//= iR.next();
 				if (resource instanceof AmountResource) {
 				    double amount = (Double) neededResources.get(resource);
 				    double amountStored = inv.getAmountResourceStored((AmountResource) resource, false);
@@ -817,7 +814,7 @@ implements UnitListener {
 				    if (amountStored < amount) {
 				    	String newLog = vehicle.getName() + " does not have enough " + resource +
 				                " to continue with " + getName() + " (Required: " + Math.round(amount*100D)/100D +
-				                " kg. Stored: " + Math.round(amountStored*100D)/100D + " kg)";
+				                " kg  Stored: " + Math.round(amountStored*100D)/100D + " kg).";
 				    	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
 				        result = false;
 				    }
@@ -830,7 +827,7 @@ implements UnitListener {
 					if (numStored < num) {
 				    	String newLog = vehicle.getName() + " does not have enough " + resource +
 								" to continue with " + getName() + " (Required: " + num +
-								". Stored: " + numStored + ")";
+								"  Stored: " + numStored + ").";
 				    	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
 						result = false;
 					}
@@ -920,10 +917,10 @@ implements UnitListener {
 
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		if (beaconOn) {
-			logger.info("Emergency beacon activated on " + vehicle.getName());
+			logger.info("Emergency beacon activated on " + vehicle.getName() + ".");
 		}
 		else {
-			logger.info("Emergency beacon deactivated on " + vehicle.getName());
+			logger.info("Emergency beacon deactivated on " + vehicle.getName() + ".");
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);

@@ -824,10 +824,12 @@ public class Crop implements Serializable {
 					// Modify actual harvest amount based on daily tending work.
 					actualHarvest += (dailyMaxHarvest * (dailyWorkCompleted - .5D));
 					
-					// Records the water usage in the farm
-					farm.addWaterUsage(cropName, cumulative_water_usage/growingArea);
-					// Reset the water usage
-					cumulative_water_usage = 0;
+					if (cumulative_water_usage != 0) {
+						// Records the water usage in the farm
+						farm.addWaterUsage(cropName, cumulative_water_usage/growingArea);
+						// Reset the water usage
+						cumulative_water_usage = 0;
+					}
 					
 					if (actualHarvest < 0) {
 						phaseType = PhaseType.FINISHED;
@@ -1076,8 +1078,6 @@ public class Crop implements Serializable {
 
 		}
 
-
-
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
 		// TODO: Modify harvest modifier according to the moisture level
 		//double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
@@ -1087,7 +1087,7 @@ public class Crop implements Serializable {
 		// Assume an universal rate of water vapor evaporation rate of 10%
 		farm.addMoisture(totalWaterUsed*.1);
 		// Record the amount of water taken up by the crop
-		cumulative_water_usage += totalWaterUsed *.9;
+		cumulative_water_usage += totalWaterUsed;// *.9;
 		
 		environment[3] = .5 * waterModifier + .5 * environment[3];
 		if (environment[3] > 1.1)
@@ -1197,6 +1197,7 @@ public class Crop implements Serializable {
 		int phaseNum = getCurrentPhaseNum();
 		int length = phases.size();
 
+		// Tune the growthFactor according to the stage of a crop
 		double growthFactor = 0;
 		// amount of grey water/water needed is also based on % of growth
 		if (phaseNum == 2)
@@ -1204,12 +1205,14 @@ public class Crop implements Serializable {
 			growthFactor = .1;
 		else if (fractionalGrowingTimeCompleted < .1 )
 			growthFactor = .2;
-		else if (fractionalGrowingTimeCompleted < .2 )
-			growthFactor = .25;
-		else if (fractionalGrowingTimeCompleted < .3 )
+		else if (fractionalGrowingTimeCompleted < .15 )
 			growthFactor = .3;
+		else if (fractionalGrowingTimeCompleted < .2 )
+			growthFactor = .4;
 		else if (phaseNum > 2 && phaseNum < length - 2)
-			growthFactor = fractionalGrowingTimeCompleted;
+			growthFactor = fractionalGrowingTimeCompleted * 2;
+		else if (phaseType == PhaseType.FINISHED) 
+			growthFactor = .5;
 		
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		double uPAR = 0;

@@ -1001,7 +1001,7 @@ implements Serializable {
 		// 2015-03-09 Added all desserts to the matching test
     	//AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 	  	// Put together a list of available dessert
-        for(AmountResource dessert : availableDesserts) {
+        for (AmountResource dessert : availableDesserts) {
         	//AmountResource dessert = AmountResource.findAmountResource(n);
            	//if (resource.getName().equals(dessert.getName())) {
         	if (resource.equals(dessert)) {

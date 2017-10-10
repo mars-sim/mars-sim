@@ -230,7 +230,8 @@ implements Serializable {
         bodyMassFactor = person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT; 
         
         // assuming a person drinks 10 times a day, each time ~375 mL
-        waterConsumedPerServing = h2o_consumption * bodyMassFactor / 10D; 
+        waterConsumedPerServing = h2o_consumption * bodyMassFactor / 10D; // about .3 kg per serving
+        //System.out.println("waterConsumedPerServing : " + waterConsumedPerServing);
         
         minimum_air_pressure = personConfig.getMinAirPressure();
         min_temperature = personConfig.getMinTemperature();
@@ -1303,7 +1304,7 @@ implements Serializable {
         return h2o_consumption; //personConfig.getWaterConsumptionRate();
     }
 
-    public double getWaterConsumedEach() {
+    public double getWaterConsumedPerServing() {
     	return waterConsumedPerServing;
     }
     

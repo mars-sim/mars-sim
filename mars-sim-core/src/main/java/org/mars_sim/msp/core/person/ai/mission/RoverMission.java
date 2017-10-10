@@ -798,19 +798,19 @@ extends VehicleMission {
 
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
-				* timeSols * crewNum;
+				* timeSols * crewNum * Mission.OXYGEN_MARGIN ;
 		if (useBuffer)
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(oxygenAR, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
-				* timeSols * crewNum;
+				* timeSols * crewNum * Mission.WATER_MARGIN;
 		if (useBuffer)
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(waterAR, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
-				* timeSols * crewNum; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
+				* timeSols * crewNum * Mission.FOOD_MARGIN; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(foodAR, foodAmount);

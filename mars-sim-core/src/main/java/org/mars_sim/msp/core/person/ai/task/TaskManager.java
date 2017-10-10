@@ -644,8 +644,8 @@ implements Serializable {
 					taskProbCache.put(mt, 0D);
 
 					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-							"Task probability invalid when calculating " 
-								+ " for " + mind.getPerson().getName() + " on " + mt.getName() + " probability (" + probability + ")", null);
+							"Task probability is invalid when calculating for " + mind.getPerson().getName() 
+								+ " on " + mt.getName() + " : Probability is " + probability + ".", null);
 				}
 			}
 		}

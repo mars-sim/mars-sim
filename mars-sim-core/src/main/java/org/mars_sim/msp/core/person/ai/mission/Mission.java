@@ -126,9 +126,8 @@ implements Serializable {
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
 		// Created mission starting event.
-		HistoricalEvent newEvent = null;
-
-		newEvent = new MissionHistoricalEvent(startingMember, this, startingMember.getSettlement().getName(), EventType.MISSION_START);
+		HistoricalEvent newEvent = new MissionHistoricalEvent(startingMember, this, 
+				startingMember.getSettlement().getName(), EventType.MISSION_START);
 
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
@@ -142,7 +141,7 @@ implements Serializable {
         else
         	s = "' with " + n + " others at ";
         LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-        		startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement(), null);
+        		startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement() + ".", null);
 
         // Add starting member to mission.
         // 2015-11-01 Temporarily set the shift type to none during the mission

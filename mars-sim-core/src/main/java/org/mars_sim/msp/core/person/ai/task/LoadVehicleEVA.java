@@ -43,7 +43,6 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -75,6 +74,10 @@ implements Serializable {
     /** The amount of resources (kg) one person of average strength can load per millisol. */
     private static double LOAD_RATE = 20D;
 
+    private static double WATER_NEED = 40D;
+    
+    private static double OXYGEN_NEED = 10D;
+    
     // Data members
     /** The vehicle that needs to be loaded. */
     private Vehicle vehicle;
@@ -107,8 +110,8 @@ implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
-            requiredResources.put(waterAR, 40D);
-            requiredResources.put(oxygenAR, 10D);
+            requiredResources.put(waterAR, WATER_NEED); 
+            requiredResources.put(oxygenAR, OXYGEN_NEED);
             optionalResources = new HashMap<Resource, Number>(0);
             requiredEquipment = new HashMap<Class, Integer>(1);
             requiredEquipment.put(EVASuit.class, 1);
@@ -321,7 +324,7 @@ implements Serializable {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
                             double water = roverInv.getAmountResourceStored(waterAR, false);
                             double oxygen = roverInv.getAmountResourceStored(oxygenAR, false);
-                            if ((numSuits == 0) || (water < 40D) || (oxygen < 10D)) {
+                            if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
                                 result.add(rover);
                             }
                         }

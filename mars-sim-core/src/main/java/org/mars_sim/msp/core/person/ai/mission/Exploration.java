@@ -582,21 +582,21 @@ implements Serializable {
 
         // Determine life support supplies needed for trip.
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * Mission.OXYGEN_MARGIN
+        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()// * Mission.OXYGEN_MARGIN
                 * timeSols * crewNum;
         if (result.containsKey(oxygenAR))
             oxygenAmount += (Double) result.get(oxygenAR);
         result.put(oxygenAR, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double waterAmount = PhysicalCondition.getWaterConsumptionRate() * Mission.WATER_MARGIN
+        double waterAmount = PhysicalCondition.getWaterConsumptionRate()// * Mission.WATER_MARGIN
                 * timeSols * crewNum;
         if (result.containsKey(waterAR))
             waterAmount += (Double) result.get(waterAR);
         result.put(waterAR, waterAmount);
 
        // AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        double foodAmount = PhysicalCondition.getFoodConsumptionRate() * Mission.FOOD_MARGIN
+        double foodAmount = PhysicalCondition.getFoodConsumptionRate()// * Mission.FOOD_MARGIN
                 * timeSols * crewNum;
         if (result.containsKey(foodAR))
             foodAmount += (Double) result.get(foodAR);

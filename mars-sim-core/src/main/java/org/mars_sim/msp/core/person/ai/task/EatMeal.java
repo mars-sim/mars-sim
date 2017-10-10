@@ -82,7 +82,9 @@ public class EatMeal extends Task implements Serializable {
     //private static final double UNPREPARED_DESSERT_BAD_CHANCE = 1D; // in %
     /** Mass (kg) of single napkin for meal. */
     private static final double NAPKIN_MASS = .0025D;
-
+    /** The factor during water ration when settlers are expected to conserve the remaining amount. */
+    private static final double RATION_FACTOR = .5;
+    
     private static double totalfood;
     private static double totalDessert;
 
@@ -132,7 +134,7 @@ public class EatMeal extends Task implements Serializable {
         startingHunger = condition.getHunger();
         currentHunger = startingHunger;
         
-        if (thirst > 500 && energy > 1500 && currentHunger < 250) {
+        if (thirst > 300 && energy > 2000 && currentHunger < 150) {
         	consumeWater();
         	endTask();
         }
@@ -540,28 +542,45 @@ public class EatMeal extends Task implements Serializable {
     	Unit containerUnit = person.getTopContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
-	        double waterEach = condition.getWaterConsumedEach() *1000D;
+	        double waterEach = condition.getWaterConsumedPerServing() *1000D;
 	        double average = (thirst + waterEach)/2D;
 	        double waterFinal = Math.min(average, thirst);
 	
-	    	if (waterFinal > thirst) {
-	    		waterFinal = thirst;
-	    		condition.setThirst(0);
-	    	}
-	    	else {
-	        	double newThirst = thirst - waterFinal;
-	    		condition.setThirst(newThirst);
-	    	}
-	    	double t = 0;
 	        double waterPortion = PreparingDessert.getDessertMassPerServing() - dryMass;
 	        if (waterPortion > 0) {
-		    	t = waterFinal - waterPortion;
+	        	waterFinal = waterFinal - waterPortion;
 	        }
-	        else
-	        	t = waterFinal;
-	        
-		    if (t > 0)
-		    	Storage.retrieveAnResource(t/1000D, ResourceUtil.waterAR, inv, true);  
+
+		    if (waterFinal > 0)  {
+
+		    	double new_thirst = 0;
+	    	
+		    	if (waterFinal > thirst) {
+		    		waterFinal = thirst;
+		    	}
+		    	else {
+		    		new_thirst = thirst - waterFinal;
+		    	}
+		    	
+		    	// Test to see if there's enough water
+		    	boolean haswater = Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , false);  
+		    	
+		    	if (haswater) {
+		    		condition.setThirst(new_thirst);
+		    		setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+		    		Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , true); 
+		    	}
+		    	else {
+			    	// Test to see if there's just half of the amount of water
+		    		haswater = Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterAR, inv , false);
+		    		if (haswater) {
+		    			new_thirst = new_thirst * RATION_FACTOR;
+			    		condition.setThirst(new_thirst);
+			    		setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+			    		Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterAR, inv , false);
+			    	}
+		    	}
+	    	}
         }
     }
     
@@ -572,20 +591,40 @@ public class EatMeal extends Task implements Serializable {
     	Unit containerUnit = person.getTopContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
-	        double waterEach = condition.getWaterConsumedEach() *1000D;
+	        double waterEach = condition.getWaterConsumedPerServing() *1000D;
 	        double average = (thirst + waterEach)/2D;
 	        double waterFinal = Math.min(average, thirst);
-	
-	    	if (waterFinal > thirst) {
-	    		waterFinal = thirst;
-	    		condition.setThirst(0);
-	    	}
-	    	else {
-	        	double newThirst = thirst - waterFinal;
-	    		condition.setThirst(newThirst);
-	    	}
-		    if (waterFinal > 0)
-		    	Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , true);  
+
+		    if (waterFinal > 0)  {
+
+		    	double new_thirst = 0;
+	    	
+		    	if (waterFinal > thirst) {
+		    		waterFinal = thirst;
+		    	}
+		    	else {
+		    		new_thirst = thirst - waterFinal;
+		    	}
+		    	
+		    	// Test to see if there's enough water
+		    	boolean haswater = Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , false);  
+		    	
+		    	if (haswater) {
+		    		condition.setThirst(new_thirst);
+		    		setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+		    		Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , true); 
+		    	}
+		    	else {
+			    	// Test to see if there's just half of the amount of water
+		    		haswater = Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterAR, inv , false);
+		    		if (haswater) {
+		    			new_thirst = new_thirst * RATION_FACTOR;
+			    		condition.setThirst(new_thirst);
+			    		setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+			    		Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterAR, inv , false);
+			    	}
+		    	}
+	    	}	        
         }
     }
     

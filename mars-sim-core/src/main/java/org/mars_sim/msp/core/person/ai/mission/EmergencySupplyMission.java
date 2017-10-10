@@ -107,6 +107,8 @@ implements Serializable {
 
     private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
+    private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+    
     /**
      * Constructor.
      * @param startingPerson the person starting the settlement.
@@ -432,7 +434,8 @@ implements Serializable {
                     }
                     else {
                         // Check if it is day time.
-                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                    	if (surface == null)
+                    		surface = Simulation.instance().getMars().getSurfaceFeatures();
                         if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) ||
                                 surface.inDarkPolarRegion(person.getCoordinates())) {
                             assignTask(person, new UnloadVehicleEVA(person, getRover()));
@@ -472,7 +475,8 @@ implements Serializable {
                         }
                         else {
                             // Check if it is day time.
-                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                        	if (surface == null)
+                        		surface = Simulation.instance().getMars().getSurfaceFeatures();
                             if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) ||
                                     surface.inDarkPolarRegion(person.getCoordinates())) {
                                 assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
