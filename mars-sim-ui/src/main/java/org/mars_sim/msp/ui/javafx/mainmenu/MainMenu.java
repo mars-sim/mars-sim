@@ -386,15 +386,11 @@ public class MainMenu {
     */
    public void runLoad() {
 
-	   scene.setCursor(Cursor.WAIT);
-
 	   primaryStage.setIconified(true);
 	   primaryStage.hide();
 	   primaryStage.close();
 
 	   loadSim(null);
-
-       scene.setCursor(Cursor.DEFAULT); 
 
    }
 

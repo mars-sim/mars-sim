@@ -559,7 +559,8 @@ public class EatMeal extends Task implements Serializable {
 		    		waterFinal = thirst;
 		    	}
 		    	else {
-		    		new_thirst = thirst - waterFinal;
+		    		// Divide by 4 since the effect of thirst is not that cumulative
+		    		new_thirst = (thirst - waterFinal)/4;
 		    	}
 		    	
 		    	// Test to see if there's enough water
@@ -603,7 +604,8 @@ public class EatMeal extends Task implements Serializable {
 		    		waterFinal = thirst;
 		    	}
 		    	else {
-		    		new_thirst = (thirst - waterFinal)/2;
+		    		// Divide by 4 since the effect of thirst is not that cumulative
+		    		new_thirst = (thirst - waterFinal)/4;
 		    	}
 		    	
 		    	// Test to see if there's enough water

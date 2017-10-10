@@ -240,7 +240,7 @@ public class MainScene {
 	private Parent root;
 	private StackPane rootStackPane, mainStackPane, dashboardStackPane, // monPane,
 			mapStackPane, minimapStackPane, speedPane, soundPane, calendarPane, // farmPane,
-			settlementBox, chatBoxPane, pausePane, asPane, sPane;
+			settlementBox, chatBoxPane, pausePane, savePane, sPane;
 
 	// private FlowPane flowPane;
 	private AnchorPane anchorPane, mapAnchorPane;
@@ -360,6 +360,8 @@ public class MainScene {
 			stage.show();
 			stage.requestFocus();
 
+			createSavingIndicator();
+			
 			openInitialWindows();
 			hideWaitStage(MainScene.LOADING);
 		});
@@ -2563,7 +2565,7 @@ public class MainScene {
 	 */
 	public void createLastSaveBar() {
 		// 2016-09-15 Added oldLastSaveStamp
-		oldLastSaveStamp = sim.getLastSave();
+		oldLastSaveStamp = sim.getLastSaveTimeStamp();
 		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
 
 		lastSaveLabel = new Label();
@@ -2582,7 +2584,7 @@ public class MainScene {
 
 		lastSaveLabel.setAlignment(Pos.CENTER_RIGHT);
 		lastSaveLabel.setTextAlignment(TextAlignment.RIGHT);
-		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + "     ");
+		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
 
 		setQuickToolTip(lastSaveLabel, "Last time when the sim was saved or auto-saved");
 
@@ -2653,11 +2655,11 @@ public class MainScene {
 
 		// Check to see if the last save label needs to be updated
 		if (sim.getJustSaved()) {
-			String newLastSaveStamp = sim.getLastSave();
+			String newLastSaveStamp = sim.getLastSaveTimeStamp();
 			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
 				sim.setJustSaved(false);
 				oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
-				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + "     ");
+				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
 
 			}
 		}
@@ -3217,12 +3219,12 @@ public class MainScene {
 			mPane.setStyle("-fx-background-color: transparent; ");
 			// indicator.setScaleX(1.5);
 			// indicator.setScaleY(1.5);
-			asPane = new StackPane();
+			savePane = new StackPane();
 			// stackPane.setOpacity(0.5);
-			asPane.getChildren().add(mPane);
+			savePane.getChildren().add(mPane);
 			StackPane.setAlignment(mPane, Pos.CENTER);
-			asPane.setBackground(Background.EMPTY);
-			asPane.setStyle(// "-fx-border-style: none; "
+			savePane.setBackground(Background.EMPTY);
+			savePane.setStyle(// "-fx-border-style: none; "
 					"-fx-background-color: transparent; "
 			// + "-fx-background-radius: 3px;"
 			);
@@ -3235,7 +3237,7 @@ public class MainScene {
 					.add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 			savingStage.initStyle(StageStyle.TRANSPARENT);
 
-			savingScene = new Scene(asPane);// , 150, 150);
+			savingScene = new Scene(savePane);// , 150, 150);
 			savingScene.setFill(Color.TRANSPARENT);
 			savingStage.setScene(savingScene);
 			savingStage.hide();
@@ -3278,7 +3280,7 @@ public class MainScene {
 	 */
 	public void showWaitStage(int type) {
 		if (type == AUTOSAVING) {
-			savingScene.setRoot(asPane);
+			savingScene.setRoot(savePane);
 		} else if (type == SAVING) {
 			savingScene.setRoot(sPane);
 		}
@@ -3512,7 +3514,7 @@ public class MainScene {
 		settlementBox = null; 
 		chatBoxPane = null; 
 		pausePane = null; 
-		asPane = null; 
+		savePane = null; 
 		sPane = null; 
 
 		anchorPane = null;

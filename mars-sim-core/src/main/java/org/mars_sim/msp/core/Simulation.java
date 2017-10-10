@@ -92,6 +92,10 @@ implements ClockListener, Serializable {
     /** Default save filename extension. */
     private final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
 
+    private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$"  (Local Time)      ";
+    
+    private final static String WHITESPACES = "  "; 
+    		
     /** Save directory. */
     public final static String DEFAULT_DIR =
             System.getProperty("user.home") + //$NON-NLS-1$
@@ -126,18 +130,22 @@ implements ClockListener, Serializable {
     /** Flag to indicate that a new simulation is being created or loaded. */
     private static boolean isUpdating = false;
 
+    private static int autosave_minute;// = 15;
+
     private double fileSize;
 
     private boolean defaultLoad = false, justSaved = true;
 
     private boolean initialSimulationCreated = false;
 
-    private static int autosave_minute;// = 15;
-
+    private boolean changed = true;
+    
+    private String lastSaveTimeStamp;
+				
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild;// = "unknown";
 
-    private String lastSave = null;
+    private String lastSaveStr = null;
     // Note: Transient data members (aren't stored in save file)
     // 2016-07-26 Added transient to avoid serialization error
 	private transient Timeline autosaveTimer;
@@ -595,9 +603,9 @@ implements ClockListener, Serializable {
         Simulation sim = instance();
         sim.halt();
 
-		//2016-09-15 Added lastSave
-    	lastSave = new SystemDateTime().getDateTimeStr();
-
+    	lastSaveStr = new SystemDateTime().getDateTimeStr();
+    	changed = true;
+    	
         // 2016-09-22 Use type to differentiate in what name/dir it is saved
         if (type == SAVE_DEFAULT) {
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
@@ -624,7 +632,7 @@ implements ClockListener, Serializable {
         }
 
         else if (type == AUTOSAVE) {
-            String autosaveFilename = lastSave
+            String autosaveFilename = lastSaveStr
             		+ "_Sol" + masterClock.getMarsClock().getMissionSol()
             		+ "_r" + BUILD
             		+ DEFAULT_EXTENSION;
@@ -866,12 +874,19 @@ implements ClockListener, Serializable {
     }
 
 
-	public String getLastSave() {
-		if (lastSave == null || lastSave.equals(""))
-			return "None";
+    /**
+     * Returns the time string of the last saving or autosaving action
+     */
+	public String getLastSaveTimeStamp() {
+		if (lastSaveStr == null || lastSaveStr.equals(""))
+			return "Never     ";
+		else if (!changed) {
+			return lastSaveTimeStamp;
+		}
 		else {
+			changed = false;
 			StringBuilder sb = new StringBuilder();
-			int l = lastSave.length();
+			int l = lastSaveStr.length();
 
 			// Past : e.g. 03-22-2017_022018PM
 			//String s = lastSave.substring(l-8, l);
@@ -880,9 +895,10 @@ implements ClockListener, Serializable {
 
 			// Now e.g. 2007-12-03T10.15.30
 			//String id = ZonedDateTime.now().getZone().toString();
-			String s = lastSave.substring(lastSave.indexOf("T")+1, l).replace(".", ":");
-			sb.append(s).append(" ").append(" (Local Time)");//append(id);
-			return sb.toString();
+			String s = lastSaveStr.substring(lastSaveStr.indexOf("T")+1, l).replace(".", ":");
+			sb.append(s).append(WHITESPACES).append(LOCAL_TIME);
+			lastSaveTimeStamp = sb.toString();
+			return lastSaveTimeStamp;
 		}
 	}
 

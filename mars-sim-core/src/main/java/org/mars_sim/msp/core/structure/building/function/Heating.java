@@ -70,7 +70,7 @@ implements Serializable {
 
     private static final double HEAT_DISSIPATED_PER_PERSON = .1; //[in kW]
     
-    private static final double MSOL_LIMIT = .9;
+    private static final double MSOL_LIMIT = 1.5;
     
      //private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
     //private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
@@ -693,8 +693,8 @@ implements Serializable {
 		// (3c) USE HEAT SINK to reduce the value of d_heat
 		double d_heat2 = 0;//d_heat1;
 		
-		if (t_in_C <= t_initial - .5 * T_LOWER_SENSITIVITY
-				|| t_in_C >= t_initial + .5 * T_LOWER_SENSITIVITY)	
+		if (t_in_C <= t_initial - 2 * T_LOWER_SENSITIVITY
+				|| t_in_C >= t_initial + 2 * T_UPPER_SENSITIVITY)	
 			d_heat2 = computeHeatSink(d_heat1, c_factor);
 		else
 			d_heat2 = d_heat1;
@@ -846,8 +846,8 @@ implements Serializable {
 	 */
 	public double heatGainVentilation(double t, double time) {
 		double total_gain = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
-		boolean tooLow = t < (t_initial - 1.0 * T_LOWER_SENSITIVITY);
-		boolean tooHigh = t > (t_initial + 1.0 * T_UPPER_SENSITIVITY);
+		boolean tooLow = t < (t_initial - 3.0 * T_LOWER_SENSITIVITY);
+		boolean tooHigh = t > (t_initial + 3.0 * T_UPPER_SENSITIVITY);
 		double speed_factor = .01 * time * CFM;
 		
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
@@ -1054,9 +1054,9 @@ implements Serializable {
 
 	/**
 	 * Time passing for the building.
-	 * @param time amount of time passing (in millisols)
+	 * @param deltaTime amount of time passing (in millisols)
 	 */
-	public void timePassing(double time) {
+	public void timePassing(double deltaTime) {
 		counts++;
 	
 		if (masterClock == null)
@@ -1065,8 +1065,8 @@ implements Serializable {
 			marsClock = masterClock.getMarsClock();
 	
 		double time_ratio = masterClock.getTimeRatio();
-		double time_ratio_1 = Math.sqrt(time_ratio); // = 2.38 at x128
-		double time_ratio_2 = Math.sqrt(Math.sqrt(time_ratio_1/4)); // = 2.38 at x128
+		double time_ratio_1 = Math.sqrt(time_ratio/2); // sqrt(128) = 11.3137 
+		double time_ratio_2 = Math.sqrt(Math.sqrt(time_ratio_1/2)); // sqrt(sqrt(11.3137/4)) = 1.2968
 		double update = Math.round(PER_UPDATE * time_ratio_2);
 		if (update < 1)
 			update = 1;
@@ -1081,13 +1081,23 @@ implements Serializable {
 		if (counts % (int)update == 0) {
 			counts = 0;
 
-			double limit = MSOL_LIMIT/Math.sqrt(time_ratio_2)*1.5;
-			double new_time = update*time;
-			int numCycles = (int)(new_time/limit);
+			// Note 1 : the goal is to reduce dt to no more than ~1.6 millisols or else the temperature would
+			// fluctuate too much and the heat gain/loss would not be fine grained enough.
+
+			double msol = marsClock.getMillisol();
+			int _msol =  (int) (Math.round(msol));
+
+			double limit = MSOL_LIMIT/time_ratio_2;
+			double new_deltaTime = update * deltaTime;
+
+			// Note 2 : if msol accidentally skips a millisols, the size of the delta time is still safe to use.
+
+			int numCycles = (int)(Math.round(new_deltaTime/limit));
 			if (numCycles < 1)
 				numCycles = 1;
-			double msol = marsClock.getMillisol();
-			int _msol =  (int) msol;
+			
+			// Computes the dt (the final delta time). 
+			double dt = new_deltaTime/numCycles;
 			
 			if (isGreenhouse)
 				emissivity = emissivityMap.get(_msol);
@@ -1098,11 +1108,14 @@ implements Serializable {
 			
 			while (countDown != 0) {
 				countDown--;
-				cycleThermalControl(new_time/numCycles);
+				cycleThermalControl(dt);
 				//LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 				//	"  msol : " + _msol
+				//	+ "   update : " + Math.round(update*1000.0)/1000.0
+				//	+ "   limit : " + Math.round(limit*1000.0)/1000.0
+				//	+ "   new_deltaTime : " + Math.round(new_deltaTime*1000.0)/1000.0
 				//	+ "   numCycles : " + numCycles
-				//	+ "   t : " + Math.round(new_time/numCycles*1000.0)/1000.0 + " "
+				//	+ "   dt : " + Math.round(dt*1000.0)/1000.0 + " "
 				//	, null);
 			}
 		}
@@ -1139,8 +1152,8 @@ implements Serializable {
 		// Limit any spurious change of temperature for the sake of stability 
 		if (dt < -10)
 			dt = -10;
-		else if (dt > 7)
-			dt = 7;
+		else if (dt > 5)
+			dt = 5;
 		//System.out.println(building.getNickName() + "'s dt = " + Math.round(dt*10.0)/10.0);
 		// Limit the current temperature
 		new_t = old_t + dt;

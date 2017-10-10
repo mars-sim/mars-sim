@@ -525,9 +525,6 @@ public class ScenarioConfigEditorFX {
 
 				closeWindow();
 
-				Platform.runLater(() -> {
-					mainScene.createSavingIndicator();
-				});
 				// scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
 			} // end of if (!hasError)
