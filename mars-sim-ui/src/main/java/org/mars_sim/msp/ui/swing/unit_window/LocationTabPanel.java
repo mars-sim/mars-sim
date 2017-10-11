@@ -9,13 +9,10 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -24,7 +21,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -40,24 +36,20 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.steelseries.gauges.DigitialRadial;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplayCircular;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.BackgroundColor;
 import org.mars_sim.msp.ui.steelseries.tools.FrameDesign;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
-import org.mars_sim.msp.ui.steelseries.tools.Orientation;
-import org.mars_sim.msp.ui.steelseries.tools.PointerType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
-import javafx.application.Platform;
 
 /**
  * The LocationTabPanel is a tab panel for location information.
@@ -449,8 +441,14 @@ implements ActionListener {
         		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = p.getVehicle();
+
         			if (vv.getSettlement() == null) {
+        				
         				// out there on a mission
+        				desktop.openToolWindow(NavigatorWindow.NAME);
+        				if (mainScene != null)
+        					mainScene.openMinimap();
+    
         				desktop.centerMapGlobe(p.getCoordinates());
         			}
         			else {
@@ -478,8 +476,8 @@ implements ActionListener {
         			Vehicle vv = p.getVehicle();
 
         			if (vv == null) {
-
                			desktop.openToolWindow(SettlementWindow.NAME);
+               			
             			//System.out.println("Just open Settlement Map Tool");
 
                			// TODO: Case 1 : person is on a mission on the surface of Mars and just happens to step outside the vehicle temporarily
@@ -502,9 +500,17 @@ implements ActionListener {
             			mapPanel.selectPerson(p);
 */
         			}
-        			else
-        				// he's stepped outside a vehicle
-        				desktop.centerMapGlobe(p.getCoordinates());
+        			else {
+            			if (vv.getSettlement() == null) {
+            				
+            				// out there on a mission
+            				desktop.openToolWindow(NavigatorWindow.NAME);
+            				if (mainScene != null)
+            					mainScene.openMinimap();
+            				// he's stepped outside a vehicle
+            				desktop.centerMapGlobe(p.getCoordinates());
+            			}
+        			}
         		}
 
         	} else if (unit instanceof Robot) {
@@ -544,7 +550,6 @@ implements ActionListener {
 	        				mainScene.setSettlement(vv.getSettlement());
 	        			else
 	        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(vv.getSettlement());
-
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -598,19 +603,23 @@ implements ActionListener {
         			else
         				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getSettlement());
 
-
         			double xLoc = v.getXLocation();
         			double yLoc = v.getYLocation();
         			double scale = mapPanel.getScale();
         			mapPanel.reCenter();
         			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-
         			mapPanel.setShowVehicleLabels(true);
 
         			//mapPanel.selectVehicleAt((int)xLoc, (int)yLoc);
             	}
-        		else
+        		else {
+    				// out there on a mission
+    				desktop.openToolWindow(NavigatorWindow.NAME);
+    				if (mainScene != null)
+    					mainScene.openMinimap();
         			desktop.centerMapGlobe(unit.getCoordinates());
+        		}
+
 
 	    	} else if (unit instanceof Equipment) {
 	    		e = (Equipment) unit;
@@ -868,6 +877,7 @@ implements ActionListener {
 
     	else if (unit instanceof Robot) {
     		Robot r = (Robot) unit;
+    		Vehicle v = r.getVehicle();
 
     		if (r.isSalvaged())
     			loc = " is Salvaged";
@@ -885,9 +895,9 @@ implements ActionListener {
 	    		}
 
 	    		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-	     			if (r.getSettlement() != null)
+	     			if (v.getSettlement() != null)
 	    				// case C
-	           			loc = IN + containerCache + INSIDE + r.getVehicle().getBuildingLocation();// " inside a garage";
+	           			loc = IN + containerCache + INSIDE + v.getGarage(v.getSettlement()).getNickName();// " inside a garage";
 	    			else {
 	         			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
 /*
@@ -957,7 +967,7 @@ implements ActionListener {
 	    		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 	     			if (r.getSettlement() != null)
 	    				// case C
-	           			loc = IN + containerCache + INSIDE + r.getVehicle().getBuildingLocation();// " inside a garage";
+	           			loc = IN + containerCache + INSIDE + v.getGarage(v.getSettlement()).getNickName();// " inside a garage";
 	    			else {
 	         			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
 	        	     	// Note: a vehicle's container unit may be null if it's outside a settlement
@@ -979,7 +989,8 @@ implements ActionListener {
 
     	else if (unit instanceof Equipment) {
     		Equipment e = (Equipment) unit;
-
+    		Vehicle v = e.getVehicle();
+    		
     		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     			// case A
     			//loc = AT + e.getBuildingLocation().getNickName() + IN + topContainerCache;
@@ -997,7 +1008,7 @@ implements ActionListener {
        		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {
      			if (e.getSettlement() != null)
     				// case C
-           			loc = IN + containerCache + INSIDE + e.getVehicle().getBuildingLocation();// " inside a garage";
+           			loc = IN + containerCache + INSIDE + v.getGarage(v.getSettlement()).getNickName();// " inside a garage";
     			else {
          			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
         	     	// Note: a vehicle's container unit may be null if it's outside a settlement

@@ -367,15 +367,17 @@ public class CompositionOfAir implements Serializable {
 			
 			double t = C_TO_K  + b.getCurrentTemperature();
 			
-			o2 = numPeople * o2;
-			cO2 = numPeople * cO2;
-			moisture = numPeople * moisture;
+			o2 = numPeople * -o2; // consumed
+			cO2 = numPeople * cO2; // generated
+			moisture = numPeople * moisture; // generated
 			//h2o = numPeople * h2o;
 			
-			// Extract the air moisture if it's a greenhouse
-			if (b.getBuildingType().toLowerCase().contains("greenhouse"))
-				moisture += b.getFarming().retrieveMoisture();
-	
+			// Extract the air moisture generated, O2 generated and CO2 consumed if it's a greenhouse
+			if (b.getBuildingType().toLowerCase().contains("greenhouse")) {
+				moisture += b.getFarming().retrieveMoisture(); // generated
+				o2 += b.getFarming().retrieveO2(); // generated
+				cO2 -= b.getFarming().retrieveCO2(); // consumed
+			}
 			
 			for (int gas = 0; gas < numGases; gas++) {
 
@@ -388,7 +390,7 @@ public class CompositionOfAir implements Serializable {
 					m += cO2;
 				}
 				else if (gas == 3) {
-					m -= o2;
+					m += o2;
 				}
 				else if (gas == 4) {
 					m += moisture;

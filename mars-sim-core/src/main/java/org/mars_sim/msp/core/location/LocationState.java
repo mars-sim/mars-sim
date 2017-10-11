@@ -1,14 +1,10 @@
 /**
  * Mars Simulation Project
  * LocationState.java
- * @version 3.08 2015-12-20
+* @version 3.1.0 2017-10-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
-
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public interface LocationState {
 
@@ -16,6 +12,7 @@ public interface LocationState {
 	// compared to the use of LocationState declared as just an enum
 	
 	String getName();
+	
 	LocationStateType getType();
 /*	
 	// for a person or robot

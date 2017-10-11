@@ -105,26 +105,27 @@ implements Serializable {
  	private static double dessert_consumption;
  	private static double highFatigueCollapseChance;
     private static double stressBreakdownChance;
-
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
-
     /** The amount of water this person would consume each time (assuming drinking water 8 times a day) */
     private double waterConsumedPerServing; 
-    
-	private int solCache = 0;
-
-    private boolean isStarving;
-
+    /** True if person is starving. */
+    private boolean isStarving = false;
+    /** True if person is stressed out. */
     private boolean isStressedOut = false;
-    
+    /** True if person is collapsed under fatigue. */   
     private boolean isCollapsed = false;
-    
+    /** True if person is dehydrated. */    
     private boolean isDehydrated = false;
-    
     /** True if person is alive. */
     private boolean alive;
 
+	private int solCache = 0;
+    private int endurance;
+    private int strength ;
+    private int resilience;
+    private int emotStability;
+    
     /** Person's thirst level. [in millisols]. */
     private double thirst;
     /** Person's fatigue level . (0 to infinity) */
@@ -167,14 +168,18 @@ implements Serializable {
     // 2015-04-29 Added RadiationExposure
     private RadiationExposure radiation;
 
-	private MarsClock marsClock;
-	
 	private CircadianClock circadian;
 
 	private Complaint dehydration;
 
     private Complaint starvation;
 
+    private Complaint depression;
+    
+    private Complaint panicAttack;
+	
+    private Complaint highFatigue;
+    
     private LocationSituation ls;
     
     private TaskManager taskMgr;
@@ -183,13 +188,15 @@ implements Serializable {
     
     private HealthProblem dehydrated;
     
+	private static MarsClock marsClock;
+	
     /** List of medications affecting the person. */
     private List<Medication> medicationList;
-    
     /** Injury/Illness effecting person. */
     private HashMap<Complaint, HealthProblem> problems;
     
-    
+    /** List of all available medical complaints. */
+    private static List<Complaint> allMedicalComplaints;
 
     /**
      * Constructor 1.
@@ -203,12 +210,18 @@ implements Serializable {
     	circadian = person.getCircadianClock();
     	
     	dehydration = getMedicalManager().getDehydration();
-
         starvation = getMedicalManager().getStarvation();
         
-        //starved = problems.get(starvation);
-        
-        //dehydrated = problems.get(dehydration);
+    	depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
+    	panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+       	highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+       	
+        endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
+        strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+        resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
+        emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+
+        allMedicalComplaints = getMedicalManager().getAllMedicalComplaints();
         
         ls = person.getLocationSituation();
 
@@ -351,9 +364,9 @@ implements Serializable {
 	            List<Complaint> newProblems = new ArrayList<Complaint>();
 	            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
 
-	            Iterator<HealthProblem> iter = currentProblems.iterator();
-	            while(iter.hasNext()) {
-	                HealthProblem problem = iter.next();
+	            //Iterator<HealthProblem> iter = currentProblems.iterator();
+	            //while(iter.hasNext()) {
+	            for (HealthProblem problem : currentProblems) {//= iter.next();
 
 	                // Advance each problem, they may change into a worse problem.
 	                // If the current is completed or a new problem exists then
@@ -387,11 +400,16 @@ implements Serializable {
 	            }
 
 	            // Add the new problems
-	            Iterator<Complaint> newIter = newProblems.iterator();
-	            while(newIter.hasNext()) {
-	                addMedicalComplaint(newIter.next());
+	            //Iterator<Complaint> newIter = newProblems.iterator();
+	            //while(newIter.hasNext()) {
+	           //     addMedicalComplaint(newIter.next());
+	           //     illnessEvent = true;
+	            //}
+	            for (Complaint c : newProblems) {
+	            	addMedicalComplaint(c);
 	                illnessEvent = true;
 	            }
+	            
 	        }
 
 	        // Has the person died ?
@@ -622,7 +640,7 @@ implements Serializable {
     	if (starvation == null)
     		starvation = getMedicalManager().getStarvation();
 
-        if (hunger > starvationStartTime && (kJoules < 120D)) {
+        if (!isStarving && hunger > starvationStartTime && (kJoules < 120D)) {
             if (!problems.containsKey(starvation)) {
                 addMedicalComplaint(starvation);
                 isStarving = true;
@@ -655,12 +673,12 @@ implements Serializable {
 
         }
 
-        else if (hunger < 500D && kJoules > 800D) {
+        else if (isStarving && hunger < 500D && kJoules > 800D) {
         	if (starved == null)
         		starved = problems.get(starvation);
             if (starved != null) {
                 starved.startRecovery();
-
+                isStarving = false;
             }
         }
 
@@ -676,7 +694,7 @@ implements Serializable {
     		dehydration = getMedicalManager().getDehydration();
 
         if (thirst > dehydrationStartTime) {
-            if (!problems.containsKey(dehydration)) {
+            if (!isDehydrated && !problems.containsKey(dehydration)) {
                 addMedicalComplaint(dehydration);
                 isDehydrated = true;
                 person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -701,11 +719,12 @@ implements Serializable {
             
         }
 
-        else if (thirst < 150D) {
+        else if (isDehydrated && thirst < 500D) {
         	if (dehydrated == null)
         		dehydrated = problems.get(dehydration);
             if (dehydrated != null) {
                 dehydrated.startRecovery();
+                isDehydrated = false;
             }
         }
     }
@@ -731,14 +750,14 @@ implements Serializable {
      */
     private void checkForStressBreakdown(double time) {
         // Expanded Anxiety Attack into either Panic Attack or Depression
-    	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
-    	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+    	//Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
+    	//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
     	// a person is limited to have only one of them at a time
         if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
 
             // Determine stress resilience modifier (0D - 2D).
-            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
-            int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+            //int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
+            //int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
 
             // 0 (strong) to 1 (weak)
             double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
@@ -755,9 +774,7 @@ implements Serializable {
                     if (panicAttack != null) {
                     	if (inclination_factor > -.5)
                     		inclination_factor = inclination_factor - .05;
-
                     	addMedicalComplaint(panicAttack);
- 
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         logger.info(name + " suffers from a panic attack.");
 
@@ -789,12 +806,13 @@ implements Serializable {
      * @param time the time passing (millisols)
      */
     private void checkForHighFatigueCollapse(double time) {
-    	Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-        if (!problems.containsKey(highFatigue)) {
+    	//Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+        
+    	if (!problems.containsKey(highFatigue)) {
 
             // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
-            int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
-            int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+            //int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
+            //int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
 
             // a person with high endurance will be less likely to be collapse
             double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
@@ -824,23 +842,17 @@ implements Serializable {
      * @return list of ailments occurring.  May be empty.
      */
     private List<Complaint> checkForRandomAilments(double time) {
-
     	// TODO: create a history of past ailments a person suffers from.
     	// TODO: create a history of potential ailments a person is likely to suffer from.
-
-
         List<Complaint> result = new ArrayList<Complaint>(0);
-
         // Check each possible medical complaint.
-        Iterator<Complaint> i = getMedicalManager().getAllMedicalComplaints().iterator();
-        while (i.hasNext()) {
-            Complaint complaint = i.next();
+        //Iterator<Complaint> i = getMedicalManager().getAllMedicalComplaints().iterator();
+        //while (i.hasNext()) {
+        for (Complaint complaint : allMedicalComplaints) {//= i.next();
             double probability = complaint.getProbability();
             // TODO: need to be more task-based or location-based ?
-
             // Check that medical complaint has a probability > zero.
             if (probability > 0D) {
-
                 // Check that person does not already have a health problem with this complaint.
                 if (!problems.containsKey(complaint)) {
 

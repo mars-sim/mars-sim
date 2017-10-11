@@ -63,7 +63,7 @@ implements Serializable {
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
 
 	/** The dimenion-less marginal factor for the amount of water to be brought during a mission. */
-	public final static double WATER_MARGIN = 2.4;
+	public final static double WATER_MARGIN = 3.5; // TODO: need to find out why water is running so fast in vehicle
 	/** The dimenion-less marginal factor for the amount of oxygen to be brought during a mission. */
 	public final static double OXYGEN_MARGIN = 1.2;
 	/** The dimenion-less marginal factor for the amount of food to be brought during a mission. */

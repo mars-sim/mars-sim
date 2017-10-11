@@ -62,11 +62,11 @@ public class EatMealMeta implements MetaTask, Serializable {
         // Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ persson per sol
         
     	if (thirst > 250) {
-    		 result = thirst/5;
+    		 result = thirst/2.5;
     	}
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
     	else if (hunger > 250 || energy < 2525 || ghrelin-leptin > 300) {
-        	thirst = thirst / 10;
+        	thirst = thirst / 2.5;
         	hunger = hunger / 10;
             energy = (2525 - energy) / 100;
             result = thirst + hunger + energy;// +  (ghrelin-leptin - 300);
@@ -111,7 +111,12 @@ public class EatMealMeta implements MetaTask, Serializable {
         }
         
         else if (ls == LocationSituation.IN_VEHICLE) {
-        	result *= 1D; // ration food a little bit just in case of running out of it
+            //if (!EatMeal.isPreservedFoodAvailable(person)) {
+                // If no preserved food, person can't eat a meal.
+            //    return 0;
+            //}
+        	result *= 2D; 
+        	// TODO : how to ration food and water if running out of it ?
         }
         
     	

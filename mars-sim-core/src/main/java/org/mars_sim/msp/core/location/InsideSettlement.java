@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsideSettlement.java
- * @version 3.08 2015-12-20
+* @version 3.1.0 2017-10-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
@@ -12,10 +12,8 @@ import org.mars_sim.msp.core.Unit;
 
 public class InsideSettlement implements LocationState, Serializable {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String name = "Inside a settlement";
 	private Unit unit;
 

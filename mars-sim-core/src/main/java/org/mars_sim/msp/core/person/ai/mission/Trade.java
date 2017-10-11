@@ -603,7 +603,7 @@ implements Serializable {
                         assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
                     }
                     else {
-                        logger.severe("Unable to walk to building " + destinationBuilding);
+                        logger.severe(person.getName() + " is unable to walk to building " + destinationBuilding);
                     }
                 }
                 else if (member instanceof Robot) {
@@ -612,7 +612,7 @@ implements Serializable {
                         assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
                     }
                     else {
-                        logger.severe("Unable to walk to building " + destinationBuilding);
+                        logger.severe(robot.getName() + " is unable to walk to building " + destinationBuilding);
                     }
                 }
             }

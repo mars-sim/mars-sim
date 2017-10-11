@@ -1,13 +1,10 @@
 package org.mars_sim.msp.core.structure.building;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 

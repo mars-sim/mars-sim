@@ -957,7 +957,7 @@ implements Serializable {
 		Vehicle vehicleTarget = null;
 		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
 		if (vehicle != null) {
-		    vehicleTarget = RescueSalvageVehicle.findAvailableBeaconVehicle(settlement, vehicle.getRange());
+		    vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange());
 		    if (vehicleTarget != null) {
 		        if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
 		            result = true;

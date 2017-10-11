@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Medical.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-10-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.vehicle;
@@ -159,13 +159,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         if (getCrewNum() > 0 || getRobotCrewNum() > 0 ) malfunctionManager.activeTimePassing(time);
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
 
-        attachments.clear();
-        attachments = null;
-    }
 
 	@Override
 	public Collection<Unit> getUnitCrew() {
@@ -178,5 +172,17 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return getName();
 	}
 
+	@Override
+	public String getLocationName() {
+		return getLocationTag().getSettlementName();
+	}
 
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        attachments.clear();
+        attachments = null;
+    }
+    
 }

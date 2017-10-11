@@ -144,6 +144,10 @@ public class Crop implements Serializable {
 	private double diseaseIndex = 0;
 
 	private double cumulative_water_usage = 0;
+
+	private double cumulative_o2_gen = 0;
+	
+	private double cumulative_co2_used = 0;
 	
 	private static int cropNum;
 	
@@ -824,12 +828,27 @@ public class Crop implements Serializable {
 					// Modify actual harvest amount based on daily tending work.
 					actualHarvest += (dailyMaxHarvest * (dailyWorkCompleted - .5D));
 					
-					if (cumulative_water_usage != 0) {
+					if (cumulative_water_usage > 0) {
 						// Records the water usage in the farm
 						farm.addWaterUsage(cropName, cumulative_water_usage/growingArea);
 						// Reset the water usage
 						cumulative_water_usage = 0;
 					}
+
+					if (cumulative_o2_gen > 0) {
+						// Records the CO2 consumption/generation in the farm
+						farm.addO2Generated(cropName, cumulative_o2_gen/growingArea);
+						// Reset the consumption/generation
+						cumulative_o2_gen = 0;
+					}
+
+					if (cumulative_co2_used > 0) {
+						// Records the oxygen consumption/generation in the farm
+						farm.addCO2Consumed(cropName, cumulative_co2_used/growingArea);
+						// Reset the consumption/generation
+						cumulative_co2_used = 0;
+					}
+
 					
 					if (actualHarvest < 0) {
 						phaseType = PhaseType.FINISHED;
@@ -1120,8 +1139,11 @@ public class Crop implements Serializable {
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			if (o2Used > 0)
-				Storage.retrieveAnResource(o2Used, oxygenAR, inv, true);
+			if (o2Used > 0) {
+				//Storage.retrieveAnResource(o2Used, oxygenAR, inv, true);
+				farm.addO2(-o2Used);
+				cumulative_o2_gen -= o2Used;	
+			}
 
 			o2Modifier =  o2Used / o2Required;
 
@@ -1131,13 +1153,16 @@ public class Crop implements Serializable {
 			
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * CO2_TO_O2_RATIO;
-			if (co2Amount > 0)
-				Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "::computeGases");
+			if (co2Amount > 0) {
+				//Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "::computeGases");
+				farm.addCO2(-co2Amount);
+				cumulative_co2_used -= co2Amount;
+			}
 		}
 
 		else {
 			// during the day
-			fudge_factor = uPAR / 50D;
+			fudge_factor = uPAR / 10D;
 			// TODO: gives a better modeling of how the amount of light available will trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double carbonDioxideRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageCarbonDioxideNeeded * fudge_factor;
@@ -1148,9 +1173,11 @@ public class Crop implements Serializable {
 
 			if (carbonDioxideUsed > carbonDioxideAvailable)
 				carbonDioxideUsed = carbonDioxideAvailable;
-			if (carbonDioxideUsed > 0)
-				Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideAR, inv, true);
-
+			if (carbonDioxideUsed > 0) {
+				//Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideAR, inv, true);
+				farm.addCO2(carbonDioxideUsed);
+				cumulative_co2_used += carbonDioxideUsed;
+			}
 			// TODO: research how much high amount of CO2 may facilitate the crop growth and reverse past bad health
 
 			co2Modifier = carbonDioxideUsed / carbonDioxideRequired;
@@ -1163,8 +1190,11 @@ public class Crop implements Serializable {
 			// 
 			// Determine the amount of oxygen generated during the day when photosynthesis is taking place .
 			double oxygenAmount = carbonDioxideUsed * O2_TO_CO2_RATIO;
-			if (oxygenAmount > 0)
-				Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::computeGases");
+			if (oxygenAmount > 0) {
+				//Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::computeGases");
+				farm.addO2(oxygenAmount);
+				cumulative_o2_gen += oxygenAmount;
+			}
 
 		}
 		

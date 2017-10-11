@@ -9,27 +9,18 @@ package org.mars_sim.msp.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.location.InsideBuilding;
-import org.mars_sim.msp.core.location.InsideSettlement;
-import org.mars_sim.msp.core.location.InsideVehicleInSettlement;
-import org.mars_sim.msp.core.location.InsideVehicleOutsideOnMars;
-import org.mars_sim.msp.core.location.LocationState;
 import org.mars_sim.msp.core.location.LocationStateType;
-import org.mars_sim.msp.core.location.OnAPerson;
-import org.mars_sim.msp.core.location.OutsideOnMars;
-import org.mars_sim.msp.core.location.SettlementVicinity;
+import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.connection.BuildingLocation;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -59,8 +50,8 @@ implements Serializable, Comparable<Unit> {
 	private String description;
 	/** The mass of the unit without inventory. */
 	private double baseMass;
-
-
+	/** The unit's location tag. */
+	private LocationTag tag;
 	/** The unit's inventory. */
 	private Inventory inventory;
 	/** The unit containing this unit. */
@@ -69,7 +60,7 @@ implements Serializable, Comparable<Unit> {
 	private Coordinates location;
 
 	// 2015-12-20 Added LocationState class
-	private LocationState currentState, insideBuilding, insideVehicleOutsideOnMars, insideVehicleInSettlement, insideSettlement, outsideOnMars, settlementVicinity, onAPerson;
+	//private LocationState currentState, insideBuilding, insideVehicleOutsideOnMars, insideVehicleInSettlement, insideSettlement, outsideOnMars, settlementVicinity, onAPerson;
 
 	// 2016-11-21 Added LocationStateType
 	private LocationStateType currentStateType;
@@ -95,6 +86,8 @@ implements Serializable, Comparable<Unit> {
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
 		this.identifier = getNextIdentifier();
+		
+		tag = new LocationTag(this);
 
 		// Initialize data members from parameters
 		this.name = name;
@@ -110,6 +103,7 @@ implements Serializable, Comparable<Unit> {
 			this.inventory.setCoordinates(location);
 		}
 
+		// Define the default LocationStateType of an unit at the start of the sim
 		if (this instanceof Robot)
 			currentStateType = LocationStateType.INSIDE_BUILDING;
 		else if (this instanceof Equipment)
@@ -1005,7 +999,9 @@ implements Serializable, Comparable<Unit> {
 	}
 */
 
+
 	public LocationSituation getLocationSituation() {
+		
 		return null;
 	}
 
@@ -1033,6 +1029,10 @@ implements Serializable, Comparable<Unit> {
 		return currentStateType;
 	}
 
+	public LocationTag getLocationTag() {;
+		return tag;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

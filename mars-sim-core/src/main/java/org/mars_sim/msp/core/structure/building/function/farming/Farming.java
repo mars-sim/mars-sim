@@ -96,6 +96,10 @@ implements Serializable {
     
     /** The amount of air moisture in the greenhouse */ 
     private volatile double moisture;
+    /** The amount of O2 generated in the greenhouse */ 
+    private volatile double o2;
+    /** The amount of CO2 consumed in the greenhouse */ 
+    private volatile double co2;
 
 	//private boolean checkLED;
 
@@ -112,7 +116,11 @@ implements Serializable {
     private List<String> inspectionList, cleaningList;
 
     private Map<String, List<Double>> cropDailyWaterUsage;
-    
+
+    private Map<String, List<Double>> cropDailyO2Generated;
+
+    private Map<String, List<Double>> cropDailyCO2Consumed;
+
     private static MarsClock marsClock;
     private Inventory inv;
     private Settlement settlement;
@@ -174,7 +182,9 @@ implements Serializable {
         // beeGrowing = new BeeGrowing(this);
 
         cropDailyWaterUsage = new HashMap<>();
-        
+        cropDailyO2Generated = new HashMap<>();
+        cropDailyCO2Consumed = new HashMap<>();
+                
     }
 
     public void setupInspection() {
@@ -519,14 +529,16 @@ implements Serializable {
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount = amountStored ;
 	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	    				tissueName + " is partially available : " + requestedAmount + " kg" + " in " + settlement, null);
+	    				Math.round(requestedAmount*100.0)/100.0 + " kg " +
+	    				tissueName + " is partially available in " + settlement, null);
 	    	}
 
 	    	else {
 	    		available = true;
 	    		percent = 100D ;
 	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	    				tissueName + " is fully available : " + requestedAmount + " kg" + " in " + settlement, null);
+	    				Math.round(requestedAmount*100.0)/100.0 + " kg " +
+	    				tissueName + " is fully available in " + settlement, null);
 	    	}
 
 	    	if (available) {
@@ -1331,6 +1343,22 @@ implements Serializable {
 	}
 
 	/**
+	 * Adds O2 to this farm
+	 * @param value the amount of O2 in kg
+	 */
+	public synchronized void addO2(double value) {
+		o2 += value;
+	}
+
+	/**
+	 * Adds CO2 to this farm
+	 * @param value the amount of CO2 in kg
+	 */
+	public synchronized void addCO2(double value) {
+		co2 += value;
+	}
+	
+	/**
 	 * Retrieves the air moisture from this farm
 	 * @return the amount of air moisture in kg
 	 */
@@ -1343,6 +1371,28 @@ implements Serializable {
 		return m;
 	}
 	
+	/**
+	 * Retrieves the O2 generated from this farm
+	 * @return the amount of O2 in kg
+	 */
+	public synchronized double retrieveO2() {
+		double gas = o2;
+		o2 = o2 - gas; 
+		// Note : The amount of o2 will be monitored by the CompositionOfAir
+		return gas;
+	}
+
+	/**
+	 * Retrieves the CO2 consumed from this farm
+	 * @return the amount of CO2 in kg
+	 */
+	public synchronized double retrieveCO2() {
+		double gas = co2;
+		co2 = co2 - gas; 
+		// Note : The amount of co2 will be monitored by the CompositionOfAir
+		return gas;
+	}
+	
 	/** 
 	 * Records the average water usage on a particular crop 
 	 * @param cropName 
@@ -1350,13 +1400,47 @@ implements Serializable {
 	 */
 	public void addWaterUsage(String cropName, double usage) {
 		if (cropDailyWaterUsage.containsKey(cropName)) {
-			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName); //new HashMap<>();
+			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName); 
 			cropWaterData.add(usage);
 		}
 		else {
 			List<Double> cropWaterData = new ArrayList<>();
 			cropWaterData.add(usage);
 			cropDailyWaterUsage.put(cropName, cropWaterData);	
+		}
+	}
+
+	/** 
+	 * Records the average O2 generation on a particular crop 
+	 * @param cropName 
+	 * @param gen average O2 generated in kg/m^2/sol
+	 */
+	public void addO2Generated(String cropName, double gen) {
+		if (cropDailyO2Generated.containsKey(cropName)) {
+			List<Double> o2Data = cropDailyO2Generated.get(cropName); 
+			o2Data.add(gen);
+		}
+		else {
+			List<Double> o2Data = new ArrayList<>();
+			o2Data.add(gen);
+			cropDailyO2Generated.put(cropName, o2Data);	
+		}
+	}
+
+	/** 
+	 * Records the average CO2 consumption on a particular crop 
+	 * @param cropName 
+	 * @param used average CO2 consumed in kg/m^2/sol
+	 */
+	public void addCO2Consumed(String cropName, double used) {
+		if (cropDailyCO2Consumed.containsKey(cropName)) {
+			List<Double> co2Data = cropDailyCO2Consumed.get(cropName); 
+			co2Data.add(used);
+		}
+		else {
+			List<Double> co2Data = new ArrayList<>();
+			co2Data.add(used);
+			cropDailyCO2Consumed.put(cropName, co2Data);	
 		}
 	}
 	
@@ -1367,7 +1451,7 @@ implements Serializable {
 	public double computeCropWaterUsage(String cropName) {
 		if (cropDailyWaterUsage.containsKey(cropName)) {
 			double sum = 0;
-			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName); //new HashMap<>();
+			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName); 
 			int size = cropWaterData.size();
 			for (double i : cropWaterData) {
 				sum += i;
@@ -1386,10 +1470,90 @@ implements Serializable {
 	 */
 	public double computeWaterUsage() {
 		double sum = 0;
-		int size = 0; //cropTypeList.size();
+		int size = 0; 
 		for (CropType ct : cropTypeList) {
 			String n = ct.getName();
 			Double ave = computeCropWaterUsage(n);
+			if (ave > 0)
+				size ++;
+			sum += ave;
+		}		
+		if (size == 0)
+			return 0;
+		else
+			return Math.round(sum/size*10.0)/10.0;
+	}
+	
+	/** 
+	 * Computes the average O2 generated on a particular crop 
+	 * @return average O2 generated in kg/m^2/sol
+	 */
+	public double computeCropO2Generated(String cropName) {
+		if (cropDailyO2Generated.containsKey(cropName)) {
+			double sum = 0;
+			List<Double> o2Data = cropDailyO2Generated.get(cropName); 
+			int size = o2Data.size();
+			for (double i : o2Data) {
+				sum += i;
+			}
+			if (size == 0)
+				return 0;
+			else
+				return Math.round(sum/size*10.0)/10.0;
+		}
+		return 0;
+	}
+	
+	/** 
+	 * Computes the average O2 generated on all crop 
+	 * @return average O2 generated in kg/m^2/sol
+	 */
+	public double computeO2Generated() {
+		double sum = 0;
+		int size = 0; 
+		for (CropType ct : cropTypeList) {
+			String n = ct.getName();
+			Double ave = computeCropO2Generated(n);
+			if (ave > 0)
+				size ++;
+			sum += ave;
+		}		
+		if (size == 0)
+			return 0;
+		else
+			return Math.round(sum/size*10.0)/10.0;
+	}
+	
+	/** 
+	 * Computes the average O2 generated on a particular crop 
+	 * @return average O2 generated in kg/m^2/sol
+	 */
+	public double computeCropCO2Consumed(String cropName) {
+		if (cropDailyCO2Consumed.containsKey(cropName)) {
+			double sum = 0;
+			List<Double> o2Data = cropDailyCO2Consumed.get(cropName); 
+			int size = o2Data.size();
+			for (double i : o2Data) {
+				sum += i;
+			}
+			if (size == 0)
+				return 0;
+			else
+				return Math.round(sum/size*10.0)/10.0;
+		}
+		return 0;
+	}
+	
+	/** 
+	 * Computes the average O2 generated on all crop 
+	 * @return average O2 generated in kg/m^2/sol
+	 */
+	public double computeCO2Consumed() {
+		double sum = 0;
+		int size = 0; 
+		for (CropType ct : cropTypeList) {
+			String n = ct.getName();
+			Double ave = computeCropCO2Consumed(n);
 			if (ave > 0)
 				size ++;
 			sum += ave;

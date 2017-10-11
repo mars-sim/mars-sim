@@ -83,16 +83,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	final static double AVERAGE_WEIGHT = 62.85 ; //(AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
 	
 	// Data members
+	/** True if a person is rationing water */
+	private boolean waterRation;
+	/** True if a person is born on Mars. */	
 	private boolean bornOnMars;
 	/** True if person is declared dead and buried. */
 	private boolean isBuried, declaredDead;
 	/** The age of a person */
 	private int age;
-
+	/** The cache for sol. */
 	private int solCache = 1;
-
 	//private int[] emotional_states;
-
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */
@@ -655,7 +656,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			else if (container == null)
 				return LocationSituation.OUTSIDE;
 			else
-				return null;
+				return LocationSituation.UNKNOWN;
 		}
 		/*
 		 * if (isBuried) return LocationSituation.OUTSIDE; else if
@@ -1383,6 +1384,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return circadian;
 	}
 	
+	public void setWaterRatio(boolean value) {
+		waterRation = value;
+	}
+
+	public boolean getWaterRatio() {
+		return waterRation;
+	}
 	
 	@Override
 	public void destroy() {

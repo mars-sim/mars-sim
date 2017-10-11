@@ -108,15 +108,18 @@ implements UnitListener {
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
 
-
-		// Reserve a vehicle.
-		if (!reserveVehicle(startingMember)) {
-		    endMission(NO_RESERVABLE_VEHICLES);
-		}
+		reserveVehicle();
 
 	}
 
 
+	protected void reserveVehicle() {
+		// Reserve a vehicle.
+		if (!reserveVehicle(startingMember)) {
+		    endMission(NO_RESERVABLE_VEHICLES);
+		}
+	}
+	
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople,
 			Vehicle vehicle) {
 		// Use TravelMission constructor.
@@ -701,9 +704,9 @@ implements UnitListener {
 
 		double totalSpeed = 0D;
 		int count = 0;
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-		    MissionMember member = i.next();
+		//Iterator<MissionMember> i = getMembers().iterator();
+		//while (i.hasNext()) {
+		for (MissionMember member : getMembers()) {//= i.next();
 		    if (member instanceof Person) {
 		        totalSpeed += getAverageVehicleSpeedForOperator((Person) member);
 		        count++;

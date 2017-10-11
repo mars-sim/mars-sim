@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -32,9 +32,6 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonBuilder;
-import org.mars_sim.msp.core.person.PersonBuilderImpl;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -58,7 +55,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The robot class represents a robot on Mars. It keeps track of everything
@@ -67,7 +63,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
 public class Robot
 //extends Unit
 extends Equipment
-implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Serializable {
+implements Salvagable, Malfunctionable, MissionMember, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -104,7 +100,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 	private boolean isSalvaged;
     /** The robot's achievement in scientific fields. */
     //private Map<ScienceType, Double> scientificAchievement;
-    private Person owner;
+    //private Person owner;
     /** Manager for robot's natural attributes. */
     private RoboticAttributeManager attributes;
     /** robot's mind. */
@@ -128,18 +124,17 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
     private LifeSupportType support ;
 
-    private MarsClock marsClock;
-
-    private EarthClock earthClock;
-
-    private MasterClock masterClock;
-
     /** The settlement the robot is currently associated with. */
     private Settlement associatedSettlement;
 
     private Building currentBuilding;
+    
+    private static MarsClock marsClock;
+    private static EarthClock earthClock;
+    private static MasterClock masterClock;
 
-	private Vehicle vehicle;
+
+	//private Vehicle vehicle;
 
     protected Robot(String name, Settlement settlement, RobotType robotType) {
         super(name, settlement.getCoordinates()); // if extending equipment
@@ -293,6 +288,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     /**
      * @return {@link LocationSituation} the robot's location
      */
+    @Override
     public LocationSituation getLocationSituation() {
         if (isInoperable)
             return LocationSituation.IN_SETTLEMENT;
@@ -305,7 +301,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
             else if (container instanceof Vehicle)
                 return LocationSituation.IN_VEHICLE;
         }
-        return null;
+        return LocationSituation.UNKNOWN;
     }
 
     /**
@@ -345,6 +341,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @return the robot's settlement
      */
    // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
+   @Override
    public Settlement getSettlement() {
        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     	   Settlement settlement = (Settlement) getContainerUnit();
@@ -376,6 +373,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      *
      * @return the robot's vehicle
      */
+    @Override
     public Vehicle getVehicle() {
         if (LocationSituation.IN_VEHICLE == getLocationSituation())
             return (Vehicle) getContainerUnit();
@@ -843,13 +841,34 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 	@Override
 	public void setVehicle(Vehicle vehicle) {
-		this.vehicle = vehicle;
+		//this.vehicle = vehicle;
+	}
+
+	@Override
+	public String getNickName() {
+		return name;
+	}
+
+	@Override
+	public String getLocationName() {
+		if (getVehicle() != null)
+			return getVehicle().getName();
+		else if (getSettlement() != null) {
+			if (getBuildingLocation() != null) {
+				return getBuildingLocation().getNickName() + " in " + getSettlement().getName();
+			}
+			else {
+				return getSettlement().getName();
+			}
+		}
+		else
+			return LocationTag.OUTSIDE_ON_MARS;	
 	}
 
     @Override
     public void destroy() {
         super.destroy();
-		vehicle = null;
+		//vehicle = null;
     	if (salvageInfo != null) salvageInfo.destroy();
 		salvageInfo = null;
         attributes.destroy();
@@ -864,10 +883,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         //scientificAchievement = null;
     }
 
-	@Override
-	public String getNickName() {
-		return name;
-	}
 
 
 }

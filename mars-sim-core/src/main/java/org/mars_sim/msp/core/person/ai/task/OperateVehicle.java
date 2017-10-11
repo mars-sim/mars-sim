@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -45,11 +46,16 @@ public abstract class OperateVehicle extends Task implements Serializable {
     public static final double BASE_ACCIDENT_CHANCE = .001D; 
 	
 	// Data members
+	private double startTripDistance; // The distance (km) to the destination at the start of the trip.
+	   
 	private Vehicle vehicle; // The vehicle to operate.
 	private Coordinates destination; // The location of the destination of the trip.
 	private MarsClock startTripTime; // The time/date the trip is starting.
-	private double startTripDistance; // The distance (km) to the destination at the start of the trip.
 	
+	private static SurfaceFeatures surface;
+	private MalfunctionManager malfunctionManager;
+	
+
 	/**
 	 * Default Constructor
 	 * @param name the name of the particular task.
@@ -89,6 +95,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		malfunctionManager = vehicle.getMalfunctionManager();
+		
 		// Walk to operation activity spot in vehicle.
 		if (vehicle instanceof Rover) {
 		    walkToOperatorActivitySpotInRover((Rover) vehicle, false);
@@ -125,6 +134,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.destination = destination;
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
+		
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		malfunctionManager = vehicle.getMalfunctionManager();
 		
 		// Walk to operation activity spot in vehicle.
 		if (vehicle instanceof Rover) {
@@ -219,7 +231,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         }
         
         // If vehicle has malfunction, end task.
-        if (vehicle.getMalfunctionManager().hasMalfunction()) {
+        if (malfunctionManager.hasMalfunction()) {
             endTask();
         }
         
@@ -237,16 +249,22 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		if (person != null) {
 	        // Set person as the vehicle operator if he/she isn't already.
 	        if (!person.equals(vehicle.getOperator())) {
+        		// If attempting to switch the driver of this vehicle
+	        	if (vehicle.getOperator() != null) {
+		        	Person lastDriver = (Person) vehicle.getOperator();
+		        	lastDriver.getMind().getTaskManager().clearTask();
+	        	}
 	            vehicle.setOperator(person);
 	        }
 
 		}
 		else if (robot != null) {
+/*			
 	        // Set robot as the vehicle operator if it isn't already.
 	        if (!robot.equals(vehicle.getOperator())) {
 	            vehicle.setOperator(robot);
 	        }
-
+*/
 		}		
 		
         // Find starting distance to destination.
@@ -426,7 +444,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
      *  @return elevation in km.
      */
     protected double getVehicleElevation() {
-    	SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+    	if (surface == null)
+    		surface = Simulation.instance().getMars().getSurfaceFeatures();
         return surface.getTerrainElevation().getElevation(vehicle.getCoordinates());
     }
     

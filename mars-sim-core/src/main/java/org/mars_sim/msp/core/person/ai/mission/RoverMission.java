@@ -64,7 +64,7 @@ extends VehicleMission {
     public static final int MIN_GOING_MEMBERS = 2;
 
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
-	public static final double MIN_WATER_RESERVE = 15D;
+	//public static final double MIN_WATER_RESERVE = 15D;
 
 	// Data members
 	

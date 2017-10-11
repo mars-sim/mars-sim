@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -210,12 +209,12 @@ LocalBoundedObject, InsidePathLocation {
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
-	private static Malfunction mal_meteor;
+	private static Malfunction malfunction_meteor;
 	
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
-	private DecimalFormat fmt = new DecimalFormat("###.####");
+	//private DecimalFormat fmt = new DecimalFormat("###.####");
 
 	
 	
@@ -1333,19 +1332,18 @@ LocalBoundedObject, InsidePathLocation {
 
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
-					if (mal_meteor == null)
-						mal_meteor = MalfunctionFactory.getMeteoriteImpactMalfunction(
+					if (malfunction_meteor == null)
+						malfunction_meteor = MalfunctionFactory.getMeteoriteImpactMalfunction(
 		        			MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
-
 		        	// Simulate the meteorite impact as a malfunction event for now
 					try {
-						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, mal_meteor);
+						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction_meteor);
 					}
 					catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
-
-					HistoricalEvent newEvent = new MalfunctionEvent(this, mal_meteor, false);
+					
+					HistoricalEvent newEvent = new MalfunctionEvent(this, malfunction_meteor, false);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 					
 					//check if someone under this roof may have seen/affected by the impact
@@ -1423,6 +1421,11 @@ LocalBoundedObject, InsidePathLocation {
 		heating.setHeatLoss(heat);
 	}
 	
+	@Override
+	public String getLocationName() {
+		return nickName + " in " + getSettlement().getName(); //getLocationTag().getSettlementName();
+	}
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -1441,7 +1444,7 @@ LocalBoundedObject, InsidePathLocation {
 		masterClock = null;
 		buildingConfig = null;
 		heatModeCache = null;
-		fmt = null;
+		//fmt = null;
 		buildingType = null;
 		manager = null;
 		powerModeCache = null;
@@ -1455,4 +1458,5 @@ LocalBoundedObject, InsidePathLocation {
 		}
 */		
 	}
+
 }

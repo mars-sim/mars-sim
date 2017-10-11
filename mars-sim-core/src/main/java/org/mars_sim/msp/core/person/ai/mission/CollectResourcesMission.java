@@ -65,8 +65,7 @@ implements Serializable {
 	final public static double EVA_COLLECTION_OVERHEAD = 20D;
 
 	// Data members
-	/** The type of resource to collect. */
-	private AmountResource resourceType;
+
 	/** The amount of resources (kg) collected at a collection site. */
 	private double siteCollectedResources;
 	/** The starting amount of resources in a rover at a collection site. */
@@ -75,22 +74,27 @@ implements Serializable {
 	private double siteResourceGoal;
 	/** The resource collection rate for a person (kg/millisol). */
 	private double resourceCollectionRate;
-	/** The type of container needed for the mission or null if none. */
-	private Class containerType;
 	/** The number of containers needed for the mission. */
 	private int containerNum;
-	/** The start time at the current collection site. */
-	private MarsClock collectionSiteStartTime;
 	/** External flag for ending collection at the current site. */
 	private boolean endCollectingSite;
 	/** The total amount (kg) of resource collected. */
 	private double totalResourceCollected;
 
+	/** The type of container needed for the mission or null if none. */
+	private Class<?> containerType;
+	/** The start time at the current collection site. */
+	private MarsClock collectionSiteStartTime;
+	/** The type of resource to collect. */
+	private AmountResource resourceType;
+	
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;
 	private static AmountResource methaneAR = ResourceUtil.methaneAR;
 
+	private static PersonConfig personConfig;
+	
     /**
      * Constructor
      * @param missionName The name of the mission.
@@ -493,8 +497,7 @@ implements Serializable {
         Coordinates startingLocation = getCurrentMissionLocation();
 
         // Determine the first collection site.
-        Direction direction = new Direction(RandomUtil
-                .getRandomDouble(2 * Math.PI));
+        Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
         double limit = range / 4D;
         double siteDistance = RandomUtil.getRandomDouble(limit);
         Coordinates newLocation = startingLocation.getNewLocation(direction,
@@ -781,12 +784,11 @@ implements Serializable {
 
         double timeLimit = Double.MAX_VALUE;
 
-        PersonConfig config = SimulationConfig.instance()
-                .getPersonConfiguration();
+        if (personConfig == null)
+        	personConfig = SimulationConfig.instance().getPersonConfiguration();
 
         // Check food capacity as time limit.
-        //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        double foodConsumptionRate = config.getFoodConsumptionRate();
+        double foodConsumptionRate = personConfig.getFoodConsumptionRate();
         double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
@@ -803,8 +805,7 @@ implements Serializable {
             timeLimit = dessert1TimeLimit;
         */
         // Check water capacity as time limit.
-        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double waterConsumptionRate = config.getWaterConsumptionRate();
+        double waterConsumptionRate = personConfig.getWaterConsumptionRate();
         double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
@@ -812,8 +813,7 @@ implements Serializable {
             timeLimit = waterTimeLimit;
 
         // Check oxygen capacity as time limit.
-        //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenConsumptionRate = config.getNominalO2ConsumptionRate();
+        double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
         double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
@@ -855,7 +855,8 @@ implements Serializable {
     @Override
     public void destroy() {
         super.destroy();
-
+        
+        personConfig = null;
         resourceType = null;
         containerType = null;
         collectionSiteStartTime = null;

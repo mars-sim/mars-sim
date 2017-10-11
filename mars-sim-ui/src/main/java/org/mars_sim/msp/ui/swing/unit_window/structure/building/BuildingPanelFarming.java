@@ -80,7 +80,7 @@ implements MouseListener {
 	/** The label for the average water usage per sol per crop. */
 	//private JLabel waterUsageLabel;
 	
-	private JTextField radTF, farmersTF, cropsTF, waterUsageTF;
+	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
 	
 	// Data cache
 	/** The number of farmers cache. */
@@ -91,9 +91,13 @@ implements MouseListener {
 	private double radCache;
 
 	private int deletingCropIndex;
-	/** The cache value for the average water usage per sol per crop. */
+	/** The cache value for the average water usage per sol per square meters. */
 	private double waterUsageCache;
-	
+	/** The cache value for the average O2 generated per sol per square meters. */
+	private double o2Cache;
+	/** The cache value for the average CO2 consumed per sol per square meters. */
+	private double co2Cache;
+		
 	//private String[] tooltipArray;
 	private ArrayList<String> tooltipArray;
 	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
@@ -218,10 +222,36 @@ implements MouseListener {
 		wrapper4.add(waterUsageTF);
 		labelPanel.add(wrapper4);
 		
+		JLabel o2Label = new JLabel(Msg.getString("BuildingPanelFarming.o2.title"), JLabel.RIGHT);
+		o2Label.setToolTipText(Msg.getString("BuildingPanelFarming.o2.tooltip"));
+		labelPanel.add(o2Label);
+		
+		o2Cache = farm.computeO2Generated();
+		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		o2TF = new JTextField(Msg.getString("BuildingPanelFarming.o2", o2Cache + ""));
+		o2TF.setEditable(false);
+		o2TF.setColumns(10);
+		o2TF.setPreferredSize(new Dimension(120, 25));
+		wrapper5.add(o2TF);
+		labelPanel.add(wrapper5);
+
+		JLabel co2Label = new JLabel(Msg.getString("BuildingPanelFarming.co2.title"), JLabel.RIGHT);
+		co2Label.setToolTipText(Msg.getString("BuildingPanelFarming.co2.tooltip"));
+		labelPanel.add(co2Label);
+		
+		co2Cache = farm.computeCO2Consumed();
+		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		co2TF = new JTextField(Msg.getString("BuildingPanelFarming.co2", co2Cache + ""));
+		co2TF.setEditable(false);
+		co2TF.setColumns(10);
+		co2TF.setPreferredSize(new Dimension(120, 25));
+		wrapper6.add(co2TF);
+		labelPanel.add(wrapper6);
+
 		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(labelPanel,
-		                                4, 2, //rows, cols
+		                                6, 2, //rows, cols
 		                                65, 20,        //initX, initY
 		                                3, 1);       //xPad, yPad
 		
@@ -589,13 +619,26 @@ implements MouseListener {
 		}
 
 		// Update the average water usage
-		double new_ave = farm.computeWaterUsage();
-		if (waterUsageCache != new_ave) {
-			waterUsageCache = new_ave;
+		double new_water = farm.computeWaterUsage();
+		if (waterUsageCache != new_water) {
+			waterUsageCache = new_water;
 			waterUsageTF.setText(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache));
 		}
 
+		// Update the average O2 generated
+		double new_o2 = farm.computeO2Generated();
+		if (o2Cache != new_o2) {
+			o2Cache = new_o2;
+			o2TF.setText(Msg.getString("BuildingPanelFarming.o2", o2Cache));
+		}
 
+		// Update the average CO2 consumed
+		double new_co2 = farm.computeCO2Consumed();
+		if (co2Cache != new_co2) {
+			co2Cache = new_co2;
+			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", co2Cache));
+		}
+		
 		// Update crop table.
 		cropTableModel.update();
 

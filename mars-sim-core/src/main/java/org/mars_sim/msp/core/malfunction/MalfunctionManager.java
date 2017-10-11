@@ -189,9 +189,9 @@ implements Serializable {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			//Iterator<Malfunction> i = malfunctions.iterator();
+			//while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {//= i.next();
 				if ((malfunction.getEmergencyWorkTime() -
 						malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
 			}
@@ -208,9 +208,9 @@ implements Serializable {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			//Iterator<Malfunction> i = malfunctions.iterator();
+			//while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {//= i.next();
 				if ((malfunction.getWorkTime() -
 						malfunction.getCompletedWorkTime()) > 0D) result = true;
 			}
@@ -227,9 +227,9 @@ implements Serializable {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			//Iterator<Malfunction> i = malfunctions.iterator();
+			//while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {// = i.next();
 				if ((malfunction.getEVAWorkTime() -
 						malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
 			}
@@ -256,9 +256,9 @@ implements Serializable {
 		double highestSeverity = 0;
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			//Iterator<Malfunction> i = malfunctions.iterator();
+			//while (i.hasNext()) {
+				for (Malfunction malfunction : malfunctions) {// = i.next();
 				if ((malfunction.getSeverity() > highestSeverity) && !malfunction.isFixed()) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -279,9 +279,9 @@ implements Serializable {
 		double highestSeverity = 0D;
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			//Iterator<Malfunction> i = malfunctions.iterator();
+			//while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {// = i.next();
 				if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
 					if (malfunction.getSeverity() > highestSeverity) {
 						highestSeverity = malfunction.getSeverity();
@@ -304,9 +304,9 @@ implements Serializable {
 		double highestSeverity = 0D;
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			//Iterator<Malfunction> i = malfunctions.iterator();
+			//while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {// = i.next();
 				if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
 					if (malfunction.getSeverity() > highestSeverity) {
 						highestSeverity = malfunction.getSeverity();
@@ -325,9 +325,9 @@ implements Serializable {
 	 */
 	public List<Malfunction> getNormalMalfunctions() {
 		List<Malfunction> result = new ArrayList<Malfunction>();
-		Iterator<Malfunction> i = malfunctions.iterator();
-		while (i.hasNext()) {
-			Malfunction malfunction = i.next();
+		//Iterator<Malfunction> i = malfunctions.iterator();
+		//while (i.hasNext()) {
+		for (Malfunction malfunction : malfunctions) {// = i.next();
 			if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D)
 				result.add(malfunction);
 		}
@@ -345,9 +345,9 @@ implements Serializable {
 		double highestSeverity = 0D;
 
 		if (hasMalfunction()) {
-			Iterator<Malfunction> i = malfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction malfunction = i.next();
+			//Iterator<Malfunction> i = malfunctions.iterator();
+			//while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {// = i.next();
 				if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
 					if (malfunction.getSeverity() > highestSeverity) {
 						highestSeverity = malfunction.getSeverity();
@@ -366,9 +366,9 @@ implements Serializable {
 	 */
 	public List<Malfunction> getEVAMalfunctions() {
 		List<Malfunction> result = new ArrayList<Malfunction>();
-		Iterator<Malfunction> i = malfunctions.iterator();
-		while (i.hasNext()) {
-			Malfunction malfunction = i.next();
+		//Iterator<Malfunction> i = malfunctions.iterator();
+		//while (i.hasNext()) {
+		for (Malfunction malfunction : malfunctions) {// = i.next();
 			if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D)
 				result.add(malfunction);
 		}
@@ -736,8 +736,8 @@ implements Serializable {
 			sb.insert(0, "in ");
 		}
 
-		if (entity.getSettlement() != null) {
-			sb.append(" at " + entity.getSettlement());
+		if (entity.getLocationName() != null) {
+			sb.append(" at " + entity.getLocationName());
 		}
 
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 

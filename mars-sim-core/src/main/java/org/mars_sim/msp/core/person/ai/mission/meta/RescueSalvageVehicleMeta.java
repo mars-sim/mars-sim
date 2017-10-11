@@ -54,7 +54,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             try {
                 Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
                 if (vehicle != null) {
-                    vehicleTarget = RescueSalvageVehicle.findAvailableBeaconVehicle(settlement,
+                    vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
                             vehicle.getRange());
                     if (vehicle == vehicleTarget)
                         return 0;

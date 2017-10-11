@@ -42,6 +42,10 @@ implements Serializable {
 	private double terrainHandlingCapability;
 	/** True if vehicle is stuck. */
 	private boolean isStuck;
+	
+	private static SurfaceFeatures surface;	
+	private static TerrainElevation terrain;
+	
 
 	/** 
 	 * Constructs a {@link GroundVehicle} object at a given settlement.
@@ -59,8 +63,10 @@ implements Serializable {
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());//"GroundVehicle");
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		elevation = surface.getTerrainElevation().getElevation(getCoordinates());
+		
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		terrain = surface.getTerrainElevation();
+		elevation = terrain.getElevation(getCoordinates());
 	}
 
 	/**
@@ -81,6 +87,7 @@ implements Serializable {
 	 * @return elevation of the ground vehicle (in km)
 	 */
 	public double getElevation() {
+		//return terrain.getElevation(getCoordinates());
 		return elevation;
 	}
 
@@ -122,8 +129,8 @@ implements Serializable {
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		TerrainElevation terrain = surface.getTerrainElevation();
+		//SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//TerrainElevation terrain = surface.getTerrainElevation();
 		return terrain.determineTerrainDifficulty(getCoordinates(), direction);
 	}
 

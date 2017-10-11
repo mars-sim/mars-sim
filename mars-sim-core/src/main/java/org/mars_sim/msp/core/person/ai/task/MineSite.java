@@ -262,7 +262,7 @@ implements Serializable {
 
         	}
             else if (robot != null) {
-
+/*
 	        	if (luv.getInventory().canStoreUnit(robot, false)) {
 	                luv.getInventory().storeUnit(robot);
 
@@ -279,8 +279,9 @@ implements Serializable {
 	                        luv.getName())); //$NON-NLS-1$
 	            }
 	            else {
-	                logger.info(person.getName() + " could not operate " + luv.getName());
+	                logger.info(robot.getName() + " could not operate " + luv.getName());
 	            }
+*/ 	
         }
 
         // Excavate minerals.

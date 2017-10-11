@@ -32,7 +32,7 @@ public interface Malfunctionable {
      */
     
     /**
-     * Gets the nickname of the building.
+     * Gets the unique/nickname of the malfunctionable entity if it's a building.
      * @return nickname
      */
     public String getNickName();
@@ -50,8 +50,8 @@ public interface Malfunctionable {
     public Inventory getInventory();
 
     /**
-     * Gets the settlement associated with this entity.
-     * @return settlement
+     * Gets the location associated with this entity.
+     * @return location
      */
-    public Settlement getSettlement();
+    public String getLocationName();
 }

@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -2462,9 +2460,10 @@ public class GoodsManager implements Serializable {
 
         double currentCapacity = 0D;
         boolean soldFlag = false;
-        Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
-        while (i.hasNext()) {
-            String type = i.next().getDescription().toLowerCase();
+        //Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
+        //while (i.hasNext()) {
+        for (Vehicle v : settlement.getAllAssociatedVehicles()) {	
+            String type = v.getDescription().toLowerCase();
             if (!buy && !soldFlag && (type.equalsIgnoreCase(vehicleType))) soldFlag = true;
             else currentCapacity += determineMissionVehicleCapacity(missionType, type);
         }
@@ -2656,7 +2655,7 @@ public class GoodsManager implements Serializable {
 
         double fuelCapacity = v.getCargoCapacity("methane");
         double fuelEfficiency = v.getDriveTrainEff();
-        range = fuelCapacity * fuelEfficiency * SOFC_CONVERSION_EFFICIENCY / 1.5D;   
+        range = fuelCapacity * fuelEfficiency * SOFC_CONVERSION_EFFICIENCY;// / 1.5D;   
 
         double baseSpeed = v.getBaseSpeed();
         double distancePerSol = baseSpeed / 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
@@ -2695,10 +2694,9 @@ public class GoodsManager implements Serializable {
      */
     private double getNumberOfVehiclesForSettlement(String vehicleType) {
         double number = 0D;
-
-        Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
-        while (i.hasNext()) {
-            Vehicle vehicle = i.next();
+        //Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
+        //while (i.hasNext()) {
+        for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {//= i.next();
             if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) number += 1D;
         }
 
@@ -2725,9 +2723,9 @@ public class GoodsManager implements Serializable {
 
             if (unitManager == null)
             	unitManager = sim.getUnitManager(); // needed for loading a saved sim
-            Iterator<Settlement> i = unitManager.getSettlements().iterator();
-            while (i.hasNext()) {
-                Settlement tempSettlement = i.next();
+            //Iterator<Settlement> i = unitManager.getSettlements().iterator();
+            //while (i.hasNext()) {
+            for (Settlement tempSettlement : unitManager.getSettlements()) {//= i.next();
                 if (tempSettlement != settlement) {
                     double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
                     double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());

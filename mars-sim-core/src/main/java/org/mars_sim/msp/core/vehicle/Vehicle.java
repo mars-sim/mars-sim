@@ -107,9 +107,9 @@ public abstract class Vehicle extends Unit implements Serializable,
     private VehicleOperator vehicleOperator; // The operator of the vehicle
     private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
     private SalvageInfo salvageInfo; // The vehicle's salvage info.
-    private VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
     private Settlement associatedSettlement;
 
+    private static VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
     /**
      * Constructor 1 : prepares a Vehicle object with a given settlement
      * @param name the vehicle's name

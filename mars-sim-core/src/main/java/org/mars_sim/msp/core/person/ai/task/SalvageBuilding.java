@@ -499,8 +499,8 @@ implements Serializable {
 	                	 }
 
 	                     else if (robot != null) {
-	                        tempLuv.getInventory().storeUnit(robot);
-	                        tempLuv.setOperator(robot);
+	                        //tempLuv.getInventory().storeUnit(robot);
+	                        //tempLuv.setOperator(robot);
 	                     }
 
                         luv = tempLuv;

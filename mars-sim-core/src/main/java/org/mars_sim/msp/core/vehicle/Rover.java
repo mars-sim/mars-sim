@@ -75,8 +75,8 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public static AmountResource greyWaterAR = ResourceUtil.greyWaterAR;
     public static AmountResource blackWaterAR = ResourceUtil.blackWaterAR;
 
-    private static VehicleConfig vehicleConfig;
-    private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+    //private static VehicleConfig vehicleConfig;
+    private static PersonConfig personConfig;
     private static Inventory inv;
     private static Weather weather;
     
@@ -106,7 +106,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 
 		// Get vehicle configuration.
         weather = Simulation.instance().getMars().getWeather();
-		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+        VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		
 		// Add scope to malfunction manager.
@@ -533,11 +533,16 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		return getName();
 	}
 	
+	@Override
+	public String getLocationName() {
+		return getLocationTag().getSettlementName();
+	}
+
     @Override
     public void destroy() {
         super.destroy();
 
-        vehicleConfig = null;
+        //vehicleConfig = null;
         personConfig = null;
         inv = null;
         weather = null;

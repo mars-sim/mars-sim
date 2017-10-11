@@ -50,7 +50,12 @@ implements Serializable {
 	private double cosPhi;
 	/** Cosine of theta (stored for efficiency). */
 	private double cosTheta;
-
+	/** Formatted string of the latitude. */
+	private String latCache;
+	/** Formatted string of the longitude. */
+	private String lonCache;
+	/** Track if the coordinate of an unit has been changed */
+	private boolean changed;
 	/**
 	 * Constructs a Coordinates object, hence a constructor.
 	 * @param phi the phi angle of the spherical coordinate
@@ -180,7 +185,7 @@ implements Serializable {
 	 *  this Coordinates object
 	 */
 	public void setCoords(Coordinates newCoordinates) {
-
+		changed = true;
 		// Update coordinates
 		setPhi(newCoordinates.phi);
 		setTheta(newCoordinates.theta);
@@ -332,7 +337,12 @@ implements Serializable {
 	 * @return formatted longitude string for this Coordinates object
 	 */
 	public String getFormattedLongitudeString() {
-		return getFormattedLongitudeString(theta);
+		if (lonCache == null || changed) {
+			changed = false;
+			return getFormattedLongitudeString(theta);
+		}
+		else
+			return lonCache;
 	}
 
 	/**
@@ -390,7 +400,12 @@ implements Serializable {
 	 * @return formatted latitude string for this Coordinates object
 	 */
 	public String getFormattedLatitudeString() {
-		return getFormattedLatitudeString(phi);
+		if (latCache == null || changed) {
+			changed = false;
+			return getFormattedLatitudeString(phi);
+		}
+		else
+			return latCache;		
 	}
 
 	/**
@@ -465,7 +480,7 @@ implements Serializable {
 
 	/**
 	 * Converts phi in radian to lat in radian
-	 * @param lat in radians
+	 * @param latCache in radians
 	 * @return latitude in radian
 	 */
 	public double getPhi2LatRadian() {

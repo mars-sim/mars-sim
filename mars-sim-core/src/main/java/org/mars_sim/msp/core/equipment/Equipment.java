@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.util.Collection;
@@ -124,7 +123,7 @@ implements Salvagable {
 	 * @return the equipment's settlement
 	 */
 	// 2017-03-19 Add getSettlement()
-	@Override
+    @Override
 	public Settlement getSettlement() {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = (Settlement) getContainerUnit();
@@ -143,6 +142,7 @@ implements Salvagable {
 		}
 
 		else if (getLocationSituation() == LocationSituation.BURIED) {
+			// should not be the case
 			return null;
 		}
 
@@ -156,22 +156,20 @@ implements Salvagable {
 	 * Gets the building the equipment is located at, null if outside of a
 	 * settlement
 	 *
-	 * @return building
-	 */
+	 * @return building 
 	// 2017-03-19 Added getBuildingLocation()
-	@Override
 	public Building getBuildingLocation() {
-		// TODO: what building do you want to store equipment ?
+		// not being used at this moment
 		return null;
 	}
-
+*/
 	/**
 	 * Get vehicle the equipment is in, null if not in vehicle
 	 *
 	 * @return the equipment's vehicle
 	 */
 	// 2017-03-19 Add getSettlement()
-	@Override
+	
 	public Vehicle getVehicle() {
 		if (getLocationSituation() == LocationSituation.IN_VEHICLE)
 			return (Vehicle) getContainerUnit();
@@ -182,7 +180,6 @@ implements Salvagable {
 	/**
 	 * Get the equipment's location
 	 */
-	@Override
 	public LocationSituation getLocationSituation() {
 		Unit container = getContainerUnit();
 		if (container instanceof Settlement)
@@ -191,9 +188,8 @@ implements Salvagable {
 			return LocationSituation.IN_VEHICLE;
 		else if (container == null)
 			return LocationSituation.OUTSIDE;
-		else {
-			return null;
-		}
+		else 
+			return LocationSituation.UNKNOWN;
 	}
 
 	public void setLastOwner(Unit unit) {

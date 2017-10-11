@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
@@ -60,6 +61,9 @@ implements Serializable {
 	// Data members
 	private int sideDirection = NONE;
 
+	private static SurfaceFeatures surface;
+	//private MalfunctionManager malfunctionManager;
+	
 	/**
 	 * Default Constructor.
 	 * @param person the person to perform the task
@@ -75,6 +79,9 @@ implements Serializable {
         super(NAME, person, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//malfunctionManager = vehicle.getMalfunctionManager();
+		
         // Set initial parameters
         setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
@@ -90,6 +97,9 @@ implements Serializable {
         super(NAME, robot, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//malfunctionManager = vehicle.getMalfunctionManager();
+		
         // Set initial parameters
         setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
@@ -115,6 +125,9 @@ implements Serializable {
     	super(NAME, person, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
 
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//malfunctionManager = vehicle.getMalfunctionManager();
+		
         // Set initial parameters
     	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
@@ -131,6 +144,9 @@ implements Serializable {
     	super(NAME, robot, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
 
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//malfunctionManager = vehicle.getMalfunctionManager();
+		
         // Set initial parameters
     	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail",
                 vehicle.getName())); //$NON-NLS-1$
@@ -237,7 +253,9 @@ implements Serializable {
         if (!isDone()) checkForAccident(timeUsed);
 
         // If vehicle has malfunction, end task.
-        if (getVehicle().getMalfunctionManager().hasMalfunction()) endTask();
+        //if (malfunctionManager == null)
+        //malfunctionManager = vehicle.getMalfunctionManager();
+        if (vehicle.getMalfunctionManager().hasMalfunction()) endTask();
 
         return time - timeUsed;
     }
@@ -277,7 +295,10 @@ implements Serializable {
         if (!isDone()) checkForAccident(timeUsed);
 
         // If vehicle has malfunction, end task.
-        if (getVehicle().getMalfunctionManager().hasMalfunction()) endTask();
+        //if (malfunctionManager == null)
+        //	malfunctionManager = vehicle.getMalfunctionManager();
+        if (vehicle.getMalfunctionManager().hasMalfunction()) 
+        	endTask();
 
         return time - timeUsed;
     }
@@ -354,7 +375,7 @@ implements Serializable {
      */
     protected double getSpeedLightConditionModifier() {
     	// Ground vehicles travel at 30% speed at night.
-    	SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+    	//SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
     	double lightConditions = surface.getSolarIrradiance(getVehicle().getCoordinates());
         double result = ((lightConditions / 600D) * .7D) + .3D;
         return result;
@@ -405,7 +426,7 @@ implements Serializable {
         chance /= (1D + vehicle.getTerrainHandlingCapability());
 
         // Light condition modification.
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         double lightConditions = surface.getSolarIrradiance(vehicle.getCoordinates());
         lightConditions /= 600D;
         chance *= (5D * (1D - lightConditions)) + 1D;
@@ -413,18 +434,20 @@ implements Serializable {
             chance = 0D;
         }
 
+        //if (malfunctionManager == null)
+        MalfunctionManager malfunctionManager = vehicle.getMalfunctionManager();
         // Modify based on the vehicle's wear condition.
-        chance *= vehicle.getMalfunctionManager().getWearConditionAccidentModifier();
+        chance *= malfunctionManager.getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null) {
 	            logger.info(person.getName() + " has an accident driving " + vehicle.getName());
-		    	vehicle.getMalfunctionManager().createASeriesOfMalfunctions(vehicle.getName(), person);
+		    	malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), person);
 			}
 			else if (robot != null) {
 				logger.info(robot.getName() + " has an accident driving " + vehicle.getName());
-		    	vehicle.getMalfunctionManager().createASeriesOfMalfunctions(vehicle.getName(), robot);
+		    	malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), robot);
 			}
 
 

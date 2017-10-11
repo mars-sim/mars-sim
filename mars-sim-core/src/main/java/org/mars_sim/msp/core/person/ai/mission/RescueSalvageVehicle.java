@@ -101,8 +101,11 @@ implements Serializable {
 
             if (hasVehicle()) {
             	if (vehicleTarget == null)
-            		vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
+            		vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
+            	// Obtain a rescuing vehicle and ensure that vehicleTarget is not included.
+            	reserveVehicle();
+            	
                 int capacity = getRover().getCrewCapacity();
                 if (capacity < MAX_GOING_MEMBERS) {
                     setMissionCapacity(capacity);
@@ -224,8 +227,9 @@ implements Serializable {
         	//if (vehicleTarget == null)
         	//	vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
-            //if (!vehicleTarget.equals(newVehicle))
-            //	return false;
+            // Filter off the vehicleTarget as the candidate vehicle to be used for rescue
+            if (vehicleTarget != null && vehicleTarget.equals(newVehicle))
+            	return false;
             
             if (!(newVehicle instanceof Rover))
                 usable = false;
@@ -493,7 +497,7 @@ implements Serializable {
      * @param range the available range (km).
      * @return vehicle or null if none available.
      */
-    public static Vehicle findAvailableBeaconVehicle(Settlement settlement, double range) {
+    public static Vehicle findBeaconVehicle(Settlement settlement, double range) {
         Vehicle result = null;
         double halfRange = range / 2D;
 

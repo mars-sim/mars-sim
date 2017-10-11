@@ -901,11 +901,9 @@ implements Serializable {
             	double totalAmountDessertStored = 0;
         		double remainingSettlementDessertAmount = 0;
         		double amountDessertNeeded = (Double) resources.get(resource);
+        		
            	  	// Put together a list of available dessert
-        		//AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-                for(AmountResource dessert : availableDesserts) {
-                	//AmountResource dessert = AmountResource.findAmountResource(n);
-
+                for (AmountResource dessert : availableDesserts) {
                 	if (resource.getName().equals(dessert.getName())) {
     	        		// 2015-03-15 Added the amount of all six desserts together
     	        		amountDessertLoaded += vInv.getAmountResourceStored((AmountResource) resource, false);
@@ -923,7 +921,8 @@ implements Serializable {
 	        		if ( totalAmountDessertStored < totalDessertNeeded) {
 	        			if (logger.isLoggable(Level.INFO))
 	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "desserts needed: " 
-	        						+ totalDessertNeeded + " total stored: " + totalAmountDessertStored, null);
+	        						+ Math.round(totalDessertNeeded*10.0)/10.0  
+	        						+ " total stored: " + Math.round(totalAmountDessertStored*10.0)/10.0 , null);
 	        			enoughSupplies = false;
 	        		}
                 }
@@ -938,7 +937,8 @@ implements Serializable {
 	        			double stored = inv.getAmountResourceStored((AmountResource) resource, false);
 	        			if (logger.isLoggable(Level.INFO))
 	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, resource.getName() 
-	        						+ " needed: " + totalNeeded + " stored: " + stored, null);
+	        						+ " needed: " + Math.round(totalNeeded*10.0)/10.0 
+	        						+ " stored: " + Math.round(stored*10.0)/10.0 , null);
 	        			enoughSupplies = false;
 	        		}
                 }

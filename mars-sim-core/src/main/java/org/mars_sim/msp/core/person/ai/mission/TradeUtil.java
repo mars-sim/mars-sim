@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -68,10 +70,15 @@ public final class TradeUtil {
 	/** Cache for container types. */
 	private final static Map <Class, Equipment> containerTypeCache = new HashMap<Class, Equipment>(3);
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
+	private static AmountResource foodAR = ResourceUtil.foodAR;
     
+	private static Simulation sim = Simulation.instance();
+	private static MissionManager missionManager = sim.getMissionManager();
+	private static CreditManager creditManager = sim.getCreditManager();
+	private static UnitManager unitManager = sim.getUnitManager();
+	
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -88,25 +95,25 @@ public final class TradeUtil {
 		double bestProfit = 0D;
 		Settlement bestSettlement = null;
 
-		Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
-			if (settlement != startingSettlement) {
+		//Iterator<Settlement> i = unitManager.getSettlements().iterator();
+		//while (i.hasNext()) {
+		for (Settlement s : unitManager.getSettlements()) {//= i.next();
+			if (s != startingSettlement) {
 
-				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, settlement);
+				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, s);
 
-				double settlementRange = settlement.getCoordinates().getDistance(startingSettlement.getCoordinates());
+				double settlementRange = s.getCoordinates().getDistance(startingSettlement.getCoordinates());
 				boolean withinRange = (settlementRange <= (rover.getRange() * .8D));
 
 				if (!hasCurrentTradeMission && withinRange) {
 					// double startTime = System.currentTimeMillis();
 					
-					double profit = getEstimatedTradeProfit(startingSettlement, rover, settlement);
+					double profit = getEstimatedTradeProfit(startingSettlement, rover, s);
 					// double endTime = System.currentTimeMillis();
 					// logger.info("getEstimatedTradeProfit " + (endTime - startTime));
 					if (profit > bestProfit) {
 						bestProfit = profit;
-						bestSettlement = settlement;
+						bestSettlement = s;
 					}
 				}
 			}
@@ -127,8 +134,8 @@ public final class TradeUtil {
 	private static boolean hasCurrentTradeMission(Settlement settlement1, Settlement settlement2) {
 		boolean result = false;
 
-		MissionManager manager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = manager.getMissions().iterator();
+		//MissionManager manager = Simulation.instance().getMissionManager();
+		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof Trade) {
@@ -182,7 +189,7 @@ public final class TradeUtil {
 			Settlement tradingSettlement) {
 
 		// Get credit between starting settlement and trading settlement.
-		CreditManager creditManager = Simulation.instance().getCreditManager();
+		//CreditManager creditManager = Simulation.instance().getCreditManager();
 		double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
 
 		Map<Good, Integer> buyLoad = null;
@@ -364,16 +371,14 @@ public final class TradeUtil {
 	 * @return value of the load (value points).
 	 * @throws Exception if error determining the load value.
 	 */
-	public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement,
-			boolean buy) {
-
+	public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement, boolean buy) {
 		double result = 0D;
 
 		GoodsManager manager = settlement.getGoodsManager();
 
-		Iterator<Good> i = load.keySet().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
+		//Iterator<Good> i = load.keySet().iterator();
+		//while (i.hasNext()) {
+		for (Good good : load.keySet()) {//= i.next();
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
@@ -435,9 +440,9 @@ public final class TradeUtil {
 		if (result == null) {
 			double bestValue = 0D;
 			if (allowNegValue) bestValue = Double.NEGATIVE_INFINITY;
-			Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
-			while (i.hasNext()) {
-				Good good = i.next();
+			//Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+			//while (i.hasNext()) {
+			for (Good good : GoodsUtil.getGoodsList()) {//= i.next();
 				if (!nonTradeGoods.contains(good)) {
 					double tradeValue = getTradeValue(good, sellingSettlement, buyingSettlement, tradedGoods,
 							remainingCapacity, hasVehicle, missionRover, allowNegValue, repairParts);
@@ -715,24 +720,22 @@ public final class TradeUtil {
 		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
 		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
+		double life_support_margin = Vehicle.getLifeSupportRangeErrorMargin();
 		// Get oxygen amount.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
-				Vehicle.getLifeSupportRangeErrorMargin();
-		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS 
+				* Mission.OXYGEN_MARGIN * life_support_margin;
 		Good oxygenGood = GoodsUtil.getResourceGood(oxygenAR);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
-				Vehicle.getLifeSupportRangeErrorMargin();
-		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS 
+				* Mission.WATER_MARGIN * life_support_margin;
 		Good waterGood = GoodsUtil.getResourceGood(waterAR);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
-				Vehicle.getLifeSupportRangeErrorMargin();
-		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS 
+				* Mission.FOOD_MARGIN * life_support_margin;
 		Good foodGood = GoodsUtil.getResourceGood(foodAR);
 		neededResources.put(foodGood, (int) foodAmount);
 

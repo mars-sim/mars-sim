@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsideBuilding.java
- * @version 3.08 2015-12-20
+* @version 3.1.0 2017-10-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
@@ -12,10 +12,8 @@ import org.mars_sim.msp.core.Unit;
 
 public class InsideBuilding implements LocationState, Serializable {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String name = "Inside a building";
 	private Unit unit;
 

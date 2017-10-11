@@ -117,19 +117,22 @@ implements Serializable, Malfunctionable, Salvagable {
 		malfunctionManager.timePassing(time);
 	}
 
+	@Override
+	public String getNickName() {
+		return getName();
+	}
 
+
+	@Override
+	public String getLocationName() {
+		return getLocationTag().getLocationName();//getSettlementName();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
 		if (salvageInfo != null) salvageInfo.destroy();
 		salvageInfo = null;
 	}
-
-
-	@Override
-	public String getNickName() {
-		return getName();
-	}
-
 
 }

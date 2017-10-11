@@ -800,7 +800,13 @@ public class ChatBox extends BorderPane {
 	    	else if (num == 2 || text.contains("located") || text.contains("location") && text.contains("situation")) {
 	    		questionText = YOU_PROMPT + "Where are you located ? "; //what is your Location Situation [Expert Mode only] ?";
 	    		responseText.append("I'm located at ");
-	    		responseText.append(Conversion.capitalize(cache.getLocationSituation().getName()));
+	    		if (personCache != null) {
+	    			responseText.append(Conversion.capitalize(personCache.getLocationSituation().getName()));
+	    		}
+	    		else if (robotCache != null) {
+	    			responseText.append(Conversion.capitalize(robotCache.getLocationSituation().getName()));    			
+	    		}
+	    		
 	    	}
 
 	       	else if (num == 3 || text.equalsIgnoreCase("task") || text.equalsIgnoreCase("activity")
@@ -837,8 +843,14 @@ public class ChatBox extends BorderPane {
 	    	else if (num == 5 || text.equalsIgnoreCase("bed") || text.equalsIgnoreCase("quarter") || text.equalsIgnoreCase("quarters")) {
 	    		questionText = YOU_PROMPT + "Where is your designated quarters/bed ? ";
 	    		Point2D bed = personCache.getBed();
-	    		if (bed == null)
-	    			responseText.append("I don't have my own private quarters/bed.");
+	    		if (bed == null) {
+	    			if (personCache != null) {
+	    				responseText.append("I haven't got my own private quarters/bed yet.");
+	    			}
+		    	    else if (robotCache != null) {
+		    	    	responseText.append("I don't need one. My battery can be charged at any robotic station.");
+		    	    }
+	    		}
 	    		else {
 	    			if (personCache != null) {
 	    				Settlement s1 = personCache.getSettlement();
@@ -874,6 +886,7 @@ public class ChatBox extends BorderPane {
 	    					responseText.append(" at ");
 		    			}
 	    	    	}
+	    			
 	    	    	else if (robotCache != null) {
 	    	    		responseText.append("I don't need one. My battery can be charged at any robotic station.");
 	    	    	}

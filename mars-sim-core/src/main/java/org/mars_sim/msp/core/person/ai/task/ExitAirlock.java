@@ -913,8 +913,12 @@ implements Serializable {
         // Make sure there is enough extra water for everyone else.
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);
+        
+        if (!hasEnoughWater)
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+				"Won't be able to feed enough water to " + suit.getNickName(), null);
 
-        return hasEnoughOxygen && hasEnoughWater;
+        return hasEnoughOxygen;// && hasEnoughWater;
     }
 
     /**

@@ -77,6 +77,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
+	
 	private static Weather weather ;
 
 	private static AmountResource waterAR = ResourceUtil.waterAR;
@@ -342,4 +343,10 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		malfunctionManager = null;
 		weather = null;
 	}
+
+	@Override
+	public String getLocationName() {
+		return getLocationTag().getLocationName();//getSettlementName();
+	}
+
 }

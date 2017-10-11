@@ -86,7 +86,7 @@ implements Serializable {
 	/** The average volume of a airlock [m^3] */	
     private static double AIRLOCK_VOLUME_IN_CM = Building.AIRLOCK_VOLUME_IN_CM; // = 12 [in m^3]
     /**  convert meters to feet  */
-	private static final double M_TO_FT = 3.2808399;//10.764;
+	//private static final double M_TO_FT = 3.2808399;//10.764;
 	/**  Specific Heat Capacity = 4.0 for a typical U.S. house */
 	//private static final double SHC = 6.0; // [in BTU / sq ft / °F]
 
@@ -488,6 +488,32 @@ implements Serializable {
 		else {
 			solarHeatGain +=  I * transmittance_window * 4 * .5 * .5;
 		}		
+		
+		// if temperature inside is too high, will automatically close the "blind" or "curtain" partially to block the 
+		// excessive sunlight from coming in as a way of cooling off the building.
+		if (t_in_C < t_initial + 2.0 * T_UPPER_SENSITIVITY) {
+			solarHeatGain = solarHeatGain/2;
+		}
+		else if (t_in_C < t_initial + 3.0 * T_UPPER_SENSITIVITY) {
+			solarHeatGain = solarHeatGain/3;
+		}			
+		else if (t_in_C < t_initial + 4.0 * T_UPPER_SENSITIVITY) {
+			solarHeatGain = solarHeatGain/4;
+		}			
+		else if (t_in_C < t_initial + 5.0 * T_UPPER_SENSITIVITY) {
+			solarHeatGain = solarHeatGain/5;
+		}				
+		else if (t_in_C < t_initial + 6.0 * T_UPPER_SENSITIVITY) {
+			solarHeatGain = solarHeatGain/6;
+		}				
+		else if (t_in_C < t_initial + 7.0 * T_UPPER_SENSITIVITY) {
+			solarHeatGain = solarHeatGain/7;
+		}				
+		else if (t_in_C < t_initial + 8.0 * T_UPPER_SENSITIVITY) {
+			solarHeatGain = solarHeatGain/8;
+		}				
+		else
+			solarHeatGain = solarHeatGain/9;
 		
 		// (1e) CALCULATE INSULATION HEAT GAIN
 		double canopyHeatGain = 0;
@@ -1150,10 +1176,15 @@ implements Serializable {
 			
 		// STEP 2 : LIMIT THE TEMPERATURE CHANGE
 		// Limit any spurious change of temperature for the sake of stability 
-		if (dt < -10)
-			dt = -10;
-		else if (dt > 5)
-			dt = 5;
+		if (old_t < t_initial + 5.0 * T_LOWER_SENSITIVITY) {
+			if (dt < -5)
+				dt = -5;
+		}
+		else if (old_t > t_initial + 5.0 * T_UPPER_SENSITIVITY) {
+			if (dt > 5)
+				dt = 5;			
+		}		
+
 		//System.out.println(building.getNickName() + "'s dt = " + Math.round(dt*10.0)/10.0);
 		// Limit the current temperature
 		new_t = old_t + dt;
