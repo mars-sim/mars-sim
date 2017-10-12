@@ -188,7 +188,7 @@ public class MainScene {
 	private static final String ORBIT = "Orbit : ";
 	private static final String ADIR = "Adir";
 
-	private static final String BENCHMARK = "Benchmark :";
+	//private static final String BENCHMARK = "Benchmark :";
 	private static final String UPTIME = "UpTime :";
 	private static final String TPS = "Ticks/s :";
 	private static final String SEC = "1 real sec :";
@@ -221,7 +221,8 @@ public class MainScene {
 	//private double newTimeRatio = 0;
 	//private double initial_time_ratio = 0;
 	private double sliderCache = 0;
-
+	private double tpsCache;
+	
 	//private boolean isMuteCache;
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
@@ -232,6 +233,7 @@ public class MainScene {
 
 	private volatile transient ExecutorService mainSceneExecutor;
 
+	private String upTimeCache = "";
 	private String themeSkin = "nimrod";
 	private String title = null;
 	private String dir = null;
@@ -254,7 +256,7 @@ public class MainScene {
 
 	private IconNode soundIcon, marsNetIcon, speedIcon;// , farmIcon;
 	private Button earthTimeButton, marsTimeButton;// , northHemi, southHemi;
-	private Label lastSaveLabel, TPSLabel, upTimeLabel, noteLabel;//, benchmarkLabel; // monthLabel, yearLabel, LSLabel
+	private Label lastSaveLabel, tpsLabel, upTimeLabel, noteLabel;//, benchmarkLabel; // monthLabel, yearLabel, LSLabel
 	private Text LSText, monthText, yearText, northText, southText;
 	private Blend blend;
 	private VBox mapLabelBox, speedVBox, soundVBox;
@@ -279,35 +281,35 @@ public class MainScene {
 	private Timeline timeline;
 	// private NotificationPane notificationPane;
 
-	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
+	//private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
+	//private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 
-	private ChatBox chatBox;
-	private MainDesktopPane desktop;
-	private MainSceneMenu menuBar;
+	private static ChatBox chatBox;
+	private static MainDesktopPane desktop;
+	private static MainSceneMenu menuBar;
 
-	private MarsNode marsNode;
-	private TransportWizard transportWizard;
-	private ConstructionWizard constructionWizard;
+	private static MarsNode marsNode;
+	private static TransportWizard transportWizard;
+	private static ConstructionWizard constructionWizard;
 
-	private QuotationPopup quote;
+	private static QuotationPopup quote;
 	// private MessagePopup messagePopup;
 	// private BorderSlideBar topFlapBar;
 
-	private Simulation sim = Simulation.instance();
-	private MasterClock masterClock = sim.getMasterClock();
-	private EarthClock earthClock;
-	private MarsClock marsClock;
+	private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock = sim.getMasterClock();
+	private static EarthClock earthClock;
+	private static MarsClock marsClock;
 
 	private SettlementWindow settlementWindow;
 	private NavigatorWindow navWin;
 	private SettlementMapPanel mapPanel;
 
 	private static AudioPlayer soundPlayer;
-	private MarsCalendarDisplay calendarDisplay;
-	private UpTimer uptimer;
+	private static MarsCalendarDisplay calendarDisplay;
+	private static UpTimer uptimer;
 
-	private OrbitInfo orbitInfo;
+	private static OrbitInfo orbitInfo;
 
 	// private List<DesktopPane> desktops;
 
@@ -1098,24 +1100,24 @@ public class MainScene {
 			}
 		});
 
-		Label TPSLabel0 = new Label(TPS);
+		Label tpsLabel0 = new Label(TPS);
 		// TPSLabel0.setEffect(blend);
-		TPSLabel0.setAlignment(Pos.CENTER_RIGHT);
-		TPSLabel0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
+		tpsLabel0.setAlignment(Pos.CENTER_RIGHT);
+		tpsLabel0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
 				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
 				+ "-fx-font-weight: italic;");
-		TPSLabel0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(TPSLabel0, "how often the simulation updates the changes"); //$NON-NLS-1$
+		tpsLabel0.setPadding(new Insets(1, 1, 1, 2));
+		setQuickToolTip(tpsLabel0, "how often the simulation updates the changes"); //$NON-NLS-1$
 
-		TPSLabel = new Label();
+		tpsLabel = new Label();
 		// TPSLabel.setEffect(blend);
-		TPSLabel.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
+		tpsLabel.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
 				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
 				+ "-fx-font-weight: italic;");
 		// TPSLabel.setPadding(new Insets(1, 1, 1, 5));
-		TPSLabel.setAlignment(Pos.CENTER);
-		TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
-		setQuickToolTip(TPSLabel, "e.g. 6.22 Hz means for each second, the simulation is updated 6.22 times"); //$NON-NLS-1$
+		tpsLabel.setAlignment(Pos.CENTER);
+		tpsLabel.setText(masterClock.getPulsesPerSecond() + HZ);
+		setQuickToolTip(tpsLabel, "e.g. 6.22 Hz means for each second, the simulation is updated 6.22 times"); //$NON-NLS-1$
 
 		Label upTimeLabel0 = new Label(UPTIME);
 		// upTimeLabel0.setEffect(blend);
@@ -1174,34 +1176,34 @@ public class MainScene {
 		GridPane.setConstraints(spinner, 1, 0);
 		GridPane.setConstraints(default_ratio_label, 1, 1);
 		GridPane.setConstraints(real_time_label, 1, 2);
-		GridPane.setConstraints(TPSLabel, 1, 3);
+		GridPane.setConstraints(tpsLabel, 1, 3);
 		GridPane.setConstraints(upTimeLabel, 1, 4);
 		//GridPane.setConstraints(benchmarkLabel, 1, 5);
 
 		GridPane.setConstraints(spinner_label0, 0, 0);
 		GridPane.setConstraints(default_ratio_label0, 0, 1);
 		GridPane.setConstraints(real_time_label0, 0, 2);
-		GridPane.setConstraints(TPSLabel0, 0, 3);
+		GridPane.setConstraints(tpsLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
 		//GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
 		GridPane.setHalignment(spinner, HPos.CENTER);
 		GridPane.setHalignment(default_ratio_label, HPos.CENTER);
 		GridPane.setHalignment(real_time_label, HPos.CENTER);
-		GridPane.setHalignment(TPSLabel, HPos.CENTER);
+		GridPane.setHalignment(tpsLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
 		//GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
 
 		GridPane.setHalignment(spinner_label0, HPos.RIGHT);
 		GridPane.setHalignment(default_ratio_label0, HPos.RIGHT);
 		GridPane.setHalignment(real_time_label0, HPos.RIGHT);
-		GridPane.setHalignment(TPSLabel0, HPos.RIGHT);
+		GridPane.setHalignment(tpsLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
 		//GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
 		gridPane.getChildren().addAll(spinner_label0, spinner, default_ratio_label0, default_ratio_label,
-				real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel);//, benchmarkLabel0,
+				real_time_label0, real_time_label, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel);//, benchmarkLabel0,
 				//benchmarkLabel);
 
 		speedVBox = new VBox();
@@ -2596,8 +2598,16 @@ public class MainScene {
 	public void updateTimeLabels() {
 
 		if (simSpeedPopup.isShowing() || solCache == 0) {
-			TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
-			upTimeLabel.setText(uptimer.getUptime());	
+			double tps = Math.round(masterClock.getPulsesPerSecond()*100.0)/100.0;
+			if (tpsCache != tps) {
+				tpsCache = tps;
+				tpsLabel.setText(tps + HZ);
+			}
+			String upt = uptimer.getUptime();
+			if (!upTimeCache.equals(upt)) {
+				upTimeCache = upt;
+				upTimeLabel.setText(upt);
+			}
 			//benchmarkLabel.setText(masterClock.getDiffCache() + "");
 		}
 		

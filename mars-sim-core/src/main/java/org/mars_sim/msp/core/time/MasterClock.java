@@ -806,8 +806,10 @@ public class MasterClock implements Serializable { // Runnable,
     }
 
     public double getPulsesPerSecond() {
-        //System.out.println("pulsespersecond: "+((double) totalPulses / (uptimer.getUptimeMillis()/1000 ) ));
-        return totalPulses / uptimer.getUptimeMillis() * 1000D;
+        //System.out.println("totalPulses : " + Math.round(totalPulses*100.0)/100.0 
+        //		+ "    uptimeMillis: " + Math.round(uptimer.getUptimeMillis()*100.0)/100.0
+        //		+ "    tps: " + 1000L * totalPulses / uptimer.getUptimeMillis());
+        return 1000.0 * totalPulses / uptimer.getUptimeMillis();
     }
 
 
