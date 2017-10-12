@@ -57,7 +57,6 @@ import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
-import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -306,13 +305,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	// Additional Component Listener methods implemented but not used.
 	@Override
 	public void componentMoved(ComponentEvent e) {
-		logger.info("DesktopPane : componentMoved()");
+		logger.info("componentMoved()");
 		updateToolWindow();
 	}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-		logger.info("DesktopPane : componentShown()");
+		logger.info("componentShown()");
 		JInternalFrame[] frames = this.getAllFrames();
 		for (JInternalFrame f : frames) {
 			//((ToolWindow)f).update();
@@ -327,7 +326,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	public void componentHidden(ComponentEvent e) {}
 
 	public void updateToolWindow() {
-		logger.info("DesktopPane : updateToolWindow()");
+		logger.info("updateToolWindow()");
 		JInternalFrame[] frames = this.getAllFrames();
 		for (JInternalFrame f : frames) {
 			f.updateUI();
@@ -863,9 +862,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	/**
 	 * Recreates the Mars Navigator Tool
-	 */
+
 	public void recreateNavWin() {
-		System.out.println("recreateNavWin()");//. toolWindows : " + toolWindows.size());
+		logger.info("recreateNavWin()");//. toolWindows : " + toolWindows.size());
 		SwingUtilities.invokeLater(() -> {
 			ToolWindow window = getToolWindow(NavigatorWindow.NAME);
 			if ((window != null) && !window.isClosed()) {
@@ -889,7 +888,8 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	        //System.out.println("toolWindows : " + toolWindows.size());
 		});
 	}
-
+	 */
+	
 	/**
 	 * Closes a tool window if it is open
 	 * @param toolName the name of the tool window
@@ -942,7 +942,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 */
 		});
 	}
-
+/*
 	public void refreshTheme() {
 		Unit unit = Simulation.instance().getUnitManager().getFirstSettlement();
 		openUnitWindow(unit, true);
@@ -950,7 +950,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		disposeUnitWindow(w);
 		logger.info("done with refreshTheme()");
 	}
-
+*/
 	/**
 	 * Creates and opens a window for a unit if it isn't
 	 * already in existence and open.
@@ -989,6 +989,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
 			if (initialWindow) {
+				
 				// Put window in configured position on desktop.
 				tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
 			}
@@ -1067,9 +1068,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	public UnitWindow findUnitWindow(Unit unit) {
 		UnitWindow result = null;
-		Iterator<UnitWindow> i = unitWindows.iterator();
-		while (i.hasNext()) {
-			UnitWindow window = i.next();
+		//Iterator<UnitWindow> i = unitWindows.iterator();
+		//while (i.hasNext()) {
+		for (UnitWindow window : unitWindows) {//= i.next();
 			if (window.getUnit() == unit) {
 				result = window;
 			}
@@ -1086,9 +1087,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		// Dispose unit window
 		UnitWindow deadWindow = null;
-		Iterator<UnitWindow> i = unitWindows.iterator();
-		while (i.hasNext()) {
-			UnitWindow window = i.next();
+		//Iterator<UnitWindow> i = unitWindows.iterator();
+		//while (i.hasNext()) {
+		for (UnitWindow window : unitWindows) {//= i.next();
 			if (unit == window.getUnit()) {
 				deadWindow = window;
 			}
@@ -1301,9 +1302,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		//} catch (InterruptedException e) {};
 
 		// Dispose unit windows
-		Iterator<UnitWindow> i1 = unitWindows.iterator();
-		while (i1.hasNext()) {
-			UnitWindow window = i1.next();
+		//Iterator<UnitWindow> i1 = unitWindows.iterator();
+		//while (i1.hasNext()) {
+		for (UnitWindow window : unitWindows) {//= i1.next();
 			window.dispose();
 			if (mainWindow !=null) mainWindow.disposeUnitButton(window.getUnit());
 			window.destroy();
@@ -1311,9 +1312,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		unitWindows.clear();
 
 		// Dispose tool windows
-		Iterator<ToolWindow> i2 = toolWindows.iterator();
-		while (i2.hasNext()) {
-			ToolWindow window = i2.next();
+		//Iterator<ToolWindow> i2 = toolWindows.iterator();
+		//while (i2.hasNext()) {
+		for (ToolWindow window : toolWindows) {//= i2.next();
 			window.dispose();
 			window.destroy();
 		}
@@ -1407,11 +1408,11 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	// 2016-11-26 getStartingLocation()
 	private Point getStartingLocation(JInternalFrame f) {
-		Dimension desktop_size = getSize();
-		Dimension f_size = f.getSize();
+		//Dimension desktop_size = getSize();
+		//Dimension f_size = f.getSize();
 
 		// 2016-11-24 populate windows in grid=like starting position
-		int w = desktop_size.width - f_size.width;
+		//int w = desktop_size.width - f_size.width;
 		int rX = 5;
 		int rY = 10;
 		return new Point(rX, rY);
@@ -1474,11 +1475,11 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 * Updates the look & feel for all tool windows.
 	 */
 	public void updateToolWindowLF() {
-		Iterator<ToolWindow> i = toolWindows.iterator();
-		while (i.hasNext()) {
-		    ToolWindow toolWindow = i.next();
+		//Iterator<ToolWindow> i = toolWindows.iterator();
+		//while (i.hasNext()) {
+		for (ToolWindow toolWindow : toolWindows) {//= i.next();
 		   	//SwingUtilities.invokeLater(() -> {
-		   		toolWindow.update();
+		   	toolWindow.update();
 		   	//});
 			//toolWindow.validate();
 			//toolWindow.repaint();	
@@ -1490,13 +1491,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 
 	public void updateUnitWindowLF() {
-		Iterator<UnitWindow> i = unitWindows.iterator();
-		while (i.hasNext()) {
-			UnitWindow window = i.next();
+		//Iterator<UnitWindow> i = unitWindows.iterator();
+		//while (i.hasNext()) {
+		for (UnitWindow window : unitWindows) {//= i.next();
 			//window.validate();
 			//window.repaint();
 		   	//SwingUtilities.invokeLater(() -> {
-	            window.update();
+	        window.update();
 		   	//});
 			SwingUtilities.updateComponentTreeUI(window);    
 		}
@@ -1506,9 +1507,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 * Closes the look & feel for all tool windows.
 	 */
 	public void closeAllToolWindow() {
-		Iterator<ToolWindow> i = toolWindows.iterator();
-		while (i.hasNext()) {
-		    ToolWindow toolWindow = i.next();
+		//Iterator<ToolWindow> i = toolWindows.iterator();
+		//while (i.hasNext()) {
+		for (ToolWindow toolWindow : toolWindows) {//= i.next();
 			remove(toolWindow);
 		}
 		disposeAnnouncementWindow();
@@ -1762,8 +1763,16 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// TODO Auto-generated method stub
-
+		if (isPaused) {
+			marqueeTicker.pauseMarqueeTimer(true);
+			if (!soundPlayer.isMute(false))
+				soundPlayer.setMute(true);
+		} 
+		else {
+			marqueeTicker.pauseMarqueeTimer(false);
+			if (soundPlayer.isMute(false))
+				soundPlayer.setMute(false);
+		}
 	}
 
 	public void destroy() {

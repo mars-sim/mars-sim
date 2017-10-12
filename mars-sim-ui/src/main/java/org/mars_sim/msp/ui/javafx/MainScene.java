@@ -180,8 +180,8 @@ public class MainScene {
 	//private static final String ESC_TO_RESUME = "ESC to resume";
 	//private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
-	private static final String EARTH_DATE_TIME = "EARTH  :  ";
-	private static final String MARS_DATE_TIME = "MARS  :  ";
+	private static final String EARTH_DATE_TIME = "  EARTH : ";
+	private static final String MARS_DATE_TIME = "  MARS : ";
 	//private static final String UMST = " (UMST)";
 	private static final String ONE_SPACE = " ";
 	private static final String MONTH = "    Month : ";
@@ -216,13 +216,13 @@ public class MainScene {
 	private int screen_width = DEFAULT_WIDTH;
 	private int screen_height = DEFAULT_HEIGHT;
 
-	private int solElapsedCache = 0;
+	private int solCache = 0;
 
 	//private double newTimeRatio = 0;
 	//private double initial_time_ratio = 0;
 	private double sliderCache = 0;
 
-	private boolean isMuteCache;
+	//private boolean isMuteCache;
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
@@ -254,7 +254,7 @@ public class MainScene {
 
 	private IconNode soundIcon, marsNetIcon, speedIcon;// , farmIcon;
 	private Button earthTimeButton, marsTimeButton;// , northHemi, southHemi;
-	private Label lastSaveLabel, TPSLabel, upTimeLabel, noteLabel, benchmarkLabel; // monthLabel, yearLabel, LSLabel
+	private Label lastSaveLabel, TPSLabel, upTimeLabel, noteLabel;//, benchmarkLabel; // monthLabel, yearLabel, LSLabel
 	private Text LSText, monthText, yearText, northText, southText;
 	private Blend blend;
 	private VBox mapLabelBox, speedVBox, soundVBox;
@@ -452,9 +452,11 @@ public class MainScene {
 		// resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
 		Platform.runLater(() -> {
-			boolean previous = startPause();
+			//boolean previous = startPause(); ?
+			pauseSimulation(false);		
 			transportWizard.deliverBuildings(buildingManager);
-			endPause(previous);
+			unpauseSimulation();
+			//endPause(previous);
 		});
 	}
 
@@ -933,14 +935,13 @@ public class MainScene {
 
 	public void createEarthTimeBar() {
 		earthTimeButton = new Button();
-		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
 
 		if (OS.contains("linux")) {
 			earthTimeButton.setPrefWidth(LINUX_WIDTH);
 			earthTimeButton.setPrefSize(LINUX_WIDTH, 29);
 		} else if (OS.contains("mac")) {
 			earthTimeButton.setPrefWidth(MACOS_WIDTH);
-			earthTimeButton.setPrefSize(MACOS_WIDTH, 28);
+			earthTimeButton.setPrefSize(MACOS_WIDTH, 30);
 		} else {
 			earthTimeButton.setPrefWidth(WIN_WIDTH);
 			earthTimeButton.setPrefSize(WIN_WIDTH, 35);
@@ -956,7 +957,8 @@ public class MainScene {
 
 		earthTimeButton.setId("rich-green");
 		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
-		earthTimeButton.setAlignment(Pos.CENTER);
+		earthTimeButton.setTextAlignment(TextAlignment.LEFT);		
+		earthTimeButton.setAlignment(Pos.CENTER_LEFT);
 	}
 
 	/**
@@ -1135,7 +1137,7 @@ public class MainScene {
 		if (uptimer != null)
 			upTimeLabel.setText(uptimer.getUptime());
 		setQuickToolTip(upTimeLabel, "e.g. 03m 05s means 3 minutes and 5 seconds"); //$NON-NLS-1$
-
+/*
 		Label benchmarkLabel0 = new Label(BENCHMARK);
 		// upTimeLabel0.setEffect(blend);
 		benchmarkLabel0.setAlignment(Pos.CENTER_RIGHT);
@@ -1156,7 +1158,7 @@ public class MainScene {
 		benchmarkLabel.setPadding(new Insets(1, 1, 1, 2));
 		benchmarkLabel.setText(masterClock.getDiffCache() + "");
 		setQuickToolTip(benchmarkLabel, "a real time metric of performance"); //$NON-NLS-1$
-
+*/
 		GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container");
 		gridPane.setAlignment(Pos.CENTER);
@@ -1174,33 +1176,33 @@ public class MainScene {
 		GridPane.setConstraints(real_time_label, 1, 2);
 		GridPane.setConstraints(TPSLabel, 1, 3);
 		GridPane.setConstraints(upTimeLabel, 1, 4);
-		GridPane.setConstraints(benchmarkLabel, 1, 5);
+		//GridPane.setConstraints(benchmarkLabel, 1, 5);
 
 		GridPane.setConstraints(spinner_label0, 0, 0);
 		GridPane.setConstraints(default_ratio_label0, 0, 1);
 		GridPane.setConstraints(real_time_label0, 0, 2);
 		GridPane.setConstraints(TPSLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
-		GridPane.setConstraints(benchmarkLabel0, 0, 5);
+		//GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
 		GridPane.setHalignment(spinner, HPos.CENTER);
 		GridPane.setHalignment(default_ratio_label, HPos.CENTER);
 		GridPane.setHalignment(real_time_label, HPos.CENTER);
 		GridPane.setHalignment(TPSLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
-		GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
+		//GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
 
 		GridPane.setHalignment(spinner_label0, HPos.RIGHT);
 		GridPane.setHalignment(default_ratio_label0, HPos.RIGHT);
 		GridPane.setHalignment(real_time_label0, HPos.RIGHT);
 		GridPane.setHalignment(TPSLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
-		GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
+		//GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
 		gridPane.getChildren().addAll(spinner_label0, spinner, default_ratio_label0, default_ratio_label,
-				real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel, benchmarkLabel0,
-				benchmarkLabel);
+				real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel);//, benchmarkLabel0,
+				//benchmarkLabel);
 
 		speedVBox = new VBox();
 		speedVBox.getStyleClass().add("jfx-popup-container");
@@ -1414,14 +1416,15 @@ public class MainScene {
 
 	public void createMarsTimeBar() {
 		marsTimeButton = new Button();
-
+		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
+		
 		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
 			marsTimeButton.setPrefWidth(LINUX_WIDTH);
 			marsTimeButton.setPrefSize(LINUX_WIDTH, 29);
 		} else if (OS.contains("mac")) {
 			marsTimeButton.setPrefWidth(MACOS_WIDTH);
-			marsTimeButton.setPrefSize(MACOS_WIDTH, 28);
+			marsTimeButton.setPrefSize(MACOS_WIDTH, 30);
 		} else {
 			marsTimeButton.setPrefWidth(WIN_WIDTH);
 			marsTimeButton.setPrefSize(WIN_WIDTH, 35);
@@ -1435,6 +1438,19 @@ public class MainScene {
 			marsClock = masterClock.getMarsClock();
 		}
 
+		marsTimeButton.setOnAction(e -> {
+			if (marsCalendarPopup.isShowing()) {
+				marsCalendarPopup.hide();// close();
+			} else {
+				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.RIGHT, -20, 25);
+			}
+			e.consume();
+		});
+
+		marsTimeButton.setId("rich-red");
+		marsTimeButton.setTextAlignment(TextAlignment.LEFT);
+		marsTimeButton.setAlignment(Pos.CENTER_LEFT);
+	
 		calendarDisplay = new MarsCalendarDisplay(marsClock, desktop);
 
 		SwingNode calNode = new SwingNode();
@@ -1521,22 +1537,6 @@ public class MainScene {
 		calendarPane.setPadding(new Insets(5, 5, 5, 5));
 
 		marsCalendarPopup = new JFXPopup(calendarPane);
-		// marsTimeButton = new Button();//Label();
-		// marsTimeButton.setMaxWidth(Double.MAX_VALUE);
-		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
-		marsTimeButton.setOnAction(e -> {
-			if (marsCalendarPopup.isShowing()) {
-				marsCalendarPopup.hide();// close();
-			} else {
-				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.RIGHT, -20, 25);
-			}
-			e.consume();
-		});
-
-		marsTimeButton.setId("rich-red");
-		// marsTimeButton.setTextAlignment(TextAlignment.LEFT);
-		marsTimeButton.setAlignment(Pos.CENTER);
-		// setQuickToolTip(marsTime, "Click to see Quick Info on Mars");
 
 	}
 
@@ -2595,16 +2595,16 @@ public class MainScene {
 	 */
 	public void updateTimeLabels() {
 
-		if (simSpeedPopup.isShowing() || solElapsedCache == 0) {
+		if (simSpeedPopup.isShowing() || solCache == 0) {
 			TPSLabel.setText(formatter.format(masterClock.getPulsesPerSecond()) + HZ);
 			upTimeLabel.setText(uptimer.getUptime());	
-			benchmarkLabel.setText(masterClock.getDiffCache() + "");
+			//benchmarkLabel.setText(masterClock.getDiffCache() + "");
 		}
 		
-		int solElapsed = marsClock.getMissionSol();
-		if (solElapsed != solElapsedCache) {
-
-			if (solElapsed == 1) {
+		int solOfMonth = marsClock.getSolOfMonth();
+		if (solCache != solOfMonth) {
+			solCache = solOfMonth;
+			if (solOfMonth == 1) {
 				String mn = marsClock.getMonthName();
 				if (mn != null) {
 					monthText.setText(MONTH + mn);
@@ -2614,10 +2614,9 @@ public class MainScene {
 				}
 			}
 
-			solElapsedCache = solElapsed;
 		}
 
-		if (marsCalendarPopup.isShowing() || solElapsedCache == 0) {
+		if (marsCalendarPopup.isShowing() || solCache == 0) {
 			calendarDisplay.update();
 
 			double L_s = orbitInfo.getL_s();
@@ -2904,11 +2903,13 @@ public class MainScene {
 	public void pauseSimulation(boolean showPane) {
 		if (exitDialog == null || !exitDialog.isVisible()) {
 			isShowingDialog = true;
-			isMuteCache = desktop.getSoundPlayer().isMute(false);
-			if (!isMuteCache)
-				desktop.getSoundPlayer().setMute(true);
-			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
+			//isMuteCache = desktop.getSoundPlayer().isMute(false);
+			//if (!isMuteCache)
+			//	desktop.getSoundPlayer().setMute(true);
+			//desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 			masterClock.setPaused(true, showPane);
+			if (showPane && !masterClock.isSavingSimulation())
+				startPausePopup();
 		}
 	}
 
@@ -2918,9 +2919,10 @@ public class MainScene {
 	public void unpauseSimulation() {
 		isShowingDialog = false;
 		masterClock.setPaused(false, true);
-		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-		if (!isMuteCache)
-			desktop.getSoundPlayer().setMute(false);
+		stopPausePopup();
+		//desktop.getMarqueeTicker().pauseMarqueeTimer(false);
+		//if (!isMuteCache)
+		//	desktop.getSoundPlayer().setMute(false);
 	}
 
 	public boolean startPause() {

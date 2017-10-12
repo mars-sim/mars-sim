@@ -55,8 +55,10 @@ extends TabPanel {
 	// Data cache
 	private int numBuildingsCache;
 	
-	private double o2Cache, cO2Cache, n2Cache, h2OCache, arCache, totalPressureCache, averageTemperatureCache;
+	private double o2Cache, cO2Cache, n2Cache, h2OCache, arCache, averageTemperatureCache;
 
+	private String totalPressureCache;
+	
 	private List<Building> buildingsCache;
 
 	private JLabel o2Label, cO2Label, n2Label, h2OLabel, arLabel, totalPressureLabel, averageTemperatureLabel;
@@ -124,8 +126,8 @@ extends TabPanel {
 		
 		JLabel p_label = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.title"), JLabel.RIGHT);
 		topPanel.add(p_label);
-		totalPressureCache = settlement.getAirPressure();
-		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure", fmt2.format(totalPressureCache)), JLabel.LEFT); //$NON-NLS-1$
+		totalPressureCache = Math.round(settlement.getAirPressure()*100.0)/100.0 + "";
+		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.kPa", totalPressureCache), JLabel.LEFT); //$NON-NLS-1$
 		topPanel.add(totalPressureLabel);
 		
 		//Lay out the spring panel.
@@ -413,8 +415,6 @@ extends TabPanel {
 		}
 		else {
 
-
-
 			double cO2 = getOverallComposition(0);
 			if (cO2Cache != cO2) {
 				cO2Cache = cO2;
@@ -472,13 +472,31 @@ extends TabPanel {
 					));
 			}
 			
-			double totalPressure = Math.round(settlement.getAirPressure()*1000.0)/1000.0; // convert to kPascal by multiplying 1000
-			if (totalPressureCache != totalPressure) {
+			String totalPressure = "";
+			
+			if (kPa_btn.isSelected()) {
+				// convert from atm to kPascal
+				totalPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.kPa",  //$NON-NLS-1$
+						Math.round(settlement.getAirPressure()*100.0)/100.0);
+			}
+			else if (atm_btn.isSelected()) {
+				totalPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.atm",  //$NON-NLS-1$
+						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM*100.0)/100.0);
+			}
+			else if (mb_btn.isSelected()) {
+				// convert from atm to mb
+				totalPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.mb",  //$NON-NLS-1$
+						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.MB_PER_ATM*100.0)/100.0);
+			}
+			else if (psi_btn.isSelected()) {
+				// convert from atm to kPascal
+				totalPressure =  Msg.getString("TabPanelAirComposition.label.totalPressure.psi",  //$NON-NLS-1$
+						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.PSI_PER_ATM*100.0)/100.0);
+			}
+			
+			if (!totalPressureCache.equals(totalPressure)) {
 				totalPressureCache = totalPressure;
-				totalPressureLabel.setText(
-					Msg.getString("TabPanelAirComposition.label.totalPressure",  //$NON-NLS-1$
-					fmt2.format(totalPressureCache)//Math.round(totalPressureCache*10D)/10D
-					));
+				totalPressureLabel.setText(totalPressureCache);
 			}
 
 		}

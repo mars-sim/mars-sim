@@ -23,7 +23,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -41,6 +40,8 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.jidesoft.plaf.LookAndFeelFactory;
 import com.jidesoft.swing.JideTabbedPane;
 
+import javafx.application.Platform;
+
 /**
  * The UnitWindow is the base window for displaying units.
  */
@@ -49,16 +50,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
     //private static final int BLUR_SIZE = 7;
-	// Data members
-	private int themeCache = -1;
-	protected JPanel namePanel;
-	/** The tab panels. */
-	private Collection<TabPanel> tabPanels;
-	/** The center panel. */
-	//private JTabbedPane centerPanel;
-	// 2015-06-20 Replaced with JideTabbedPane
-	private JideTabbedPane centerPanel;
-
+	
 	//private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
 	private static final String TOWN = Msg.getString("icon.town");
@@ -80,6 +72,9 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final String STATUS_ICON = Msg.getString("icon.status");
 	private static final String DETAILS_ICON = Msg.getString("icon.details");
 
+	// Data members
+	private int themeCache = -1;
+
 	private String oldRoleString = "",
 					oldJobString = "",
 					oldTownString = "";
@@ -89,6 +84,15 @@ public abstract class UnitWindow extends JInternalFrame {
     private JLabel roleLabel;
     private JLabel shiftLabel;
 
+    private JPanel namePanel;
+	/** The tab panels. */
+	private Collection<TabPanel> tabPanels;
+	/** The center panel. */
+	//private JTabbedPane centerPanel;
+	// 2015-06-20 Replaced with JideTabbedPane
+	private JideTabbedPane centerPanel;
+	
+	
 	/** Main window. */
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
@@ -103,7 +107,8 @@ public abstract class UnitWindow extends JInternalFrame {
      * @param unit the unit for this window.
      * @param hasDescription true if unit description is to be displayed.
      */
-    public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
+    @SuppressWarnings("restriction")
+	public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
         // Use JInternalFrame constructor
         super(unit.getName(), true, true, false, true);
 
@@ -298,6 +303,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
         //setStyle();
   		//setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
+        
     }
 
 	/**
@@ -463,16 +469,17 @@ public abstract class UnitWindow extends JInternalFrame {
     	}
     	
 		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()
-    	SwingUtilities.invokeLater(() -> {
+    	//SwingUtilities.invokeLater(() -> {
 	    	// Update each of the tab panels.
 	        for (TabPanel tabPanel : tabPanels) {
 	        	tabPanel.update();
+	        	//tabPanel.validate();
 	        }
 
 	        if (unit instanceof Person) {
 	        	statusUpdate();
 	        }
-    	});
+    	//});
     }
 
 
@@ -583,5 +590,17 @@ public abstract class UnitWindow extends JInternalFrame {
         	tabPanels.clear();
 		tabPanels = null;
 		centerPanel = null;
+		oldShiftType = null;
+		townLabel = null;
+	    jobLabel = null;
+	    roleLabel = null;
+	    shiftLabel = null;
+
+		/** Main window. */
+		desktop = null;
+		/** Unit for this window. */
+		unit = null;
+		factory = null;
+		mainScene = null;
 	}
 }

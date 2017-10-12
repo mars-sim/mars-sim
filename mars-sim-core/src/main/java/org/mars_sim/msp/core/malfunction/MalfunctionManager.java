@@ -423,7 +423,7 @@ implements Serializable {
 			if (!registerEvent)
 				return;
 			
-			HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
+			HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, entity.getLocationName(), false);
 			//if (eventManager == null)
 			//	eventManager = sim.getEventManager();
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
@@ -573,7 +573,7 @@ implements Serializable {
 					e.printStackTrace(System.err);
 				}
 
-				HistoricalEvent newEvent = new MalfunctionEvent(entity, item, true);
+				HistoricalEvent newEvent = new MalfunctionEvent(entity, item, entity.getLocationName(), true);
 				//if (eventManager == null)
 				//	eventManager = sim.getEventManager();
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);

@@ -422,9 +422,9 @@
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
     -fx-text-fill: dark-green;
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-font-family: "Libeartion Mono";    
+    -fx-font-family: "Monospaced";    
 }
 
 #rich-green Text {
@@ -441,9 +441,9 @@
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
     -fx-text-fill: #cc6308;
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-font-family: "Libeartion Mono";
+    -fx-font-family: "Monospaced";
 }
 
 #rich-red Text {

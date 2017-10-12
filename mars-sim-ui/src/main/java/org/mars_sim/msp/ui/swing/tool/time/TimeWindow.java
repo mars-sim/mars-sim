@@ -621,17 +621,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// logger.info("TimeWindow : calling pauseChange()");
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
-			if (showPane && mainScene != null && !masterClock.isSavingSimulation())
-				mainScene.startPausePopup();
+			//if (showPane && mainScene != null && !masterClock.isSavingSimulation())
+			//	mainScene.startPausePopup();
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
-			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
+			//desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		
 		} 
 		else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
-			desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-			if (showPane && mainScene != null)
-				mainScene.stopPausePopup();
+			//desktop.getMarqueeTicker().pauseMarqueeTimer(false);
+			//if (showPane && mainScene != null)
+			//	mainScene.stopPausePopup();
 		}
 	}
 

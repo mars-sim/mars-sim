@@ -139,11 +139,12 @@ implements Serializable, Transportable {
         buildingManager = settlement.getBuildingManager();
 
         buildingManager.addResupply(this);
+        
     	// Deliver buildings to the destination settlement.
-    	deliverBuildings();
+    	//deliverBuildings();
         // Deliver the rest of the supplies and add people.
-        deliverOthers();
-/*
+        //deliverOthers();
+
         // 2014-12-26 Added Simulation.getUseGUI() to terminate handling of delivery by Resupply.java if GUI is in use
         if (Simulation.getUseGUI())  {
        	// if GUI is in use
@@ -167,7 +168,7 @@ implements Serializable, Transportable {
             // Deliver the rest of the supplies and add people.
             deliverOthers();
         }
-*/
+
     }
 
 	/**

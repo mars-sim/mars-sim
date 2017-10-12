@@ -48,16 +48,13 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	// Column names
 	private static final int TIMESTAMP = 0;
-	private static final int CATEGORY = 1;
+	private static final int DESC = 1;
 	private static final int TYPE = 2;
-	private static final int ACTOR = 3;
-	private static final int LOCATION = 4;
-	private static final int DESC = 5;
+	private static final int CATEGORY = 3;
+	private static final int ACTOR = 4;
+	private static final int LOCATION = 5;
 	private static final int COLUMNCOUNT = 6;
 
-	// 2014-12-17 Added Timer and isPaused
-	//private Timer timer;
-	//private boolean isPaused = false;
 	private boolean showMedical = true;
 	private boolean showMedicalCache = true;
 	private boolean showMalfunction = true;
@@ -73,11 +70,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[TIMESTAMP] = Msg.getString("EventTableModel.column.time");		columnTypes[TIMESTAMP] = String.class; //$NON-NLS-1$
-		columnNames[CATEGORY] = Msg.getString("EventTableModel.column.category");	columnTypes[CATEGORY] = String.class; //$NON-NLS-1$
+		columnNames[DESC] = Msg.getString("EventTableModel.column.description");	columnTypes[DESC] = String.class; //$NON-NLS-1$
 		columnNames[TYPE] = Msg.getString("EventTableModel.column.eventType");		columnTypes[TYPE] = String.class; //$NON-NLS-1$
+		columnNames[CATEGORY] = Msg.getString("EventTableModel.column.category");	columnTypes[CATEGORY] = String.class; //$NON-NLS-1$
 		columnNames[ACTOR] = Msg.getString("EventTableModel.column.actor");			columnTypes[ACTOR] = Object.class; //$NON-NLS-1$
 		columnNames[LOCATION] = Msg.getString("EventTableModel.column.location");	columnTypes[LOCATION] = Object.class; //$NON-NLS-1$
-		columnNames[DESC] = Msg.getString("EventTableModel.column.description");	columnTypes[DESC] = String.class; //$NON-NLS-1$
 	}
 
 	private HistoricalEventManager manager;
@@ -113,7 +110,6 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 		desktop.setEventTableModel(this);
 
-		//count++;
 		// Update the cached events.
 		updateCachedEvents();
 

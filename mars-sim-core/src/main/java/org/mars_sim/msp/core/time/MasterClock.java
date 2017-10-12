@@ -90,7 +90,7 @@ public class MasterClock implements Serializable { // Runnable,
 
 	private long totalPulses = 1,  t2Cache = 0, diffCache = 0;
 	private transient long elapsedLast;
-	private transient long elapsedMilliseconds;
+	//private transient long elapsedMilliseconds;
 
 	/** Clock listeners. */
 	private transient List<ClockListener> listeners;
@@ -143,7 +143,7 @@ public class MasterClock implements Serializable { // Runnable,
         // Create listener list.
         listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         elapsedLast = uptimer.getUptimeMillis();
-        elapsedMilliseconds = 0L;
+        //elapsedMilliseconds = 0L;
 
         //setupClockListenerTask();
         clockThreadTask = new ClockThreadTask();
@@ -393,9 +393,9 @@ public class MasterClock implements Serializable { // Runnable,
      * @return time pulse length in millisols
      * @throws Exception if time pulse length could not be determined.
      */
-    public double computeTimePulseInMillisols() {
+    public double computeTimePulseInMillisols(long elapsedMilliseconds) {
         //if (timeRatio > 0D) {
-            return computeTimePulseInSeconds()/MarsClock.SECONDS_IN_MILLISOL;
+            return computeTimePulseInSeconds(elapsedMilliseconds)/MarsClock.SECONDS_IN_MILLISOL;
         //}
         //else {
         //    return 1D;
@@ -406,7 +406,7 @@ public class MasterClock implements Serializable { // Runnable,
      * Computes the time pulse in seconds. It varies, depending on the time ratio
      * @return time pulse length in seconds
      */
-    public double computeTimePulseInSeconds() {
+    public double computeTimePulseInSeconds(long elapsedMilliseconds) {
     	return elapsedMilliseconds * timeRatio / 1000D;
     }
     
@@ -644,16 +644,16 @@ public class MasterClock implements Serializable { // Runnable,
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
         if (!isPaused) {
             // Update elapsed milliseconds.
-            updateElapsedMilliseconds();
+            long elapsedMilliseconds = updateElapsedMilliseconds();
             // Get the time pulse length in millisols.
-            double timePulse = computeTimePulseInMillisols();
+            double timePulse = computeTimePulseInMillisols(elapsedMilliseconds);
             // Incrementing total time pulse number.
             totalPulses++;
             //logger.info(timePulse+"");
             if (timePulse > 0) {
 	            if (keepRunning) {
 	                // Add time pulse length to Earth and Mars clocks.
-	            	earthTime.addTime(timePulse*MarsClock.SECONDS_IN_MILLISOL);
+	            	earthTime.addTime(Math.round(elapsedMilliseconds));//timePulse*MarsClock.SECONDS_IN_MILLISOL);
 	            	marsTime.addTime(timePulse);
 				  	if (!isPaused
 				  			|| !clockListenerExecutor.isTerminating()
@@ -814,13 +814,14 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Update the milliseconds elapsed since last time pulse.
      */
-    private void updateElapsedMilliseconds() {
+    private long updateElapsedMilliseconds() {
     	if (uptimer == null) {
     		uptimer = new UpTimer(this);
     	}
         long tnow = uptimer.getUptimeMillis();
-        elapsedMilliseconds = tnow - elapsedLast;
+        long elapsedMilliseconds = tnow - elapsedLast;
         elapsedLast = tnow;
+        return elapsedMilliseconds;
     }
 
 

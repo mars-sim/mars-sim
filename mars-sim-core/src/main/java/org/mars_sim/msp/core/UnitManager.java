@@ -938,7 +938,7 @@ public class UnitManager implements Serializable {
 							String n = k.next();
 							if (n.equals(fullname)) {
 								isUniqueName = false;
-								System.out.println("UnitManager : " + fullname + " is a duplicate name. Selecting another one...");
+								logger.info(fullname + " is a duplicate name. Choose another one.");
 								//break;
 							}
 						}

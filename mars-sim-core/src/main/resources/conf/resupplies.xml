@@ -84,11 +84,11 @@
 
 		<building type="MD4 Nuclear Reactor" x-location="-110.0" y-location="-60.5" facing="0.0" />
 	
-		<building type="Astronomy Observatory" x-location="-62.5" y-location="-17.5" facing="90.0" />
+		<building type="Astronomy Observatory" x-location="-55.0" y-location="-20.05" facing="90.0" />
 		
 		<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />			
 		<building type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
-		<building type="Large Sabatier Processor" x-location="0.0" y-location="20.0" facing="90.0" />
+		<building type="Large Sabatier Processor" x-location="-30.0" y-location="-20.0" facing="90.0" />
 
 		<building type="Command and Control" x-location="0.0" y-location="38" facing="270.0" />
 		<building type="Lounge" x-location="-11.0" y-location="38" facing="270.0" />

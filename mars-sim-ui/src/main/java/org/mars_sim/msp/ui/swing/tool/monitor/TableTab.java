@@ -303,7 +303,7 @@ extends MonitorTab {
         // 2014-12-29 Added ColumnResizer
      	//SwingUtilities.invokeLater(() -> {
             TableStyle.setTableStyle(table);
-	     	adjustColumnPreferredWidths(table);
+	     	//adjustColumnPreferredWidths(table);
 	    //});
 
     	// 2015-06-10 Switched to using the TableStyle's setTableStyle()

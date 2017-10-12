@@ -1343,7 +1343,7 @@ LocalBoundedObject, InsidePathLocation {
 						e.printStackTrace(System.err);
 					}
 					
-					HistoricalEvent newEvent = new MalfunctionEvent(this, malfunction_meteor, false);
+					HistoricalEvent newEvent = new MalfunctionEvent(this, malfunction_meteor, settlement.getName(), false);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 					
 					//check if someone under this roof may have seen/affected by the impact

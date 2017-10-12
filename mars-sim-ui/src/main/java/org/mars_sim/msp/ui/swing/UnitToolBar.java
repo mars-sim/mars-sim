@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 3.07 2015-01-17
+ * @version 3.1.0 2017-10-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.javafx.MainScene;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -33,9 +34,10 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private List<UnitButton> unitButtons; // List of unit buttons
-	private MainWindow parentMainWindow; // Main window that contains this
-											// toolbar.
-
+	
+	private MainWindow parentMainWindow; // Main window that contains this toolbar.
+	private MainScene mainScene;
+	
 	/**
 	 * Constructs a UnitToolBar object
 	 * 
@@ -69,6 +71,38 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	}
 
 	/**
+	 * Constructs a UnitToolBar object
+	 * 
+	 * @param parentMainWindow
+	 *            the main window pane
+	 */
+	public UnitToolBar(MainScene scene) {
+
+		// Use JToolBar constructor
+		super();
+
+		setOpaque(false);
+	    setBackground(new Color(0,0,0,128));
+	    
+		// Initialize data members
+		unitButtons = new ArrayList<UnitButton>();
+		this.mainScene = mainScene;
+		
+		// Set name
+		setName("Unit Toolbar");
+
+		// Fix tool bar
+		setFloatable(false);
+
+		// Set preferred height to 57 pixels.
+		setPreferredSize(new Dimension(0, 57));
+
+		// Set border around toolbar
+		setBorder(new BevelBorder(BevelBorder.RAISED));	
+
+	}
+	
+	/**
 	 * Create a new unit button in the toolbar.
 	 * 
 	 * @param unit
@@ -78,9 +112,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 
 		// Check if unit button already exists
 		boolean alreadyExists = false;
-		Iterator<UnitButton> i = unitButtons.iterator();
-		while (i.hasNext()) {
-			UnitButton unitButton = i.next();
+		//Iterator<UnitButton> i = unitButtons.iterator();
+		//while (i.hasNext()) {
+		for (UnitButton unitButton : unitButtons) {//= i.next();
 			if (unitButton.getUnit() == unit)
 				alreadyExists = true;
 		}

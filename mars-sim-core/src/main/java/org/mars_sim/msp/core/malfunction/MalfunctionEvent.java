@@ -26,15 +26,16 @@ extends HistoricalEvent implements Serializable {
 	 * Create an event associated to a Malfunction.
 	 * @param entity Malfunctionable entity with problem.
 	 * @param malfunction Problem that has occurred.
+	 * @param location the place where the malfunction took place.
 	 * @param fixed Is the malfunction resolved.
 	 */
-	public MalfunctionEvent(Malfunctionable entity, Malfunction malfunction, boolean fixed) {
+	public MalfunctionEvent(Malfunctionable entity, Malfunction malfunction, String location, boolean fixed) {
 		super(
 			HistoricalEventCategory.MALFUNCTION,
 			(fixed ? EventType.MALFUNCTION_FIXED : EventType.MALFUNCTION_UNFIXED), 
 			entity,
-			entity.getLocationName(),
-			malfunction.getName() + (fixed? " Fixed" : " Occurred")
+			location,
+			malfunction.getName() //+ (fixed? " Fixed" : " Occurred")
 		);
 	}
 }

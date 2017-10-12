@@ -324,10 +324,10 @@ implements Serializable {
 
 	/**
 	 * Adds time to the calendar
-	 * @param seconds seconds added to the calendar
+	 * @param ms milliseconds added to the calendar
 	 */
-	public void addTime(double seconds) {
-		cal.add(Calendar.MILLISECOND, (int) (seconds * 1000D));
+	public void addTime(long ms) {
+		cal.add(Calendar.MILLISECOND, (int) ms);
 	}
 
 	/**

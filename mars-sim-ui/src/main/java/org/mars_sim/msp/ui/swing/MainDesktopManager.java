@@ -32,33 +32,40 @@ extends DefaultDesktopManager {
 	@Override
 	public void iconifyFrame(JInternalFrame frame) { frame.setVisible(false); }
 	
-
 	// see http://stackoverflow.com/questions/8136944/preventing-jinternalframe-from-being-moved-out-of-a-jdesktoppane#8138986
 	@Override
 	public void beginDraggingFrame(JComponent f) {
+		//SwingUtilities.updateComponentTreeUI(f); 
+		//f.validate();
 		// Don't do anything. Needed to prevent the DefaultDesktopManager setting the dragMode
 	}
 
 	@Override
 	public void beginResizingFrame(JComponent f, int direction) {
+		//SwingUtilities.updateComponentTreeUI(f); 
 		// Don't do anything. Needed to prevent the DefaultDesktopManager setting the dragMode
 	}
 	
 	@Override
 	public void setBoundsForFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
-		boolean didResize = (f.getWidth() != newWidth || f.getHeight() != newHeight);
+		boolean hitBoundary = (f.getWidth() != newWidth || f.getHeight() != newHeight);
+		//System.out.println("setBoundsForFrame");
 		if (!inBounds((JInternalFrame) f, newX, newY, newWidth, newHeight)) {
 			Container parent = f.getParent();
 			Dimension parentSize = parent.getSize();
+			// Limit the unit window or tool windows to stay inside and never go outside of the desktop 
+			// or always show up fully (never show up less than the full window)
 			int boundedX = (int) Math.min(Math.max(0, newX), parentSize.getWidth() - newWidth);
 			int boundedY = (int) Math.min(Math.max(0, newY), parentSize.getHeight() - 40);//newHeight);
 			f.setBounds(boundedX, boundedY, newWidth, newHeight);
 		} else {
 			f.setBounds(newX, newY, newWidth, newHeight);
 		}
-		if(didResize) {
+		
+		if (hitBoundary) {
 			f.validate();
 		}
+		
 	}
 
 	protected boolean inBounds(JInternalFrame f, int newX, int newY, int newWidth, int newHeight) {

@@ -710,7 +710,7 @@
 			<building id="36" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />		
 			<building id="37" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />			
 			
-			<building id="38" type="Astronomy Observatory" x-location="-62.5" y-location="-17.5" facing="90.0" />
+			<building id="38" type="Astronomy Observatory" x-location="-55.0" y-location="-20.0" facing="90.0" />
 			<building id="39" type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
 			<building id="40" type="Large Sabatier Processor" x-location="-30.0" y-location="-20.0" facing="90.0" />
 			

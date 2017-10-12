@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -73,25 +72,30 @@ import java.util.logging.Logger;
  * The TransportWizard class is a class for hosting building transport event manually.
  *
  */
+@SuppressWarnings("restriction")
 public class TransportWizard {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TransportWizard.class.getName());
 
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 9D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
-
-    private static int wait_time_in_secs = 60; // in seconds
+	// 2016-03-08 Added key bindings related declarations
+    private static final int ANIMATION_DELAY = 5;
+    
+    private static int wait_time_in_secs = 90; // in seconds
 
     private final static String TITLE = "Transport Wizard";
 
     private double xLast, yLast;
 
-	// 2016-03-08 Added key bindings related declarations
-    private static final int ANIMATION_DELAY = 5;
+    private boolean upKeyPressed = false;
+    private boolean downKeyPressed = false;
+    private boolean leftKeyPressed = false;
+    private boolean rightKeyPressed = false;
+    private boolean turnKeyPressed = false;
+    
     private EnumMap<KeyboardDirection, Boolean> enumMap = new EnumMap<>(KeyboardDirection.class);
     private Map<Integer, KeyboardDirection> keyboardMap = new HashMap<>();
     private javax.swing.Timer animationTimer;
@@ -798,8 +802,8 @@ public class TransportWizard {
 			mainScene.getStage().requestFocus();
 
 
-			//final KeyboardDetection kb = new KeyboardDetection(newBuilding, mgr);
-
+			KeyboardDetection keyboard = new KeyboardDetection(newBuilding, mgr);
+/*
 			// 2016-03-08 Added keyboard mapping and key bindings
 			for (KeyboardDirection dir : KeyboardDirection.values()) {
 				enumMap.put(dir, Boolean.FALSE);
@@ -820,76 +824,56 @@ public class TransportWizard {
 			setKeyBindings();
 			animationTimer = new javax.swing.Timer(ANIMATION_DELAY, new AnimationListener(newBuilding, mgr));
 			animationTimer.start();
+*/
 
+			MouseMotionDetection mouseMotion = new MouseMotionDetection(newBuilding, mgr);
 
-			final MouseDetection md = new MouseDetection(newBuilding, mgr);
-
-			SwingUtilities.invokeLater(() -> {
-
+			//SwingUtilities.invokeLater(() -> {
 				mapPanel.setFocusable(true);
 				mapPanel.requestFocusInWindow();
-
-				//mapPanel.addKeyListener(kb);
-
-				mapPanel.addMouseMotionListener(md);
-
+				mapPanel.addKeyListener(keyboard);
+				mapPanel.addMouseMotionListener(mouseMotion);
+				logger.info("addKeyListener() and addMouseMotionListener()");  
+/*
 				mapPanel.addMouseListener(new MouseListener() {
 				    @Override
 				    public void mouseClicked(MouseEvent evt) {
 					//	Point location = MouseInfo.getPointerInfo().getLocation();
-				    	evt.consume();
+						// empty
 				    }
 
 					@Override
 					public void mouseEntered(MouseEvent evt) {
-						//mouseMoved(arg0);
-				    	evt.consume();
+						// empty
 					}
 
 					@Override
 					public void mouseExited(MouseEvent evt) {
-						//mouseMoved(arg0);
-				    	evt.consume();
+						// empty
 					}
 
 					@Override
-					public void mousePressed(MouseEvent evt) {
-						if (evt.getButton() == MouseEvent.BUTTON1) {
-							//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-							xLast = evt.getX();
-							yLast = evt.getY();
-						}
-				    	evt.consume();
+					public synchronized void mousePressed(MouseEvent evt) {
+						// empty
 					}
 
 					@Override
-					public void mouseReleased(MouseEvent evt) {
-						if (evt.getButton() == MouseEvent.BUTTON1) {
-							//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-							mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-					    	boolean withinRadius = isWithinZone(newBuilding, mgr);
-
-					    	if (withinRadius)
-					    		moveNewBuildingTo(newBuilding, evt.getX(), evt.getY());
-
-						}
-
-						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				    	evt.consume();
+					public synchronized void mouseReleased(MouseEvent evt) {
+						// empty
 					}
 
 				});
-			});
+*/				
+			//});
 
 			Optional<ButtonType> result = alert.showAndWait();
 
 			if (result.isPresent() && result.get() == buttonTypeConfirm) {
 				newBuilding.setInTransport(false);
-				//mapPanel.removeKeyListener(kb);
-				removeKeyBindings();
-				animationTimer.stop();
-				mapPanel.removeMouseMotionListener(md);
+				mapPanel.removeKeyListener(keyboard);
+				//removeKeyBindings();
+				//animationTimer.stop();
+				mapPanel.removeMouseMotionListener(mouseMotion);
 			}
 
 	}
@@ -1134,38 +1118,41 @@ public class TransportWizard {
 	}
 
 	// 2015-12-25 Added MouseDetection
-	class MouseDetection implements MouseMotionListener{
+	class MouseMotionDetection implements MouseMotionListener{
 		private Building newBuilding;
 		private BuildingManager mgr;
 
-		MouseDetection(Building newBuilding, BuildingManager mgr) {
+		MouseMotionDetection(Building newBuilding, BuildingManager mgr) {
 			this.newBuilding = newBuilding;
 			this.mgr = mgr;
 		}
 
 		@Override
-		public void mouseDragged(MouseEvent evt) {
-			if (evt.getButton() == MouseEvent.BUTTON1) {
-				mouseMoved(evt);
-			}
+		public synchronized void mouseDragged(MouseEvent e) {
+			xLast = e.getX();
+			yLast = e.getY();
 		}
 
 		@Override
-		public void mouseMoved(MouseEvent evt) {
-			if (evt.getButton() == MouseEvent.BUTTON1) {
+		public synchronized void mouseMoved(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				
 				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			    // Check for collision here
 			    isCollisionFreeVehicle(newBuilding, mgr);
-			    boolean ok2 = isCollisionFreeImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
+			    //boolean ok2 = isCollisionFreeImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
-			    if (ok2) {
-			    	boolean withinRadius = isWithinZone(newBuilding, mgr);
+			    //if (ok2) {
+			    //	boolean withinRadius = isWithinZone(newBuilding, mgr);
 
-			    	if (withinRadius)
-			    		moveNewBuildingTo(newBuilding, evt.getX(), evt.getY());
-			    }
+			    //	if (withinRadius)
+			    		moveNewBuildingTo(newBuilding, e.getX(), e.getY());
+			    //}
 			}
+			xLast = e.getX();
+			yLast = e.getY();
 		}
+	
 	}
 
 	// 2015-12-25 Added KeyboardDetection
@@ -1181,20 +1168,21 @@ public class TransportWizard {
 		@Override
 		public void keyPressed(java.awt.event.KeyEvent e) {
 		    int c = e.getKeyCode();
+	    
 		    //System.out.println("c is " + c);
 		    // Check for collision here
-		    isCollisionFreeVehicle(newBuilding, mgr);
-		    boolean ok2 = isCollisionFreeImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
+		    //isCollisionFreeVehicle(newBuilding, mgr);
+		    //boolean ok2 = isCollisionFreeImmovable(newBuilding, mgr, Resupply.MAX_COUNTDOWN);
 
-		    if (ok2) {
-		    	boolean withinRadius = isWithinZone(newBuilding, mgr);
+		    //if (ok2) {
+		    //	boolean withinRadius = isWithinZone(newBuilding, mgr);
 
-		    	if (withinRadius)
-		    		handleKeyboardInput(newBuilding, c);
-		    }
+		    //	if (withinRadius)
+		    		handleKeyPress(newBuilding, c);
+		    //}
 
 		    mapPanel.repaint();
-			e.consume();
+			//e.consume();
 		}
 
 		@Override
@@ -1205,6 +1193,9 @@ public class TransportWizard {
 		@Override
 		public void keyReleased(java.awt.event.KeyEvent e) {
 		    int c = e.getKeyCode();
+		    handleKeyRelease(newBuilding, c);
+		    //e.consume();
+/*		    
 		    //System.out.println("c is " + c);
 		    // Check for collision here
 		    isCollisionFreeVehicle(newBuilding, mgr);
@@ -1214,11 +1205,12 @@ public class TransportWizard {
 		    	boolean withinRadius = isWithinZone(newBuilding, mgr);
 
 		    	if (withinRadius)
-		    		handleKeyboardInput(newBuilding, c);
+		    		handleKeyRelease(newBuilding, c);
 		    }
 
 		    mapPanel.repaint();
 			e.consume();
+*/			
 		}
 	}
 
@@ -1299,63 +1291,196 @@ public class TransportWizard {
 		}
 	}
 
+	public void moveNewBuildingTo(Building b, double xPixel, double yPixel, double turnAngle) {
+		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
+
+		double xDiff = xPixel - xLast;
+		double yDiff = yPixel - yLast;
+
+		if (xDiff < mapPanel.getWidth() && yDiff < mapPanel.getHeight()) {
+			//System.out.println("xPixel : " + xPixel
+			//		+ "  yPixel : " + yPixel
+			//		+ "  xLast : " + xLast
+			//		+ "  yLast : " + yLast
+			//		+ "  xDiff : " + xDiff
+			//		+ "  yDiff : " + yDiff);
+
+			double width = b.getWidth();
+			double length = b.getLength();
+			int facing = (int) b.getFacing();
+			double x = b.getXLocation();
+			double y = b.getYLocation();
+			double xx = 0;
+			double yy = 0;
+
+			if (facing == 0) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 90){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			// Loading Dock Garage
+			if (facing == 180) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 270){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+			// Fortunately, they both have the same width and length
+			else if (facing == 45){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			else if (facing == 135){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			double distanceX = Math.abs(x - pixel.getX());
+			double distanceY = Math.abs(y - pixel.getY());
+			//System.out.println("distanceX : " + distanceX + "  distanceY : " + distanceY);
+
+
+			if (distanceX <= xx && distanceY <= yy) {
+				Point.Double last = mapPanel.convertToSettlementLocation((int)xLast, (int)yLast);
+
+				double new_x = Math.round(x + pixel.getX() - last.getX());
+				b.setXLocation(new_x);
+				double new_y = Math.round(y + pixel.getY() - last.getY());
+				b.setYLocation(new_y);
+
+				xLast = xPixel;
+				yLast = yPixel;
+			}
+		}
+	}
+	
 	/**
 	 * Sets the new x and y location and facing of the site
 	 * @param b
 	 * @param c
 	 */
 	// 2016-03-08 Renamed to handleKeyboardInput()
-	public void handleKeyboardInput(Building b, int c) {
-		int facing = (int) b.getFacing();
-		double x = b.getXLocation();
-		double y = b.getYLocation();
+	public void handleKeyPress(Building b, int c) {
 
 	    if (c == java.awt.event.KeyEvent.VK_UP // 38
 	    	|| c == java.awt.event.KeyEvent.VK_KP_UP
 	    	|| c == java.awt.event.KeyEvent.VK_W
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("up");
-			b.setYLocation(y + 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
-	    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
+	    	upKeyPressed = true;
+	    	
+	    } else if (c == java.awt.event.KeyEvent.VK_DOWN // 40
 	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN
 	    	|| c == java.awt.event.KeyEvent.VK_S
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("down");
-			b.setYLocation(y - 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
-	    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
+	    	downKeyPressed = true;
+
+	    } else if (c == java.awt.event.KeyEvent.VK_LEFT // 37
 	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT
 	    	|| c == java.awt.event.KeyEvent.VK_A
 	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD4) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("left");
-			b.setXLocation(x + 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
-	    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
+	    	leftKeyPressed = true;
+
+	    } else if (c == java.awt.event.KeyEvent.VK_RIGHT // 39
 	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT
-	    	|| c == java.awt.event.KeyEvent.VK_W
-	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
-	    	//System.out.println("x : " + x + "  y : " + y);
-	    	//System.out.println("right");
-			b.setXLocation(x - 1);
-	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
-	    } else if(c == java.awt.event.KeyEvent.VK_R
+	    	|| c == java.awt.event.KeyEvent.VK_D
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD6) {
+	    	rightKeyPressed = true;
+
+	    } else if (c == java.awt.event.KeyEvent.VK_R
 	    	|| c == java.awt.event.KeyEvent.VK_F) {
-	    	//System.out.println("f : " + facing);
-	    	//System.out.println("turn 90");
+	    	turnKeyPressed = true;
+	    }
+
+		int facing = (int) b.getFacing();
+		double x = b.getXLocation();
+		double y = b.getYLocation();
+
+	    if (upKeyPressed) {
+	    	b.setYLocation(y + 1);
+	    	logger.info("setYLocation(y + 1)");
+	    	//moveNewBuildingTo(b, 0, 1);
+	    	upKeyPressed = false;
+
+	    } 
+	    else if (downKeyPressed) {
+	    	b.setYLocation(y - 1);
+	    	logger.info("setYLocation(y - 1)");
+	    	//moveNewBuildingTo(b, 0, -1);
+	    	downKeyPressed = false;
+				
+		} 
+	    else if (leftKeyPressed) {
+			b.setXLocation(x + 1);
+			logger.info("setYLocation(x + 1)");
+	    	//moveNewBuildingTo(b, 1, 0);
+			leftKeyPressed = false;
+			
+		} 
+	    else if (rightKeyPressed) {
+			b.setXLocation(x - 1);
+			logger.info("setYLocation(x - 1)");
+	    	//moveNewBuildingTo(b, -1, 0);
+			rightKeyPressed = false;
+				
+		}
+	    else if (turnKeyPressed) {
 	    	facing = facing + 45;
 	    	if (facing >= 360)
 	    		facing = facing - 360;
 	    	b.setFacing(facing);
-	    	//System.out.println("f : " + s.getFacing());
+	    	logger.info("setFacing(facing)");
+	    	//moveNewBuildingTo(b, 0, 0, 45);
+	    	turnKeyPressed = false;
+		}
+	}
+
+
+	/**
+	 * Sets the new x and y location and facing of the site
+	 * @param b
+	 * @param c
+	 */
+	public void handleKeyRelease(Building b, int c) {
+
+	    if (c == java.awt.event.KeyEvent.VK_UP // 38
+	    	|| c == java.awt.event.KeyEvent.VK_KP_UP
+	    	|| c == java.awt.event.KeyEvent.VK_W
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
+	    	upKeyPressed = false;
+	    	
+	    } else if (c == java.awt.event.KeyEvent.VK_DOWN // 40
+	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN
+	    	|| c == java.awt.event.KeyEvent.VK_S
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
+	    	downKeyPressed = false;
+
+	    } else if (c == java.awt.event.KeyEvent.VK_LEFT // 37
+	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT
+	    	|| c == java.awt.event.KeyEvent.VK_A
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD4) {
+	    	leftKeyPressed = false;
+
+	    } else if (c == java.awt.event.KeyEvent.VK_RIGHT // 39
+	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT
+	    	|| c == java.awt.event.KeyEvent.VK_D
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD6) {
+	    	rightKeyPressed = false;
+
+	    } else if (c == java.awt.event.KeyEvent.VK_R
+	    	|| c == java.awt.event.KeyEvent.VK_F) {
+	    	turnKeyPressed = false;
 	    }
 
 	}
 
-
+	
 	/**
 	 * Compares and sorts a list of BuildingTemplates according to its building id
 	 */
