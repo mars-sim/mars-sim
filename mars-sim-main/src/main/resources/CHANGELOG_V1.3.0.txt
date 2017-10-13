@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4180) - 2017-10-11
+## v3.1.0-Preview 9 (build 4185) - 2017-10-13
 
 
 ### KNOWN LIMITATIONS :
@@ -56,7 +56,7 @@ https://github.com/mars-sim/mars-sim
 17. Stabilize the value points (VP) based economy. Add variable inflation to
     prevent abrupt changes.
 
-18. Add 8 more background sound tracks.
+18. Add sound tracks as background music.
 
 ### UI IMPROVEMENT :
 
@@ -66,6 +66,7 @@ https://github.com/mars-sim/mars-sim
 
 3. Add a list of supported resolutions in the main menu.
 
+4. Add separate volume controls for sound effects and background music
 
 ### FIXES :
 

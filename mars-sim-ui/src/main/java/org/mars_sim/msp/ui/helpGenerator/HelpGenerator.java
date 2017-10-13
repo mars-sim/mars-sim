@@ -51,14 +51,30 @@ public class HelpGenerator {
 	 *
 	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
 
-	// In Windows OS, the Eclipse's htmls are kept in the \src\ folder
-	// or at \mars-sim\mars-sim-ui\src\main\resources\docs\help
+	// In Windows OS, the htmls that are visible together with the codebase under the Eclipse's IDE are kept 
+	// inside the src folder hierarchy as follows : 
+	//
+	// at \mars-sim\mars-sim-ui\src\main\resources\docs\help
 	// e.g. D:\Data\git\mars-sim\mars-sim-ui\src\main\resources\docs\help
 	//
-	// After running "MarsProjectFX -html.launch" in Eclipse, the newly generated htmls will be at the \target\ folder 
-	// or at at \mars-sim-ui\target\classes\docs\help
+	// After running "MarsProjectFX -html.launch" in Eclipse, 
+	// the newly generated htmls will be at the target folder hierarchy as follows :
+	//
+	// at \mars-sim-ui\target\classes\docs\help
 	// e.g. D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help
-
+    //
+    //
+    // One will need to "manually" copy the newly generated htmls from the target folder to the src folder
+    //   
+    // A total of 620 newly generated htmls using this HelpGenerator class can be broken into the followings :
+    // 1. food_production*.html
+    // 2. process*.html       
+    // 3. part*.html
+    // 4. resource*.html
+    // 
+    // In order to include a clean set of htmls, it is recommended that one should delete the old set of htmls 
+    // (1-4 above) in the src folder right before copying the new set of htmls from the target folder. 
+    // 
 */
 
 	private static final String DIR = "\\docs\\help\\";
