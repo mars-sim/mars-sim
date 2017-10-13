@@ -1356,8 +1356,8 @@ public class MainScene {
 			}
 		});
 		// Background sound track
-		Label tracklabel = createBlendLabel("Background Music");
-		tracklabel.setPadding(new Insets(0, 0, 0, 1));
+		Label trackLabel = createBlendLabel("Background Music");
+		trackLabel.setPadding(new Insets(0, 0, 0, 0));
 
 		musicMuteBox = new CheckBox("mute");
 		musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
@@ -1432,8 +1432,8 @@ public class MainScene {
 		});
 		
 		// Sound effect
-		Label effectlabel = createBlendLabel("Sound Effect");
-		effectlabel.setPadding(new Insets(0, 0, 0, 1));
+		Label effectLabel = createBlendLabel("Sound Effect");
+		effectLabel.setPadding(new Insets(0, 0, 0, 1));
 
 		effectMuteBox = new CheckBox("mute");
 		effectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
@@ -1479,36 +1479,38 @@ public class MainScene {
 		gridPane1.setHgap(1.0);
 		gridPane1.setVgap(1.0);
 		
-		ColumnConstraints c = new ColumnConstraints();
-		c.setPrefWidth(90);
+		ColumnConstraints c0 = new ColumnConstraints();
+		c0.setPrefWidth(60);
+		ColumnConstraints c1 = new ColumnConstraints();
+		c1.setPrefWidth(120);
 		// ColumnConstraints mid = new ColumnConstraints();
 		// mid.setPrefWidth(70);
 		// ColumnConstraints left = new ColumnConstraints();
 		// left.setPrefWidth(70);
 
 		//GridPane.setConstraints(empty, 0, 0);
-		GridPane.setConstraints(tracklabel, 0, 0);
+		GridPane.setConstraints(trackLabel, 0, 0);
 		GridPane.setConstraints(musicMuteBox, 1, 0);
 		//GridPane.setConstraints(empty, 0, 1);
-		GridPane.setConstraints(effectlabel, 0, 0);
+		GridPane.setConstraints(effectLabel, 0, 0);
 		GridPane.setConstraints(effectMuteBox, 1, 0);
 		
 		//GridPane.setHalignment(empty, HPos.CENTER);
-		GridPane.setHalignment(tracklabel, HPos.CENTER);
-		GridPane.setHalignment(musicMuteBox, HPos.CENTER);
+		GridPane.setHalignment(trackLabel, HPos.LEFT);
+		GridPane.setHalignment(musicMuteBox, HPos.RIGHT);
 		//GridPane.setHalignment(empty, HPos.CENTER);
-		GridPane.setHalignment(effectlabel, HPos.CENTER);
-		GridPane.setHalignment(effectMuteBox, HPos.CENTER);
+		GridPane.setHalignment(effectLabel, HPos.LEFT);
+		GridPane.setHalignment(effectMuteBox, HPos.RIGHT);
 		
-		gridPane0.getColumnConstraints().addAll(c, c);
-		gridPane0.getChildren().addAll(tracklabel, musicMuteBox);
+		gridPane0.getColumnConstraints().addAll(c1, c0);
+		gridPane0.getChildren().addAll(trackLabel, musicMuteBox);
 		
-		gridPane1.getColumnConstraints().addAll(c, c);
-		gridPane1.getChildren().addAll(effectlabel, effectMuteBox);
+		gridPane1.getColumnConstraints().addAll(c1, c0);
+		gridPane1.getChildren().addAll(effectLabel, effectMuteBox);
 
 		soundVBox = new VBox();
 		soundVBox.getStyleClass().add("jfx-popup-container");
-		soundVBox.setPadding(new Insets(5, 5, 5, 5));
+		soundVBox.setPadding(new Insets(1, 1, 1, 1));
 		soundVBox.setAlignment(Pos.CENTER);
 		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, effectSlider);
 		soundPane.getChildren().addAll(soundVBox);

@@ -70,7 +70,8 @@ public class MockBuilding extends Building {
 //	        functions.remove(function);
 //	}
 
+	@Override
 	public Inventory getInventory() {
-		return manager.getSettlement().getInventory();
+		return null;//manager.getSettlement().getInventory();
 	}
 }

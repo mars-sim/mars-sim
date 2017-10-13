@@ -109,7 +109,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     private SalvageInfo salvageInfo; // The vehicle's salvage info.
     private Settlement associatedSettlement;
 
-    private static VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+    private static VehicleConfig config;
     /**
      * Constructor 1 : prepares a Vehicle object with a given settlement
      * @param name the vehicle's name
@@ -131,6 +131,8 @@ public abstract class Vehicle extends Unit implements Serializable,
         containerUnit = settlement;
         settlement.getInventory().storeUnit(this);
 
+        config = SimulationConfig.instance().getVehicleConfiguration();
+        
         // Initialize vehicle data
         vehicleType = vehicleType.toLowerCase();
         setDescription(vehicleType);

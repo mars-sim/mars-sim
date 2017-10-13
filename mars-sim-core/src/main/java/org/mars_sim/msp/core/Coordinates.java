@@ -712,17 +712,17 @@ implements Serializable {
 			throw new IllegalStateException("Longitude number invalid: " + longitude);
 		}
 
-
 		// TODO parse longitude depending on locale and validate
 		String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
+	
+		if (directionStr.compareToIgnoreCase(shortWest) == 0) 
+			longValue = 360D - longValue;
+		else if (directionStr.compareToIgnoreCase(shortEast) != 0) 
+			throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
 		
-		if ((longValue > 180D) || (longValue < 0)) {
-			//throw new IllegalStateException("The value of longitude " + longValue + " needs to be between 0 and 180 degrees.");
-			if (directionStr.compareToIgnoreCase(shortWest) == 0) 
-				longValue = 360D - longValue;
-			else if (directionStr.compareToIgnoreCase(shortEast) != 0) 
-				throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
-		}
+		//if ((longValue > 180D) || (longValue < 0)) {
+		//	throw new IllegalStateException("The value of longitude " + longValue + " needs to be between 0 and 180 degrees.");
+		//}
 			
 
 		double theta = (2 * Math.PI) * (longValue / 360D);

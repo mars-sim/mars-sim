@@ -184,7 +184,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected BuildingManager manager;
 	protected MalfunctionManager malfunctionManager;
 
-    //private Inventory inv; //b_inv, s_inv;
+    private Inventory inv; //b_inv, s_inv;
     private Settlement settlement;
 
     private ThermalGeneration furnace;
@@ -235,6 +235,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.settlement = manager.getSettlement();
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
+		inv = settlement.getInventory();
 
 		// Set the instance of life support
 		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
@@ -309,6 +310,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.nickName = nickName;
 		this.manager = manager;
 		this.settlement = manager.getSettlement();
+		inv = settlement.getInventory();
 
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
@@ -454,6 +456,8 @@ LocalBoundedObject, InsidePathLocation {
 	/** Constructor 3 (for use by Mock Building in Unit testing) */
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
+		//settlement = manager.getSettlement();
+		//inv = settlement.getInventory();
 	}
 
 	/**
@@ -469,7 +473,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * @return inventory
 	 */
 	public Inventory getSettlementInventory() {
-		return settlement.getInventory();//s_inv;
+		return inv;//manager.getSettlement().getInventory();//s_inv;
 	}
 
 	/**
@@ -477,7 +481,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * @return inventory
 	 */
 	public Inventory getInventory() {
-		return manager.getSettlement().getInventory();
+		return inv;//manager.getSettlement().getInventory();
 	}
 
 	/**

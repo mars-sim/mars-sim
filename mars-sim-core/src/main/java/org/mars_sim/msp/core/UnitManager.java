@@ -512,16 +512,16 @@ public class UnitManager implements Serializable {
 	private void createInitialVehicles() {
 
 		try {
-			Iterator<Settlement> i = getSettlements().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
+			//Iterator<Settlement> i = getSettlements().iterator();
+			//while (i.hasNext()) {
+			for (Settlement settlement : getSettlements()) {//= i.next();
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> vehicleMap = template.getVehicles();
 				Iterator<String> j = vehicleMap.keySet().iterator();
 				while (j.hasNext()) {
 					String vehicleType = j.next();
 					int number = vehicleMap.get(vehicleType);
-					vehicleType = vehicleType.toLowerCase();
+					//vehicleType = vehicleType.toLowerCase();
 					for (int x = 0; x < number; x++) {
 						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 							String name = getNewName(UnitType.VEHICLE, "LUV", null, null);
@@ -534,7 +534,8 @@ public class UnitManager implements Serializable {
 				}
 			}
 		} catch (Exception e) {
-			throw new IllegalStateException("Vehicles could not be created: " + e.getMessage(), e);
+			e.printStackTrace();
+			//throw new IllegalStateException("Vehicles could not be created: " + e.getMessage(), e);
 		}
 	}
 
@@ -547,14 +548,14 @@ public class UnitManager implements Serializable {
 	private void createInitialEquipment() {
 
 		try {
-			Iterator<Settlement> i = getSettlements().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
+			//Iterator<Settlement> i = getSettlements().iterator();
+			//while (i.hasNext()) {
+			for (Settlement settlement : getSettlements()) {//= i.next();
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> equipmentMap = template.getEquipment();
-				Iterator<String> j = equipmentMap.keySet().iterator();
-				while (j.hasNext()) {
-					String type = j.next();
+				//Iterator<String> j = equipmentMap.keySet().iterator();
+				//while (j.hasNext()) {
+				for (String type : equipmentMap.keySet()) {//= j.next();
 					int number = (Integer) equipmentMap.get(type);
 					for (int x = 0; x < number; x++) {
 						Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates(), false);

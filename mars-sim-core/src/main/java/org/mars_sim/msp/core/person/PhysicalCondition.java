@@ -170,15 +170,15 @@ implements Serializable {
 
 	private CircadianClock circadian;
 
-	private Complaint dehydration;
+	private static Complaint dehydration;
 
-    private Complaint starvation;
+    private static Complaint starvation;
 
-    private Complaint depression;
+    private static Complaint depression;
     
-    private Complaint panicAttack;
+    private static Complaint panicAttack;
 	
-    private Complaint highFatigue;
+    private static Complaint highFatigue;
     
     private LocationSituation ls;
     
@@ -188,7 +188,11 @@ implements Serializable {
     
     private HealthProblem dehydrated;
     
+    private static MedicalManager medicalManager;
+    
 	private static MarsClock marsClock;
+	
+	private static Simulation sim;
 	
     /** List of medications affecting the person. */
     private List<Medication> medicationList;
@@ -207,22 +211,24 @@ implements Serializable {
         person = newPerson;
     	name = newPerson.getName();
 
+    	sim = Simulation.instance();
+    	
     	circadian = person.getCircadianClock();
     	
-    	dehydration = getMedicalManager().getDehydration();
-        starvation = getMedicalManager().getStarvation();
+    	medicalManager = sim.getMedicalManager();
+            		
+    	//dehydration = medicalManager.getComplaintByName(ComplaintType.DEHYDRATION);//.getDehydration();
+        //starvation = medicalManager.getComplaintByName(ComplaintType.STARVATION);//.getStarvation();
         
-    	depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
-    	panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-       	highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+    	//depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+    	//panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
+       	//highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
        	
         endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
         strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
         resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
         emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
 
-        allMedicalComplaints = getMedicalManager().getAllMedicalComplaints();
-        
         ls = person.getLocationSituation();
 
         taskMgr = person.getMind().getTaskManager();
@@ -233,8 +239,8 @@ implements Serializable {
 
         alive = true;
 
-    	if (Simulation.instance().getMasterClock() != null) // for passing maven test
-    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	if (sim.getMasterClock() != null) // for passing maven test
+    		marsClock = sim.getMasterClock().getMarsClock();
 
 		//foodAR = AmountResource.findAmountResource(FOOD);			// 1
 		//waterAR = AmountResource.findAmountResource(WATER);		// 2
@@ -754,9 +760,15 @@ implements Serializable {
      */
     private void checkForStressBreakdown(double time) {
         // Expanded Anxiety Attack into either Panic Attack or Depression
-    	//Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
-    	//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+
     	// a person is limited to have only one of them at a time
+    	if (panicAttack == null)
+    		panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+    	
+    	if (depression == null)
+    	   	depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+
+    	
         if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
 
             // Determine stress resilience modifier (0D - 2D).
@@ -810,10 +822,11 @@ implements Serializable {
      * @param time the time passing (millisols)
      */
     private void checkForHighFatigueCollapse(double time) {
-    	//Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-        
+   
+    	if (highFatigue == null)
+    		highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+    	  
     	if (!problems.containsKey(highFatigue)) {
-
             // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
             //int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
             //int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
@@ -852,6 +865,9 @@ implements Serializable {
         // Check each possible medical complaint.
         //Iterator<Complaint> i = getMedicalManager().getAllMedicalComplaints().iterator();
         //while (i.hasNext()) {
+        if (allMedicalComplaints == null)
+            allMedicalComplaints = medicalManager.getAllMedicalComplaints();
+        
         for (Complaint complaint : allMedicalComplaints) {//= i.next();
             double probability = complaint.getProbability();
             // TODO: need to be more task-based or location-based ?

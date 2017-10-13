@@ -789,7 +789,7 @@ extends VehicleMission {
 	}
 
 	@Override
-	public synchronized Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer,
+	public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer,
 			double distance) {
 		Map<Resource, Number> result = super.getResourcesNeededForTrip(
 				useBuffer, distance);
@@ -811,12 +811,12 @@ extends VehicleMission {
 				* timeSols * crewNum * Mission.WATER_MARGIN;
 		if (useBuffer)
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, 
-				"Preparing " + getVehicle() + ", <Water Estimate>  sols : " + Math.round(timeSols * 10.0)/10.0 
+		//LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, 
+		//		"Preparing " + getVehicle() + ", <Water Estimate>  sols : " + Math.round(timeSols * 10.0)/10.0 
 				//+ "   Consumption Rate : " + PhysicalCondition.getWaterConsumptionRate() 
-				+ "   crewNum : " + crewNum 
-				+ "   water : " + Math.round(waterAmount * 10.0)/10.0 + " kg" 
-				, null);
+		//		+ "   crewNum : " + crewNum 
+		//		+ "   water : " + Math.round(waterAmount * 10.0)/10.0 + " kg" 
+		//		, null);
 		result.put(waterAR, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
