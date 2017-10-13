@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Administration.java
- * @version 3.07 2014-07-02
+ * @version 3.1.0 2017-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -30,6 +30,8 @@ public class Administration extends Function implements Serializable {
     private int populationSupport;
     private int staff, staffCapacity;
     
+    private String buildingType;
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -38,12 +40,21 @@ public class Administration extends Function implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
+        buildingType = building.getBuildingType();
         // Populate data members.
         buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-        populationSupport = buildingConfig.getAdministrationPopulationSupport(building.getName());
-
+        
+        if (buildingType.equalsIgnoreCase("Command and Control"))
+        	populationSupport = 16;	
+        else if (buildingType.equalsIgnoreCase("Lander Hab"))
+        	populationSupport = 8;	
+        else if (buildingType.equalsIgnoreCase("Outpost Hub"))
+        	populationSupport = 6;	
+        
+        staffCapacity = buildingConfig.getAdministrationPopulationSupport(buildingType);
+        
         // Load activity spots
-        loadActivitySpots(buildingConfig.getAdministrationActivitySpots(building.getName()));
+        loadActivitySpots(buildingConfig.getAdministrationActivitySpots(buildingType));
     }
 
     /**
@@ -64,7 +75,7 @@ public class Administration extends Function implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building adminBuilding = i.next();
-            Administration admin = (Administration) adminBuilding.getFunction(FUNCTION);
+            Administration admin = adminBuilding.getAdministration();// adminBuilding.getFunction(FUNCTION);
             double populationSupport = admin.getPopulationSupport();
             double wearFactor = ((adminBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
             supply += populationSupport * wearFactor;
@@ -105,6 +116,13 @@ public class Administration extends Function implements Serializable {
         return staff;
     }
 
+    public boolean isFull() {
+    	if (staff == staffCapacity)
+    		return true;
+    	else
+    		return false;
+    }
+    
     /**
      * Adds a person to the office space.
      * @throws BuildingException if person would exceed office space capacity.

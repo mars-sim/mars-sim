@@ -66,7 +66,7 @@ public class MainSceneMenu extends MenuBar  {
 							guideToolItem;
 							//marsViewerItem, webToolItem;
 
-	private CheckMenuItem showFullScreenItem, notificationItem, muteItem;
+	private CheckMenuItem showFullScreenItem, notificationItem, effectMuteItem, musicMuteItem;
 
 	private MenuItem skinThemeItem, quotationItem, volumeUpItem, volumeDownItem ;
 
@@ -238,15 +238,17 @@ public class MainSceneMenu extends MenuBar  {
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
         volumeDownItem = new MenuItem("Volume Down");
         volumeDownItem.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN));
-        muteItem = new CheckMenuItem("Mute");
-        muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
+        musicMuteItem = new CheckMenuItem("Mute Background Music");
+        musicMuteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
+        effectMuteItem = new CheckMenuItem("Mute Sound Effect");
+        effectMuteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
         menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, SeparatorMenuItem4,
         		quotationItem,
         		SeparatorMenuItem5,
         		notificationItem,
         		SeparatorMenuItem6,
-        		volumeUpItem, volumeDownItem, muteItem); // showUnitBarItem,showToolBarItem,
+        		volumeUpItem, volumeDownItem, musicMuteItem, effectMuteItem); // showUnitBarItem,showToolBarItem,
 
 
 /*
@@ -426,10 +428,23 @@ public class MainSceneMenu extends MenuBar  {
             }
         });
 
-        muteItem.setOnAction(new EventHandler<ActionEvent>() {
+        musicMuteItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			desktop.getSoundPlayer().setMute(muteItem.isSelected());
+            	if (musicMuteItem.isSelected())
+            		desktop.getSoundPlayer().mute(false, true);
+            	else
+            		desktop.getSoundPlayer().unmute(false, true);
+            }
+        });
+        
+        effectMuteItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+            	if (effectMuteItem.isSelected())
+            		desktop.getSoundPlayer().mute(true, false);
+            	else
+            		desktop.getSoundPlayer().unmute(true, false);
             }
         });
 /*
@@ -595,10 +610,14 @@ public class MainSceneMenu extends MenuBar  {
 
     }
 
-    public CheckMenuItem getMuteItem() {
-    	return muteItem;
+    public CheckMenuItem getMusicMuteItem() {
+    	return musicMuteItem;
     }
 
+    public CheckMenuItem getEffectMuteItem() {
+    	return effectMuteItem;
+    }
+    
     public CheckMenuItem getNotificationItem() {
     	return notificationItem;
     }

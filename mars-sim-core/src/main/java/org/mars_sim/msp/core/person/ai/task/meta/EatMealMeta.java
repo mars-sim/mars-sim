@@ -61,12 +61,13 @@ public class EatMealMeta implements MetaTask, Serializable {
     	double leptin = cc.getSurplusLeptin();
         // Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ persson per sol
         
-    	if (thirst > 250) {
-    		 result = thirst/2.5;
+    	// When thirst is greater than 50, a person may start feeling thirsty
+    	if (thirst > 50) {
+    		 result = thirst/10;
     	}
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
     	else if (hunger > 250 || energy < 2525 || ghrelin-leptin > 300) {
-        	thirst = thirst / 2.5;
+        	thirst = thirst / 10;
         	hunger = hunger / 10;
             energy = (2525 - energy) / 100;
             result = thirst + hunger + energy;// +  (ghrelin-leptin - 300);
@@ -83,14 +84,13 @@ public class EatMealMeta implements MetaTask, Serializable {
             Cooking kitchen = EatMeal.getKitchenWithMeal(person);
             if (kitchen != null) {
                 // Increase probability to eat meal if a cooked meal is available.
-            	int num = kitchen.getNumberOfAvailableCookedMeals();
-                result *= 1.5 * num;
+                result *= 1.5 * kitchen.getNumberOfAvailableCookedMeals();
             }
             else { //no kitchen has available meals
                 // If no cooked meal, check if preserved food is available to eat.
                 if (!EatMeal.isPreservedFoodAvailable(person)) {
                     // If no preserved food, person can't eat a meal.
-                    return 0;
+                    return result/5;
                 }
             }
 
@@ -115,7 +115,7 @@ public class EatMealMeta implements MetaTask, Serializable {
                 // If no preserved food, person can't eat a meal.
             //    return 0;
             //}
-        	result *= 2D; 
+        	result *= 1.5D; 
         	// TODO : how to ration food and water if running out of it ?
         }
         

@@ -97,20 +97,22 @@ implements Serializable {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
 
+        Settlement s = null;
+        
 		if (!isDone()) {
 			// Set the lead areology researcher and study.
 			leadResearcher = startingPerson;
 			study = determineStudy(leadResearcher);
 			if (study == null) endMission("Scientific study could not be determined.");
 
+			// Initialize data members.
+			s = startingPerson.getSettlement();
+            setStartingSettlement(s);
+            
 			// Set mission capacity.
 			if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
-			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(
-					startingPerson.getSettlement());
+			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
 			if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
-
-			// Initialize data members.
-			setStartingSettlement(startingPerson.getSettlement());
 
 			// Recruit additional members to mission.
 			recruitMembersForMission(startingPerson);
@@ -123,7 +125,7 @@ implements Serializable {
 
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
-					getStartingSettlement(), getStartingSettlement().getName()));
+					s, s.getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable())
@@ -136,7 +138,7 @@ implements Serializable {
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-				getStartingSettlement().getName())); //$NON-NLS-1$
+				s.getName())); //$NON-NLS-1$
 	}
 
 	/**

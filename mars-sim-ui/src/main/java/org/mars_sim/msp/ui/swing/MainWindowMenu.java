@@ -457,7 +457,10 @@ implements ActionListener, MenuListener {
 		}
 
 		else if (selectedItem == muteItem) {
-			desktop.getSoundPlayer().setMute(muteItem.isSelected());
+			if (muteItem.isSelected())
+				desktop.getSoundPlayer().mute(true, true);
+			else
+				desktop.getSoundPlayer().unmute(true, true);
 		}
 
 		else if (selectedItem == aboutMspItem) {
@@ -503,8 +506,8 @@ implements ActionListener, MenuListener {
 		//notificationItem.setSelected(desktop.getMainWindow().getNotification());
 
 		volumeItem.setValue(Math.round(desktop.getSoundPlayer().getVolume() * 10F));
-		volumeItem.setEnabled(!desktop.getSoundPlayer().isMute(false));
-		muteItem.setSelected(desktop.getSoundPlayer().isMute(false));
+		volumeItem.setEnabled(!desktop.getSoundPlayer().isMute(true, true));
+		muteItem.setSelected(desktop.getSoundPlayer().isMute(true, true));
 	}
 
 

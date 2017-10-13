@@ -418,7 +418,7 @@ public class MasterClock implements Serializable { // Runnable,
     }
 
     /**
-     * Resets the total number of pulses using the default TBU
+     * Resets the total number of pulses using the default TBU value
      * @return totalPulses
      */
     // 2017-01-09 Add resetTotalPulses()
@@ -430,7 +430,7 @@ public class MasterClock implements Serializable { // Runnable,
 	}
 
     /**
-     * Sets the simulation time ratio. 
+     * Sets the simulation time ratio and adjust the value of time between update (TBU)
      * @param ratio
      */
     public void setTimeRatio(double ratio) {
@@ -809,7 +809,7 @@ public class MasterClock implements Serializable { // Runnable,
         //System.out.println("totalPulses : " + Math.round(totalPulses*100.0)/100.0 
         //		+ "    uptimeMillis: " + Math.round(uptimer.getUptimeMillis()*100.0)/100.0
         //		+ "    tps: " + 1000L * totalPulses / uptimer.getUptimeMillis());
-        return 1000.0 * totalPulses / uptimer.getUptimeMillis();
+        return 1000.0 / elapsedLast * totalPulses ;//uptimer.getUptimeMillis();
     }
 
 

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
@@ -55,9 +56,13 @@ implements Serializable {
     private static final TaskPhase TOGGLE_PROCESS = new TaskPhase(Msg.getString(
             "Task.phase.toggleProcess")); //$NON-NLS-1$
 
+    private static final String OFF = "off";
+    private static final String ON = "on";
+
+    
     // Data members
     /** True if toggling process is EVA operation. */
-    private boolean isEVA;
+    private boolean needEVA;
     /** The resource process to toggle. */
     private ResourceProcess process;
     /** The building the resource process is in. */
@@ -73,6 +78,7 @@ implements Serializable {
         super(NAME_ON, person, false, 0D);
 
         building = getResourceProcessingBuilding(person);
+        
         if (building != null) {
             process = getResourceProcess(building);
             toggleOn = !process.isProcessRunning();
@@ -80,10 +86,45 @@ implements Serializable {
                 setName(NAME_OFF);
                 setDescription(NAME_OFF);
             }
-            isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+            
+            // Assume the toggling is NOW handled remotely in the command control center
+            needEVA = false;
+            
+            // Pick the building
+            Building destination = null;
+            List<Building> c2_buildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.ADMINISTRATION);
+            for (Building b : c2_buildings) {
+            	if (b.getBuildingType().equalsIgnoreCase("Command and Control")) {
+            		Administration admin = b.getAdministration();
+            		// check if a spot is available
+            		if (!admin.isFull()) {           			
+	            		destination = b;
+	            		break;
+            		}
+            	}
+            	else {
+            		Administration admin = b.getAdministration();
+            		// check if a spot is available
+            		if (!admin.isFull()) {           			
+	            		destination = b;
+	            		break;
+            		}
+            	}
+            }
+            
+            if (destination != null)
+            	walkToActivitySpotInBuilding(destination, false);
+            else
+            	endTask();
+    		
+    		
+                        
+    		// NOTE : no longer require EVA to physically go out there and manually touching a toggle switch 
+/*            
+            needEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 
             // If habitable building, add person to building.
-            if (!isEVA) {
+            if (!needEVA) {
                 // Walk to building.
                 walkToActivitySpotInBuilding(building, false);
             }
@@ -92,6 +133,8 @@ implements Serializable {
                 Point2D toggleLoc = determineToggleLocation();
                 setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
             }
+*/
+            
         }
         else {
             endTask();
@@ -99,7 +142,7 @@ implements Serializable {
 
         addPhase(TOGGLE_PROCESS);
 
-        if (!isEVA) {
+        if (!needEVA) {
             setPhase(TOGGLE_PROCESS);
         }
     }
@@ -297,7 +340,7 @@ implements Serializable {
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 
-        if (isEVA) {
+        if (needEVA) {
             // Add experience to "EVA Operations" skill.
             // (1 base experience point per 100 millisols of time spent)
             double evaExperience = time / 100D;
@@ -320,7 +363,7 @@ implements Serializable {
     public List<SkillType> getAssociatedSkills() {
         List<SkillType> result = new ArrayList<SkillType>(2);
         result.add(SkillType.MECHANICS);
-        if (isEVA) {
+        if (needEVA) {
             result.add(SkillType.EVA_OPERATIONS);
         }
         return result;
@@ -331,7 +374,7 @@ implements Serializable {
         SkillManager manager = person.getMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-        if (isEVA) {
+        if (needEVA) {
             return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
         }
         else {
@@ -369,7 +412,9 @@ implements Serializable {
 
         // If person is incapacitated, enter airlock.
         if (person.getPerformanceRating() == 0D) {
-            if (isEVA) {
+        	// reset it to 3% so that he can walk inside
+        	person.getPhysicalCondition().setPerformanceFactor(3);
+            if (needEVA) {
                 setPhase(WALK_BACK_INSIDE);
             }
             else {
@@ -377,17 +422,9 @@ implements Serializable {
             }
         }
 
-        // Check if process has already been completed.
-        if (process.isProcessRunning() == toggleOn) {
-            if (isEVA) {
-                setPhase(WALK_BACK_INSIDE);
-            }
-            else {
-                endTask();
-            }
-        }
 
         if (isDone()) {
+        	// if the work has been accomplished (it takes some finite amount of time to finish the task
             return time;
         }
 
@@ -409,7 +446,7 @@ implements Serializable {
 
         // Check if process has already been completed.
         if (process.isProcessRunning() == toggleOn) {
-            if (isEVA) {
+            if (needEVA) {
                 setPhase(WALK_BACK_INSIDE);
             }
             else {
@@ -417,9 +454,9 @@ implements Serializable {
             }
 
             Settlement settlement = building.getBuildingManager().getSettlement();
-            String toggle = "off";
+            String toggle = OFF;
             if (toggleOn) {
-                toggle = "on";
+                toggle = ON;
             }
             logger.fine(person.getName() + " turning " + toggle + " " + process.getProcessName() +
                     " at " + settlement.getName() + ": " + building.getNickName());
@@ -438,7 +475,7 @@ implements Serializable {
     protected void checkForAccident(double time) {
 
         // Use EVAOperation checkForAccident() method.
-        if (isEVA) {
+        if (needEVA) {
             super.checkForAccident(time);
         }
 

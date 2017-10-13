@@ -50,7 +50,8 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Mission.class.getName());
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-	// Global mission identifier
+
+    // Global mission identifier
 	private static int missionIdentifer = 0;
 
 	public static String SUCCESSFULLY_ENDED_CONSTRUCTION = "Mission accomplished and all members successfully ended construction";
@@ -63,7 +64,7 @@ implements Serializable {
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
 
 	/** The dimenion-less marginal factor for the amount of water to be brought during a mission. */
-	public final static double WATER_MARGIN = 3.5; // TODO: need to find out why water is running so fast in vehicle
+	public final static double WATER_MARGIN = 4.5; // TODO: need to find out why water is running so fast in vehicle
 	/** The dimenion-less marginal factor for the amount of oxygen to be brought during a mission. */
 	public final static double OXYGEN_MARGIN = 1.2;
 	/** The dimenion-less marginal factor for the amount of food to be brought during a mission. */

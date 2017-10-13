@@ -116,6 +116,8 @@ implements Serializable {
         // Use RoverMission constructor
         super(missionName, startingPerson, minPeople);
 
+        Settlement s = null;
+        
         if (!isDone()) {
 
             // Set mission capacity.
@@ -128,7 +130,8 @@ implements Serializable {
                 setMissionCapacity(availableSuitNum);
 
             // Initialize data members.
-            setStartingSettlement(startingPerson.getSettlement());
+            s = startingPerson.getSettlement();
+            setStartingSettlement(s);
             this.resourceType = resourceType;
             this.siteResourceGoal = siteResourceGoal;
             this.resourceCollectionRate = resourceCollectionRate;
@@ -145,8 +148,7 @@ implements Serializable {
                     true), numSites);
 
             // Add home settlement
-            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
-                    getStartingSettlement(), getStartingSettlement().getName()));
+            addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
             // Check if vehicle can carry enough supplies for the mission.
             if (hasVehicle() && !isVehicleLoadable()) {
@@ -159,8 +161,7 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); //$NON-NLS-1$
 
         // int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
         // logger.info("Starting " + getName() + " with " + emptyContainers + " " + containerType);

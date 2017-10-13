@@ -28,8 +28,9 @@ implements Serializable {
 
 	// Data members
 	private double quality;
-	private MarsClock expirationTime;
 
+	private double dryMass;
+	
 	// 2014-11-28 Added name
 	private String name;
 
@@ -37,7 +38,8 @@ implements Serializable {
 	//private String consumerName;
 	private PreparingDessert kitchen;
 
-	private double dryMass;
+	private MarsClock expirationTime;
+
 	/**
 	 * Constructor.
 	 * @param quality the quality of the dessert

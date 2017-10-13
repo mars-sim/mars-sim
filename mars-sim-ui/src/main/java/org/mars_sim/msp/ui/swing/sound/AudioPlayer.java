@@ -46,9 +46,12 @@ public class AudioPlayer {
 	/** The volume of the audio player (0.0 to 1.0) */
 	private float volume = .8f;
 
-	private int num_times = 0;
+	private int play_times = 0;
 	
-	private static boolean hasMasterGain = true;
+	private boolean hasMasterGain = true;
+	
+	private boolean lastTrackState;
+	private boolean lastEffectState;
 
 	public AudioPlayer(MainDesktopPane desktop) {
 		//logger.info("constructor is on " + Thread.currentThread().getName());
@@ -67,7 +70,7 @@ public class AudioPlayer {
 		soundTracks.add(SoundConstants.ST_MOONLIGHT);
 		soundTracks.add(SoundConstants.ST_PUZZLE);
 		soundTracks.add(SoundConstants.ST_DREAMY);
-		soundTracks.add(SoundConstants.ST_STRANGE);
+		//soundTracks.add(SoundConstants.ST_STRANGE);
 		soundTracks.add(SoundConstants.ST_AREOLOGIE);
 		soundTracks.add(SoundConstants.ST_MENU);
 		soundTracks.add(SoundConstants.ST_AREOLOGIE);
@@ -83,10 +86,10 @@ public class AudioPlayer {
 		}
 
 		if (UIConfig.INSTANCE.useUIDefault()) {
-			setMute(false);
+			//setMute(false, false);
 			setVolume(.8f);
 		} else {
-			setMute(UIConfig.INSTANCE.isMute());
+			//setMute(UIConfig.INSTANCE.isMute(), UIConfig.INSTANCE.isMute());
 		}
 	}
 
@@ -97,7 +100,7 @@ public class AudioPlayer {
 	@SuppressWarnings("restriction")
 	public void playSound(String filepath) {
 		//logger.info("play() is on " + Thread.currentThread().getName());
-		if (!isMute(false)) {
+		if (!isMute(true, false)) {
 			if (desktop.getMainScene() != null) {
 					Platform.runLater(() -> {
 						try {
@@ -146,20 +149,20 @@ public class AudioPlayer {
 	@SuppressWarnings("restriction")
 	public void playBackground(String filepath) {
 		//logger.info("play() is on " + Thread.currentThread().getName());
-		if (!isMute(false)) {
+		if (!isMute(false, true)) {
 			if (desktop.getMainScene() != null) {
 					Platform.runLater(() -> {
 						try {
 							if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 								currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
 								currentBackgroundTrack.loop();
-								if (num_times < 1) logger.info("Playing the sound track " + filepath);
+								if (play_times < 2) logger.info("Playing the background track " + filepath);
 							}
 							else {
 								currentBackgroundTrack = new OGGSoundClip(filepath);
 								allOGGSoundClips.put(filepath, currentBackgroundTrack);
 								currentBackgroundTrack.loop();
-								if (num_times < 1) logger.info("Playing the sound track " + filepath);
+								if (play_times < 2) logger.info("Playing the background track " + filepath);
 							}
 						} catch (IOException e) {
 							//e.printStackTrace();
@@ -173,13 +176,13 @@ public class AudioPlayer {
 					try {
 						if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 							allBackgroundSoundTracks.get(filepath).loop();
-							if (num_times < 1) logger.info("Playing the sound track " + filepath);
+							if (play_times < 2) logger.info("Playing the sound track " + filepath);
 						}
 						else {
 							currentBackgroundTrack = new OGGSoundClip(filepath);
 							allOGGSoundClips.put(filepath, currentBackgroundTrack);
 							currentBackgroundTrack.loop();
-							if (num_times < 1) logger.info("Playing the sound track " + filepath);
+							if (play_times < 2) logger.info("Playing the sound track " + filepath);
 						}
 					} catch (IOException e) {
 						//e.printStackTrace();
@@ -258,7 +261,7 @@ public class AudioPlayer {
 	public void setVolume() {
 		Platform.runLater(() -> {
 			if (hasMasterGain) {
-				if(!isMute(false)) {
+				if(!isMute(false, true)) {
 					//logger.info("!isMute(false) is " + !isMute(false));
 					// 2016-09-28 Added backgroundSoundTrack
 					if (currentBackgroundTrack != null)
@@ -268,7 +271,7 @@ public class AudioPlayer {
 							//backgroundSoundTrack.resume();//.play();
 						}
 				}
-				else {
+				else if(!isMute(true, false)) {
 					if (currentOGGSoundClip != null)
 						if (!currentOGGSoundClip.isMute()) {
 							currentOGGSoundClip.setGain(volume);
@@ -294,7 +297,7 @@ public class AudioPlayer {
 		this.volume = volume;
 		//System.out.println("volume " + volume);
 		if (hasMasterGain) {
-			if (!isMute(false)) {
+			if (!isMute(false, true)) {
 				//logger.info("!isMute(false) is " + !isMute(false));
 				// 2016-09-28 Added backgroundSoundTrack
 				if (currentBackgroundTrack != null) {
@@ -306,7 +309,7 @@ public class AudioPlayer {
 					}
 				}
 			}
-			else {
+			else if (!isMute(true, false)) {
 				if (currentOGGSoundClip != null)
 					if (!currentOGGSoundClip.isMute())
 						currentOGGSoundClip.setGain(volume);
@@ -319,40 +322,95 @@ public class AudioPlayer {
 
 	/**
 	 * Checks if the audio player is muted.
-	 * @param is it a sound effect
-	 * @return true if muted.
+	 * @param isEffect is the sound effect mute ?
+	 * @param isTrack is the background music mute ?
+	 * @return true if mute.
 	 */
-	public boolean isMute(boolean isSoundEffect) {
+	public boolean isMute(boolean isEffect, boolean isTrack) {
 		boolean result = false;
-		if (isSoundEffect) {
+		if (isEffect) {
 			if (currentOGGSoundClip != null) {
 				result = currentOGGSoundClip.isMute();
 			}
 		}
-		else {
+		else if (isTrack) {
 			// 2016-09-28 Added backgroundSoundTrack
 			if (currentBackgroundTrack != null) {
-				result = currentBackgroundTrack.isMute();
+				result = result || currentBackgroundTrack.isMute();
 			}
 		}
+		
 		return result;
 	}
 
+	public void restoreSound(boolean isEffect, boolean isTrack) {
+		if (isEffect) {
+			if (currentOGGSoundClip != null) {
+				currentOGGSoundClip.setMute(lastEffectState);
+			}
+		}
+		
+		if (isTrack) {
+			if (currentBackgroundTrack != null) {
+				currentBackgroundTrack.setMute(lastTrackState);
+			}
+		}
+	}
+		
+	
+
+	public void pauseSound(boolean isEffect, boolean isTrack) {
+		if (currentBackgroundTrack != null)
+			lastTrackState = currentBackgroundTrack.isMute();
+		if (currentOGGSoundClip != null)
+			lastEffectState = currentOGGSoundClip.isMute();
+		mute(isEffect, isTrack);
+	}
+	
 	/**
 	 * Sets the state of the audio player to mute or unmute.
 	 * @param mute true if it will be set to mute
 	 */
-	public void setMute(boolean mute) {
-		if (currentOGGSoundClip != null) {
-			currentOGGSoundClip.setMute(mute);
+	public void mute(boolean effectMute, boolean trackMute) {
+		if (effectMute) {
+			if (currentOGGSoundClip != null) {
+				//lastEffectState = currentOGGSoundClip.isMute();
+				currentOGGSoundClip.setMute(true);
+			}
+			//else
+			//	lastEffectState = true;
 		}
-		if (currentBackgroundTrack != null) {
-			currentBackgroundTrack.setMute(mute);
-			//if (currentBackgroundTrack.isPaused())
-			//	currentBackgroundTrack.loop();
+		
+		if (trackMute) {
+			if (currentBackgroundTrack != null) {
+				//lastTrackState = currentBackgroundTrack.isMute();
+				currentBackgroundTrack.setMute(true);
+			}
+			//else
+			//	lastTrackState = true;
 		}
 	}
 
+	public void unmute(boolean effectMute, boolean trackMute) {
+		if (effectMute) {
+			if (currentOGGSoundClip != null) {
+				//lastEffectState = currentOGGSoundClip.isMute();
+				currentOGGSoundClip.setMute(false);
+			}
+			//else
+				//lastEffectState = true;
+		}
+		
+		if (trackMute) {
+			if (currentBackgroundTrack != null) {
+				//lastTrackState = currentBackgroundTrack.isMute();
+				currentBackgroundTrack.setMute(false);
+			}
+			//else
+				//lastTrackState = true;
+		}
+	}
+	
 	//public void cleanAudioPlayer() {
 	//	stop();
 	//}
@@ -373,9 +431,9 @@ public class AudioPlayer {
 			if (currentBackgroundTrack != null
 					&& !currentBackgroundTrack.toString().equals("Areologie.ogg") 
 					&& !currentBackgroundTrack.toString().equals("Fantascape.ogg")	
-					&& num_times < 3) {
+					&& play_times < 3) {
 				playBackground(currentBackgroundTrack.toString());
-				num_times++;
+				play_times++;
 			}
 			else {		
 				List<String> keys = new ArrayList<String>(soundTracks);
@@ -387,7 +445,8 @@ public class AudioPlayer {
 				else
 					rand = RandomUtil.getRandomInt(num_tracks-1);
 				playBackground(keys.get(rand));
-				num_times = 1;
+				// Reset the play times to 1
+				play_times = 1;
 			}
 		}
 	}

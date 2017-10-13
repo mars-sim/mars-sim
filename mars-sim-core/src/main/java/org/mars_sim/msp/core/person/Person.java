@@ -89,6 +89,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private boolean bornOnMars;
 	/** True if person is declared dead and buried. */
 	private boolean isBuried, declaredDead;
+	/** True if person is thirsty. */
+	private boolean isThirsty;
+	
 	/** The age of a person */
 	private int age;
 	/** The cache for sol. */
@@ -170,7 +173,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static EarthClock earthClock;
 	private static MasterClock masterClock;
 
-	private PersonConfig config; 
+	//private PersonConfig config; 
 
 	/**
 	 * Constructor 1 : used by PersonBuilderImpl
@@ -258,7 +261,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		isBuried = false;
 
-		config = SimulationConfig.instance().getPersonConfiguration();
+		//config = SimulationConfig.instance().getPersonConfiguration();
 
 		attributes = new NaturalAttributeManager(this);
 
@@ -1377,19 +1380,27 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (getLocationSituation() == LocationSituation.IN_VEHICLE)
 			return (Vehicle) getContainerUnit();
 		else
-			return null;
+			return vehicle;
 	}
 
 	public CircadianClock getCircadianClock() {
 		return circadian;
 	}
 	
-	public void setWaterRatio(boolean value) {
+	public void setWaterRation(boolean value) {
 		waterRation = value;
 	}
 
-	public boolean getWaterRatio() {
+	public boolean getWaterRation() {
 		return waterRation;
+	}
+	
+	public boolean isThirsty() {
+		return isThirsty;
+	}
+
+	public void setThirsty(boolean value) {
+		isThirsty = value;
 	}
 	
 	@Override

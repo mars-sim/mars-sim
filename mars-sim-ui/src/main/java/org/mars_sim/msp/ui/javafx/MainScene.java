@@ -85,7 +85,6 @@ import javafx.scene.input.ScrollEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -220,7 +219,8 @@ public class MainScene {
 
 	//private double newTimeRatio = 0;
 	//private double initial_time_ratio = 0;
-	private double sliderCache = 0;
+	private double musicSliderCache = 0;
+	private double effectSliderCache = 0;
 	private double tpsCache;
 	
 	//private boolean isMuteCache;
@@ -268,13 +268,13 @@ public class MainScene {
 	// private JFXBadge badgeIcon;
 	// private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; // calendarButton,
-	private static JFXSlider zoomSlider, soundSlider; // timeSlider,
+	private static JFXSlider zoomSlider, musicSlider, effectSlider; // timeSlider,
 	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;// , farmBtn; //																				// miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// , farmPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 	private JFXDialog exitDialog;
 	
-	private CheckBox muteBox;
+	private CheckBox musicMuteBox, effectMuteBox;
 	// private DndTabPane dndTabPane;
 	private ESCHandler esc = null;
 
@@ -605,7 +605,8 @@ public class MainScene {
 		InputMap<KeyEvent> ctrlUp = consume(keyPressed(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					// soundPlayer.volumeUp();
-					soundSlider.setValue(soundSlider.getValue() + .5);
+					effectSlider.setValue(effectSlider.getValue() + .5);
+					musicSlider.setValue(musicSlider.getValue() + .5);
 					// soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() +.05));
 				});
 		Nodes.addInputMap(rootStackPane, ctrlUp);
@@ -613,30 +614,15 @@ public class MainScene {
 		InputMap<KeyEvent> ctrlDown = consume(
 				keyPressed(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN)), e -> {
 					// soundPlayer.volumeDown();
-					soundSlider.setValue(soundSlider.getValue() - .5);
+					effectSlider.setValue(effectSlider.getValue() - .5);
+					musicSlider.setValue(musicSlider.getValue() - .5);
 					// soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() -.05));
 				});
 		Nodes.addInputMap(rootStackPane, ctrlDown);
 
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)),
-				e -> {			
-					if (!masterClock.isPaused()) {
-						boolean isMute = menuBar.getMuteItem().isSelected();
-						if (isMute) {
-							menuBar.getMuteItem().setSelected(false);
-							soundPlayer.setMute(true);
-							soundSlider.setValue(0);
-							muteBox.setSelected(true);
-						} else {
-							menuBar.getMuteItem().setSelected(true);
-							soundPlayer.setMute(false);
-							soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
-							muteBox.setSelected(false);
-						}
-					}
-					else {
-						logger.info("It's not allowed to mute or unmute while sim is on pause!");
-					}
+				e -> {		
+					adjustSound(true, true);
 				});
 		Nodes.addInputMap(rootStackPane, ctrlM);
 
@@ -768,6 +754,68 @@ public class MainScene {
 		return text;
 	}
 
+	public void adjustSound(boolean isEffect, boolean isMusic) {
+		if (!masterClock.isPaused()) {
+			if (isEffect) {
+				boolean isMute = menuBar.getEffectMuteItem().isSelected();
+				if (isMute) {
+					unmuteSound(isEffect, isMusic);
+				} else {
+					muteSound(isEffect, isMusic);
+				}
+			}
+			if (isMusic) {
+				boolean isMute = menuBar.getMusicMuteItem().isSelected();
+				if (isMute) {
+					unmuteSound(isEffect, isMusic);
+				} else {
+					muteSound(isEffect, isMusic);
+				}
+			}
+		}
+		else {
+			logger.info("Unable to mute or unmute while sim is on pause!");
+		}
+	}
+	
+	public void muteSound(boolean isEffect, boolean isMusic) {
+		if (isMusic) {
+			musicSliderCache = musicSlider.getValue();
+			menuBar.getMusicMuteItem().setSelected(true);
+			musicSlider.setValue(0);
+			musicMuteBox.setSelected(true);
+		}
+		if (isEffect) {
+			effectSliderCache = effectSlider.getValue();
+			menuBar.getEffectMuteItem().setSelected(true);
+			effectSlider.setValue(0);
+			effectMuteBox.setSelected(true);
+		}
+		soundPlayer.mute(isEffect, isMusic);
+	}
+
+	
+	public void unmuteSound(boolean isEffect, boolean isMusic) {
+		if (isMusic) {
+			musicSlider.setValue(musicSliderCache);
+			menuBar.getMusicMuteItem().setSelected(false);
+			soundPlayer.setVolume((float) convertSlider2Volume(musicSliderCache));
+			//musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+			musicMuteBox.setSelected(false);
+		}
+		if (isEffect) {
+			effectSlider.setValue(effectSliderCache);
+			menuBar.getEffectMuteItem().setSelected(false);
+			soundPlayer.setVolume((float) convertSlider2Volume(effectSliderCache));
+			//effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+			effectMuteBox.setSelected(false);
+		}
+		
+		soundPlayer.unmute(isEffect, isMusic);
+
+	}
+	
+	
 	/**
 	 * initializes the scene
 	 *
@@ -1259,96 +1307,178 @@ public class MainScene {
 		// soundPane.setEffect(blend);
 		soundPane.getStyleClass().add("jfx-popup-container");
 		soundPane.setAlignment(Pos.CENTER);
-		soundPane.setPrefHeight(75);
-		soundPane.setPrefWidth(250);
+		soundPane.setPrefHeight(100);
+		soundPane.setPrefWidth(300);
 
 		soundPopup = new JFXPopup(soundPane);
 
-		// Set up a settlement view zoom bar
-		soundSlider = new JFXSlider();
-		// soundSlider.setEffect(blend);
-		soundSlider.getStyleClass().add("jfx-slider");
-		// soundSlider.setEffect(blend);
-		soundSlider.setPrefWidth(220);
-		soundSlider.setPrefHeight(20);
-		soundSlider.setPadding(new Insets(0, 15, 0, 15));
-
-		soundSlider.setMin(0);
-		soundSlider.setMax(10);
-		soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
-		soundSlider.setMajorTickUnit(1);
-		// soundSlider.setMinorTickCount();
-		soundSlider.setShowTickLabels(true);
-		soundSlider.setShowTickMarks(true);
-		soundSlider.setSnapToTicks(true);
-		soundSlider.setBlockIncrement(.5);
-		soundSlider.setOrientation(Orientation.HORIZONTAL);
-		soundSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
-
-		setQuickToolTip(soundSlider, "adjust the sound volume"); //$NON-NLS-1$
-
 		Text header_label = createTextHeader("SOUND PANEL");
 
-		Label volumelabel = createBlendLabel("Volume");
-		volumelabel.setPadding(new Insets(0, 0, 5, 0));
+		// Set up a settlement view zoom bar
+		musicSlider = new JFXSlider();
+		// soundSlider.setEffect(blend);
+		musicSlider.getStyleClass().add("jfx-slider");
+		// soundSlider.setEffect(blend);
+		musicSlider.setPrefWidth(220);
+		musicSlider.setPrefHeight(20);
+		musicSlider.setPadding(new Insets(0, 15, 0, 15));
 
-		muteBox = new CheckBox("mute");
-		muteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
-		// cb.setPadding(new Insets(0,0,0,5));
-		muteBox.setAlignment(Pos.CENTER_RIGHT);
-		muteBox.setOnAction(e -> {
-			if (!masterClock.isPaused()) {
-				if (muteBox.isSelected()) {
-					// mute it
-					sliderCache = soundSlider.getValue();
-					soundSlider.setValue(0);
-					menuBar.getMuteItem().setSelected(false);
-				} else {
-					// unmute it
-					soundSlider.setValue(sliderCache);
-					menuBar.getMuteItem().setSelected(true);
+		musicSlider.setMin(0);
+		musicSlider.setMax(10);
+		musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+		musicSlider.setMajorTickUnit(1);
+		// soundSlider.setMinorTickCount();
+		musicSlider.setShowTickLabels(true);
+		musicSlider.setShowTickMarks(true);
+		musicSlider.setSnapToTicks(true);
+		musicSlider.setBlockIncrement(.5);
+		musicSlider.setOrientation(Orientation.HORIZONTAL);
+		musicSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
+		setQuickToolTip(musicSlider, "adjust the background music volume"); //$NON-NLS-1$
+		// detect dragging
+		musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+				if (old_val != new_val) {
+					float sliderValue = new_val.floatValue();
+					if (sliderValue <= 0) { 
+						soundPlayer.mute(false, true);
+						musicMuteBox.setSelected(true);
+						menuBar.getMusicMuteItem().setSelected(false);
+						//muteSound(false, true);
+					} else {
+						soundPlayer.unmute(false, true);
+						soundPlayer.setVolume((float) convertSlider2Volume(sliderValue));
+						musicMuteBox.setSelected(false);
+						menuBar.getMusicMuteItem().setSelected(true);
+						//unmuteSound(false, true);
+					}
 				}
 			}
+		});
+		// Background sound track
+		Label tracklabel = createBlendLabel("Background Music");
+		tracklabel.setPadding(new Insets(0, 0, 0, 1));
+
+		musicMuteBox = new CheckBox("mute");
+		musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
+		// cb.setPadding(new Insets(0,0,0,5));
+		musicMuteBox.setAlignment(Pos.CENTER);
+		musicMuteBox.setOnAction(e -> {
+			if (!masterClock.isPaused()) {
+				if (musicMuteBox.isSelected()) {
+					// mute it
+					//muteSound(false, true);
+					musicSliderCache = musicSlider.getValue();
+					musicSlider.setValue(0);
+					menuBar.getMusicMuteItem().setSelected(false);
+				} else {
+					// unmute it
+					//unmuteSound(false, true);
+					musicSlider.setValue(musicSliderCache);
+					menuBar.getMusicMuteItem().setSelected(true);
+				}
+				
+			}
 			else {
-				muteBox.setSelected(!muteBox.isSelected());
-				logger.info("It's not allowed to mute or unmute while sim is on pause!");
+				musicMuteBox.setSelected(!musicMuteBox.isSelected());
+				logger.info("Unable to mute or unmute while sim is on pause!");
 			}
 			
 			e.consume();
 		});
 
+		// Set up a settlement view zoom bar
+		effectSlider = new JFXSlider();
+		// soundSlider.setEffect(blend);
+		effectSlider.getStyleClass().add("jfx-slider");
+		// soundSlider.setEffect(blend);
+		effectSlider.setPrefWidth(220);
+		effectSlider.setPrefHeight(20);
+		effectSlider.setPadding(new Insets(0, 15, 0, 15));
+
+		effectSlider.setMin(0);
+		effectSlider.setMax(10);
+		effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+		effectSlider.setMajorTickUnit(1);
+		// soundSlider.setMinorTickCount();
+		effectSlider.setShowTickLabels(true);
+		effectSlider.setShowTickMarks(true);
+		effectSlider.setSnapToTicks(true);
+		effectSlider.setBlockIncrement(.5);
+		effectSlider.setOrientation(Orientation.HORIZONTAL);
+		effectSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
+		setQuickToolTip(effectSlider, "adjust the sound effect volume"); //$NON-NLS-1$
 		// detect dragging
-		soundSlider.valueProperty().addListener(new ChangeListener<Number>() {
+		effectSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 
 				if (old_val != new_val) {
-
 					float sliderValue = new_val.floatValue();
-
-					if (sliderValue <= 0) {
-						soundPlayer.setMute(true);
-						muteBox.setSelected(true);
-						menuBar.getMuteItem().setSelected(false);
+					if (sliderValue <= 0) { 
+						soundPlayer.mute(true, false);
+						effectMuteBox.setSelected(true);
+						menuBar.getEffectMuteItem().setSelected(false);
+						//muteSound(true, false);
 					} else {
-						soundPlayer.setMute(false);
+						soundPlayer.unmute(true, false);
 						soundPlayer.setVolume((float) convertSlider2Volume(sliderValue));
-						muteBox.setSelected(false);
-						menuBar.getMuteItem().setSelected(true);
+						effectMuteBox.setSelected(false);
+						menuBar.getEffectMuteItem().setSelected(true);
+						//unmuteSound(true, false);
 					}
 				}
 			}
 		});
+		
+		// Sound effect
+		Label effectlabel = createBlendLabel("Sound Effect");
+		effectlabel.setPadding(new Insets(0, 0, 0, 1));
 
-		Label empty = new Label();
+		effectMuteBox = new CheckBox("mute");
+		effectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
+		// cb.setPadding(new Insets(0,0,0,5));
+		effectMuteBox.setAlignment(Pos.CENTER);
+		effectMuteBox.setOnAction(e -> {
+			if (!masterClock.isPaused()) {
+				if (effectMuteBox.isSelected()) {
+					// mute it
+					//muteSound(true, false);
+					effectSliderCache = effectSlider.getValue();
+					effectSlider.setValue(0);
+					menuBar.getEffectMuteItem().setSelected(false);
+				} else {
+					// unmute it
+					//unmuteSound(true, false);
+					effectSlider.setValue(effectSliderCache);
+					menuBar.getEffectMuteItem().setSelected(true);
+				}
+			}
+			else {
+				effectMuteBox.setSelected(!effectMuteBox.isSelected());
+				logger.info("Unable to mute or unmute while sim is on pause!");
+			}
+			
+			e.consume();
+		});
+		
+		//Label empty = new Label();
 
-		GridPane gridPane = new GridPane();
-		gridPane.getStyleClass().add("jfx-popup-container");
-		gridPane.setAlignment(Pos.CENTER);
-		gridPane.setPadding(new Insets(1, 1, 1, 1));
-		gridPane.setHgap(1.0);
-		gridPane.setVgap(1.0);
+		GridPane gridPane0 = new GridPane();
+		gridPane0.getStyleClass().add("jfx-popup-container");
+		gridPane0.setAlignment(Pos.CENTER);
+		gridPane0.setPadding(new Insets(1, 1, 1, 1));
+		gridPane0.setHgap(1.0);
+		gridPane0.setVgap(1.0);
 
+		GridPane gridPane1 = new GridPane();
+		gridPane1.getStyleClass().add("jfx-popup-container");
+		gridPane1.setAlignment(Pos.CENTER);
+		gridPane1.setPadding(new Insets(1, 1, 1, 1));
+		gridPane1.setHgap(1.0);
+		gridPane1.setVgap(1.0);
+		
 		ColumnConstraints c = new ColumnConstraints();
 		c.setPrefWidth(90);
 		// ColumnConstraints mid = new ColumnConstraints();
@@ -1356,22 +1486,31 @@ public class MainScene {
 		// ColumnConstraints left = new ColumnConstraints();
 		// left.setPrefWidth(70);
 
-		GridPane.setConstraints(empty, 0, 0);
-		GridPane.setConstraints(volumelabel, 1, 0);
-		GridPane.setConstraints(muteBox, 2, 0);
-
-		GridPane.setHalignment(empty, HPos.CENTER);
-		GridPane.setHalignment(volumelabel, HPos.CENTER);
-		GridPane.setHalignment(muteBox, HPos.RIGHT);
-
-		gridPane.getColumnConstraints().addAll(c, c, c);
-		gridPane.getChildren().addAll(volumelabel, empty, muteBox);
+		//GridPane.setConstraints(empty, 0, 0);
+		GridPane.setConstraints(tracklabel, 0, 0);
+		GridPane.setConstraints(musicMuteBox, 1, 0);
+		//GridPane.setConstraints(empty, 0, 1);
+		GridPane.setConstraints(effectlabel, 0, 0);
+		GridPane.setConstraints(effectMuteBox, 1, 0);
+		
+		//GridPane.setHalignment(empty, HPos.CENTER);
+		GridPane.setHalignment(tracklabel, HPos.CENTER);
+		GridPane.setHalignment(musicMuteBox, HPos.CENTER);
+		//GridPane.setHalignment(empty, HPos.CENTER);
+		GridPane.setHalignment(effectlabel, HPos.CENTER);
+		GridPane.setHalignment(effectMuteBox, HPos.CENTER);
+		
+		gridPane0.getColumnConstraints().addAll(c, c);
+		gridPane0.getChildren().addAll(tracklabel, musicMuteBox);
+		
+		gridPane1.getColumnConstraints().addAll(c, c);
+		gridPane1.getChildren().addAll(effectlabel, effectMuteBox);
 
 		soundVBox = new VBox();
 		soundVBox.getStyleClass().add("jfx-popup-container");
 		soundVBox.setPadding(new Insets(5, 5, 5, 5));
 		soundVBox.setAlignment(Pos.CENTER);
-		soundVBox.getChildren().addAll(header_label, gridPane, soundSlider);
+		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, effectSlider);
 		soundPane.getChildren().addAll(soundVBox);
 
 	}
@@ -2381,7 +2520,8 @@ public class MainScene {
 
 		// setStylesheet(timeSlider, cssFile);
 		setStylesheet(zoomSlider, cssFile);
-		setStylesheet(soundSlider, cssFile);
+		setStylesheet(musicSlider, cssFile);
+		setStylesheet(effectSlider, cssFile);
 
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
@@ -2674,7 +2814,7 @@ public class MainScene {
 		}
 		
 		// Check to see if a background sound track is being played.
-		if (!desktop.getSoundPlayer().isMute(false))
+		if (!desktop.getSoundPlayer().isMute(false, true))
 			soundPlayer.playRandomBackgroundTrack();
 	}
 
@@ -3488,8 +3628,11 @@ public class MainScene {
 
 	public static void disableSound() {
 		soundPlayer.enableMasterGain(false);
-		if (soundSlider != null)
-			soundSlider.setDisable(true);// .setValue(0);
+		if (musicSlider != null)
+			musicSlider.setDisable(true);// .setValue(0);
+		if (effectSlider != null)
+			effectSlider.setDisable(true);// .setValue(0);
+
 	}
 
 	public void setScreenSize(int w, int h) {

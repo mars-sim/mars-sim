@@ -1765,13 +1765,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {
 			marqueeTicker.pauseMarqueeTimer(true);
-			if (!soundPlayer.isMute(false))
-				soundPlayer.setMute(true);
+			//if (!soundPlayer.isMute(true, true))
+				soundPlayer.pauseSound(true, true);
 		} 
 		else {
 			marqueeTicker.pauseMarqueeTimer(false);
-			if (soundPlayer.isMute(false))
-				soundPlayer.setMute(false);
+			//if (soundPlayer.isMute(true, true))
+				soundPlayer.restoreSound(true, true);
 		}
 	}
 

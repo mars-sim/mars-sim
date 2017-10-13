@@ -134,10 +134,10 @@ public class UpTimer implements Serializable {
                 return uptime;
             }
             else {
-                logger.severe("Too long since last time pulse, clearing update time");
                 thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
                 // 2017-01-09 Add calling resetTotalPulses()
                 masterClock.resetTotalPulses();
+                logger.info("Time limit exceeded between the last and this call, resetting the total # of pules");
                 return uptime;
             }
         }

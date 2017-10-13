@@ -155,7 +155,7 @@ implements Serializable {
     
     private String name;
     
-    private double bodyMassFactor;
+    private double bodyMassDeviation;
 
     private static EatMealMeta eatMealMeta = new EatMealMeta();
     
@@ -265,10 +265,10 @@ implements Serializable {
 		
         h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
         
-        bodyMassFactor = person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT; 
+        bodyMassDeviation = Math.sqrt(person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT); 
         
         // assuming a person drinks 10 times a day, each time ~375 mL
-        waterConsumedPerServing = h2o_consumption * bodyMassFactor / 10D; // about .3 kg per serving
+        waterConsumedPerServing = h2o_consumption * bodyMassDeviation / 10D; // about .3 kg per serving
         //System.out.println("waterConsumedPerServing : " + waterConsumedPerServing);
         
         minimum_air_pressure = personConfig.getMinAirPressure();
@@ -282,10 +282,10 @@ implements Serializable {
 
         foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
-       	starvationStartTime =  1000D * (personConfig.getStarvationStartTime() * bodyMassFactor);
+       	starvationStartTime =  1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation);
         			//+ RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
 
-       	dehydrationStartTime =  1000D * (personConfig.getDehydrationStartTime() * bodyMassFactor);
+       	dehydrationStartTime =  1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
     }
 
     public RadiationExposure getRadiationExposure() {
@@ -436,9 +436,9 @@ implements Serializable {
 	        }
 
 	        // Build up fatigue & hunger for given time passing.
-	        setThirst(thirst + time* bodyMassFactor);
+	        setThirst(thirst + time* bodyMassDeviation);
 	        setFatigue(fatigue + time);
-	        setHunger(hunger + time* bodyMassFactor);
+	        setHunger(hunger + time* bodyMassDeviation);
 
 	        // normal bodily function consume a minute amount of energy
 	        // even if a person does not perform any tasks
@@ -620,6 +620,10 @@ implements Serializable {
     public void setThirst(double t) {
         if (thirst != t)
         	thirst = t;
+        if (t > 50)
+        	person.setThirsty(true);
+        else
+        	person.setThirsty(false);
         //person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
     }
     

@@ -48,7 +48,7 @@ public class SimulationController {
         
         //Flip paused state
         boolean isPaused = clock.isPaused();
-        clock.setPaused(!isPaused);
+        clock.setPaused(!isPaused, false);
 		
 		return getDetails();
 		

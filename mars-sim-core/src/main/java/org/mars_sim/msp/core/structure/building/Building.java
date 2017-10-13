@@ -205,6 +205,7 @@ LocalBoundedObject, InsidePathLocation {
 	private ResourceProcessing processing; 
 	private Research lab;
 	private Manufacture workshop;
+	private Administration admin;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -610,6 +611,12 @@ LocalBoundedObject, InsidePathLocation {
 		if (workshop == null)
 			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);
 		return workshop;
+	}
+	
+	public Administration getAdministration() {
+		if (admin == null)
+			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
+		return admin;			
 	}
 	
     /**
