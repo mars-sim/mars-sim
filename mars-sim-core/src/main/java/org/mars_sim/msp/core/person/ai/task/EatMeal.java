@@ -612,9 +612,9 @@ public class EatMeal extends Task implements Serializable {
 	    	}	        
         }
         
-        if (condition.getThirst()  > 50) {
-        	logger.info(person + " new thirst : " + Math.round(condition.getThirst() * 1000.0)/1000.0);        	
-        }
+        //if (condition.getThirst() > 50) {
+        //	logger.info(person + " new thirst : " + Math.round(condition.getThirst() * 1000.0)/1000.0);        	
+        //}
     }
     
     

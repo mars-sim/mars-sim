@@ -8,19 +8,17 @@
 
 
 # mars-sim
-The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars with a higher level of simulation fidelity than a typical PC strategy game. 
+The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars with a higher fidelity of simulation than a typical PC strategy game. 
 
 
 ## Modeling and Simulation
-Both the paradigm of Discrete Event Simulation and the Agent-based Modeling are implemented in guiding the everyday decisions of the settlers in mars-sim.
-
-Each settler is a computer agent possessing certain properties. Based on these properties and the external characteristics imposed on them, they make decisions and interact with one another in a constraint environment.
+Each settler in mars-sim is a computer agent possessing certain properties. Based on these properties and the external characteristics imposed on them, they make decisions and interact with one another in a constraint environment.
 
 For instance, each settler has a well-defined job, a role, a bunch of technical skills, a set of personality, natural attributes, and task preferences (likes and dislikes). They build relationship with one another as they strive on Mars. 
 
 
 ## Settlement Development 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial base (somewhat loosely following the Mars Direct Mission Plan by Robert Zubrin);
+Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin),
 a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
 
 

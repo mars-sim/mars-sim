@@ -246,7 +246,7 @@ public class MainScene {
 
 	// private FlowPane flowPane;
 	private AnchorPane anchorPane, mapAnchorPane;
-	private SwingNode swingNode, mapNode, minimapNode;//, guideNode;// monNode, missionNode, resupplyNode, sciNode,
+	private SwingNode desktopNode, mapNode, minimapNode;//, guideNode;// monNode, missionNode, resupplyNode, sciNode,
 																	// guideNode ;
 	private Stage stage, loadingStage, savingStage;
 	private Scene scene, savingScene;
@@ -826,8 +826,8 @@ public class MainScene {
 		IconFontFX.register(FontAwesome.getIconFont());
 
 		// Create group to hold swingNode which in turns holds the Swing desktop
-		swingNode = new SwingNode();
-		createSwingNode();
+		desktopNode = new SwingNode();
+		createDesktopNode();
 		//JFXToolbar toolbar = new JFXToolbar();
 		
 		// Load soundPlayer instance from desktop right after desktop has been instantiated.
@@ -1483,22 +1483,14 @@ public class MainScene {
 		c0.setPrefWidth(60);
 		ColumnConstraints c1 = new ColumnConstraints();
 		c1.setPrefWidth(120);
-		// ColumnConstraints mid = new ColumnConstraints();
-		// mid.setPrefWidth(70);
-		// ColumnConstraints left = new ColumnConstraints();
-		// left.setPrefWidth(70);
 
-		//GridPane.setConstraints(empty, 0, 0);
 		GridPane.setConstraints(trackLabel, 0, 0);
 		GridPane.setConstraints(musicMuteBox, 1, 0);
-		//GridPane.setConstraints(empty, 0, 1);
 		GridPane.setConstraints(effectLabel, 0, 0);
 		GridPane.setConstraints(effectMuteBox, 1, 0);
 		
-		//GridPane.setHalignment(empty, HPos.CENTER);
 		GridPane.setHalignment(trackLabel, HPos.LEFT);
 		GridPane.setHalignment(musicMuteBox, HPos.RIGHT);
-		//GridPane.setHalignment(empty, HPos.CENTER);
 		GridPane.setHalignment(effectLabel, HPos.LEFT);
 		GridPane.setHalignment(effectMuteBox, HPos.RIGHT);
 		
@@ -1978,7 +1970,7 @@ public class MainScene {
 */
 		
 		mainStackPane = new StackPane();
-		mainStackPane.getChildren().add(swingNode);
+		mainStackPane.getChildren().add(desktopNode);
 		
 		dashboardStackPane = new StackPane();
 
@@ -3050,15 +3042,11 @@ public class MainScene {
 	}
 
 	/**
-	 * Pauses the marquee timer and pauses the simulation.
+	 * Pauses the simulation.
 	 */
 	public void pauseSimulation(boolean showPane) {
 		if (exitDialog == null || !exitDialog.isVisible()) {
 			isShowingDialog = true;
-			//isMuteCache = desktop.getSoundPlayer().isMute(false);
-			//if (!isMuteCache)
-			//	desktop.getSoundPlayer().setMute(true);
-			//desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 			masterClock.setPaused(true, showPane);
 			if (showPane && !masterClock.isSavingSimulation())
 				startPausePopup();
@@ -3066,15 +3054,12 @@ public class MainScene {
 	}
 
 	/**
-	 * Unpauses the marquee timer and unpauses the simulation.
+	 * Unpauses the simulation.
 	 */
 	public void unpauseSimulation() {
 		isShowingDialog = false;
 		masterClock.setPaused(false, true);
 		stopPausePopup();
-		//desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-		//if (!isMuteCache)
-		//	desktop.getSoundPlayer().setMute(false);
 	}
 
 	public boolean startPause() {
@@ -3088,9 +3073,9 @@ public class MainScene {
 	}
 
 	public double slowDownTimeRatio() {
-		double tr = masterClock.getTimeRatio();
+		double last_tr = masterClock.getTimeRatio();
 		masterClock.setTimeRatio(1.0);
-		return tr;
+		return last_tr;
 	}
 
 	public void speedUpTimeRatio(double previous) {
@@ -3153,16 +3138,14 @@ public class MainScene {
 		return stage;
 	}
 
-	private void createSwingNode() {
+	private void createDesktopNode() {
 		// createDesktops();
 		desktop = new MainDesktopPane(this);
-		SwingUtilities.invokeLater(() -> {
-			swingNode.setContent(desktop);
-		});
+		SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
 	}
 
-	public SwingNode getSwingNode() {
-		return swingNode;
+	public SwingNode getDesktopNode() {
+		return desktopNode;
 	}
 
 

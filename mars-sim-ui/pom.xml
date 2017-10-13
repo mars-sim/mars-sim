@@ -502,7 +502,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>1.9.0</version>
+			<version>1.9.1</version>
 		</dependency>
 <!-- The following artifacts are Needed by jfoenix
 		fontawesomefx 8.0.10 : 84 KB
