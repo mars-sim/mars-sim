@@ -44,6 +44,7 @@ import org.mars_sim.msp.ui.steelseries.tools.BackgroundColor;
 import org.mars_sim.msp.ui.steelseries.tools.FrameDesign;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
@@ -63,6 +64,11 @@ implements ActionListener {
 
 	 /** default logger.   */
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
+	
+	private static final String LOCATOR_ORANGE = "locator48_orange";
+	
+	private static final String LOCATOR_BLUE = "locator48_blue";
+			
 	private static final String N = "N";
 	private static final String S = "S";
 	private static final String E = "E";
@@ -75,6 +81,8 @@ implements ActionListener {
 	private static final String PARKED = " Parked";
 	//private static final String ON_A_MISSION_OUTSIDE = " on a mission outside";
 	private static final String OUTSIDE_ON_THE_SURFACE_OF_MARS = " outside on the surface of Mars";
+	private static final String ON_MARS = "on Mars";
+	
 	private static final String STEPPED = " Stepped";
 	private static final String STORED = "Stored";
 
@@ -85,6 +93,8 @@ implements ActionListener {
 	private static final String BURIED = "Buried";
 
 	private static final String USED_BY = "Used by ";
+	
+	private static final String UNKNOWN = "Unknown";
 	
 	private int themeCache;
 
@@ -109,19 +119,22 @@ implements ActionListener {
 	private JLabel latitudeLabel;
 	private JLabel longitudeLabel;
 	private JPanel centerPanel;
-	//private JButton locationButton;
-
+	
+	private JComboBoxMW<?> combox;
+	
 	private TerrainElevation terrainElevation;
 	private Coordinates locationCache;
 	private MainScene mainScene;
 
 	private JButton locatorButton;
+	private SettlementMapPanel mapPanel;
 
 	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
 	private DisplayCircular gauge;//RadialQuarterN gauge;
 
-	DecimalFormat fmt = new DecimalFormat("##0");
-	DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	private DecimalFormat fmt = new DecimalFormat("##0");
+	private DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	
     /**
      * Constructor.
      * @param unit the unit to display.
@@ -137,7 +150,11 @@ implements ActionListener {
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
     	mainScene = desktop.getMainScene();
-
+    	mapPanel = desktop.getSettlementWindow().getMapPanel();
+    	
+    	if (mainScene == null)
+    		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
+    	
         // Initialize location header.
 		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
@@ -156,7 +173,7 @@ implements ActionListener {
 
         // Initialize location cache
         locationCache = new Coordinates(unit.getCoordinates());
-        themeCache = mainScene.getTheme();
+        themeCache = MainScene.getTheme();
 
         String dir_N_S = null;
         String dir_E_W = null;
@@ -213,7 +230,7 @@ implements ActionListener {
  */
 
         // Create center map button
-        locatorButton = new JButton(ImageLoader.getIcon("locator48_orange"));
+        locatorButton = new JButton(ImageLoader.getIcon(LOCATOR_ORANGE));
         //centerMapButton = new JButton(ImageLoader.getIcon("locator_blue"));
         locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1) );
         locatorButton.addActionListener(this);
@@ -300,7 +317,7 @@ implements ActionListener {
         locLabel.setHorizontalAlignment(SwingConstants.CENTER);
  */
 
-        String loc = "On the surface of Mars";
+        String loc = ON_MARS;
 		lcdText = new DisplaySingle();
         lcdText.setLcdInfoString("Last Unknown Position");
         //lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
@@ -328,7 +345,7 @@ implements ActionListener {
 
     public void checkTheme(boolean firstRun) {
         if (mainScene != null) {
-            int theme = mainScene.getTheme();
+            int theme = MainScene.getTheme();
 
             if (themeCache != theme || firstRun) {
             	themeCache = theme;
@@ -336,12 +353,12 @@ implements ActionListener {
 	        	if (theme == 7) {
 	                lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
 	                gauge.setFrameDesign(FrameDesign.GOLD);
-	                locatorButton.setIcon(ImageLoader.getIcon("locator48_orange"));
+	                locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_ORANGE));
 	        	}
 	        	else if (theme == 6) {
 	        		lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
 	        		gauge.setFrameDesign(FrameDesign.STEEL);
-	        		locatorButton.setIcon(ImageLoader.getIcon("locator48_blue"));
+	        		locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_BLUE));
 	        	}
             }
         }
@@ -383,7 +400,7 @@ implements ActionListener {
         gauge.setVisible(true);
 
     }
-
+/*
 	private String getLatitudeString() {
 		return locationCache.getFormattedLatitudeString();
 	}
@@ -391,7 +408,7 @@ implements ActionListener {
 	private String getLongitudeString() {
 		return locationCache.getFormattedLongitudeString();
 	}
-
+*/
 
     /**
      * Action event occurs.
@@ -413,7 +430,7 @@ implements ActionListener {
 
         	if (unit instanceof Person) {
         		p = (Person) unit;
-    		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+    		    //SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
         		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
@@ -425,7 +442,7 @@ implements ActionListener {
             			if (mainScene != null)
             				mainScene.setSettlement(p.getSettlement());
             			else
-            				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+            				combox.setSelectedItem(p.getSettlement());
         			}
 
         			Building b = p.getBuildingLocation();
@@ -438,6 +455,7 @@ implements ActionListener {
 
         			mapPanel.selectPerson(p);
             	}
+        		
         		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = p.getVehicle();
@@ -459,7 +477,7 @@ implements ActionListener {
 	        			if (mainScene != null)
 	        				mainScene.setSettlement(vv.getSettlement());
 	        			else
-	        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(vv.getSettlement());
+	        				combox.setSelectedItem(vv.getSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -472,6 +490,7 @@ implements ActionListener {
 
 	        		}
             	}
+        		
         		else if (p.getLocationSituation() == LocationSituation.OUTSIDE) {
         			Vehicle vv = p.getVehicle();
 
@@ -487,7 +506,7 @@ implements ActionListener {
             			if (mainScene != null)
             				mainScene.setSettlement(p.getSettlement());
             			else
-            				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+            				combox.setSelectedItem(p.getSettlement());
 
 
         				double xLoc = p.getXLocation();
@@ -512,10 +531,11 @@ implements ActionListener {
             			}
         			}
         		}
-
-        	} else if (unit instanceof Robot) {
+        	} 
+        	
+        	else if (unit instanceof Robot) {
         		r = (Robot) unit;
-        		SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+        		//SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
         		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         			desktop.openToolWindow(SettlementWindow.NAME);
@@ -523,7 +543,7 @@ implements ActionListener {
         			if (mainScene != null)
         				mainScene.setSettlement(r.getSettlement());
         			else
-        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+        				combox.setSelectedItem(r.getSettlement());
 
         			Building b = r.getBuildingLocation();
         			double xLoc = b.getXLocation();
@@ -535,6 +555,7 @@ implements ActionListener {
 
         			mapPanel.selectRobot(r);
             	}
+        		
         		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = r.getVehicle();
@@ -549,7 +570,7 @@ implements ActionListener {
 	        			if (mainScene != null)
 	        				mainScene.setSettlement(vv.getSettlement());
 	        			else
-	        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(vv.getSettlement());
+	        				combox.setSelectedItem(vv.getSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -562,6 +583,7 @@ implements ActionListener {
 
 	        		}
             	}
+        		
         		else if (r.getLocationSituation() == LocationSituation.OUTSIDE) {
         			Vehicle vv = r.getVehicle();
 
@@ -569,7 +591,6 @@ implements ActionListener {
         				// he's stepped outside the settlement temporally
                			desktop.openToolWindow(SettlementWindow.NAME);
             			//System.out.println("Just open Settlement Map Tool");
-
 
                			// TODO: Case 1 : robot is on a mission on the surface of Mars and just happens to step outside the vehicle temporarily
 
@@ -589,11 +610,12 @@ implements ActionListener {
         				// he's stepped outside a vehicle
         				desktop.centerMapGlobe(r.getCoordinates());
         		}
-
-        	} else if (unit instanceof Vehicle) {
+        	}
+        	
+        	else if (unit instanceof Vehicle) {
         		v = (Vehicle) unit;
 
-    		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+    		    //SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
           		if (v.getSettlement() != null) {
         			desktop.openToolWindow(SettlementWindow.NAME);
@@ -601,7 +623,7 @@ implements ActionListener {
         			if (mainScene != null)
         				mainScene.setSettlement(v.getSettlement());
         			else
-        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getSettlement());
+        				combox.setSelectedItem(v.getSettlement());
 
         			double xLoc = v.getXLocation();
         			double yLoc = v.getYLocation();
@@ -619,11 +641,11 @@ implements ActionListener {
     					mainScene.openMinimap();
         			desktop.centerMapGlobe(unit.getCoordinates());
         		}
-
-
-	    	} else if (unit instanceof Equipment) {
+	    	} 
+        	
+        	else if (unit instanceof Equipment) {
 	    		e = (Equipment) unit;
-	    		SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+	    		//SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
 	    		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	    			desktop.openToolWindow(SettlementWindow.NAME);
@@ -631,7 +653,7 @@ implements ActionListener {
 	    			if (mainScene != null)
 	    				mainScene.setSettlement(e.getSettlement());
 	    			else
-	    				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(e.getSettlement());
+	    				combox.setSelectedItem(e.getSettlement());
 
 	    			//System.out.println("Just open Settlement Map Tool");
 
@@ -662,7 +684,7 @@ implements ActionListener {
 	        			if (mainScene != null)
 	        				mainScene.setSettlement(vv.getSettlement());
 	        			else
-	        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(vv.getSettlement());
+	        				combox.setSelectedItem(vv.getSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -967,7 +989,7 @@ implements ActionListener {
 	    		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 	     			if (r.getSettlement() != null)
 	    				// case C
-	           			loc = IN + containerCache + INSIDE + v.getGarage(v.getSettlement()).getNickName();// " inside a garage";
+	           			loc = IN + containerCache + INSIDE + v.getName();//.getGarage(v.getSettlement()).getNickName();// " inside a garage";
 	    			else {
 	         			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
 	        	     	// Note: a vehicle's container unit may be null if it's outside a settlement
@@ -990,6 +1012,7 @@ implements ActionListener {
     	else if (unit instanceof Equipment) {
     		Equipment e = (Equipment) unit;
     		Vehicle v = e.getVehicle();
+    		//Building garage = v.getGarage();
     		
     		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     			// case A
@@ -1000,15 +1023,17 @@ implements ActionListener {
 					loc = USED_BY + e.getLastOwner().getName();
 				else if (topContainerCache != null)
 	    			loc = STORED + AT + topContainerCache;
+				else if (v != null)
+					loc =  STORED + AT + v.getName();
 				else
-					loc = "Unknown";
+					loc = UNKNOWN;
 
     		}
 
        		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {
      			if (e.getSettlement() != null)
     				// case C
-           			loc = IN + containerCache + INSIDE + v.getGarage(v.getSettlement()).getNickName();// " inside a garage";
+           			loc = IN + containerCache + INSIDE + v.getName();//v.getGarage(v.getSettlement()).getNickName();// " inside a garage";
     			else {
          			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
         	     	// Note: a vehicle's container unit may be null if it's outside a settlement

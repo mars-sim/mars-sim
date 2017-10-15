@@ -153,6 +153,8 @@ public class PersonTableModel extends UnitTableModel {
 	 * m.put(PhysicalCondition.DEATH_EVENT, HEALTH); EVENT_COLUMN_MAPPING =
 	 * Collections.unmodifiableMap(m); }
 	 */
+	
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/** The type of source for the people table. */
 	private ValidSourceType sourceType;
@@ -169,6 +171,7 @@ public class PersonTableModel extends UnitTableModel {
 	private MissionListener missionListener;
 	private UnitManagerListener unitManagerListener;
 
+	
 	/**
 	 * Map for caching a person's hunger, fatigue, stress and performance status
 	 * strings.
@@ -182,7 +185,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param unitManager
 	 *            Manager containing Person objects.
 	 */
-	public PersonTableModel(UnitManager unitManager, MainDesktopPane desktop) {
+	public PersonTableModel(MainDesktopPane desktop) {
 		super(Msg.getString("PersonTableModel.tabName"), //$NON-NLS-1$
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);

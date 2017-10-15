@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionHistoricalEvent.java
- * @version 3.07 2015-01-21
-
+ * @version 3.1.0 2017-10-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -12,8 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.robot.Robot;
+
 
 /**
  * This class represents the historical actions involving missions.

@@ -95,9 +95,13 @@ implements ActionListener, MenuListener {
 	/** Mute menu item. */
 	private JCheckBoxMenuItem muteItem;
 	/** Volume Up menu item. */
-	private JMenuItem volumeUpItem;
+	private JMenuItem musicVolumeUpItem;
 	/** Volume Down menu item. */
-	private JMenuItem volumeDownItem;
+	private JMenuItem musicVolumeDownItem;
+	/** Volume Up menu item. */
+	private JMenuItem effectVolumeUpItem;
+	/** Volume Down menu item. */
+	private JMenuItem effectVolumeDownItem;
 	/** Volume Slider menu item. */
 	private JSlider volumeItem;
 	/** About Mars Simulation Project menu item. */
@@ -280,7 +284,7 @@ implements ActionListener, MenuListener {
 		// Create Volume slider menu item
 		//MainDesktopPane desktop = mainWindow.getDesktop();
 		final AudioPlayer soundPlayer = desktop.getSoundPlayer();
-		float volume = soundPlayer.getVolume();
+		float volume = soundPlayer.getMusicVolume();
 		int intVolume = Math.round(volume * 10F);
 
 		volumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume);; //$NON-NLS-1$
@@ -294,24 +298,24 @@ implements ActionListener, MenuListener {
 		volumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				float newVolume = (float) volumeItem.getValue()/10F;
-				soundPlayer.setVolume(newVolume);			
+				soundPlayer.setMusicVolume(newVolume);			
 			}
 			});
 		settingsMenu.add(volumeItem);
 
 		// Create Volume Up menu item
-		volumeUpItem = new JMenuItem(Msg.getString("mainMenu.volumeUp")); //$NON-NLS-1$
-		volumeUpItem.addActionListener(this);
-		volumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK, false));
-		volumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeUp")); //$NON-NLS-1$
-		settingsMenu.add(volumeUpItem);
+		effectVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.volumeUp")); //$NON-NLS-1$
+		effectVolumeUpItem.addActionListener(this);
+		effectVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK, false));
+		effectVolumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeUp")); //$NON-NLS-1$
+		settingsMenu.add(effectVolumeUpItem);
 
 		// Create Volume Down menu item
-		volumeDownItem = new JMenuItem(Msg.getString("mainMenu.volumeDown")); //$NON-NLS-1$
-		volumeDownItem.addActionListener(this);
-		volumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
-		volumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeDown")); //$NON-NLS-1$
-		settingsMenu.add(volumeDownItem);
+		effectVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.volumeDown")); //$NON-NLS-1$
+		effectVolumeDownItem.addActionListener(this);
+		effectVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
+		effectVolumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeDown")); //$NON-NLS-1$
+		settingsMenu.add(effectVolumeDownItem);
 
 		// Create Mute menu item
 		muteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.mute")); //$NON-NLS-1$
@@ -445,17 +449,28 @@ implements ActionListener, MenuListener {
 			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());
 		}
 
-
-		else if (selectedItem == volumeUpItem) {
-			float oldvolume = desktop.getSoundPlayer().getVolume();
-			desktop.getSoundPlayer().setVolume(oldvolume+0.05F);
+		else if (selectedItem == musicVolumeUpItem) {
+			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
+			desktop.getSoundPlayer().setMusicVolume(oldvolume+0.05F);
 		}
 
-		else if (selectedItem == volumeDownItem) {
-			float oldvolume = desktop.getSoundPlayer().getVolume();
-			desktop.getSoundPlayer().setVolume(oldvolume-0.05F);
+		else if (selectedItem == musicVolumeDownItem) {
+			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
+			desktop.getSoundPlayer().setMusicVolume(oldvolume-0.05F);
 		}
 
+
+		else if (selectedItem == effectVolumeUpItem) {
+			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
+			desktop.getSoundPlayer().setEffectVolume(oldvolume+0.05F);
+		}
+
+		else if (selectedItem == effectVolumeDownItem) {
+			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
+			desktop.getSoundPlayer().setEffectVolume(oldvolume-0.05F);
+		}
+
+		
 		else if (selectedItem == muteItem) {
 			if (muteItem.isSelected())
 				desktop.getSoundPlayer().mute(true, true);
@@ -505,7 +520,7 @@ implements ActionListener, MenuListener {
 		///
 		//notificationItem.setSelected(desktop.getMainWindow().getNotification());
 
-		volumeItem.setValue(Math.round(desktop.getSoundPlayer().getVolume() * 10F));
+		volumeItem.setValue(Math.round(desktop.getSoundPlayer().getMusicVolume() * 10F));
 		volumeItem.setEnabled(!desktop.getSoundPlayer().isMute(true, true));
 		muteItem.setSelected(desktop.getSoundPlayer().isMute(true, true));
 	}

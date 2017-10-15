@@ -68,18 +68,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 public class BuildingPanelFarming
 extends BuildingFunctionPanel
 implements MouseListener {
-
-	// Data members
-
-	/** The number of farmers label. */
-	//private JLabel farmersLabel;
-	/** The number of crops label. */
-	//private JLabel cropsLabel;
-	/** The label for the amount solar irradiance. */
-	//private JLabel radLabel;
-	/** The label for the average water usage per sol per crop. */
-	//private JLabel waterUsageLabel;
 	
+	// Data members
 	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
 	
 	// Data cache
@@ -97,24 +87,12 @@ implements MouseListener {
 	private double o2Cache;
 	/** The cache value for the average CO2 consumed per sol per square meters. */
 	private double co2Cache;
-		
-	//private String[] tooltipArray;
-	private ArrayList<String> tooltipArray;
-	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
-	//private String deletingCrop = "";
-
-	// 2014-12-09 Added comboBox for crop queue
+	
 	private DefaultComboBoxModel<CropType> comboBoxModel;
 	private JComboBoxMW<CropType> comboBox;
-	private List<CropType> cropCache;
-	private JList<CropType> list;
-	//private JButton opsButton;
-
-	//private String cropInQueue;
 	private ListModel listModel;
 	/** Table model for crop info. */
 	private CropTableModel cropTableModel;
-
 	private JScrollPane listScrollPanel;
 
 	/** The farming building. */
@@ -122,8 +100,14 @@ implements MouseListener {
 	private CropType cropType;
 	private CropType deletingCropType;
 	private Coordinates location;
-	private SurfaceFeatures surface;
+	
+	private ArrayList<String> tooltipArray;
+	private List<CropType> cropCache;
+	private JList<CropType> list;
+	
 	private static List<CropType> cropTypeList;
+	
+	private static SurfaceFeatures surface;
 	
 	/**
 	 * Constructor.
@@ -155,15 +139,15 @@ implements MouseListener {
 		//farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 
 		// Create label panel
-		JPanel labelPanel = new JPanel(new SpringLayout());//GridLayout(5, 1, 0, 0));
-		add(labelPanel, BorderLayout.CENTER);
+		JPanel springPanel = new JPanel(new SpringLayout());//GridLayout(5, 1, 0, 0));
+		add(springPanel, BorderLayout.CENTER);
 		
 		// Prepare solar irradiance label
 		//JPanel radPanel = new JPanel(new FlowLayout());
-		JLabel radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache),  JLabel.RIGHT);
+		JLabel radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache), JLabel.RIGHT);
 	    //radPanel.add(radLabel);
 		//balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
-		labelPanel.add(radLabel);
+		springPanel.add(radLabel);
 
 		radCache = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -172,7 +156,7 @@ implements MouseListener {
 		radTF.setColumns(7);
 		radTF.setPreferredSize(new Dimension(120, 25));
 		wrapper1.add(radTF);
-		labelPanel.add(wrapper1);
+		springPanel.add(wrapper1);
 		
 		
 		// Prepare farmers label
@@ -180,7 +164,7 @@ implements MouseListener {
 		JLabel farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers.title"), JLabel.RIGHT);
 	    //farmersPanel.add(farmersLabel);
 		//balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
-		labelPanel.add(farmersLabel);
+		springPanel.add(farmersLabel);
 
 		farmersCache = farm.getFarmerNum();
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -189,14 +173,14 @@ implements MouseListener {
 		farmersTF.setColumns(3);
 		farmersTF.setPreferredSize(new Dimension(120, 25));
 		wrapper2.add(farmersTF);
-		labelPanel.add(wrapper2);
+		springPanel.add(wrapper2);
 		
 		// Prepare crops label
 		//JPanel cropsPanel = new JPanel(new FlowLayout());
 		JLabel cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops.title"), JLabel.RIGHT);
 	    //cropsPanel.add(cropsLabel);
 		//balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
-		labelPanel.add(cropsLabel);
+		springPanel.add(cropsLabel);
 
 		cropsCache = farm.getCrops().size();
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -205,13 +189,13 @@ implements MouseListener {
 		cropsTF.setColumns(3);
 		cropsTF.setPreferredSize(new Dimension(120, 25));
 		wrapper3.add(cropsTF);
-		labelPanel.add(wrapper3);
+		springPanel.add(wrapper3);
 		
 		//JPanel waterUsagePanel = new JPanel(new FlowLayout());
 		JLabel waterUsageLabel = new JLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), JLabel.RIGHT);
 		//waterUsagePanel.add(waterUsageLabel);
 		waterUsageLabel.setToolTipText(Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
-		labelPanel.add(waterUsageLabel);
+		springPanel.add(waterUsageLabel);
 		
 		waterUsageCache = farm.computeWaterUsage();
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -220,11 +204,11 @@ implements MouseListener {
 		waterUsageTF.setColumns(10);
 		waterUsageTF.setPreferredSize(new Dimension(120, 25));
 		wrapper4.add(waterUsageTF);
-		labelPanel.add(wrapper4);
+		springPanel.add(wrapper4);
 		
 		JLabel o2Label = new JLabel(Msg.getString("BuildingPanelFarming.o2.title"), JLabel.RIGHT);
 		o2Label.setToolTipText(Msg.getString("BuildingPanelFarming.o2.tooltip"));
-		labelPanel.add(o2Label);
+		springPanel.add(o2Label);
 		
 		o2Cache = farm.computeO2Generated();
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -233,11 +217,11 @@ implements MouseListener {
 		o2TF.setColumns(10);
 		o2TF.setPreferredSize(new Dimension(120, 25));
 		wrapper5.add(o2TF);
-		labelPanel.add(wrapper5);
+		springPanel.add(wrapper5);
 
 		JLabel co2Label = new JLabel(Msg.getString("BuildingPanelFarming.co2.title"), JLabel.RIGHT);
 		co2Label.setToolTipText(Msg.getString("BuildingPanelFarming.co2.tooltip"));
-		labelPanel.add(co2Label);
+		springPanel.add(co2Label);
 		
 		co2Cache = farm.computeCO2Consumed();
 		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -246,11 +230,10 @@ implements MouseListener {
 		co2TF.setColumns(10);
 		co2TF.setPreferredSize(new Dimension(120, 25));
 		wrapper6.add(co2TF);
-		labelPanel.add(wrapper6);
-
-		
+		springPanel.add(wrapper6);
+	
 		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(labelPanel,
+		SpringUtilities.makeCompactGrid(springPanel,
 		                                6, 2, //rows, cols
 		                                65, 20,        //initX, initY
 		                                3, 1);       //xPad, yPad
@@ -477,21 +460,13 @@ implements MouseListener {
 
         }
 
-        result.append("<html>");
-    	result.append("&emsp;&nbsp;Crop Name:&emsp;");
-    	result.append(cropName);
-    	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;");
-    	result.append(cat);
-    	result.append("<br>&nbsp;Growing Days:&emsp;");
-    	result.append(time);
-    	result.append("<br>&emsp;Edible Mass:&emsp;");
-    	result.append(mass0).append(" g/m2/day");
-    	result.append("<br>&nbsp;Inedible Mass:&emsp;");
-    	result.append(mass1).append(" g/m2/day");
-    	result.append("<br>&nbsp;Water Content:&emsp;");
-    	result.append(water).append(" %");
-    	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;");
-    	result.append(PAR).append(" mol/m2/day");
+        result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
+    	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
+    	result.append("<br>&nbsp;Growing Days:&emsp;").append(time);
+    	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(" g/m2/day");
+    	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(" g/m2/day");
+    	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
+    	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day");
 
     	return result;
 	}

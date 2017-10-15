@@ -63,6 +63,8 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	private List<Mission> missionCache;
 
+	private static MissionManager missionManager = Simulation.instance().getMissionManager();
+	
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
@@ -85,11 +87,10 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		columnNames[REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.distanceRemaining"); //$NON-NLS-1$
 		columnTypes[REMAINING_DISTANCE] = Integer.class;
 
-		MissionManager manager = Simulation.instance().getMissionManager();
-		missionCache = manager.getMissions();
-		manager.addListener(this);
+		missionCache = missionManager.getMissions();
+		missionManager.addListener(this);
 		Iterator<Mission> i = missionCache.iterator();
-		while (i.hasNext()) i.next().addMissionListener(this);
+		while (i.hasNext()) i.next().addMissionListener(this); 
 	}
 
 	/**
@@ -332,8 +333,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			removeMission((Mission) missions[x]);
 		}
 
-		Simulation.instance().getMissionManager().removeListener(this);
-		//missionCache = null;
+		missionManager = null;
 	}
 
 	/**

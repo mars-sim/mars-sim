@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 3.1.0 2017-01-19
+ * @version 3.1.0 2017-10-14
  * @author Scott Davis
  */
 
@@ -287,8 +287,9 @@ implements Serializable {
                 return 0;
 
             // Check if settlement has enough basic resources for a rover mission.
-            if (!RoverMission.hasEnoughBasicResources(settlement))
-                return 0;
+            //if (!RoverMission.hasEnoughBasicResources(settlement))
+            //    return 0;
+            
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
             if (settlement.getInventory().getAmountResourceStored(methaneAR, false) <

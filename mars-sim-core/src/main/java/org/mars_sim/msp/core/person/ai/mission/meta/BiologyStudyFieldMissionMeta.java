@@ -78,7 +78,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             }
 
             // Check if settlement has enough basic resources for a rover mission.
-            else if (!RoverMission.hasEnoughBasicResources(settlement)) {
+            else if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
             	return 0;
             }
 

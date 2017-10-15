@@ -63,7 +63,7 @@ public class ChatBox extends BorderPane {
 	public final static String HELP_TEXT = " ***** KEYWORDS ***** " + System.lineSeparator()
 	+ "(1) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "+ System.lineSeparator()
 	+ "(2) 'bed', 'quarters', 'building', 'inside', 'outside',"+ System.lineSeparator()
-	+ "(3) 'settlement', 'settlements', 'associated settlement', 'buried settlement', " + System.lineSeparator()
+	+ "(3) 'settlement', 'settlements', 'associated settlement', 'association', 'home', 'home town'," + System.lineSeparator() // 'buried settlement', 'buried'
 	+ "(4) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement'," + System.lineSeparator()
 	+ "(5) 'vehicle container', 'vehicle top container'" + System.lineSeparator()
 	+ " ***** NUMERAL ***** " + System.lineSeparator()
@@ -897,8 +897,7 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "Are you inside?"; //what is your Container unit [Expert Mode only] ?";
 	    		Unit c = cache.getContainerUnit();
 	    		if (c != null) {
-	    			responseText.append("I'm at/in ");
-	    			responseText.append(c.getName());
+	    			responseText.append("I'm at/in ").append(c.getName());
 	    		}
 	    		else
 	    			responseText.append("I'm not inside a building or vehicle"); //"I don't have a Container unit. ";
@@ -908,8 +907,7 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "Are you inside?"; //YOU_PROMPT + "what is your Top Container unit [Expert Mode only] ?";
 	    		Unit tc = cache.getTopContainerUnit();
 	    		if (tc != null) {
-	    			responseText.append("I'm in ");
-	    			responseText.append(tc.getName());
+	    			responseText.append("I'm in ").append(tc.getName());
 	    		}
 
 	    		else
@@ -924,8 +922,7 @@ public class ChatBox extends BorderPane {
 		    		//Building b1 = s.getBuildingManager().getBuilding(cache);
 		    		Building b = cache.getBuildingLocation();
 		    		if (b != null) {// && b1 != null)
-		    			responseText.append("The building I'm in is ");
-		    			responseText.append(b.getNickName());
+		    			responseText.append("The building I'm in is ").append(b.getNickName());
 		    				//+ "  (aka " + b1.getNickName() + ").";
 		    		}
 		    		else
@@ -938,23 +935,23 @@ public class ChatBox extends BorderPane {
 
 
 	    	else if (num == 9 || text.equalsIgnoreCase("settlement")) {
-	    		questionText = YOU_PROMPT + "What is the settlement that you are at ?";
+	    		questionText = YOU_PROMPT + "What settlement are you at ?";
 	    		Settlement s = cache.getSettlement();
 	   			if (s != null) {
-	   				responseText.append("My settlement is ");
-	   				responseText.append(s.getName());
+	   				responseText.append("I'm at ").append(s.getName());
 	   			}
 	   			else
 	   				responseText.append("I'm not inside a settlement");
 
 	    	}
 
-	    	else if (num == 10 || text.equalsIgnoreCase("associated settlement")) {
+	    	else if (num == 10 || text.equalsIgnoreCase("associated settlement") || text.equalsIgnoreCase("association")
+	    			|| text.equalsIgnoreCase("home") || text.equalsIgnoreCase("home town")
+	    			|| text.equalsIgnoreCase("hometown") ) {
 	    		questionText = YOU_PROMPT + "What is your associated settlement ?";
 	    		Settlement s = cache.getAssociatedSettlement();
 	    		if (s  != null) {
-	    			responseText.append("My associated settlement is ");
-	    			responseText.append(s.getName());
+	    			responseText.append("My associated settlement is ").append(s.getName());
 	    		}
 	    		else
 	    			responseText.append("I don't have an associated settlement");

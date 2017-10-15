@@ -102,7 +102,7 @@ public class TravelToSettlementMeta implements MetaMission {
 	    }
 
         // Check if settlement has enough basic resources for a rover mission.
-        if (!RoverMission.hasEnoughBasicResources(settlement)) {
+        if (!RoverMission.hasEnoughBasicResources(settlement, false)) {
         	return 0;
         }
 

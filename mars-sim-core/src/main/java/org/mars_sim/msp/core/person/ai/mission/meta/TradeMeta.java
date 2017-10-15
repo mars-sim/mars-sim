@@ -150,7 +150,7 @@ public class TradeMeta implements MetaMission {
 	    }
 
 	    // Check if settlement has enough basic resources for a rover mission.
-	    if (!RoverMission.hasEnoughBasicResources(settlement)) {
+	    if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
 	        return 0;
 	    }
 

@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -25,7 +23,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta implements MetaMission {
 
-    private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
+    //private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
 
     /** Mission name */
     private static final String NAME = Msg.getString(
@@ -52,7 +50,7 @@ public class CollectIceMeta implements MetaMission {
 
 	        // a settlement with <= 4 population can always do DigLocalRegolith task
 	        // should avoid the risk of mission.
-	        if (settlement.getNumCurrentPopulation() <= 3)//.getAllAssociatedPeople().size() <= 4)
+	        if (settlement.getNumCurrentPopulation() <= 1)//.getAllAssociatedPeople().size() <= 4)
 	        	return 0;
 
             // Check if available rover.
@@ -76,7 +74,7 @@ public class CollectIceMeta implements MetaMission {
     	    }
 
             // Check if settlement has enough basic resources for a rover mission.
-            else if (!RoverMission.hasEnoughBasicResources(settlement)) {
+            else if (!RoverMission.hasEnoughBasicResources(settlement, false)) {
                 return 0;
             }
 

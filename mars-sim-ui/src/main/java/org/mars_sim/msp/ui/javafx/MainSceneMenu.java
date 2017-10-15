@@ -68,7 +68,8 @@ public class MainSceneMenu extends MenuBar  {
 
 	private CheckMenuItem showFullScreenItem, notificationItem, effectMuteItem, musicMuteItem;
 
-	private MenuItem skinThemeItem, quotationItem, volumeUpItem, volumeDownItem ;
+	private MenuItem skinThemeItem, quotationItem, musicVolumeUpItem, musicVolumeDownItem, 
+		effectVolumeUpItem, effectVolumeDownItem;
 
 	private Stage stage;
 	//private Stage webStage;
@@ -234,10 +235,16 @@ public class MainSceneMenu extends MenuBar  {
 
         SeparatorMenuItem SeparatorMenuItem6 = new SeparatorMenuItem();
 
-        volumeUpItem = new MenuItem("Volume Up");
-        volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
-        volumeDownItem = new MenuItem("Volume Down");
-        volumeDownItem.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN));
+        musicVolumeUpItem = new MenuItem("Music Volume Up");
+        musicVolumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
+        musicVolumeDownItem = new MenuItem("Music Volume Down");
+        musicVolumeDownItem.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN));
+
+        effectVolumeUpItem = new MenuItem("Sound Effect Volume Up");
+        effectVolumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
+        effectVolumeDownItem = new MenuItem("Sound Effect Volume Down");
+        effectVolumeDownItem.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN));
+
         musicMuteItem = new CheckMenuItem("Mute Background Music");
         musicMuteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
         effectMuteItem = new CheckMenuItem("Mute Sound Effect");
@@ -248,9 +255,9 @@ public class MainSceneMenu extends MenuBar  {
         		SeparatorMenuItem5,
         		notificationItem,
         		SeparatorMenuItem6,
-        		volumeUpItem, volumeDownItem, musicMuteItem, effectMuteItem); // showUnitBarItem,showToolBarItem,
-
-
+        		musicVolumeUpItem, musicVolumeDownItem, 
+        		effectVolumeUpItem, effectVolumeDownItem,
+        		musicMuteItem, effectMuteItem); // showUnitBarItem,showToolBarItem,
 /*
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
@@ -265,8 +272,8 @@ public class MainSceneMenu extends MenuBar  {
 */
 		Platform.runLater(() -> {
 
-        // 2016-07-06 Added nsmenufx.
-		if (MainScene.OS.contains("mac")) {
+			// 2016-07-06 Added nsmenufx.
+			if (MainScene.OS.contains("mac")) {
 
 				MenuToolkit tk = MenuToolkit.toolkit(Locale.getDefault());
 				tk.setApplicationMenu(tk.createDefaultApplicationMenu("mars-sim"));
@@ -292,11 +299,11 @@ public class MainSceneMenu extends MenuBar  {
 
 				tk.setMenuBar(stage, menuBar);
 
-		}
-		else
-			super.getMenus().addAll(menuFile, menuTools, menuSettings);//, menuHelp); // menuNotification,
-
-	});
+			}
+			else
+				super.getMenus().addAll(menuFile, menuTools, menuSettings);//, menuHelp); // menuNotification,
+	
+		});
 
 		/*
         newItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -409,22 +416,39 @@ public class MainSceneMenu extends MenuBar  {
 
         });
 
-
-        volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
+        musicVolumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
             	//float oldvolume = desktop.getSoundPlayer().getVolume();
     			//desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
-    			desktop.getSoundPlayer().volumeUp();
+    			desktop.getSoundPlayer().musicVolumeUp();
             }
         });
 
-        volumeDownItem.setOnAction(new EventHandler<ActionEvent>() {
+        musicVolumeDownItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
             	//float oldvolume = desktop.getSoundPlayer().getVolume();
     			//desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
-    			desktop.getSoundPlayer().volumeDown();
+    			desktop.getSoundPlayer().musicVolumeDown();
+            }
+        });
+        
+        effectVolumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+            	//float oldvolume = desktop.getSoundPlayer().getVolume();
+    			//desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
+    			desktop.getSoundPlayer().effectVolumeUp();
+            }
+        });
+
+        effectVolumeDownItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+            	//float oldvolume = desktop.getSoundPlayer().getVolume();
+    			//desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
+    			desktop.getSoundPlayer().effectVolumeDown();
             }
         });
 

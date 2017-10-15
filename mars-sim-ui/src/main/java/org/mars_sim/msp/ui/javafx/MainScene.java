@@ -799,14 +799,14 @@ public class MainScene {
 		if (isMusic) {
 			musicSlider.setValue(musicSliderCache);
 			menuBar.getMusicMuteItem().setSelected(false);
-			soundPlayer.setVolume((float) convertSlider2Volume(musicSliderCache));
+			soundPlayer.setMusicVolume((float) convertSlider2Volume(musicSliderCache));
 			//musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
 			musicMuteBox.setSelected(false);
 		}
 		if (isEffect) {
 			effectSlider.setValue(effectSliderCache);
 			menuBar.getEffectMuteItem().setSelected(false);
-			soundPlayer.setVolume((float) convertSlider2Volume(effectSliderCache));
+			soundPlayer.setEffectVolume((float) convertSlider2Volume(effectSliderCache));
 			//effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
 			effectMuteBox.setSelected(false);
 		}
@@ -1325,7 +1325,7 @@ public class MainScene {
 
 		musicSlider.setMin(0);
 		musicSlider.setMax(10);
-		musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+		musicSlider.setValue(convertVolume2Slider(soundPlayer.getMusicVolume()));
 		musicSlider.setMajorTickUnit(1);
 		// soundSlider.setMinorTickCount();
 		musicSlider.setShowTickLabels(true);
@@ -1347,7 +1347,7 @@ public class MainScene {
 						//muteSound(false, true);
 					} else {
 						soundPlayer.unmute(false, true);
-						soundPlayer.setVolume((float) convertSlider2Volume(sliderValue));
+						soundPlayer.setMusicVolume((float) convertSlider2Volume(sliderValue));
 						musicMuteBox.setSelected(false);
 						menuBar.getMusicMuteItem().setSelected(true);
 						//unmuteSound(false, true);
@@ -1399,7 +1399,7 @@ public class MainScene {
 
 		effectSlider.setMin(0);
 		effectSlider.setMax(10);
-		effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+		effectSlider.setValue(convertVolume2Slider(soundPlayer.getEffectVolume()));
 		effectSlider.setMajorTickUnit(1);
 		// soundSlider.setMinorTickCount();
 		effectSlider.setShowTickLabels(true);
@@ -1422,7 +1422,7 @@ public class MainScene {
 						//muteSound(true, false);
 					} else {
 						soundPlayer.unmute(true, false);
-						soundPlayer.setVolume((float) convertSlider2Volume(sliderValue));
+						soundPlayer.setEffectVolume((float) convertSlider2Volume(sliderValue));
 						effectMuteBox.setSelected(false);
 						menuBar.getEffectMuteItem().setSelected(true);
 						//unmuteSound(true, false);

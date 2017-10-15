@@ -12,12 +12,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -61,7 +59,7 @@ extends VehicleMission {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Static members
     public static final int MIN_STAYING_MEMBERS = 1;
@@ -908,6 +906,7 @@ extends VehicleMission {
 		//	MissionMember member = i.next();
 		for (MissionMember member : getMembers()) {
 			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+				// TODO: when should we reset a person's associated settlement to the one he's at.
 			    member.setAssociatedSettlement(member.getSettlement());
 			}
 		}
@@ -936,17 +935,21 @@ extends VehicleMission {
 	 * @param settlement the starting settlement.
 	 * @return true if enough resources.
 	 */
-	public static boolean hasEnoughBasicResources(Settlement settlement) {
+	public static boolean hasEnoughBasicResources(Settlement settlement, boolean unmasked) {
+		// if unmasked is false, it won't check the amount of H2O and O2. 
+		// the goal of this mission can potentially increase O2 & H2O of the settlement
+		// e.g. an ice mission is desperately needed especially when there's 
+		//      not enough water since ice will produce water.
 
 		Inventory inv = settlement.getInventory();
 		try {
 			if (inv.getAmountResourceStored(methaneAR, false) < 100D) {
 				return false;
 			}
-			if (inv.getAmountResourceStored(oxygenAR, false) < 100D) {
+			if (unmasked && inv.getAmountResourceStored(oxygenAR, false) < 100D) {
 				return false;
 			}
-			if (inv.getAmountResourceStored(waterAR, false) < 100D) {
+			if (unmasked && inv.getAmountResourceStored(waterAR, false) < 100D) {
 				return false;
 			}
 			if (inv.getAmountResourceStored(foodAR, false) < 100D) {

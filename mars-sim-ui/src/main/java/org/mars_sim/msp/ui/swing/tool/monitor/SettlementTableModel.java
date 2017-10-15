@@ -100,9 +100,11 @@ extends UnitTableModel {
 		columnTypes[ICE] = Integer.class;
 	};
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	// Data members
 	private UnitManagerListener unitManagerListener;
+	
 	private Map<Unit, Map<AmountResource, Integer>> resourceCache;
 
 	/**
@@ -111,7 +113,7 @@ extends UnitTableModel {
 	 *
 	 * @param unitManager Unit manager that holds settlements.
 	 */
-	public SettlementTableModel(UnitManager unitManager) {
+	public SettlementTableModel() {
 		super(
 			Msg.getString("SettlementTableModel.tabName"),
 			"SettlementTableModel.countingSettlements", //$NON-NLS-1$

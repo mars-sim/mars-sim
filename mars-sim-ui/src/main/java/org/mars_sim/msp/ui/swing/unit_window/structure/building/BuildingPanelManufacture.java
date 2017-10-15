@@ -125,10 +125,10 @@ extends BuildingFunctionPanel {
         scrollPanel = new JScrollPane();
         scrollPanel.setPreferredSize(new Dimension(170, 90));
         add(scrollPanel, BorderLayout.CENTER);
-        scrollPanel.setOpaque(false);
-        scrollPanel.setBackground(new Color(0,0,0,128));
-        scrollPanel.getViewport().setOpaque(false);
-        scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
+        //scrollPanel.setOpaque(false);
+        //scrollPanel.setBackground(new Color(0,0,0,128));
+        //scrollPanel.getViewport().setOpaque(false);
+        //scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
         scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
         // Create process list main panel
@@ -234,25 +234,25 @@ extends BuildingFunctionPanel {
 		if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 
 			// Add process panels for new processes.
-			Iterator<ManufactureProcess> i = processes.iterator();
-			while (i.hasNext()) {
-				ManufactureProcess process = i.next();
+			//Iterator<ManufactureProcess> i = processes.iterator();
+			//while (i.hasNext()) {
+			for (ManufactureProcess process : processes) {//= i.next();
 				if (!processCache.contains(process))
 					processListPane.add(new ManufacturePanel(process, false,  processStringWidth));
 			}
 
 			// Add salvage panels for new salvage processes.
-			Iterator<SalvageProcess> k = salvages.iterator();
-			while (k.hasNext()) {
-			    SalvageProcess salvage = k.next();
+			//Iterator<SalvageProcess> k = salvages.iterator();
+			//while (k.hasNext()) {
+			for (SalvageProcess salvage : salvages) {//= k.next();
 			    if (!salvageCache.contains(salvage))
 			        processListPane.add(new SalvagePanel(salvage, false,  processStringWidth));
 			}
 
 			// Remove process panels for old processes.
-			Iterator<ManufactureProcess> j = processCache.iterator();
-			while (j.hasNext()) {
-				ManufactureProcess process = j.next();
+			//Iterator<ManufactureProcess> j = processCache.iterator();
+			//while (j.hasNext()) {
+			for (ManufactureProcess process : processCache) {//= j.next();
 				if (!processes.contains(process)) {
 					ManufacturePanel panel = getManufacturePanel(process);
 					if (panel != null) processListPane.remove(panel);
@@ -260,9 +260,9 @@ extends BuildingFunctionPanel {
 			}
 
 			// Remove salvage panels for old salvages.
-			Iterator<SalvageProcess> l = salvageCache.iterator();
-            while (l.hasNext()) {
-                SalvageProcess salvage = l.next();
+			//Iterator<SalvageProcess> l = salvageCache.iterator();
+            //while (l.hasNext()) {
+    		for (SalvageProcess salvage : salvageCache) {//= k.next();
                 if (!salvages.contains(salvage)) {
                     SalvagePanel panel = getSalvagePanel(salvage);
                     if (panel != null) processListPane.remove(panel);
@@ -464,4 +464,22 @@ extends BuildingFunctionPanel {
 			return result;
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+		workshop = null;
+		processListPane = null;
+		scrollPanel = null;
+		processCache = null;
+		salvageCache = null;
+		processComboBox = null;
+		processComboBoxCache = null;
+		salvageSelectionCache = null;
+		newProcessButton = null;
+
+	}
+	
 }

@@ -102,4 +102,12 @@ extends BuildingFunctionPanel {
 	public void update() {
 		// Storage capacity doesn't change so nothing to update.
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+
+	}
 }

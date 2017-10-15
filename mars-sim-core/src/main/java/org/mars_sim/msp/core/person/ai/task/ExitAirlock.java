@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -28,6 +29,10 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -35,6 +40,7 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The ExitAirlock class is a task for exiting an airlock for an EVA operation.
@@ -82,9 +88,11 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
 
-	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.waterAR;//findAmountResource(LifeSupportType.WATER);
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
 
+    private static MissionManager missionManager = Simulation.instance().getMissionManager();
+    
     //private Person person = null;
     //private Robot robot = null;
 
@@ -231,8 +239,6 @@ implements Serializable {
     private double waitingToEnterAirlockPhase(double time) {
 
         double remainingTime = time;
-
-
 
         if (person != null) {
             logger.finer(person + " waiting to enter airlock.");
@@ -734,13 +740,32 @@ implements Serializable {
             return false;
         }
 
-        // Check if EVA suit is available.
-        else if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation() 
+        	// Check if EVA suit is available.
+        	&& !goodEVASuitAvailable(airlock.getEntityInventory())) {
+        	
 	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since no working EVA suit is available.";
     		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
-          	//person.getMind().getNewAction(true, false);//getTaskManager().clearTask();
-    		person.getMind().getTaskManager().clearTask();
+    		// TODO: how to have someone deliver him a working EVASuit
+
+    		Vehicle v = person.getVehicle();
+    		Mission m = person.getMind().getMission();
+    		//Mission m = missionManager.getMission(person);
+    		
+    		
+    		if (!v.isEmergencyBeacon()) {
+				//if the emergency beacon is off
+				// Question: could the emergency beacon itself be broken ?
+				if (!v.isBeingTowed()) {
+					((VehicleMission)m).setEmergencyBeacon(null, v, true);
+					LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+							v + "'s emergency beacon is on. awaiting the response for rescue right now.", null);
+				}
+    		}
+    		
+        	person.getMind().getNewAction(true, true);
+    		//person.getMind().getTaskManager().clearTask();
     		return false;
         }
 
@@ -764,8 +789,8 @@ implements Serializable {
             	//logger.info(person.getName() + " is nearly abandoning the action of exiting the airlock and switching to a new task");
             	// 2016-10-07 Note: calling getNewAction() below is still considered "experimental"
             	// It may have caused StackOverflowError if a very high fatigue person is stranded in the airlock and cannot go outside.
-            	// Intentionally add a 5% performance boost
-            	person.getPhysicalCondition().setPerformanceFactor(.1);
+            	// Intentionally add a 3% performance boost
+            	person.getPhysicalCondition().setPerformanceFactor(3);
             	person.getMind().getNewAction(true, false);
 
             } catch (Exception e) {
@@ -914,6 +939,7 @@ implements Serializable {
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);
         
+        // it's okay even if there's not enough water
         if (!hasEnoughWater)
         	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 				"Won't be able to feed enough water to " + suit.getNickName(), null);

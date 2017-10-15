@@ -1346,6 +1346,7 @@ implements Serializable {
 	 * @throws Exception if error during time passing.
 	 */
 	public void timePassing(double time) {
+		// add O2 consumption here ?
 	}
 
 	/**

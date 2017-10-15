@@ -44,7 +44,8 @@ public class AudioPlayer {
 	private MainDesktopPane desktop;
 
 	/** The volume of the audio player (0.0 to 1.0) */
-	private float volume = .8f;
+	private float musicVolume = .8f;
+	private float effectVolume = .8f;
 
 	private int play_times = 0;
 	
@@ -87,7 +88,8 @@ public class AudioPlayer {
 
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			//setMute(false, false);
-			setVolume(.8f);
+			setMusicVolume(.8f);
+			setEffectVolume(.8f);
 		} else {
 			//setMute(UIConfig.INSTANCE.isMute(), UIConfig.INSTANCE.isMute());
 		}
@@ -230,35 +232,63 @@ public class AudioPlayer {
 */
 	
 	/**
-	 * Gets the volume of the audio player.
+	 * Gets the volume of the background music.
 	 * @return volume (0.0 to 1.0)
 	 */
-	public float getVolume() {
-		return volume;
+	public float getMusicVolume() {
+		return musicVolume;
 	}
 
+	/**
+	 * Gets the volume of the sound effect.
+	 * @return volume (0.0 to 1.0)
+	 */
+	public float getEffectVolume() {
+		return effectVolume;
+	}
+	
 	// 2016-09-28 volumeUp()
-	public void volumeUp() {
-		Platform.runLater(() -> {
-			volume = currentBackgroundTrack.getVolume() + .05f;
-			if (volume > 1f)
-				volume = 1f;
-			setVolume();
-		});
+	public void musicVolumeUp() {
+		//Platform.runLater(() -> {
+			musicVolume = currentBackgroundTrack.getVolume() + .05f;
+			if (musicVolume > 1f)
+				musicVolume = 1f;
+			setMusicVolume();
+		//});
 	}
 
 	// 2016-09-28 volumeDown()
-	public void volumeDown() {
-		Platform.runLater(() -> {
-			volume = currentBackgroundTrack.getVolume() - .05f;
-			if (volume < -1f)
-				volume = -1f;
-			setVolume();
-		});
+	public void musicVolumeDown() {
+		//Platform.runLater(() -> {
+			musicVolume = currentBackgroundTrack.getVolume() - .05f;
+			if (musicVolume < -1f)
+				musicVolume = -1f;
+			setMusicVolume();
+		//});
 	}
 
+	// 2016-09-28 volumeUp()
+	public void effectVolumeUp() {
+		//Platform.runLater(() -> {
+			effectVolume = currentOGGSoundClip.getVolume() + .05f;
+			if (effectVolume > 1f)
+				effectVolume = 1f;
+			setEffectVolume();
+		//});
+	}
+
+	// 2016-09-28 volumeDown()
+	public void effectVolumeDown() {
+		Platform.runLater(() -> {
+			effectVolume = currentOGGSoundClip.getVolume() - .05f;
+			if (effectVolume < -1f)
+				effectVolume = -1f;
+			setEffectVolume();
+		});
+	}
+	
 	@SuppressWarnings("restriction")
-	public void setVolume() {
+	public void setMusicVolume() {
 		Platform.runLater(() -> {
 			if (hasMasterGain) {
 				if(!isMute(false, true)) {
@@ -266,18 +296,28 @@ public class AudioPlayer {
 					// 2016-09-28 Added backgroundSoundTrack
 					if (currentBackgroundTrack != null)
 						if (!currentBackgroundTrack.isMute())	{
-							currentBackgroundTrack.setGain(volume);
+							currentBackgroundTrack.setGain(musicVolume);
 							//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
 							//backgroundSoundTrack.resume();//.play();
 						}
 				}
-				else if(!isMute(true, false)) {
-					if (currentOGGSoundClip != null)
-						if (!currentOGGSoundClip.isMute()) {
-							currentOGGSoundClip.setGain(volume);
-							//currentOGGSoundClip.resume();
-						}
+			}
+		});
+	}
 
+	@SuppressWarnings("restriction")
+	public void setEffectVolume() {
+		Platform.runLater(() -> {
+			if (hasMasterGain) {
+				if(!isMute(false, true)) {
+					//logger.info("!isMute(false) is " + !isMute(false));
+					// 2016-09-28 Added backgroundSoundTrack
+					if (currentBackgroundTrack != null)
+						if (!currentBackgroundTrack.isMute())	{
+							currentBackgroundTrack.setGain(effectVolume);
+							//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
+							//backgroundSoundTrack.resume();//.play();
+						}
 				}
 			}
 		});
@@ -287,14 +327,14 @@ public class AudioPlayer {
 	 * Sets the volume of the audio player.
 	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
 	 */
-	public void setVolume(float volume) {
+	public void setMusicVolume(float volume) {
 		//logger.info("setVolume() is on " + Thread.currentThread().getName());
 		if (volume < 0F)
 			volume = 0F;
 		if (volume > 1F)
 			volume = 1F;
 
-		this.volume = volume;
+		this.musicVolume = volume;
 		//System.out.println("volume " + volume);
 		if (hasMasterGain) {
 			if (!isMute(false, true)) {
@@ -309,7 +349,25 @@ public class AudioPlayer {
 					}
 				}
 			}
-			else if (!isMute(true, false)) {
+		}
+
+	}
+
+	/**
+	 * Sets the volume of the audio player.
+	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
+	 */
+	public void setEffectVolume(float volume) {
+		//logger.info("setVolume() is on " + Thread.currentThread().getName());
+		if (volume < 0F)
+			volume = 0F;
+		if (volume > 1F)
+			volume = 1F;
+
+		this.effectVolume = volume;
+		//System.out.println("volume " + volume);
+		if (hasMasterGain) {
+			if (!isMute(true, false)) {
 				if (currentOGGSoundClip != null)
 					if (!currentOGGSoundClip.isMute())
 						currentOGGSoundClip.setGain(volume);
@@ -318,8 +376,6 @@ public class AudioPlayer {
 		}
 
 	}
-
-
 	/**
 	 * Checks if the audio player is muted.
 	 * @param isEffect is the sound effect mute ?

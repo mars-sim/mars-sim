@@ -142,6 +142,8 @@ extends UnitTableModel {
         }
 	 */
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
 	/** The type of source for the people table. */
 	private ValidSourceType sourceType;
 
@@ -149,17 +151,19 @@ extends UnitTableModel {
 	private Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
+	
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
 	private UnitManagerListener unitManagerListener;
 
+	
 	/**
 	 * constructor.
 	 * Constructs a RobotTableModel object that displays all people in the simulation.
 	 * @param unitManager Manager containing Robot objects.
 	 */
-	public RobotTableModel(UnitManager unitManager, MainDesktopPane desktop ) {
+	public RobotTableModel(MainDesktopPane desktop) {
 		super(
 			Msg.getString("RobotTableModel.tabName"), //$NON-NLS-1$
 			"RobotTableModel.countingRobots", //$NON-NLS-1$

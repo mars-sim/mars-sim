@@ -1009,27 +1009,27 @@ implements Serializable {
      * @param resource the amount resource
      * @param double tripTime the estimated trip time (millisols).
      * @return remaining amount (kg)
-     */
+
     private static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
     		AmountResource resource, double tripTime) {
 
     	return LoadVehicleGarage.getRemainingSettlementAmount(settlement, vehicleCrewNum,
         		resource, tripTime);
     }
-
+     */
     /**
      * Gets the number of an item resource that should remain at the settlement.
      * @param settlement the settlement
      * @param vehicleCrewNum the number of crew leaving on the vehicle.
      * @param resource the item resource
      * @return remaining number
-     */
+     
     private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
             ItemResource resource) {
         // No item resources required at settlement at this time.
         return 0;
     }
-
+    */
     /**
      * Gets the number of an equipment type that should remain at the settlement.
      * @param settlement the settlement

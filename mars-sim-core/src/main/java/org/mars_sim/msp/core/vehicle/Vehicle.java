@@ -406,6 +406,27 @@ public abstract class Vehicle extends Unit implements Serializable,
     	}
     }
 
+    /** Returns vehicle's current status
+     *  @return the vehicle's current status
+     */
+    public int getStatusNum() {
+    	// Update status string if necessary.
+        updateStatus();
+
+        if (status.equals(PARKED))
+        	return 0;
+        else if (status.equals(MOVING))
+        	return 1;
+        else if (status.equals(MAINTENANCE))
+        	return 2;
+        else if (status.equals(TOWED))
+        	return 3;
+        else if (status.equals(MALFUNCTION))
+        	return 4;      
+        else
+        	return -1;
+    }
+    
     /**
      * Checks if the vehicle is reserved for any reason.
      * @return true if vehicle is currently reserved

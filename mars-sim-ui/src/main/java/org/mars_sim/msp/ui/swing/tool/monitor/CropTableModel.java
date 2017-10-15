@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -198,7 +199,8 @@ extends UnitTableModel {
 	private Map<Building, List<Integer>> cropCatMap;
 	private Map<Integer, String> catMap;
 	
-	private UnitManager unitManager;
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
 
 	/*
 	 * Constructs a FoodTableModel model that displays all Settlements
@@ -206,14 +208,13 @@ extends UnitTableModel {
 	 *
 	 * @param unitManager Unit manager that holds settlements.
 	 */
-	public CropTableModel(UnitManager unitManager) {
+	public CropTableModel() {
 		super(
 			Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 			"CropTableModel.countingCrops", //$NON-NLS-1$
 			columnNames,
 			columnTypes
 		);
-		this.unitManager = unitManager;
 
 		totalNumCropMap = new ConcurrentHashMap<>();
 		buildings = new ArrayList<Building>();

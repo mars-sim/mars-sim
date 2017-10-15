@@ -55,13 +55,10 @@ import com.jidesoft.swing.TableSearchable;
  */
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
-    private JTable equipmentTable, resourcesTable ;
+    private JTable equipmentTable;
+    private JTable resourcesTable;
     
 
     /**
@@ -287,9 +284,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         		Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
         		newResourceKeys.addAll(itemResources);
-            	Iterator<ItemResource> iItem = itemResources.iterator();
-            	while (iItem.hasNext()) {
-            		ItemResource resource = iItem.next();
+            	//Iterator<ItemResource> iItem = itemResources.iterator();
+            	//while (iItem.hasNext()) {
+            	for (ItemResource resource : itemResources) {//= iItem.next();
             		newResources.put(resource, inventory.getItemResourceNum(resource));
             		newCapacity.put(resource, null);
             	}
@@ -355,7 +352,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				Set<AmountResource> ars = unit.getInventory().getAllAmountResourcesStored(false);
 				if (ars.size() > 1) System.out.print(ars.size());
 				for (AmountResource ar : ars) {
-					s = ar.getName();
+					s = Conversion.capitalize(ar.getName());
                 }
 			}
 			return s;
@@ -417,4 +414,17 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			}
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+		resourceTableModel = null;
+		equipmentTableModel = null;
+		equipmentTable = null;
+		resourcesTable = null;
+		    
+	}
+	
 }

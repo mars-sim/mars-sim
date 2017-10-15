@@ -6,11 +6,17 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -18,6 +24,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
  * The BuildingPanelPower class is a building function panel representing 
@@ -29,8 +36,20 @@ extends BuildingFunctionPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final String kW = " kW";
+	
 	/** Is the building a power producer? */
 	private boolean isProducer;
+	
+	/** The power production cache. */
+	private double powerCache;
+	/** The power used cache. */
+	private double usedCache;
+	
+	private JTextField statusTF;
+	private JTextField producedTF;
+	private JTextField usedTF;
+	
 	/** The power status label. */
 	private JLabel powerStatusLabel;
 	/** The power production label. */
@@ -40,13 +59,10 @@ extends BuildingFunctionPanel {
 	/** Decimal formatter. */
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("BuildingPanelPower.decimalFormat")); //$NON-NLS-1$
 
-	// Caches
 	/** The power status cache. */
 	private PowerMode powerStatusCache;
-	/** The power production cache. */
-	private double powerCache;
-	/** The power used cache. */
-	private double usedCache;
+
+	private PowerGeneration generator;
 
 	/**
 	 * Constructor.
@@ -60,10 +76,10 @@ extends BuildingFunctionPanel {
 
 		// Check if the building is a power producer.
 		isProducer = building.hasFunction(FunctionType.POWER_GENERATION);
-
+		generator = building.getPowerGeneration();
+		
 		// Set the layout
-		if (isProducer) setLayout(new GridLayout(4, 1, 0, 0));
-		else setLayout(new GridLayout(3, 1, 0, 0));
+		setLayout(new BorderLayout());
 
 		// 2014-11-21 Changed font type, size and color and label text
 		JLabel titleLabel = new JLabel(
@@ -71,26 +87,43 @@ extends BuildingFunctionPanel {
 				JLabel.CENTER);		
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		add(titleLabel);
+		add(titleLabel, BorderLayout.NORTH);
 		
+		JPanel springPanel = new JPanel(new SpringLayout());
+		add(springPanel, BorderLayout.CENTER);
 		
 		// Prepare power status label.
 		powerStatusCache = building.getPowerMode();
 		powerStatusLabel = new JLabel(
-				Msg.getString("BuildingPanelPower.powerStatus", powerStatusCache.getName()), //$NON-NLS-1$
-				JLabel.CENTER
-			);
-		add(powerStatusLabel);
+				Msg.getString("BuildingPanelPower.powerStatus"), //$NON-NLS-1$
+				JLabel.RIGHT);
+		springPanel.add(powerStatusLabel);
+		
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		statusTF = new JTextField(powerStatusCache.getName());
+		statusTF.setEditable(false);
+		statusTF.setColumns(7);
+		statusTF.setPreferredSize(new Dimension(120, 25));
+		wrapper1.add(statusTF);
+		springPanel.add(wrapper1);
 
 		// If power producer, prepare power producer label.
 		if (isProducer) {
-			PowerGeneration generator = (PowerGeneration) building.getFunction(FunctionType.POWER_GENERATION);
+			//PowerGeneration generator = building.getPowerGeneration();//(PowerGeneration) building.getFunction(FunctionType.POWER_GENERATION);
 			powerCache = generator.getGeneratedPower();
 			powerLabel = new JLabel(
-				Msg.getString("BuildingPanelPower.powerProduced", formatter.format(powerCache)), //$NON-NLS-1$
-				JLabel.CENTER
-			);
-			add(powerLabel);
+				Msg.getString("BuildingPanelPower.powerProduced"), //$NON-NLS-1$
+				JLabel.RIGHT);
+			
+			springPanel.add(powerLabel);
+			
+			JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+			producedTF = new JTextField(formatter.format(powerCache) + kW);
+			producedTF.setEditable(false);
+			producedTF.setColumns(7);
+			producedTF.setPreferredSize(new Dimension(120, 25));
+			wrapper2.add(producedTF);
+			springPanel.add(wrapper2);
 		}
 
 		// Prepare power used label.
@@ -99,12 +132,35 @@ extends BuildingFunctionPanel {
 		else if (powerStatusCache == PowerMode.POWER_DOWN) 
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
+		
 		usedLabel = new JLabel(
-			Msg.getString("BuildingPanelPower.powerUsed", formatter.format(usedCache)), //$NON-NLS-1$
-			JLabel.CENTER
+			Msg.getString("BuildingPanelPower.powerUsed"), //$NON-NLS-1$
+			JLabel.RIGHT
 		);
-		add(usedLabel);
-	}
+		
+		springPanel.add(usedLabel);
+		
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		usedTF = new JTextField(formatter.format(usedCache) + kW);
+		usedTF.setEditable(false);
+		usedTF.setColumns(7);
+		usedTF.setPreferredSize(new Dimension(120, 25));
+		wrapper3.add(usedTF);
+		springPanel.add(wrapper3);
+		
+		//Lay out the spring panel.
+		if (isProducer) {
+			SpringUtilities.makeCompactGrid(springPanel,
+		                                3, 2, //rows, cols
+		                                75, 25,        //initX, initY
+		                                3, 1);       //xPad, yPad
+		}
+		else
+			SpringUtilities.makeCompactGrid(springPanel,
+                    2, 2, //rows, cols
+                    75, 25,        //initX, initY
+                    3, 1);       //xPad, yPad
+		}
 
 	/**
 	 * Update this panel
@@ -115,16 +171,16 @@ extends BuildingFunctionPanel {
 		PowerMode mode = building.getPowerMode();
 		if (powerStatusCache != mode) {
 			powerStatusCache = mode;
-			powerStatusLabel.setText(Msg.getString("BuildingPanelPower.powerStatus", powerStatusCache.getName())); //$NON-NLS-1$
+			statusTF.setText(powerStatusCache.getName()); //$NON-NLS-1$
 		}
 
 		// Update power production if necessary.
 		if (isProducer) {
-			PowerGeneration generator = building.getPowerGeneration();//(PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
+			//PowerGeneration generator = building.getPowerGeneration();//(PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
 			double power = generator.getGeneratedPower();
 			if (powerCache != power) {
 				powerCache = power;
-				powerLabel.setText(Msg.getString("BuildingPanelPower.powerProduced", formatter.format(powerCache))); //$NON-NLS-1$
+				producedTF.setText(formatter.format(powerCache) + kW); //$NON-NLS-1$
 			}
 		}
 
@@ -134,9 +190,26 @@ extends BuildingFunctionPanel {
 			usedPower = building.getFullPowerRequired();
 		else if (powerStatusCache == PowerMode.POWER_DOWN) 
 			usedPower = building.getPoweredDownPowerRequired();
+		
 		if (usedCache != usedPower) {
 			usedCache = usedPower;
-			usedLabel.setText(Msg.getString("BuildingPanelPower.powerUsed", formatter.format(usedCache))); //$NON-NLS-1$
+			usedTF.setText(formatter.format(usedCache) + kW); //$NON-NLS-1$
 		}
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+		formatter = null;
+		statusTF = null;
+		producedTF = null;
+		usedTF = null;
+		powerStatusLabel = null;
+		powerLabel = null;
+		usedLabel = null;
+		powerStatusCache = null;
+		generator = null;
 	}
 }

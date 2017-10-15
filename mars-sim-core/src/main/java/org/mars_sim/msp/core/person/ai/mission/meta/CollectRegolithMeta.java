@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -20,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 
 
 /**
@@ -27,7 +26,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectRegolithMeta implements MetaMission {
 
-    private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
+    //private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
 
     /** Mission name */
     private static final String NAME = Msg.getString(
@@ -36,6 +35,10 @@ public class CollectRegolithMeta implements MetaMission {
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
+	public int sol = 0; 
+	
+	private static MarsClock marsClock;
+	
     @Override
     public String getName() {
         return NAME;
@@ -51,16 +54,20 @@ public class CollectRegolithMeta implements MetaMission {
 
     	double result = 0;
 
-        if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() < MIN_STARTING_SOL)
+    	if (marsClock == null)
+    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	
+    	sol = marsClock.getMissionSol();
+    	
+        if (sol < MIN_STARTING_SOL)
         	return 0;
-
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        Settlement settlement = person.getSettlement();
 
 	        // a settlement with <= 4 population can always do DigLocalRegolith task
 	        // should avoid the risk of mission.
-	        if (settlement.getNumCurrentPopulation() <= 3)//.getAllAssociatedPeople().size() <= 4)
+	        if (settlement.getNumCurrentPopulation() <= 1)//.getAllAssociatedPeople().size() <= 4)
 	        	return 0;
 
 		    // Check if minimum number of people are available at the settlement.

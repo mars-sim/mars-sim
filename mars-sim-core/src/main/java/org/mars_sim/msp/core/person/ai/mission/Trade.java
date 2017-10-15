@@ -78,24 +78,29 @@ implements Serializable {
             "Mission.phase.tradeEmbarking")); //$NON-NLS-1$
 
 	// Static members
-	static final int MAX_MEMBERS = 2;
 	public static final double MAX_STARTING_PROBABILITY = 10D;
 
 	// Static cache for holding trade profit info.
 	public static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();
 	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
 
+	static final int MAX_MEMBERS = 2;
+	
 	// Data members.
-	private Settlement tradingSettlement;
-	private Map<Good, Integer> sellLoad;
-	private Map<Good, Integer> buyLoad;
 	private double profit;
-	private Map<Good, Integer> desiredBuyLoad;
 	private double desiredProfit;
+	
 	private boolean outbound;
+	private boolean doNegotiation;
+	
+	private Settlement tradingSettlement;
 	private MarsClock startNegotiationTime;
 	private NegotiateTrade negotiationTask;
-	private boolean doNegotiation;
+	
+	private Map<Good, Integer> sellLoad;
+	private Map<Good, Integer> buyLoad;
+	private Map<Good, Integer> desiredBuyLoad;
+
 
     /**
      * Constructor.

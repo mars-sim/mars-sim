@@ -735,19 +735,19 @@ implements Serializable {
 		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 		                walkingStepIndex++;
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
+	    	        	//setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
 		                setPhase(getWalkingStepPhase());
 		            }
 		            else {
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
+	    	        	//setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
 		                endTask();
 		            }
 		        }
 		        else {
 		        	if (building != null) { // && step.building != null) {
 			        	// Going from building to step.building
-			        	setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
+			        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
 			            addSubTask(new WalkSettlementInterior(person, step.building, x, y));
 		        	}
 		            else if (building == null) {
@@ -774,19 +774,19 @@ implements Serializable {
 		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 		                walkingStepIndex++;
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
+	    	        	//setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
 		                setPhase(getWalkingStepPhase());
 		            }
 		            else {
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
+	    	        	//setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
 		                endTask();
 		            }
 		        }
 		        else {
 		        	if (building != null) { // && step.building != null) {
 			        	// Going from building to step.building
-			        	setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
+			        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
 			            addSubTask(new WalkSettlementInterior(robot, step.building, x, y));
 		        	}
 		        	else if (building == null) {
@@ -849,17 +849,17 @@ implements Serializable {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking back to the rover at (" + x + ", " + y + ")");
+    	        	//setDescription("Walking back to the rover at (" + x + ", " + y + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arrived at (" + x + ", " + y + ")");
+    	        	//setDescription("Arrived at (" + x + ", " + y + ")");
                     endTask();
                 }
             }
             else {
-                logger.finer("Starting walk rover interior from Walk.walkingRoverInteriorPhase.");
+                //logger.info(person + " is starting to walk inside rover " +  step.rover);
                 addSubTask(new WalkRoverInterior(person, step.rover, x, y));
             }
 
@@ -892,12 +892,12 @@ implements Serializable {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking back to the rover at (" + x + ", " + y + ")");
+    	        	//setDescription("Walking back to the rover at (" + x + ", " + y + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arrived at (" + x + ", " + y + ")");
+    	        	//setDescription("Arrived at (" + x + ", " + y + ")");
                     endTask();
                 }
             }
@@ -980,7 +980,7 @@ implements Serializable {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking toward (" + xx + ", " + yy + ")");
+    	        	//setDescription("Walking toward (" + xx + ", " + yy + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
@@ -993,7 +993,7 @@ implements Serializable {
             	if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
 	                logger.finer(robot + " starting walk outside task.");
 		        	// 2015-11-11 setDescription()
-		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", " + yy + ")");
+		        	//setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", " + yy + ")");
 		        	addSubTask(new WalkOutside(robot, x, y,
 	                        xx, yy, true));
             	}
@@ -1028,13 +1028,13 @@ implements Serializable {
                     walkingStepIndex++;
        	        	// 2015-11-11 setDescription()
     	        	//setDescription("Walking outside to an airlock");
-    	        	setDescription("is OUTSIDE and still walking...");
+    	        	//setDescription("is OUTSIDE and still walking...");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
                 	//2015-11-11 setDescription()
     	        	//setDescription("Arriving at an airlock outside a building");
-    	        	setDescription("is OUTSIDE and have arrived");
+    	        	//setDescription("is OUTSIDE and have arrived");
                     endTask();
                 }
             }
@@ -1115,11 +1115,11 @@ implements Serializable {
                     walkingStepIndex++;
        	        	// 2015-11-11 setDescription()
     	        	//setDescription("Walking outside to an airlock to enter");
-    	        	setDescription("is INSIDE and still walking toward an airlock");
+    	        	//setDescription("is INSIDE and still walking toward an airlock");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
-       	        	setDescription("is INSIDE and arrived at an airlock");
+       	        	//setDescription("is INSIDE and arrived at an airlock");
                     endTask();
                 }
             }
@@ -1148,23 +1148,23 @@ implements Serializable {
                     walkingStepIndex++;
        	        	// 2015-11-11 setDescription()
     	        	//setDescription("Walking outside to an airlock to enter");
-    	        	setDescription("is INSIDE and still walking toward an airlock");
+    	        	//setDescription("is INSIDE and still walking toward an airlock");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
-    	        	setDescription("is INSIDE and arrived at an airlock");
+    	        	//setDescription("is INSIDE and arrived at an airlock");
                     endTask();
                 }
             }
             else {
                 if (EnterAirlock.canEnterAirlock(robot, airlock)) {
-    	        	setDescription("is OUTSIDE and attempting to enter an airlock. calling EnterAirlock as a subTask now");
+    	        	//setDescription("is OUTSIDE and attempting to enter an airlock. calling EnterAirlock as a subTask now");
                     addSubTask(new EnterAirlock(robot, airlock));
                 }
                 else {
                     endTask();
                     LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
-                    		robot.getName() + " is OUTSIDE, unable to physically enter the airlock of " +
+                    		robot.getName() + " is still OUTSIDE, unable to physically enter the airlock of " +
                             airlock.getEntityName(), null);
                 }
             }

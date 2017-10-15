@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 3.1.0 2017-05-04
+ * @version 3.1.0 2017-10-14
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -11,10 +11,8 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -60,7 +58,7 @@ extends CollectResourcesMission {
 	public CollectRegolith (Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson,
-				getRegolithResource(), SITE_GOAL,
+				ResourceUtil.regolithAR, SITE_GOAL,
 				COLLECTION_RATE,
 				Bag.class, REQUIRED_BAGS,
 				NUM_SITES, MIN_PEOPLE);
@@ -79,7 +77,7 @@ extends CollectResourcesMission {
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, getRegolithResource(),
+		super(description, members, startingSettlement, ResourceUtil.regolithAR,
 				SITE_GOAL, COLLECTION_RATE,
 				Bag.class, REQUIRED_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
@@ -98,8 +96,9 @@ extends CollectResourcesMission {
 	 * Gets the regolith resource.
 	 * @return regolith resource.
 	 * @throws MissionException if error getting regolith resource.
-	 */
+
 	private static AmountResource getRegolithResource() {
 		return ResourceUtil.regolithAR;
 	}
+	*/
 }

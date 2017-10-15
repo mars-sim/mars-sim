@@ -78,13 +78,10 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	}
 
 	private HistoricalEventManager manager;
-	// 2014-11-15 Added NotificationManager
 	private NotificationWindow notifyBox;
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
 	private MainSceneMenu mainSceneMenu;
-
-	//private static int count;
 
 	private List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 

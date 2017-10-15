@@ -44,37 +44,49 @@ class MissionDataBean {
     protected final static String EMERGENCY_SUPPLY_MISSION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
 	// Data members.
-	private String type;
-	private String description;
-	private Settlement startingSettlement;
-	private Rover rover;
-	private Collection<MissionMember> mixedMembers;
-	private Collection<Person> members;
-	private Settlement destinationSettlement;
-	private Rover rescueRover;
-	private LightUtilityVehicle luv;
-	private Coordinates iceCollectionSite;
-	private Coordinates regolithCollectionSite;
-	private Coordinates[] explorationSites;
-	private ExploredLocation miningSite;
-	private Map<Good, Integer> sellGoods;
-	private Map<Good, Integer> buyGoods;
-    private Settlement constructionSettlement;
-    private ConstructionSite constructionSite;
-    private ConstructionStageInfo constructionStageInfo;
     private double constructionSiteXLoc;
     private double constructionSiteYLoc;
     private double constructionSiteFacing;
-    private List<GroundVehicle> constructionVehicles;
+
+	private String type;
+	private String description;
+	
+	private Settlement startingSettlement;
+	private Settlement destinationSettlement;
+    private Settlement constructionSettlement;
     private Settlement salvageSettlement;
+    
+	private Rover rover;
+	private Rover rescueRover;
+	private LightUtilityVehicle luv;
+	
+	private Coordinates fieldSite;
+	private Coordinates iceCollectionSite;
+	private Coordinates regolithCollectionSite;
+	
+	private Coordinates[] explorationSites;
+	
+	private ExploredLocation miningSite;
+    
+    private ConstructionSite constructionSite;
+    private ConstructionStageInfo constructionStageInfo;
     private ConstructionSite salvageSite;
+    
     private Building salvageBuilding;
-    private List<GroundVehicle> salvageVehicles;
-    private Coordinates fieldSite;
+  
     private Person leadResearcher;
     private ScientificStudy study;
+    
+	private Collection<MissionMember> mixedMembers;
+	private Collection<Person> members;
+    private List<GroundVehicle> constructionVehicles;
+    private List<GroundVehicle> salvageVehicles;
     private Map<Good, Integer> emergencyGoods;
-
+	private Map<Good, Integer> sellGoods;
+	private Map<Good, Integer> buyGoods;
+	
+    private static MissionManager manager = Simulation.instance().getMissionManager();
+    
 	/**
 	 * Creates a mission from the mission data.
 	 */
@@ -136,7 +148,7 @@ class MissionDataBean {
 	    }
 	    else throw new IllegalStateException("mission type: " + type + " unknown");
 
-	    MissionManager manager = Simulation.instance().getMissionManager();
+	    //MissionManager manager = Simulation.instance().getMissionManager();
 	    manager.addMission(mission);
 	}
  

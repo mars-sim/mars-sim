@@ -230,15 +230,15 @@ implements TableModelListener, ActionListener {
 		rowCount.setPreferredSize(dims);
 
 		// Add the default table tabs
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+		//UnitManager unitManager = Simulation.instance().getUnitManager();
 
 		// 2014-11-29 Added notifyBox
 		NotificationWindow notifyBox = new NotificationWindow(desktop);
 
 		// 2015-01-21 Added RobotTableModel
-		addTab(new UnitTab(this, new RobotTableModel(unitManager, desktop), true, BOT_ICON));
+		addTab(new UnitTab(this, new RobotTableModel(desktop), true, BOT_ICON));
 		// 2014-10-14 mkung: added FoodTableModel
-		addTab(new UnitTab(this, new CropTableModel(unitManager), true, CROP_ICON));
+		addTab(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
 		// 2014-11-29 Added notifyBox 2015-01-15 Added desktop
 		eventsTab = new EventTab(this, notifyBox, desktop);
 
@@ -250,11 +250,11 @@ implements TableModelListener, ActionListener {
 
 		addTab(new MissionTab(this));
 
-		addTab(new UnitTab(this, new PersonTableModel(unitManager, desktop), true, PEOPLE_ICON));
+		addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
 
-		addTab(new UnitTab(this, new SettlementTableModel(unitManager), true, BASE_ICON));
+		addTab(new UnitTab(this, new SettlementTableModel(), true, BASE_ICON));
 
-		addTab(new UnitTab(this, new VehicleTableModel(unitManager), true, VEHICLE_ICON));
+		addTab(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
 
 		// Add a listener for the tab changes
 		tabsSection.addChangeListener(
@@ -273,7 +273,6 @@ implements TableModelListener, ActionListener {
 		//setPreferredSize(new Dimension(1280, 512));
 		setResizable(true);
 		setMaximizable(true);
-
 		setVisible(true);
 
 		Dimension desktopSize = desktop.getSize();

@@ -58,11 +58,23 @@ implements Serializable {
 
         // Check that the person is currently inside a rover.
         LocationSituation location = person.getLocationSituation();
-        if (location != LocationSituation.IN_VEHICLE) {
-            throw new IllegalStateException(
-                    "WalkRoverInterior task started when " + person + " is not in a rover.");
+
+        if (location == LocationSituation.IN_SETTLEMENT) {
+           	logger.severe(person + " is in " + person.getSettlement() + " but is starting WalkRoverInterior "
+           			+ "task started and NOT found in rover (" + rover.getName() + ")."); 
+    	}
+        
+        else if (location == LocationSituation.OUTSIDE) {
+           	logger.severe(person + " is not in any settlement, is starting WalkRoverInterior "
+           			+ "task but NOT found in rover (" + rover.getName() + ").");
+            //throw new IllegalStateException(
+            //        "WalkRoverInterior task started when " + person + " is not in a rover.");
         }
 
+        if (location != LocationSituation.IN_VEHICLE) {
+        	logger.severe("WalkRoverInterior task started when " + person + " is not in rover (" + rover.getName() + ").");
+        }
+        
         // Initialize data members.
         this.rover = rover;
         this.destXLoc = destinationXLocation;

@@ -11,15 +11,27 @@
 The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars with a higher fidelity of simulation than a typical PC strategy game. 
 
 
-## Modeling and Simulation
-Each settler in mars-sim is a computer agent possessing certain properties. Based on these properties and the external characteristics imposed on them, they make decisions and interact with one another in a constraint environment.
+## Simulation
+mars-sim is a general purpose simulation for the human settlement on Mars. While computer simulation is a particularly useful tool for the mathematical modeling of many systems or branches of science (such as in physics, climatology, chemistry, biology, economics, psychology, and social science), mars-sim attempts to simulate the behaviors of these systems and sub-systems under the Object-Oriented programming paradigm of Java. 
 
-For instance, each settler has a well-defined job, a role, a bunch of technical skills, a set of personality, natural attributes, and task preferences (likes and dislikes). They build relationship with one another as they strive on Mars. 
+As each settler in mars-sim is a computer agent possessing certain properties, based on these properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
+
+For instance, each settler has a well-defined job, a role, a bunch of technical skills, a set of personality, natural attributes, and task preferences (likes and dislikes). They build relationship as they interact and work with one another. They are there to live, dream, explore, and settle Mars. 
 
 
+## Operational Modeling
+mars-sim leverages the scientific principles found in many research journal and attempts to model and incorporate many operational paradigm based on the present day technologies that are applicable for the near-term human exploration and settlement on Mars.
+
+For instance, a low pressure atmosphere of 34kPa or 5 psi is chosen for humans to live in each settlement on Mars, as opposed to the Earth's 
+sea level atmosphere of 101 kPa (14.7 psi). The oxygen (as well as other traces of gas and water moisture) in the air is continuously monitored 
+and replenished periodically for each building. These gases are generated via various systems such as Sabatier Reverse Water Gas (SRWG) and Oxygen Generation System as well as in greenhouses.
+
+Another example is the modes of operation involved in EVA. Prior to each EVA activity, one of the settlers will be selected as the airlock operator. The airlock would have to be pressurized and depressurized (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
+
+The third example is radiation modeling and how often the Galactic Cosmic Ray (GCR) and Solar Energetic Particles (SEP) happens during EVA as they are monitored and tracked presumably over the career lifetime of a settler. 
+ 
 ## Settlement Development 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin),
-a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
+Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin), a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
 
 
 ## Economics
@@ -62,7 +74,7 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 
 ## Supported Platforms
 * Windows
-* MacOS (known bugs in displaying the Settlement Map)
+* MacOS (known bugs in displaying certain fonts in a website in Help Browser)
 * Linux (cannot input text in text fields)
 
 
