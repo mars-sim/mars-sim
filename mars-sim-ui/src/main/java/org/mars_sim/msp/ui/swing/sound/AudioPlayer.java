@@ -102,9 +102,9 @@ public class AudioPlayer {
 	@SuppressWarnings("restriction")
 	public void playSound(String filepath) {
 		//logger.info("play() is on " + Thread.currentThread().getName());
-		if (!isMute(true, false)) {
+		if (!isEffectMute()) {
 			if (desktop.getMainScene() != null) {
-					Platform.runLater(() -> {
+					//Platform.runLater(() -> {
 						try {
 							if (allOGGSoundClips.containsKey(filepath) && allOGGSoundClips.get(filepath) != null) {
 								currentOGGSoundClip = allOGGSoundClips.get(filepath);
@@ -119,7 +119,7 @@ public class AudioPlayer {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
 						}
-					});
+					//});
 			}
 
 			else {
@@ -151,9 +151,9 @@ public class AudioPlayer {
 	@SuppressWarnings("restriction")
 	public void playBackground(String filepath) {
 		//logger.info("play() is on " + Thread.currentThread().getName());
-		if (!isMute(false, true)) {
+		if (!isMusicMute()) {
 			if (desktop.getMainScene() != null) {
-					Platform.runLater(() -> {
+					//Platform.runLater(() -> {
 						try {
 							if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 								currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
@@ -170,7 +170,7 @@ public class AudioPlayer {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
 						}
-					});
+					//});
 			}
 
 			else {
@@ -291,7 +291,7 @@ public class AudioPlayer {
 	public void setMusicVolume() {
 		Platform.runLater(() -> {
 			if (hasMasterGain) {
-				if(!isMute(false, true)) {
+				if(!isMusicMute()) {
 					//logger.info("!isMute(false) is " + !isMute(false));
 					// 2016-09-28 Added backgroundSoundTrack
 					if (currentBackgroundTrack != null)
@@ -309,12 +309,12 @@ public class AudioPlayer {
 	public void setEffectVolume() {
 		Platform.runLater(() -> {
 			if (hasMasterGain) {
-				if(!isMute(false, true)) {
+				if(!isEffectMute()) {
 					//logger.info("!isMute(false) is " + !isMute(false));
 					// 2016-09-28 Added backgroundSoundTrack
-					if (currentBackgroundTrack != null)
-						if (!currentBackgroundTrack.isMute())	{
-							currentBackgroundTrack.setGain(effectVolume);
+					if (currentOGGSoundClip != null)
+						if (!currentOGGSoundClip.isMute())	{
+							currentOGGSoundClip.setGain(effectVolume);
 							//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
 							//backgroundSoundTrack.resume();//.play();
 						}
@@ -337,7 +337,7 @@ public class AudioPlayer {
 		this.musicVolume = volume;
 		//System.out.println("volume " + volume);
 		if (hasMasterGain) {
-			if (!isMute(false, true)) {
+			if (!isMusicMute()) {
 				//logger.info("!isMute(false) is " + !isMute(false));
 				// 2016-09-28 Added backgroundSoundTrack
 				if (currentBackgroundTrack != null) {
@@ -367,7 +367,7 @@ public class AudioPlayer {
 		this.effectVolume = volume;
 		//System.out.println("volume " + volume);
 		if (hasMasterGain) {
-			if (!isMute(true, false)) {
+			if (!isEffectMute()) {
 				if (currentOGGSoundClip != null)
 					if (!currentOGGSoundClip.isMute())
 						currentOGGSoundClip.setGain(volume);
@@ -376,26 +376,35 @@ public class AudioPlayer {
 		}
 
 	}
+
 	/**
 	 * Checks if the audio player is muted.
 	 * @param isEffect is the sound effect mute ?
 	 * @param isTrack is the background music mute ?
 	 * @return true if mute.
 	 */
-	public boolean isMute(boolean isEffect, boolean isTrack) {
+	public boolean isMusicMute() {
 		boolean result = false;
-		if (isEffect) {
-			if (currentOGGSoundClip != null) {
-				result = currentOGGSoundClip.isMute();
-			}
-		}
-		else if (isTrack) {
-			// 2016-09-28 Added backgroundSoundTrack
-			if (currentBackgroundTrack != null) {
-				result = result || currentBackgroundTrack.isMute();
-			}
+		if (currentBackgroundTrack != null) {
+			result = currentBackgroundTrack.isMute() || currentBackgroundTrack.getGain() == 0;
 		}
 		
+		return result;
+	}
+	
+	
+	/**
+	 * Checks if the audio player is muted.
+	 * @param isEffect is the sound effect mute ?
+	 * @param isTrack is the background music mute ?
+	 * @return true if mute.
+	 */
+	public boolean isEffectMute() {
+		boolean result = false;
+		if (currentOGGSoundClip != null) {
+			result = currentOGGSoundClip.isMute() || currentOGGSoundClip.getGain() == 0 ;
+		}
+
 		return result;
 	}
 
@@ -432,6 +441,7 @@ public class AudioPlayer {
 			if (currentOGGSoundClip != null) {
 				//lastEffectState = currentOGGSoundClip.isMute();
 				currentOGGSoundClip.setMute(true);
+				currentOGGSoundClip.setGain(0);
 			}
 			//else
 			//	lastEffectState = true;
@@ -441,6 +451,7 @@ public class AudioPlayer {
 			if (currentBackgroundTrack != null) {
 				//lastTrackState = currentBackgroundTrack.isMute();
 				currentBackgroundTrack.setMute(true);
+				currentBackgroundTrack.setGain(0);
 			}
 			//else
 			//	lastTrackState = true;
@@ -452,6 +463,7 @@ public class AudioPlayer {
 			if (currentOGGSoundClip != null) {
 				//lastEffectState = currentOGGSoundClip.isMute();
 				currentOGGSoundClip.setMute(false);
+				setMusicVolume();
 			}
 			//else
 				//lastEffectState = true;
@@ -461,6 +473,7 @@ public class AudioPlayer {
 			if (currentBackgroundTrack != null) {
 				//lastTrackState = currentBackgroundTrack.isMute();
 				currentBackgroundTrack.setMute(false);
+				setEffectVolume();
 			}
 			//else
 				//lastTrackState = true;
@@ -485,6 +498,7 @@ public class AudioPlayer {
 		if (isBackgroundTrackStopped()) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long. Don't need to repeat
 			if (currentBackgroundTrack != null
+					&& !currentBackgroundTrack.isMute() && currentBackgroundTrack.getGain() != 0
 					&& !currentBackgroundTrack.toString().equals("Areologie.ogg") 
 					&& !currentBackgroundTrack.toString().equals("Fantascape.ogg")	
 					&& play_times < 3) {

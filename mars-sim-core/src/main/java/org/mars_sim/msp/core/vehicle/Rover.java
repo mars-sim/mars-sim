@@ -197,6 +197,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public int getCrewCapacity() {
         return crewCapacity;
     }
+    
     public int getRobotCrewCapacity() {
         return robotCrewCapacity;
     }
@@ -207,6 +208,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public int getCrewNum() {
         return getCrew().size();
     }
+    
     public int getRobotCrewNum() {
         return getRobotCrew().size();
     }
@@ -230,6 +232,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public boolean isCrewmember(Person person) {
         return getInventory().containsUnit(person);
     }
+    
     public boolean isRobotCrewmember(Robot robot) {
         return getInventory().containsUnit(robot);
     }

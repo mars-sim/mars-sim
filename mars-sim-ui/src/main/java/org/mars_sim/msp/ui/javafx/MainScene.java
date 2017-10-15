@@ -1416,15 +1416,15 @@ public class MainScene {
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
 					if (sliderValue <= 0) { 
-						soundPlayer.mute(true, false);
 						effectMuteBox.setSelected(true);
 						menuBar.getEffectMuteItem().setSelected(false);
+						soundPlayer.mute(true, false);
 						//muteSound(true, false);
 					} else {
-						soundPlayer.unmute(true, false);
 						soundPlayer.setEffectVolume((float) convertSlider2Volume(sliderValue));
 						effectMuteBox.setSelected(false);
 						menuBar.getEffectMuteItem().setSelected(true);
+						soundPlayer.unmute(true, false);
 						//unmuteSound(true, false);
 					}
 				}
@@ -2808,7 +2808,7 @@ public class MainScene {
 		}
 		
 		// Check to see if a background sound track is being played.
-		if (!desktop.getSoundPlayer().isMute(false, true))
+		if (!desktop.getSoundPlayer().isMusicMute())
 			soundPlayer.playRandomBackgroundTrack();
 	}
 

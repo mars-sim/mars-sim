@@ -149,7 +149,8 @@ public class UIConfig {
             AudioPlayer player = desktop.getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
             volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute(true, true)));
+            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
+            volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
 
             Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
             uiElement.addContent(internalWindowsElement);
@@ -247,8 +248,9 @@ public class UIConfig {
             AudioPlayer player = desktop.getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
             volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute(true, true)));
-
+            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
+            volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
+            
             Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
             uiElement.addContent(internalWindowsElement);
 

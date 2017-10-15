@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
@@ -103,6 +104,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     private String typeOfDessertLoaded;
 
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
+    
     private Direction direction; // Direction vehicle is traveling in
     private VehicleOperator vehicleOperator; // The operator of the vehicle
     private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
@@ -110,6 +112,9 @@ public abstract class Vehicle extends Unit implements Serializable,
     private Settlement associatedSettlement;
 
     private static VehicleConfig config;
+    
+    private static MissionManager missionManager;
+    
     /**
      * Constructor 1 : prepares a Vehicle object with a given settlement
      * @param name the vehicle's name
@@ -123,6 +128,8 @@ public abstract class Vehicle extends Unit implements Serializable,
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
 
+        missionManager = Simulation.instance().getMissionManager();
+        
         life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
@@ -131,7 +138,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         containerUnit = settlement;
         settlement.getInventory().storeUnit(this);
 
-        config = SimulationConfig.instance().getVehicleConfiguration();
+        config = SimulationConfig.instance().getVehicleConfiguration(); 
         
         // Initialize vehicle data
         vehicleType = vehicleType.toLowerCase();
@@ -185,6 +192,8 @@ public abstract class Vehicle extends Unit implements Serializable,
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
 
+        missionManager = Simulation.instance().getMissionManager();
+        
         life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
@@ -218,6 +227,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public String getDescription(String vehicleType) {
     	return config.getDescription(vehicleType);
     }
+    
     public String getVehicleType() {
     	return vehicleType;
     }
@@ -683,14 +693,14 @@ public abstract class Vehicle extends Unit implements Serializable,
 
         if (isReservedMission) {
             // Set reserved for mission to false if the vehicle is not associated with a mission.
-            if (Simulation.instance().getMissionManager().getMissionForVehicle(this) == null) {
+            if (missionManager.getMissionForVehicle(this) == null) {
             	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
                 		getName() + " is mission reserved but has NO mission.", null);
                 setReservedForMission(false);
             }
         }
         else {
-            if (Simulation.instance().getMissionManager().getMissionForVehicle(this) != null) {
+            if (missionManager.getMissionForVehicle(this) != null) {
             	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
                 		getName() + " is NOT mission reserved but is on a mission.", null);
             }

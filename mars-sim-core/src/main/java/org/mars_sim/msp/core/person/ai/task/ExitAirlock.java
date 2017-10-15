@@ -760,7 +760,7 @@ implements Serializable {
 				if (!v.isBeingTowed()) {
 					((VehicleMission)m).setEmergencyBeacon(null, v, true);
 					LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-							v + "'s emergency beacon is on. awaiting the response for rescue right now.", null);
+							v + "'s emergency beacon is on, awaiting response for rescue right now.", null);
 				}
     		}
     		

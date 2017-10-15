@@ -35,9 +35,9 @@ public class CollectRegolithMeta implements MetaMission {
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
-	public int sol = 0; 
+	//public int sol = 0; 
 	
-	private static MarsClock marsClock;
+	//private static MarsClock marsClock;
 	
     @Override
     public String getName() {
@@ -53,7 +53,7 @@ public class CollectRegolithMeta implements MetaMission {
     public double getProbability(Person person) {
 
     	double result = 0;
-
+/*
     	if (marsClock == null)
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
     	
@@ -61,7 +61,7 @@ public class CollectRegolithMeta implements MetaMission {
     	
         if (sol < MIN_STARTING_SOL)
         	return 0;
-
+*/
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        Settlement settlement = person.getSettlement();
 

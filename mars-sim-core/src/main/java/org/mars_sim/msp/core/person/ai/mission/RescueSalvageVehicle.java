@@ -415,7 +415,12 @@ implements Serializable {
             // Unhook towed vehicle.
             rover.setTowedVehicle(null);
             towedVehicle.setTowingVehicle(null);
-
+            logger.info(rover + " is being unhooked from " + towedVehicle + " at " + disembarkSettlement);
+            
+            // Re-orient the location/position of the vehicle to avoid being placed inside a garage.
+            rover.determinedSettlementParkedLocationAndFacing();
+            towedVehicle.determinedSettlementParkedLocationAndFacing();
+            
             // Store towed vehicle in settlement.
             Inventory inv = disembarkSettlement.getInventory();
             inv.storeUnit(towedVehicle);
