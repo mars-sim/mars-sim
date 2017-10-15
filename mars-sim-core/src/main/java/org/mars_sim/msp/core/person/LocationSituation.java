@@ -19,6 +19,7 @@ public enum LocationSituation {
 	IN_VEHICLE (Msg.getString("LocationSituation.inVehicle")), //$NON-NLS-1$
 	OUTSIDE (Msg.getString("LocationSituation.outside")), //$NON-NLS-1$
 	BURIED (Msg.getString("LocationSituation.buried")), //$NON-NLS-1$
+	DECOMMISSIONED (Msg.getString("LocationSituation.decommissioned")), //$NON-NLS-1$
 	UNKNOWN (Msg.getString("LocationSituation.unknown")); //$NON-NLS-1$
 	
 	private String name;

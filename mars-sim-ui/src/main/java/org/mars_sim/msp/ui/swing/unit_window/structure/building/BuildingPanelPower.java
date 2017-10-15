@@ -152,13 +152,13 @@ extends BuildingFunctionPanel {
 		if (isProducer) {
 			SpringUtilities.makeCompactGrid(springPanel,
 		                                3, 2, //rows, cols
-		                                75, 25,        //initX, initY
+		                                75, 10,        //initX, initY
 		                                3, 1);       //xPad, yPad
 		}
 		else
 			SpringUtilities.makeCompactGrid(springPanel,
                     2, 2, //rows, cols
-                    75, 25,        //initX, initY
+                    75, 10,        //initX, initY
                     3, 1);       //xPad, yPad
 		}
 

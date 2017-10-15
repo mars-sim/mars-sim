@@ -1077,19 +1077,13 @@ public class BuildingManager implements Serializable {
      */
     public static Building getBuilding(Vehicle vehicle, Settlement settlement) {
         if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
-        Building result = null;
         if (settlement != null) {
-        	for (Building garageBuilding : settlement.getBuildingManager().getBuildings(
-                    FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
-            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-                    //BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
-            //while (i.hasNext()) {
-                //Building garageBuilding = i.next();
+        	List<Building> list = settlement.getBuildingManager().getBuildings(
+                    FunctionType.GROUND_VEHICLE_MAINTENANCE);
+        	for (Building garageBuilding : list) {
                 try {
-                    VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
-                            FunctionType.GROUND_VEHICLE_MAINTENANCE);
+                    VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
                     if (garage.containsVehicle(vehicle)) {
-                        //result = garageBuilding;
                         return garageBuilding;
                     }
                 }
@@ -1098,7 +1092,7 @@ public class BuildingManager implements Serializable {
                 }
             }
         }
-        return result;
+        return null;
     }
 
 
@@ -1114,13 +1108,13 @@ public class BuildingManager implements Serializable {
         if (unit instanceof Person) {
          	person = (Person) unit;
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        	result = person.getBuildingLocation();
+/*	        	
 	            Settlement settlement = person.getSettlement();
-	            for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT)) {
-	            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
-	            //while (i.hasNext()) {
-	            //    Building building = i.next();
+	            List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
+	            for (Building building : list) {
 	                try {
-	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+	                    LifeSupport lifeSupport = building.getLifeSupport();
 	                    if (lifeSupport.containsOccupant(person)) {
 	                        //if (result == null) {
 	                            result = building;
@@ -1135,6 +1129,7 @@ public class BuildingManager implements Serializable {
 	                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
 	                }
 	            }
+*/	            
 	        }
         }
         else if (unit instanceof Robot) {

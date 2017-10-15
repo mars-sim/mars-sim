@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
@@ -33,6 +32,8 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(WalkRoverInterior.class.getName());
+
+	//private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	/** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
@@ -55,26 +56,30 @@ implements Serializable {
     public WalkRoverInterior(Person person, Rover rover, double destinationXLocation,
             double destinationYLocation) {
         super("Walking inside a rover", person, false, false, STRESS_MODIFIER, false, 0D);
-
+/*
         // Check that the person is currently inside a rover.
         LocationSituation location = person.getLocationSituation();
 
         if (location == LocationSituation.IN_SETTLEMENT) {
-           	logger.severe(person + " is in " + person.getSettlement() + " but is starting WalkRoverInterior "
-           			+ "task started and NOT found in rover (" + rover.getName() + ")."); 
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+        			person + " is in " + person.getSettlement() + " now but is calling WalkRoverInterior "
+           			+ "task and NOT in rover (" + rover.getName() + ").", null); 
     	}
         
         else if (location == LocationSituation.OUTSIDE) {
-           	logger.severe(person + " is not in any settlement, is starting WalkRoverInterior "
-           			+ "task but NOT found in rover (" + rover.getName() + ").");
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+        			person + " is outside but is calling WalkRoverInterior task and NOT in rover (" 
+        			+ rover.getName() + ").", null); 
             //throw new IllegalStateException(
             //        "WalkRoverInterior task started when " + person + " is not in a rover.");
         }
 
-        if (location != LocationSituation.IN_VEHICLE) {
-        	logger.severe("WalkRoverInterior task started when " + person + " is not in rover (" + rover.getName() + ").");
+        else if (location != LocationSituation.IN_VEHICLE) {
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+        		"WalkRoverInterior task started when " + person + " is not in rover (" 
+        			+ rover.getName() + ").", null);
         }
-        
+*/     
         // Initialize data members.
         this.rover = rover;
         this.destXLoc = destinationXLocation;
@@ -84,8 +89,8 @@ implements Serializable {
         addPhase(WALKING);
         setPhase(WALKING);
 
-        logger.finer(person.getName() + " starting to walk to new location in " + rover.getName() +
-                " to (" + destinationXLocation + ", " + destinationYLocation + ")");
+        //logger.finer(person.getName() + " starting to walk to new location in " + rover.getName() +
+        //        " to (" + destinationXLocation + ", " + destinationYLocation + ")");
     }
 
 	/*
@@ -94,14 +99,14 @@ implements Serializable {
     public WalkRoverInterior(Robot robot, Rover rover, double destinationXLocation,
             double destinationYLocation) {
         super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
-
+/*
         // Check that the robot is currently inside a rover.
         LocationSituation location = robot.getLocationSituation();
         if (location != LocationSituation.IN_VEHICLE) {
             throw new IllegalStateException(
                     "WalkRoverInterior task started when robot is not in a rover.");
         }
-
+*/
         // Initialize data members.
         this.rover = rover;
         this.destXLoc = destinationXLocation;
@@ -111,8 +116,8 @@ implements Serializable {
         addPhase(WALKING);
         setPhase(WALKING);
 
-        logger.finer(robot.getName() + " starting to walk to new location in " + rover.getName() +
-                " to (" + destinationXLocation + ", " + destinationYLocation + ")");
+        //logger.finer(robot.getName() + " starting to walk to new location in " + rover.getName() +
+        //        " to (" + destinationXLocation + ", " + destinationYLocation + ")");
     }
     @Override
     protected double performMappedPhase(double time) {

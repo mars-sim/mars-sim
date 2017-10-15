@@ -127,7 +127,7 @@ extends Airlock {
 					// Exit robot to inside vehicle.
 					vehicle.getInventory().storeUnit(robot);
 				}
-				else if (LocationSituation.BURIED != robot.getLocationSituation()) {
+				else if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
 					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",robot.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}
@@ -136,7 +136,7 @@ extends Airlock {
 					// Exit robot outside vehicle.
 					vehicle.getInventory().retrieveUnit(robot);
 				}
-				else if (LocationSituation.BURIED != robot.getLocationSituation()) {
+				else if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
 					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",robot.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}

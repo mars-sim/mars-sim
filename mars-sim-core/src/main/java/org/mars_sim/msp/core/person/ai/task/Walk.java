@@ -52,6 +52,8 @@ implements Serializable {
     /** default serial id. */
     private static Logger logger = Logger.getLogger(Walk.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D;
     /** Task name */
@@ -819,7 +821,7 @@ implements Serializable {
         double timeLeft = time;
 
     	if (person != null) {
-            logger.finer(person + " walking rover interior phase.");
+            //logger.finer(person + " walking rover interior phase.");
 
             // Check if person has reached destination location.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -858,9 +860,30 @@ implements Serializable {
                     endTask();
                 }
             }
-            else {
-                //logger.info(person + " is starting to walk inside rover " +  step.rover);
-                addSubTask(new WalkRoverInterior(person, step.rover, x, y));
+            else { // this is a high traffic case when a person is in a vehicle
+
+                LocationSituation location = person.getLocationSituation();
+
+                //logger.info(person + " is " + location.getName());
+                
+                if (location == LocationSituation.IN_SETTLEMENT) {
+                	LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
+                			person + " is in " + person.getSettlement() + " but is in walkingRoverInteriorPhase() "
+                   			+ "and NOT in rover (" + rover.getName() + ").", null); 
+                	person.getMind().getTaskManager().getNewTask();//.clearTask();
+            	}
+                
+                else if (location == LocationSituation.OUTSIDE) {
+                	LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
+                			person + " is outside but is in walkingRoverInteriorPhase() and NOT in rover (" 
+                			+ rover.getName() + ").", null); 
+                	person.getMind().getTaskManager().getNewTask();//clearTask();
+                }
+
+                else if (location == LocationSituation.IN_VEHICLE) {
+                    addSubTask(new WalkRoverInterior(person, step.rover, x, y));
+                }
+
             }
 
     	}
@@ -1125,7 +1148,7 @@ implements Serializable {
             }
             else {
                 if (EnterAirlock.canEnterAirlock(person, airlock)) {
-    	        	setDescription("is OUTSIDE and attempting to enter an airlock. calling EnterAirlock as a subTask now");
+    	        	//setDescription("is OUTSIDE and attempting to enter an airlock. calling EnterAirlock as a subTask now");
                     addSubTask(new EnterAirlock(person, airlock));
                 }
                 else {

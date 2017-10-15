@@ -291,7 +291,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
     @Override
     public LocationSituation getLocationSituation() {
         if (isInoperable)
-            return LocationSituation.IN_SETTLEMENT;
+            return LocationSituation.DECOMMISSIONED;
         else {
             Unit container = getContainerUnit();
             if (container == null)
@@ -357,8 +357,8 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
     	   return settlement;
        }
 
-       else if (getLocationSituation() == LocationSituation.BURIED) {
-    	   return null;
+       else if (getLocationSituation() == LocationSituation.DECOMMISSIONED) {
+    	   return null; // TODO: create buriedSettlement;
        }
 
        else {
