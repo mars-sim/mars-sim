@@ -157,9 +157,9 @@ public class EatMeal extends Task implements Serializable {
         	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
         }
         
-        boolean notHungry = startingHunger < 150 && energy > 1000;
+        boolean notHungry = startingHunger < 150 && energy > 1500;
         // if a person is thirsty and not hungry
-        if (person.isThirsty() && thirst > 300 && notHungry) {
+        if (condition.isThirsty() && thirst > 300 && notHungry) {
         	consumeWater(true);
         	endTask();
         }
@@ -315,7 +315,7 @@ public class EatMeal extends Task implements Serializable {
             remainingTime = time * .6 - eatingTime;
         }
         
-        if (person.isThirsty())
+        if (condition.isThirsty())
         	consumeWater(false);
  
         return remainingTime;
@@ -598,7 +598,7 @@ public class EatMeal extends Task implements Serializable {
 		    	boolean haswater = Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , false);  
 		    	
 		    	if (haswater) {
-		    		person.setThirsty(false);
+		    		condition.setThirsty(false);
 		    		person.setWaterRation(false);
 		    		condition.setThirst(new_thirst);
 		    		if (waterOnly)
@@ -621,7 +621,7 @@ public class EatMeal extends Task implements Serializable {
 			    	// Test to see if there's just half of the amount of water
 		    		haswater = Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterAR, inv , false);
 		    		if (haswater) {
-		    			person.setThirsty(false);
+		    			condition.setThirsty(false);
 		    			new_thirst = new_thirst * (1 + RATION_FACTOR);
 			    		condition.setThirst(new_thirst);
 			    		if (waterOnly)

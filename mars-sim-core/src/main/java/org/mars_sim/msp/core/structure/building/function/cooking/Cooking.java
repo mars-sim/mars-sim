@@ -1066,20 +1066,20 @@ implements Serializable {
                         	if (dryMassPerServing > 0)
                         		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteAR, inv, "::timePassing");
                             LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-                            		dryMassPerServing  + " kg " + meal.getName()
+                            		"[" + settlement.getName() + "] " + dryMassPerServing  + " kg " + meal.getName()
                                     + " was expired and discarded at " + getBuilding().getNickName()
-                                    + " in " + settlement.getName() + ".", null);
+                                    + ".", null);
 
                         } else {
                             // Convert the meal into preserved food.
                             preserveFood();
-                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-                            		"A meal is expiring. Convert "
+                            LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+                            		"[" + settlement.getName() + "] A meal is expiring. Convert "
                                     + dryMassPerServing  + " kg "
                                     + meal.getName().toLowerCase()
                                     + " into preserved food at "
                                     + getBuilding().getNickName()
-                                    + " in " + settlement.getName()
+                                    + "."
                                     , null);
                         }
 

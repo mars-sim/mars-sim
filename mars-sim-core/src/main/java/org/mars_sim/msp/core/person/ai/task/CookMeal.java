@@ -137,9 +137,8 @@ implements Serializable {
 	        	}
 */
 
-				String newLog = person + " cannot cook meals in "
-	            		+ person.getSettlement().getName()
-	            		+ " because none of the ingredients of any meals are available ";
+				String newLog = "[" + person.getSettlement().getName() + "] " + person + " cannot cook any meals "
+	            		+ " because none of the ingredients are available.";
 
 				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, newLog, null);
 
@@ -220,10 +219,8 @@ implements Serializable {
 	            		+ " because none of the ingredients of any meals are available ");
 */
 
-				String newLog = robot + " cannot cook meals in "
-	            		+ robot.getSettlement().getName()
-	            		+ " because none of the ingredients of any meals are available ";
-
+				String newLog = "[" + robot.getSettlement().getName() + "] " + robot + " cannot cook any meals in "
+	            		+ " because none of the ingredients are available. ";
 
 				LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(), newLog, null);
 

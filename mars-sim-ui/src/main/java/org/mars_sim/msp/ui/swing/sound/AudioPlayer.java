@@ -79,8 +79,8 @@ public class AudioPlayer {
 		soundTracks.add(SoundConstants.ST_ONE_WORLD);
 		soundTracks.add(SoundConstants.ST_BEDTIME);
 		soundTracks.add(SoundConstants.ST_BOG_CREATURES);
-		soundTracks.add(SoundConstants.ST_CLIPPITY);
 		soundTracks.add(SoundConstants.ST_LOST_JUNGLE);
+		soundTracks.add(SoundConstants.ST_CLIPPITY);
 		soundTracks.add(SoundConstants.ST_MONKEY);
 		soundTracks.add(SoundConstants.ST_SURREAL);
 
@@ -429,34 +429,47 @@ public class AudioPlayer {
 		hasMasterGain = value;
 	}
 
+	/**
+	 * Checks if the music track ever started or has stopped 
+	 * @return true if no music track is playing
+	 */
 	public boolean isBackgroundTrackStopped() {
 		if (currentBackgroundTrack == null)
 			return true;
 		return currentBackgroundTrack.checkState();
 	}
 	
+	/**
+	 * Play a randomly selected music track
+	 */
 	public void playRandomBackgroundTrack() {
 		if (isBackgroundTrackStopped()) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long. Don't need to repeat
-			if (currentBackgroundTrack != null) {
-				if (!currentBackgroundTrack.isMute() && currentBackgroundTrack.getGain() != 0
-					&& play_times < 3) {
-					playBackground(currentBackgroundTrack.toString());
-					play_times++;
-				}
-				else if (currentBackgroundTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
-					&& play_times < 1) {
-					playBackground(currentBackgroundTrack.toString());
-					play_times++;
-				}
-				else if (currentBackgroundTrack.toString().equals(SoundConstants.ST_FANTASCAPE) 
-					&& play_times < 2)	{
-					playBackground(currentBackgroundTrack.toString());
-					play_times++;
-				}
+			if (currentBackgroundTrack != null
+				&& !currentBackgroundTrack.isMute() && currentBackgroundTrack.getGain() != 0
+				&& play_times < 3) {
+				playBackground(currentBackgroundTrack.toString());
+				play_times++;
+			}
+			else if (currentBackgroundTrack != null
+				&& currentBackgroundTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
+				&& play_times < 1) {
+				; // empty
+			}
+			else if (currentBackgroundTrack != null
+				&& currentBackgroundTrack.toString().equals(SoundConstants.ST_FANTASCAPE) 
+				&& play_times < 2)	{
+				playBackground(currentBackgroundTrack.toString());
+				play_times++;
 			}
 			else {		
-				int rand = RandomUtil.getRandomInt(num_tracks-1);
+				int rand = 0;
+				// At the start of the sim, refrain from playing the last 3 tracks due to their sudden loudness
+				if (previous_tracks.isEmpty()) {
+						rand = RandomUtil.getRandomInt(num_tracks-4);
+				}
+				else
+					RandomUtil.getRandomInt(num_tracks-1);
 				boolean not_repeated = false;
 				// Do not repeat the last 3 music tracks just played
 				while (!not_repeated) {
@@ -470,15 +483,10 @@ public class AudioPlayer {
 						}
 					}
 					if (not_repeated) {
-						// At the start of the sim, refrain from playing the last two tracks due to their sudden loudness
-						if (previous_tracks.isEmpty()) {
-							if (rand == num_tracks-1 && rand == num_tracks-2)
-								rand = rand - RandomUtil.getRandomInt(num_tracks-3);
-						}
 						String name = soundTracks.get(rand);
 						playBackground(soundTracks.get(rand));
 						logger.info("Playing the background music track #" + (rand+1) + " '" + name + "'");
-						// Remove the earliest tracks 
+						// Remove the earliest track 
 						if (!previous_tracks.isEmpty())
 							previous_tracks.remove(0);
 						// Add the new track

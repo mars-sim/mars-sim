@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -55,6 +56,9 @@ import com.jidesoft.swing.TableSearchable;
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(InventoryTabPanel.class.getName());
 
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
@@ -350,7 +354,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				//else 
 				//	s = unit.getContainerUnit().getName();		
 			}
-			if (unit instanceof Robot) {
+			else if (unit instanceof Robot) {
 				;// TODO: determine ownership of a bot
 			}
 			//if (item.contains("box") || item.contains("canister") 
@@ -359,7 +363,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			//}
 			else {		
 				List<AmountResource> ars = new ArrayList<>(unit.getInventory().getAllAmountResourcesStored(false));
-				if (ars.size() > 1) System.out.print(unit.getName() + " has " + ars.size() + "resources.");
+				if (ars.size() > 1) logger.info(unit.getName() + " has " + ars.size() + " resources.");
 				//for (AmountResource ar : ars) {
 				//	s = Conversion.capitalize(ar.getName());
                 //}

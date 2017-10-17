@@ -384,8 +384,9 @@ implements Serializable, LifeSupportType, Objective {
 		else
 			setObjective(ObjectiveType.CROP_FARM);
 
-		logger.info("Set " + this + "'s development objective to " + objectiveType.toString() 
-			+ " (based on the '" + template + "' Template)");
+		LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+				"[" + this + "] Set development objective to " + objectiveType.toString() 
+				+ " (based upon the '" + template + "' Template).", null);
 		
 
 	}
@@ -3275,7 +3276,8 @@ implements Serializable, LifeSupportType, Objective {
 	   	//System.out.println("chance1 : " + chance1);
 	    if (RandomUtil.lessThanRandPercent(chance1)) {
 	    	exposed[1] = true;
-	    	logger.info("An GCR event is detected by the radiation sensor grid on " + getName());
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					"[" + name + "] A GCR event is detected by the radiation sensor grid.", null);
 	    	this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 	    }
 	    else
@@ -3287,7 +3289,8 @@ implements Serializable, LifeSupportType, Objective {
     	//System.out.println("chance2 : " + chance2);
 	    if (RandomUtil.lessThanRandPercent(chance2)) {
 	    	exposed[2] = true;
-	    	logger.info("An SEP event is detected by the radiation sensor grid on " + getName());
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					"[" + name + "] A SEP event is detected by the radiation sensor grid.", null);
 	    	this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 	    }
 	    else
@@ -3470,7 +3473,7 @@ implements Serializable, LifeSupportType, Objective {
     	else {
         	millisolCache = m;
 	        for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
-	            Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
+	            Farming farm = b.getFarming();
 	            for (Crop c : farm.getCrops()){
 	                if (c.requiresWork()) {
 	                    result++;
@@ -3488,9 +3491,9 @@ implements Serializable, LifeSupportType, Objective {
     	return cropsNeedingTendingCache;
     }
 
-    //public String toString() {
-    //	return name;
-    //}
+    public String toString() {
+    	return name;
+    }
 
     /***
      * Computes the probability of the presence of regolith  

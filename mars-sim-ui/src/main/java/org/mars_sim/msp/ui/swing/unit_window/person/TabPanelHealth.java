@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -70,11 +69,13 @@ extends TabPanel {
 	private JLabel stressLabel;
 	private JLabel performanceLabel;
 
+	private PhysicalCondition condition;
+	
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
 	private RadiationTableModel radiationTableModel;
 	private JTable radiationTable, medicationTable, healthProblemTable;
-	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 
@@ -99,8 +100,9 @@ extends TabPanel {
 		);
 
 		Person person = (Person) unit;
-		PhysicalCondition condition = person.getPhysicalCondition();
-
+		condition = person.getPhysicalCondition();
+		//PhysicalCondition condition = ((Person) unit).getPhysicalCondition();
+		
 		// Create health label panel.
 		JPanel healthLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(healthLabelPanel);
@@ -311,53 +313,56 @@ extends TabPanel {
 		TableStyle.setTableStyle(medicationTable);
 		TableStyle.setTableStyle(healthProblemTable);
 
-		Person person = (Person) unit;
-		PhysicalCondition condition = person.getPhysicalCondition();
-
 		// Update fatigue if necessary.
-		double newF = condition.getFatigue();
-		if (fatigueCache *.95 > newF || fatigueCache *1.05 < newF) {
+		double newF = Math.round(condition.getFatigue()* 1.0)/1.0;
+		//if (fatigueCache *.95 > newF || fatigueCache *1.05 < newF) {
+		if (fatigueCache != newF) {
 			fatigueCache = newF;
 			fatigueLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
 			        formatter.format(fatigueCache)));
 		}
 
 		// Update thirst if necessary.
-		double newT = condition.getThirst();
-		if (thirstCache *.95 > newT || thirstCache *1.05 < newT) {
+		double newT = Math.round(condition.getThirst()* 1.0)/1.0;
+		//if (thirstCache *.95 > newT || thirstCache *1.05 < newT) {
+		if (thirstCache != newT) {
 			thirstCache = newT;
 			thirstLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
 			        formatter.format(thirstCache)));
 		}
 		
 		// Update hunger if necessary.
-		double newH = condition.getHunger();
-		if (hungerCache *.95 > newH || hungerCache *1.05 < newH) {
+		double newH = Math.round(condition.getHunger()* 1.0)/1.0;
+		//if (hungerCache *.95 > newH || hungerCache *1.05 < newH) {
+		if (hungerCache != newH) {
 			hungerCache = newH;
 			hungerLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
 			        formatter.format(hungerCache)));
 		}
 
 		// Update energy if necessary.
-		double newEnergy = condition.getEnergy();
-		if (energyCache *.98 > newEnergy || energyCache *1.02 < newEnergy   ) {
+		double newEnergy = Math.round(condition.getEnergy()* 1.0)/1.0;
+		//if (energyCache *.98 > newEnergy || energyCache *1.02 < newEnergy   ) {
+		if (energyCache != newEnergy) {
 			energyCache = newEnergy;
 			energyLabel.setText(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
 			        formatter.format(energyCache)));
 		}
 
 		// Update stress if necessary.
-		double newS = condition.getStress();
-		if (stressCache *.95 > newS || stressCache*1.05 < newS) {
+		double newS = Math.round(condition.getStress()* 1.0)/1.0;
+		//if (stressCache *.95 > newS || stressCache*1.05 < newS) {
+		if (stressCache != newS) {
 			stressCache = newS;
 			stressLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
 			        formatter.format(stressCache)));
 		}
 
 		// Update performance cache if necessary.
-		double newP = person.getPerformanceRating();
-		if (performanceCache *95D > newP || performanceCache *105D < newP) {
-			performanceCache = newP * 100D;
+		double newP = Math.round(condition.getPerformanceFactor() * 100)/1.0;
+		//if (performanceCache *95D > newP || performanceCache *105D < newP) {
+		if (performanceCache != newP) {
+			performanceCache = newP;
 			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
 			        formatter.format(performanceCache)));
 		}

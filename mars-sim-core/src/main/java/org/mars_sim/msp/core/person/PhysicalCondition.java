@@ -123,6 +123,9 @@ implements Serializable {
     private boolean isDehydrated = false;
     /** True if person is alive. */
     private boolean alive;
+	/** True if person is thirsty. */
+	private boolean isThirsty;
+
 
 	private int solCache = 0;
     private int endurance;
@@ -608,10 +611,10 @@ implements Serializable {
      * @param newPerformance new performance (between 0 and 1).
      */
     public void setPerformanceFactor(double p) {
-	    if (p > 100D)
-	        p = 100D;
-	    else if (p < 0D)
-	        p = 0D;
+	    if (p > 1D)
+	        p = 1D;
+	    else if (p < 0)
+	        p = 0;
         if (performance != p)
             performance = p;
 	    //person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
@@ -631,13 +634,21 @@ implements Serializable {
     public void setThirst(double t) {
         if (thirst != t)
         	thirst = t;
-        if (t > 50)
-        	person.setThirsty(true);
-        else
-        	person.setThirsty(false);
+        if (t > 50 && !isThirsty)
+        	isThirsty = true;
+        //else if (isThirsty)
+        //	isThirsty = false;
         //person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
     }
     
+	public boolean isThirsty() {
+		return isThirsty;
+	}
+
+	public void setThirsty(boolean value) {
+		isThirsty = value;
+	}
+	
     /** Gets the person's hunger level
      *  @return person's hunger
      */

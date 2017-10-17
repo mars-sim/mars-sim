@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4186) - 2017-10-14
+## v3.1.0-Preview 9 (build 4190) - 2017-10-17
 
 
 ### KNOWN LIMITATIONS :
@@ -58,6 +58,7 @@ https://github.com/mars-sim/mars-sim
 
 18. Add sound tracks as background music.
 
+
 ### UI IMPROVEMENT :
 
 1. Add build # on the bottom right of the main menu.
@@ -67,6 +68,7 @@ https://github.com/mars-sim/mars-sim
 3. Add a list of supported resolutions in the main menu.
 
 4. Add separate volume controls for sound effects and background music
+
 
 ### FIXES :
 
@@ -92,6 +94,8 @@ https://github.com/mars-sim/mars-sim
    remaining after tending a greenhouse.	 
 	
 10. Fix user initiated construction mission.
+
+11. Fix various bugs during emergency rescue missions.
 
 
 -----------------------------------------------------------------------------------------

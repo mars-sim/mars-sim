@@ -847,8 +847,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
 		}
 	}
 
@@ -886,8 +886,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
 		}
 	}
 
@@ -928,8 +928,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
 		}
 	}
 
@@ -958,8 +958,8 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) has been sighted near " + ds.getSettlements().get(0) + ".");
+				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
 		}
 	}
 

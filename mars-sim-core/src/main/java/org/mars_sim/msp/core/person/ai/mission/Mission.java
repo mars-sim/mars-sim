@@ -144,14 +144,14 @@ implements Serializable {
 	        int n = members.size();
 	        String str = null;
 	        if (n == 0)
-	        	str = "' at ";
+	        	str = ".";
 	        else if (n == 1)
-	        	str = "' with 1 other at ";
+	        	str = "' with 1 other.";
 	        else
-	        	str = "' with " + n + " others at ";
+	        	str = "' with " + n + " others.";
 
 	        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-	        		startingMember.getName() + " started '" + missionName + str + s + ".", null);
+	        		"[" + s + "] " + startingMember.getName() + " started '" + missionName + str, null);
 
 	        // Add starting member to mission.
 	        // 2015-11-01 Temporarily set the shift type to none during the mission

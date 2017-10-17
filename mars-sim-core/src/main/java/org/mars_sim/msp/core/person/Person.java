@@ -87,10 +87,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** True if a person is born on Mars. */	
 	private boolean bornOnMars;
 	/** True if person is declared dead and buried. */
-	private boolean isBuried, declaredDead;
-	/** True if person is thirsty. */
-	private boolean isThirsty;
-	
+	private boolean isBuried, declaredDead;	
 	/** The age of a person */
 	private int age;
 	/** The cache for sol. */
@@ -1394,13 +1391,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return waterRation;
 	}
 	
-	public boolean isThirsty() {
-		return isThirsty;
-	}
-
-	public void setThirsty(boolean value) {
-		isThirsty = value;
-	}
 	
 	@Override
 	public void destroy() {

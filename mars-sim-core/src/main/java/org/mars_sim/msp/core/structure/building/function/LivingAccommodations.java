@@ -80,8 +80,9 @@ public class LivingAccommodations extends Function implements Serializable {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
         this.building = building;
-        this.settlement = building.getBuildingManager().getSettlement();
-        this.inv = settlement.getInventory();
+        
+        settlement = building.getBuildingManager().getSettlement();
+        inv = settlement.getInventory();
         //inv = building.getBuildingManager().getSettlement().getInventory();
         //inv = building.getSettlementInventory();
         
@@ -164,7 +165,7 @@ public class LivingAccommodations extends Function implements Serializable {
     	if (sleepers > maxBeds) { 		
     		//LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person 
     		//		+ " is going to his/her quarter in " + building.getNickName() + " in " + settlement, null);
-            logger.info("# sleepers : " + sleepers + "  # beds : " + maxBeds);
+            //logger.info("[" + settlement.getName() + "]  # sleepers : " + sleepers + "   # beds : " + maxBeds);
         }
         else if (!designatedBeds.containsKey(person)) {
         	if (isAGuest) {
@@ -186,8 +187,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		        	sleepers++;	    				    			
 	    		}
 	    		else {
-	                LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person + " could not find any unmarked beds in "
-	    					+ building.getNickName() + " in " + settlement, null);
+	                LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
+	                		"[" + settlement.getName() + "] " + person + " could not find any unmarked beds in "
+	    					+ building.getNickName() + "." , null);
 	    		}
         	}
     	}
@@ -248,6 +250,8 @@ public class LivingAccommodations extends Function implements Serializable {
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
 	        // Designate a bed for each inhabitant
+			if (settlement == null)
+				settlement = building.getBuildingManager().getSettlement();
 	        for (Person p : settlement.getInhabitants()) {
 	        	if (p.getBed() == null) {
 	        		registerSleeper(p, false);
@@ -293,6 +297,8 @@ public class LivingAccommodations extends Function implements Serializable {
         //System.out.println("waterUsed : " + waterUsed);       
         //System.out.println("wasteWaterProduced : " + wasteWaterProduced);  
         // Remove wash water from settlement.
+        if (inv == null)
+        	inv = settlement.getInventory();
         Storage.retrieveAnResource(waterUsed * random_factor, ResourceUtil.waterAR, inv, true);
 
         // Grey water is produced by wash water.

@@ -1202,15 +1202,11 @@ implements Serializable {
 			    	Storage.retrieveAnResource(amountExtracted, cropAR, inv, true);
 			    	// store the tissues
 			    	if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
-			    		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv, sourceName + "::growCropTissue");
-				  		//System.out.println("Storing " + STANDARD_AMOUNT_TISSUE_CULTURE + " kg of " + tissueName);
-				
+			    		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv, sourceName + "::growCropTissue");				
 						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-								"During sampling, " + cropName + TISSUE_CULTURE + " is not in stock. "
-								+ "Extract " 
-								+ STANDARD_AMOUNT_TISSUE_CULTURE + " kg from " + cropName + " and restock in " 
-								+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
-				
+								"[" + settlement.getName() + "] During sampling, " + cropName + TISSUE_CULTURE + " is not in stock. "
+								+ "Extract " + STANDARD_AMOUNT_TISSUE_CULTURE + " kg from " + cropName + " and restock in " 
+								+ lab.getBuilding().getNickName() + ".", null);			
 						isDone = true;
 			    	}
 			    }		
@@ -1233,11 +1229,10 @@ implements Serializable {
 		        	// store the tissues
 		        	if (amountExtracted > 0) {
 		        		Storage.storeAnResource(amountExtracted, tissueAR, inv, sourceName + "::growCropTissue");
-			      		//System.out.println("Storing " + Math.round(amountExtracted*100000.0)/100000.0D + " kg of " + tissueName);
-						LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-								"During sampling, " + Math.round(amountExtracted*1000.0)/1000.0D + " kg " 
-			    				+ cropName + TISSUE_CULTURE + " is cloned and restocked in "
-			    				+ lab.getBuilding().getNickName() + " at " + settlement.getName() + ".", null);
+						//LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+						//		"[" + settlement.getName() + "] During sampling, " + Math.round(amountExtracted*1000.0)/1000.0D + " kg " 
+			    		//		+ cropName + TISSUE_CULTURE + " is cloned and restocked in "
+			    		//		+ lab.getBuilding().getNickName() + ".", null);
 	
 			    		isDone = true;
 		        	}

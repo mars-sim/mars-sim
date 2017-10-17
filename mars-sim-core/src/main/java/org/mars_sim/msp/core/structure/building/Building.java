@@ -1346,8 +1346,8 @@ LocalBoundedObject, InsidePathLocation {
         	int delta = (int)Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
         	if (now > moment_of_impact - 2 *delta && now < moment_of_impact + 2 *delta) {
             	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-            			"A meteorite impact for " + nickName 
-    					+ " in " + settlement + " is imminent.", null);
+            			"[" + settlement + "]  A meteorite impact over " + nickName 
+    					+ " is imminent.", null);
 	        	// reset the boolean immmediately. This is for keeping track of whether the impact has occurred at msols
 				isImpactImminent = false;
 

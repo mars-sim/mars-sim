@@ -534,7 +534,7 @@
 			</resupply>
 		</template>
 
-		<template id="3" name="Alpha Base (MDB Phase 4)" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
+		<template id="3" name="Alpha Base (Phase 4)" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -1152,7 +1152,7 @@
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
 
-		<settlement name="Alpha Base" template="Alpha Base (MDB Phase 4)">
+		<settlement name="Alpha Base" template="Alpha Base (Phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />
