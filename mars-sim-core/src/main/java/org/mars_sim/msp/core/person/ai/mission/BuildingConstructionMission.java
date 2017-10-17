@@ -692,7 +692,7 @@ implements Serializable {
                 if (vehicle.isReserved()) {
                     usable = false;
                 }
-                if (!vehicle.getStatus().equals(Vehicle.PARKED)) {
+    			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED))) {
                     usable = false;
                 }
                 if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0) {
@@ -973,7 +973,8 @@ implements Serializable {
 
             if (vehicle instanceof LightUtilityVehicle) {
                 LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
-                if (luvTemp.getStatus().equals(Vehicle.PARKED) && !luvTemp.isReserved()
+                if ((luvTemp.getStatus().equals(Vehicle.PARKED) || luvTemp.getStatus().equals(Vehicle.GARAGED))
+                		&& !luvTemp.isReserved()
                         && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0) ) {
                     result = luvTemp;
                     luvTemp.setReservedForMission(true);

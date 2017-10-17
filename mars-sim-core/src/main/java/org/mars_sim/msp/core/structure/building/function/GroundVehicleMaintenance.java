@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleMaintenance.java
- * @version 3.07 2014-06-24
+ * @version 3.1.0 2017-10-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -28,6 +28,8 @@ implements Serializable {
 
 	private static final FunctionType FUNCTION = FunctionType.GROUND_VEHICLE_MAINTENANCE;
 
+	private static BuildingConfig config;
+	
 	/**
 	 * Constructor.
 	 * @param building the building the function is for.
@@ -36,7 +38,7 @@ implements Serializable {
 		// Call VehicleMaintenance constructor.
 		super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		config = SimulationConfig.instance().getBuildingConfiguration();
 
 		vehicleCapacity = config.getVehicleCapacity(building.getBuildingType());
 
@@ -91,8 +93,7 @@ implements Serializable {
 				removedBuilding = true;
 			}
 			else {
-				GroundVehicleMaintenance maintFunction = 
-						(GroundVehicleMaintenance) building.getFunction(FUNCTION);
+				GroundVehicleMaintenance maintFunction = building.getGroundVehicleMaintenance();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += maintFunction.getVehicleCapacity() * wearModifier;
 			}
@@ -100,7 +101,8 @@ implements Serializable {
 
 		double vehicleCapacityValue = demand / (supply + 1D);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		if (config == null)
+			config = SimulationConfig.instance().getBuildingConfiguration();
 		double vehicleCapacity = config.getVehicleCapacity(buildingName);
 
 		return vehicleCapacity * vehicleCapacityValue;

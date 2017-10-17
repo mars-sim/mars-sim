@@ -12,10 +12,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -44,7 +46,6 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -59,7 +60,7 @@ extends VehicleMission {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 
-    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Static members
     public static final int MIN_STAYING_MEMBERS = 1;
@@ -177,7 +178,7 @@ extends VehicleMission {
 				usable = false;
 			if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
-			if (!vehicle.getStatus().equals(Vehicle.PARKED))
+			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
 				usable = false;
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
@@ -215,7 +216,7 @@ extends VehicleMission {
 				usable = false;
 			if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
-			if (!vehicle.getStatus().equals(Vehicle.PARKED))
+			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
 				usable = false;
 			if (!(vehicle instanceof Rover))
 				usable = false;
@@ -435,32 +436,29 @@ extends VehicleMission {
 	protected void performDisembarkToSettlementPhase(MissionMember member,
 			Settlement disembarkSettlement) {
 
-		//Building garageBuilding = null;
-		//VehicleMaintenance garage = null;
-
+		Vehicle v = getVehicle();
+		Rover rover = (Rover) v;
+		
 		// If rover is not parked at settlement, park it.
-		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-			disembarkSettlement.getInventory().storeUnit(getVehicle());
-			getVehicle().determinedSettlementParkedLocationAndFacing();
+		if ((v != null) && (v.getSettlement() == null)) {
+			disembarkSettlement.getInventory().storeUnit(v);
+			
+			//v.determinedSettlementParkedLocationAndFacing();
 
+			// Test if this rover is towing another vehicle or is being towed
+	        boolean tethered = v.isBeingTowed() || (v.getTowingVehicle() != null);
+	        
 			// Add vehicle to a garage if available.
-			BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(),
-					disembarkSettlement);
-			//garageBuilding = BuildingManager.getBuilding(getVehicle());
-			//if (garageBuilding != null)
-			//	garage = garageBuilding.getVehicleMaintenance();
+	        if (!tethered)
+	        	BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
 
-
-	        // 2017-04-01 If operator is dead, retrieve the person
-			Vehicle v = getVehicle();
-			VehicleOperator operator = v.getOperator();
-	        if ((operator != null) && (operator instanceof Person)) {
-	            Person p = (Person) operator;
+	        // Retrieve the person if he/she is dead
+			for (Person p : rover.getCrew()) {
 	            if (p.isDead()) {
 					v.getInventory().retrieveUnit(p);
 	            	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
 	            }
-	        }
+			}
 		}
 
 		// Have member exit rover if necessary.
@@ -492,13 +490,13 @@ extends VehicleMission {
 				    else {
 
 				        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-				        	Vehicle v = person.getVehicle();
-				            v.getInventory().retrieveUnit(person);
+				        	Vehicle v1 = person.getVehicle();
+				            v1.getInventory().retrieveUnit(person);
 				            
 					        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
 					        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be 
 					        // retrieved and moved to a settlement in emergency?
-					        logger.severe(Msg.getString("RoverMission.log.requestRescue", person.getName(), v.getName(),
+					        logger.severe(Msg.getString("RoverMission.log.requestRescue", person.getName(), v1.getName(),
 					        		destinationBuilding.getNickName(), disembarkSettlement)); //$NON-NLS-1$
 				        }
 				        //else {
@@ -539,10 +537,10 @@ extends VehicleMission {
                     else {
 
 				        if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-				        	Vehicle v = robot.getVehicle();
-				            v.getInventory().retrieveUnit(robot);
+				        	Vehicle v2 = robot.getVehicle();
+				            v2.getInventory().retrieveUnit(robot);
 					        logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
-					        		v.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
+					        		v2.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
 				        }
 				        else {
 /*				        	
@@ -590,7 +588,6 @@ extends VehicleMission {
 			}
 		}
 
-		Rover rover = (Rover) getVehicle();
 		if (rover != null) {
 
 			// If any people are aboard the rover who aren't mission members, carry them into the settlement.
@@ -814,11 +811,18 @@ extends VehicleMission {
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
+		double oxygenAmount =  PhysicalCondition.getOxygenConsumptionRate()
 				* timeSols * crewNum * Mission.OXYGEN_MARGIN ;
 		if (useBuffer)
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		result.put(oxygenAR, oxygenAmount);
+/*		LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, 
+				"Preparing " + getVehicle() + ", <Water Estimate>  sols : " + Math.round(timeSols * 10.0)/10.0 
+				+ "   O2 Consumption : " + PhysicalCondition.getOxygenConsumptionRate() 
+				+ "   margin : " + Mission.OXYGEN_MARGIN
+				+ "   crewNum : " + crewNum 
+				+ "   O2 amount : " + Math.round(oxygenAmount * 1000.0)/1000.0 + " kg" 
+				, null);
+*/		result.put(oxygenAR, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum * Mission.WATER_MARGIN;
@@ -883,7 +887,7 @@ extends VehicleMission {
         int crewNum = getPeopleNumber();
 
         // Determine dessert amount for trip.
-        double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * crewNum * timeSols;
+        double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * crewNum * timeSols * Mission.DESSERT_MARGIN;
 
         // Put together a list of available unprepared dessert resources.
         List<AmountResource> dessertList = new ArrayList<AmountResource>();

@@ -229,7 +229,8 @@ extends WizardPanel {
 			LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
 
 			if (column == 1) {
-				if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
+				if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
+					result = true;
 			}
 			else if (column == 2) {
 				Mission mission = Simulation.instance().getMissionManager().

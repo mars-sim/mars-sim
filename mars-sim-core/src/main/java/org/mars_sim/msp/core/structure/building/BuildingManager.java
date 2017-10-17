@@ -1024,10 +1024,7 @@ public class BuildingManager implements Serializable {
         List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
         List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
         for (Building garageBuilding : garages) {
-        //Iterator<Building> i = garages.iterator();
-        //while (i.hasNext()) {
-        //    Building garageBuilding = i.next();
-            VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+            VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
             if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) openGarages.add(garage);
         }
 
@@ -1035,9 +1032,9 @@ public class BuildingManager implements Serializable {
             int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
             openGarages.get(rand).addVehicle(vehicle);
         }
-        else {
+        //else {
             //logger.warning("No available garage space for " + vehicle.getName() + ", didn't add vehicle");
-        }
+        //}
     }
 
     /**
@@ -1088,7 +1085,7 @@ public class BuildingManager implements Serializable {
                     }
                 }
                 catch (Exception e) {
-                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
+                    logger.log(Level.SEVERE, "BuildingManager.getBuilding(): " + e.getMessage());
                 }
             }
         }

@@ -208,6 +208,7 @@ LocalBoundedObject, InsidePathLocation {
 	private Administration admin;
 	private Recreation rec;
 	private Dining dine;
+	private GroundVehicleMaintenance maint;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -635,6 +636,12 @@ LocalBoundedObject, InsidePathLocation {
 		if (dine == null)
 			dine = (Dining) getFunction(FunctionType.DINING);
 		return dine;
+	}
+	
+	public GroundVehicleMaintenance getGroundVehicleMaintenance() {
+		if (maint == null)
+			maint = (GroundVehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		return maint;
 	}
 	
     /**

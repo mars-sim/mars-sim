@@ -292,7 +292,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<!-- Sabatier process :
 
-					CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
+				CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
 
 				CO2 : 44 g/mol
 				4H2 : 8 g/mol
@@ -301,8 +301,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				Sabatier with Reverse Water Gas Shift (RWGS) :  
 					
-					3CO2 + 6H2 -> CH4 + 2CO + 4H2O, exothermic heat = -83 kJ/mol
-	
+				3CO2 + 6H2 -> CH4 + 2CO + 4H2O, exothermic heat = -83 kJ/mol
 				
 				CO2 : 132 g/mol
 				4H2 : 12 g/mol
@@ -357,8 +356,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
 				
 				See also https://www.quora.com/How-is-oxygen-generated-on-the-ISS
-				
-				
+						
 				Available water electrolysis units using solid polymer 
 				electrolytes are highly efficient (>90%) and extremely rugged, 
 				as they have been designed for nuclear submarine use with 
@@ -376,20 +374,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				O2 : 32 g/mol
 				
 				50A * 120 = 6kW
-				
-				
+						
 				https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
 				
 				We assume a power usage of 1kW system for splitting 18 kg water
 				into 2 kg H2 and 16 kg O2
 				
 				-->	
-				<process name="Oxygen Generation System" power-required="1.5" default="on">
-					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
-					<input resource="water" rate="36" ambient="false" />
-					<output resource="hydrogen" rate="4" ambient="false" />
-					<output resource="oxygen" rate="32" ambient="false" />
-					<!-- output resource="methane" rate="2" ambient="false" /-->
+				<process name="Oxygen Generation System" power-required="3.0" default="on">				
+					<input resource="water" rate="72" ambient="false" />
+					<output resource="hydrogen" rate="8" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
 				
@@ -412,7 +407,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building is capable of storing resources. -->
 				<!-- stock-capacity: the building's default capacity (kg) for 
 				     all the resources. -->
-			<storage stock-capacity="5000">
+			<storage stock-capacity="10000">
 
 				<!-- The building's storage capacity for oxygen. -->
 				<!-- resource: the specific resources that the building may 
@@ -443,15 +438,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="paper" capacity="100.0" />
 				<resource-storage resource="napkin" capacity="100.0" />
 
-
-
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially stored in this building. -->
 				<!-- amount: the amount (kg) of the resource. -->
 
 				<!-- life support: 5000 kg  -->
-				<resource-initial resource="water" amount="2000.0" />
-				<resource-initial resource="oxygen" amount="2000.0" />
+				<resource-initial resource="water" amount="5000.0" />
+				<resource-initial resource="oxygen" amount="5000.0" />
 				<resource-initial resource="food" amount="1000.0" />
 
 				<!-- other gases: 200 kg  -->
@@ -814,15 +807,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
-				<process name="Oxygen Generation System" power-required="2.0" default="on">
-					<!-- input resource="carbon dioxide" rate="30" ambient="true" /-->					
-					<input resource="water" rate="54" ambient="false" />
-					<output resource="hydrogen" rate="6" ambient="false" />
-					<output resource="oxygen" rate="48" ambient="false" />
-					<!-- output resource="methane" rate="6" ambient="false" /-->
-				</process>				
+				<process name="Oxygen Generation System" power-required="5.0" default="on">				
+					<input resource="water" rate="144" ambient="false" />
+					<output resource="hydrogen" rate="16" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
+				</process>	
 			</resource-processing>
-			<storage stock-capacity="10000">
+			<storage stock-capacity="60000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="methane" capacity="10000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
@@ -886,15 +877,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
-				<process name="Oxygen Generation System" power-required="2.0" default="on">
-					<!-- input resource="carbon dioxide" rate="30" ambient="true" /-->					
-					<input resource="water" rate="54" ambient="false" />
-					<output resource="hydrogen" rate="6" ambient="false" />
-					<output resource="oxygen" rate="48" ambient="false" />
-					<!-- output resource="methane" rate="6" ambient="false" /-->
+				<process name="Oxygen Generation System" power-required="5.0" default="on">				
+					<input resource="water" rate="144" ambient="false" />
+					<output resource="hydrogen" rate="16" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
 				</process>		
 			</resource-processing>
-			<storage stock-capacity="10000">
+			<storage stock-capacity="60000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="methane" capacity="10000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
@@ -2383,12 +2372,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>	
 				
-				<process name="Oxygen Generation System" power-required="1.5" default="on">
-					<!-- input resource="carbon dioxide" rate="10" ambient="true" /-->					
-					<input resource="water" rate="36" ambient="false" />
-					<output resource="hydrogen" rate="4" ambient="false" />
-					<output resource="oxygen" rate="32" ambient="false" />
-					<!-- output resource="methane" rate="2" ambient="false" /-->
+				<process name="Oxygen Generation System" power-required="3.0" default="on">				
+					<input resource="water" rate="72" ambient="false" />
+					<output resource="hydrogen" rate="8" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 				
 				<activity>

@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 
-import javafx.application.Platform;
+//import javafx.application.Platform;
 
 /**
  * A class to dispatch playback of OGG files to OGGSoundClip.
@@ -38,12 +38,14 @@ public class AudioPlayer {
 	private float effectVolume = .8f;
 
 	private int play_times = 0;
-	
+
 	private boolean hasMasterGain = true;
 	
 	private boolean lastMusicState;
 	private boolean lastEffectState;
 
+	private MainDesktopPane desktop;
+	
 	/** The current clip sound. */
 	private static OGGSoundClip currentOGGSoundClip;
 	private static OGGSoundClip currentBackgroundTrack;
@@ -52,8 +54,8 @@ public class AudioPlayer {
 	private static Map<String, OGGSoundClip> allOGGSoundClips;
 
 	private static List<String> soundTracks;
-	private MainDesktopPane desktop;
-
+	private static List<Integer> previous_tracks = new ArrayList<>();
+	
 
 	public AudioPlayer(MainDesktopPane desktop) {
 		//logger.info("constructor is on " + Thread.currentThread().getName());
@@ -66,17 +68,22 @@ public class AudioPlayer {
 		allOGGSoundClips = new HashMap<>();
 		
 		soundTracks = new ArrayList<>();
+		soundTracks.add(SoundConstants.ST_AREOLOGIE);
 		soundTracks.add(SoundConstants.ST_FANTASCAPE);
+		soundTracks.add(SoundConstants.ST_PUZZLE);
 		soundTracks.add(SoundConstants.ST_CITY);
 		soundTracks.add(SoundConstants.ST_MISTY);
 		soundTracks.add(SoundConstants.ST_MOONLIGHT);
-		soundTracks.add(SoundConstants.ST_PUZZLE);
-		soundTracks.add(SoundConstants.ST_DREAMY);
-		//soundTracks.add(SoundConstants.ST_STRANGE);
-		soundTracks.add(SoundConstants.ST_AREOLOGIE);
 		soundTracks.add(SoundConstants.ST_MENU);
-		soundTracks.add(SoundConstants.ST_AREOLOGIE);
-		
+			
+		soundTracks.add(SoundConstants.ST_ONE_WORLD);
+		soundTracks.add(SoundConstants.ST_BEDTIME);
+		soundTracks.add(SoundConstants.ST_BOG_CREATURES);
+		soundTracks.add(SoundConstants.ST_CLIPPITY);
+		soundTracks.add(SoundConstants.ST_LOST_JUNGLE);
+		soundTracks.add(SoundConstants.ST_MONKEY);
+		soundTracks.add(SoundConstants.ST_SURREAL);
+
 		num_tracks = soundTracks.size();
 		
 		for (String p : soundTracks) {
@@ -159,13 +166,13 @@ public class AudioPlayer {
 							if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 								currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
 								currentBackgroundTrack.loop();
-								if (play_times < 2) logger.info("Playing the background track " + filepath);
+								//if (play_times < 2) logger.info("Playing the background track " + filepath);
 							}
 							else {
 								currentBackgroundTrack = new OGGSoundClip(filepath);
-								allOGGSoundClips.put(filepath, currentBackgroundTrack);
+								allBackgroundSoundTracks.put(filepath, currentBackgroundTrack);
 								currentBackgroundTrack.loop();
-								if (play_times < 2) logger.info("Playing the background track " + filepath);
+								//if (play_times < 2) logger.info("Playing the background track " + filepath);
 							}
 						} catch (IOException e) {
 							//e.printStackTrace();
@@ -179,13 +186,13 @@ public class AudioPlayer {
 					try {
 						if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 							allBackgroundSoundTracks.get(filepath).loop();
-							if (play_times < 2) logger.info("Playing the sound track " + filepath);
+							if (play_times == 1) logger.info("Playing the sound track " + filepath);
 						}
 						else {
 							currentBackgroundTrack = new OGGSoundClip(filepath);
-							allOGGSoundClips.put(filepath, currentBackgroundTrack);
+							allBackgroundSoundTracks.put(filepath, currentBackgroundTrack);
 							currentBackgroundTrack.loop();
-							if (play_times < 2) logger.info("Playing the sound track " + filepath);
+							if (play_times == 1) logger.info("Playing the sound track " + filepath);
 						}
 					} catch (IOException e) {
 						//e.printStackTrace();
@@ -431,26 +438,67 @@ public class AudioPlayer {
 	public void playRandomBackgroundTrack() {
 		if (isBackgroundTrackStopped()) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long. Don't need to repeat
-			if (currentBackgroundTrack != null
-					&& !currentBackgroundTrack.isMute() && currentBackgroundTrack.getGain() != 0
-					&& !currentBackgroundTrack.toString().equals("Areologie.ogg") 
-					&& !currentBackgroundTrack.toString().equals("Fantascape.ogg")	
+			if (currentBackgroundTrack != null) {
+				if (!currentBackgroundTrack.isMute() && currentBackgroundTrack.getGain() != 0
 					&& play_times < 3) {
-				playBackground(currentBackgroundTrack.toString());
-				play_times++;
+					playBackground(currentBackgroundTrack.toString());
+					play_times++;
+				}
+				else if (currentBackgroundTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
+					&& play_times < 1) {
+					playBackground(currentBackgroundTrack.toString());
+					play_times++;
+				}
+				else if (currentBackgroundTrack.toString().equals(SoundConstants.ST_FANTASCAPE) 
+					&& play_times < 2)	{
+					playBackground(currentBackgroundTrack.toString());
+					play_times++;
+				}
 			}
 			else {		
-				List<String> keys = new ArrayList<String>(soundTracks);
-				int rand = 0;
-				if (currentBackgroundTrack != null) {
+				int rand = RandomUtil.getRandomInt(num_tracks-1);
+				boolean not_repeated = false;
+				// Do not repeat the last 3 music tracks just played
+				while (!not_repeated) {
+					if (previous_tracks.isEmpty())
+						not_repeated = true;
+					else {
+						for (int t : previous_tracks) {
+							if (rand != t) {
+								not_repeated = true;
+							}
+						}
+					}
+					if (not_repeated) {
+						// At the start of the sim, refrain from playing the last two tracks due to their sudden loudness
+						if (previous_tracks.isEmpty()) {
+							if (rand == num_tracks-1 && rand == num_tracks-2)
+								rand = rand - RandomUtil.getRandomInt(num_tracks-3);
+						}
+						String name = soundTracks.get(rand);
+						playBackground(soundTracks.get(rand));
+						logger.info("Playing the background music track #" + (rand+1) + " '" + name + "'");
+						// Remove the earliest tracks 
+						if (!previous_tracks.isEmpty())
+							previous_tracks.remove(0);
+						// Add the new track
+						previous_tracks.add((rand+1));
+						// Reset the play times to 1
+						play_times = 1;
+						break;
+					}
+					else
+						// need to pick another rand
+						rand = RandomUtil.getRandomInt(num_tracks-1);
+				}			
+/*				
+				if (currentBackgroundTrack != null) {	
 					keys.remove(currentBackgroundTrack.toString());
 					rand = RandomUtil.getRandomInt(num_tracks-2);
 				} 
 				else
 					rand = RandomUtil.getRandomInt(num_tracks-1);
-				playBackground(keys.get(rand));
-				// Reset the play times to 1
-				play_times = 1;
+*/				
 			}
 		}
 	}

@@ -743,33 +743,38 @@ implements Serializable {
             return false;
         }
 
-        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation() 
-        	// Check if EVA suit is available.
-        	&& !goodEVASuitAvailable(airlock.getEntityInventory())) {
+        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
         	
-	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " since no working EVA suit is available.";
-    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
-    		// TODO: how to have someone deliver him a working EVASuit
-
-    		Vehicle v = person.getVehicle();
-    		Mission m = person.getMind().getMission();
-    		//Mission m = missionManager.getMission(person);
-    		
-    		
-    		if (!v.isEmergencyBeacon()) {
-				//if the emergency beacon is off
-				// Question: could the emergency beacon itself be broken ?
-				if (!v.isBeingTowed()) {
-					((VehicleMission)m).setEmergencyBeacon(null, v, true);
-					LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-							v + "'s emergency beacon is on, awaiting response for rescue right now.", null);
-				}
-    		}
-    		
-        	person.getMind().getNewAction(true, true);
-    		//person.getMind().getTaskManager().clearTask();
-    		return false;
+        	// Check if EVA suit is available.
+        	if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+        	
+		    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
+	                    " since no working EVA suit is available.";
+	    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
+	    		// TODO: how to have someone deliver him a working EVASuit
+	
+	    		Vehicle v = person.getVehicle();
+	    		Mission m = person.getMind().getMission();
+	    		//Mission m = missionManager.getMission(person);
+	    		
+	    		
+	    		if (!v.isEmergencyBeacon()) {
+					//if the emergency beacon is off
+					// Question: could the emergency beacon itself be broken ?
+					if (!v.isBeingTowed()) {
+						((VehicleMission)m).setEmergencyBeacon(null, v, true);
+						LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+								v + "'s emergency beacon is on, awaiting response for rescue right now.", null);
+					}
+	    		}
+	    		
+	        	person.getMind().getNewAction(true, true);
+	    		//person.getMind().getTaskManager().clearTask();
+	    		return false;
+        	}
+        	
+        	else
+        		return true;
         }
 
         //double performance = person.getPerformanceRating();

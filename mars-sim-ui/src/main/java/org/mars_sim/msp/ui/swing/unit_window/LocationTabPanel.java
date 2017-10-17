@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.1.0 2017-09-16
+ * @version 3.1.0 2017-10-16
  * @author Scott Davis
  */
 
@@ -15,7 +15,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -922,7 +921,7 @@ implements ActionListener {
 			
  			if (v.getSettlement() != null)
 				// case C
-       			loc = IN + containerCache + INSIDE + v.getGarage(v.getSettlement()).getNickName();// " inside a garage";
+       			loc = IN + containerCache + INSIDE + v.getGarage().getNickName();// " inside a garage";
 			
  			else {
      			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
@@ -1094,7 +1093,7 @@ implements ActionListener {
    			Unit tc = v.getTopContainerUnit();
    			s = (Settlement)tc;
 
-			Building b = v.getGarage(s);
+			Building b = v.getGarage();
 			// case D
 			// Note: it takes a short finite amount of time to update the latest LocationStateType
 			// the vehicle would have left the building and b becomes null when LocationStateType is waiting to be updated in the next frame.

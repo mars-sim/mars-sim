@@ -220,28 +220,29 @@ implements Serializable {
     }
 
     @Override
-    protected boolean isUsableVehicle(Vehicle newVehicle) {
-        if (newVehicle != null) {
+    protected boolean isUsableVehicle(Vehicle vehicle) {
+        if (vehicle != null) {
             boolean usable = true;
 
         	//if (vehicleTarget == null)
         	//	vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
             // Filter off the vehicleTarget as the candidate vehicle to be used for rescue
-            if (vehicleTarget != null && vehicleTarget.equals(newVehicle))
+            if (vehicleTarget != null && vehicleTarget.equals(vehicle))
             	return false;
             
-            if (!(newVehicle instanceof Rover))
+            if (!(vehicle instanceof Rover))
                 usable = false;
             
-            if (newVehicle.isReservedForMission())
+            if (vehicle.isReservedForMission())
                 usable = false;
             
-            String status = newVehicle.getStatus();
-            if (!status.equals(Vehicle.PARKED) && !status.equals(Vehicle.MAINTENANCE))
+            String status = vehicle.getStatus();
+			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED))
+            		&& !status.equals(Vehicle.MAINTENANCE))
                 usable = false;
             
-            if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D)
+            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
                 usable = false;
 
             return usable;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarageMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-10-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -91,8 +91,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 	            while (j.hasNext() && !garageSpace) {
 	                try {
 	                    Building building = j.next();
-	                    VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(
-	                            FunctionType.GROUND_VEHICLE_MAINTENANCE);
+	                    VehicleMaintenance garage = building.getGroundVehicleMaintenance();
 	                    if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
 	                        garageSpace = true;
 	                    }

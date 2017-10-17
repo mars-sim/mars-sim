@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVAMeta.java
- * @version 3.08 2015-06-15
+ * @version 3.1.0 2017-10-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -36,7 +36,7 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
 
-    private SurfaceFeatures surface;
+    private static SurfaceFeatures surface;
 
     @Override
     public String getName() {

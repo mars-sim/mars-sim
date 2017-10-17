@@ -156,14 +156,15 @@ public class LivingAccommodations extends Function implements Serializable {
     }
 
     /**
-     * Adds a sleeper to a bed.
-     * @throws BuildingException if beds are already in use.
+     * Registers a sleeper with a bed.
+     * @param person
+     * @param isAGuest is this person a guest (not inhabitant) of this settlement
      */
-    public void addSleeper(Person person, boolean isAGuest) {
-    	if (sleepers >= maxBeds) { 		
-    		LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person 
-    				+ " is looking for a bed in " + building.getNickName() + " in " + settlement, null);
-            //logger.info("# sleepers : " + sleepers + "  # beds : " + beds);
+    public void registerSleeper(Person person, boolean isAGuest) {
+    	if (sleepers > maxBeds) { 		
+    		//LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person 
+    		//		+ " is going to his/her quarter in " + building.getNickName() + " in " + settlement, null);
+            logger.info("# sleepers : " + sleepers + "  # beds : " + maxBeds);
         }
         else if (!designatedBeds.containsKey(person)) {
         	if (isAGuest) {
@@ -249,7 +250,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	        // Designate a bed for each inhabitant
 	        for (Person p : settlement.getInhabitants()) {
 	        	if (p.getBed() == null) {
-	        		addSleeper(p, false);
+	        		registerSleeper(p, false);
 	        	}
 	        }
 		}

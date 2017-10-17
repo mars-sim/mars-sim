@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverDisplayInfoBean.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-10-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_display_info;
@@ -46,7 +45,7 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
     	if (Vehicle.MOVING.equals(status)) return SoundConstants.SND_ROVER_MOVING;
     	else if (Vehicle.MAINTENANCE.equals(status)) return SoundConstants.SND_ROVER_MAINTENANCE;
     	else if (Vehicle.MALFUNCTION.equals(status)) return SoundConstants.SND_ROVER_MALFUNCTION;
-    	else if (Vehicle.PARKED.equals(status)) return SoundConstants.SND_ROVER_PARKED;
+    	else if (Vehicle.GARAGED.equals(status) || Vehicle.PARKED.equals(status)) return SoundConstants.SND_ROVER_PARKED;
     	else return "";
 	}
 }

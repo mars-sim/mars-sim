@@ -64,14 +64,15 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
+    public final static String GARAGED = "Garaged";
     public final static String MOVING = "Moving";
     public final static String MALFUNCTION = "Malfunction";
     public final static String MAINTENANCE = "Periodic Maintenance";
     public final static String TOWED = "Towed";
 
     // The error margin for determining vehicle range. (actual distance / safe distance)
-    private static double fuel_range_error_margin;
-	private static double life_support_range_error_margin;
+    private static double fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
+	private static double life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
@@ -128,16 +129,16 @@ public abstract class Vehicle extends Unit implements Serializable,
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
 
-        missionManager = Simulation.instance().getMissionManager();
-        
-        life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
-        fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
+    
+        //life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
+        //fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
         //2016-11-21 Added associatedSettlement
         associatedSettlement = settlement;
         containerUnit = settlement;
         settlement.getInventory().storeUnit(this);
 
+        missionManager = Simulation.instance().getMissionManager();
         config = SimulationConfig.instance().getVehicleConfiguration(); 
         
         // Initialize vehicle data
@@ -405,6 +406,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     	// Update status based on current situation.
     	String newStatus = PARKED;
+    	if (getGarage() != null) newStatus = GARAGED;
     	if (reservedForMaintenance) newStatus = MAINTENANCE;
     	else if (towingVehicle != null) newStatus = TOWED;
 		else if (malfunctionManager.hasMalfunction()) newStatus = MALFUNCTION;
@@ -425,14 +427,16 @@ public abstract class Vehicle extends Unit implements Serializable,
 
         if (status.equals(PARKED))
         	return 0;
-        else if (status.equals(MOVING))
+        if (status.equals(GARAGED))
         	return 1;
-        else if (status.equals(MAINTENANCE))
+        else if (status.equals(MOVING))
         	return 2;
-        else if (status.equals(TOWED))
+        else if (status.equals(MAINTENANCE))
         	return 3;
+        else if (status.equals(TOWED))
+        	return 4;
         else if (status.equals(MALFUNCTION))
-        	return 4;      
+        	return 5;      
         else
         	return -1;
     }
@@ -659,8 +663,8 @@ public abstract class Vehicle extends Unit implements Serializable,
 */
     }
 
-    public Building getGarage(Settlement s) {
-		return BuildingManager.getBuilding(this, s);
+    public Building getGarage() {
+		return BuildingManager.getBuilding(this, getSettlement());
     }
 
 
@@ -682,15 +686,18 @@ public abstract class Vehicle extends Unit implements Serializable,
         // Update status if necessary.
         updateStatus();
 
-        if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
-        malfunctionManager.timePassing(time);
-        addToTrail(getCoordinates());
-
+        if (status.equals(MOVING)) 
+        	malfunctionManager.activeTimePassing(time);
         // Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-        if (getStatus().equals(MAINTENANCE)) {
+        else if (status.equals(MAINTENANCE)) {
             if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
         }
+        else {
+            malfunctionManager.timePassing(time);
+        }
 
+        addToTrail(getCoordinates());
+        
         if (isReservedMission) {
             // Set reserved for mission to false if the vehicle is not associated with a mission.
             if (missionManager.getMissionForVehicle(this) == null) {

@@ -274,6 +274,7 @@ implements Serializable {
         appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;		
 		
         h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
+        o2_consumption = personConfig.getNominalO2ConsumptionRate();
         
         bodyMassDeviation = Math.sqrt(person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT); 
         

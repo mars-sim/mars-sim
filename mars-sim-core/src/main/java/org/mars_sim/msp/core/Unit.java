@@ -749,7 +749,7 @@ implements Serializable, Comparable<Unit> {
 		//Unit oldContainer = this.containerUnit;
 
 		if (newContainer != null) {
-			if (((Vehicle)this).getGarage((Settlement)newContainer) != null) {
+			if (((Vehicle)this).getGarage() != null) {
 				// Case 2
 				currentStateType = LocationStateType.INSIDE_BUILDING;
 	        	//System.out.println(((Vehicle)this) + " is inside a building.");

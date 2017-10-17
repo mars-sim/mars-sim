@@ -197,17 +197,17 @@ implements UnitListener {
 	 * @throws IllegalArgumentException if newVehicle is null.
 	 * @throws MissionException if problem checking vehicle is loadable.
 	 */
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
-		if (newVehicle != null) {
+	protected boolean isUsableVehicle(Vehicle vehicle) {
+		if (vehicle != null) {
 			boolean usable = true;
 
-			if (newVehicle.isReserved())
+			if (vehicle.isReserved())
 				usable = false;
 			
-			if (!newVehicle.getStatus().equals(Vehicle.PARKED))
+			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
 				usable = false;
 			
-			if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D)
+			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
 			
 			return usable;

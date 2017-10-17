@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
@@ -63,13 +63,14 @@ implements Serializable {
 	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
 
-	/** The dimenion-less marginal factor for the amount of water to be brought during a mission. */
-	public final static double WATER_MARGIN = 4.5; // TODO: need to find out why water is running so fast in vehicle
-	/** The dimenion-less marginal factor for the amount of oxygen to be brought during a mission. */
-	public final static double OXYGEN_MARGIN = 1.2;
-	/** The dimenion-less marginal factor for the amount of food to be brought during a mission. */
-	public final static double FOOD_MARGIN = 1.3;
-
+	/** The marginal factor for the amount of water to be brought during a mission. */
+	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle
+	/** The marginal factor for the amount of oxygen to be brought during a mission. */
+	public final static double OXYGEN_MARGIN = 2.8;
+	/** The marginal factor for the amount of food to be brought during a mission. */
+	public final static double FOOD_MARGIN = 2.1;
+	/** The marginal factor for the amount of dessert to be brought during a mission. */
+	public final static double DESSERT_MARGIN = 1.5;
 	
 	// Data members
 	/** Unique identifier */
@@ -99,6 +100,7 @@ implements Serializable {
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
 
+	private static UnitManager unitManager;
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different threads.
@@ -124,27 +126,32 @@ implements Serializable {
 //		this.minPeople = minPeople;
 		this.minMembers = minMembers;
 		missionCapacity = Integer.MAX_VALUE;
+		
+		unitManager = Simulation.instance().getUnitManager();
+		
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
-	    if (startingMember.getSettlement() != null) {
+		Settlement s = startingMember.getSettlement();
+		
+	    if (s != null) {
 	   		// Created mission starting event.
 	   		HistoricalEvent newEvent = new MissionHistoricalEvent(startingMember, this, 
-	   				startingMember.getSettlement().getName(), EventType.MISSION_START);
+	   				s.getName(), EventType.MISSION_START);
 
 	   		Simulation.instance().getEventManager().registerNewEvent(newEvent);
  
 	        // Log mission starting.
 	        int n = members.size();
-	        String s = null;
+	        String str = null;
 	        if (n == 0)
-	        	s = "' at ";
+	        	str = "' at ";
 	        else if (n == 1)
-	        	s = "' with 1 other at ";
+	        	str = "' with 1 other at ";
 	        else
-	        	s = "' with " + n + " others at ";
+	        	str = "' with " + n + " others at ";
 
 	        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-	        		startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement() + ".", null);
+	        		startingMember.getName() + " started '" + missionName + str + s + ".", null);
 
 	        // Add starting member to mission.
 	        // 2015-11-01 Temporarily set the shift type to none during the mission
@@ -213,8 +220,8 @@ implements Serializable {
 		if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 		synchronized(listeners) {
 			Iterator<MissionListener> i = listeners.iterator();
-			while (i.hasNext()) i.next().missionUpdate(
-					new MissionEvent(this, addMemberEvent, target));
+			while (i.hasNext()) 
+				i.next().missionUpdate(new MissionEvent(this, addMemberEvent, target));
 		}
 	}
 
@@ -850,9 +857,7 @@ implements Serializable {
 	 */
 	protected final boolean hasDangerousMedicalProblems() {
 		boolean result = false;
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-		    MissionMember member = i.next();
+		for (MissionMember member : members) {
 		    if (member instanceof Person) {
 		        Person person = (Person) member;
 		        if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
@@ -872,9 +877,7 @@ implements Serializable {
 	 */
 	protected final boolean hasDangerousMedicalProblemsAllCrew() {
 		boolean result = true;
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-		    MissionMember member = i.next();
+		for (MissionMember member : members) {
             if (member instanceof Person) {
                 Person person = (Person) member;
                 if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) {
@@ -909,7 +912,7 @@ implements Serializable {
 
         // Get all people qualified for the mission.
         Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
-        Iterator <Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+        Iterator <Person> i = unitManager.getPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             if (isCapableOfMission(person)) {

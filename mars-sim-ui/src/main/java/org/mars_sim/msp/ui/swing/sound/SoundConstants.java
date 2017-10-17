@@ -26,10 +26,17 @@ public interface SoundConstants {
 	public final static String ST_MISTY = "Misty_Bog.ogg";
 	public final static String ST_MOONLIGHT = "Moonlight_Flying.ogg";
 	public final static String ST_PUZZLE = "Puzzle_Game.ogg";
-	public final static String ST_DREAMY = "Some_Dreamy_Place.ogg";
-	public final static String ST_STRANGE = "Strange_Phenomenon.ogg";
 	public final static String ST_AREOLOGIE = "Areologie.ogg";
 	public final static String ST_MENU = "Game_Menu.ogg";
+	
+	public final static String ST_BEDTIME = "Bedtime_Story.ogg";
+	public final static String ST_BOG_CREATURES = "Bog_Creatures_on_the_Move.ogg";
+	public final static String ST_CLIPPITY = "Clippity_Clop.ogg";
+	public final static String ST_LOST_JUNGLE = "Lost_Jungle.ogg";
+	public final static String ST_MONKEY = "Monkey_Drama.ogg";
+	public final static String ST_ONE_WORLD = "One_World.ogg";
+	public final static String ST_SURREAL = "Surreal_Chase.ogg";
+	
 	
 	/** Unit window sounds for equipment. */
 	public final static String SND_EQUIPMENT = "equipment.ogg";

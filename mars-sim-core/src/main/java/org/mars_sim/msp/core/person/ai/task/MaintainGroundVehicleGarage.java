@@ -88,9 +88,7 @@ implements Serializable {
         	Building building = BuildingManager.getBuilding(vehicle);
         	if (building != null) {
         		try {
-        			garage = (VehicleMaintenance) building.getFunction(
-        			        FunctionType.GROUND_VEHICLE_MAINTENANCE);
-
+        			garage = building.getVehicleMaintenance();
         			// Walk to garage.
         			walkToActivitySpotInBuilding(building, false);
         		}
@@ -107,8 +105,7 @@ implements Serializable {
         		while (j.hasNext() && (garage == null)) {
         			try {
         				Building garageBuilding = j.next();
-        				VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(
-        				        FunctionType.GROUND_VEHICLE_MAINTENANCE);
+        				VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();
         				if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
         					garage = garageTemp;
         					garage.addVehicle(vehicle);
@@ -340,9 +337,9 @@ implements Serializable {
 
         // Populate vehicles and probabilities.
         Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
-        Iterator<Vehicle> i = availableVehicles.iterator();
-        while (i.hasNext()) {
-            Vehicle vehicle = i.next();
+        //Iterator<Vehicle> i = availableVehicles.iterator();
+        //while (i.hasNext()) {
+        for (Vehicle vehicle : availableVehicles) {//= i.next();
             double prob = getProbabilityWeight(vehicle);
             if (prob > 0D) {
                 vehicleProb.put(vehicle, prob);
@@ -370,11 +367,12 @@ implements Serializable {
     private double getProbabilityWeight(Vehicle vehicle) {
     	double result = 0D;
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
+        boolean tethered = vehicle.isBeingTowed() || (vehicle.getTowingVehicle() != null);
 		boolean hasMalfunction = manager.hasMalfunction();
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		boolean minTime = (effectiveTime >= 1000D);
 		boolean enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
-		if (!hasMalfunction && minTime && enoughParts) {
+		if (!tethered && !hasMalfunction && minTime && enoughParts) {
 		    result = effectiveTime;
 		}
 		return result;

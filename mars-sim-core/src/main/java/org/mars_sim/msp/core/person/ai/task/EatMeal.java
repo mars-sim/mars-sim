@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -137,7 +138,28 @@ public class EatMeal extends Task implements Serializable {
         
         waterEachServing = condition.getWaterConsumedPerServing() *1000D;
         
-        if (person.isThirsty() && thirst > 300 && energy > 2000 && currentHunger < 150) {
+        boolean want2Chat = true;
+        // See if a person wants to chat while eating
+        int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
+        if (score > 0)
+        	want2Chat = true;
+        else if (score < 0)
+        	want2Chat = false;
+        else {
+        	int rand = RandomUtil.getRandomInt(1);
+        	if (rand == 0)
+        		want2Chat = false;
+        }
+        
+        Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, want2Chat);
+        if (diningBuilding != null) {
+        	// Walk to that building.
+        	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
+        }
+        
+        boolean notHungry = startingHunger < 150 && energy > 1000;
+        // if a person is thirsty and not hungry
+        if (person.isThirsty() && thirst > 300 && notHungry) {
         	consumeWater(true);
         	endTask();
         }
@@ -161,15 +183,17 @@ public class EatMeal extends Task implements Serializable {
             //	endTask();
         }
         
-        if (startingHunger < 200 && energy > 500) {
-        	// if a person is thirsty and NOT hungry  
+    
+    	// if a person is just a little thirsty and NOT that hungry  
+        if (notHungry) {
 	        // Initialize task phase.
             addPhase(PICK_UP_DESSERT);
             addPhase(EATING_DESSERT);
             
             setPhase(PICK_UP_DESSERT);
         }
-        else {
+        else {//if (startingHunger >= 150 && energy <= 1000) {
+        	// if a person is a thirsty and NOT that hungry  
 	        // Initialize task phase.
 	        addPhase(PICK_UP_MEAL);
 	        addPhase(PICK_UP_DESSERT);
@@ -740,9 +764,7 @@ public class EatMeal extends Task implements Serializable {
      * @return available dining building
      * @throws BuildingException if error finding dining building.
      */
-    // 2016-03-01 Added canChat param
     public static Building getAvailableDiningBuilding(Person person, boolean canChat) {
-
         Building result = null;
 
         if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
@@ -752,14 +774,12 @@ public class EatMeal extends Task implements Serializable {
             diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
             diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
             if (canChat)
-                // 2016-03-01 Added getChattyBuildings()
+                // Choose between the most crowded or the least crowded dining hall 
             	diningBuildings = BuildingManager.getChattyBuildings(diningBuildings);
             else
                 diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
 
             if (diningBuildings.size() > 0) {
-
-
                 Map<Building, Double> diningBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, diningBuildings);
                 result = RandomUtil.getWeightedRandomObject(diningBuildingProbs);
