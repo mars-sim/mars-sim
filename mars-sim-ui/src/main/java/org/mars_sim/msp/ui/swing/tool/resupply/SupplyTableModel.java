@@ -29,9 +29,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 public class SupplyTableModel
 extends AbstractTableModel {
 
-	/** default serial id.*/
-	private static final long serialVersionUID = 1L;
-
 	// Supply categories.
 	public final static String BUILDING = "Building";
 	public final static String VEHICLE = "Vehicle";

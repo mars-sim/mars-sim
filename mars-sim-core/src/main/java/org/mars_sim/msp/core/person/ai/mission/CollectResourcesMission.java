@@ -131,38 +131,44 @@ implements Serializable {
 
             // Initialize data members.
             s = startingPerson.getSettlement();
-            setStartingSettlement(s);
-            this.resourceType = resourceType;
-            this.siteResourceGoal = siteResourceGoal;
-            this.resourceCollectionRate = resourceCollectionRate;
-            this.containerType = containerType;
-            this.containerNum = containerNum;
-
-            // Recruit additional members to mission.
-            recruitMembersForMission(startingPerson);
-
-            // Determine collection sites
-            if (hasVehicle())
-            	determineCollectionSites(getVehicle().getRange(),
-                    getTotalTripTimeLimit(getRover(), getPeopleNumber(),
-                    true), numSites);
-
-            // Add home settlement
-            addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
-
-            // Check if vehicle can carry enough supplies for the mission.
-            if (hasVehicle() && !isVehicleLoadable()) {
-                endMission("Vehicle is not loadable at CollectingResourcesMission");
+            
+            if (s != null) {
+	            setStartingSettlement(s);
+	            
+	            this.resourceType = resourceType;
+	            this.siteResourceGoal = siteResourceGoal;
+	            this.resourceCollectionRate = resourceCollectionRate;
+	            this.containerType = containerType;
+	            this.containerNum = containerNum;
+	
+	            // Recruit additional members to mission.
+	            recruitMembersForMission(startingPerson);
+	
+	            // Determine collection sites
+	            if (hasVehicle())
+	            	determineCollectionSites(getVehicle().getRange(),
+	                    getTotalTripTimeLimit(getRover(), getPeopleNumber(),
+	                    true), numSites);
+	
+	            // Add home settlement
+	            addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+	
+	            // Check if vehicle can carry enough supplies for the mission.
+	            if (hasVehicle() && !isVehicleLoadable()) {
+	                endMission("Vehicle is not loadable at CollectingResourcesMission");
+	            }
             }
         }
 
-        // Add collecting phase.
-        addPhase(COLLECT_RESOURCES);
-
-        // Set initial mission phase.
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); //$NON-NLS-1$
-
+        if (s != null) {
+	        // Add collecting phase.
+	        addPhase(COLLECT_RESOURCES);
+	
+	        // Set initial mission phase.
+	        setPhase(VehicleMission.EMBARKING);
+	        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); //$NON-NLS-1$
+        }
+        
         // int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
         // logger.info("Starting " + getName() + " with " + emptyContainers + " " + containerType);
     }

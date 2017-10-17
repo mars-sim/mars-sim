@@ -208,8 +208,11 @@ implements Serializable {
             // If person still doesn't have an EVA suit, end task.
             if (!hasSuit) {
 	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-	    				person.getName() + " does not have an EVA suit, ExitAirlock ended", null);
-                endTask();
+	    				person.getName() + " does not have an EVA suit, ending procuringEVASuit()", null);
+	    		
+            	person.getMind().getTaskManager().clearTask();
+            	person.getMind().getTaskManager().getNewTask();
+                //endTask(); // will call Walk many times again
                 return 0D;
             }
             else {

@@ -14,11 +14,9 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 /**
  * An abstract panel for editing a transport item.
  */
+@SuppressWarnings("restriction")
 public abstract class TransportItemEditingStage
 extends Stage {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private Transportable transportItem;

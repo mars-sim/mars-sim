@@ -79,16 +79,15 @@ public class CircadianClock implements Serializable {
  	private double ghrelin_threshold = 400;
 
 	private Person person;
-	
-	private PersonConfig personConfig; 
-	
-	private MarsClock marsClock;
 
-	private PhysicalCondition health;
+	private PhysicalCondition condition;
     
     /** Sleep habit map keeps track of the sleep cycle */
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); 
 
+	//private static PersonConfig personConfig; 
+	
+	private static MarsClock marsClock;
     
 	public CircadianClock(Person person) {
 		this.person = person;
@@ -99,10 +98,8 @@ public class CircadianClock implements Serializable {
 	
 	public void init() {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-
-        personConfig = SimulationConfig.instance().getPersonConfiguration();
-
-        health = person.getPhysicalCondition();
+        //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        condition = person.getPhysicalCondition();
         
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -115,25 +112,25 @@ public class CircadianClock implements Serializable {
     	int solElapsed = marsClock.getMissionSol();
 
     	if (solCache != solElapsed) {
-    		
+
     		// Reset numSleep back to zero at the beginning of each sol
     		numSleep = 0;
     		suppressHabit = 0;
-    		
+
 	    	if (solCache == 0) {
-	    		double mass_ratio = person.getBaseMass() / Person.AVERAGE_WEIGHT;
+	    		double dev = Math.sqrt(person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT); //condition.getBodyMassDeviation(); //person.getBaseMass() / Person.AVERAGE_WEIGHT;
 	    		double age = person.getAge();
-	    		
+
 	    	 	// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin and higher when you're fat. 
-	    		leptin_threshold *= mass_ratio ;
+	    		leptin_threshold *= dev ;
 
 	    	 	// But many obese people have built up a resistance to the appetite-suppressing effects of leptin. 
 	    		// TODO: how to code this resistance ?	
-	    		
+
 	    		// Ghrelin levels have been found to increase in children with anorexia nervosa
 	    	 	// and decrease in children who are obese.
 	    		if (age <= 21)
-	    			ghrelin_threshold /= mass_ratio ;
+	    			ghrelin_threshold /= dev ;
 	    		
 	            //LogConsolidated.log(logger, Level.INFO, 2000, sourceName, person 
 	            //		+ " LL " + Math.round(leptin_level*10.0)/10.0
@@ -173,10 +170,9 @@ public class CircadianClock implements Serializable {
     // 2015-12-05 Added getBestKeySleepCycle()
     public int[] getBestKeySleepCycle() {
     	int largest[] = {0,0};
-
-    	Iterator<Integer> i = sleepCycleMap.keySet().iterator();
-    	while (i.hasNext()) {
-            int key = i.next();
+    	//Iterator<Integer> i = sleepCycleMap.keySet().iterator();
+    	//while (i.hasNext()) {
+        for (int key : sleepCycleMap.keySet()) {//    int key = i.next();
     		int value = sleepCycleMap.get(key);
             if (value > largest[0]) {
             	largest[1] = largest[0];
@@ -272,9 +268,9 @@ public class CircadianClock implements Serializable {
      */
     // 2015-12-05 Added inflateSleepHabit()
     public void inflateSleepHabit() {
-    	Iterator<Integer> i = sleepCycleMap.keySet().iterator();
-    	while (i.hasNext()) {
-            int key = i.next();
+    	//Iterator<Integer> i = sleepCycleMap.keySet().iterator();
+    	//while (i.hasNext()) {
+        for (int key : sleepCycleMap.keySet()) {//    int key = i.next();
     		int value = sleepCycleMap.get(key);
 
     		if (value > SLEEP_MAX_FACTOR) {
@@ -510,9 +506,9 @@ public class CircadianClock implements Serializable {
      */
     public void destroy() {
     	person = null;
-    	personConfig = null;
+    	//personConfig = null;
     	marsClock = null;
-    	health = null;
+    	condition = null;
         sleepCycleMap = null; 
 
     }

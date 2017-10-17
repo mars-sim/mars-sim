@@ -96,6 +96,9 @@ implements Serializable {
 	private Settlement tradingSettlement;
 	private MarsClock startNegotiationTime;
 	private NegotiateTrade negotiationTask;
+
+	private static SurfaceFeatures surface;
+	private static MarsClock marsClock;
 	
 	private Map<Good, Integer> sellLoad;
 	private Map<Good, Integer> buyLoad;
@@ -690,7 +693,9 @@ implements Serializable {
                 }
                 else {
                     if (startNegotiationTime == null) {
-                        startNegotiationTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+                    	if (marsClock == null)
+                    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+                    	startNegotiationTime = (MarsClock) marsClock.clone();
                     }
                     Person settlementTrader = getSettlementTrader();
                     if (settlementTrader != null) {
@@ -703,7 +708,9 @@ implements Serializable {
                         }
                     }
                     else {
-                        MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+                    	if (marsClock == null)
+                    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+                        MarsClock currentTime = (MarsClock) marsClock.clone();
                         double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
                         if (timeDiff > 1000D) {
                             buyLoad = new HashMap<Good, Integer>(0);
@@ -795,7 +802,8 @@ implements Serializable {
                     }
                     else {
                         // Check if it is day time.
-                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                    	if (surface == null)
+                    		surface = Simulation.instance().getMars().getSurfaceFeatures();
                         if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
                                 surface.inDarkPolarRegion(member.getCoordinates())) {
                             // TODO Refactor.
@@ -874,7 +882,8 @@ implements Serializable {
                         }
                         else {
                             // Check if it is day time.
-                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                        	if (surface == null)
+                        		surface = Simulation.instance().getMars().getSurfaceFeatures();
                             if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
                                     surface.inDarkPolarRegion(member.getCoordinates())) {
                                 // TODO Refactor.

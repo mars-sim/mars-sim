@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlementDetailPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-10-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -34,9 +33,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 public class ArrivingSettlementDetailPanel
 extends JPanel
 implements ClockListener, HistoricalEventListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private ArrivingSettlement arrivingSettlement;

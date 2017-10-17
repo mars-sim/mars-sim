@@ -46,9 +46,9 @@ public class SleepMeta implements MetaTask, Serializable {
 
     private static final int MAX_SUPPRESSION = 10;
 
-    private Simulation sim = Simulation.instance();
-	private MasterClock masterClock;// = sim.getMasterClock();
-	private MarsClock marsClock;// = masterClock.getMarsClock();
+    private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock;// = sim.getMasterClock();
+	private static MarsClock marsClock;// = masterClock.getMarsClock();
 	
 	private TaskSchedule ts;// = person.getTaskSchedule();
 	private PhysicalCondition pc;// = person.getPhysicalCondition();
@@ -116,7 +116,7 @@ public class SleepMeta implements MetaTask, Serializable {
             
         	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
             // he is supposed to want to sleep right away.
-        	if (fatigue > 1000D || stress > 50D || ghrelin-leptin > 300) {
+        	if (fatigue > 500D || stress > 50D || ghrelin-leptin > 300) {
         		proceed = true;
         	}
 
@@ -146,7 +146,7 @@ public class SleepMeta implements MetaTask, Serializable {
             if (proceed) {
     	
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 500) / 5D + stress * 5D + (ghrelin-leptin - 300)/10D;
+	            result += (fatigue - 250) / 5D + stress * 5D + (ghrelin-leptin - 300)/10D;
 
             	result += refreshSleepHabit(person);
                          	

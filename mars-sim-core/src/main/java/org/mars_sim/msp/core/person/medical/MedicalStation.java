@@ -7,11 +7,14 @@
  */
 package org.mars_sim.msp.core.person.medical;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -44,6 +47,8 @@ public class MedicalStation
 	private List<Person> restingRecoveryPeople;
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
+
+    private Map<Person, Point2D> bedMap = new HashMap<>();
 
 	/** 
 	 * Constructor.

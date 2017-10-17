@@ -9,13 +9,19 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The Read class is the task of reading
@@ -49,18 +55,63 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, true, 5D);
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        LocationSituation ls = person.getLocationSituation(); 
+        
+        if (LocationSituation.IN_SETTLEMENT == ls || LocationSituation.IN_VEHICLE == ls) {
 
-        	
+        	boolean walkSite = false;
+
             int score = person.getPreference().getPreferenceScore(new ReadMeta());
             super.setDuration(5 + score);
             //2016-09-24 Factored in a person's preference for the new stress modifier 
             super.setStressModifier(score/10D + STRESS_MODIFIER);
-            
+
 	        // set the boolean to true so that it won't be done again today
         	//person.getPreference().setTaskStatus(this, false);
 
+            if (LocationSituation.IN_SETTLEMENT == ls) {
+
+				Building recBuilding = getAvailableRecreationBuilding(person);
+				if (recBuilding != null) {
+					// Walk to recreation building.
+					// 2016-01-10 Added BuildingFunction.RECREATION
+				    walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
+				    walkSite = true;
+				} 
+				else {
+	            	// 2016-01-10 if rec building is not available, go to a gym
+	            	Building gym = Workout.getAvailableGym(person);
+	            	if (gym != null) {
+	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
+	                	walkSite = true;
+	                } 
+	            	else {
+						// 2016-01-10 if gym is not available, go back to his quarters
+		                Building quarters = person.getQuarters();    
+		                if (quarters != null) {
+		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
+						    walkSite = true;
+		                }
+	                }
+				}
+            }
+            
+    		if (!walkSite) {
+    		    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                    // If person is in rover, walk to passenger activity spot.
+                    if (person.getVehicle() instanceof Rover) {
+                        walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+                    }
+                }
+    		    else {
+                    // Walk to random location.
+                    walkToRandomLocation(true);
+                }
+    		    
+    		}
+    		
+        	setDescription(Msg.getString("Task.description.read"));
+        	
         }
         else {
             endTask();
@@ -70,6 +121,43 @@ implements Serializable {
         addPhase(READING);
         setPhase(READING);
     }
+
+    /**
+     * Performs reading phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     */
+    private double reading(double time) {
+        setDescription(Msg.getString("Task.description.read"));//$NON-NLS-1$
+        return 0D;
+    }
+
+	/**
+	 * Gets an available recreation building that the person can use.
+	 * Returns null if no recreation building is currently available.
+	 * @param person the person
+	 * @return available recreation building
+	 */
+	public static Building getAvailableRecreationBuilding(Person person) {
+
+		Building result = null;
+
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			BuildingManager manager = person.getSettlement().getBuildingManager();
+			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
+			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
+			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
+
+			if (recreationBuildings.size() > 0) {
+				Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+						person, recreationBuildings);
+				result = RandomUtil.getWeightedRandomObject(recreationBuildingProbs);
+			}
+		}
+
+		return result;
+	}
+
 
     @Override
     protected double performMappedPhase(double time) {
@@ -82,16 +170,6 @@ implements Serializable {
         else {
             return time;
         }
-    }
-
-    /**
-     * Performs reading phase.
-     * @param time the amount of time (millisols) to perform the phase.
-     * @return the amount of time (millisols) left over after performing the phase.
-     */
-    private double reading(double time) {
-        setDescription(Msg.getString("Task.description.read"));//$NON-NLS-1$
-        return 0D;
     }
 
     @Override

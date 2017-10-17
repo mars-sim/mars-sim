@@ -291,7 +291,7 @@ implements ActionListener, MenuListener {
 		float volume = soundPlayer.getMusicVolume();
 		int intVolume = Math.round(volume * 10F);
 
-		musicVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume);; //$NON-NLS-1$
+		musicVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); //$NON-NLS-1$
 		musicVolumeItem.setMajorTickSpacing(1);
 		musicVolumeItem.setPaintTicks(true);
 		musicVolumeItem.setPaintLabels(true);
@@ -307,7 +307,7 @@ implements ActionListener, MenuListener {
 			});
 		settingsMenu.add(musicVolumeItem);
 
-		effectVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume);; //$NON-NLS-1$
+		effectVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); //$NON-NLS-1$
 		effectVolumeItem.setMajorTickSpacing(1);
 		effectVolumeItem.setPaintTicks(true);
 		effectVolumeItem.setPaintLabels(true);

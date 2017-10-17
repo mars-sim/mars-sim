@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -339,21 +340,31 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			Collections.sort(list);
 		}
 
-		private String showOwner(Unit unit) {//boolean bool) {
-			String s = null;
-			if (unit.getName().toLowerCase().contains("eva")) {
+		private String showOwner(Unit unit) {
+			String s = "";
+			String item = unit.getName().toLowerCase();
+			if (item.contains("eva")) {
 				Person p = (Person) ((Equipment) unit).getLastOwner();
 				if (p != null)
 					s = p.getName();
-				else 
-					s = unit.getContainerUnit().getName();		
+				//else 
+				//	s = unit.getContainerUnit().getName();		
 			}
+			if (unit instanceof Robot) {
+				;// TODO: determine ownership of a bot
+			}
+			//if (item.contains("box") || item.contains("canister") 
+			//		|| item.contains("barrel") || item.contains("bag")) {
+			//	Person p = (Person) ((Equipment) unit).getLastOwner();	
+			//}
 			else {		
-				Set<AmountResource> ars = unit.getInventory().getAllAmountResourcesStored(false);
-				if (ars.size() > 1) System.out.print(ars.size());
-				for (AmountResource ar : ars) {
-					s = Conversion.capitalize(ar.getName());
-                }
+				List<AmountResource> ars = new ArrayList<>(unit.getInventory().getAllAmountResourcesStored(false));
+				if (ars.size() > 1) System.out.print(unit.getName() + " has " + ars.size() + "resources.");
+				//for (AmountResource ar : ars) {
+				//	s = Conversion.capitalize(ar.getName());
+                //}
+				if (ars.size() > 0)
+					s = Conversion.capitalize(ars.get(0).getName());
 			}
 			return s;
 			//return bool ? "yes" : "no";

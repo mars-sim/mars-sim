@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.equipment;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
@@ -44,6 +45,8 @@ implements Salvagable {
 
 	private Unit lastOwner;
 
+	private static UnitManager unitManager;
+	
 	/** Constructs an Equipment object
 	 *  @param name the name of the unit
 	 *  @param location the unit's location
@@ -55,6 +58,8 @@ implements Salvagable {
 		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
+		
+		unitManager = Simulation.instance().getUnitManager();
 	}
 
 	/**
@@ -64,23 +69,31 @@ implements Salvagable {
 	public Collection<Person> getAffectedPeople() {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
+		Person owner = null;
+		if (lastOwner != null && lastOwner instanceof Person) {
+			owner = (Person) lastOwner;
+			people.add(owner);
+		}
+
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
-			Person person = i.next();
+			Person person = i.next();			
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this equipment.
 			if (task instanceof Maintenance) {
 				if (((Maintenance) task).getEntity() == this) {
-					if (!people.contains(person)) people.add(person);
+					if (!people.contains(person)) 
+						people.add(person);
 				}
 			}
 
 			// Add all people repairing this equipment.
 			if (task instanceof Repair) {
 				if (((Repair) task).getEntity() == this) {
-					if (!people.contains(person)) people.add(person);
+					if (!people.contains(person)) 
+						people.add(person);
 				}
 			}
 		}
@@ -126,9 +139,9 @@ implements Salvagable {
     @Override
 	public Settlement getSettlement() {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = (Settlement) getContainerUnit();
-			return settlement;
-			//return (Settlement) getContainerUnit();
+			//Settlement settlement = (Settlement) getContainerUnit();
+			//return settlement;
+			return (Settlement) getContainerUnit();
 		}
 
 		else if (getLocationSituation() == LocationSituation.OUTSIDE)

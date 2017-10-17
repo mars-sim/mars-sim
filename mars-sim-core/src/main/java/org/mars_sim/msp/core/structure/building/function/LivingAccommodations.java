@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 3.1.0 2018-08-16
+ * @version 3.1.0 2017-10-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -50,7 +50,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
 
     
-    private int beds; // max # of beds
+    private int maxBeds; // max # of beds
     private int sleepers;
 
     private double washWaterUsage; // Water used per person for washing (showers, washing clothes, hands, dishes, etc) per millisol (avg over Sol).
@@ -63,7 +63,7 @@ public class LivingAccommodations extends Function implements Serializable {
     private Inventory inv;
 
     private Building building;
-    private Map<Person, Point2D> bedMap = new HashMap<>();
+    private Map<Person, Point2D> designatedBeds = new HashMap<>();
 
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
@@ -88,7 +88,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
-        beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
+        maxBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
 
         PersonConfig personconfig = simulationConfig.getPersonConfiguration();
         washWaterUsage = personconfig.getWaterUsageRate() / 1000D;
@@ -127,7 +127,7 @@ public class LivingAccommodations extends Function implements Serializable {
             } else {
                 LivingAccommodations livingFunction = (LivingAccommodations) building.getFunction(FUNCTION);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += livingFunction.beds * wearModifier;
+                supply += livingFunction.maxBeds * wearModifier;
             }
         }
 
@@ -144,7 +144,7 @@ public class LivingAccommodations extends Function implements Serializable {
      * @return number of beds.
      */
     public int getBeds() {
-        return beds;
+        return maxBeds;
     }
 
     /**
@@ -160,35 +160,38 @@ public class LivingAccommodations extends Function implements Serializable {
      * @throws BuildingException if beds are already in use.
      */
     public void addSleeper(Person person, boolean isAGuest) {
-    	sleepers++;
-    	if (isAGuest) {
-    		// Case 1 & 2
-    		//if (sleepers > beds) {
-            //    sleepers--;
-            //    logger.info("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : "
-            //    		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
-            //}
+    	if (sleepers >= maxBeds) { 		
+    		LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person 
+    				+ " is looking for a bed in " + building.getNickName() + " in " + settlement, null);
+            //logger.info("# sleepers : " + sleepers + "  # beds : " + beds);
+        }
+        else if (!designatedBeds.containsKey(person)) {
+        	if (isAGuest) {
+            	sleepers++;
+            	// do not designate a bed since he's only a guest
+        		// Case 1 & 2
+        		//if (sleepers > beds) {
+                //    sleepers--;
+                //    logger.info("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : "
+                //    		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
+                //}
+        	}
+        	else {
+	        	 // for a new inhabitant   
+	    		// if a person has never been assigned a bed
+	    		//logger.info(person + " does not have a designated bed yet.");
+	    		Point2D bed = designateABed(person);
+	    		if (bed != null) {
+		        	sleepers++;	    				    			
+	    		}
+	    		else {
+	                LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person + " could not find any unmarked beds in "
+	    					+ building.getNickName() + " in " + settlement, null);
+	    		}
+        	}
     	}
-    	else {
-    		// for inhabitants
-        	if (sleepers > beds) {
-                //sleepers = beds;
-                sleepers--;
-                //logger.info("# sleepers : " + sleepers + "  # beds : " + beds);
-            }
-            else {
-	        	if (!bedMap.containsKey(person)) {
-	        		// if a person has never been assigned a bed
-	        		//logger.info(person + " does not have a designated bed yet.");
-	        		Point2D bed = designateABed(person);
-	        		if (bed == null) {
-	                    sleepers--;
-	                    LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person + " could not find any unmarked beds in "
-	        					+ building.getNickName() + " in " + settlement, null);
-	        		}
-	        	}
-            }
-    	}
+        else // as an old inhabitant   
+        	sleepers++;
     }
 
     /**
@@ -201,13 +204,13 @@ public class LivingAccommodations extends Function implements Serializable {
     	Point2D bed = null;
     	List<Point2D> spots = super.getActivitySpotsList();
     	//int numBeds = spots.size();
-    	int numDesignated = bedMap.size();
-    	if (numDesignated <= beds) {//numBeds) {
+    	int numDesignated = designatedBeds.size();
+    	if (numDesignated <= maxBeds) {//numBeds) {
     		// there should be at least one bed available-- Note: it may not be empty. a traveler may be sleeping on it.
 	        for (Point2D spot : spots) {
-	            if (!bedMap.containsValue(spot)) {
+	            if (!designatedBeds.containsValue(spot)) {
 	            	bed = spot;
-	            	bedMap.put(person, bed);
+	            	designatedBeds.put(person, bed);
 	        		person.setBed(bed);
 	        		person.setQuarters(building);
 	            	//logger.info(person + " has been designated a bed at (" + bed.getX() + ", " + bed.getY() 	+ ") in " + person.getQuarters());
@@ -266,7 +269,7 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     public void generateWaste(double time) {
     	double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
-    	int numBed = bedMap.size();
+    	int numBed = designatedBeds.size();
     	//int pop = settlement.getNumCurrentPopulation();
     	// Total average wash water used at the settlement over this time period.
     	// This includes showering, washing hands, washing dishes, etc.
@@ -319,7 +322,7 @@ public class LivingAccommodations extends Function implements Serializable {
     }
 
     public Map<Person, Point2D> getBedMap() {
-    	return bedMap;
+    	return designatedBeds;
     }
 
     /*
@@ -330,10 +333,10 @@ public class LivingAccommodations extends Function implements Serializable {
     	//List<Point2D> activitySpots = super.getActivitySpotsList();//(List<Point2D>) super.getAvailableActivitySpot(person);
     	//int numBeds = activitySpots.size();
 
-    	int numDesignated = bedMap.size();
+    	int numDesignated = designatedBeds.size();
 		//logger.info("# designated beds : " +  numDesignated + " # beds : " +  numBeds);
 
-    	if (numDesignated < beds)
+    	if (numDesignated < maxBeds)
     		return true;
     	else
     		return false;
@@ -362,7 +365,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
     @Override
     public double getMaintenanceTime() {
-        return beds * 7D;
+        return maxBeds * 7D;
     }
 
 	@Override

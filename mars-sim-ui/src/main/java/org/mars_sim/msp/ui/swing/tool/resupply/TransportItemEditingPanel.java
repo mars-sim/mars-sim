@@ -9,16 +9,12 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * An abstract panel for editing a transport item.
  */
 public abstract class TransportItemEditingPanel
 extends JPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private Transportable transportItem;

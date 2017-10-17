@@ -38,9 +38,6 @@ public class IncomingListPanel
 extends JPanel
 implements ListSelectionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private JList<?> incomingList;
 	private IncomingListModel listModel;

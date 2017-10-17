@@ -56,6 +56,8 @@ implements Serializable {
     
     private Person candidate = null;  
     
+    private static RelationshipManager relationshipManager;
+    
     /**
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
@@ -174,7 +176,8 @@ implements Serializable {
 		        if (getDuration() <= (getTimeCompleted() + time)) {
 		
 		            // Check if existing relationship between primary researcher and invitee.
-		            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		            if (relationshipManager == null)
+		            	relationshipManager = Simulation.instance().getRelationshipManager();
 		            	
 		            if (!relationshipManager.hasRelationship(person, candidate)) {
 		                // Add new communication meeting relationship.

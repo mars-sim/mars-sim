@@ -8,9 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,9 +51,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 public class ResupplyDetailPanel
 extends JPanel
 implements ClockListener, HistoricalEventListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private Resupply resupply;

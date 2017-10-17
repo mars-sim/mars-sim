@@ -100,26 +100,9 @@ implements ActionListener {
 
 	private double elevationCache;
 
-	//private String locationText = "Mars";
+	private Unit containerCache;
+	private Unit topContainerCache;
 
-	// 2014-11-11 Added new panels and labels
-	private JPanel tpPanel =  new JPanel();
-	private JPanel outsideReadingPanel = new JPanel();
-	private JPanel containerPanel = new JPanel();
-	//private JLabel temperatureLabel;
-	//private JLabel airPressureLabel;
-	private JLabel locationLabel;
-	private JLabel locLabel;
-	//private Color THEME_COLOR = Color.ORANGE;
-	//private double airPressureCache;
-	//private int temperatureCache;
-	private Unit containerCache, topContainerCache;
-
-	private JPanel coordsPanel;
-	private JLabel latitudeLabel;
-	private JLabel longitudeLabel;
-	private JPanel centerPanel;
-	
 	private JComboBoxMW<?> combox;
 	
 	private TerrainElevation terrainElevation;
@@ -132,9 +115,7 @@ implements ActionListener {
 	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
 	private DisplayCircular gauge;//RadialQuarterN gauge;
 
-	private DecimalFormat fmt = new DecimalFormat("##0");
-	private DecimalFormat fmt2 = new DecimalFormat("#0.00");
-	
+
     /**
      * Constructor.
      * @param unit the unit to display.
@@ -146,6 +127,16 @@ implements ActionListener {
         		null,
         		Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
+        Unit container = unit.getContainerUnit();
+        if (containerCache != container) {
+        	containerCache = container;
+        }
+
+        Unit topContainer = unit.getTopContainerUnit();
+        if (topContainerCache != topContainer) {
+        	topContainerCache = topContainer;
+        }
+        
     	if (terrainElevation == null)
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
@@ -155,6 +146,7 @@ implements ActionListener {
     	if (mainScene == null)
     		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
     	
+        
         // Initialize location header.
 		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
@@ -169,7 +161,6 @@ implements ActionListener {
         locationPanel.setBorder(new MarsPanelBorder());
         locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         topContentPanel.add(locationPanel);
-
 
         // Initialize location cache
         locationCache = new Coordinates(unit.getCoordinates());
@@ -355,7 +346,7 @@ implements ActionListener {
 	                gauge.setFrameDesign(FrameDesign.GOLD);
 	                locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_ORANGE));
 	        	}
-	        	else if (theme == 6) {
+	        	else if (theme == 6 || theme == 0) {
 	        		lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
 	        		gauge.setFrameDesign(FrameDesign.STEEL);
 	        		locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_BLUE));
@@ -794,7 +785,6 @@ implements ActionListener {
             }
         }
 
-        // 2015-12-09 Prepare loc label
         // Update location button or location text label as necessary.
         Unit container = unit.getContainerUnit();
         if (containerCache != container) {
@@ -1091,14 +1081,10 @@ implements ActionListener {
      */
     public String updateVehicle(Vehicle v) {
     	String loc = null;
-    		
-		//Settlement settlement = (Settlement) v.getContainerUnit();
-		Settlement s = v.getSettlement();
-		//System.out.println(v.getName() + " is in " + settlement.getName());
-		//Unit tc = v.getTopContainerUnit();
-		//Unit c = v.getContainerUnit();
-
-		if (v.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+    	
+   		Settlement s = v.getSettlement();
+		
+   		if (v.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
 			loc = PARKED + WITHIN_THE_VINCINITY_OF + s;
 
 		else if (v.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
@@ -1109,9 +1095,6 @@ implements ActionListener {
    			s = (Settlement)tc;
 
 			Building b = v.getGarage(s);
-			//System.out.println(v + " is at " + s);
-			//System.out.println(v + " is at " + b);
-
 			// case D
 			// Note: it takes a short finite amount of time to update the latest LocationStateType
 			// the vehicle would have left the building and b becomes null when LocationStateType is waiting to be updated in the next frame.
@@ -1165,10 +1148,6 @@ implements ActionListener {
 	public void destroy() {
 		containerCache = null;
 		topContainerCache = null;
-		coordsPanel = null;
-		latitudeLabel = null;
-		longitudeLabel = null;
-		centerPanel = null;
 		terrainElevation = null;
 		locationCache = null;
 		mainScene = null;
@@ -1177,8 +1156,7 @@ implements ActionListener {
 		lcdLat = null;
 		lcdText = null;
 		gauge = null;
-		fmt = null;
-		fmt2 = null;
+
 	}
 
 }

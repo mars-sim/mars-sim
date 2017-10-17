@@ -165,7 +165,7 @@ public class MainMenu {
      */
 	@SuppressWarnings("restriction")
 	public void initMainMenu(Stage stage) {
-        System.setProperty("sampler.mode", "true");   
+		System.setProperty("sampler.mode", "true");   
 	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName());
 		this.primaryStage = stage;
 
@@ -175,21 +175,20 @@ public class MainMenu {
 		// If this attribute is false, the application will continue to run normally even after the last window is closed,
 		// until the application calls exit. The default value is true.
 
-       menuApp = new MenuApp(mainMenu);
-       anchorPane = menuApp.createContent();
+    	menuApp = new MenuApp(mainMenu);
+    	anchorPane = menuApp.createContent();
        
-       stackPane = new StackPane(anchorPane);
-       stackPane.setPrefSize(WIDTH, HEIGHT);
+    	stackPane = new StackPane(anchorPane);
+    	stackPane.setPrefSize(WIDTH, HEIGHT);
+    	stackPane.setLayoutX(10);
+    	stackPane.setLayoutY(10);
        
-       double sceneWidth = stackPane.getPrefWidth() + 30;
-       double sceneHeight = stackPane.getPrefHeight() + 30;
+    	double sceneWidth = stackPane.getPrefWidth() + 30;
+    	double sceneHeight = stackPane.getPrefHeight() + 30;
 
-       Group root = new Group();
-       Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
-
-       // application area
-       @SuppressWarnings("restriction")
-       Rectangle applicationArea = RectangleBuilder.create()
+    	// Create application area
+    	@SuppressWarnings("restriction")
+    	Rectangle applicationArea = RectangleBuilder.create()
                 .width(sceneWidth - 10)
                 .height(sceneHeight - 10)
                 .arcWidth(20)
@@ -201,12 +200,48 @@ public class MainMenu {
                 .stroke(Color.rgb(255, 255, 255, .70))
                 .build();
        
+    	// Create close button
+    	final Group closeApp = new Group();
+    	Node closeRect = RectangleBuilder.create()
+               .width(25)
+               .height(25)
+               .arcWidth(15)
+               .arcHeight(15)
+               .fill(Color.rgb(0, 0, 0, .80))
+               .stroke(Color.WHITE)
+               .build();
+       
+    	Text closeXmark = new Text(9, 16.5, "X");
+    	closeXmark.setStroke( Color.WHITE);
+    	closeXmark.setFill(Color.WHITE);
+    	closeXmark.setStrokeWidth(2);
+    	closeApp.setTranslateY(5);
+    	closeApp.getChildren().addAll(closeRect, closeXmark);
+    	closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
+       	@Override
+       	public void handle(MouseEvent event) {
+       		if (!isShowingDialog) {
+       			dialogOnExit(stackPane);
+       		}
+       		if (!isExit) {
+       			event.consume();
+       		}
+       		else {
+       			Platform.exit();
+           		System.exit(0);
+       		}
+       	}
+       });
+       
+       Group root = new Group();
        root.getChildren().add(applicationArea);
-       stackPane.setLayoutX(10);
-       stackPane.setLayoutY(10);
-       
        root.getChildren().add(stackPane);
-       
+       root.getChildren().add(closeApp);
+
+       Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
+
+       closeApp.translateXProperty().bind(scene.widthProperty().subtract(40));
+   	
        // starting initial anchor point
        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event){
@@ -231,43 +266,6 @@ public class MainMenu {
             }
         });
         
-        // close button
-        final Group closeApp = new Group();
-        Node closeRect = RectangleBuilder.create()
-                .width(25)
-                .height(25)
-                .arcWidth(15)
-                .arcHeight(15)
-                .fill(Color.rgb(0, 0, 0, .80))
-                .stroke(Color.WHITE)
-                .build();
-        
-        Text closeXmark = new Text(9, 16.5, "X");
-        closeXmark.setStroke( Color.WHITE);
-        closeXmark.setFill(Color.WHITE);
-        closeXmark.setStrokeWidth(2);
-        
-        closeApp.translateXProperty().bind(scene.widthProperty().subtract(40));
-        closeApp.setTranslateY(5);
-        closeApp.getChildren().addAll(closeRect, closeXmark);
-        closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
-        	@Override
-        	public void handle(MouseEvent event) {
-        		if (!isShowingDialog) {
-        			dialogOnExit(stackPane);
-        		}
-        		if (!isExit) {
-        			event.consume();
-        		}
-        		else {
-        			Platform.exit();
-            		System.exit(0);
-        		}
-        	}
-        });
-        
-        root.getChildren().add(closeApp);
-
         previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY()); 
        
 	   //scene = new Scene(stackPane, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);

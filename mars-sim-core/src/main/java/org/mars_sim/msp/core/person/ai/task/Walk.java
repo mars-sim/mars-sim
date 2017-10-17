@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -81,6 +82,8 @@ implements Serializable {
     private Map<Integer, TaskPhase> walkingStepPhaseMap;
     private int walkingStepIndex;
 
+    private static UnitManager unitManager;
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -419,6 +422,9 @@ implements Serializable {
      */
     public static Airlock findEmergencyAirlock(Person person) {
 
+    	if (unitManager == null)
+    		unitManager = Simulation.instance().getUnitManager();
+    	
         Airlock result = null;
 
         // Determine airlock from other members on mission.
@@ -443,7 +449,7 @@ implements Serializable {
 
         // If not look for any settlements at person's location.
         if (result == null) {
-            Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+            Iterator<Settlement> i = unitManager.getSettlements().iterator();
             while (i.hasNext() && (result == null)) {
                 Settlement settlement = i.next();
                 if (person.getCoordinates().equals(settlement.getCoordinates())) {
@@ -454,7 +460,7 @@ implements Serializable {
 
         // If not look for any vehicles with airlocks at person's location.
         if (result == null) {
-            Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+            Iterator<Vehicle> i = unitManager.getVehicles().iterator();
             while (i.hasNext() && (result == null)) {
                 Vehicle vehicle = i.next();
                 if (person.getCoordinates().equals(vehicle.getCoordinates())) {
@@ -494,7 +500,7 @@ implements Serializable {
 
         // If not look for any settlements at robot's location.
         if (result == null) {
-            Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+            Iterator<Settlement> i = unitManager.getSettlements().iterator();
             while (i.hasNext() && (result == null)) {
                 Settlement settlement = i.next();
                 if (robot.getCoordinates().equals(settlement.getCoordinates())) {
@@ -505,7 +511,7 @@ implements Serializable {
 
         // If not look for any vehicles with airlocks at robot's location.
         if (result == null) {
-            Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+            Iterator<Vehicle> i = unitManager.getVehicles().iterator();
             while (i.hasNext() && (result == null)) {
                 Vehicle vehicle = i.next();
                 if (robot.getCoordinates().equals(vehicle.getCoordinates())) {
@@ -752,7 +758,7 @@ implements Serializable {
 			        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
 			            addSubTask(new WalkSettlementInterior(person, step.building, x, y));
 		        	}
-		            else if (building == null) {
+		            else {
 		    			logger.info(person + " is not in a building.");
 		            	endTask();
 			        	// do this for now so as to debug why this happen and how often
@@ -791,7 +797,7 @@ implements Serializable {
 			        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
 			            addSubTask(new WalkSettlementInterior(robot, step.building, x, y));
 		        	}
-		        	else if (building == null) {
+		        	else {
 		        		logger.info(robot + " is not in a building");
 		        		logger.info(robot + " may be at " + robot.getBuildingLocation());
 		        		logger.info(robot + "'s location is " + robot.getLocationSituation());
@@ -869,7 +875,8 @@ implements Serializable {
                 if (location == LocationSituation.IN_SETTLEMENT) {
                 	LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
                 			person + " is in " + person.getSettlement() + " but is in walkingRoverInteriorPhase() "
-                   			+ "and NOT in rover (" + rover.getName() + ").", null); 
+                   			+ "and NOT in a rover.", null); 
+                	person.getMind().getTaskManager().clearTask();
                 	person.getMind().getTaskManager().getNewTask();//.clearTask();
             	}
                 
@@ -877,6 +884,7 @@ implements Serializable {
                 	LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
                 			person + " is outside but is in walkingRoverInteriorPhase() and NOT in rover (" 
                 			+ rover.getName() + ").", null); 
+                	person.getMind().getTaskManager().clearTask();
                 	person.getMind().getTaskManager().getNewTask();//clearTask();
                 }
 
@@ -1068,9 +1076,12 @@ implements Serializable {
                 }
                 else {
                 	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
-                			person.getName() + " unable to physically exit the airlock of " +
-                            airlock.getEntityName() + ". Calling endTask()", null);
-                    endTask();
+                			person.getName() + " is unable to physically exit the airlock of " +
+                            airlock.getEntityName() + ".", null);
+                	
+                	person.getMind().getTaskManager().clearTask();
+                	person.getMind().getTaskManager().getNewTask();
+                    //endTask(); // will call Walk many times again
                 }
             }
 

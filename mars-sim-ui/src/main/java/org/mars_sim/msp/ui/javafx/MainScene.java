@@ -1807,7 +1807,7 @@ public class MainScene {
 		zoomSlider.setMajorTickUnit(5);
 		zoomSlider.setShowTickLabels(true);
 		zoomSlider.setShowTickMarks(true);
-		zoomSlider.setBlockIncrement(1);
+		zoomSlider.setBlockIncrement(.2);
 		zoomSlider.setOrientation(Orientation.VERTICAL);
 		zoomSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 

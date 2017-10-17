@@ -126,13 +126,15 @@ implements Serializable {
 
         outbound = true;
 
-        if (!isDone()) {
+        Settlement s = startingPerson.getSettlement();
+        
+        if (s != null & !isDone()) {
 
             // Initialize data members
-            setStartingSettlement(startingPerson.getSettlement());
+            setStartingSettlement(s);
 
             // Determine emergency settlement.
-            emergencySettlement = findSettlementNeedingEmergencySupplies(getStartingSettlement(), getRover());
+            emergencySettlement = findSettlementNeedingEmergencySupplies(s, getRover());
 
             if (emergencySettlement != null) {
 
@@ -153,21 +155,23 @@ implements Serializable {
             }
         }
 
-        // Add emergency supply mission phases.
-        addPhase(SUPPLY_DELIVERY_DISEMBARKING);
-        addPhase(SUPPLY_DELIVERY);
-        addPhase(LOAD_RETURN_TRIP_SUPPLIES);
-        addPhase(RETURN_TRIP_EMBARKING);
-
-        // Set initial phase
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
-        if (logger.isLoggable(Level.INFO)) {
-            if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " started an emergency supply mission from " + getStartingSettlement() +
-                        " to " + getEmergencySettlement() + " using " + getRover().getName());
-            }
+        if (s != null) {
+	        // Add emergency supply mission phases.
+	        addPhase(SUPPLY_DELIVERY_DISEMBARKING);
+	        addPhase(SUPPLY_DELIVERY);
+	        addPhase(LOAD_RETURN_TRIP_SUPPLIES);
+	        addPhase(RETURN_TRIP_EMBARKING);
+	
+	        // Set initial phase
+	        setPhase(VehicleMission.EMBARKING);
+	        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
+	                s.getName())); //$NON-NLS-1$
+	        if (logger.isLoggable(Level.INFO)) {
+	            if (startingPerson != null && getRover() != null) {
+	                logger.info(startingPerson.getName() + " started an emergency supply mission from " + s +
+	                        " to " + getEmergencySettlement() + " using " + getRover().getName());
+	            }
+	        }
         }
     }
 

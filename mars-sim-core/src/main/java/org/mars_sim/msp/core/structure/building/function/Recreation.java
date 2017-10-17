@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Recreation.java
- * @version 3.07 2014-06-19
+ * @version 3.1.0 2017-10-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -30,6 +30,7 @@ implements Serializable {
     // Data members
     private int populationSupport;
 
+    private static BuildingConfig config;
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -39,7 +40,7 @@ implements Serializable {
         super(FUNCTION, building);
 
         // Populate data members.
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        config = SimulationConfig.instance().getBuildingConfiguration();
         populationSupport = config.getRecreationPopulationSupport(building.getBuildingType());
 
         // Load activity spots
@@ -64,14 +65,15 @@ implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building recreationBuilding = i.next();
-            Recreation recreation = (Recreation) recreationBuilding.getFunction(FUNCTION);
+            Recreation recreation = recreationBuilding.getRecreation();
             double populationSupport = recreation.getPopulationSupport();
             double wearFactor = ((recreationBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
             supply += populationSupport * wearFactor;
         }
 
         if (!newBuilding) {
-            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        	if (config == null)
+        		config = SimulationConfig.instance().getBuildingConfiguration();
             supply -= config.getRecreationPopulationSupport(buildingName);
             if (supply < 0D) supply = 0D;
         }

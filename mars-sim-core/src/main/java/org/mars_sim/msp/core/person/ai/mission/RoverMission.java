@@ -465,7 +465,8 @@ extends VehicleMission {
 
 		// Have member exit rover if necessary.
 		if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
-
+			// member should be in a vehicle
+			
 			// Get closest airlock building at settlement.
 		    Building destinationBuilding = null;
 		    // TODO Refactor.
@@ -487,40 +488,49 @@ extends VehicleMission {
 				    if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
 				        assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 				    }
+				    
 				    else {
 
 				        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 				        	Vehicle v = person.getVehicle();
 				            v.getInventory().retrieveUnit(person);
-					        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",person.getName(), v.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
+				            
+					        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
+					        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be 
+					        // retrieved and moved to a settlement in emergency?
+					        logger.severe(Msg.getString("RoverMission.log.requestRescue", person.getName(), v.getName(),
+					        		destinationBuilding.getNickName(), disembarkSettlement)); //$NON-NLS-1$
 				        }
-				        else {
+				        //else {
 				        	//
-				        	Building b = person.getBuildingLocation();
-				        	if (b != null)
-				        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",person.getName(), b.getNickName(), destinationBuilding.getNickName())); //$NON-NLS-1$
-				        	else {
-				        		Settlement s = person.getSettlement();
-				        		if (s == null) {
-				        			s = person.getAssociatedSettlement();
-				        			String ss = "the vincity of " + s.getName();
-					        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",person.getName(), ss, destinationBuilding.getNickName())); //$NON-NLS-1$
-				        		}
-				        	}
+				        	//Building b = person.getBuildingLocation();
+				        	//if (b != null)
+				        	//	logger.severe(Msg.getString("RoverMission.log.requestRescue", person.getName(), 
+				        	//			b.getNickName(), destinationBuilding.getNickName(), disembarkSettlement)); //$NON-NLS-1$
+				        	//else {
+				        		//Settlement s = person.getSettlement();
+				        		//if (s == null) {
+				        		//	s = person.getAssociatedSettlement();
+				        		//	String ss = "the vincity of " + s.getName();
+					        	//	logger.severe(Msg.getString("RoverMission.log.requestRescue", person.getName(), ss, destinationBuilding.getNickName())); //$NON-NLS-1$
+				        		//}
+				        	//}
 
-				        }
+				        //}
 
 				        disembarkSettlement.getInventory().storeUnit(person);
 				        BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(), 
 				        		adjustedLoc.getY());
 
-				        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
-				        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be 
-				        // retrieved and moved back to the settlement in emergency?
+
 				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding", person.getName(), 
-				        		destinationBuilding.getNickName())); //$NON-NLS-1$
+				        		destinationBuilding.getNickName(), disembarkSettlement)); //$NON-NLS-1$
+				        
+	                	person.getMind().getTaskManager().clearTask();
+	                	person.getMind().getTaskManager().getNewTask();
 				    }
 				}
+				
 				else if (member instanceof Robot) {
                     Robot robot = (Robot) member;
                     if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
@@ -531,23 +541,25 @@ extends VehicleMission {
 				        if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 				        	Vehicle v = robot.getVehicle();
 				            v.getInventory().retrieveUnit(robot);
-					        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(), 
+					        logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
 					        		v.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
 				        }
 				        else {
+/*				        	
 				        	Building b = robot.getBuildingLocation();
 				        	if (b != null)
-				        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(), 
+				        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
 				        				b.getNickName(), destinationBuilding.getNickName())); //$NON-NLS-1$
 				        	else {
 				        		Settlement s = robot.getSettlement();
 				        		if (s == null) {
 				        			s = robot.getAssociatedSettlement();
 				        			String ss = "the vincity of " + s.getName();
-					        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(), 
+					        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
 					        				ss, destinationBuilding.getNickName())); //$NON-NLS-1$
 				        		}
 				        	}
+*/				        	
 				        }
 
 				        disembarkSettlement.getInventory().storeUnit(robot);
@@ -560,7 +572,7 @@ extends VehicleMission {
 				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding", robot.getName(), 
 				        		destinationBuilding.getNickName())); //$NON-NLS-1$
 /*
-                        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
+                        logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
                         logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
                         if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                             robot.getVehicle().getInventory().retrieveUnit(robot);
@@ -586,6 +598,9 @@ extends VehicleMission {
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
 					Person crewmember = i.next();
+			        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
+			        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be 
+			        // retrieved and moved back to the settlement in emergency?
 					logger.severe(Msg.getString("RoverMission.log.emergencyEnterSettlement", crewmember.getName(),
 							disembarkSettlement.getName())); //$NON-NLS-1$
 					rover.getInventory().retrieveUnit(crewmember);

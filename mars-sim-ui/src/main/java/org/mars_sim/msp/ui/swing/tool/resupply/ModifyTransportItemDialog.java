@@ -28,8 +28,6 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
  */
 public class ModifyTransportItemDialog extends ModalInternalFrame {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members.
 	private Transportable transportItem;

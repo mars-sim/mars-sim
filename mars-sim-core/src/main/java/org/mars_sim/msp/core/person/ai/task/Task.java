@@ -404,11 +404,11 @@ implements Serializable, Comparable<Task> {
                 subTask = newSubTask;
 				if (person != null) {
 					// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-	                //person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+	                person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 				}
 				else if (robot != null) {
 					// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-					//robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+					robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 				}
 
             }
@@ -420,11 +420,11 @@ implements Serializable, Comparable<Task> {
             subTask = newSubTask;
 			if (person != null) {
 				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-	            //person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+	            person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 			}
 			else if (robot != null) {
 				// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-	            //robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+	            robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 			}
         }
     }

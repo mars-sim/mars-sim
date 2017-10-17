@@ -96,6 +96,8 @@ implements Serializable {
 		                }
 	                }
 				}
+				
+            	setDescription(Msg.getString("Task.description.listenToMusic"));
 			}
 			catch (Exception e) {
 				logger.log(Level.SEVERE,"ListenToMusic's constructor(): " + e.getMessage());
@@ -114,6 +116,8 @@ implements Serializable {
                 // Walk to random location.
                 walkToRandomLocation(true);
             }
+		    
+        	setDescription(Msg.getString("Task.description.listenToMusic"));
 		}
 
 		// Initialize phase
@@ -166,7 +170,7 @@ implements Serializable {
             newFatigue = 0D;
         }
         person.getPhysicalCondition().setFatigue(newFatigue);
-
+        setDescription(Msg.getString("Task.description.listenToMusic"));//$NON-NLS-1$
 		return 0D;
 	}
 

@@ -27,9 +27,6 @@ public class TransportDetailPanel
 extends JPanel
 implements ListSelectionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Panel key strings.
 	private static final String RESUPPLY = "resupply";
 	private static final String SETTLEMENT = "settlement";

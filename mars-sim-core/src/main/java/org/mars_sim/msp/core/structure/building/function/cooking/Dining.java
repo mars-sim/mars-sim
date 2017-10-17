@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Dining.java
- * @version 3.07 2014-06-19
+ * @version 3.1.0 2017-10-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -32,6 +32,8 @@ implements Serializable {
     // Data members
     private int capacity;
 
+    private static BuildingConfig config;
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -41,7 +43,7 @@ implements Serializable {
         super(FUNCTION, building);
 
         // Populate data members.
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        config = SimulationConfig.instance().getBuildingConfiguration();
         capacity = config.getDiningCapacity(building.getBuildingType());
 
         // Load activity spots
@@ -67,14 +69,15 @@ implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building diningBuilding = i.next();
-            Dining dining = (Dining) diningBuilding.getFunction(FUNCTION);
+            Dining dining = diningBuilding.getDining();
             double capacity = dining.getDiningCapacity();
             double wearFactor = ((diningBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
             supply += capacity * wearFactor;
         }
 
         if (!newBuilding) {
-            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        	if (config == null)
+        		config = SimulationConfig.instance().getBuildingConfiguration();
             double capacity = config.getDiningCapacity(buildingName);
             supply -= capacity;
             if (supply < 0D) supply = 0D;

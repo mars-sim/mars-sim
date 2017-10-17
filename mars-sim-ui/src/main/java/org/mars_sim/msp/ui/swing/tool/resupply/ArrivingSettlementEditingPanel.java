@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -16,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -63,8 +61,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class ArrivingSettlementEditingPanel
 extends TransportItemEditingPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private String errorString = new String();

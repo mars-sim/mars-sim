@@ -224,7 +224,7 @@ public class EatMeal extends Task implements Serializable {
 
           if (kitchen != null) {
               // Walk to kitchen.
-              walkToActivitySpotInBuilding(kitchen.getBuilding(), FunctionType.COOKING, true);
+              walkToActivitySpotInBuilding(kitchen.getBuilding(), FunctionType.DINING, true);
               return time;
           }
           else {
@@ -311,7 +311,7 @@ public class EatMeal extends Task implements Serializable {
 
             if (dessertKitchen != null) {
                 // Walk to dessert kitchen.
-                walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), FunctionType.PREPARING_DESSERT, true);
+                walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), FunctionType.DINING, true);
                 return time;
             }
             else {

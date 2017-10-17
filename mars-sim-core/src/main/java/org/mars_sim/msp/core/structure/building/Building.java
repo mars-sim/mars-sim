@@ -206,6 +206,8 @@ LocalBoundedObject, InsidePathLocation {
 	private Research lab;
 	private Manufacture workshop;
 	private Administration admin;
+	private Recreation rec;
+	private Dining dine;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -621,6 +623,18 @@ LocalBoundedObject, InsidePathLocation {
 		if (admin == null)
 			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
 		return admin;			
+	}
+	
+	public Recreation getRecreation() {
+		if (rec == null)
+			rec = (Recreation)getFunction(FunctionType.RECREATION);
+		return rec;
+	}
+	
+	public Dining getDining() {
+		if (dine == null)
+			dine = (Dining) getFunction(FunctionType.DINING);
+		return dine;
 	}
 	
     /**

@@ -95,6 +95,8 @@ implements Serializable {
     public static final double ENERGY_FACTOR = 0.8D;
     /** The maximum air pressure a person can live without harm */
     public static final double MAXIMUM_AIR_PRESSURE = 680D; // in kPa // Assume 10,000 psi or 680 kPa time dependent and somewhat arbitrary
+    /** Period of time (millisols) over which random ailments may happen. */
+    private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
     
  	private static double o2_consumption;
  	private static double h2o_consumption;
@@ -105,8 +107,10 @@ implements Serializable {
  	private static double dessert_consumption;
  	private static double highFatigueCollapseChance;
     private static double stressBreakdownChance;
-    /** Period of time (millisols) over which random ailments may happen. */
-    private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
+
+    private static EatMealMeta eatMealMeta = new EatMealMeta();
+
+    
     /** The amount of water this person would consume each time (assuming drinking water 8 times a day) */
     private double waterConsumedPerServing; 
     /** True if person is starving. */
@@ -152,12 +156,11 @@ implements Serializable {
     private double personalMaxEnergy;
     
     private double foodDryMassPerServing;
-    
-    private String name;
-    
+
     private double bodyMassDeviation;
 
-    private static EatMealMeta eatMealMeta = new EatMealMeta();
+    
+    private String name;
     
     /** Person owning this physical. */
     private Person person;
@@ -170,16 +173,6 @@ implements Serializable {
 
 	private CircadianClock circadian;
 
-	private static Complaint dehydration;
-
-    private static Complaint starvation;
-
-    private static Complaint depression;
-    
-    private static Complaint panicAttack;
-	
-    private static Complaint highFatigue;
-    
     private LocationSituation ls;
     
     private TaskManager taskMgr;
@@ -194,6 +187,17 @@ implements Serializable {
 	
 	private static Simulation sim;
 	
+	private static Complaint dehydration;
+
+    private static Complaint starvation;
+
+    private static Complaint depression;
+    
+    private static Complaint panicAttack;
+	
+    private static Complaint highFatigue;
+    
+    
     /** List of medications affecting the person. */
     private List<Medication> medicationList;
     /** Injury/Illness effecting person. */
@@ -1412,6 +1416,10 @@ implements Serializable {
         return person;
     }
     
+    public double getBodyMassDeviation() {
+    	return bodyMassDeviation;
+	}
+
     //public double getMinAirPressure() {
     //	return minimum_air_pressure;
     //}

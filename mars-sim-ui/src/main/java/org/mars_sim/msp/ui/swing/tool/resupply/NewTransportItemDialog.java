@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -30,9 +29,6 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
  */
 //2015-03-21 Switched from extending JDialog to JinternalFrame
 public class NewTransportItemDialog extends ModalInternalFrame {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Transport item types.
 	private static final String DEFAULT_MESSAGE = "Select Transport Item Type";

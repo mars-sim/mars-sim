@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class LocationTag implements LocationState, Serializable {
 
@@ -29,6 +30,7 @@ public class LocationTag implements LocationState, Serializable {
 	private Robot r = null;
 	private Equipment e = null;
 	private Building b = null;
+	private Vehicle v = null;
 
 	public LocationTag(Unit unit) {
 		this.unit = unit;
@@ -40,6 +42,8 @@ public class LocationTag implements LocationState, Serializable {
 			e = (Equipment) unit;
 		else if (unit instanceof Building)
 			b = (Building) unit;
+		else if (unit instanceof Vehicle)
+			v = (Vehicle) unit;
 		
 	}
 	
@@ -48,23 +52,31 @@ public class LocationTag implements LocationState, Serializable {
 			if (p.getSettlement() != null)
 				return p.getSettlement().getName();
 			else
-				return OUTSIDE_ON_MARS;		
+				return p.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
 		}
 		else if (e != null) {
 			if (e.getSettlement() != null)
 				return e.getSettlement().getName();
 			else
-				return OUTSIDE_ON_MARS;		
+				return e.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
 		}
 		else if (r != null) {
 			if (r.getSettlement() != null)
 				return r.getSettlement().getName();
 			else
-				return OUTSIDE_ON_MARS;		
+				return r.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
 		}
 		else if (b != null) {
 			return b.getSettlement().getName();
 		}
+		
+		else if (v != null) {
+			if (v.getSettlement() != null)
+				return v.getSettlement().getName();
+			else
+				return v.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
+		}
+		
 		return UNKNOWN;
 	}
 
@@ -82,7 +94,7 @@ public class LocationTag implements LocationState, Serializable {
 					}
 				}
 				else
-					return OUTSIDE_ON_MARS;	
+					return p.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
 			}
 		}
 		
@@ -94,7 +106,7 @@ public class LocationTag implements LocationState, Serializable {
 			//if (e.getSettlement() != null)
 			//	return e.getSettlement().getName();
 			else
-				return OUTSIDE_ON_MARS;		
+				return e.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
 		}
 		
 		else if (r != null) {
@@ -110,11 +122,24 @@ public class LocationTag implements LocationState, Serializable {
 					}
 				}
 				else
-					return OUTSIDE_ON_MARS;	
+					return r.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
 			}
 		}
 		else if (b != null) {
 			return b.getNickName() + " in " + b.getSettlement().getName();
+		}
+		
+		else if (v != null) {
+			if (v.getSettlement() != null) {
+				if (v.getBuildingLocation() != null) {
+					return v.getBuildingLocation().getNickName() + " in " + v.getSettlement().getName();
+				}
+				else {
+					return v.getSettlement().getName();
+				}
+			}
+			else
+				return v.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
 		}
 		
 		return UNKNOWN;

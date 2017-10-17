@@ -126,29 +126,34 @@ implements Serializable {
 		missionCapacity = Integer.MAX_VALUE;
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
-		// Created mission starting event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(startingMember, this, 
-				startingMember.getSettlement().getName(), EventType.MISSION_START);
+	    if (startingMember.getSettlement() != null) {
+	   		// Created mission starting event.
+	   		HistoricalEvent newEvent = new MissionHistoricalEvent(startingMember, this, 
+	   				startingMember.getSettlement().getName(), EventType.MISSION_START);
 
-        Simulation.instance().getEventManager().registerNewEvent(newEvent);
+	   		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+ 
+	        // Log mission starting.
+	        int n = members.size();
+	        String s = null;
+	        if (n == 0)
+	        	s = "' at ";
+	        else if (n == 1)
+	        	s = "' with 1 other at ";
+	        else
+	        	s = "' with " + n + " others at ";
 
-        // Log mission starting.
-        int n = members.size();
-        String s = null;
-        if (n == 0)
-        	s = "' at ";
-        else if (n == 1)
-        	s = "' with 1 other at ";
-        else
-        	s = "' with " + n + " others at ";
-        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-        		startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement() + ".", null);
+	        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+	        		startingMember.getName() + " started '" + missionName + s + startingMember.getSettlement() + ".", null);
 
-        // Add starting member to mission.
-        // 2015-11-01 Temporarily set the shift type to none during the mission
-        startingMember.setMission(this);
-        if (startingMember instanceof Person)
-        	startingMember.setShiftType(ShiftType.ON_CALL);
+	        // Add starting member to mission.
+	        // 2015-11-01 Temporarily set the shift type to none during the mission
+	        startingMember.setMission(this);
+
+	        if (startingMember instanceof Person)
+	        	startingMember.setShiftType(ShiftType.ON_CALL);
+
+	    }
 
 	}
 

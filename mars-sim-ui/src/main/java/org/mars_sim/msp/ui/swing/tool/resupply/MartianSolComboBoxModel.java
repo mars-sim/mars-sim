@@ -16,8 +16,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 public class MartianSolComboBoxModel
 extends DefaultComboBoxModel<Integer> {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	/** Data members. */
 	private int maxSolNum;
 

@@ -82,16 +82,14 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 public class ResupplyMissionEditingPanel
 extends TransportItemEditingPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private static final Integer[] EMPTY_STRING_ARRAY = new Integer[0];
 
 	// Data members
 	private String errorString = new String();
 	private boolean validation_result = true;
 	private Integer[] sols = new Integer[ResupplyUtil.MAX_NUM_SOLS_PLANNED];
-	private Number[] quantity = new Number[1000];
+	private Number[] quantity = new Number[100000];
+	//private Number[] amount = new Number[100000];
 	private Integer[] immigrants = new Integer[25];
 
 	private JComboBoxMW<Settlement> destinationCB;
@@ -296,9 +294,10 @@ extends TransportItemEditingPanel {
 		timeUntilArrivalPane.add(solInfoLabel);
 
 		// Create sol information label.
-		JLabel limit = new JLabel("  Note : cannot have more than one resupply per sol.");
-		limit.setEnabled(true);
-		arrivalDatePane.add(limit);
+		JLabel limitLabel = new JLabel("  Note : cannot have more than one resupply per sol.");
+		limitLabel.setEnabled(true);
+		limitLabel.setForeground(Color.ORANGE);
+		arrivalDatePane.add(limitLabel);
 
 		// 2016-01-14 Create error pane.
 		JPanel errorPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -347,9 +346,9 @@ extends TransportItemEditingPanel {
 		supplyTableModel = new SupplyTableModel(resupply) ;
 		supplyTable = new JTable(supplyTableModel) ;
 		TableStyle.setTableStyle(supplyTable);
-		supplyTable.getColumnModel().getColumn(0).setMaxWidth(120);
+		supplyTable.getColumnModel().getColumn(0).setMaxWidth(150);
 		supplyTable.getColumnModel().getColumn(0).setCellEditor(new CategoryCellEditor());
-		supplyTable.getColumnModel().getColumn(1).setMaxWidth(200);
+		supplyTable.getColumnModel().getColumn(1).setMaxWidth(250);
 		supplyTable.getColumnModel().getColumn(1).setCellEditor(new TypeCellEditor());
 		supplyTable.getColumnModel().getColumn(2).setMaxWidth(100);
 		supplyTable.getColumnModel().getColumn(2).setCellEditor(new QuantityCellEditor());

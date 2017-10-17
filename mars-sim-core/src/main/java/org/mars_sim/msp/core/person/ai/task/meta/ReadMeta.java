@@ -13,12 +13,9 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * Meta task for the Read task.
@@ -55,7 +52,6 @@ public class ReadMeta implements MetaTask, Serializable {
         	if (ls == LocationSituation.IN_VEHICLE)
         		result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
 
-
 	        // Effort-driven task modifier.
 	        //result *= person.getPerformanceRating();
 
@@ -65,7 +61,7 @@ public class ReadMeta implements MetaTask, Serializable {
                 result *= 1.5D;
             }
             else if (fav.equalsIgnoreCase("Tinkering")) {
-                result *= 1.2D;
+                result *= 1.1D;
             }
             else if (fav.equalsIgnoreCase("Lab Experimentation")) {
                 result *= 1.2D;
@@ -74,21 +70,27 @@ public class ReadMeta implements MetaTask, Serializable {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
-
-         	if (condition.getFatigue() > 750D)
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            
+         	if (fatigue > 750D)
          		result/=1.5;
-         	else if (condition.getFatigue() > 1500D)
+         	else if (fatigue > 1500D)
          		result/=2D;
-         	else if (condition.getFatigue() > 2000D)
+         	else if (fatigue > 2000D)
          		result/=3D;
-
-         	if (condition.getStress() > 45D)
+         	else
+         		result/=4D;
+         	
+         	if (stress > 45D)
          		result/=1.5;
-         	else if (condition.getStress() > 65D)
+         	else if (stress > 65D)
          		result/=2D;
-         	else if (condition.getStress() > 85D)
+         	else if (stress > 85D)
          		result/=3D;
-
+         	else
+         		result/=4D;
+         	
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {
                 result = result + result * person.getPreference().getPreferenceScore(this)/2D;
