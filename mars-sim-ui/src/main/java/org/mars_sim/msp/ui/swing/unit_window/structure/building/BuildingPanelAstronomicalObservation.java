@@ -25,9 +25,6 @@ import java.awt.event.ActionListener;
 public class BuildingPanelAstronomicalObservation
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private int currentObserversAmount;
 

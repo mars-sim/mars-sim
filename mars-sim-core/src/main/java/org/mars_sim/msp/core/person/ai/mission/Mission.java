@@ -66,7 +66,7 @@ implements Serializable {
 	/** The marginal factor for the amount of water to be brought during a mission. */
 	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle
 	/** The marginal factor for the amount of oxygen to be brought during a mission. */
-	public final static double OXYGEN_MARGIN = 2.8;
+	public final static double OXYGEN_MARGIN = 3.1;
 	/** The marginal factor for the amount of food to be brought during a mission. */
 	public final static double FOOD_MARGIN = 2.1;
 	/** The marginal factor for the amount of dessert to be brought during a mission. */
@@ -115,15 +115,12 @@ implements Serializable {
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
 		this.startingMember = startingMember;
-//		people = new ConcurrentLinkedQueue<Person>();
-//		robots = new ConcurrentLinkedQueue<Robot>();
 		members = new ConcurrentLinkedQueue<MissionMember>();
 		done = false;
 		phase = null;
 		phaseDescription = null;
 		phases = new ArrayList<MissionPhase>();
 		phaseEnded = false;
-//		this.minPeople = minPeople;
 		this.minMembers = minMembers;
 		missionCapacity = Integer.MAX_VALUE;
 		
@@ -151,7 +148,7 @@ implements Serializable {
 	        	str = "' with " + n + " others.";
 
 	        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-	        		"[" + s + "] " + startingMember.getName() + " started '" + missionName + str, null);
+	        		"[" + s + "] " + startingMember.getName() + " started a " + missionName + " mission" + str, null);
 
 	        // Add starting member to mission.
 	        // 2015-11-01 Temporarily set the shift type to none during the mission
@@ -232,41 +229,6 @@ implements Serializable {
 		return missionName;
 	}
 
-//	/**
-//	 * Adds a person to the mission.
-//	 * @param person to be added
-//	 */
-//	public final void addPerson(Person person) {
-//		if (!people.contains(person)) {
-//			people.add(person);
-//
-//			// Creating mission joining event.
-//			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_JOINING);
-//			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-//
-//			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, person);
-//
-//			logger.finer(person.getName() + " added to mission: " + name);
-//		}
-//	}
-//
-//	/**
-//	 * Adds a robot to the mission.
-//	 * @param robot to be added
-//	 */
-//	public final void addRobot(Robot robot) {
-//		if (!robots.contains(robot)) {
-//			robots.add(robot);
-//
-//			// Creating mission joining event.
-//			HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_JOINING);
-//			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-//
-//			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, robot);
-//
-//			logger.finer(robot.getName() + " added to mission: " + name);
-//		}
-//	}
 
 	public final void addMember(MissionMember member) {
 	    if (!members.contains(member)) {
@@ -282,51 +244,6 @@ implements Serializable {
             logger.finer(member.getName() + " added to mission: " + missionName);
 	    }
 	}
-
-//	/**
-//	 * Removes a person from the mission.
-//	 * @param person to be removed
-//	 */
-//	public final void removePerson(Person person) {
-//		if (people.contains(person)) {
-//			people.remove(person);
-//
-//			// Creating missing finishing event.
-//			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_FINISH);
-//			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-//
-//			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, person);
-//
-//			if ((people.size() == 0) && !done) {
-//				endMission("Not enough members.");
-//			}
-//
-//			logger.finer(person.getName() + " removed from mission: " + name);
-//		}
-//	}
-//
-//
-//	/**
-//	 * Removes a person from the mission.
-//	 * @param person to be removed
-//	 */
-//	public final void removeRobot(Robot robot) {
-//		if (robots.contains(robot)) {
-//			robots.remove(robot);
-//
-//			// Creating missing finishing event.
-//			HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_FINISH);
-//			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-//
-//			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, robot);
-//
-//			if ((robots.size() == 0) && !done) {
-//				endMission("Not enough members.");
-//			}
-//
-//			logger.finer(robot.getName() + " removed from mission: " + name);
-//		}
-//	}
 
 	/**
      * Removes a member from the mission.
@@ -759,12 +676,13 @@ implements Serializable {
 			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 			
 			if (startingMember.getSettlement() != null)
-			    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-						startingMember.getName() + " ended the '" + missionName + "' at "  
- 			    		+ startingMember.getSettlement() + ". Reason : " + reason, null);
+			    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,  
+				        "[" + startingMember.getSettlement() + "] " + startingMember.getName() + " ended the " 
+				        + missionName + " mission. Reason : " + reason, null);
 			else
-			    LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-		        		startingMember.getName() + " ended the '" + missionName + ". Reason : " + reason, null);
+			    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+			    		startingMember.getName() + " ended the " 
+			    		+ missionName + " mission. Reason : " + reason, null);
 
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
@@ -773,24 +691,11 @@ implements Serializable {
 			if (members != null) {
 				if (!members.isEmpty()) {	
 				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-				    		"Mission members removed : " + members, null);
+				    	"[" + startingMember.getSettlement() + "] " + "Mission members removed : " + members, null);
 				    Iterator<MissionMember> i = members.iterator();
 					while (i.hasNext()) {
 	                    removeMember(i.next());
-                  
-/*	                    
-	                    if (o instanceof Person) {
-	        		        Person person = (Person) o;
-	        		        person.setMission(null);
-	        				//performDisembarkToSettlementPhase(person, person.getAssociatedSettlement());
-		                    //person.getAssociatedSettlement().getInventory().storeUnit(person);
-	        		    }
-	                    
-	                    //else if (o instanceof Robot) {
-	                    //	Robot robot = (Robot) o;
-	                    	//robot.getAssociatedSettlement().getInventory().storeUnit(robot);
-	        		    //}
-*/
+
 	                }
 				}
 			}
@@ -799,7 +704,8 @@ implements Serializable {
 		}
 		else
 		    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-	        		"Calling endMission() to the '" + missionName + " initiated by " + startingMember.getName() 
+		    		"[" + startingMember.getSettlement() + "] " + startingMember.getName()  
+		    		+ " is calling endMission() to end the " + missionName 
 	        		+ ". Reason : '" + reason + "'", null);
 	}
 
@@ -969,120 +875,6 @@ implements Serializable {
         }
     }
 
-//	/**
-//	 * Recruits new people into the mission.
-//	 * @param startingPerson the person starting the mission.
-//	 */
-//	protected void recruitPeopleForMission(Person startingPerson) {
-//
-//		int count = 0;
-//		while (count < 4) {
-//			count++;
-//
-//			// Get all people qualified for the mission.
-//			Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
-//			Iterator <Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
-//			while (i.hasNext()) {
-//				Person person = i.next();
-//				if (isCapableOfMission(person)) {
-//					qualifiedPeople.add(person);
-//				}
-//			}
-//
-//			// Recruit the most qualified and most liked people first.
-//			try {
-//				while (qualifiedPeople.size() > 0) {
-//					double bestPersonValue = 0D;
-//					Person bestPerson = null;
-//					Iterator<Person> j = qualifiedPeople.iterator();
-//					while (j.hasNext() && (getPeopleNumber() < missionCapacity)) {
-//						Person person = j.next();
-//						// Determine the person's mission qualification.
-//						double qualification = getMissionQualification(person) * 100D;
-//
-//						// Determine how much the recruiter likes the person.
-//						RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-//						double likability = relationshipManager.getOpinionOfPerson(startingPerson, person);
-//
-//						// Check if person is the best recruit.
-//						double personValue = (qualification + likability) / 2D;
-//						if (personValue > bestPersonValue) {
-//							bestPerson = person;
-//							bestPersonValue = personValue;
-//						}
-//					}
-//
-//					// Try to recruit best person available to the mission.
-//					if (bestPerson != null) {
-//						recruitPerson(startingPerson, bestPerson);
-//						qualifiedPeople.remove(bestPerson);
-//					}
-//					else break;
-//				}
-//			}
-//			catch (Exception e) {
-//				e.printStackTrace(System.err);
-//			}
-//		}
-//
-//		if (getPeopleNumber() < minPeople) endMission("Not enough members");
-//	}
-
-//	protected void recruitRobotsForMission(Robot startingRobot) {
-//
-//		int count = 0;
-//		while (count < 4) {
-//			count++;
-//
-//			// Get all people qualified for the mission.
-//			Collection<Robot> qualifiedRobots = new ConcurrentLinkedQueue<Robot>();
-//			Iterator <Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
-//			while (i.hasNext()) {
-//				Robot robot = i.next();
-//				if (isCapableOfMission(robot)) {
-//					qualifiedRobots.add(robot);
-//				}
-//			}
-//
-//			// Recruit the most qualified and most liked people first.
-//			try {
-//				while (qualifiedRobots.size() > 0) {
-//					double bestRobotValue = 0D;
-//					Robot bestRobot = null;
-//					Iterator<Robot> j = qualifiedRobots.iterator();
-//					while (j.hasNext() && (getRobotsNumber() < missionCapacity)) {
-//						Robot robot = j.next();
-//						// Determine the person's mission qualification.
-//						double qualification = getMissionQualification(robot) * 100D;
-//
-//						// Determine how much the recruiter likes the person.
-//						//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-//						//double likability = relationshipManager.getOpinionOfPerson(startingPerson, person);
-//
-//						// Check if robot is the best recruit.
-//						double robotValue = qualification ;
-//						if (robotValue > bestRobotValue) {
-//							bestRobot = robot;
-//							bestRobotValue = robotValue;
-//					}
-//					}
-//
-//					// Try to recruit best person available to the mission.
-//					if (bestRobot != null) {
-//						recruitRobot(startingRobot, bestRobot);
-//						qualifiedRobots.remove(bestRobot);
-//					}
-//					else break;
-//				}
-//			}
-//			catch (Exception e) {
-//				e.printStackTrace(System.err);
-//			}
-//		}
-//
-//		if (getRobotsNumber() < minRobots) endMission("Not enough members");
-//	}
-
 	/**
 	 * Attempt to recruit a new person into the mission.
 	 * @param recruiter the mission member doing the recruiting.
@@ -1133,33 +925,7 @@ implements Serializable {
 			}
 		}
 	}
-//	private void recruitRobot(Robot recruiter, Robot recruitee) {
-//		if (isCapableOfMission(recruitee)) {
-//			// Get mission qualification modifier.
-//			double qualification = getMissionQualification(recruitee) * 100D;
-//
-//			//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-//
-//			// Get the recruitee's social opinion of the recruiter.
-//			//double recruiterLikability = relationshipManager.getOpinionOfRobot(recruitee, recruiter);
-//
-//			// Get the recruitee's average opinion of all the current mission members.
-//			//double groupLikability = relationshipManager.getAverageOpinionOfRobot(recruitee, people);
-//
-//			double recruitmentChance = qualification;
-//			if (recruitmentChance > 100D) {
-//				recruitmentChance = 100D;
-//			}
-//			else if (recruitmentChance < 0D) {
-//				recruitmentChance = 0D;
-//			}
-//
-//			if (RandomUtil.lessThanRandPercent(recruitmentChance)) {
-//				recruitee.getBotMind().setMission(this);
-//			}
-//		}
-//	}
-
+	
 	/**
      * Checks to see if a member is capable of joining a mission.
      * @param member the member to check.
@@ -1208,35 +974,6 @@ implements Serializable {
         return result;
     }
 
-//	/**
-//	 * Checks to see if a person is capable of joining a mission.
-//	 * @param person the person to check.
-//	 * @return true if person could join mission.
-//	 */
-//	protected boolean isCapableOfMission(Person person) {
-//		if (person == null) throw new IllegalArgumentException("person is null");
-//
-//		// Make sure person isn't already on a mission.
-//		if (person.getMind().getMission() == null) {
-//			// Make sure person doesn't have any serious health problems.
-//			if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-//				return true;
-//			}
-//		}
-//
-//		return false;
-//	}
-//	protected boolean isCapableOfMission(Robot robot) {
-//		if (robot == null) throw new IllegalArgumentException("robot is null");
-//
-//		// Make sure robot isn't already on a mission.
-//		if (robot.getBotMind().getMission() == null) {
-//			// Make sure robot doesn't have any serious health problems.
-//			if (!robot.getPhysicalCondition().hasSeriousMedicalProblems())
-//				return true;
-//		}
-//		return false;
-//	}
 
     /**
      * Gets the mission qualification value for the member.
@@ -1273,44 +1010,6 @@ implements Serializable {
 
         return result;
     }
-
-//	/**
-//	 * Gets the mission qualification value for the person.
-//	 * Person is qualified and interested in joining the mission if the value is larger than 0.
-//	 * The larger the qualification value, the more likely the person will be picked for the mission.
-//	 * @param person the person to check.
-//	 * @return mission qualification value.
-//	 * @throws MissionException if error determining mission qualification.
-//	 */
-//	protected double getMissionQualification(Person person) {
-//
-//		double result = 0D;
-//
-//		if (isCapableOfMission(person)) {
-//			// Get base result for job modifier.
-//			Job job = person.getMind().getJob();
-//			if (job != null) {
-//				result = job.getJoinMissionProbabilityModifier(this.getClass());
-//			}
-//		}
-//
-//		return result;
-//	}
-//
-//	protected double getMissionQualification(Robot robot) {
-//
-//		double result = 0D;
-//
-//		if (isCapableOfMission(robot)) {
-//			// Get base result for job modifier.
-//			RobotJob job = robot.getBotMind().getRobotJob();
-//			if (job != null) {
-//				result = job.getJoinMissionProbabilityModifier(this.getClass());
-//			}
-//		}
-//
-//		return result;
-//	}
 
 	/**
 	 * Checks if the current phase has ended or not.

@@ -56,9 +56,6 @@ import com.jidesoft.swing.TableSearchable;
 public class TabPanelPowerGrid
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private static final String kW = " kW";
 	private static final String kWh = " kWh";
 	private static final String PERCENT_PER_SOL = " % per sol";

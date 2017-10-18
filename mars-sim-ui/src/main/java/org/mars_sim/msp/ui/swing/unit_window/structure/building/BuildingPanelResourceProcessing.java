@@ -27,9 +27,6 @@ import java.util.List;
 public class BuildingPanelResourceProcessing
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private ResourceProcessing processor;
 	private List<JLabel> processLabels;

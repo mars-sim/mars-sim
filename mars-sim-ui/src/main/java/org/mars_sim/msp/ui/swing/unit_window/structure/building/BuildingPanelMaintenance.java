@@ -27,9 +27,6 @@ import java.util.Map;
 public class BuildingPanelMaintenance
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
 	/** Cached value for the wear condition. */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * ScienceTabPanel.java
- * @version 3.07 2014-12-01
+ * TabPanelScience.java
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -53,9 +53,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  */
 public class TabPanelScience
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private JButton scienceToolButton;

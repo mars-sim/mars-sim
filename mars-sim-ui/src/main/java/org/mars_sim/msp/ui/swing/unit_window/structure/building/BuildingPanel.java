@@ -68,9 +68,6 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPan
 public class BuildingPanel
 extends JPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
     private static final Logger logger = Logger.getLogger(BuildingPanel.class.getName());
 
 	/** The name of the panel. */

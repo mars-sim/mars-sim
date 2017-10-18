@@ -1022,7 +1022,7 @@ implements Serializable {
 		            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		            if (RandomUtil.lessThanRandPercent(chance * time)) {
-		                logger.fine(person.getName() + " has accident during an EVA.");
+		                logger.info(person.getName() + " has an accident during an EVA.");
 		                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA", person);
 		            }
 		        }

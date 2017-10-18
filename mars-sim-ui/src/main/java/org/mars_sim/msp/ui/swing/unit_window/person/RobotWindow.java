@@ -18,9 +18,6 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 public class RobotWindow
 extends UnitWindow {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** Is robot inoperable? */
 	private boolean inoperableCache = false;
 

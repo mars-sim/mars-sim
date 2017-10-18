@@ -31,9 +31,6 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 public class BuildingPanelMedicalCare
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	/** The medical care. */
 	private MedicalCare medical;

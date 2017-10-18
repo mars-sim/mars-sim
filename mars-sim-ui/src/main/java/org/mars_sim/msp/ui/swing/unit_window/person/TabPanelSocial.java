@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
- * SocialTabPanel.java
- * @version 3.07 2014-12-06
-
+ * TabPanelSocial.java
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -19,21 +18,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.ui.javafx.MainScene;
+
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -44,9 +39,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelSocial
 extends TabPanel
 implements ListSelectionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private JTable relationshipTable;

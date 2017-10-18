@@ -27,8 +27,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 public class BuildingPanelThermal
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	// default logger.
 	//private static Logger logger = Logger.getLogger(BuildingPanelThermal.class.getName());
 

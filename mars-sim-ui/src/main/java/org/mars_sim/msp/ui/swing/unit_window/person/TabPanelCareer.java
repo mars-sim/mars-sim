@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelCareer.java
- * @version 3.08 2015-06-16
+ * @version 3.1.0 2017-10-18
  * @author Manny KUng
  */
 
@@ -17,11 +17,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -49,12 +47,9 @@ import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -70,8 +65,6 @@ implements ActionListener {
 
 	private static Logger logger = Logger.getLogger(TabPanelCareer.class.getName());
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	private static final int RATING_DAYS = 7;
 
 	/** data cache */

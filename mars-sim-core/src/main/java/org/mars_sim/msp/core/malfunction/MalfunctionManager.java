@@ -540,7 +540,8 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
         	LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-        			entity.getNickName() + " is behind on maintenance.  "
+        			"[" + entity.getLocationName() + "] "
+        			+ entity.getNickName() + " is behind on maintenance.  "
 					+ "Time since last check-up: " + solsLastMaint
 					+ " sols.  Condition: " + wearCondition + " %.", null);
 			selectMalfunction();
@@ -673,7 +674,7 @@ implements Serializable {
 	 * @param s the place of accident
 	 */
 	public void createASeriesOfMalfunctions(String s, Robot r) {
-		handleStringTypeOne(s);
+		handleStringTypeOne(s, r);
 		determineNumOfMalfunctions();
 	}
 	
@@ -682,12 +683,12 @@ implements Serializable {
 	 * @param s the place of accident
 	 */
 	public void createASeriesOfMalfunctions(String s, Person p) {
-		handleStringTypeOne(s);
+		handleStringTypeOne(s, p);
     	int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		determineNumOfMalfunctions(nervousness);
 	}
 	
-	public void handleStringTypeOne(String s) {
+	public void handleStringTypeOne(String s, Unit u) {
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
 
 		if (s.contains("EVA")) {
@@ -702,8 +703,16 @@ implements Serializable {
 				sb.insert(0, "in a ");
 		}
 
+		String loc = "";
+		if (u.getSettlement() != null)
+			loc = u.getSettlement().getName();
+		else if (u.getVehicle() != null)
+			loc = u.getVehicle().getName();
+		else
+			loc = "At " + u.getCoordinates().getFormattedString();
+		
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-    			"An accident occurs " + sb.toString() + ".", null);
+    			"[" + loc + "] An accident occurs " + sb.toString() + ".", null);
 
 	}
 	
@@ -741,6 +750,7 @@ implements Serializable {
 		}
 
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+    			//"[" + entity.getLocationName() + "] "
     			"An accident occurs " + sb.toString() + ".", null);
 
 	}

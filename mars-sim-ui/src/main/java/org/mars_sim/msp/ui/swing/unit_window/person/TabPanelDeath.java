@@ -33,9 +33,6 @@ public class TabPanelDeath
 extends TabPanel
 implements ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private JTextField causeTF, timeTF, malTF;
 
 	/**

@@ -45,9 +45,6 @@ public class TabPanelBuildings
 extends TabPanel
 implements ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private DefaultComboBoxModel<Building> comboBoxModel;
 	private JComboBoxMW<Building> comboBox;
 	private List<Building> buildingsCache;

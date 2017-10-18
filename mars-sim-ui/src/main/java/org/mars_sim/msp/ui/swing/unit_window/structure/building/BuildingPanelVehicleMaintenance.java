@@ -29,9 +29,6 @@ public class BuildingPanelVehicleMaintenance
 extends BuildingFunctionPanel
 implements MouseListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private VehicleMaintenance garage;
 	private JLabel vehicleNumberLabel;
 	private int vehicleNumberCache = 0;

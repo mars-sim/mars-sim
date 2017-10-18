@@ -21,9 +21,6 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoo
  */
 public class SettlementUnitWindow extends UnitWindow {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/**
      * Constructor
      *

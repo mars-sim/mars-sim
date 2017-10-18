@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MaintenanceTabPanel.java
- * @version 3.07 2015-03-06
+ * TabPanelMaintenance.java
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -39,9 +39,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 public class TabPanelMaintenance
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private Settlement settlement;
 	private List<Building> buildingsList;

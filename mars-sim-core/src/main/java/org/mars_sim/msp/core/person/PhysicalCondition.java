@@ -353,19 +353,23 @@ implements Serializable {
 	        try {
 
 	            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
-	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient oxygen.", null);
+	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+	            		"[" + person.getSettlement() + "] " + name + " has insufficient oxygen.", null);
 	            //if (consumeWater(support, h2o_consumption * (time / 1000D)))
 	            //	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has insufficient water.", null);
 	            if (requireAirPressure(support, minimum_air_pressure))
-	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " is under insufficient air pressure.", null);
+	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+	            		"[" + person.getSettlement() + "] " + name + " is under insufficient air pressure.", null);
 	            if (requireTemperature(support, min_temperature, max_temperature))
-	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " cannot survive long at this extreme temperature.", null);
+	            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+	            		"[" + person.getSettlement() + "] " + name + " cannot survive long at this extreme temperature.", null);
 	            
 	            //TODO: how to run to another building/location
 	        }
 	        catch (Exception e) {
                 e.printStackTrace();
-	            LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + "'s life support system is failing !", null);
+	            LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+	            	"[" + person.getSettlement() + "] " + name + "'s life support system is failing !", null);
 	        }
 	    	
 	        radiation.timePassing(time);
@@ -808,7 +812,8 @@ implements Serializable {
                     		inclination_factor = inclination_factor - .05;
                     	addMedicalComplaint(panicAttack);
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                        logger.info(name + " suffers from a panic attack.");
+                        LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                            	"[" + person.getSettlement() + "] " + name + " suffers from a panic attack.", null);
 
                     }
                     else
@@ -821,7 +826,8 @@ implements Serializable {
                     		inclination_factor = inclination_factor + .05;
                     	addMedicalComplaint(depression);
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                        logger.info(name + " has an episode of depression.");
+                        LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                            	"[" + person.getSettlement() + "] " + name + " has an episode of depression.", null);
                     }
                     else
                     	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
@@ -858,7 +864,9 @@ implements Serializable {
                 if (highFatigue != null) {
                     addMedicalComplaint(highFatigue);
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                    logger.info(name + " collapses because of high fatigue exhaustion.");
+                    LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                        	"[" + person.getSettlement() + "] " + name + " collapses because of high fatigue exhaustion.", null);
+                    
                 }
                 else
                 	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
@@ -901,7 +909,8 @@ implements Serializable {
                     		ailment = "an " + ailment.toLowerCase();
                     	else
                     		ailment = "a " + ailment.toLowerCase();
-                        logger.info(person + " comes down with " + ailment);
+                        LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                        		"[" + person.getSettlement() + "] " + person + " comes down with " + ailment + ".", null);
                         addMedicalComplaint(complaint);
                         result.add(complaint);
                     }
@@ -920,28 +929,41 @@ implements Serializable {
             HealthProblem problem = new HealthProblem(complaint, person);
             problems.put(complaint, problem);
             String n = complaint.getType().getName().toLowerCase();
+            String prefix = "";
+            String phrase = "";
+            String suffix = ".";
+            
+            LocationSituation ls = person.getLocationSituation();
+            
+        	if (LocationSituation.IN_SETTLEMENT == ls) {
+        		prefix = "[" + person.getSettlement() + "] ";
+        		suffix = " in " + person.getBuildingLocation() + ".";
+        	}
+        	else if (LocationSituation.IN_VEHICLE == ls) {
+        		prefix = "[" + person.getSettlement() + "] ";
+        	}
+        	else if (LocationSituation.OUTSIDE == ls) {
+        		prefix = "[At " + person.getCoordinates().getFormattedString() + "] ";
+        	}
+        		
             if (n.equalsIgnoreCase("starvation"))
-                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                		person + " is starving in " + person.getAssociatedSettlement(), null);            	
+            	phrase = " is starving" ;            	
             else if (n.equalsIgnoreCase("decompression"))
-                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                		person + " is suffering from decompression in " + person.getAssociatedSettlement(), null);   
+            	phrase = " is suffering from decompression";  
             else if (n.equalsIgnoreCase("dehydration"))
-                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                		person + " is suffering from dehydration in " + person.getAssociatedSettlement(), null); 
+            	phrase = " is suffering from dehydration"; 
             else if (n.equalsIgnoreCase("freezing"))
-                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                		person + " is freezing in " + person.getAssociatedSettlement(), null); 
+            	phrase = " is freezing"; 
             else if (n.equalsIgnoreCase("heat stroke"))
-                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                		person + " is suffering from a heat stroke in " + person.getAssociatedSettlement(), null);     
+            	phrase = " is suffering from a heat stroke";     
             else if (n.equalsIgnoreCase("suffocation"))
-                LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                		person + " is suffocating in " + person.getAssociatedSettlement(), null); 
+            	phrase = " is suffocating" ; 
             else
-            	LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-            		person + " is complaining about the " + n + " in " + person.getAssociatedSettlement(), null);
+            	phrase = " is complaining about the " + n ;
 
+        	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+                	prefix + person + phrase + suffix , null); 
+        	
             recalculatePerformance();
         }
     }

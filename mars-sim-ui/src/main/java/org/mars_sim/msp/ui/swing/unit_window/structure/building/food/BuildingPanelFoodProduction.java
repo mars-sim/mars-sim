@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * FoodProductionBuildingPanel.java
- * @version 3.07 2015-01-01
+ * BuildingPanelFoodProduction.java
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 
@@ -37,7 +37,6 @@ import javax.swing.JScrollPane;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
-import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -54,9 +53,6 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunction
 public class BuildingPanelFoodProduction
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-	
 	private static int processStringWidth = 40;
 
 	/** default logger. */

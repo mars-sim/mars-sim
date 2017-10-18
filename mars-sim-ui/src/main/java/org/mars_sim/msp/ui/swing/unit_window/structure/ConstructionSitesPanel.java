@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSitesPanel.java
- * @version 3.08 2015-03-19
-
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -22,10 +21,7 @@ import java.util.List;
  * A panel displaying a list of construction sites at a settlement.
  */
 public class ConstructionSitesPanel extends JPanel {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+  
     // Data members
     private ConstructionManager manager;
     private List<ConstructionSite> sitesCache;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFoodProduction.java
- * @version 3.07 2015-01-10
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -59,9 +59,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  */
 public class TabPanelFoodProduction
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
@@ -146,9 +143,9 @@ extends TabPanel {
 		// 2014-12-01 Added sorting
 		Collections.sort(buildingComboBoxCache);
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
-		buildingComboBox.setOpaque(false);
-		buildingComboBox.setBackground(new Color(51,25,0,128));
-		buildingComboBox.setForeground(Color.orange);
+		//buildingComboBox.setOpaque(false);
+		//buildingComboBox.setBackground(new Color(51,25,0,128));
+		//buildingComboBox.setForeground(Color.orange);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
 		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
@@ -164,9 +161,9 @@ extends TabPanel {
 		Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
-		processSelection.setOpaque(false);
-		processSelection.setBackground(new Color(51,25,0,128));
-		processSelection.setForeground(Color.ORANGE);
+		//processSelection.setOpaque(false);
+		//processSelection.setBackground(new Color(51,25,0,128));
+		//processSelection.setForeground(Color.ORANGE);
 		// 2014-12-01 Modified FoodProductionSelectionListCellRenderer() & Added setSelectedIndex(-1)
 		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setSelectedIndex(-1);
@@ -177,9 +174,9 @@ extends TabPanel {
 		newProcessButton = new JButton(Msg.getString("TabPanelFoodProduction.button.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.createNewProcess")); //$NON-NLS-1$
-        newProcessButton.setOpaque(false);
-        newProcessButton.setBackground(new Color(51,25,0,128));
-        newProcessButton.setForeground(Color.ORANGE);
+        //newProcessButton.setOpaque(false);
+        //newProcessButton.setBackground(new Color(51,25,0,128));
+        //newProcessButton.setForeground(Color.ORANGE);
 		newProcessButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {

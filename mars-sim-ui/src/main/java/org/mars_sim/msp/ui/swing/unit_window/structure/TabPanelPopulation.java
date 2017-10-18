@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.Color;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -46,8 +46,6 @@ public class TabPanelPopulation
 extends TabPanel
 implements MouseListener, ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private JLabel populationNumLabel;
 	private JLabel populationCapLabel;

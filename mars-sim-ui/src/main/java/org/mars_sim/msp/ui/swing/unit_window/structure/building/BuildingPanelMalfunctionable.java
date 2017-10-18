@@ -28,9 +28,6 @@ import java.util.Iterator;
 public class BuildingPanelMalfunctionable
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
 	/** List of malfunction panels. */

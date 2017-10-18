@@ -47,9 +47,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelWeather
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 12L;
-
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
 	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$

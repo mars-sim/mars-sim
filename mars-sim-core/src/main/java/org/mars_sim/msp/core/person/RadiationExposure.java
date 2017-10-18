@@ -196,13 +196,13 @@ public class RadiationExposure implements Serializable {
 	// randomize dose at the start of the sim when a settler arrives on Mars
 	private double [][] dose;
 
-	private MarsClock marsClock;
-	//private static MasterClock masterClock;
 	private RadiationEvent event;
 
 	//private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
 	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
 
+	private static MarsClock marsClock;
+		
 	@SuppressWarnings("unused")
 	private PhysicalCondition condition;
 	private Person person;
@@ -467,12 +467,14 @@ public class RadiationExposure implements Serializable {
     		if (totalExposure > 0) {
 	    		if (person.getSettlement() != null)
 				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-				    		person.getName() + " was exposed to " + exposure
+				    	"[" + person.getSettlement().toString() + "] " 
+				    	+ person.getName() + " was exposed to " + exposure
     	    			+ " mSv dose of radiation" //in body region " + i
     	    			+ " during an EVA operation near " + person.getSettlement(), null);
 	    		else if (person.getMind().getMission() != null)
 	    			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	    					person.getName() + " was exposed to " + exposure
+	    				"[At " + person.getCoordinates().getFormattedString() + "] "
+	    				+ person.getName() + " was exposed to " + exposure
     	    			+ " mSv dose of radiation" // in body region " + i
     	    			+ " during " + person.getMind().getMission().getName(), null);
 

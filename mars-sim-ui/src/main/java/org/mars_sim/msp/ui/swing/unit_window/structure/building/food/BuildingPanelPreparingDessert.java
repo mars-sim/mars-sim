@@ -22,9 +22,6 @@ import java.awt.*;
 public class BuildingPanelPreparingDessert
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Domain members
 	private PreparingDessert kitchen;
 	/** The number of cooks label. */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelPersonality.java
- * @version 3.1.0 2016-11-05
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -389,15 +389,6 @@ extends TabPanel {
 	
 	public void createSwingGUI() {
 		
-		// Create general label panel.
-		//JPanel generalLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//LEFT));
-		//topContentPanel.add(generalLabelPanel);
-
-		// Prepare general label
-		//JLabel generalLabel = new JLabel(Msg.getString("TabPanelPersonality.label"), JLabel.CENTER); //LEFT)); //$NON-NLS-1$
-		//generalLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//generalLabelPanel.add(generalLabel);
-
 		// Prepare info panel.
 		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 0, 0));//FlowLayout(FlowLayout.LEFT));//
 		infoPanel.setBorder(new MarsPanelBorder());

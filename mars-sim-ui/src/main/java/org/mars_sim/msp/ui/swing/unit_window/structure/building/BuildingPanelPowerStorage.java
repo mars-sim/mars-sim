@@ -23,9 +23,6 @@ import java.text.DecimalFormat;
 public class BuildingPanelPowerStorage
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private static final String kWh = " kWh";
 	
 	// Data members
@@ -70,29 +67,29 @@ extends BuildingFunctionPanel {
 		add(springPanel, BorderLayout.CENTER);
 		
 		// Create capacity label.
-		capacityCache = storage.getCurrentMaxCapacity();
+		capacityCache = Math.round(storage.getCurrentMaxCapacity() *10.0)/10.0;;
 		capacityLabel = new JLabel(
 				Msg.getString("BuildingPanelPowerStorage.cap"), //$NON-NLS-1$
 				JLabel.CENTER);		
 		springPanel.add(capacityLabel);
 		
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		storedTF = new JTextField(formatter.format(capacityCache) + kWh);
-		storedTF.setEditable(false);
-		storedTF.setColumns(7);
-		storedTF.setPreferredSize(new Dimension(120, 25));
-		wrapper1.add(storedTF);
+		capTF = new JTextField(formatter.format(capacityCache) + kWh);
+		capTF.setEditable(false);
+		capTF.setColumns(7);
+		capTF.setPreferredSize(new Dimension(120, 25));
+		wrapper1.add(capTF);
 		springPanel.add(wrapper1);
 		
 		// Create stored label.
-		storedCache = storage.getkWattHourStored();
+		storedCache = Math.round(storage.getkWattHourStored() *10.0)/10.0;;
 		storedLabel = new JLabel(
 				Msg.getString("BuildingPanelPowerStorage.stored"), //$NON-NLS-1$
 				JLabel.CENTER);
 		springPanel.add(storedLabel);
 		
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		storedTF = new JTextField(formatter.format(storedCache) + kWh);
+		storedTF = new JTextField(storedCache + kWh);
 		storedTF.setEditable(false);
 		storedTF.setColumns(7);
 		storedTF.setPreferredSize(new Dimension(120, 25));
@@ -109,17 +106,17 @@ extends BuildingFunctionPanel {
 	public void update() {
 
 		// Update capacity label if necessary.
-		double newCapacity = storage.getCurrentMaxCapacity();
+		double newCapacity = Math.round(storage.getCurrentMaxCapacity() *10.0)/10.0;
 		if (capacityCache != newCapacity) {
 			capacityCache = newCapacity;
-			capTF.setText(formatter.format(capacityCache) + kWh);
+			capTF.setText(capacityCache + kWh);
 		}
 
 		// Update stored label if necessary.
-		double newStored = storage.getkWattHourStored();
+		double newStored = Math.round(storage.getkWattHourStored() *10.0)/10.0;
 		if (storedCache != newStored) {
 			storedCache = newStored;
-			storedTF.setText(formatter.format(storedCache) + kWh);
+			storedTF.setText(storedCache + kWh);
 		}    
 	}
 	

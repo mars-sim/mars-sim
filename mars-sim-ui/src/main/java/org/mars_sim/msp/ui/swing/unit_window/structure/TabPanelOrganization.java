@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
- * TabPanelStructure.java
- * @version 3.08 2015-04-28
+ * TabPanelOrganization.java
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -55,8 +54,6 @@ import com.jidesoft.swing.TreeSearchable;
 public class TabPanelOrganization
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private Settlement settlement;
 

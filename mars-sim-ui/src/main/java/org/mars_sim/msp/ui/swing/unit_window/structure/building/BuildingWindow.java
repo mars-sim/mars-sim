@@ -21,9 +21,6 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  */
 public class BuildingWindow extends UnitWindow {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	//private boolean salvaged;
 

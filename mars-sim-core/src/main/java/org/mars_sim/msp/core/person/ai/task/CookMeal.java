@@ -138,7 +138,7 @@ implements Serializable {
 */
 
 				String newLog = "[" + person.getSettlement().getName() + "] " + person + " cannot cook any meals "
-	            		+ " because none of the ingredients are available.";
+	            		+ "because none of the ingredients are available.";
 
 				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, newLog, null);
 

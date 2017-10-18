@@ -36,9 +36,6 @@ import com.jidesoft.swing.TableSearchable;
 public class TabPanelGoods
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private JTable goodsTable;
 	private GoodsTableModel goodsTableModel;

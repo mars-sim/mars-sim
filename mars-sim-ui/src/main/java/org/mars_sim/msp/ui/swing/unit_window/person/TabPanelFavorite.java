@@ -48,9 +48,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelFavorite
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private JTable table;
 	private PreferenceTableModel tableModel;
 	private BalloonToolTip balloonToolTip = new BalloonToolTip();

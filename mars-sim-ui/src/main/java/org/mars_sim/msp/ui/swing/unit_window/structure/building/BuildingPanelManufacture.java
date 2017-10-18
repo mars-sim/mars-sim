@@ -57,9 +57,6 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
 public class BuildingPanelManufacture
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
 	

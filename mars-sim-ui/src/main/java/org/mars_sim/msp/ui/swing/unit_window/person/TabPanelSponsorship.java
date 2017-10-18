@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelSponsorship.java
- * @version 3.1.0 2017-02-14
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,9 +30,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  */
 public class TabPanelSponsorship
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.

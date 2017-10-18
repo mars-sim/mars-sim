@@ -889,14 +889,13 @@ implements Serializable {
         }
 
         // Check if there are enough resources at the settlement.
-        Iterator<Resource> iR = resources.keySet().iterator();
-        while (iR.hasNext()) {
-        	Resource resource = iR.next();
-        	if (resource instanceof AmountResource) {
-
+        //Iterator<Resource> iR = resources.keySet().iterator();
+        //while (iR.hasNext()) {
+        for (Resource resource : resources.keySet()) {//= iR.next();
+        	if (resource instanceof AmountResource) {       		
         		// 2015-03-09 Added all desserts to the matching test
         	 	boolean isDessert = false;
-            	double amountDessertLoaded = 0;
+             	double amountDessertLoaded = 0;
             	double totalAmountDessertStored = 0;
         		double settlementDessertNeed = 0;
         		double amountDessertNeeded = (Double) resources.get(resource);
@@ -938,7 +937,8 @@ implements Serializable {
 	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, resource.getName() 
 	        						+ " needed: " + Math.round(totalNeeded*10.0)/10.0 
 	        						+ " stored: " + Math.round(stored*10.0)/10.0 , null);
-	        			enoughSupplies = false;
+	        			//enoughSupplies = false;
+	        			return false;
 	        		}
                 }
         	}
@@ -954,7 +954,8 @@ implements Serializable {
         			if (logger.isLoggable(Level.INFO))
         				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, resource.getName() 
         						+ " needed: " + totalNeeded + " stored: " + stored, null);
-        			enoughSupplies = false;
+        			//enoughSupplies = false;
+        			return false;
         		}
         	}
         	else throw new IllegalStateException("Unknown resource type: " + resource);
@@ -973,7 +974,8 @@ implements Serializable {
     			if (logger.isLoggable(Level.INFO))
     				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
     						equipmentType + " needed: " + totalNeeded + " stored: " + stored, null);
-        		enoughSupplies = false;
+        		//enoughSupplies = false;
+        		return false;
         	}
         }
 
@@ -997,15 +999,17 @@ implements Serializable {
     	double amountPersonPerSol = 0D;
     	double tripTimeSols = tripTime / 1000D;
 
+    	//if (personConfig == null)
+    	//	throw new IllegalArgumentException("personConfig is null");
+    	
     	// Only life support resources are required at settlement at this time.
     	if (resource.equals(oxygenAR)) 
     		amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
     	else if (resource.equals(waterAR)) 
     		amountPersonPerSol = personConfig.getWaterConsumptionRate();
     	else if (resource.equals(foodAR)) 
+      	  // Divide by 3 arbitrarily since settlers prefer to have meals rather than preserved food
     		amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; 
-    	  // Divide by 3 arbitrarily since settlers prefer to have meals rather than preserved food
-    
     	else {
 	    	// check if this resource is a dessert
 	        for (AmountResource dessert : availableDesserts) {

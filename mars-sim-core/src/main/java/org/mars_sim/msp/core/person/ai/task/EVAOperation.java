@@ -503,11 +503,11 @@ implements Serializable {
 
     	            if (RandomUtil.lessThanRandPercent(chance * time)) {
     	    			if (person != null) {
-    	    	            logger.info(person.getName() + " has an accident during EVA operation.");
+    	    	            logger.info(person.getName() + " has an accident during an EVA operation.");
         	                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", person);
     	    			}
     	    			else if (robot != null) {
-    	    				logger.info(robot.getName() + " has an accident during EVA operation.");
+    	    				logger.info(robot.getName() + " has an accident during an EVA operation.");
         	                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", robot);
     	    			}
     	            }

@@ -26,9 +26,6 @@ import javax.swing.JTextArea;
 public class BuildingPanelResearch
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	/** The research building. */
 	private Research lab;

@@ -7,13 +7,8 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,8 +18,6 @@ import javax.swing.SpringLayout;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.PersonalityType;
-import org.mars_sim.msp.ui.steelseries.gauges.Radial2Top;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -36,9 +29,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  */
 public class TabPanelGeneral
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.

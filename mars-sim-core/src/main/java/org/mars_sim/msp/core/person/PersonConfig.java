@@ -29,7 +29,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(PersonConfig.class.getName());
+	//private static Logger logger = Logger.getLogger(PersonConfig.class.getName());
 
 	public static final int SIZE_OF_CREW = 4;
 	public static final int ALPHA_CREW = 0; ;
@@ -130,6 +130,7 @@ implements Serializable {
 	private double pressure = 0;
 
 	private Document personDoc;
+	private Element root;
 
 	private Map<String, Double> personalityDistribution;
 
@@ -147,6 +148,8 @@ implements Serializable {
 
 		this.personDoc = personDoc;
 
+		root = personDoc.getRootElement();
+		
 		getPersonNameList();
 		retrieveLastNameList();
 		retrieveFirstNameList();
@@ -164,7 +167,7 @@ implements Serializable {
 
 		if (personNameList == null) {
 			personNameList = new ArrayList<String>();
-			Element root = personDoc.getRootElement();
+			root = personDoc.getRootElement();
 			Element personNameEl = root.getChild(PERSON_NAME_LIST);
 			List<Element> personNames = personNameEl.getChildren(PERSON_NAME);
 
@@ -187,7 +190,7 @@ implements Serializable {
 
 		if (nameList == null) {
 			nameList = new ArrayList<String>();
-			Element root = personDoc.getRootElement();
+			//Element root = personDoc.getRootElement();
 			Element personNameList = root.getChild(FIRST_NAME_LIST);
 			List<Element> personNames = personNameList.getChildren(FIRST_NAME);
 
@@ -226,7 +229,7 @@ implements Serializable {
 		    	countries.add(countryList);
 			}
 
-	    	Element root = personDoc.getRootElement();
+	    	//Element root = personDoc.getRootElement();
 			Element lastNameEl = root.getChild(LAST_NAME_LIST);
 			List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
 
@@ -348,7 +351,7 @@ implements Serializable {
 			}
 
 	    	//List<String> nameList = new ArrayList<String>();
-			Element root = personDoc.getRootElement();
+			//Element root = personDoc.getRootElement();
 			Element firstNameEl = root.getChild(FIRST_NAME_LIST);
 			List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
 
@@ -518,7 +521,7 @@ implements Serializable {
 	public ReportingAuthorityType getPersonSponsor(String name) {
     	ReportingAuthorityType type = null;
 
-    	Element root = personDoc.getRootElement();
+    	//Element root = personDoc.getRootElement();
 
 		Element personNameList = root.getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
@@ -570,7 +573,7 @@ implements Serializable {
 	public GenderType getPersonGender(String name) {
 		GenderType result = GenderType.UNKNOWN;
 
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element personNameList = root.getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
 		for (Element nameElement : personNames ) {
@@ -909,7 +912,7 @@ implements Serializable {
 	public double getPersonalityTypePercentage(String personalityType) {
 		double result = 0D;
 
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element personalityTypeList = root.getChild(PERSONALITY_TYPES);
 		List<Element> personalityTypes = personalityTypeList.getChildren(MBTI);
 
@@ -979,7 +982,7 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public int getNumberOfConfiguredPeople() {
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
 		List personNodes = personList.getChildren(PERSON);
 		if (personNodes != null) return personNodes.size();
@@ -1253,7 +1256,7 @@ implements Serializable {
     @SuppressWarnings("unchecked")
 	public Map<String, Integer> getNaturalAttributeMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
@@ -1282,7 +1285,7 @@ implements Serializable {
     @SuppressWarnings("unchecked")
 	public Map<String, Integer> getBigFiveMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> listNodes = personElement.getChildren(PERSONALITY_TRAIT_LIST);
@@ -1309,7 +1312,7 @@ implements Serializable {
 	 * @return a String
 	 */
 	private String getValueAsString(int index, String param){
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		return personElement.getAttributeValue(param);
@@ -1321,7 +1324,7 @@ implements Serializable {
 	 * @return a double
 	 */
 	private double getValueAsDouble(String child) {
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element element = root.getChild(child);
 		String str = element.getAttributeValue(VALUE);
 		return Double.parseDouble(str);
@@ -1336,7 +1339,7 @@ implements Serializable {
     @SuppressWarnings("unchecked")
 	public Map<String, Integer> getSkillMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		// 2014-10-07 mkung: changed the people.xml element from "person-list" to "alpha-team"
 		Element personList = root.getChild(PERSON_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
@@ -1364,7 +1367,7 @@ implements Serializable {
     @SuppressWarnings("unchecked")
 	public Map<String, Integer> getRelationshipMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element root = personDoc.getRootElement();
+		//Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);

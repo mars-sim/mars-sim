@@ -1,14 +1,12 @@
 /**
  * Mars Simulation Project
- * MissionTabPanel.java
- * @version 3.07 2014-12-06
-
+ * TabPanelMissions.java
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -52,9 +50,6 @@ import org.mars_sim.msp.ui.swing.unit_window.vehicle.TabPanelMission;
  */
 public class TabPanelMissions
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private Settlement settlement;

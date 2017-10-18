@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * ConstructionTabPanel.java
+ * TabPanelConstruction.java
  * @version 3.1.0 2017-09-22
  * @author Scott Davis
  */
@@ -22,7 +22,6 @@ import java.awt.event.ActionListener;
 
 public class TabPanelConstruction
 extends TabPanel {
-
 
 	// Data members
 	private Settlement settlement;

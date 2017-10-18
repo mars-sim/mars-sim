@@ -15,7 +15,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.tool.monitor.RobotTableModel;
@@ -49,9 +47,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelActivity
 extends TabPanel
 implements ActionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private static final int COL_WDITH = 16;
 

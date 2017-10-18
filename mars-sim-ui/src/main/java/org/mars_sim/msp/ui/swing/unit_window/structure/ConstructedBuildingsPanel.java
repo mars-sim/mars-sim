@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructedBuildingsPanel.java
- * @version 3.07 2014-12-03
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -18,21 +18,16 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 public class ConstructedBuildingsPanel
 extends JPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private JTable constructedTable;
-	private ConstructedBuildingTableModel constructedTableModel = null;
+	private ConstructedBuildingTableModel constructedTableModel;
 
 	/**
 	 * Constructor.

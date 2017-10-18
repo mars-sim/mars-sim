@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StormTrackingWindow.java
- * @version 3.08 2015-05-22
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 
@@ -10,13 +10,11 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
@@ -24,11 +22,9 @@ import javax.swing.event.InternalFrameListener;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
-
-import javafx.embed.swing.SwingNode;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
+//import javafx.embed.swing.SwingNode;
+//import javafx.scene.layout.Pane;
+//import javafx.stage.Stage;
 
 /**
  * The window for tracking storms.
@@ -36,9 +32,6 @@ import javafx.stage.Stage;
 public class StormTrackingWindow
 extends JInternalFrame
 implements InternalFrameListener, ActionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private JPanel infoPane;

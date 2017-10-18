@@ -56,9 +56,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelSchedule
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	//private int sol;
 	private int todayCache = 1;
 	private int today;

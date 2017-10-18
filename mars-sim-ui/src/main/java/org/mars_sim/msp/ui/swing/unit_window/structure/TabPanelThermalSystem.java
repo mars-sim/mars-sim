@@ -53,9 +53,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelThermalSystem
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-	
+
 	// default logger.
 	//private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 	

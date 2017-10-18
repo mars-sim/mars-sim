@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
- * CreditTabPanel.java
- * @version 3.07 2014-12-06
+ * TabPanelCredit.java
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -35,19 +34,14 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditEvent;
 import org.mars_sim.msp.core.structure.goods.CreditListener;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 public class TabPanelCredit
 extends TabPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private JTable creditTable ;
 

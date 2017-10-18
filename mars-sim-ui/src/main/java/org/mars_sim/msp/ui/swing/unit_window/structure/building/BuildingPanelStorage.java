@@ -30,9 +30,6 @@ import javax.swing.JPanel;
 public class BuildingPanelStorage
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Constructor.
 	 * @param storage the storage building function.

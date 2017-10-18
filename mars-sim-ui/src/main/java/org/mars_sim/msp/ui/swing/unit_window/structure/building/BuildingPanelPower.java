@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
@@ -32,9 +31,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
  */
 public class BuildingPanelPower
 extends BuildingFunctionPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private static final String kW = " kW";
 	

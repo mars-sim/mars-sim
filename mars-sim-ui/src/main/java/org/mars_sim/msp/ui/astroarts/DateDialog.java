@@ -1,6 +1,6 @@
 /* Mars Simulation Project
  * DateDialog.java
- * @version 3.08 2016-04-19
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
  * http://www.astroarts.com/products/orbitviewer/
@@ -9,27 +9,16 @@
 
 package org.mars_sim.msp.ui.astroarts;
 
-//import java.awt.BorderLayout;
-//import java.awt.Button;
-//import java.awt.Choice;
 import java.awt.Dimension;
-//import java.awt.Event;
-//import java.awt.FlowLayout;
-//import java.awt.Font;
 import java.awt.GridLayout;
-//import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -41,8 +30,6 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 */
 public class DateDialog extends ModalInternalFrame {
 			
-	private static final long serialVersionUID = 1L;
-	
 	protected JTextField		tfYear;
 	protected JTextField		tfDate;
 	protected JComboBox		monthCB;

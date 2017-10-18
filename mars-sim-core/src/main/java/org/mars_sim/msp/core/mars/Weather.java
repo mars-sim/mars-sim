@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
@@ -32,7 +34,7 @@ implements Serializable {
 	/* default logger. */
 	private static Logger logger = Logger.getLogger(Weather.class.getName());
 	
-    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Static data
 	/** Sea level air pressure in kPa. */
@@ -815,8 +817,9 @@ implements Serializable {
 					s.setDustStorm(ds);
 					newStormID++;
 					
-					logger.info("On L_s = " + Math.round(L_s*100.0)/100.0 + ", " + ds.getName() 
-						+ " was first spotted near " + s + ".");
+					LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+							"[" + ds.getSettlements().get(0).getName() + "] On L_s = " + Math.round(L_s*100.0)/100.0 + ", " + ds.getName() 
+						+ " was first spotted near " + s + ".", null);
 
 				}
 			}
@@ -847,8 +850,9 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.", null);
 		}
 	}
 
@@ -886,8 +890,9 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.", null);
 		}
 	}
 
@@ -928,8 +933,9 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.", null);
 		}
 	}
 
@@ -958,8 +964,9 @@ implements Serializable {
 			}
 			
 			if (ds.getSize() != 0)
-				logger.info("[" + ds.getSettlements().get(0) + "]  On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
-				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.");
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+						"[" + ds.getSettlements().get(0) + "] On Sol " + (solCache + 1) + ", " + ds.getName() + " (size " + ds.getSize()  
+				+ " with windspeed " + Math.round(ds.getSpeed()*10.0)/10.0 + " m/s) was sighted.", null);
 		}
 	}
 

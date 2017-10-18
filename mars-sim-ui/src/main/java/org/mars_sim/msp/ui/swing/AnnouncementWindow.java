@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * AnnouncementWindow.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -11,11 +10,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.ui.swing.tool.ResizedFontLabel;
-import org.mars_sim.msp.ui.swing.tool.WaitLayerUI;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 /** 
  * The AnnouncementWindow class is an internal frame for displaying popup announcements
@@ -23,9 +20,6 @@ import java.awt.event.ActionListener;
  */
 public class AnnouncementWindow
 extends JInternalFrame {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private ResizedFontLabel announcementLabel;
 

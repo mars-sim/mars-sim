@@ -92,8 +92,6 @@ public class OrbitViewer
 extends ModalInternalFrame
 implements InternalFrameListener, ActionListener, WindowListener {
 
-	private static final long serialVersionUID = 1L;
-
 	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 600;
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * TabPanelTabPanelAirComposition.java
- * @version 3.1.0 2017-03-08
+ * TabPanelAirComposition.java
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;

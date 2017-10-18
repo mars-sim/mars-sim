@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * TabPanelBots.java
- * @version 3.1.0 2017-02-14
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -45,9 +44,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelBots
 extends TabPanel
 implements MouseListener, ActionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private JLabel robotNumLabel;
 	private JLabel robotCapLabel;

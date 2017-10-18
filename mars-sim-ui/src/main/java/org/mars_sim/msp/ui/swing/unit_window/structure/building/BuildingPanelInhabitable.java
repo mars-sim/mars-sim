@@ -29,9 +29,6 @@ public class BuildingPanelInhabitable
 extends BuildingFunctionPanel
 implements MouseListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** The inhabitable building. */
 	private LifeSupport inhabitable;
 	private DefaultListModel<Person> inhabitantListModel;

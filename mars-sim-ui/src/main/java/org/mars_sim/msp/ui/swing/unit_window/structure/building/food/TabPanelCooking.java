@@ -56,9 +56,6 @@ import com.google.common.collect.Multiset;
 public class TabPanelCooking
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
     /** default logger. */
     //private static Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
@@ -222,7 +219,7 @@ extends TabPanel {
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setOpaque(false);
+		//scrollPane.setOpaque(false);
 		//scrollPane.setBackground(new Color(0,0,0,128));
 		//scrollPane.setForeground(Color.orange);
 		scrollPane.setPreferredSize(new Dimension(257, 230));

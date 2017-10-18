@@ -293,8 +293,9 @@ public class Crop implements Serializable {
 				// assume zero day incubation period if 100% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				logger.info("Proceeds to transferring plantflets from "
-						+ capitalizedCropName + "'s tissue culture into the field.");
+				LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                 		"[" + settlement + "] Proceeding to transferring plantflets from "
+						+ capitalizedCropName + "'s tissue culture into the field.", null);
 				
 				setupMushroom();
 			}
@@ -302,9 +303,10 @@ public class Crop implements Serializable {
 			else {
 				currentPhaseWorkCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
 				phaseType = PhaseType.INCUBATION;
-				logger.info(capitalizedCropName + " needs a work period of "
+				LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                 		"[" + settlement + "] " + capitalizedCropName + " needs a work period of "
 						+ Math.round(currentPhaseWorkCompleted/1000D*10D)/10D 
-						+ " sols to clone enough tissues before planting in " + farmName + " at " + settlement);
+						+ " sols to clone enough tissues before planting in " + farmName + ".", null);
 			}
 
 		}
@@ -640,7 +642,8 @@ public class Crop implements Serializable {
 					//		+ " at " + settlement.getName());
 					
 				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-				    		unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
+			                 "[" + settlement + "] "		    		
+				    		+ unit.getName() + " harvested " + Math.round(modifiedHarvest * 10_000.0)/10_000.0 
 							+ " kg of " + capitalizedCropName + " in " + farmName
 							+ " at " + settlement.getName()
 							, null);

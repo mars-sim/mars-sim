@@ -8,20 +8,16 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -44,13 +40,10 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.OneActivity;
-import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 
@@ -62,22 +55,19 @@ public class PlannerWindow
 extends JInternalFrame
 implements InternalFrameListener, ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private JTextField orbit, month, sol, millisols;
 	private JButton add;
 	private JTable table;
 
 	private Unit unit;
-	private JComboBoxMW<Object> comboBox;
-	private DefaultComboBoxModel<Object> comboBoxModel;
+	//private JComboBoxMW<Object> comboBox;
+	//private DefaultComboBoxModel<Object> comboBoxModel;
 	private PlannerTableModel PlannerTableModel;
 
-	private Person person;
-	private Robot robot;
-	private JPanel topPanel, infoPane, panel;
+	//private Person person;
+	//private Robot robot;
+	private JPanel topPanel, panel;
 	private TabPanelSchedule tabPanelSchedule;
 
 	public PlannerWindow(Unit unit, MainDesktopPane desktop, TabPanelSchedule tabPanelSchedule) {
