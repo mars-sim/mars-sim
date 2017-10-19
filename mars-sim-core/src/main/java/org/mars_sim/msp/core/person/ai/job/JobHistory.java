@@ -25,6 +25,7 @@ public class JobHistory implements Serializable  {
 
 	//private static transient Logger logger = Logger.getLogger(JobHistory.class.getName());
     private int solCache;
+    
 	private Person person;
 	private MarsClock clock;
 	private MasterClock masterClock;

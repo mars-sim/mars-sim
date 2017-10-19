@@ -9,13 +9,12 @@ package org.mars_sim.msp.ui.swing.tool.map;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-import java.awt.*;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * The UnitMapLayer is an abstract graphics layer to display units.
@@ -27,7 +26,10 @@ abstract class UnitMapLayer implements MapLayer {
     private static long blinkTime = 0L;
     private Collection<Unit> unitsToDisplay;
 
+    private UnitManager unitManager;
+    
     public UnitMapLayer() {
+    	unitManager = Simulation.instance().getUnitManager();
         blinkFlag = false;
     }
 
@@ -56,16 +58,17 @@ abstract class UnitMapLayer implements MapLayer {
     public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 
         Collection<Unit> units = null;
+        
         if (unitsToDisplay != null) {
             units = unitsToDisplay;
         } else {
-            units = Simulation.instance().getUnitManager().getUnits();
+            units = unitManager.getUnits();
         }
 
         for (Unit unit : units) {
-            UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+            //UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
-            if (displayInfo.isMapDisplayed(unit)) {
+            if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
                 double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
                 if (mapCenter.getAngle(unit.getCoordinates()) < angle) {

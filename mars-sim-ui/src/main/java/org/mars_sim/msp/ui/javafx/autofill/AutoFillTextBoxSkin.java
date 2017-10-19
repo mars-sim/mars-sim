@@ -1,17 +1,21 @@
-
+/**
+ * Mars Simulation Project
+ * AutoFillTextBoxSkin.java
+ * @version 3.1.0 2017-10-18
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.ui.javafx.autofill;
 
-//IMPORT DIRECTIVES
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+//import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
+//import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SkinBase;
@@ -29,6 +33,7 @@ import javafx.util.Callback;
  * @author Narayan G. Maharjan
  * @see <a href="http://www.blog.ngopal.com.np"> Blog </a>
  */
+@SuppressWarnings("restriction")
 public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
         implements ChangeListener<String>,
         EventHandler {
@@ -36,7 +41,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
     //Final Static variables for Window Insets
     private final static int TITLE_HEIGHT = 28;
 
-    private final static int WINDOW_BORDER = 8;
+    //private final static int WINDOW_BORDER = 8;
 
     //This is listview for showing the matched words
     private ListView listview;
@@ -64,7 +69,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
      * <p>
      * @param text AutoTextBox ****************************
      */
-    @SuppressWarnings({ "restriction", "unchecked" })
+	@SuppressWarnings("unchecked")
 	public AutoFillTextBoxSkin(AutoFillTextBox<T> text) {
         super((AutoFillTextBox<T>) text);
 

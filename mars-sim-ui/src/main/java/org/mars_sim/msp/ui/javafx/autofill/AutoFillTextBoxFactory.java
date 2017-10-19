@@ -1,4 +1,9 @@
-
+/**
+ * Mars Simulation Project
+ * AutoFillTextBoxFactory.java
+ * @version 3.1.0 2017-10-18
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.ui.javafx.autofill;
 
 import javafx.collections.ObservableList;
@@ -10,6 +15,7 @@ import javafx.scene.control.TextField;
  * @author Narayan G. Maharjan
  * @see <a href="http://www.blog.ngopal.com.np"> Blog </a>
  */
+@SuppressWarnings("restriction")
 public interface AutoFillTextBoxFactory<T> {
     
     /**

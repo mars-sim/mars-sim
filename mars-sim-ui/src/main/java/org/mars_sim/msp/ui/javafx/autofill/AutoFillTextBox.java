@@ -1,7 +1,13 @@
+/**
+ * Mars Simulation Project
+ * AutoFillTextBox.java
+ * @version 3.1.0 2017-10-18
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.ui.javafx.autofill;
 
 
-import javafx.event.ActionEvent;
+//import javafx.event.ActionEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -34,6 +40,7 @@ import javafx.scene.control.TextField;
  * @see <a href="http://www.blog.ngopal.com.np"> Blog </a>
  * <p>
  */
+@SuppressWarnings("restriction")
 public class AutoFillTextBox<T> extends Control implements
         AutoFillTextBoxFactory<T> {
 

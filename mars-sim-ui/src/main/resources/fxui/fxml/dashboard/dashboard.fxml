@@ -10,27 +10,29 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" 
-	stylesheets="@../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/8.0" 
+<AnchorPane id="AnchorPane" fx:id="mainPane" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/8.0" 
 	xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.dashboard.DashboardController">
    <children>
-      <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 42; 
-      -fx-background-color: #222D32;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 45; -fx-background-color: #222D32;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
-            <Label prefHeight="42.0" prefWidth="228.0" style="-fx-font-size: 20; -fx-text-fill: #7387A8; -fx-font-weight: bold;" 
-            text="Mission Control" BorderPane.alignment="CENTER">
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
-            </Label>
+			<Label fx:id="insertLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="45.0" prefWidth="228.0" text="Mission Control" 
+				textAlignment="CENTER" textFill="#945f16">
+				<font>
+					<Font name="Verdana Bold" size="18.0" />
+				</font>
+				<padding>
+ 					<Insets top="5.0" /><Insets left="20.0" />
+ 				</padding>
+			</Label>
          </left>
       </JFXToolbar>
-      <VBox fx:id="leftVBox" layoutY="40.0" prefHeight="900.0" prefWidth="140.0" style="-fx-background-color: #2A3F54;">
+      <VBox fx:id="leftVBox" layoutY="46.0" prefHeight="900.0" prefWidth="140.0" style="-fx-background-color: #2A3F54;">
          <children>
             <Label prefHeight="40.0" prefWidth="140.0" style="-fx-alignment: center; -fx-font-size: 16; -fx-text-fill: #7387A8; 
             -fx-border-color: #7387A8; -fx-border-width: 0 0 2 0;" text="MarsNet" />
-            <JFXButton fx:id="btnHome" prefHeight="42.0" prefWidth="139.0" style="-fx-alignment: left;" styleClass="nav-button" 
+            <JFXButton fx:id="btnHome" onAction="#updateSettlers" prefHeight="42.0" prefWidth="139.0" style="-fx-alignment: center-left;" styleClass="nav-button" 
             text="Home" textFill="#a1aec4">
                <font>
                   <Font name="Roboto Bold" size="14.0" />
@@ -39,8 +41,8 @@
                   <FontAwesomeIconView fill="#a1aec4" glyphName="DASHBOARD" size="17.0" wrappingWidth="43.0" />
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnContacts" layoutX="10.0" layoutY="109.0" onAction="#switchPeople" prefHeight="42.0" prefWidth="139.0" 
-            style="-fx-alignment: left;" styleClass="nav-button" text="Contacts" textFill="#a1aec4">
+            <JFXButton fx:id="btnSettlers" layoutX="10.0" layoutY="109.0" onAction="#updateSettlers" prefHeight="42.0" prefWidth="139.0" 
+            style="-fx-alignment: center-left;" styleClass="nav-button" text="Settlers" textFill="#a1aec4">
                <font>
                   <Font name="Roboto Bold" size="14.0" />
                </font>
@@ -50,6 +52,6 @@
             </JFXButton>
          </children>
       </VBox>
-      <AnchorPane fx:id="holderPane" layoutX="140.0" layoutY="42.0" />
+		<AnchorPane fx:id="insertPane" layoutX="140.0" layoutY="46.0"/>
    </children>
 </AnchorPane>

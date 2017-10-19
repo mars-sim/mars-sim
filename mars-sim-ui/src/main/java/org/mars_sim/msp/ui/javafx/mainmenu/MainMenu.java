@@ -117,7 +117,6 @@ public class MainMenu {
 
 	private Stage primaryStage;
 	
-	private Scene scene;
 
 	private MainMenu mainMenu;
 	
@@ -934,8 +933,6 @@ public class MainMenu {
 	public void destroy() {
 		anchorPane = null;
 		primaryStage = null;
-		scene = null;
-		//screen = null;
 		mainMenu = null;
 		mainScene = null;
 		executor = null;

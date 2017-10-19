@@ -15,6 +15,7 @@ import javafx.stage.Stage;
  *
  * @author danml
  */
+@SuppressWarnings("restriction")
 public class DashboardMain extends Application {
     
     @Override

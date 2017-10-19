@@ -28,19 +28,27 @@ public class MineralMapLayer implements MapLayer {
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Domain members
+    private boolean updateLayer;
+
+    private String mapTypeCache;
+    
 	private int[] mineralConcentrationArray;
+	
     private Component displayComponent;
     private Image mineralConcentrationMap;
+
     private Coordinates mapCenterCache;
-    private String mapTypeCache;
-    private boolean updateLayer;
+    private MineralMap mineralMap;
+    
     private java.util.Map<String, Boolean> mineralsDisplayedMap;
 	
+    
     /**
      * Constructor
      * @param displayComponent the display component.
      */
     public MineralMapLayer(Component displayComponent) {
+    	mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
     	this.displayComponent = displayComponent;
     	mineralConcentrationArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
     	updateMineralsDisplayed();
@@ -67,7 +75,7 @@ public class MineralMapLayer implements MapLayer {
         
 			double rho = CannedMarsMap.PIXEL_RHO;
         
-			MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+			//MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
 			java.util.Map<String, Color> mineralColors = getMineralColors();
 			updateMineralsDisplayed();
 			
@@ -137,7 +145,7 @@ public class MineralMapLayer implements MapLayer {
 	 * @return map of names and colors.
 	 */
 	public java.util.Map<String, Color> getMineralColors() {
-		MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+		//MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
 		String[] mineralNames = mineralMap.getMineralTypeNames();
 		java.util.Map<String, Color> result = new HashMap<String, Color>(mineralNames.length);
 		for (int x = 0; x < mineralNames.length; x++) {
@@ -152,7 +160,7 @@ public class MineralMapLayer implements MapLayer {
 	 * Update which minerals to display on the map if they've changed.
 	 */
 	private void updateMineralsDisplayed() {
-		MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+		//MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
 		String[] mineralNames = mineralMap.getMineralTypeNames();
 		Arrays.sort(mineralNames);
 		if (mineralsDisplayedMap == null) mineralsDisplayedMap = new HashMap<String, Boolean>(mineralNames.length);

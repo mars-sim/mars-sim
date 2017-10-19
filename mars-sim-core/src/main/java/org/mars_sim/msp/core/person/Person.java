@@ -101,13 +101,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
+	
 	/** The birthplace of the person. */
 	private String birthplace;
 	/** The person's name. */
 	private String name;
+	/** The person's sponsor. */
 	private String sponsor;
+	/** The person's country. */	
 	private String country;
+	/** The person's blood type. */
 	private String bloodType;
+	/** The person's last word before departing. */
 	private String lastWord;
 	
 	/** The gender of the person (male or female). */

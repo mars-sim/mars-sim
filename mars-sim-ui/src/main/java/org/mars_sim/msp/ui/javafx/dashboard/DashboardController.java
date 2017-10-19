@@ -1,5 +1,11 @@
-
+/**
+ * Mars Simulation Project
+ * DashboardController.java
+ * @version 3.1.0 2017-10-18
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.ui.javafx.dashboard;
+
 
 import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
@@ -18,48 +24,61 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
 import javafx.util.Duration;
 
-/**
- *
- * @author danml
- */
 @SuppressWarnings("restriction")
 public class DashboardController implements Initializable {
 
     @FXML
-    private AnchorPane anchorPane;
+    private AnchorPane mainPane;
     @FXML
-    private AnchorPane holderPane;
+    private AnchorPane insertPane;
+    @FXML
+    private AnchorPane settlerPane;
+
     @FXML
     private VBox leftVBox;
     
     @FXML
     private JFXButton btnHome;
     @FXML
-    private JFXButton btnContacts;
+    private JFXButton btnSettlers;
 
-    private AnchorPane settlerPane;
-
+    @FXML
+    private Label insertLabel;
+    
+    private SettlersController controller;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-            settlerPane = FXMLLoader.load(getClass().getResource("/fxui/fxml/dashboard/settlers.fxml"));
+            //settlerPane = FXMLLoader.load(getClass().getResource("/fxui/fxml/dashboard/settlers.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxui/fxml/dashboard/settlers.fxml"));
+            settlerPane = fxmlLoader.load();
+        	controller = fxmlLoader.<SettlersController>getController();
+            insertLabel.setText("Settlers List");
             setNode(settlerPane);
+            	
         } catch (IOException ex) {
             Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
 	public void setSize(int screen_width, int screen_height){
-    	anchorPane.setPrefSize(screen_width, screen_height);
-    	leftVBox.setPrefHeight(screen_height - MainScene.TAB_PANEL_HEIGHT - 20);
+		int h = screen_height - MainScene.TAB_PANEL_HEIGHT - 20;
+		mainPane.setPrefSize(screen_width, screen_height);
+    	leftVBox.setPrefHeight(h);
+    	if (controller != null)
+    		controller.setSize(screen_width, h);
     }
     
     //Set selected node to a content holder
     private void setNode(Node node) {
-        holderPane.getChildren().clear();
-        holderPane.getChildren().add((Node) node);
+    	//if (controller != null)
+    	//	controller.updateSettlers();
+        insertPane.getChildren().clear();
+        insertPane.getChildren().add((Node) node);
 
         FadeTransition ft = new FadeTransition(Duration.millis(1500));
         ft.setNode(node);
@@ -71,7 +90,9 @@ public class DashboardController implements Initializable {
     }
 
     @FXML
-    private void switchPeople(ActionEvent event) {
+    private void updateSettlers(ActionEvent event) {
+    	if (controller != null)
+    		controller.updateSettlers();
         setNode(settlerPane);
     }
 

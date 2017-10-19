@@ -9,214 +9,32 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
 <?import org.controlsfx.control.Rating?>
 
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0">
-    <children>
-      <Label layoutX="19.0" layoutY="17.0" prefHeight="25.0" prefWidth="207.0" style="-fx-font-size: 20; -fx-font-weight: bold; 
-      	-fx-text-fill: #7387A8;" text="Settlers" />
-      <Separator layoutX="3.0" layoutY="55.0" prefHeight="4.0" />
-      <VBox layoutX="71.0" layoutY="143.0" spacing="30.0">
-         <children>
-            <AnchorPane prefHeight="250.0" prefWidth="504.0" style="-fx-background-radius: 3; -fx-border-radius: 3; -fx-border-color: #c3c3c3;">
-               <children>
-                  <Label layoutX="34.0" layoutY="52.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Rik Declercq" />
-                  <Label layoutX="34.0" layoutY="82.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Areologist" />
-                  <Label layoutX="34.0" layoutY="155.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Leave Msg">
-                     <graphic>
-                        <MaterialDesignIconView fill="#73879c" glyphName="PHONE" size="16.0" wrappingWidth="21.0" />
-                     </graphic>
-                  </Label>
-                  <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C;" text="Commander">
-                     <font>
-                        <Font name="System Italic" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="34.0" layoutY="125.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Location">
-                     <graphic>
-                        <FontAwesomeIconView fill="#73879c" glyphName="HOME" size="16.0" wrappingWidth="22.0" />
-                     </graphic>
-                  </Label>
-                  <Pane layoutY="200.0" prefHeight="50.0" prefWidth="504.0" style="-fx-border-radius: 0 0 3 3; -fx-background-color: #E5E8EB; -fx-border-color: #C3C3C3; -fx-border-width: 1 0 0 0;">
-                     <children>
-                        <Rating layoutX="14.0" layoutY="9.0" prefHeight="20.0" prefWidth="207.0" rating="4.0" />
-                        <JFXButton layoutX="372.0" layoutY="9.0" prefHeight="32.0" prefWidth="118.0" style="-fx-background-color: #337AB7; -fx-text-fill: white; -fx-font-size: 14;" text="View Profile">
-                           <graphic>
-                              <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                           </graphic>
-                        </JFXButton>
-                        <JFXButton layoutX="298.0" layoutY="9.0" prefHeight="32.0" prefWidth="53.0" style="-fx-background-color: #26B99A; -fx-text-fill: white; -fx-font-size: 14;" text=" ">
-                           <graphic>
-                              <HBox alignment="CENTER" spacing="3.0">
-                                 <children>
-                                    <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                                    <MaterialDesignIconView fill="WHITE" glyphName="EYE" size="16.0" />
-                                 </children>
-                              </HBox>
-                           </graphic>
-                        </JFXButton>
-                     </children>
-                  </Pane>
-                  <Circle fill="#e5e8eb" layoutX="399.0" layoutY="104.0" radius="75.0" stroke="#c3c3c3" strokeType="INSIDE" />
-                  <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="339.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/avatar.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </AnchorPane>
-            <AnchorPane prefHeight="250.0" prefWidth="504.0" style="-fx-background-radius: 3; -fx-border-radius: 3; -fx-border-color: #c3c3c3;">
-               <children>
-                  <Label layoutX="34.0" layoutY="52.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Karen Andersen" />
-                  <Label layoutX="34.0" layoutY="82.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Botanist" />
-                  <Label layoutX="34.0" layoutY="155.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Leave Msg">
-                     <graphic>
-                        <MaterialDesignIconView fill="#73879c" glyphName="PHONE" size="16.0" wrappingWidth="21.0" />
-                     </graphic>
-                  </Label>
-                  <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C;" text="Resource Specialist">
-                     <font>
-                        <Font name="System Italic" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="34.0" layoutY="125.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Settlement">
-                     <graphic>
-                        <FontAwesomeIconView fill="#73879c" glyphName="HOME" size="16.0" wrappingWidth="22.0" />
-                     </graphic>
-                  </Label>
-                  <Pane layoutY="200.0" prefHeight="50.0" prefWidth="504.0" style="-fx-border-radius: 0 0 3 3; -fx-background-color: #E5E8EB; -fx-border-color: #C3C3C3; -fx-border-width: 1 0 0 0;">
-                     <children>
-                        <Rating layoutX="14.0" layoutY="9.0" prefHeight="20.0" prefWidth="207.0" rating="4.0" />
-                        <JFXButton layoutX="372.0" layoutY="9.0" prefHeight="32.0" prefWidth="118.0" style="-fx-background-color: #337AB7; -fx-text-fill: white; -fx-font-size: 14;" text="View Profile">
-                           <graphic>
-                              <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                           </graphic>
-                        </JFXButton>
-                        <JFXButton layoutX="298.0" layoutY="9.0" prefHeight="32.0" prefWidth="53.0" style="-fx-background-color: #26B99A; -fx-text-fill: white; -fx-font-size: 14;" text=" ">
-                           <graphic>
-                              <HBox alignment="CENTER" spacing="3.0">
-                                 <children>
-                                    <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                                    <MaterialDesignIconView fill="WHITE" glyphName="EYE" size="16.0" />
-                                 </children>
-                              </HBox>
-                           </graphic>
-                        </JFXButton>
-                     </children>
-                  </Pane>
-                  <Circle fill="#e5e8eb" layoutX="399.0" layoutY="104.0" radius="75.0" stroke="#c3c3c3" strokeType="INSIDE" />
-                  <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="339.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/avatar.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </AnchorPane>
-         </children>
-      </VBox>
-      <VBox layoutX="636.0" layoutY="143.0" spacing="30.0">
-         <children>
-            <AnchorPane prefHeight="250.0" prefWidth="504.0" style="-fx-background-radius: 3; -fx-border-radius: 3; -fx-border-color: #c3c3c3;">
-               <children>
-                  <Label layoutX="34.0" layoutY="52.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Lena LaGranda" />
-                  <Label layoutX="34.0" layoutY="82.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Technician" />
-                  <Label layoutX="34.0" layoutY="155.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Leave Msg">
-                     <graphic>
-                        <MaterialDesignIconView fill="#73879c" glyphName="PHONE" size="16.0" wrappingWidth="21.0" />
-                     </graphic>
-                  </Label>
-                  <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C;" text="Mission Specialist">
-                     <font>
-                        <Font name="System Italic" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="34.0" layoutY="125.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Settlement">
-                     <graphic>
-                        <FontAwesomeIconView fill="#73879c" glyphName="HOME" size="16.0" wrappingWidth="22.0" />
-                     </graphic>
-                  </Label>
-                  <Pane layoutY="200.0" prefHeight="50.0" prefWidth="504.0" style="-fx-border-radius: 0 0 3 3; -fx-background-color: #E5E8EB; -fx-border-color: #C3C3C3; -fx-border-width: 1 0 0 0;">
-                     <children>
-                        <Rating layoutX="14.0" layoutY="9.0" prefHeight="20.0" prefWidth="207.0" rating="4.0" />
-                        <JFXButton layoutX="372.0" layoutY="9.0" prefHeight="32.0" prefWidth="118.0" style="-fx-background-color: #337AB7; -fx-text-fill: white; -fx-font-size: 14;" text="View Profile">
-                           <graphic>
-                              <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                           </graphic>
-                        </JFXButton>
-                        <JFXButton layoutX="298.0" layoutY="9.0" prefHeight="32.0" prefWidth="53.0" style="-fx-background-color: #26B99A; -fx-text-fill: white; -fx-font-size: 14;" text=" ">
-                           <graphic>
-                              <HBox alignment="CENTER" spacing="3.0">
-                                 <children>
-                                    <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                                    <MaterialDesignIconView fill="WHITE" glyphName="EYE" size="16.0" />
-                                 </children>
-                              </HBox>
-                           </graphic>
-                        </JFXButton>
-                     </children>
-                  </Pane>
-                  <Circle fill="#e5e8eb" layoutX="399.0" layoutY="104.0" radius="75.0" stroke="#c3c3c3" strokeType="INSIDE" />
-                  <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="339.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/avatar.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </AnchorPane>
-            <AnchorPane prefHeight="250.0" prefWidth="504.0" style="-fx-background-radius: 3; -fx-border-radius: 3; -fx-border-color: #c3c3c3;">
-               <children>
-                  <Label layoutX="34.0" layoutY="52.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Leonardo DaVinci" />
-                  <Label layoutX="34.0" layoutY="82.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Engineer" />
-                  <Label layoutX="34.0" layoutY="155.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Leave Msg">
-                     <graphic>
-                        <MaterialDesignIconView fill="#73879c" glyphName="PHONE" size="16.0" wrappingWidth="21.0" />
-                     </graphic>
-                  </Label>
-                  <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C;" text="Safety Specialist">
-                     <font>
-                        <Font name="System Italic" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="34.0" layoutY="125.0" prefHeight="30.0" prefWidth="246.0" style="-fx-text-fill: #73879C; -fx-font-weight: bold; -fx-font-size: 15;" text="Settlement">
-                     <graphic>
-                        <FontAwesomeIconView fill="#73879c" glyphName="HOME" size="16.0" wrappingWidth="22.0" />
-                     </graphic>
-                  </Label>
-                  <Pane layoutY="200.0" prefHeight="50.0" prefWidth="504.0" style="-fx-border-radius: 0 0 3 3; -fx-background-color: #E5E8EB; -fx-border-color: #C3C3C3; -fx-border-width: 1 0 0 0;">
-                     <children>
-                        <Rating layoutX="14.0" layoutY="9.0" prefHeight="20.0" prefWidth="207.0" rating="4.0" />
-                        <JFXButton layoutX="372.0" layoutY="9.0" prefHeight="32.0" prefWidth="118.0" style="-fx-background-color: #337AB7; -fx-text-fill: white; -fx-font-size: 14;" text="View Profile">
-                           <graphic>
-                              <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                           </graphic>
-                        </JFXButton>
-                        <JFXButton layoutX="298.0" layoutY="9.0" prefHeight="32.0" prefWidth="53.0" style="-fx-background-color: #26B99A; -fx-text-fill: white; -fx-font-size: 14;" text=" ">
-                           <graphic>
-                              <HBox alignment="CENTER" spacing="3.0">
-                                 <children>
-                                    <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />
-                                    <MaterialDesignIconView fill="WHITE" glyphName="EYE" size="16.0" />
-                                 </children>
-                              </HBox>
-                           </graphic>
-                        </JFXButton>
-                     </children>
-                  </Pane>
-                  <Circle fill="#e5e8eb" layoutX="399.0" layoutY="104.0" radius="75.0" stroke="#c3c3c3" strokeType="INSIDE" />
-                  <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="339.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/avatar.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </AnchorPane>
-         </children>
-      </VBox>   
-      
-   </children>
+<AnchorPane id="AnchorPane" fx:id="settlersPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0"
+	fx:controller="org.mars_sim.msp.ui.javafx.dashboard.SettlersController" >
+	<children>
+		<Label text="Settlers" layoutX="19.0" layoutY="17.0" prefHeight="25.0" prefWidth="200.0" style="-fx-font-size: 20; -fx-font-weight: bold; 
+      		-fx-text-fill: #7387A8;" />
+		<Separator layoutX="3.0" layoutY="55.0" prefHeight="4.0" />
+		<ScrollPane fx:id="scrollPane" layoutX="15.0" prefHeight="960.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<content>
+				<VBox fx:id="innerVBox" layoutX="50.0" layoutY="143.0" spacing="15.0">
+            		<padding>
+ 						<Insets left="15.0" />
+ 					</padding>
+					<children>
+					</children>
+	      		</VBox>
+      		</content>
+ 		</ScrollPane>  	  
+	</children>
 </AnchorPane>

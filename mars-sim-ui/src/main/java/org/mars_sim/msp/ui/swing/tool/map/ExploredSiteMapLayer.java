@@ -37,6 +37,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
 	private SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+	
 	/**
 	 * Constructor.
 	 * @param displayComponent the display component.

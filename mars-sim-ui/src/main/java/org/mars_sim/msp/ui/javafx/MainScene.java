@@ -1998,7 +1998,6 @@ public class MainScene {
 		try {
 			fxmlLoader = new FXMLLoader();
 			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml"));														// //
-			//fxmlLoader.setController(this);
 			parent = (Parent) fxmlLoader.load();
 			controller = (DashboardController)fxmlLoader.getController();
 		} catch (IOException e) {

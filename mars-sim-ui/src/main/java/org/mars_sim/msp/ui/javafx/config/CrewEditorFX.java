@@ -1,24 +1,23 @@
 /**
  * Mars Simulation Project
  * CrewEditorFX.java
- * @version 3.1.0 2017-01-24
+ * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.javafx.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import javafx.animation.*;
-import javafx.application.*;
+//import javafx.application.*;
 import javafx.beans.property.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.scene.*;
+//import javafx.geometry.Orientation;
+//import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -27,10 +26,10 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.*;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
+//import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+//import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.beans.property.SimpleStringProperty;
@@ -38,31 +37,31 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
+//import javafx.event.ActionEvent;
+//import javafx.event.EventHandler;
+//import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
+//import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+//import javafx.scene.control.Button;
 //import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+//import javafx.scene.control.Label;
 //import javafx.scene.control.RadioButton;
 //import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
+//import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
+//import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+//import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+//import javafx.stage.Stage;
 import javafx.scene.control.ScrollPane;
 
 import org.controlsfx.validation.ValidationSupport;
@@ -84,6 +83,7 @@ import com.jfoenix.controls.JFXTextField;
  * CrewEditorFX allows users to design the crew manifest for an initial
  * settlement
  */
+@SuppressWarnings("restriction")
 public class CrewEditorFX {
 
 	/** Tool name. */

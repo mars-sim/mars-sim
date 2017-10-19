@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.1.0 2017-09-14
+ * @version 3.1.0 2017-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -31,6 +31,7 @@ public class SurfaceFeatures implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public static double MEAN_SOLAR_IRRADIANCE =  586D; // in flux or [W/m2]  = 1371 / (1.52*1.52)
+
 	// This is the so-called "solar constant" of Mars (not really a constant per se), which is the flux of solar radiation at the top of the atmosphere (TOA) at the mean distance a between Mars and the sun.
 	// Note: at the top of the Mars atmosphere
 	// The solar irradiance at Mars' mean distance from the Sun (1.52 AU) is S0 = 590 Wm-2.
@@ -38,34 +39,31 @@ public class SurfaceFeatures implements Serializable {
 	// At perihelion (1.382 AU), the maximum available irradiance is S = 717 Wm-2, while at apohelion (1.666 AU) the maximum is S = 493 Wm-2.
 	// see http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
-	//private static final float HALF_PI = (float) Math.PI / 2f;
 	private static final double HALF_PI = Math.PI / 2d;
 
 	// Data members
-	//private int dataset = 0;
-	/** Current sol since the start of sim. */
-	//private int solCache = 1;
 
 	private double opticalDepthStartingValue = 0.2342;
 	private double factor;
 
-    private List<Landmark> landmarks;
-    private List<ExploredLocation> exploredLocations;
-
     private transient Mars mars;
     private transient OrbitInfo orbitInfo;
     private transient TerrainElevation terrainElevation;
+    
     private MineralMap mineralMap;
     private AreothermalMap areothermalMap;
-    private static MissionManager missionManager;
     private Coordinates sunDirection;
-    private static Weather weather;
+
+    private List<Landmark> landmarks;
+    private List<ExploredLocation> exploredLocations;
 
 	private Map<Coordinates, Double> opticalDepthMap = new ConcurrentHashMap<>();
 	//private Map<Coordinates, Double> totalSolarIrradianceMap = new ConcurrentHashMap<>();
 	private Map<Coordinates, Double> solarIrradianceMapCache;
-	private static MarsClock solarIrradianceMapCacheTime;
 	
+    private static MissionManager missionManager;
+    private static Weather weather;
+	private static MarsClock solarIrradianceMapCacheTime;
 	private static Simulation sim;
 	private static SimulationConfig simulationConfig;
 

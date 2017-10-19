@@ -39,7 +39,7 @@ public class NavpointMapLayer implements MapLayer {
 	private Mission singleMission;
 	private NavPoint selectedNavpoint;
 	
-	private MissionManager manager;
+	private static MissionManager missionManager;
 
 	/**
 	 * Constructor
@@ -51,7 +51,7 @@ public class NavpointMapLayer implements MapLayer {
 		this.displayComponent = displayComponent;
 		
 		angle = CannedMarsMap.HALF_MAP_ANGLE;
-		manager = Simulation.instance().getMissionManager();
+		missionManager = Simulation.instance().getMissionManager();
 		
 		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconWhite = ImageLoader.getIcon(WHITE_ICON_NAME);
@@ -88,7 +88,7 @@ public class NavpointMapLayer implements MapLayer {
     	}
     	else {
     		//MissionManager manager = Simulation.instance().getMissionManager();
-    		for (Mission mission : manager.getMissions()) {
+    		for (Mission mission : missionManager.getMissions()) {
     			if (mission instanceof TravelMission) 
     				displayMission((TravelMission) mission, mapCenter, mapType, g);
     		}
