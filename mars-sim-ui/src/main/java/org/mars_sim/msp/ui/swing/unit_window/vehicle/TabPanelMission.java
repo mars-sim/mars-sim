@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -64,6 +65,8 @@ extends TabPanel {
 	private String missionPhaseCache = null;
 	private Collection<MissionMember> memberCache;
 
+	private MissionManager missionManager;
+	
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle.
@@ -78,7 +81,9 @@ extends TabPanel {
 			vehicle, desktop
 		);
 
-		Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+		missionManager = Simulation.instance().getMissionManager(); 
+		
+		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
 		// Prepare mission top panel
 		JPanel missionTopPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -167,7 +172,7 @@ extends TabPanel {
 		missionButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Vehicle vehicle = (Vehicle) unit;
-				Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+				Mission mission = missionManager.getMissionForVehicle(vehicle);
 				if (mission != null) {
 					((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
 					getDesktop().openToolWindow(MissionWindow.NAME);
@@ -184,7 +189,7 @@ extends TabPanel {
 		monitorButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Vehicle vehicle = (Vehicle) unit;
-				Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+				Mission mission = missionManager.getMissionForVehicle(vehicle);
 				if (mission != null) getDesktop().addModel(new PersonTableModel(mission));
 			}
 		});
@@ -198,7 +203,7 @@ extends TabPanel {
 	public void update() {
 
 		Vehicle vehicle = (Vehicle) unit;
-		Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
 		if (mission != null) {
 		    missionCache = mission.getDescription();

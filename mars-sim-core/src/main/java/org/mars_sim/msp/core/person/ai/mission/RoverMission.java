@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -72,7 +73,6 @@ extends VehicleMission {
 	// Data members
 	
 	private Settlement startingSettlement;
-	private SurfaceFeatures surface;
 	
 	private Map<AmountResource, Double> dessertResources;
 
@@ -82,6 +82,8 @@ extends VehicleMission {
 	private static AmountResource methaneAR = ResourceUtil.methaneAR;
 
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+
+	private static SurfaceFeatures surface;
 
 	/**
 	 * Constructor.
@@ -178,7 +180,7 @@ extends VehicleMission {
 				usable = false;
 			if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
-			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
+			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED) 
 				usable = false;
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
@@ -216,7 +218,7 @@ extends VehicleMission {
 				usable = false;
 			if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
-			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
+			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED) 
 				usable = false;
 			if (!(vehicle instanceof Rover))
 				usable = false;

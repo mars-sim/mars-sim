@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * RescueMissionCustomInfoPanel.java
- * @version 3.1.0 2017-05-03
+ * @version 3.1.0 2017-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -130,7 +129,7 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
             rescueVehicleButton.setText(vehicle.getName());
 
             // Update rescue vehicle status.
-            vehicleStatusValueLabel.setText(vehicle.getStatus());
+            vehicleStatusValueLabel.setText(vehicle.getStatus().getName());
 
             StringBuffer malfunctionBuff = new StringBuffer("");
             String serious = null;

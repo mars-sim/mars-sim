@@ -53,6 +53,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -689,18 +690,18 @@ implements Serializable {
 
             if (vehicle instanceof LightUtilityVehicle) {
                 boolean usable = true;
-                if (vehicle.isReserved()) {
+                if (vehicle.isReserved()) 
                     usable = false;
-                }
-    			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED))) {
+                
+    			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED) 
                     usable = false;
-                }
-                if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0) {
+                
+                if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0) 
                     usable = false;
-                }
-                if (usable) {
+                
+                if (usable) 
                     result = true;
-                }
+                
             }
         }
 
@@ -973,7 +974,7 @@ implements Serializable {
 
             if (vehicle instanceof LightUtilityVehicle) {
                 LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
-                if ((luvTemp.getStatus().equals(Vehicle.PARKED) || luvTemp.getStatus().equals(Vehicle.GARAGED))
+                if ((luvTemp.getStatus() == StatusType.PARKED || luvTemp.getStatus() == StatusType.GARAGED)
                 		&& !luvTemp.isReserved()
                         && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0) ) {
                     result = luvTemp;

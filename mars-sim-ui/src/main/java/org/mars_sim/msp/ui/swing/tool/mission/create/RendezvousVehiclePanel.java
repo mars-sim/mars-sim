@@ -53,6 +53,8 @@ class RendezvousVehiclePanel extends WizardPanel {
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
 	
+	private static MissionManager missionManager;
+	
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -61,6 +63,8 @@ class RendezvousVehiclePanel extends WizardPanel {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
+		missionManager = Simulation.instance().getMissionManager();
+		 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -289,8 +293,8 @@ class RendezvousVehiclePanel extends WizardPanel {
     	private Vehicle getRescueVehicle(Vehicle emergencyVehicle) {
     		Vehicle result = null;
     		
-    	   	MissionManager manager = Simulation.instance().getMissionManager();
-        	Iterator<?> i = manager.getMissions().iterator();
+    	   	//MissionManager manager = Simulation.instance().getMissionManager();
+        	Iterator<?> i = missionManager.getMissions().iterator();
         	while (i.hasNext()) {
         		Mission mission = (Mission) i.next();
         		if (mission instanceof RescueSalvageVehicle) {

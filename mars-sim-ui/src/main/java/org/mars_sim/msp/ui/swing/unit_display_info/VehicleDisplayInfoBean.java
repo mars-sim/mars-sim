@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * VehicleDisplayInfoBean.java
- * @version 3.07 2014-10-12
+ * @version 3.1.0 2017-10-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
@@ -51,7 +52,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         if (vehicle.isSalvaged()) result = false;
         
         // Do not display towed vehicle on map.
-        if (vehicle.getStatus().equals(Vehicle.TOWED)) {
+        if (vehicle.getStatus() == StatusType.TOWED) {
             result = false;
         }
         

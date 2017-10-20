@@ -63,12 +63,12 @@ public abstract class Vehicle extends Unit implements Serializable,
     		logger.getName().length());
 
     // Vehicle Status Strings
-    public final static String PARKED = "Parked";
-    public final static String GARAGED = "Garaged";
-    public final static String MOVING = "Moving";
-    public final static String MALFUNCTION = "Malfunction";
-    public final static String MAINTENANCE = "Periodic Maintenance";
-    public final static String TOWED = "Towed";
+    //public final static String PARKED = "Parked";
+    //public final static String GARAGED = "Garaged";
+    //public final static String MOVING = "Moving";
+    //public final static String MALFUNCTION = "Malfunction";
+    //public final static String MAINTENANCE = "Periodic Maintenance";
+    //public final static String TOWED = "Towed";
 
     // The error margin for determining vehicle range. (actual distance / safe distance)
     private static double fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
@@ -100,7 +100,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     private List<Point2D> operatorActivitySpots; // List of operator activity spots.
     private List<Point2D> passengerActivitySpots; // List of passenger activity spots
     
-    private String status; // The vehicle's status.
+    private StatusType status; // The vehicle's status.
     private String vehicleType;
     private String typeOfDessertLoaded;
 
@@ -128,7 +128,6 @@ public abstract class Vehicle extends Unit implements Serializable,
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
-
     
         //life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         //fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
@@ -146,7 +145,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         setDescription(vehicleType);
         direction = new Direction(0);
 	    trail = new ArrayList<Coordinates>();
-	    status = PARKED;
+	    status = StatusType.PARKED;
 
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
@@ -210,7 +209,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    setBaseSpeed(baseSpeed);
 	    setBaseMass(baseMass);
 	    this.drivetrainEfficiency = fuelEfficiency;
-	    status = PARKED;
+	    status = StatusType.PARKED;
 	    isSalvaged = false;
 	    salvageInfo = null;
 	    width = 0D;
@@ -391,7 +390,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     /** Returns vehicle's current status
      *  @return the vehicle's current status
      */
-    public String getStatus() {
+    public StatusType getStatus() {
 
     	// Update status string if necessary.
         updateStatus();
@@ -405,14 +404,14 @@ public abstract class Vehicle extends Unit implements Serializable,
     private void updateStatus() {
 
     	// Update status based on current situation.
-    	String newStatus = PARKED;
-    	if (getGarage() != null) newStatus = GARAGED;
-    	if (reservedForMaintenance) newStatus = MAINTENANCE;
-    	else if (towingVehicle != null) newStatus = TOWED;
-		else if (malfunctionManager.hasMalfunction()) newStatus = MALFUNCTION;
-        else if (speed > 0D) newStatus = MOVING;
+    	StatusType newStatus = StatusType.PARKED;
+    	if (getGarage() != null) newStatus = StatusType.GARAGED;
+    	if (reservedForMaintenance) newStatus = StatusType.MAINTENANCE;
+    	else if (towingVehicle != null) newStatus = StatusType.TOWED;
+		else if (malfunctionManager.hasMalfunction()) newStatus = StatusType.MALFUNCTION;
+        else if (speed > 0D) newStatus = StatusType.MOVING;
 
-    	if (!status.equals(newStatus)) {
+    	if (status != newStatus) {
     		status = newStatus;
     		fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
     	}
@@ -420,7 +419,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     /** Returns vehicle's current status
      *  @return the vehicle's current status
-     */
+    
     public int getStatusNum() {
     	// Update status string if necessary.
         updateStatus();
@@ -440,7 +439,8 @@ public abstract class Vehicle extends Unit implements Serializable,
         else
         	return -1;
     }
-    
+*/
+
     /**
      * Checks if the vehicle is reserved for any reason.
      * @return true if vehicle is currently reserved
@@ -686,10 +686,10 @@ public abstract class Vehicle extends Unit implements Serializable,
         // Update status if necessary.
         updateStatus();
 
-        if (status.equals(MOVING)) 
+        if (status == StatusType.MOVING) 
         	malfunctionManager.activeTimePassing(time);
         // Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-        else if (status.equals(MAINTENANCE)) {
+        else if (status == StatusType.MAINTENANCE) {
             if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
         }
         else {

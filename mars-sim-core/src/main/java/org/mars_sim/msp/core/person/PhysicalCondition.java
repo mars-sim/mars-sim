@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * This class represents the Physical Condition of a Person.
@@ -904,6 +903,7 @@ implements Serializable {
                     double chance = RandomUtil.getRandomDouble(100D);
                     double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
                     if (chance <= (probability) * timeModifier) {
+ /*                   	
                     	String ailment = complaint.toString();
                     	if (Conversion.checkVowel(ailment))
                     		ailment = "an " + ailment.toLowerCase();
@@ -911,6 +911,7 @@ implements Serializable {
                     		ailment = "a " + ailment.toLowerCase();
                         LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
                         		"[" + person.getSettlement() + "] " + person + " comes down with " + ailment + ".", null);
+ */                       
                         addMedicalComplaint(complaint);
                         result.add(complaint);
                     }
@@ -958,6 +959,8 @@ implements Serializable {
             	phrase = " is suffering from a heat stroke";     
             else if (n.equalsIgnoreCase("suffocation"))
             	phrase = " is suffocating" ; 
+            else if (n.equalsIgnoreCase("laceration"))
+            	phrase = " is having a" ; 
             else
             	phrase = " is complaining about the " + n ;
 

@@ -60,6 +60,8 @@ extends TabPanel {
 	private JButton monitorButton;
 	private JCheckBox overrideCheckbox;
 
+	private static MissionManager missionManager;
+
 	/**
 	 * Constructor.
 	 * @param settlement {@link Settlement} the settlement this tab panel is for.
@@ -77,6 +79,8 @@ extends TabPanel {
 		// Initialize data members.
 		this.settlement = settlement;
 
+		missionManager = Simulation.instance().getMissionManager();
+		
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
@@ -103,8 +107,8 @@ extends TabPanel {
 
 		// Create mission list model.
 		missionListModel = new DefaultListModel<Mission>();
-		MissionManager manager = Simulation.instance().getMissionManager();
-		missionsCache = manager.getMissionsForSettlement(settlement);
+		//MissionManager manager = Simulation.instance().getMissionManager();
+		missionsCache = missionManager.getMissionsForSettlement(settlement);
 		Iterator<Mission> i = missionsCache.iterator();
 		while (i.hasNext()) missionListModel.addElement(i.next());
 
@@ -174,8 +178,8 @@ extends TabPanel {
 	public void update() {
 
 		// Get all missions for the settlement.
-		MissionManager manager = Simulation.instance().getMissionManager();
-		List<Mission> missions = manager.getMissionsForSettlement(settlement);
+		//MissionManager manager = Simulation.instance().getMissionManager();
+		List<Mission> missions = missionManager.getMissionsForSettlement(settlement);
 
 		// Update mission list if necessary.
 		if (!missions.equals(missionsCache)) {

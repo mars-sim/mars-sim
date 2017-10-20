@@ -41,6 +41,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	private JLabel descriptionLabel;
 	private JTextField descriptionField;
 	
+	private static MissionManager missionManager;
+
 	//private CreateMissionWizard wizard;
 	/**
 	 * Constructor.
@@ -51,6 +53,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		super(wizard);
 		
 		this.wizard = wizard;
+		
+		missionManager = Simulation.instance().getMissionManager();
 		
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -145,8 +149,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		String selectedMission = (String) typeSelect.getSelectedItem();
 		// 2015-12-15 Added "..."
 		int num = 1;
-	    MissionManager manager = Simulation.instance().getMissionManager();
-	    List<Mission> missions = manager.getMissions();
+	    //MissionManager manager = Simulation.instance().getMissionManager();
+	    List<Mission> missions = missionManager.getMissions();
 		for (Mission m : missions) {
 			if (m.getName().equals(selectedMission))
 				num++;

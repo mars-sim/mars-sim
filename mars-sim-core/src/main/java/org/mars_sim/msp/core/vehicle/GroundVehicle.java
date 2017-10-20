@@ -32,8 +32,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** TODO Ground Vehicle Status String should be internationalized. */
-	public final static String STUCK = "Stuck - using winch";
+	//public final static String STUCK = "Stuck - using winch";
 
 	// Data members
 	/** Current elevation in km. */
@@ -73,10 +72,10 @@ implements Serializable {
 	 * Returns vehicle's current status
 	 * @return the vehicle's current status
 	 */
-	public String getStatus() {
-		String status = null;
+	public StatusType getStatus() {
+		StatusType status = null;
 
-		if (isStuck) status = STUCK;
+		if (isStuck) status = StatusType.STUCK;
 		else status = super.getStatus();
 
 		return status;

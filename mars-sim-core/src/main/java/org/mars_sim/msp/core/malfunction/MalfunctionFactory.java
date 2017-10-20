@@ -11,8 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -22,12 +20,13 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
+
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -55,6 +54,7 @@ implements Serializable {
 	
 	private static Malfunction meteoriteMalfunction;
 	
+	private static MissionManager missionManager;
 
 	/**
 	 * Constructs a MalfunctionFactory object.
@@ -65,6 +65,8 @@ implements Serializable {
 		 this.config = config;
 		 malfunctions = config.getMalfunctionList();
 		 numMal = malfunctions.size(); // = 39 in total
+		 
+		 missionManager = Simulation.instance().getMissionManager();
 	}
 
 	/**
@@ -244,8 +246,10 @@ implements Serializable {
 		// Add settlement, buildings and all other malfunctionables in settlement inventory.
 		Collection<Malfunctionable> entities = getMalfunctionables(settlement);
 
+		if (missionManager == null)
+			 missionManager = Simulation.instance().getMissionManager();
 		// Add all associated rovers out on missions and their inventories.
-		for (Mission mission : Simulation.instance().getMissionManager().getMissionsForSettlement(settlement)) {
+		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))

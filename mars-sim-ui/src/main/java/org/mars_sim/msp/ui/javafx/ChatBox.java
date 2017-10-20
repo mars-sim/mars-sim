@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -976,13 +977,13 @@ public class ChatBox extends BorderPane {
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	           		String d = cache.getVehicle().getDescription();
-	           		String status = cache.getVehicle().getStatus();
+	           		StatusType status = cache.getVehicle().getStatus();
 	           		responseText.append("My vehicle is ");
 	           		responseText.append(v.getName());
 	           		responseText.append(" (a ");
 	           		responseText.append(Conversion.capitalize(d));
 	           		responseText.append(" type). It's currently ");
-	           		responseText.append(status.toLowerCase());
+	           		responseText.append(status.getName().toLowerCase());
 	           		responseText.append(".");
 	       		}
 	       		else

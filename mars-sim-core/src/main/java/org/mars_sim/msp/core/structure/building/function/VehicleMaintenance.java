@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -40,6 +39,7 @@ implements Serializable {
     private static Logger logger = Logger.getLogger(VehicleMaintenance.class.getName());
 
     protected int vehicleCapacity;
+    
     protected List<ParkingLocation> parkingLocations;
     private Collection<Vehicle> vehicles;
 
@@ -93,7 +93,7 @@ implements Serializable {
         Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunctionType()).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(getFunctionType());
+            VehicleMaintenance garage = building.getVehicleMaintenance();
             if (garage.containsVehicle(vehicle)) {
                 garage.removeVehicle(vehicle);
             }
@@ -170,9 +170,9 @@ implements Serializable {
     public void timePassing(double time) { 
 
         // Check to see if any vehicles are in the garage that don't need to be.
-        Iterator<Vehicle> i = vehicles.iterator();
-        while (i.hasNext()) {
-            Vehicle vehicle = i.next();
+        //Iterator<Vehicle> i = vehicles.iterator();
+        //while (i.hasNext()) {
+        for (Vehicle vehicle : vehicles) {//= i.next();
             if (!vehicle.isReserved()) {
                 if (vehicle instanceof Crewable) {
                     Crewable crewableVehicle = (Crewable) vehicle;

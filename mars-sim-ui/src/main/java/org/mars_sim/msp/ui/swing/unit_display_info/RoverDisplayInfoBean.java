@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
@@ -41,11 +42,11 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 	 */
 	public String getSound(Unit unit) {
 		Vehicle rover = (Vehicle) unit;
-    	String status = rover.getStatus();
-    	if (Vehicle.MOVING.equals(status)) return SoundConstants.SND_ROVER_MOVING;
-    	else if (Vehicle.MAINTENANCE.equals(status)) return SoundConstants.SND_ROVER_MAINTENANCE;
-    	else if (Vehicle.MALFUNCTION.equals(status)) return SoundConstants.SND_ROVER_MALFUNCTION;
-    	else if (Vehicle.GARAGED.equals(status) || Vehicle.PARKED.equals(status)) return SoundConstants.SND_ROVER_PARKED;
+		StatusType status = rover.getStatus();
+    	if (StatusType.MOVING.equals(status)) return SoundConstants.SND_ROVER_MOVING;
+    	else if (StatusType.MAINTENANCE.equals(status)) return SoundConstants.SND_ROVER_MAINTENANCE;
+    	else if (StatusType.MALFUNCTION.equals(status)) return SoundConstants.SND_ROVER_MALFUNCTION;
+    	else if (StatusType.GARAGED.equals(status) || StatusType.PARKED.equals(status)) return SoundConstants.SND_ROVER_PARKED;
     	else return "";
 	}
 }

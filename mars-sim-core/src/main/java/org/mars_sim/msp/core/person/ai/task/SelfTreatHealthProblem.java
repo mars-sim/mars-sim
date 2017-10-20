@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -43,6 +45,8 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(SelfTreatHealthProblem.class.getName());
 
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.selfTreatHealthProblem"); //$NON-NLS-1$
@@ -55,9 +59,10 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
     private static final double STRESS_MODIFIER = .5D;
 
     // Data members.
-    private MedicalAid medicalAid;
     private double duration;
     private double treatmentTime;
+    
+    private MedicalAid medicalAid;
     private HealthProblem healthProblem;
 
     /**
@@ -88,12 +93,15 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
                     setStressModifier(STRESS_MODIFIER * treatment.getSkill());
                 }
                 else {
-                    logger.severe(healthProblem + " does not have treatment.");
+            		LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+            				"[" + person.getSettlement() + "] " + healthProblem + " does not have treatment.", null);
                     endTask();
                 }
             }
             else {
-                logger.severe(person + " could not self-treat a health problem at " + medicalAid);
+            	LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+            			"[" + person.getSettlement() + "] " +
+            			person + " could not self-treat a health problem at " + medicalAid + ".", null);
                 endTask();
             }
 
@@ -326,7 +334,9 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
         if (!medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
             medicalAid.requestTreatment(healthProblem);
             medicalAid.startTreatment(healthProblem, duration);
-            logger.info(person.getName() + " is self-treating " + healthProblem.getIllness().getType().toString().toLowerCase());
+        	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+        			"[" + person.getSettlement() + "] " +
+        			person.getName() + " is self-treating his/her " + healthProblem.getIllness().getType().toString().toLowerCase(), null);
 
             // Create starting task event if needed.
             if (getCreateEvents()) {
@@ -426,7 +436,8 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " injuried oneself during a medical self-treatment.");
+        	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+        			"[" + person.getSettlement() + "] " + person.getName() + " got injuried during a medical self-treatment.", null);
 
             entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
         }

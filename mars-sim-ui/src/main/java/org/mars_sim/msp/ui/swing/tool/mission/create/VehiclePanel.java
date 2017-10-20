@@ -11,8 +11,10 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -40,6 +42,8 @@ class VehiclePanel extends WizardPanel {
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
 	
+	private static MissionManager missionManager;
+
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -47,6 +51,8 @@ class VehiclePanel extends WizardPanel {
 	VehiclePanel(final CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
+		
+		missionManager = Simulation.instance().getMissionManager();
 		
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -226,7 +232,7 @@ class VehiclePanel extends WizardPanel {
             		else if (column == 8)
             			result = vehicle.getStatus();
             		else if (column == 9) {
-            			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            			Mission mission = missionManager.getMissionForVehicle(vehicle);
             			if (mission != null) result = mission.getDescription();
             			else result = "None";
             		}
@@ -271,17 +277,17 @@ class VehiclePanel extends WizardPanel {
 //                }
             }
             else if (column == 8) {
-    			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
+    			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED)
     				result = true;
                 
                 // Allow rescue/salvage mission to use vehicle undergoing maintenance.
                 String type = getWizard().getMissionData().getType();
                 if (MissionDataBean.RESCUE_MISSION.equals(type)) {
-                    if (vehicle.getStatus().equals(Vehicle.MAINTENANCE)) result = false;
+                    if (vehicle.getStatus() == StatusType.MAINTENANCE) result = false;
                 }
     		}
     		else if (column == 9) {
-    			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+    			Mission mission = missionManager.getMissionForVehicle(vehicle);
     			if (mission != null) result = true;
     		}
     		

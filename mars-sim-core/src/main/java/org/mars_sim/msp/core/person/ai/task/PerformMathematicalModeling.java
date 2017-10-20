@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -458,13 +459,13 @@ implements ResearchScientificStudy, Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = person.getVehicle();
-            if (vehicle.getStatus().equals(Vehicle.MOVING)) {
+            if (vehicle.getStatus() == StatusType.MOVING) {
                 result = true;
             }
-            else if (vehicle.getStatus().equals(Vehicle.TOWED)) {
+            else if (vehicle.getStatus() == StatusType.TOWED) {
                 Vehicle towingVehicle = vehicle.getTowingVehicle();
-                if (towingVehicle.getStatus().equals(Vehicle.MOVING) ||
-                        towingVehicle.getStatus().equals(Vehicle.TOWED)) {
+                if (towingVehicle.getStatus() == StatusType.MOVING ||
+                        towingVehicle.getStatus() == StatusType.TOWED) {
                     result = false;
                 }
             }

@@ -34,19 +34,23 @@ public class MissionListModel extends AbstractListModel<Mission> implements
 	// Private members.
 	private List<Mission> missions;
 	
+	private static MissionManager missionManager;
+	
 	/**
 	 * Constructor.
 	 */
 	public MissionListModel() {
 		missions = new ArrayList<Mission>();
 		
+		missionManager = Simulation.instance().getMissionManager();
+		
 		// Add all current missions.
-		MissionManager manager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = manager.getMissions().iterator();
+		//MissionManager manager = Simulation.instance().getMissionManager();
+		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) addMission(i.next());
 		
 		// Add list as mission manager listener.
-		manager.addListener(this);
+		missionManager.addListener(this);
 	}
 	
 	/**

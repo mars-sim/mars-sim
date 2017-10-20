@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -237,9 +238,9 @@ implements Serializable {
             if (vehicle.isReservedForMission())
                 usable = false;
             
-            String status = vehicle.getStatus();
-			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED))
-            		&& !status.equals(Vehicle.MAINTENANCE))
+            StatusType status = vehicle.getStatus();
+			if (!(vehicle.getStatus().equals(StatusType.PARKED) || vehicle.getStatus().equals(StatusType.GARAGED))
+            		&& !status.equals(StatusType.MAINTENANCE))
                 usable = false;
             
             if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)

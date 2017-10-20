@@ -8,8 +8,10 @@
 package org.mars_sim.msp.core.person.medical;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
@@ -29,6 +31,8 @@ public class HealthProblem implements Serializable {
 
     private static Logger logger = Logger.getLogger(HealthProblem.class.getName());
 
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    
     private static final int DEGRADING = 0;
     private static final int TREATMENT = 1;
     private static final int RECOVERING = 2;
@@ -42,6 +46,8 @@ public class HealthProblem implements Serializable {
     private double          duration;       // Length of the current state
     private MedicalAid      usedAid;        // Any aid being used
     private boolean         requiresBedRest; // Does recovery require bed rest?
+    
+    private static MedicalManager medicalManager;
 
     /**
      * Create a new Health Problem that relates to a single Physical
@@ -61,6 +67,8 @@ public class HealthProblem implements Serializable {
         usedAid = null;
         requiresBedRest = false;
 
+        medicalManager = Simulation.instance().getMedicalManager();
+        
         // Create medical event for health problem.
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
@@ -215,7 +223,9 @@ public class HealthProblem implements Serializable {
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
 
-		logger.info("Begins treating " + getSufferer().getName() + " for " + toString().toLowerCase());
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+        		"[" + getSufferer().getSettlement() + "] " +
+				getSufferer().getName() + " begins to receive treatment for " + toString().toLowerCase(), null);
     }
 
     /**
@@ -411,7 +421,7 @@ public class HealthProblem implements Serializable {
      * @return true if environmental problem.
      */
     public boolean isEnvironmentalProblem() {
-        return Simulation.instance().getMedicalManager().isEnvironmentalComplaint(illness);
+        return medicalManager.isEnvironmentalComplaint(illness);
     }
 
 

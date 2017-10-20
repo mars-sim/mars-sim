@@ -81,7 +81,7 @@ implements Serializable {
 	private static double LOAD_RATE = 20D;
 
 	/** The duration of the loading task (millisols). */
-	private static double DURATION = 10D + RandomUtil.getRandomDouble(50D);
+	private static double DURATION = RandomUtil.getRandomDouble(50D) + 10D;
 
 	// Data members
 	/** The vehicle that needs to be loaded. */
@@ -89,7 +89,7 @@ implements Serializable {
 	/** The person's settlement. */
 	private Settlement settlement;
 
-	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+	private static PersonConfig personConfig;// = SimulationConfig.instance().getPersonConfiguration();
 
 	/** Resources required to load. */
 	private Map<Resource, Number> requiredResources;
@@ -113,8 +113,9 @@ implements Serializable {
     	// Use Task constructor
     	super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
 
-        //personConfig = SimulationConfig.instance().getPersonConfiguration();
-
+    	if (personConfig == null)
+    		personConfig = SimulationConfig.instance().getPersonConfiguration();
+    	
     	VehicleMission mission = getMissionNeedingLoading();
     	if (mission != null) {
     		vehicle = mission.getVehicle();
@@ -124,6 +125,7 @@ implements Serializable {
     		optionalResources = mission.getOptionalResourcesToLoad();
     		requiredEquipment = mission.getRequiredEquipmentToLoad();
     		optionalEquipment = mission.getOptionalEquipmentToLoad();
+    		
     		settlement = person.getSettlement();
     		if (settlement == null) {
     		    endTask();
@@ -999,7 +1001,8 @@ implements Serializable {
     	double amountPersonPerSol = 0D;
     	double tripTimeSols = tripTime / 1000D;
 
-    	//if (personConfig == null)
+    	if (personConfig == null)
+    		personConfig = SimulationConfig.instance().getPersonConfiguration();
     	//	throw new IllegalArgumentException("personConfig is null");
     	
     	// Only life support resources are required at settlement at this time.

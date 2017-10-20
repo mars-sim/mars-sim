@@ -63,6 +63,8 @@ implements Serializable {
 
 	//	private static Logger logger = Logger.getLogger(Biologist.class.getName());
 
+	private static MissionManager missionManager;
+	
 	/**
 	 * Constructor.
 	 */
@@ -70,6 +72,8 @@ implements Serializable {
 		// Use Job constructor
 		super(Biologist.class);
 
+		missionManager = Simulation.instance().getMissionManager();
+		
 		// Add biologist-related tasks.
 		jobTasks.add(StudyFieldSamples.class);
 
@@ -154,7 +158,7 @@ implements Serializable {
 		}
 
 		// Add (labspace * tech level / 2) for all labs with biology specialties in rovers out on missions.
-		MissionManager missionManager = Simulation.instance().getMissionManager();
+		//MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> k = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (k.hasNext()) {
 			Mission mission = k.next();

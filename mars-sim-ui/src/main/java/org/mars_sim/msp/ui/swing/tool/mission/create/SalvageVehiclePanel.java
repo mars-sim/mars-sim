@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -17,6 +18,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -45,6 +47,8 @@ public class SalvageVehiclePanel extends WizardPanel {
     private JLabel selectedLabel;
     private JLabel errorMessageLabel;
     
+	private static MissionManager missionManager;
+	
     /**
      * Constructor
      * @param wizard the create mission wizard.
@@ -53,6 +57,8 @@ public class SalvageVehiclePanel extends WizardPanel {
         // User WizardPanel constructor.
         super(wizard);
         
+    	missionManager = Simulation.instance().getMissionManager();
+    	
         // Set the layout.
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
@@ -238,8 +244,7 @@ public class SalvageVehiclePanel extends WizardPanel {
                     else if (column == 1) 
                         result = vehicle.getStatus();
                     else if (column == 2) {
-                        Mission mission = Simulation.instance().getMissionManager().
-                                getMissionForVehicle(vehicle);
+                        Mission mission = missionManager.getMissionForVehicle(vehicle);
                         if (mission != null) result = mission.getDescription();
                         else result = "None";
                     }
@@ -277,12 +282,11 @@ public class SalvageVehiclePanel extends WizardPanel {
             LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
             
             if (column == 1) {
-    			if (!(vehicle.getStatus().equals(Vehicle.PARKED) || vehicle.getStatus().equals(Vehicle.GARAGED)))
+    			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED)
                 	result = true;
             }
             else if (column == 2) {
-                Mission mission = Simulation.instance().getMissionManager().
-                        getMissionForVehicle(vehicle);
+                Mission mission = missionManager.getMissionForVehicle(vehicle);
                 if (mission != null) result = true;
             }
             

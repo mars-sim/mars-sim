@@ -64,6 +64,8 @@ implements Serializable {
 
 	//private static Logger logger = Logger.getLogger(Areologist.class.getName());
 
+	private static MissionManager missionManager;
+	
 	/**
 	 * Constructor.
 	 */
@@ -71,6 +73,8 @@ implements Serializable {
 		// Use Job constructor
 		super(Areologist.class);
 
+		missionManager = Simulation.instance().getMissionManager();
+		
 		// Add areologist-related tasks.
 		jobTasks.add(StudyFieldSamples.class);
 
@@ -171,7 +175,7 @@ implements Serializable {
 		}
 
 		// Add (labspace * tech level / 2) for all labs with areology specialties in rovers out on missions.
-		MissionManager missionManager = Simulation.instance().getMissionManager();
+		//MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> k = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (k.hasNext()) {
 			Mission mission = k.next();

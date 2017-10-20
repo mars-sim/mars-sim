@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVAMeta.java
- * @version 3.08 2015-06-15
+ * @version 3.1.0 2017-10-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -41,7 +40,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(LoadVehicleEVAMeta.class.getName());
 
-    private SurfaceFeatures surface;
+    private static SurfaceFeatures surface;
 
     @Override
     public String getName() {
@@ -130,7 +129,6 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
 			result = result/4D;
 		}
-
 
         if (result < 0)
             result = 0;

@@ -10,13 +10,17 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+
+import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-import java.awt.*;
-
-
 
 
 /** 
@@ -114,8 +118,8 @@ public class DirectionDisplayPanel extends JPanel {
 		g.drawString("E", centerX + letterRadius - (eWidth / 2), centerY + (fontHeight / 2));
 
 		// Draw direction line if necessary
-		String status = vehicle.getStatus();
-		if (status.equals(Vehicle.MOVING) || (status.equals(Rover.STUCK) && vehicle.getSpeed() > 0D)) {
+		StatusType status = vehicle.getStatus();
+		if (status == StatusType.MOVING || (status == StatusType.STUCK && vehicle.getSpeed() > 0D)) {
             Direction direction = vehicle.getDirection();
 			double hyp = (double) (CIRCLE_RADIUS);
 			int newX = (int) Math.round(hyp * direction.getSinDirection());

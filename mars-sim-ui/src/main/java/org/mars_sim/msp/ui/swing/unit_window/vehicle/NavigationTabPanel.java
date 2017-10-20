@@ -13,11 +13,13 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -63,16 +65,23 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private TerrainDisplayPanel terrainDisplay;
 
     // Data cache
-    private VehicleOperator driverCache;
-    private String statusCache;
     private boolean beaconCache;
+    
     private double speedCache;
     private double elevationCache;
-    private Settlement destinationSettlementCache;
-    private String destinationTextCache;
-    private Coordinates destinationLocationCache;
-    private String etaCache;
     private double distanceCache;
+    
+    private String destinationTextCache;
+    private String etaCache;
+    
+    private VehicleOperator driverCache;
+    private StatusType statusCache;
+
+    private Coordinates destinationLocationCache;
+    private Settlement destinationSettlementCache;
+    
+	private static MissionManager missionManager;
+
 
     /**
      * Constructor
@@ -84,6 +93,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Use the TabPanel constructor
         super("Navigation", null, "Navigation", unit, desktop);
 
+      	missionManager = Simulation.instance().getMissionManager();
+    	
 		// Create towing label.
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JLabel titleLabel = new JLabel(Msg.getString("NavigationTabPanel.title"), JLabel.CENTER); //$NON-NLS-1$
@@ -181,7 +192,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationTextLabel = new JLabel("", JLabel.LEFT);
 
         boolean hasDestination = false;
-        Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+        Mission mission = missionManager.getMissionForVehicle(vehicle);
         if ((mission != null) && (mission instanceof VehicleMission)) {
 
             VehicleMission vehicleMission = (VehicleMission) mission;
@@ -332,7 +343,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             }
         }
 
-        Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+        Mission mission = missionManager.getMissionForVehicle(vehicle);
         if ((mission != null) && (mission instanceof VehicleMission)
                 && ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
         	NavPoint destinationPoint = ((VehicleMission) mission).getNextNavpoint();

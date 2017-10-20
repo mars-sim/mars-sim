@@ -109,6 +109,8 @@ implements Serializable {
 
     private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
     
+	private static MissionManager missionManager;
+	
     /**
      * Constructor.
      * @param startingPerson the person starting the settlement.
@@ -117,6 +119,8 @@ implements Serializable {
         // Use RoverMission constructor.
         super(DEFAULT_DESCRIPTION, startingPerson);
 
+		missionManager = Simulation.instance().getMissionManager();
+		 
         // Set the mission capacity.
         setMissionCapacity(MAX_MEMBERS);
         int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
@@ -698,7 +702,9 @@ implements Serializable {
 
         boolean result = false;
 
-        Iterator<Mission> i = Simulation.instance().getMissionManager().getMissions().iterator();
+        if (missionManager == null)
+        	missionManager = Simulation.instance().getMissionManager();
+        Iterator<Mission> i = missionManager.getMissions().iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
             if (mission instanceof EmergencySupplyMission) {
@@ -819,8 +825,9 @@ implements Serializable {
     private static double getResourcesOnMissions(Settlement settlement, AmountResource resource) {
         double result = 0D;
 
-        MissionManager manager = Simulation.instance().getMissionManager();
-        Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
+        if (missionManager == null)
+        	missionManager = Simulation.instance().getMissionManager();
+        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
             if (mission instanceof RoverMission) {

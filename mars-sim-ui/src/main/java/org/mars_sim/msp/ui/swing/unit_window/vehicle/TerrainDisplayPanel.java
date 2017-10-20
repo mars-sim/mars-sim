@@ -9,6 +9,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import javax.swing.*;
@@ -74,7 +75,7 @@ public class TerrainDisplayPanel extends JPanel {
         
         // Find terrain grade.
         double terrainGrade = 0D;
-        if (vehicle.getStatus().equals(Vehicle.MOVING)) 
+        if (vehicle.getStatus() == StatusType.MOVING) 
             terrainGrade = vehicle.getTerrainGrade();
         
         // Determine y difference 

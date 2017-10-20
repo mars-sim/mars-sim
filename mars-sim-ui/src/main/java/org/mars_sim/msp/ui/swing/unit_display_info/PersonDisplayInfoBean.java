@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDisplayInfo.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-10-20
  * @author Scott Davis
  */
 
@@ -15,7 +14,6 @@ import javax.swing.Icon;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.ui.swing.ImageLoader;

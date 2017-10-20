@@ -51,7 +51,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private Map<Double, Map<GraphicsNode, BufferedImage>> svgImageCache;
 	private double scale;
 
-	private static MissionManager missionMgr;
+	private static MissionManager missionManager;
 	private static UnitManager unitMgr;
 	
 	/**
@@ -59,7 +59,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param mapPanel the settlement map panel.
 	 */
 	public VehicleMapLayer(SettlementMapPanel mapPanel) {
-		missionMgr = Simulation.instance().getMissionManager();
+		missionManager = Simulation.instance().getMissionManager();
 		unitMgr = Simulation.instance().getUnitManager();
 		
 		// Initialize data members.
@@ -205,7 +205,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		boolean result = false;
 
 		// For vehicle missions, check if vehicle is loading or unloading for the mission.
-		Mission mission = missionMgr.getMissionForVehicle(vehicle);
+		Mission mission = missionManager.getMissionForVehicle(vehicle);
 		if ((mission != null) && (mission instanceof VehicleMission)) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
 			MissionPhase missionPhase = vehicleMission.getPhase();

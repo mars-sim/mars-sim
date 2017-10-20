@@ -69,7 +69,6 @@ public class AudioPlayer {
 		
 		soundTracks = new ArrayList<>();
 		soundTracks.add(SoundConstants.ST_AREOLOGIE);
-		soundTracks.add(SoundConstants.ST_FANTASCAPE);
 		soundTracks.add(SoundConstants.ST_PUZZLE);
 		soundTracks.add(SoundConstants.ST_CITY);
 		soundTracks.add(SoundConstants.ST_MISTY);
@@ -80,9 +79,12 @@ public class AudioPlayer {
 		soundTracks.add(SoundConstants.ST_BEDTIME);
 		soundTracks.add(SoundConstants.ST_BOG_CREATURES);
 		soundTracks.add(SoundConstants.ST_LOST_JUNGLE);
+		
+		// not for playing at the start of the sim due to its loudness
 		soundTracks.add(SoundConstants.ST_CLIPPITY);
 		soundTracks.add(SoundConstants.ST_MONKEY);
 		soundTracks.add(SoundConstants.ST_SURREAL);
+		soundTracks.add(SoundConstants.ST_FANTASCAPE);
 
 		num_tracks = soundTracks.size();
 		
@@ -464,9 +466,9 @@ public class AudioPlayer {
 			}
 			else {		
 				int rand = 0;
-				// At the start of the sim, refrain from playing the last 3 tracks due to their sudden loudness
+				// At the start of the sim, refrain from playing the last 4 tracks due to their sudden loudness
 				if (previous_tracks.isEmpty()) {
-						rand = RandomUtil.getRandomInt(num_tracks-4);
+					rand = RandomUtil.getRandomInt(num_tracks-4);
 				}
 				else
 					RandomUtil.getRandomInt(num_tracks-1);

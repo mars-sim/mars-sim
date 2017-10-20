@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitDisplayInfoFactory.java
- * @version 3.07 2015-01-21
-
+ * @version 3.1.0 2017-10-20
  * @author Scott Davis
  */
 

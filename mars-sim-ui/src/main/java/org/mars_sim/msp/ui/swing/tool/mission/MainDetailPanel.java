@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.1.0 2017-05-03
+ * @version 3.1.0 2017-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -66,6 +66,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -527,10 +528,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					isVehicle = true;
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
-					String s = vehicle.getStatus();
-					if (s == null)
-						s = "Not Applicable";
-					vehicleStatusLabel.setText(s);
+					StatusType s = vehicle.getStatus();
+					//if (s == null)
+					//	s = "Not Applicable";
+					vehicleStatusLabel.setText(s.getName());
 					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					try {
 						int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
@@ -558,7 +559,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				        isVehicle = true;
 				        vehicleButton.setText(vehicle.getName());
 	                    vehicleButton.setVisible(true);
-	                    vehicleStatusLabel.setText(vehicle.getStatus()); //$NON-NLS-1$
+	                    vehicleStatusLabel.setText(vehicle.getStatus().getName()); //$NON-NLS-1$
 	                    speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
 	                    traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -576,7 +577,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	                    isVehicle = true;
 	                    vehicleButton.setText(vehicle.getName());
 	                    vehicleButton.setVisible(true);
-	                    vehicleStatusLabel.setText(vehicle.getStatus()); //$NON-NLS-1$
+	                    vehicleStatusLabel.setText(vehicle.getStatus().getName()); //$NON-NLS-1$
 	                    speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
 	                    traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -742,10 +743,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				if (vehicle != null) {
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
-					String s = vehicle.getStatus();
-					if (s == null)
-						s = "Not Applicable";
-					vehicleStatusLabel.setText(s);
+					StatusType s = vehicle.getStatus();
+					//if (s == null)
+					//	s = "Not Applicable";
+					vehicleStatusLabel.setText(s.getName());
 					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
@@ -792,10 +793,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			UnitEventType type = event.getType();
 			Vehicle vehicle = (Vehicle) event.getSource();
 			if (type == UnitEventType.STATUS_EVENT) {
-				String s = vehicle.getStatus();
-				if (s == null)
-					s = "Not Applicable";
-				vehicleStatusLabel.setText(s);
+				StatusType s = vehicle.getStatus();
+				//if (s == null)
+				//	s = "Not Applicable";
+				vehicleStatusLabel.setText(s.getName());
 			}
 			else if (type == UnitEventType.SPEED_EVENT)
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
