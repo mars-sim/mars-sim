@@ -36,7 +36,7 @@ extends HistoricalEvent implements Serializable {
 		super(HistoricalEventCategory.MEDICAL, 
 				eventType, 
 				person,
-				person.getLocationTag().getLocationName(),//.getAssociatedSettlement().getName(),
+				person.getLocationTag().getLongLocationName(),//.getAssociatedSettlement().getName(),
 				illness.getIllness().getType().getName());
 	}
 }

@@ -147,8 +147,8 @@ public class UIConfig {
             uiElement.addContent(volumeElement);
 
             AudioPlayer player = desktop.getSoundPlayer();
-            volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
-            volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
+            volumeElement.setAttribute(SOUND, Float.toString(player.getMusicGain()));
+            volumeElement.setAttribute(SOUND, Float.toString(player.getEffectGain()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
 
@@ -246,8 +246,8 @@ public class UIConfig {
             uiElement.addContent(volumeElement);
 
             AudioPlayer player = desktop.getSoundPlayer();
-            volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
-            volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
+            volumeElement.setAttribute(SOUND, Float.toString(player.getMusicGain()));
+            volumeElement.setAttribute(SOUND, Float.toString(player.getEffectGain()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
             

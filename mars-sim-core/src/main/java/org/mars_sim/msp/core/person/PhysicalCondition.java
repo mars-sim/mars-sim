@@ -518,11 +518,7 @@ implements Serializable {
         // double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
         // kJoules = kJoules / exponential(xdelta);
 
-        if (kJoules < 100D) {
-            // 100 kJ is the lowest possible energy level
-        	kJoules = 100D;
-        }
-        else if (kJoules < 200D) {
+        if (kJoules < 200D) {
         	kJoules -= xdelta *.75;
         }
         else if (kJoules < 400D) {
@@ -540,7 +536,10 @@ implements Serializable {
         else
         	kJoules -= xdelta;
         
-
+        if (kJoules < 100D) {
+            // 100 kJ is the lowest possible energy level
+        	kJoules = 100D;
+        }
     }
 
 //    public double exponential(double x) {
@@ -552,12 +551,13 @@ implements Serializable {
 
     /** Sets the person's energy level
      *  @param kilojoules
-     */
+ 
     public void setEnergy(double kJ) {
         kJoules = kJ;
         //System.out.println("PhysicalCondition : SetEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
     }
-
+    */
+    
     /** Adds to the person's energy intake by eating
      *  @param person's energy level in kilojoules
      */
@@ -812,7 +812,7 @@ implements Serializable {
                     	addMedicalComplaint(panicAttack);
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                            	"[" + person.getSettlement() + "] " + name + " suffers from a panic attack.", null);
+                            	"[" + person.getLocationTag().getSettlementName() + "] " + name + " suffers from a panic attack.", null);
 
                     }
                     else
@@ -826,7 +826,7 @@ implements Serializable {
                     	addMedicalComplaint(depression);
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                            	"[" + person.getSettlement() + "] " + name + " has an episode of depression.", null);
+                            	"[" + person.getLocationTag().getSettlementName() + "] " + name + " has an episode of depression.", null);
                     }
                     else
                     	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
@@ -864,7 +864,7 @@ implements Serializable {
                     addMedicalComplaint(highFatigue);
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                        	"[" + person.getSettlement() + "] " + name + " collapses because of high fatigue exhaustion.", null);
+                        	"[" + person.getLocationTag().getSettlementName() + "] " + name + " collapses because of high fatigue exhaustion.", null);
                     
                 }
                 else
@@ -930,23 +930,24 @@ implements Serializable {
             HealthProblem problem = new HealthProblem(complaint, person);
             problems.put(complaint, problem);
             String n = complaint.getType().getName().toLowerCase();
-            String prefix = "";
+            String prefix = "[" + person.getLocationTag().getShortLocationName() + "] ";
             String phrase = "";
             String suffix = ".";
             
             LocationSituation ls = person.getLocationSituation();
             
         	if (LocationSituation.IN_SETTLEMENT == ls) {
-        		prefix = "[" + person.getSettlement() + "] ";
+        		//prefix = "[" + person.getSettlement() + "] ";
         		suffix = " in " + person.getBuildingLocation() + ".";
         	}
+/*        	
         	else if (LocationSituation.IN_VEHICLE == ls) {
-        		prefix = "[" + person.getSettlement() + "] ";
+        		prefix = "[" + person.getVehicle() + "] ";
         	}
         	else if (LocationSituation.OUTSIDE == ls) {
         		prefix = "[At " + person.getCoordinates().getFormattedString() + "] ";
         	}
-        		
+*/       		
             if (n.equalsIgnoreCase("starvation"))
             	phrase = " is starving" ;            	
             else if (n.equalsIgnoreCase("decompression"))
@@ -1015,15 +1016,18 @@ implements Serializable {
         inv.addAmountDemandTotalRequest(ResourceUtil.foodAR);
 
         if (foodAvailable < 0.01D) {
-           throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");
+           //throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");
+            LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+            		"[" + person.getLocationTag().getShortLocationName() + "]" + " only " + foodAvailable + " kg preserved food remaining.", null);
         }
+        
         // if container has less than enough food, finish up all food in the container
         else {
 
             if (foodEaten > foodAvailable)
             	foodEaten = foodAvailable;
 
-            foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
+            foodEaten = Math.round(foodEaten * 1_000_000.0) / 1_000_000.0;
             // subtract food from container
             inv.retrieveAmountResource(ResourceUtil.foodAR, foodEaten);
 

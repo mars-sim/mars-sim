@@ -48,7 +48,7 @@ public class OGGSoundClip {
 	private float balance;
 	private float gain = .8f;
 	private float oldGain;
-	private float volume = .8f;
+	//private float volume = .8f;
 
 	private boolean mute;
 	private boolean paused;
@@ -159,17 +159,17 @@ public class OGGSoundClip {
 
 	/**
 	 * Compute the gain value for the playback--based on the new value of volume in the increment or decrement of 0.05f.
-	 * @param volume the volume
+	 * @param gain the gain
 	 */
-	public void setGain(float volume) {
+	public void setGain(float gain) {
 		//System.out.println("OGGSoundClip's setGain() is on " + Thread.currentThread().getName());
 
-		if (volume > 1)
-			volume = 1;
-		else if (volume < 0)
-			volume = 0;
+		if (gain > 1)
+			gain = 1;
+		else if (gain < 0)
+			gain = 0;
 
-		this.volume = volume;
+		this.gain = gain;
 
 		//System.out.println("volume : " + volume);
 
@@ -201,7 +201,7 @@ public class OGGSoundClip {
 
 				float range = max - min;
 				float step = range/20f;
-				float num = volume/0.05f;
+				float num = gain/0.05f;
 				float value = min + num * step;
 
 				if (value < min)
@@ -231,9 +231,9 @@ public class OGGSoundClip {
 
 	}
 
-	public float getVolume() {
-		return volume;
-	}
+	//public float getVolume() {
+	//	return volume;
+	//}
 
 	/*
 	public void setVolume() {
@@ -506,7 +506,7 @@ public class OGGSoundClip {
 			this.channels = channels;
 
 			setBalance(balance);
-			setGain(volume);
+			setGain(gain);
 		} catch (Exception ee) {
 			System.out.println(ee);
 		}
@@ -787,6 +787,9 @@ public class OGGSoundClip {
 		else if (outputLine.isControlSupported(BooleanControl.Type.MUTE)) {
 			BooleanControl muteControl = (BooleanControl) outputLine.getControl(BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
+
+			if (!mute)
+				setGain(oldGain);
 		}
 
 	}

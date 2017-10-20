@@ -80,10 +80,72 @@ public class LocationTag implements LocationState, Serializable {
 		return UNKNOWN;
 	}
 
-	public String getLocationName() {
+	public String getShortLocationName() {
 		if (p != null) {
 			if (p.getVehicle() != null)
 				return p.getVehicle().getName();
+			else {
+				if (p.getSettlement() != null) {
+					return p.getSettlement().getName();
+				}
+				else
+					return p.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
+			}
+		}
+		
+		else if (e != null) {
+			if (e.getContainerUnit() != null)
+				return e.getContainerUnit().getName();
+			else if (e.getTopContainerUnit() != null)
+				return e.getTopContainerUnit().getName();
+			//if (e.getSettlement() != null)
+			//	return e.getSettlement().getName();
+			else
+				return e.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
+		}
+		
+		else if (r != null) {
+			if (r.getVehicle() != null)
+				return r.getVehicle().getName();
+			else {
+				if (r.getSettlement() != null) {
+					return r.getSettlement().getName();
+				}
+				else
+					return r.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
+			}
+		}
+		else if (b != null) {
+			return b.getNickName() + " in " + b.getSettlement().getName();
+		}
+		
+		else if (v != null) {
+			if (v.getSettlement() != null) {
+				if (v.getBuildingLocation() != null) {
+					return v.getBuildingLocation().getNickName() + " in " + v.getSettlement().getName();
+				}
+				else {
+					return v.getSettlement().getName();
+				}
+			}
+			else
+				return v.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
+		}
+		
+		return UNKNOWN;
+	}
+	
+	public String getLongLocationName() {
+		if (p != null) {
+			if (p.getVehicle() != null) {
+				if (p.getVehicle().getBuildingLocation() != null) {
+					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
+				}
+				else {
+					return p.getVehicle().getName() + " in " + p.getVehicle().getSettlement().getName();
+				}
+			}
+ 
 			else {
 				if (p.getSettlement() != null) {
 					if (p.getBuildingLocation() != null) {

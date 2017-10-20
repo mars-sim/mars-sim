@@ -622,7 +622,7 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)),
 				e -> {		
-					adjustSound(true, true);
+					adjustSound();
 				});
 		Nodes.addInputMap(rootStackPane, ctrlM);
 
@@ -754,31 +754,33 @@ public class MainScene {
 		return text;
 	}
 
-	public void adjustSound(boolean isEffect, boolean isMusic) {
-		if (!masterClock.isPaused()) {
-			if (isEffect) {
-				boolean isMute = menuBar.getEffectMuteItem().isSelected();
-				if (isMute) {
-					unmuteSound(isEffect, isMusic);
-				} else {
-					muteSound(isEffect, isMusic);
-				}
-			}
-			if (isMusic) {
-				boolean isMute = menuBar.getMusicMuteItem().isSelected();
-				if (isMute) {
-					unmuteSound(isEffect, isMusic);
-				} else {
-					muteSound(isEffect, isMusic);
-				}
-			}
+	public void adjustSound() {
+		if (musicSlider.getValue() > 0) {
+			pauseSound(false, true);
 		}
-		else {
-			logger.info("Unable to mute or unmute while sim is on pause!");
+		else
+			restoreSound(false, true);
+
+		if (effectSlider.getValue() > 0) {
+			pauseSound(true, false);
 		}
+		else
+			restoreSound(true, false);
+		
+/*		
+		//if (!masterClock.isPaused()) {
+			boolean isMute = menuBar.getEffectMuteItem().isSelected();
+			if (isMute) {
+				restoreSound(isEffect, isMusic);
+			} else {
+				pauseSound(isEffect, isMusic);
+			}
+		//}
+
+*/
 	}
 	
-	public void muteSound(boolean isEffect, boolean isMusic) {
+	public void pauseSound(boolean isEffect, boolean isMusic) {
 		if (isMusic) {
 			musicSliderCache = musicSlider.getValue();
 			menuBar.getMusicMuteItem().setSelected(true);
@@ -791,11 +793,11 @@ public class MainScene {
 			effectSlider.setValue(0);
 			effectMuteBox.setSelected(true);
 		}
-		soundPlayer.mute(isEffect, isMusic);
+		soundPlayer.pauseSound(isEffect, isMusic);
 	}
 
 	
-	public void unmuteSound(boolean isEffect, boolean isMusic) {
+	public void restoreSound(boolean isEffect, boolean isMusic) {
 		if (isMusic) {
 			musicSlider.setValue(musicSliderCache);
 			menuBar.getMusicMuteItem().setSelected(false);
@@ -811,7 +813,7 @@ public class MainScene {
 			effectMuteBox.setSelected(false);
 		}
 		
-		soundPlayer.unmute(isEffect, isMusic);
+		soundPlayer.restoreSound(isEffect, isMusic);
 
 	}
 	
@@ -1325,7 +1327,7 @@ public class MainScene {
 
 		musicSlider.setMin(0);
 		musicSlider.setMax(10);
-		musicSlider.setValue(convertVolume2Slider(soundPlayer.getMusicVolume()));
+		musicSlider.setValue(convertVolume2Slider(soundPlayer.getMusicGain()));
 		musicSlider.setMajorTickUnit(1);
 		// soundSlider.setMinorTickCount();
 		musicSlider.setShowTickLabels(true);
@@ -1341,12 +1343,12 @@ public class MainScene {
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
 					if (sliderValue <= 0) { 
-						soundPlayer.mute(false, true);
+						soundPlayer.pauseSound(false, true);
 						musicMuteBox.setSelected(true);
 						menuBar.getMusicMuteItem().setSelected(false);
 						//muteSound(false, true);
 					} else {
-						soundPlayer.unmute(false, true);
+						soundPlayer.restoreSound(false, true);
 						soundPlayer.setMusicVolume((float) convertSlider2Volume(sliderValue));
 						musicMuteBox.setSelected(false);
 						menuBar.getMusicMuteItem().setSelected(true);
@@ -1399,7 +1401,7 @@ public class MainScene {
 
 		effectSlider.setMin(0);
 		effectSlider.setMax(10);
-		effectSlider.setValue(convertVolume2Slider(soundPlayer.getEffectVolume()));
+		effectSlider.setValue(convertVolume2Slider(soundPlayer.getEffectGain()));
 		effectSlider.setMajorTickUnit(1);
 		// soundSlider.setMinorTickCount();
 		effectSlider.setShowTickLabels(true);
@@ -1418,13 +1420,13 @@ public class MainScene {
 					if (sliderValue <= 0) { 
 						effectMuteBox.setSelected(true);
 						menuBar.getEffectMuteItem().setSelected(false);
-						soundPlayer.mute(true, false);
+						soundPlayer.pauseSound(true, false);
 						//muteSound(true, false);
 					} else {
 						soundPlayer.setEffectVolume((float) convertSlider2Volume(sliderValue));
 						effectMuteBox.setSelected(false);
 						menuBar.getEffectMuteItem().setSelected(true);
-						soundPlayer.unmute(true, false);
+						soundPlayer.restoreSound(true, false);
 						//unmuteSound(true, false);
 					}
 				}

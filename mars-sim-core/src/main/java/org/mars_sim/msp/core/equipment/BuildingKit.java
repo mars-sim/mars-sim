@@ -125,7 +125,7 @@ implements Serializable, Malfunctionable, Salvagable {
 
 	@Override
 	public String getLocationName() {
-		return getLocationTag().getLocationName();//getSettlementName();
+		return getLocationTag().getLongLocationName();//getSettlementName();
 	}
 	
 	@Override

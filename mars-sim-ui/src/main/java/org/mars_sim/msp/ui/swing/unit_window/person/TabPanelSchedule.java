@@ -597,9 +597,9 @@ extends TabPanel {
 	        int todaySol = taskSchedule.getSolCache();
 			//OneTask lastTask = null;
 			OneActivity lastTask = null;
-        	String lastName = null;
+        	//String lastName = null;
         	String lastDes = null;
-        	String lastPhase = null;
+        	//String lastPhase = null;
 			//OneTask currentTask = null;
 			OneActivity currentTask = null;
 			String currentDes = null;
@@ -632,9 +632,9 @@ extends TabPanel {
 		        	// make sure this is NOT the very first task (i = 0) of the day
 		        	if (i != 0) {
 		        		lastTask = displaySchedule.get(i - 1);
-		        		lastName = taskSchedule.convertTaskName(lastTask.getTaskName());
+		        		//lastName = taskSchedule.convertTaskName(lastTask.getTaskName());
 		        		lastDes = taskSchedule.convertTaskDescription(lastTask.getDescription());
-		        		lastPhase = taskSchedule.convertTaskPhase(lastTask.getPhase());
+		        		//lastPhase = taskSchedule.convertTaskPhase(lastTask.getPhase());
 
 		        		// check if the last task is the same as the current task
 			        	if (lastDes.equals(currentDes)) {

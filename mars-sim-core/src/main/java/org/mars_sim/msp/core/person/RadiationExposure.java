@@ -473,7 +473,7 @@ public class RadiationExposure implements Serializable {
     	    			+ " during an EVA operation near " + person.getSettlement(), null);
 	    		else if (person.getMind().getMission() != null)
 	    			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	    				"[At " + person.getCoordinates().getFormattedString() + "] "
+	    				"[" + person.getCoordinates().getFormattedString() + "] "
 	    				+ person.getName() + " was exposed to " + exposure
     	    			+ " mSv dose of radiation" // in body region " + i
     	    			+ " during " + person.getMind().getMission().getName(), null);

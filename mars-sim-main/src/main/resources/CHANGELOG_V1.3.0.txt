@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4190) - 2017-10-17
+## v3.1.0-Preview 9 (build 4194) - 2017-10-20
 
 
 ### KNOWN LIMITATIONS :
@@ -97,6 +97,7 @@ https://github.com/mars-sim/mars-sim
 
 11. Fix various bugs during emergency rescue missions.
 
+12. Fix pause/unpause music/sound effect after saving/pausing sim.
 
 -----------------------------------------------------------------------------------------
 

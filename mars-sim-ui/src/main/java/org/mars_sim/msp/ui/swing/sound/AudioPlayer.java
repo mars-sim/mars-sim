@@ -34,8 +34,8 @@ public class AudioPlayer {
 	private static int num_tracks;
 	
 	/** The volume of the audio player (0.0 to 1.0) */
-	private float musicVolume = .8f;
-	private float effectVolume = .8f;
+	private float musicGain = .8f;
+	private float effectGain = .8f;
 
 	private int play_times = 0;
 
@@ -245,50 +245,50 @@ public class AudioPlayer {
 	 * Gets the volume of the background music.
 	 * @return volume (0.0 to 1.0)
 	 */
-	public float getMusicVolume() {
-		return musicVolume;
+	public float getMusicGain() {
+		return musicGain;
 	}
 
 	/**
 	 * Gets the volume of the sound effect.
 	 * @return volume (0.0 to 1.0)
 	 */
-	public float getEffectVolume() {
-		return effectVolume;
+	public float getEffectGain() {
+		return effectGain;
 	}
 	
 	public void musicVolumeUp() {
 		//Platform.runLater(() -> {
-			musicVolume = currentBackgroundTrack.getVolume() + .05f;
-			if (musicVolume > 1f)
-				musicVolume = 1f;
+			musicGain = currentBackgroundTrack.getGain() + .05f;
+			if (musicGain > 1f)
+				musicGain = 1f;
 			setMusicVolume();
 		//});
 	}
 
 	public void musicVolumeDown() {
 		//Platform.runLater(() -> {
-			musicVolume = currentBackgroundTrack.getVolume() - .05f;
-			if (musicVolume < -1f)
-				musicVolume = -1f;
+			musicGain = currentBackgroundTrack.getGain() - .05f;
+			if (musicGain < -1f)
+				musicGain = -1f;
 			setMusicVolume();
 		//});
 	}
 
 	public void effectVolumeUp() {
 		//Platform.runLater(() -> {
-			effectVolume = currentOGGSoundClip.getVolume() + .05f;
-			if (effectVolume > 1f)
-				effectVolume = 1f;
+			effectGain = currentOGGSoundClip.getGain() + .05f;
+			if (effectGain > 1f)
+				effectGain = 1f;
 			setEffectVolume();
 		//});
 	}
 
 	public void effectVolumeDown() {
 		//Platform.runLater(() -> {
-			effectVolume = currentOGGSoundClip.getVolume() - .05f;
-			if (effectVolume < -1f)
-				effectVolume = -1f;
+			effectGain = currentOGGSoundClip.getGain() - .05f;
+			if (effectGain < -1f)
+				effectGain = -1f;
 			setEffectVolume();
 		//});
 	}
@@ -296,8 +296,8 @@ public class AudioPlayer {
 	@SuppressWarnings("restriction")
 	public void setMusicVolume() {
 		//Platform.runLater(() -> {
-			if (hasMasterGain && !isMusicMute() && currentBackgroundTrack != null && !currentBackgroundTrack.isMute()){
-				currentBackgroundTrack.setGain(musicVolume);
+			if (hasMasterGain && currentBackgroundTrack != null && !currentBackgroundTrack.isMute()){ //&& !isMusicMute()
+				currentBackgroundTrack.setGain(musicGain);
 			}
 		//});
 	}
@@ -305,8 +305,8 @@ public class AudioPlayer {
 	@SuppressWarnings("restriction")
 	public void setEffectVolume() {
 		//Platform.runLater(() -> {
-			if (hasMasterGain && !isEffectMute()&& currentOGGSoundClip != null && !currentOGGSoundClip.isMute()){
-				currentOGGSoundClip.setGain(effectVolume);
+			if (hasMasterGain && currentOGGSoundClip != null && !currentOGGSoundClip.isMute()){ //&& !isEffectMute()
+				currentOGGSoundClip.setGain(effectGain);
 			}
 		//});
 	}
@@ -321,9 +321,9 @@ public class AudioPlayer {
 			volume = 0F;
 		if (volume > 1F)
 			volume = 1F;
-		this.musicVolume = volume;
+		this.musicGain = volume;
 		
-		if (hasMasterGain && !isMusicMute() && currentBackgroundTrack != null && !currentBackgroundTrack.isMute()){
+		if (hasMasterGain && currentBackgroundTrack != null && !currentBackgroundTrack.isMute()){ //&& !isMusicMute()
 			currentBackgroundTrack.setGain(volume);
 		}
 	}
@@ -338,9 +338,9 @@ public class AudioPlayer {
 			volume = 0F;
 		if (volume > 1F)
 			volume = 1F;
-		this.effectVolume = volume;
+		this.effectGain = volume;
 
-		if (hasMasterGain && !isEffectMute() && currentOGGSoundClip != null && !currentOGGSoundClip.isMute()) {
+		if (hasMasterGain && currentOGGSoundClip != null && !currentOGGSoundClip.isMute()) { // && !isEffectMute()
 			currentOGGSoundClip.setGain(volume);
 		}
 	}
@@ -354,7 +354,7 @@ public class AudioPlayer {
 	public boolean isMusicMute() {
 		boolean result = false;
 		if (currentBackgroundTrack != null) {
-			result = currentBackgroundTrack.isMute() || currentBackgroundTrack.getGain() == 0;
+			result = currentBackgroundTrack.isMute();// || currentBackgroundTrack.getGain() == 0;
 		}
 		
 		return result;
@@ -370,7 +370,7 @@ public class AudioPlayer {
 	public boolean isEffectMute() {
 		boolean result = false;
 		if (currentOGGSoundClip != null) {
-			result = currentOGGSoundClip.isMute() || currentOGGSoundClip.getGain() == 0 ;
+			result = currentOGGSoundClip.isMute();// || currentOGGSoundClip.getGain() == 0 ;
 		}
 
 		return result;
@@ -378,11 +378,13 @@ public class AudioPlayer {
 
 	public void restoreSound(boolean isEffect, boolean isTrack) {
 		if (isEffect && currentOGGSoundClip != null) {
+			//logger.info("restoreSound() lastMusicState:"+ lastMusicState);
 			currentOGGSoundClip.setMute(lastEffectState);
 			setEffectVolume();
 		}
 		
 		if (isTrack && currentBackgroundTrack != null) {
+			//logger.info("restoreSound() lastEffectState:"+ lastEffectState);
 			currentBackgroundTrack.setMute(lastMusicState);
 			setMusicVolume();
 		}
@@ -391,11 +393,12 @@ public class AudioPlayer {
 	
 
 	public void pauseSound(boolean isEffect, boolean isTrack) {
-		if (currentBackgroundTrack != null)
+		if (currentBackgroundTrack != null && !currentBackgroundTrack.isMute())
 			lastMusicState = currentBackgroundTrack.isMute();
-		if (currentOGGSoundClip != null)
+		//logger.info("pauseSound() lastMusicState:"+ lastMusicState);
+		if (currentOGGSoundClip != null && !currentOGGSoundClip.isMute())
 			lastEffectState = currentOGGSoundClip.isMute();
-		
+		//logger.info("pauseSound() lastEffectState:"+ lastEffectState);		
 		mute(isEffect, isTrack);
 	}
 	
