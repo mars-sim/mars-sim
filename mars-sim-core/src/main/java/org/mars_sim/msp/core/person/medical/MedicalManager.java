@@ -11,8 +11,11 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class provides a Factory for the {@link Complaint} class. Some of the Medical Complaints are pre-defined. Instances are
@@ -24,7 +27,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(MedicalManager.class.getName());
+	//private static final Logger logger = Logger.getLogger(MedicalManager.class.getName());
 
 	public final static int MINUTES_PER_DAY = 24 * 60;
 

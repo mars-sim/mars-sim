@@ -41,6 +41,7 @@ public enum ComplaintType {
 	MINOR_BURNS						(Msg.getString("ComplaintType.minorBurns")), //$NON-NLS-1$
 	PANIC_ATTACK					(Msg.getString("ComplaintType.panicAttack")), //$NON-NLS-1$
 	PULL_MUSCLE_TENDON				(Msg.getString("ComplaintType.pulledMuscleTendon")), //$NON-NLS-1$
+	RADIATION_SICKNESS				(Msg.getString("ComplaintType.radiationSickness")), //$NON-NLS-1$
 	RUPTURED_APPENDIX				(Msg.getString("ComplaintType.rupturedAppendix")), //$NON-NLS-1$
 	SUICIDE							(Msg.getString("ComplaintType.suicide")) //$NON-NLS-1$
 	;

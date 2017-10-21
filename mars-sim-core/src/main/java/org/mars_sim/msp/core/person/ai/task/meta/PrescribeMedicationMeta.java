@@ -7,16 +7,26 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.medical.AnxietyMedication;
+import org.mars_sim.msp.core.person.medical.RadioProtectiveAgent;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Medicbot;
+import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the PrescribeMedication task.
@@ -30,6 +40,8 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
 
+    private int numPatients;
+    
     @Override
     public String getName() {
         return NAME;
@@ -49,57 +61,164 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        LocationSituation ls = person.getLocationSituation();
-        
-        if (LocationSituation.OUTSIDE == ls)
+        if (LocationSituation.OUTSIDE == person.getLocationSituation())
         	return 0;	
         
-        // Only doctor job allowed to perform this task.
+        Person patient = determinePatients(person);
+        if (patient == null || numPatients == 0) {
+        	return 0;
+        }
+        	
         Job job = person.getMind().getJob();
+        
         if (job instanceof Doctor) {
+            result = numPatients * 100D;
+            // 2015-06-07 Added Preference modifier
+            if (result > 0D) {
+                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+            }
 
-            // Determine patient needing medication.
-            Person patient = PrescribeMedication.determinePatient(person);
-            if (patient != null) {
-                result = 100D;
+        }
+        
+        else {
+        	boolean hasDoctor = hasADoctor(patient);
+            if (hasDoctor) {
+            	return 0;
+            }
+            else {
+                result = numPatients * 100D;
                 // 2015-06-07 Added Preference modifier
                 if (result > 0D) {
                     result = result + result * person.getPreference().getPreferenceScore(this)/5D;
                 }
 
-                if (result < 0) result = 0;
             }
         }
-
+            
+        if (result < 0) result = 0;
+        
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
 
         return result;
     }
 
+    public boolean hasADoctor(Person patient) {
+    	Collection<Person> list = null;
+        LocationSituation loc = patient.getLocationSituation();
+        if (LocationSituation.IN_SETTLEMENT == loc) {
+            list = patient.getSettlement().getInhabitants();
+
+        }
+        else if (LocationSituation.IN_VEHICLE == loc) {
+        	Rover rover = (Rover)patient.getContainerUnit();
+        	list = rover.getCrew();
+        	
+        }
+        
+        if (list != null) {
+	        for (Person person : list) {
+	        	Job job = person.getMind().getJob();
+	        	if (job instanceof Doctor)
+	        		return true;
+	        }
+        }
+        return false;
+    }
+    
+    
     public double getProbability(Robot robot) {
 
         double result = 0D;
 
-        //if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        // Only medicbot or a doctor is allowed to perform this task.
+        if (robot.getBotMind().getRobotJob() instanceof Medicbot) {
+        	
+            // Determine patient needing medication.
+        	Person patient = determinePatients(robot);
+        	if (numPatients == 0) {
+        		return 0;
+        	}
+	
+	            	
+        	if (patient.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
+        		result = numPatients * 100D;
+        	}               
+ 
+        }
 
-	        // Only medicbot or a doctor is allowed to perform this task.
-	        if (robot.getBotMind().getRobotJob() instanceof Medicbot) {
-
-	            // Determine patient needing medication.
-	            Person patient = PrescribeMedication.determinePatient(robot);
-	            if (patient != null && patient.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
-	                result = 100D;
-	            }
-	        }
-
-	        // Effort-driven task modifier.
-	        result *= robot.getPerformanceRating();
-
-	    //}
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
 
         return result;
     }
 
+
+	public Person determinePatients(Unit doctor) {
+		Person patient = null;
+        Person p = null;
+        Robot r = null;
+        if (doctor instanceof Person)
+        	p = (Person) doctor;
+        else
+        	r = (Robot) doctor;
+        
+        // Get possible patient list.
+        // Note: Doctor can also prescribe medication for himself.
+        Collection<Person> patientList = null;
+        
+        if (p != null) {
+	        if (LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
+	            patientList = p.getSettlement().getInhabitants();
+	        }
+	        else if (LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
+	            Vehicle vehicle = p.getVehicle();
+	            if (vehicle instanceof Crewable) {
+	                Crewable crewVehicle = (Crewable) vehicle;
+	                patientList = crewVehicle.getCrew();
+	            }
+	        }
+        }
+        
+        else if (r != null) {
+	        if (LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
+	            patientList = r.getSettlement().getInhabitants();
+	        }
+	        else if (LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
+	            Vehicle vehicle = r.getVehicle();
+	            if (vehicle instanceof Crewable) {
+	                Crewable crewVehicle = (Crewable) vehicle;
+	                patientList = crewVehicle.getCrew();
+	            }
+	        }
+        }
+
+        // Determine patient.
+        if (patientList != null) {
+            Iterator<Person> i = patientList.iterator();
+            while (i.hasNext()) {
+                Person person = i.next();
+                PhysicalCondition condition = person.getPhysicalCondition();
+                RadiationExposure exposure = condition.getRadiationExposure();
+                if (!condition.isDead()) {
+                	if (condition.isStressedOut()) {
+                        // Only prescribing anti-stress medication at the moment.
+                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
+                        	patient = person;
+                            numPatients++;
+                        }
+                	}
+                	else if (exposure.isSick()) {
+                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
+                        	patient = person;
+                        	numPatients++;
+                        }
+                	}
+                }
+            }
+        }
+
+        return patient;
+	}
 
 }

@@ -47,7 +47,7 @@ public class OGGSoundClip {
 
 	private float balance;
 	private float gain = .8f;
-	private float oldGain;
+	//private float oldGain;
 	//private float volume = .8f;
 
 	private boolean mute;
@@ -310,7 +310,7 @@ public class OGGSoundClip {
 	 */
 	public void pause() {
 		paused = true;
-		oldGain = gain;
+		//oldGain = gain;
 		setGain(0);
 	}
 
@@ -325,7 +325,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Resume the playback
-	 */
+	 
 	public void resume() {
 		if (!paused) {
 			play();
@@ -341,7 +341,8 @@ public class OGGSoundClip {
 		}
 		setGain(oldGain);
 	}
-
+*/
+	
 	/**
 	 * Check if the clip has been stopped
 	 *
@@ -788,8 +789,8 @@ public class OGGSoundClip {
 			BooleanControl muteControl = (BooleanControl) outputLine.getControl(BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 
-			if (!mute)
-				setGain(oldGain);
+			//if (!mute)
+			//	setGain(oldGain);
 		}
 
 	}

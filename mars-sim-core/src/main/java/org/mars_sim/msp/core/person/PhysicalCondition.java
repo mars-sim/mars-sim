@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.1.0 2017-01-19
+ * @version 3.1.0 2017-10-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * This class represents the Physical Condition of a Person.
@@ -69,7 +70,7 @@ implements Serializable {
 
     public static final double MENTAL_BREAKDOWN = 100D;
 
-    private static final double COLLAPSE_IMMINENT = 5000D;
+    private static final double COLLAPSE_IMMINENT = 3000D;
 
     /** Stress jump resulting from being in an accident. */
     public static final double ACCIDENT_STRESS = 10D;
@@ -108,7 +109,6 @@ implements Serializable {
     private static double stressBreakdownChance;
 
     private static EatMealMeta eatMealMeta = new EatMealMeta();
-
     
     /** The amount of water this person would consume each time (assuming drinking water 8 times a day) */
     private double waterConsumedPerServing; 
@@ -124,7 +124,8 @@ implements Serializable {
     private boolean alive;
 	/** True if person is thirsty. */
 	private boolean isThirsty;
-
+	/** True if person is radiation Poisoned. */
+	private boolean isRadiationPoisoned;
 
 	private int solCache = 0;
     private int endurance;
@@ -175,29 +176,30 @@ implements Serializable {
 
 	private CircadianClock circadian;
 
-    private LocationSituation ls;
-    
     private TaskManager taskMgr;
     
     private HealthProblem starved;
-    
     private HealthProblem dehydrated;
     
     private static MedicalManager medicalManager;
-    
+
+    private static MasterClock masterClock;
 	private static MarsClock marsClock;
-	
 	private static Simulation sim;
 	
-	private static Complaint dehydration;
-
-    private static Complaint starvation;
 
     private static Complaint depression;
-    
     private static Complaint panicAttack;
-	
     private static Complaint highFatigue;
+    private static Complaint radiationPoisoning;
+    
+    
+	private static Complaint dehydration;
+    private static Complaint starvation;
+    private static Complaint freezing;
+    private static Complaint heatStroke;
+    private static Complaint decompression;  
+    private static Complaint suffocation;
     
     
     /** List of medications affecting the person. */
@@ -224,8 +226,7 @@ implements Serializable {
     	medicalManager = sim.getMedicalManager();
             		
     	//dehydration = medicalManager.getComplaintByName(ComplaintType.DEHYDRATION);//.getDehydration();
-        //starvation = medicalManager.getComplaintByName(ComplaintType.STARVATION);//.getStarvation();
-        
+        //starvation = medicalManager.getComplaintByName(ComplaintType.STARVATION);//.getStarvation();        
     	//depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
     	//panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
        	//highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
@@ -235,23 +236,9 @@ implements Serializable {
         resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
         emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
 
-        ls = person.getLocationSituation();
-
         taskMgr = person.getMind().getTaskManager();
         
-        //sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-
         alive = true;
-
-    	if (sim.getMasterClock() != null) // for passing maven test
-    		marsClock = sim.getMasterClock().getMarsClock();
-
-		//foodAR = AmountResource.findAmountResource(FOOD);			// 1
-		//waterAR = AmountResource.findAmountResource(WATER);		// 2
-		//oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
-		//carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
 
     	radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
@@ -275,6 +262,8 @@ implements Serializable {
         
         appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;		
 		
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+
         h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
         o2_consumption = personConfig.getNominalO2ConsumptionRate();
         
@@ -282,8 +271,7 @@ implements Serializable {
         
         // assuming a person drinks 10 times a day, each time ~375 mL
         waterConsumedPerServing = h2o_consumption * bodyMassDeviation / 10D; // about .3 kg per serving
-        //System.out.println("waterConsumedPerServing : " + waterConsumedPerServing);
-        
+  
         minimum_air_pressure = personConfig.getMinAirPressure();
         min_temperature = personConfig.getMinTemperature();
         max_temperature = personConfig.getMaxTemperature();
@@ -301,19 +289,7 @@ implements Serializable {
        	dehydrationStartTime =  1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
     }
 
-    public RadiationExposure getRadiationExposure() {
-    	return radiation;
-    }
 
-
-
-    /**
-     * Gets the medical manager.
-     * @return medical manager.
-     */
-    private MedicalManager getMedicalManager() {
-        return Simulation.instance().getMedicalManager();
-    }
 
     /**
      * The Physical condition should be updated to reflect a passing of time.
@@ -332,17 +308,30 @@ implements Serializable {
   
 	        boolean illnessEvent = false;
 
+	        if (masterClock == null) 
+	        	masterClock = sim.getMasterClock();
+	        
+	    	if (marsClock == null) 
+	    		marsClock = masterClock.getMarsClock();
+	    	
 	    	int solElapsed = marsClock.getMissionSol();
 
 	    	if (solCache != solElapsed) {
 
 		    	if (solCache == 0) {
+
 		    		// Modify personalMaxEnergy at the start of the sim 
 		    		int d1 = 2* (35 - person.getAge()); // Assume that after age 35, metabolism slows down 
 		    		double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
 		    		double preference = person.getPreference().getPreferenceScore(eatMealMeta)*10D;
 		            personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
 		            appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+		            
+		            freezing = getMedicalManager().getFreezing();
+		            heatStroke = getMedicalManager().getHeatStroke();
+		            decompression = getMedicalManager().getDecompression();
+		            suffocation = getMedicalManager().getSuffocation();
+		            
 		    	}
 		    	
 	    		solCache = solElapsed;
@@ -381,9 +370,9 @@ implements Serializable {
 	            List<Complaint> newProblems = new ArrayList<Complaint>();
 	            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
 
-	            //Iterator<HealthProblem> iter = currentProblems.iterator();
-	            //while(iter.hasNext()) {
-	            for (HealthProblem problem : currentProblems) {//= iter.next();
+	            Iterator<HealthProblem> hp = currentProblems.iterator();
+	            while(hp.hasNext()) {
+	            	HealthProblem problem = hp.next();
 
 	                // Advance each problem, they may change into a worse problem.
 	                // If the current is completed or a new problem exists then
@@ -407,6 +396,9 @@ implements Serializable {
 	                    
 	                    else if (c.getType() == ComplaintType.STARVATION)
 	                    	isStarving = false;
+	                    
+	                    else if (c.getType() == ComplaintType.RADIATION_SICKNESS)
+	                    	isRadiationPoisoned = false;
 	                }
 
 
@@ -447,6 +439,7 @@ implements Serializable {
 	        Iterator<Medication> i = medicationList.iterator();
 	        while (i.hasNext()) {
 	            Medication med = i.next();
+	            med.timePassing(time);
 	            if (!med.isMedicated()) {
 	                i.remove();
 	            }
@@ -468,16 +461,23 @@ implements Serializable {
 	        checkHydration(thirst);
 	        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
 
-	        // If person is at high stress, check for mental breakdown.
-	        if (!isStressedOut)
-		        if (stress > MENTAL_BREAKDOWN)
-		            checkForStressBreakdown(time);
-
-	        // 2016-03-01 check if person is at very high fatigue may collapse.
-	        if (!isCollapsed)
-	        	if (fatigue > COLLAPSE_IMMINENT)
-	        		checkForHighFatigueCollapse(time);
-
+	        int msol = (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
+			if (msol % 10 == 0) {
+	        
+		        // If person is at high stress, check for mental breakdown.
+		        if (!isStressedOut)
+			        if (stress > MENTAL_BREAKDOWN)
+			            checkForStressBreakdown(time);
+	
+		        // 2016-03-01 check if person is at very high fatigue may collapse.
+		        if (!isCollapsed)
+		        	if (fatigue > COLLAPSE_IMMINENT)
+		        		checkForHighFatigueCollapse(time);
+	
+		        if (!isRadiationPoisoned)
+		        	checkRadiationPoisoning(time);
+			}
+	        
 	        // Calculate performance and most serious illness.
 	        recalculatePerformance();
 
@@ -679,19 +679,11 @@ implements Serializable {
                 person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
             }
               
-            if (ls == null)
-            	ls = person.getLocationSituation();
             if (taskMgr == null)
             	taskMgr = person.getMind().getTaskManager();
             
             // TODO : how to tell a person to walk back to the settlement ?
-            if (LocationSituation.OUTSIDE == ls) {
-    	        //if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-    	        //    Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
-    	        //    mgr.addSubTask(walkingTask);
-    	        //}
-            }
-            else { // in either a settlement or on a vehicle
+            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
                 //Stop any on-going tasks
                 taskMgr.clearTask();
                 // go eat a meal
@@ -729,17 +721,11 @@ implements Serializable {
                 person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
             }
             
-            if (ls == null)
-            	ls = person.getLocationSituation();
+
             if (taskMgr == null)
             	taskMgr = person.getMind().getTaskManager();
             
-
-            
-            if (LocationSituation.OUTSIDE == ls) {
- 
-            }
-            else { // in either a settlement or on a vehicle
+            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
                 //Stop any on-going tasks
                 taskMgr.clearTask();
                 // go eat a meal
@@ -812,7 +798,7 @@ implements Serializable {
                     	addMedicalComplaint(panicAttack);
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                            	"[" + person.getLocationTag().getSettlementName() + "] " + name + " suffers from a panic attack.", null);
+                            	"[" + person.getLocationTag().getShortLocationName() + "] " + name + " suffers from a panic attack.", null);
 
                     }
                     else
@@ -826,15 +812,13 @@ implements Serializable {
                     	addMedicalComplaint(depression);
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                            	"[" + person.getLocationTag().getSettlementName() + "] " + name + " has an episode of depression.", null);
+                            	"[" + person.getLocationTag().getShortLocationName() + "] " + name + " has an episode of depression.", null);
                     }
                     else
                     	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
             	}
-
-
-            } else {
             }
+
         }
     }
 
@@ -864,7 +848,43 @@ implements Serializable {
                     addMedicalComplaint(highFatigue);
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-                        	"[" + person.getLocationTag().getSettlementName() + "] " + name + " collapses because of high fatigue exhaustion.", null);
+                        	"[" + person.getLocationTag().getShortLocationName() + "] " + name + " collapses because of high fatigue exhaustion.", null);
+                    
+                }
+                else
+                	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
+            }
+        }
+    }
+
+    
+    /**
+     * Checks if person has very high fatigue.
+     * @param time the time passing (millisols)
+     */
+    private void checkRadiationPoisoning(double time) {
+   
+    	if (radiationPoisoning == null)
+    		radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
+    	  
+    	if (!problems.containsKey(radiationPoisoning) && radiation.isSick()) {
+            // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
+            //int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
+            //int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+
+            // a person with high endurance will be less likely to be collapse
+            double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
+
+            double value = highFatigueCollapseChance /5D * modifier;
+
+            if (RandomUtil.lessThanRandPercent(value)) {
+            	isRadiationPoisoned = true;
+
+                if (radiationPoisoning != null) {
+                    addMedicalComplaint(radiationPoisoning);
+                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                    //LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+                    //    	"[" + person.getLocationTag().getShortLocationName() + "] " + name + " collapses because of radiation poisoning.", null);
                     
                 }
                 else
@@ -875,6 +895,7 @@ implements Serializable {
             }
         }
     }
+    
 
     /**
      * Check for any random ailments that a person comes down with over a period of time.
@@ -1061,7 +1082,7 @@ implements Serializable {
         //System.out.println("O2 : " + amountRecieved + " : " + check);
         //return check;
         return checkResourceConsumption(amountRecieved, amount / 2D,
-                MIN_VALUE, getMedicalManager().getSuffocation());
+                MIN_VALUE, suffocation);
     }
 
     /**
@@ -1121,7 +1142,7 @@ implements Serializable {
      */
     private boolean requireAirPressure(LifeSupportType support, double pressure) {
         return checkResourceConsumption(support.getAirPressure(), pressure,
-                MIN_VALUE, getMedicalManager().getDecompression());
+                MIN_VALUE, decompression);
     }
 
     /**
@@ -1134,9 +1155,9 @@ implements Serializable {
             double maxTemperature) {
 
         boolean freeze = checkResourceConsumption(support.getTemperature(),
-                minTemperature, MIN_VALUE, getMedicalManager().getFreezing());
+                minTemperature, MIN_VALUE, freezing); 
         boolean hot = checkResourceConsumption(support.getTemperature(),
-                maxTemperature, MAX_VALUE, getMedicalManager().getHeatStroke());
+                maxTemperature, MAX_VALUE, heatStroke);
         return freeze || hot;
     }
 
@@ -1457,6 +1478,18 @@ implements Serializable {
         return person;
     }
     
+    public RadiationExposure getRadiationExposure() {
+    	return radiation;
+    }
+
+    /**
+     * Gets the medical manager.
+     * @return medical manager.
+     */
+    private MedicalManager getMedicalManager() {
+        return Simulation.instance().getMedicalManager();
+    }
+    
     public double getBodyMassDeviation() {
     	return bodyMassDeviation;
 	}
@@ -1465,17 +1498,49 @@ implements Serializable {
     //	return minimum_air_pressure;
     //}
     
+    public boolean isStressedOut() {
+    	return isStressedOut;
+    }
+    
+    public boolean isRadiationPoisoned() {
+    	return isRadiationPoisoned;
+    }
+
+    
     /**
      * Prepare object for garbage collection.
      */
     public void destroy() {
+
         deathDetails = null;
         //problems.clear();
         problems = null;
         serious = null;
         person = null;
-        //personConfig = null;
+        
+        radiation = null;
+      	circadian = null;
+        taskMgr = null; 
+        starved = null;
+        dehydrated = null;
+        medicalManager = null;
+        masterClock = null; 
+      	marsClock = null; 
+      	sim = null; 
+      	dehydration = null; 
+        starvation = null; 
+        freezing = null; 
+        heatStroke = null;         
+        decompression = null; 
+        suffocation = null; 
+        depression = null;      
+        panicAttack = null;    	
+        highFatigue = null; 
+        radiationPoisoning = null;
+        
         //if (medicationList != null) medicationList.clear();
         medicationList = null;
+        allMedicalComplaints = null;
+
     }
 }

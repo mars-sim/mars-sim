@@ -31,6 +31,9 @@ public class AudioPlayer {
 
 	private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
 
+	private final static int LOUD_TRACKS = 6;
+	private final static int REPEATING_TRACKS = 4; // track the last 4 tracks and avoid playing them repetitively.
+	
 	private static int num_tracks;
 	
 	/** The volume of the audio player (0.0 to 1.0) */
@@ -70,9 +73,7 @@ public class AudioPlayer {
 		soundTracks = new ArrayList<>();
 		soundTracks.add(SoundConstants.ST_AREOLOGIE);
 		soundTracks.add(SoundConstants.ST_PUZZLE);
-		soundTracks.add(SoundConstants.ST_CITY);
 		soundTracks.add(SoundConstants.ST_MISTY);
-		soundTracks.add(SoundConstants.ST_MOONLIGHT);
 		soundTracks.add(SoundConstants.ST_MENU);
 			
 		soundTracks.add(SoundConstants.ST_ONE_WORLD);
@@ -81,6 +82,9 @@ public class AudioPlayer {
 		soundTracks.add(SoundConstants.ST_LOST_JUNGLE);
 		
 		// not for playing at the start of the sim due to its loudness
+		// Set LOUD_TRACKS to 5
+		soundTracks.add(SoundConstants.ST_MOONLIGHT);
+		soundTracks.add(SoundConstants.ST_CITY);
 		soundTracks.add(SoundConstants.ST_CLIPPITY);
 		soundTracks.add(SoundConstants.ST_MONKEY);
 		soundTracks.add(SoundConstants.ST_SURREAL);
@@ -445,73 +449,69 @@ public class AudioPlayer {
 	}
 	
 	/**
+	 * Picks a new music track to play
+	 */
+	public void pickANewTrack() {
+		int rand = 0;
+		// At the start of the sim, refrain from playing the last few tracks due to their sudden loudness
+		if (previous_tracks.isEmpty()) {
+			rand = RandomUtil.getRandomInt(num_tracks - LOUD_TRACKS - 1);
+		}
+		else
+			RandomUtil.getRandomInt(num_tracks-1);
+		boolean not_old = false;
+		// Do not repeat the last 4 music tracks just played
+		while (!not_old) {
+			if (previous_tracks.isEmpty())
+				not_old = true;
+			else if (!previous_tracks.contains(rand))
+				not_old = true;
+		
+			if (not_old) {
+				String name = soundTracks.get(rand);
+				playBackground(soundTracks.get(rand));
+				logger.info("Playing the background music track #" + (rand+1) + " '" + name + "'");
+				// Add the new track
+				if (!previous_tracks.contains(rand))
+					previous_tracks.add((rand));
+				// Remove the earliest track 
+				if (previous_tracks.size() > REPEATING_TRACKS)
+					previous_tracks.remove(0);
+				// Reset the play times to 1 for this new track
+				play_times = 1;
+				break;
+			}
+			else
+				// need to pick another track and run while loop again
+				rand = RandomUtil.getRandomInt(num_tracks - LOUD_TRACKS - 1);
+		}
+		
+	}
+	
+	/**
 	 * Play a randomly selected music track
 	 */
 	public void playRandomBackgroundTrack() {
 		if (isBackgroundTrackStopped()) {
-			// Since Areologie.ogg and Fantascape.ogg are 4 mins long. Don't need to repeat
+			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay them
 			if (currentBackgroundTrack != null
-				&& !currentBackgroundTrack.isMute() && currentBackgroundTrack.getGain() != 0
-				&& play_times < 3) {
+					&& currentBackgroundTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
+					&& play_times < 2) {
+				pickANewTrack();
+			}
+			else if (currentBackgroundTrack != null
+					&& currentBackgroundTrack.toString().equals(SoundConstants.ST_FANTASCAPE) 
+					&& play_times < 2)	{
+				pickANewTrack();
+			}
+			else if (currentBackgroundTrack != null
+					&& !currentBackgroundTrack.isMute() && currentBackgroundTrack.getGain() != 0
+					&& play_times < 4) {
 				playBackground(currentBackgroundTrack.toString());
 				play_times++;
 			}
-			else if (currentBackgroundTrack != null
-				&& currentBackgroundTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
-				&& play_times < 1) {
-				; // empty
-			}
-			else if (currentBackgroundTrack != null
-				&& currentBackgroundTrack.toString().equals(SoundConstants.ST_FANTASCAPE) 
-				&& play_times < 2)	{
-				playBackground(currentBackgroundTrack.toString());
-				play_times++;
-			}
-			else {		
-				int rand = 0;
-				// At the start of the sim, refrain from playing the last 4 tracks due to their sudden loudness
-				if (previous_tracks.isEmpty()) {
-					rand = RandomUtil.getRandomInt(num_tracks-4);
-				}
-				else
-					RandomUtil.getRandomInt(num_tracks-1);
-				boolean not_repeated = false;
-				// Do not repeat the last 3 music tracks just played
-				while (!not_repeated) {
-					if (previous_tracks.isEmpty())
-						not_repeated = true;
-					else {
-						for (int t : previous_tracks) {
-							if (rand != t) {
-								not_repeated = true;
-							}
-						}
-					}
-					if (not_repeated) {
-						String name = soundTracks.get(rand);
-						playBackground(soundTracks.get(rand));
-						logger.info("Playing the background music track #" + (rand+1) + " '" + name + "'");
-						// Remove the earliest track 
-						if (!previous_tracks.isEmpty())
-							previous_tracks.remove(0);
-						// Add the new track
-						previous_tracks.add((rand+1));
-						// Reset the play times to 1
-						play_times = 1;
-						break;
-					}
-					else
-						// need to pick another rand
-						rand = RandomUtil.getRandomInt(num_tracks-1);
-				}			
-/*				
-				if (currentBackgroundTrack != null) {	
-					keys.remove(currentBackgroundTrack.toString());
-					rand = RandomUtil.getRandomInt(num_tracks-2);
-				} 
-				else
-					rand = RandomUtil.getRandomInt(num_tracks-1);
-*/				
+			else {
+				pickANewTrack();
 			}
 		}
 	}
@@ -520,6 +520,10 @@ public class AudioPlayer {
 		allOGGSoundClips = null;
 		allBackgroundSoundTracks = null;
 		desktop = null;
+		currentOGGSoundClip = null;
+		currentBackgroundTrack = null;
+		soundTracks = null;
+		previous_tracks = null;
 	}
 	
 }

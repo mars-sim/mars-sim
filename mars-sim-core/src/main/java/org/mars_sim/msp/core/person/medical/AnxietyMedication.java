@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * AntiStressMedication.java
- * @version 3.1.0 2016-10-15
+ * AnxietyMedication.java
+ * @version 3.1.0 2016-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.medical;
@@ -14,10 +14,12 @@ import java.io.Serializable;
 /**
  * A medication that reduces stress.
  */
-public class AntiStressMedication extends Medication implements Serializable {
+public class AnxietyMedication extends Medication implements Serializable {
 
-    // The name of the medication.
-    public static final String NAME = "Anti-stress Medication";
+	private static final long serialVersionUID = 1L;
+
+	// The name of the medication.
+    public static final String NAME = "Anxiety Medication";
     
     // Stress reduction amount.
     private static final double STRESS_REDUCTION = -1.0D;
@@ -25,13 +27,17 @@ public class AntiStressMedication extends Medication implements Serializable {
     // Duration (millisols).
     private static final double DURATION = 200D;
     
+    private PhysicalCondition condition;
+    
     /**
      * Constructor
      * @param person the person taking the medication.
      */
-    public AntiStressMedication(Person person) {
+    public AnxietyMedication(Person person) {
         // Use Medication constructor.
         super(NAME, DURATION, person);
+        
+        condition = getPerson().getPhysicalCondition();
     }
     
     @Override
@@ -39,7 +45,6 @@ public class AntiStressMedication extends Medication implements Serializable {
         super.timePassing(time);
         
         // Reduce person's stress.
-        PhysicalCondition condition = getPerson().getPhysicalCondition();
         condition.setStress(condition.getStress() + (STRESS_REDUCTION * time));
     }
 }

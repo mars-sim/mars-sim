@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RadiationExposure.java
- * @version 3.1.0 2017-08-31
+ * @version 3.1.0 2017-10-20
  * @author Manny Kung
  */
 
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 public class RadiationExposure implements Serializable {
 
@@ -178,7 +179,9 @@ public class RadiationExposure implements Serializable {
 	
 	private boolean repeated;
 	
-	private boolean isExposureChecked = false;
+	private boolean isSick;
+	
+	//private boolean isExposureChecked = false;
 
 	// Radiation Shielding
 	// One material in development at NASA has the potential to do both jobs: Hydrogenated boron nitride 
@@ -196,24 +199,24 @@ public class RadiationExposure implements Serializable {
 	// randomize dose at the start of the sim when a settler arrives on Mars
 	private double [][] dose;
 
-	private RadiationEvent event;
-
 	//private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
 	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
 
 	private static MarsClock marsClock;
-		
-	@SuppressWarnings("unused")
-	private PhysicalCondition condition;
+
+	private static MasterClock masterClock;
+	
 	private Person person;
 
 	public RadiationExposure(PhysicalCondition condition) {
 		this.person = condition.getPerson();
-		this.condition = condition;
+		//this.condition = condition;
 		dose = new double[3][3];
 
-    	if (Simulation.instance().getMasterClock() != null) // for passing maven test
-    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	if (Simulation.instance().getMasterClock() != null) { // for passing maven test
+    		masterClock = Simulation.instance().getMasterClock();
+    		marsClock = masterClock.getMarsClock();
+    	}
 
 		//if (masterClock == null)
 		//	masterClock = Simulation.instance().getMasterClock();
@@ -222,14 +225,16 @@ public class RadiationExposure implements Serializable {
 		//	marsClock = masterClock.getMarsClock(); // cannot pass maven test
 	}
 
-	//public List<RadiationEvent> getRadiationEventList() {
-	//	return eventList;
-	//}
 
 	public Map<RadiationEvent, Integer> getRadiationEventMap() {
 		return eventMap;
 	}
 
+	/*
+	 * Adds the dose
+	 * @bodyRegion
+	 * @amount
+	 */
 	// Called by checkForRadiation() in EVAOperation and WalkOutside
 	public void addDose(int bodyRegion, double amount) {
 
@@ -238,37 +243,64 @@ public class RadiationExposure implements Serializable {
 		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
 		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] + amount;
 
-
 		BodyRegionType region = null;
 
-		if (bodyRegion == 0)
+		if (bodyRegion == BFO)
 			region = BodyRegionType.BFO;
-		else if (bodyRegion == 1)
+		else if (bodyRegion == OCULAR)
 			region = BodyRegionType.OCULAR;
-		else if (bodyRegion == 2)
+		else if (bodyRegion == SKIN)
 			region = BodyRegionType.SKIN;
 
-		event = new RadiationEvent(marsClock, region, amount);
+	   	//if (marsClock == null)
+    	//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
+		RadiationEvent event = new RadiationEvent(marsClock, region, amount);
 		eventMap.put(event, solCache);
 
 	}
 
+	
+	/*
+	 * Reduces the dose
+	 * @bodyRegion
+	 * @amount
+	 */
+	public void reduceDose(int bodyRegion, double amount) {
+
+		// amount is cumulative
+		dose[bodyRegion][THIRTY_DAY] = dose[bodyRegion][THIRTY_DAY] - amount;
+		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] - amount;
+		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] - amount;
+
+		if (dose[bodyRegion][THIRTY_DAY] < 0)
+			dose[bodyRegion][THIRTY_DAY] = 0;
+		if (dose[bodyRegion][ANNUAL] < 0) 
+			dose[bodyRegion][ANNUAL] = 0;
+		if (dose[bodyRegion][CAREER] < 0)
+			dose[bodyRegion][CAREER] = 0;
+
+	}
+	
+	/*
+	 * Initialize the dose
+	 */
 	public void initializeWithRandomDose() {
 	  for (int y = 0; y < 3; y++) {
-    	if (y == 0) {
-    		dose[0][0] = rand(10);
-    		dose[1][0] = dose[0][0] + rand(15);
-    		dose[2][0] = dose[1][0] + rand(25);
+    	if (y == THIRTY_DAY) {
+    		dose[BFO][THIRTY_DAY] = rand(500);
+    		dose[OCULAR][THIRTY_DAY] = dose[BFO][THIRTY_DAY] + rand(15);
+    		dose[SKIN][THIRTY_DAY] = dose[OCULAR][THIRTY_DAY] + rand(25);
     	}
-    	else if (y == 1) {
-    		dose[0][1] = rand(30);
-    		dose[1][1] = dose[0][1] + rand(60);
-    		dose[2][1] = dose[1][1] + rand(80);
+    	else if (y == ANNUAL) {
+    		dose[BFO][ANNUAL] = rand(30);
+    		dose[OCULAR][ANNUAL] = dose[BFO][ANNUAL] + rand(60);
+    		dose[SKIN][ANNUAL] = dose[OCULAR][ANNUAL] + rand(80);
     	}
-    	else if (y == 2) {
-    		dose[0][2] = rand(40);
-    		dose[1][2] = dose[0][2] + rand(70);
-    		dose[2][2] = dose[1][2] + rand(100);
+    	else if (y == CAREER) {
+    		dose[BFO][CAREER] = rand(40);
+    		dose[OCULAR][CAREER] = dose[BFO][CAREER] + rand(70);
+    		dose[SKIN][CAREER] = dose[OCULAR][CAREER] + rand(100);
     	}
 	  }
 
@@ -287,48 +319,61 @@ public class RadiationExposure implements Serializable {
         	counter30++;
         	counter360++;
         	// set the boolean
-        	isExposureChecked = false;
+        	//isExposureChecked = false;
         }
 
-		//System.out.println("millisol : " + clock.getMillisol());
-        if (!isExposureChecked && marsClock.getMillisol() > 100 && marsClock.getMillisol() < 110) {
+        //if (!isExposureChecked && marsClock.getMillisol() > 100 && marsClock.getMillisol() < 110) {
         	// check on the effect of the exposure once a day at between 100 & 110 millisols
             // Note: at fastest simulation speed, it can skip as much as ~5 millisols
-        	checkExposure();
+        
+		int msol = (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
+		if (msol % 20 == 0) { 	
+        	checkExposureLimit();
         	// reset the boolean
-        	isExposureChecked = true;
+        	//isExposureChecked = true;
         }
 
 	}
 
+	public boolean isSick() {
+		return isSick;
+	}
+	
 	/*
-	 * Checks if the exposure yesterday exceeds the limit and reset counters
+	 * Checks if the exposure exceeds the limit and reset counters
 	 */
-	public void checkExposure() {
+	public void checkExposureLimit() {
 
 		// Compare if any element in a person's dose matrix exceeds the limit
-		boolean sick = false;
-		int interval = -1;
-		int bodyRegion = -1;
+		boolean exceeded = false;
+		//int interval = -1; 
+		//int bodyRegion = -1;
         for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
+        	// Set y < 2 to ignore the annual limit and the career limit for now
+            for (int y = 0; y < 1; y++) { 
                 final double dosage = dose[x][y];
                 final int limit = DOSE_LIMITS[x][y];
                 if (dosage > limit) {
-                	interval = x;
-            		bodyRegion = y;
-            		sick = true;
+                	//interval = x;
+            		//bodyRegion = y;
+            		exceeded = true;
+            		break;
                 }
             }
         }
+        
+        if (exceeded)
+        	isSick = true;
+        else
+        	isSick = false;
 
         // Note: exposure to a dose of 1 Sv is associated with a five percent increase in fatal cancer risk.
         // TODO if sick is true, call methods in HealthProblem...
-        if (sick) {
-        	//Complaint nausea = new Complaint();
+        //if (sick) {
+        //	Complaint radiationScikness = ;
         	//condition.addMedicalComplaint(complaint);
             //condition.getPerson().fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-        }
+        //}
 
 
 		if (counter30 == 30) {
@@ -366,11 +411,11 @@ public class RadiationExposure implements Serializable {
 
 				int type = 0;
 
-				if (region == BodyRegionType.BFO )
+				if (region == BodyRegionType.BFO)
 					type = 0;
-				else if (region == BodyRegionType.OCULAR )
+				else if (region == BodyRegionType.OCULAR)
 					type = 1;
-				else if (region == BodyRegionType.SKIN )
+				else if (region == BodyRegionType.SKIN)
 					type = 2;
 
 				if (interval == 0) {

@@ -80,6 +80,10 @@ public class LocationTag implements LocationState, Serializable {
 		return UNKNOWN;
 	}
 
+	/**
+	 * Obtains the short location name
+	 * @return the name string of the location the unit is at
+	 */
 	public String getShortLocationName() {
 		if (p != null) {
 			if (p.getVehicle() != null)
@@ -135,6 +139,10 @@ public class LocationTag implements LocationState, Serializable {
 		return UNKNOWN;
 	}
 	
+	/**
+	 * Obtains the long location name
+	 * @return the name string of the location the unit is at
+	 */
 	public String getLongLocationName() {
 		if (p != null) {
 			if (p.getVehicle() != null) {
@@ -142,7 +150,7 @@ public class LocationTag implements LocationState, Serializable {
 					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
 				}
 				else {
-					return p.getVehicle().getName() + " in " + p.getVehicle().getSettlement().getName();
+					return p.getVehicle().getName() + " in " + p.getCoordinates().getFormattedString();
 				}
 			}
  

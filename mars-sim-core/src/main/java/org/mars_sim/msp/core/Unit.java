@@ -1001,7 +1001,6 @@ implements Serializable, Comparable<Unit> {
 
 
 	public LocationSituation getLocationSituation() {
-		
 		return null;
 	}
 

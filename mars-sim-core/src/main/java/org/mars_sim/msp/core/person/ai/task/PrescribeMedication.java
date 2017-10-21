@@ -11,23 +11,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.medical.AntiStressMedication;
+import org.mars_sim.msp.core.person.medical.AnxietyMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
+import org.mars_sim.msp.core.person.medical.RadioProtectiveAgent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -51,8 +57,7 @@ implements Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
 
-	private static final double AVERAGE_MEDICAL_WASTE = .1;
-	private static final String TOXIC_WASTE = "toxic waste";
+	private static final double AVERAGE_MEDICAL_WASTE = .1 * RandomUtil.getRandomDouble(2);
 
     /** Task phases. */
     private static final TaskPhase MEDICATING = new TaskPhase(Msg.getString(
@@ -63,7 +68,7 @@ implements Serializable {
 
 	// Data members.
 	private Person patient = null;
-	private Medication medication = null;
+	//private Medication medication = null;
 
 	/**
 	 * Constructor.
@@ -74,10 +79,11 @@ implements Serializable {
         super(NAME, person, true, false, STRESS_MODIFIER, true, 10D);
 
         // Determine patient needing medication.
+        //if (patient == null)
         patient = determinePatient(person);
         if (patient != null) {
             // Determine medication to prescribe.
-            medication = determineMedication(patient);
+            //medication = determineMedication(patient);
 
             LocationSituation ls = person.getLocationSituation();
             if (LocationSituation.OUTSIDE == ls)
@@ -85,7 +91,8 @@ implements Serializable {
             // If in settlement, move doctor to building patient is in.
             if (LocationSituation.IN_SETTLEMENT == ls) {
                 // Walk to patient's building.
-                walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
+            	walkToActivitySpotInBuilding(BuildingManager.getBuilding(patient), FunctionType.MEDICAL_CARE, false);
+                //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
 
         }
@@ -103,20 +110,21 @@ implements Serializable {
         super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D);
 
         // Determine patient needing medication.
+        //if (patient == null)
         patient = determinePatient(robot);
         if (patient != null) {
             // Determine medication to prescribe.
-            medication = determineMedication(patient);
+            //medication = determineMedication(patient);
 
             // If in settlement, move doctor to building patient is in.
             if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
                 // Walk to patient's building.
-                walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
+            	walkToActivitySpotInBuilding(BuildingManager.getBuilding(patient), FunctionType.MEDICAL_CARE, false);
+                //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
 
-            logger.info(robot.getName() + " prescribing " + medication.getName() +
-                    " to " + patient.getName());
+            //logger.info(robot.getName() + " prescribing " + medication.getName() +
+            //        " to " + patient.getName());
         }
         else {
             endTask();
@@ -127,6 +135,73 @@ implements Serializable {
         setPhase(MEDICATING);
     }
 
+/*	
+	   public static int determineNumPatients(Unit doctor) {
+	        int result = 0;
+	        Person p = null;
+	        Robot r = null;
+	        if (doctor instanceof Person)
+	        	p = (Person) doctor;
+	        else
+	        	r = (Robot) doctor;
+	        
+	        // Get possible patient list.
+	        // Note: Doctor can also prescribe medication for himself.
+	        Collection<Person> patientList = null;
+	        
+	        if (p != null) {
+		        if (LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
+		            patientList = p.getSettlement().getInhabitants();
+		        }
+		        else if (LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
+		            Vehicle vehicle = p.getVehicle();
+		            if (vehicle instanceof Crewable) {
+		                Crewable crewVehicle = (Crewable) vehicle;
+		                patientList = crewVehicle.getCrew();
+		            }
+		        }
+	        }
+	        
+	        else if (r != null) {
+		        if (LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
+		            patientList = r.getSettlement().getInhabitants();
+		        }
+		        else if (LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
+		            Vehicle vehicle = r.getVehicle();
+		            if (vehicle instanceof Crewable) {
+		                Crewable crewVehicle = (Crewable) vehicle;
+		                patientList = crewVehicle.getCrew();
+		            }
+		        }
+	        }
+
+	        // Determine patient.
+	        if (patientList != null) {
+	            Iterator<Person> i = patientList.iterator();
+	            while (i.hasNext()) {
+	                Person person = i.next();
+	                PhysicalCondition condition = person.getPhysicalCondition();
+	                RadiationExposure exposure = condition.getRadiationExposure();
+	                if (!condition.isDead()) {
+	                	if (condition.isStressedOut()) {
+	                        // Only prescribing anti-stress medication at the moment.
+	                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
+	                            result++;
+	                        }
+	                	}
+	                	else if (exposure.isSick()) {
+	                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
+	                            result++;
+	                        }
+	                	}
+	                }
+	            }
+	        }
+
+	        return result;
+	    }
+*/
+	
     /**
      * Determines if there is a patient nearby needing medication.
      * @param doctor the doctor prescribing the medication.
@@ -156,11 +231,19 @@ implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Person person = i.next();
                 PhysicalCondition condition = person.getPhysicalCondition();
-                if (!condition.isDead() && (condition.getStress() >= 100D)) {
-                    // Only prescribing anti-stress medication at the moment.
-                    if (!condition.hasMedication(AntiStressMedication.NAME)) {
-                        result = person;
-                    }
+                RadiationExposure exposure = condition.getRadiationExposure();
+                if (!condition.isDead()) {
+                	if (condition.isStressedOut()) {
+                        // Only prescribing anti-stress medication at the moment.
+                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
+                            result = person;
+                        }
+                	}
+                	else if (exposure.isSick()) {
+                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
+                            result = person;
+                        }
+                	}
                 }
             }
         }
@@ -193,11 +276,19 @@ implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Person person = i.next();
                 PhysicalCondition condition = person.getPhysicalCondition();
-                if (!condition.isDead() && (condition.getStress() >= 100D)) {
-                    // Only prescribing anti-stress medication at the moment.
-                    if (!condition.hasMedication(AntiStressMedication.NAME)) {
-                        result = person;
-                    }
+                RadiationExposure exposure = condition.getRadiationExposure();
+                if (!condition.isDead()) {
+                	if (condition.isStressedOut()) {
+                        // Only prescribing anti-stress medication at the moment.
+                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
+                            result = person;
+                        }
+                	}
+                	else if (exposure.isSick()) {
+                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
+                            result = person;
+                        }
+                	}
                 }
             }
         }
@@ -210,12 +301,13 @@ implements Serializable {
      * Determines a medication for the patient.
      * @param patient the patient to medicate.
      * @return medication.
-     */
+     
     private Medication determineMedication(Person patient) {
         // Only allow anti-stress medication for now.
-        return new AntiStressMedication(patient);
+        return new AnxietyMedication(patient); 
     }
-
+*/
+    
     /**
      * Performs the medicating phase.
      * @param time the amount of time (millisols) to perform the phase.
@@ -226,27 +318,57 @@ implements Serializable {
         // If duration, provide medication.
         if (getDuration() <= (getTimeCompleted() + time)) {
             if (patient != null && patient.getSettlement() != null && patient.getBuildingLocation() != null) {
-                if (medication != null) {
+               // if (medication != null) {
                     PhysicalCondition condition = patient.getPhysicalCondition();
 
-                    // Check if patient already has taken medication.
-                    if (!condition.hasMedication(medication.getName())) {
-                        // Medicate patient.
-                        condition.addMedication(medication);
-
-                		if (person != null)
-                			logger.info(person.getName() + " is prescribing " + medication.getName()
-                				+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-                            	+ " at " + patient.getSettlement());
-               			else if (robot != null)
-                			logger.info(robot.getName() + " is prescribing " + medication.getName()
-                            	+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-                            	+ " at " + patient.getSettlement());                        
-           
-                        produceMedicalWaste();
+                    if (condition.isRadiationPoisoned()) {
+                    
+                    	Medication medication = new RadioProtectiveAgent(patient);                    
+	                    // Check if patient already has taken medication.
+	                    if (!condition.hasMedication(medication.getName())) {
+	                        // Medicate patient.
+	                        condition.addMedication(medication);
+	
+	                		if (person != null)
+	                			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+	            	            		"[" + patient.getSettlement() + "] " + person.getName() + " is prescribing " + medication.getName()
+	                				+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
+	                				+ ".", null);
+	               			else if (robot != null)
+	               				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+	            	            		"[" + patient.getSettlement() + "] " + robot.getName() + " is prescribing " + medication.getName()
+	                            	+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
+	                            	+ ".", null);
+	                    }
                     }
-                }
-                else throw new IllegalStateException("medication is null");
+                    
+                    else if (condition.isStressedOut()) {
+                    	
+                    	Medication medication = new AnxietyMedication(patient);    
+                    	
+	                    // Check if patient already has taken medication.
+	                    if (!condition.hasMedication(medication.getName())) {
+	                        // Medicate patient.
+	                        condition.addMedication(medication);
+	
+	                		if (person != null)
+	                			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+	            	            		"[" + patient.getSettlement() + "] " + person.getName() + " is prescribing " + medication.getName()
+	                				+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
+	                				+ ".", null); 
+	               			else if (robot != null)
+	               				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+	            	            		"[" + patient.getSettlement() + "] " + robot.getName() + " is prescribing " + medication.getName()
+	                            	+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
+	                            	+ ".", null);                       
+	           
+	                    }
+                    }
+                    
+                    produceMedicalWaste();
+
+                //}
+               // else throw new IllegalStateException("medication is null");
             }
             else 
             	logger.info(patient.getName() + " is not in a proper place to receive medication.");
@@ -360,6 +482,6 @@ implements Serializable {
         super.destroy();
 
         patient = null;
-        medication = null;
+        //medication = null;
     }
 }

@@ -83,6 +83,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.input.ScrollEvent;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -93,6 +94,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -2732,6 +2735,13 @@ public class MainScene {
 	 */
 	public void updateTimeLabels() {
 
+		int msol = (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
+		if (msol % 10 == 0) {
+			// Check to see if a background sound track is being played.
+			if (!desktop.getSoundPlayer().isMusicMute())
+				soundPlayer.playRandomBackgroundTrack();
+		}
+		
 		if (simSpeedPopup.isShowing() || solCache == 0) {
 			double tps = Math.round(masterClock.getPulsesPerSecond()*100.0)/100.0;
 			if (tpsCache != tps) {
@@ -2749,6 +2759,7 @@ public class MainScene {
 		int solOfMonth = marsClock.getSolOfMonth();
 		if (solCache != solOfMonth) {
 			solCache = solOfMonth;
+			
 			if (solOfMonth == 1) {
 				String mn = marsClock.getMonthName();
 				if (mn != null) {
@@ -2808,9 +2819,6 @@ public class MainScene {
 			}
 		}
 		
-		// Check to see if a background sound track is being played.
-		if (!desktop.getSoundPlayer().isMusicMute())
-			soundPlayer.playRandomBackgroundTrack();
 	}
 
 	/**
@@ -3142,7 +3150,14 @@ public class MainScene {
 	private void createDesktopNode() {
 		// createDesktops();
 		desktop = new MainDesktopPane(this);
-		SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
+		JPanel mainPane = new JPanel(new BorderLayout());
+		// Add main pane
+		mainPane.add(desktop, BorderLayout.CENTER);
+		//JFrame frame = new JFrame();
+		//frame.setContentPane(mainPane);
+		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
+		desktopNode.requestFocus(); 
+		//desktopNode.autosize();
 	}
 
 	public SwingNode getDesktopNode() {

@@ -389,8 +389,8 @@ implements Serializable {
 		}
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
-		// 2014-11-11 Added a space " " in between the degree and its sign
-		return formatter.format(degrees) + " " + Msg.getString("direction.degreeSign") + direction; //$NON-NLS-1$
+		// Add a whitespace in between the degree and its directional sign
+		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
 	}
 
 	/**
@@ -455,8 +455,8 @@ implements Serializable {
 		}
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
-
-		return formatter.format(degrees) + " " + Msg.getString("direction.degreeSign") + direction; //$NON-NLS-1$
+		// Add a whitespace in between the degree and its directional sign
+		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
 	}
 
 	/**

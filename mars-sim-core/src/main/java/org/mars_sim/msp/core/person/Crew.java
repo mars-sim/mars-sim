@@ -9,15 +9,13 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
 
 public class Crew implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(Crew.class.getName());
+    //private static Logger logger = Logger.getLogger(Crew.class.getName());
 
 	private String name;
 	private String destination;

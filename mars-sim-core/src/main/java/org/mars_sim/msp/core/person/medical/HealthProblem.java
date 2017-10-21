@@ -34,18 +34,22 @@ public class HealthProblem implements Serializable {
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
     
     private static final int DEGRADING = 0;
-    private static final int TREATMENT = 1;
+    private static final int BEING_TREATED = 1;
     private static final int RECOVERING = 2;
     private static final int CURED = 3;
+    
     public static final int DEAD = 4;
 
-    private Complaint       illness;        // Illness
-    private Person          sufferer;       // Person
     private int             state;          // State of problem
+    
     private double          timePassed;     // Current time of state
     private double          duration;       // Length of the current state
-    private MedicalAid      usedAid;        // Any aid being used
+    
     private boolean         requiresBedRest; // Does recovery require bed rest?
+    
+    private Complaint       illness;        // Illness
+    private Person          sufferer;       // Person
+    private MedicalAid      usedAid;        // Any aid being used
     
     private static MedicalManager medicalManager;
 
@@ -194,8 +198,8 @@ public class HealthProblem implements Serializable {
         switch(state) {
             case DEGRADING:
                 return "Degrading";
-            case TREATMENT:
-                return "Treatment";
+            case BEING_TREATED:
+                return "Being Treated";
             case RECOVERING:
                 return "Recovering";
             case CURED:
@@ -217,7 +221,7 @@ public class HealthProblem implements Serializable {
         usedAid = medicalAid;
         duration = treatmentLength;
         timePassed = 0D;
-        setState(TREATMENT);
+        setState(BEING_TREATED);
 
         // Create medical event for treatment.
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
@@ -232,7 +236,7 @@ public class HealthProblem implements Serializable {
      * Stops the treatment for now.
      */
     public void stopTreatment() {
-        if (state == TREATMENT) {
+        if (state == BEING_TREATED) {
             if (duration > timePassed) {
                 startDegrading();
             }
@@ -258,7 +262,7 @@ public class HealthProblem implements Serializable {
      */
     public void startRecovery() {
 
-        if ((state == DEGRADING) || (state == TREATMENT)) {
+        if ((state == DEGRADING) || (state == BEING_TREATED)) {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
      
@@ -282,7 +286,7 @@ public class HealthProblem implements Serializable {
             else
             	duration = duration + duration * RandomUtil.getRandomDouble(.1)
 							- duration * RandomUtil.getRandomDouble(.1);
-
+            
             timePassed = 0D;
             
             if (duration > 0D) {
@@ -393,7 +397,7 @@ public class HealthProblem implements Serializable {
             buffer.append("Recovering from ");
             buffer.append(illness.getType().toString());
         }
-        else if (state == TREATMENT) {
+        else if (state == BEING_TREATED) {
             buffer.append(illness.getType());
             buffer.append(" with ");
             Treatment treatment = illness.getRecoveryTreatment();

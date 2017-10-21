@@ -20,10 +20,13 @@ implements Serializable, Comparable<Medication> {
 	private static final long serialVersionUID = 1L;
 
 	// Data members.
-	private String name;
 	private double duration;
 	private double timeElapsed;
+	
+	private String name;
+	
 	private Person person;
+
 
 	/**
 	 * Constructor.

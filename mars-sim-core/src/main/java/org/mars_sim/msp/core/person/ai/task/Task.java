@@ -837,7 +837,8 @@ implements Serializable, Comparable<Task> {
         }
         else {
         	// If no available activity spot, go to random location in building.
-            walkToRandomLocInBuilding(building, allowFail);
+        	walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMODATIONS, allowFail);
+            //walkToRandomLocInBuilding(building, allowFail);
         }
     }
     

@@ -58,6 +58,10 @@ implements Serializable {
     
     private static final FunctionType FUNCTION = FunctionType.PREPARING_DESSERT;
 
+    public static final String REFRIGERATE = "A dessert has expired. Refigerating ";
+    
+    public static final String DISCARDED = " is expired and discarded at ";
+    
 	public static final String GREY_WATER = "grey water";
     public static final String FOOD_WASTE = "food waste";
 	public static final String WATER = "water";
@@ -702,27 +706,39 @@ implements Serializable {
                         // Check if prepared dessert has gone bad and has to be thrown out.
                         double quality = dessert.getQuality() / 2D + 1D;
                         double num = RandomUtil.getRandomDouble(8 * quality);
+                        StringBuilder log = new StringBuilder();
+        				
                         if (num < 1) {
                             // Throw out bad dessert as food waste.
                             if (getDryMass(dessert.getName()) > 0)
                             		Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv, "::timePassing");
-                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-                            		getDryMass(dessert.getName()) + " kg "
-                                    + dessert.getName()
-                                    + " expired and discarded at " + getBuilding().getNickName()
-                                    + " in " + settlement.getName() + "."
-                                    , null);
+                            
+            				log.append("[").append(settlement.getName()).append("] ")
+                            		.append(getDryMass(dessert.getName()))
+                            		.append(" kg ")
+                            		.append(dessert.getName().toLowerCase())
+                            		.append(DISCARDED)
+                            		.append(getBuilding().getNickName())
+                            		.append(".");
+            				
+                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+                            
                         }
                         else  {
                             // Refrigerate prepared dessert.
                             refrigerateFood(dessert);
-                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-                            		"A dessert is expiring. Refrigerate "
-                                    + getDryMass(dessert.getName()) + " kg "
-                                    + dessert.getName()
-                                    +  " at " + getBuilding().getNickName()
-                                    + " in " + settlement.getName()
-                                    , null);
+                            
+            				log.append("[").append(settlement.getName()).append("] ")
+                            		.append(REFRIGERATE)
+                            		.append(getDryMass(dessert.getName()))
+                            		.append(" kg ")
+                            		.append(dessert.getName().toLowerCase())
+                            		.append(" at ")
+                            		.append(getBuilding().getNickName())
+                            		.append(".");
+            				
+                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+             
                             //logger.finest("The dessert has lost its freshness at " +
                             //        getBuilding().getBuildingManager().getSettlement().getName());
                         }

@@ -152,7 +152,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if enough beds for patient.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+            MedicalCare medicalCare = building.getMedical();
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
             if ((numPatients < numBeds) && !malfunction) {

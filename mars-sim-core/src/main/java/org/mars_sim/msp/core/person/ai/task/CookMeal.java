@@ -71,6 +71,8 @@ implements Serializable {
 
 	// Time (millisols) duration of meals.
 	private static final double MEALTIME_DURATION = 75D; // 250 milliSol = 6 hours
+	
+	private static final String NO_INGREDIENT = " cannot cook any meals. None of the ingredients are available.";
 
 	// Data members
 	//private int counter;
@@ -137,10 +139,13 @@ implements Serializable {
 	        	}
 */
 
-				String newLog = "[" + person.getSettlement().getName() + "] " + person + " cannot cook any meals "
-	            		+ "because none of the ingredients are available.";
+				StringBuilder log = new StringBuilder();
+				
+				log.append("[" + person.getSettlement().getName() + "] ").append(person).append(NO_INGREDIENT);
+				
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, log.toString(), null);
+				
 
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, newLog, null);
 
 /*
 	            // 2015-01-15 Added solElapsed
@@ -219,10 +224,11 @@ implements Serializable {
 	            		+ " because none of the ingredients of any meals are available ");
 */
 
-				String newLog = "[" + robot.getSettlement().getName() + "] " + robot + " cannot cook any meals in "
-	            		+ " because none of the ingredients are available. ";
+				StringBuilder log = new StringBuilder();
+				
+				log.append("[" + robot.getSettlement().getName() + "] ").append(robot).append(NO_INGREDIENT);
 
-				LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(), newLog, null);
+				LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(), log.toString(), null);
 
 	            endTask();
 

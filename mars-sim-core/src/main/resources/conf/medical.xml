@@ -12,7 +12,6 @@
 
 		     WARNINGT : the name of the medical-complaint must not be changed
 		-->
-
 		<medical-complaint name="Appendicitis">
 
 			<!-- Seriousness of complaint (required) -->
@@ -81,7 +80,7 @@
 		<medical-complaint name="Pulled Muscle/Tendon">
 			<seriousness value="1" />
 			<recovery-time value="2.0" />
-			<probability value="40.0" />
+			<probability value="20.0" />
 			<performance-percent value="70.0" />
 			<bed-rest-recovery value="false" />
 		</medical-complaint>
@@ -119,7 +118,7 @@
 			<seriousness value="60" />
 			<degrade-time value="7.0" />
 			<recovery-time value="14.0" />
-			<probability value="8.0" />
+			<probability value="5.0" />
 			<performance-percent value="10.0" />
 			<bed-rest-recovery value="false" />
 			<treatment-type value="Plaster Cast" />
@@ -131,7 +130,7 @@
 			<seriousness value="50" />
 			<degrade-time value="7.0" />
 			<recovery-time value="2.0" />
-			<probability value="14.0" />
+			<probability value="3.0" />
 			<performance-percent value="60.0" />
 			<bed-rest-recovery value="false" />
 			<treatment-type value="Dressing" />
@@ -154,7 +153,7 @@
 		<medical-complaint name="Minor Burns">
 			<seriousness value="20" />
 			<recovery-time value="10.0" />
-			<probability value="10.0" />
+			<probability value="0.0" />
 			<performance-percent value="75.0" />
 			<bed-rest-recovery value="false" />
 		</medical-complaint>
@@ -274,12 +273,25 @@
 		<medical-complaint name="Hypoxemia">
 			<seriousness value="80" />
 			<recovery-time value="1.5" />
-			<probability value="1.0" />
+			<probability value="0" />
 			<performance-percent value="20.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Hospitalization" />
 		</medical-complaint>
 
+		<!-- 2017-03-09 Add Hypoxemia
+				Hypoxemia refers to insufficient oxygen in the blood. Thus any cause that influences the rate or volume
+				 of air entering the lungs (ventilation) or any cause that influences the transfer of air from the
+				 lungs to the blood may cause hypoxemia.-->
+		<!-- The effects do not last long.-->
+		<medical-complaint name="Radiation Sickness">
+			<seriousness value="70" />
+			<recovery-time value="2.0" />
+			<probability value="0" />
+			<performance-percent value="30.0" />
+			<bed-rest-recovery value="true" />
+			<treatment-type value="Radioprotective Agent" />
+		</medical-complaint>
 
 <!-- Future:
 	1. Medium cut ?
@@ -317,7 +329,7 @@
 
         <!-- Shot of antibiotics. -->
         <treatment name="Antibiotics">
-        	<skill value="1" />
+        	<skill value="0" />
         	<medical-tech-level value="1" />
         	<treatment-time value="5.0" />
         	<self-admin value="true" />
@@ -349,28 +361,34 @@
 
 		<!-- Extended bed rest in the care of a medical facility. -->
 		<treatment name="Hospitalization">
-			<skill value="3" />
+			<skill value="2" />
 			<medical-tech-level value="3" />
-			<treatment-time value="500.0" />
+			<treatment-time value="1000.0" />
 			<self-admin value="false" />
 		</treatment>
 
 		<!-- Skin graft for extensive, third-degree burns. -->
 		<treatment name="Skin Graft">
-			<skill value="5" />
-			<medical-tech-level value="5" />
-			<treatment-time value="500.0" />
+			<skill value="4" />
+			<medical-tech-level value="4" />
+			<treatment-time value="1000.0" />
 			<self-admin value="false" />
 		</treatment>
-
-        <!-- 2016-06-15 Taking Anti-anxiety Medication. -->
+        
         <treatment name="Anxiety Medication">
-        	<skill value="1" />
+        	<skill value="0" />
         	<medical-tech-level value="1" />
-        	<treatment-time value="1.0" />
+        	<treatment-time value="5.0" />
         	<self-admin value="true" />
         </treatment>
 
+        <treatment name="Radioprotective Agent">
+        	<skill value="0" />
+        	<medical-tech-level value="1" />
+        	<treatment-time value="5.0" />
+        	<self-admin value="true" />
+        </treatment>        
+        
 	</treatment-list>
 
 </medical>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RequestMedicalTreatmentMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -175,7 +175,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if building has enough bed space.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+            MedicalCare medicalCare = building.getMedical();
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
             boolean enoughBedSpace = (numPatients < numBeds);

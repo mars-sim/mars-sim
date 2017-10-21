@@ -56,10 +56,11 @@ public class TreatMedicalPatient extends Task implements Serializable {
     private static final double STRESS_MODIFIER = 1D;
 
     // Data members.
-    private MedicalAid medicalAid;
-    private Person patient;
     private double duration;
     private double treatmentTime;
+    
+    private MedicalAid medicalAid;
+    private Person patient;
     private HealthProblem healthProblem;
 
     /**
