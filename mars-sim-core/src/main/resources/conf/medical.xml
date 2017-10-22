@@ -107,6 +107,7 @@
 		<!-- A fever doesn't last long but reduces a person's performance quite a bit.  -->
 		<medical-complaint name="Fever">
 			<seriousness value="40" />
+			<degrade-time value="3.0" />
 			<recovery-time value="1.0" />
 			<probability value="5.0" />
 			<performance-percent value="20.0" />
@@ -151,7 +152,7 @@
 
 		<!-- Minor burns are painful but not serious and will heal in time. -->
 		<medical-complaint name="Minor Burns">
-			<seriousness value="20" />
+			<seriousness value="20" />		
 			<recovery-time value="10.0" />
 			<probability value="0.0" />
 			<performance-percent value="75.0" />
@@ -162,6 +163,7 @@
 		<!-- They must be dressed properly to begin healing. -->
 		<medical-complaint name="Burns">
 			<seriousness value="50" />
+			<degrade-time value="5.0" />			
 			<recovery-time value="20.0" />
 			<probability value="0.0" />
 			<performance-percent value="40.0" />
@@ -211,6 +213,7 @@
 		<!-- long, however. (See "stress-breakdown-chance" in people.xml.) -->
 		<medical-complaint name="Panic Attack">
 			<seriousness value="30" />
+			<degrade-time value="3.0" />
 			<recovery-time value="1.0" />
 			<probability value="0.0" />
 			<performance-percent value="40.0" />
@@ -224,6 +227,7 @@
 		<!-- long, however. (See "stress-breakdown-chance" in people.xml.) -->
 		<medical-complaint name="Depression">
 			<seriousness value="20" />
+			<degrade-time value="3.0" />
 			<recovery-time value="3.0" />
 			<probability value="0.0" />
 			<performance-percent value="60.0" />
@@ -236,6 +240,7 @@
 		<!-- The effects do not last long, however. (See "high-fatigue-collapse-chance" in people.xml.)-->
 		<medical-complaint name="High Fatigue Collapse">
 			<seriousness value="60" />
+			<degrade-time value="3.0" />
 			<recovery-time value="3.0" />
 			<probability value="0.0" />
 			<performance-percent value="10.0" />
@@ -248,6 +253,7 @@
 		<!-- The effects do not last long, however. (See Food Contamination in malfunctions.xml.)-->
 		<medical-complaint name="Food Poisoning">
 			<seriousness value="60" />
+			<degrade-time value="2.0" />
 			<recovery-time value="3.0" />
 			<probability value="2.0" />
 			<performance-percent value="40.0" />
@@ -259,6 +265,7 @@
 		<!-- The effects do not last long.-->
 		<medical-complaint name="Heartburn">
 			<seriousness value="10" />
+			<degrade-time value="3.0" />
 			<recovery-time value="0.5" />
 			<probability value="5.0" />
 			<performance-percent value="80.0" />
@@ -272,6 +279,7 @@
 		<!-- The effects do not last long.-->
 		<medical-complaint name="Hypoxemia">
 			<seriousness value="80" />
+			<degrade-time value="2.0" />
 			<recovery-time value="1.5" />
 			<probability value="0" />
 			<performance-percent value="20.0" />
@@ -285,10 +293,11 @@
 				 lungs to the blood may cause hypoxemia.-->
 		<!-- The effects do not last long.-->
 		<medical-complaint name="Radiation Sickness">
-			<seriousness value="70" />
+			<seriousness value="60" />
+			<degrade-time value="4.0" />
 			<recovery-time value="2.0" />
 			<probability value="0" />
-			<performance-percent value="30.0" />
+			<performance-percent value="50.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Radioprotective Agent" />
 		</medical-complaint>
@@ -331,7 +340,7 @@
         <treatment name="Antibiotics">
         	<skill value="0" />
         	<medical-tech-level value="1" />
-        	<treatment-time value="5.0" />
+        	<treatment-time value="100.0" />
         	<self-admin value="true" />
         </treatment>
 
@@ -339,7 +348,7 @@
 		<treatment name="Dressing">
 			<skill value="0" />
 			<medical-tech-level value="1" />
-			<treatment-time value="10.0" />
+			<treatment-time value="50.0" />
 			<self-admin value="true" />
 		</treatment>
 
@@ -347,7 +356,7 @@
 		<treatment name="Minor Operation">
 			<skill value="3" />
 			<medical-tech-level value="3" />
-			<treatment-time value="80.0" />
+			<treatment-time value="200.0" />
 			<self-admin value="false" />
 		</treatment>
 
@@ -355,7 +364,7 @@
 		<treatment name="Major Operation">
 			<skill value="4" />
 			<medical-tech-level value="4" />
-			<treatment-time value="160.0" />
+			<treatment-time value="600.0" />
 			<self-admin value="false" />
 		</treatment>
 
@@ -363,7 +372,7 @@
 		<treatment name="Hospitalization">
 			<skill value="2" />
 			<medical-tech-level value="3" />
-			<treatment-time value="1000.0" />
+			<treatment-time value="2000.0" />
 			<self-admin value="false" />
 		</treatment>
 
@@ -378,14 +387,14 @@
         <treatment name="Anxiety Medication">
         	<skill value="0" />
         	<medical-tech-level value="1" />
-        	<treatment-time value="5.0" />
+        	<treatment-time value="100.0" />
         	<self-admin value="true" />
         </treatment>
 
         <treatment name="Radioprotective Agent">
         	<skill value="0" />
         	<medical-tech-level value="1" />
-        	<treatment-time value="5.0" />
+        	<treatment-time value="100.0" />
         	<self-admin value="true" />
         </treatment>        
         

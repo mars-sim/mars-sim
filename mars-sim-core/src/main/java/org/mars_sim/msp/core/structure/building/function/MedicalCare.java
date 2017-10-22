@@ -38,6 +38,8 @@ implements MedicalAid, Serializable {
 
     private MedicalStation medicalStation;
 
+    private static BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -46,8 +48,6 @@ implements MedicalAid, Serializable {
     public MedicalCare(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
-
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
         int techLevel = config.getMedicalCareTechLevel(building.getBuildingType());
         int beds = config.getMedicalCareBeds(building.getBuildingType());
@@ -90,7 +90,7 @@ implements MedicalAid, Serializable {
 
         double medicalPointValue = demand / (supply + 1D) / 10D;
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        //BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         double tech = config.getMedicalCareTechLevel(buildingName);
         double beds = config.getMedicalCareBeds(buildingName);
         double medicalPoints = (tech * tech) * beds;

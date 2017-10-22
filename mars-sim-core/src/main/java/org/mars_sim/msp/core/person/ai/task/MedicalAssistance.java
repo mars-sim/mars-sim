@@ -114,10 +114,14 @@ implements Serializable {
 
 				// Add person to medical care building if necessary.
 				if (medical instanceof MedicalCare) {
-					MedicalCare medicalCare = (MedicalCare) medical;
+					//MedicalCare medicalCare = (MedicalCare) medical;
 					//Building building = medicalCare.getBuilding();
 					// Walk to medical care building.
-					walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
+					//walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
+	            	if (person.getBuildingLocation() != null)
+	            		walkToActivitySpotInBuilding(person.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+	            	else
+	            		endTask();
 
 					produceMedicalWaste();
 

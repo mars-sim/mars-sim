@@ -288,7 +288,7 @@ public class RadiationExposure implements Serializable {
 	public void initializeWithRandomDose() {
 	  for (int y = 0; y < 3; y++) {
     	if (y == THIRTY_DAY) {
-    		dose[BFO][THIRTY_DAY] = rand(500);
+    		dose[BFO][THIRTY_DAY] = rand(10);
     		dose[OCULAR][THIRTY_DAY] = dose[BFO][THIRTY_DAY] + rand(15);
     		dose[SKIN][THIRTY_DAY] = dose[OCULAR][THIRTY_DAY] + rand(25);
     	}

@@ -1257,7 +1257,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	// 2015-05-18 Added getBuildingLocation()
 	public Building getBuildingLocation() {
-		return currentBuilding;
+		return computeCurrentBuilding();
 	}
 
 	/**

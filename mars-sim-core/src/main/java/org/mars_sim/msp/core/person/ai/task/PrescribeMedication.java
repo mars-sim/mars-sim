@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.medical.RadioProtectiveAgent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
@@ -89,11 +90,15 @@ implements Serializable {
             if (LocationSituation.OUTSIDE == ls)
             	endTask();
             // If in settlement, move doctor to building patient is in.
-            if (LocationSituation.IN_SETTLEMENT == ls) {
+            else if (LocationSituation.IN_SETTLEMENT == ls && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
-            	walkToActivitySpotInBuilding(BuildingManager.getBuilding(patient), FunctionType.MEDICAL_CARE, false);
+            	patient.getMind().getTaskManager().clearTask();
+            	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
+            	//walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
                 //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
+            else
+            	endTask();
 
         }
         else {
@@ -117,12 +122,15 @@ implements Serializable {
             //medication = determineMedication(patient);
 
             // If in settlement, move doctor to building patient is in.
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
-            	walkToActivitySpotInBuilding(BuildingManager.getBuilding(patient), FunctionType.MEDICAL_CARE, false);
+            	patient.getMind().getTaskManager().clearTask();
+            	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
+            	//walkToActivitySpotInBuilding(BuildingManager.getBuilding(patient), FunctionType.MEDICAL_CARE, false);
                 //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
-
+            else
+            	endTask();
             //logger.info(robot.getName() + " prescribing " + medication.getName() +
             //        " to " + patient.getName());
         }
@@ -207,7 +215,7 @@ implements Serializable {
      * @param doctor the doctor prescribing the medication.
      * @return patient if one found, null otherwise.
      */
-    public static Person determinePatient(Person doctor) {
+    public Person determinePatient(Person doctor) {
         Person result = null;
 
         // Get possible patient list.
@@ -251,7 +259,7 @@ implements Serializable {
         return result;
     }
 
-    public static Person determinePatient(Robot doctor) {
+    public Person determinePatient(Robot doctor) {
         Person result = null;
 
         // Get possible patient list.
@@ -367,6 +375,9 @@ implements Serializable {
                     
                     produceMedicalWaste();
 
+                    Building b = patient.getBuildingLocation();
+                    if (b != null && b.hasFunction(FunctionType.MEDICAL_CARE))
+                    	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
                 //}
                // else throw new IllegalStateException("medication is null");
             }

@@ -64,7 +64,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
      */
     public RequestMedicalTreatment(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
-
+	
         // Choose available medical aid for treatment.
         medicalAid = determineMedicalAid();
 
@@ -75,7 +75,12 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 MedicalCare medicalCare = (MedicalCare) medicalAid;
 
                 // Walk to medical care building.
-                walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
+                //walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
+                Building b = medicalCare.getBuilding();
+                if (b != null)
+                	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
+                //else
+                //	endTask();
             }
             else if (medicalAid instanceof SickBay) {
                 // Walk to medical activity spot in rover.
@@ -88,7 +93,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
             }
         }
         else {
-            logger.severe("Medical aid could not be determined.");
+            //logger.severe("Medical aid could not be determined.");
             endTask();
         }
 

@@ -99,7 +99,11 @@ implements Serializable {
         if (LocationSituation.IN_SETTLEMENT == ls) {
             interiorObject = BuildingManager.getBuilding(person);
             if (interiorObject == null) {
-                throw new IllegalStateException(person.getName() + " not in building and interiorObject is null.");
+                //throw new IllegalStateException(person.getName() + " is in " + person.getSettlement() + " but not in building : interiorObject is null.");
+	    		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
+	    				"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName() 
+	    				+ " is in " + person.getSettlement() + " and is supposed to be in a building but interiorObject is null.", null);
+                endTask();
             }
             else {
                 // Add task phases.
@@ -115,7 +119,10 @@ implements Serializable {
             if (person.getVehicle() instanceof Rover) {
                 interiorObject = (Rover) person.getVehicle();
                 if (interiorObject == null) {
-                    throw new IllegalStateException(person.getName() + " not in a vehicle and interiorObject is null.");
+                    //throw new IllegalStateException(person.getName() + " not in a vehicle and interiorObject is null.");
+    	    		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
+    	    				"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName() 
+    	    				+ " is supposed to be in a vehicle but interiorObject is null.", null);
                 }
                 // Add task phases.
                 addPhase(WALK_TO_OUTSIDE_SITE);

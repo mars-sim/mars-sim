@@ -61,75 +61,82 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
         if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
         	return 0;
        
-    	Settlement settlement = person.getAssociatedSettlement();
- 
-    	//2016-10-04 Checked for radiation events
-    	boolean[] exposed = settlement.getExposed();
-
-		if (exposed[2]) {// SEP can give lethal dose of radiation
-            return 0;
-		}
-
-        // Check if an airlock is available
-        if (ls == LocationSituation.IN_SETTLEMENT
-        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+    	Settlement settlement = person.getSettlement();
+    	
+    	if (settlement == null) {
     		return 0;
+    	}
+    	
+    	else {
+ 
+	    	//2016-10-04 Checked for radiation events
+	    	boolean[] exposed = settlement.getExposed();
+	
+			if (exposed[2]) {// SEP can give lethal dose of radiation
+	            return 0;
+			}
+	
+	        // Check if an airlock is available
+	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
+	
+	        // Check if it is night time.
+	        if (surface == null)
+	            surface = Simulation.instance().getMars().getSurfaceFeatures();
+	
+	        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
+	            if (!surface.inDarkPolarRegion(person.getCoordinates()))
+	                return 0;
+	
+	        // Check all vehicle missions occurring at the settlement.
+	        try {
+	            List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(settlement);
+	            result += 100D * missions.size();
+	        }
+	        catch (Exception e) {
+	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
+	        }
+	
+	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
+	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
+	            int numEVASuits = settlement.getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+	            if (numEVASuits >= 2) {
+	                result += 100D;
+	            }
+	        }
+	
+	        // Crowded settlement modifier
+	        if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
+	            result *= 2D;
+	
+	        // Job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null)
+	            result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class)
+	            		* settlement.getGoodsManager().getTransportationFactor();
+	
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	
+	        // Modify if operations is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations"))
+	            result *= 1.5D;
+	
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0D) {
+	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	        }
+	
+	    	if (exposed[0]) {
+				result = result/2D;// Baseline can give a fair amount dose of radiation
+			}
+	
+	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+				result = result/4D;
+			}
 
-        // Check if it is night time.
-        if (surface == null)
-            surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-            if (!surface.inDarkPolarRegion(person.getCoordinates()))
-                return 0;
-
-        // Check all vehicle missions occurring at the settlement.
-        try {
-            List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(settlement);
-            result += 100D * missions.size();
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE, "Error finding loading missions.", e);
-        }
-
-        // Check if any rovers are in need of EVA suits to allow occupants to exit.
-        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
-            int numEVASuits = settlement.getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
-            if (numEVASuits >= 2) {
-                result += 100D;
-            }
-        }
-
-        // Crowded settlement modifier
-        if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
-            result *= 2D;
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null)
-            result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class)
-            		* settlement.getGoodsManager().getTransportationFactor();
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Modify if operations is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations"))
-            result *= 1.5D;
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0D) {
-            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-        }
-
-    	if (exposed[0]) {
-			result = result/2D;// Baseline can give a fair amount dose of radiation
-		}
-
-    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-			result = result/4D;
-		}
-
+    	}
+    	
         if (result < 0)
             result = 0;
 

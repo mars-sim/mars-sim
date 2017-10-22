@@ -72,7 +72,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         Job job = person.getMind().getJob();
         
         if (job instanceof Doctor) {
-            result = numPatients * 100D;
+            result = numPatients * 300D;
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {
                 result = result + result * person.getPreference().getPreferenceScore(this)/5D;
@@ -86,7 +86,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
             	return 0;
             }
             else {
-                result = numPatients * 100D;
+                result = numPatients * 150D;
                 // 2015-06-07 Added Preference modifier
                 if (result > 0D) {
                     result = result + result * person.getPreference().getPreferenceScore(this)/5D;
@@ -131,20 +131,21 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        if (LocationSituation.OUTSIDE == robot.getLocationSituation())
+        	return 0;
+        
         // Only medicbot or a doctor is allowed to perform this task.
         if (robot.getBotMind().getRobotJob() instanceof Medicbot) {
         	
             // Determine patient needing medication.
         	Person patient = determinePatients(robot);
-        	if (numPatients == 0) {
-        		return 0;
-        	}
+            if (patient == null || numPatients == 0) {
+            	return 0;
+            }
 	
-	            	
-        	if (patient.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
-        		result = numPatients * 100D;
-        	}               
- 
+            else {//if (patient != null) {
+            	result = numPatients * 100D;             
+            }
         }
 
         // Effort-driven task modifier.

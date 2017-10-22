@@ -266,9 +266,13 @@ implements Serializable {
             Class containerType, int containerNum, int minPeople) {
         double result = 1;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-
+    	Settlement settlement = person.getSettlement();
+    	
+    	if (settlement == null) {
+    		return 0;
+    	}
+    	
+    	else {
             // Check if a mission-capable rover is available.
             if (!areVehiclesAvailable(settlement, false))
                 return 0;

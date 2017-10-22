@@ -113,6 +113,7 @@ public class BuildingManager implements Serializable {
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
     private static BuildingConfig buildingConfig;
+    private static RelationshipManager relationshipManager;
 
     private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
     private Map<String, Double> buildingValuesNewCache;
@@ -147,6 +148,7 @@ public class BuildingManager implements Serializable {
 
         buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		eventManager = Simulation.instance().getEventManager();
+		relationshipManager = Simulation.instance().getRelationshipManager();
 		
         // Construct all buildings in the settlement.
         buildings = new ArrayList<Building>();
@@ -217,7 +219,8 @@ public class BuildingManager implements Serializable {
         	logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on " + Thread.currentThread().getName());
         
         buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
+        relationshipManager = Simulation.instance().getRelationshipManager();
+        
         // Construct all buildings in the settlement.
         buildings = new ArrayList<Building>();
 
@@ -926,10 +929,7 @@ public class BuildingManager implements Serializable {
             // since we don't want robots to stay in a hallway
             List<Building> validBuildings = new ArrayList<Building>();
             for (Building bldg : functionBuildings) {
-            //Iterator<Building> i = functionBuildings.iterator();
-            //while (i.hasNext()) {
-            //    Building bldg = i.next();
-            	RoboticStation roboticStation = (RoboticStation) bldg.getFunction(FunctionType.ROBOTIC_STATION);
+            	RoboticStation roboticStation = bldg.getRoboticStation(); 
     			// remove hallway, tunnel, observatory
             	if (roboticStation != null) {
             		if (bldg.getBuildingType().toLowerCase().contains("hallway")
@@ -984,9 +984,6 @@ public class BuildingManager implements Serializable {
                 List<Building> validBuildings1 = new ArrayList<Building>();
             	List<Building> stations = settlement.getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
                 for (Building bldg : stations) {
-            	//Iterator<Building> j = stations.iterator();
-                //while (j.hasNext()) {
-                //    Building bldg = j.next();
          			// remove hallway, tunnel, observatory
              		if (bldg.getBuildingType().toLowerCase().contains("hallway")
             				|| bldg.getBuildingType().toLowerCase().contains("tunnel")
@@ -1046,22 +1043,17 @@ public class BuildingManager implements Serializable {
         Building result = null;
         Settlement settlement = vehicle.getSettlement();
         if (settlement != null) {
-        	for (Building garageBuilding : settlement.getBuildingManager().getBuildings(
-                    FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
-            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-                    //BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
-            //while (i.hasNext()) {
-                //Building garageBuilding = i.next();
+            List<Building> list = settlement.getBuildingManager().getBuildings(
+                    FunctionType.GROUND_VEHICLE_MAINTENANCE);
+            for (Building garageBuilding : list) {
                 try {
-                    VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
-                            FunctionType.GROUND_VEHICLE_MAINTENANCE);
-                    if (garage.containsVehicle(vehicle)) {
-                        //result = garageBuilding;
+                    VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+                    if (garage != null && garage.containsVehicle(vehicle)) {
                         return garageBuilding;
                     }
                 }
                 catch (Exception e) {
-                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
+                    logger.log(Level.SEVERE,"Calling getBuilding(vehicle): " + e.getMessage());
                 }
             }
         }
@@ -1080,12 +1072,12 @@ public class BuildingManager implements Serializable {
         	for (Building garageBuilding : list) {
                 try {
                     VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-                    if (garage.containsVehicle(vehicle)) {
+                    if (garage != null && garage.containsVehicle(vehicle)) {
                         return garageBuilding;
                     }
                 }
                 catch (Exception e) {
-                    logger.log(Level.SEVERE, "BuildingManager.getBuilding(): " + e.getMessage());
+                    logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
                 }
             }
         }
@@ -1105,7 +1097,7 @@ public class BuildingManager implements Serializable {
         if (unit instanceof Person) {
          	person = (Person) unit;
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	        	result = person.getBuildingLocation();
+	        	return person.getBuildingLocation();
 /*	        	
 	            Settlement settlement = person.getSettlement();
 	            List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
@@ -1126,29 +1118,22 @@ public class BuildingManager implements Serializable {
 	                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
 	                }
 	            }
-*/	            
+*/
 	        }
         }
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            result = robot.getBuildingLocation();
+	            return robot.getBuildingLocation();
 /*
 				Settlement settlement = robot.getSettlement();
  	            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 	            while (i.hasNext()) {
 	                Building building = i.next();
 	                try {
-	                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+	                	RoboticStation roboticStation = building.getRoboticStation();
 	                	if (roboticStation.containsRobotOccupant(robot)) {
-	                    //if (building.equals(robot.getBuildingLocation())) {
-	                        //if (result == null) {
-	                            result = building;
-	                        //}
-	                        //else {
-	                        //    throw new IllegalStateException(robot + " is located in more than one building: " + result.getNickName() +
-	                        //            " and " + building.getNickName());
-	                        //}
+	                		result = building;
 	                    }
 	                }
 	                catch (Exception e) {
@@ -1173,7 +1158,7 @@ public class BuildingManager implements Serializable {
 		// 2016-12-08 Using Java 8 stream
 		return buildings
 				.stream()
-				.filter(b-> LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, b))
+				.filter(b -> LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, b))
 				.findFirst().orElse(null);//get();
 /*
         Building result = null;
@@ -1235,7 +1220,7 @@ public class BuildingManager implements Serializable {
         // Find least crowded population.
         int leastCrowded = Integer.MAX_VALUE;
         for (Building b0 : buildingList) {
-            LifeSupport lifeSupport = (LifeSupport) b0.getFunction(FunctionType.LIFE_SUPPORT);
+            LifeSupport lifeSupport = b0.getLifeSupport();
             int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded < leastCrowded) leastCrowded = crowded;
@@ -1243,7 +1228,7 @@ public class BuildingManager implements Serializable {
 
         // Add least crowded buildings to list.
         for (Building b : buildingList) {
-            LifeSupport lifeSupport = (LifeSupport) b.getFunction(FunctionType.LIFE_SUPPORT);
+            LifeSupport lifeSupport = b.getLifeSupport();
             int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded == leastCrowded) result.add(b);
@@ -1284,10 +1269,7 @@ public class BuildingManager implements Serializable {
         // Find least crowded population.
         int leastCrowded = Integer.MAX_VALUE;
         for (Building building : buildingList) {
-        //Iterator<Building> i = buildingList.iterator();
-        //while (i.hasNext()) {
-        	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
-        	//if (roboticStation == null) System.out.println("roboticStation is null");
+        	RoboticStation roboticStation = building.getRoboticStation();
             int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded < leastCrowded) leastCrowded = crowded;
@@ -1295,11 +1277,7 @@ public class BuildingManager implements Serializable {
 
         // Add least crowded buildings to list.
         for (Building building : buildingList) {
-        //Iterator<Building> j = buildingList.iterator();
-        //while (j.hasNext()) {
-        //    Building building = j.next();
-        	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
-
+        	RoboticStation roboticStation = building.getRoboticStation();
             int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded == leastCrowded) result.add(building);
@@ -1317,18 +1295,13 @@ public class BuildingManager implements Serializable {
      */
     public static Map<Building, Double> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
         Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+        //RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
         // Determine probabilities based on relationships in buildings.
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+        for (Building building : buildingList) {
+            LifeSupport lifeSupport = building.getLifeSupport();
             double buildingRelationships = 0D;
             int numPeople = 0;
             for (Person occupant : lifeSupport.getOccupants()) {
-            //Iterator<Person> j = lifeSupport.getOccupants().iterator();
-            //while (j.hasNext()) {
-            //    Person occupant = j.next();
                 if (person != occupant) {
                     buildingRelationships+= relationshipManager.getOpinionOfPerson(person, occupant);
                     numPeople++;

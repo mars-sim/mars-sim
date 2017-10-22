@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RestingMedicalRecovery.java
- * @version 3.1.0 2017-03-09
+ * @version 3.1.0 2017-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -76,7 +76,13 @@ public class RestingMedicalRecovery extends Task implements Serializable {
                 MedicalCare medicalCare = (MedicalCare) medicalAid;
 
                 // Walk to medical care building.
-                walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
+                //walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
+                Building b = medicalCare.getBuilding();
+                if (b != null)
+                	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
+                //else
+                //	endTask();
+                
             }
             else if (medicalAid instanceof SickBay) {
                 // Walk to medical activity spot in rover.
@@ -136,7 +142,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if enough beds for patient.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+            MedicalCare medicalCare = building.getMedical();
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
             if ((numPatients < numBeds) && !malfunction) {

@@ -1277,8 +1277,10 @@ LocalBoundedObject, InsidePathLocation {
 		if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
 
 		// Send time to each building function.
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) i.next().timePassing(time);
+		//Iterator<Function> i = functions.iterator();
+		//while (i.hasNext()) i.next().timePassing(time);
+		for (Function f : functions)
+			f.timePassing(time);
 
 		// 2015-06-03 determine if a meteorite impact will occur within the new sol
 		checkForMeteoriteImpact();

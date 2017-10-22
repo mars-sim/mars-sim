@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RestingMedicalRecoveryMeta.java
- * @version 3.1.0 2017-03-09
+ * @version 3.1.0 2017-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -48,6 +48,9 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
+        
+        if (LocationSituation.OUTSIDE == person.getLocationSituation())
+        	return 0;
 
         // Check if person has a health problem that requires bed rest for recovery.
         boolean bedRestNeeded = false;
@@ -119,7 +122,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if building has enough bed space.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+            MedicalCare medicalCare = building.getMedical();
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
             boolean enoughBedSpace = (numPatients < numBeds);

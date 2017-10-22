@@ -57,6 +57,9 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        if (LocationSituation.OUTSIDE == person.getLocationSituation())
+        	return 0;
+        
         if (person.getPhysicalCondition().getProblems().size() == 0)
         	return 0;
         

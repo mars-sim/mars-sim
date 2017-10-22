@@ -763,7 +763,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	  */
 	// 2015-05-18 Added getBuildingLocation()
 	public Building getBuildingLocation() {
-		return currentBuilding;
+		return computeCurrentBuilding();//currentBuilding;
 	}
 
 	/**
@@ -774,10 +774,11 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	// 2017-03-08 Added setCurrentBuilding()
 	public Building computeCurrentBuilding() {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = getSettlement().getBuildingManager();
-			currentBuilding = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(), getYLocation());
 		}
-
+		else
+			currentBuilding = null;
+		
 		return currentBuilding;
 	}
 

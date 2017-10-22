@@ -851,15 +851,21 @@ implements Serializable, Comparable<Task> {
     protected void walkToActivitySpotInBuilding(Building building, FunctionType functionType,
             boolean allowFail) {
 
-        Function buildingFunction = building.getFunction(functionType);
+        Function f = building.getFunction(functionType);
+        if (f == null) {
+        	 // If the functionType does not exist in this building, go to random location in building.
+            walkToRandomLocInBuilding(building, allowFail);
+            return;
+        }
+        
         Point2D settlementLoc = null;
 		if (person != null) {
 	        // Find available activity spot in building.
-	        settlementLoc = buildingFunction.getAvailableActivitySpot(person);
+	        settlementLoc = f.getAvailableActivitySpot(person);
 		}
 		else if (robot != null) {
 	        // Find available activity spot in building.
-	        settlementLoc = buildingFunction.getAvailableActivitySpot(robot);
+	        settlementLoc = f.getAvailableActivitySpot(robot);
 		}
 
         if (settlementLoc != null) {

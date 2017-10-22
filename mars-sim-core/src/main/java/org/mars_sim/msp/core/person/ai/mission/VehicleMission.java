@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.1.0 2017-01-19
+ * @version 3.1.0 2017-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;

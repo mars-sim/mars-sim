@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 
 
 /**
@@ -62,8 +60,13 @@ public class CollectRegolithMeta implements MetaMission {
         if (sol < MIN_STARTING_SOL)
         	return 0;
 */
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	        Settlement settlement = person.getSettlement();
+
+    	Settlement settlement = person.getSettlement();
+    	
+    	if (settlement == null) {
+    		return 0;
+    	}
+    	else {
 
 	        // a settlement with <= 4 population can always do DigLocalRegolith task
 	        // should avoid the risk of mission.

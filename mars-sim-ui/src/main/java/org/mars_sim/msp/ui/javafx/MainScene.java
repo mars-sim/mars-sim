@@ -94,7 +94,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -830,8 +829,6 @@ public class MainScene {
 	public Scene initializeScene() {
 		IconFontFX.register(FontAwesome.getIconFont());
 
-		// Create group to hold swingNode which in turns holds the Swing desktop
-		desktopNode = new SwingNode();
 		createDesktopNode();
 		//JFXToolbar toolbar = new JFXToolbar();
 		
@@ -943,6 +940,7 @@ public class MainScene {
 		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
 		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
 
+		
 		mainStackPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
 		mainStackPane.prefWidthProperty().bind(scene.widthProperty());
 		
@@ -3148,16 +3146,15 @@ public class MainScene {
 	}
 
 	private void createDesktopNode() {
-		// createDesktops();
+		// Create group to hold swingNode which in turns holds the Swing desktop
+		desktopNode = new SwingNode();
 		desktop = new MainDesktopPane(this);
 		JPanel mainPane = new JPanel(new BorderLayout());
+		mainPane.setSize(screen_width, screen_height);
 		// Add main pane
 		mainPane.add(desktop, BorderLayout.CENTER);
-		//JFrame frame = new JFrame();
-		//frame.setContentPane(mainPane);
 		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
 		desktopNode.requestFocus(); 
-		//desktopNode.autosize();
 	}
 
 	public SwingNode getDesktopNode() {

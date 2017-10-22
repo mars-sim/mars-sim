@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TreatMedicalPatientMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-10-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -54,7 +54,9 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
+        
+        if (LocationSituation.OUTSIDE == person.getLocationSituation())
+        	return 0;
         
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
             	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
@@ -124,7 +126,7 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
             if (!malfunction) {
 
                 // Check if there are any treatable medical problems at building.
-                MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+                MedicalCare medicalCare = building.getMedical();
                 if (hasTreatableHealthProblems(person, medicalCare)) {
                     result = true;
                 }
