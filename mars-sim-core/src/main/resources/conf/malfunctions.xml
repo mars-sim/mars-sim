@@ -610,6 +610,9 @@
 			<system name="power generation" />
 			<system name="building" />
 		</system-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="10.0" />
+		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="wire connector" number="4" probability="50" />
 			<part name="electrical wire" number="4" probability="50" />
@@ -937,7 +940,6 @@
 		<system-list>
 			<system name="building" />
 		</system-list>
-
 		<effect-list>
 			<effect type="resource" name="Oxygen" change-rate="-.2" />
 			<effect type="life-support" name="Oxygen" change-rate="-.02" />
@@ -948,6 +950,7 @@
 			<medical-complaint name="Laceration" probability="30.0" />
 			<medical-complaint name="Broken Bone" probability="5.0" />
 			<medical-complaint name="Panic Attack" probability="10.0" />
+			<medical-complaint name="HeartBurn" probability="10.0" />			
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="fire extinguisher" number="2" probability="10" />

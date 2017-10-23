@@ -401,7 +401,7 @@ implements SettlementMapLayer {
 */
 			//int yOffset = 12 * size;
 			// Draw task.
-			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(true)); //$NON-NLS-1$
+			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
 			drawLabelRight(
 				g2d, taskString, selectedPerson.getXLocation(),
 				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
@@ -464,7 +464,7 @@ implements SettlementMapLayer {
 			);
 
 			// Draw task.
-			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getBotTaskManager().getTaskDescription(true)); //$NON-NLS-1$
+			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getBotTaskManager().getTaskDescription(false)); //$NON-NLS-1$
 			drawLabelRight(
 				g2d, taskString, selectedRobot.getXLocation(),
 				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,

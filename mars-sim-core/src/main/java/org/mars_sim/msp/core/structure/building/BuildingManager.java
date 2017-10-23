@@ -1332,12 +1332,9 @@ public class BuildingManager implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+            LifeSupport lifeSupport = building.getLifeSupport();
             int numPeople = 0;
             for (Person occupant : lifeSupport.getOccupants()) {
-            //Iterator<Person> j = lifeSupport.getOccupants().iterator();
-            //while (j.hasNext()) {
-            //    Person occupant = j.next();
                 Task task = occupant.getMind().getTaskManager().getTask();
                 if (task instanceof HaveConversation) {
                     numPeople++;

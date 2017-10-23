@@ -136,27 +136,26 @@ implements ActionListener {
 		JLabel taskLabel = new JLabel(Msg.getString("TabPanelActivity.task"), JLabel.CENTER); //$NON-NLS-1$
 		taskPanel.add(taskLabel, BorderLayout.NORTH);
 
-		String taskText = "";
 		// Prepare task text area
 		if (dead)
-			taskText = deathInfo.getTask();
+			taskTextCache = deathInfo.getTask();
 		else {
 			if (person != null) {
-				String t = taskManager.getTaskDescription(true);
-				//if (!t.toLowerCase().contains("walk"))
-					taskText = t;
+				String t = taskManager.getTaskDescription(false);
+				if (t != null && !t.toLowerCase().contains("walk"))
+					taskTextCache = t;
 			}
 
 			else if (robot != null) {
-				String t = botTaskManager.getTaskDescription(true);
-				//if (!t.toLowerCase().contains("walk"))
-					taskText = t;
+				String t = botTaskManager.getTaskDescription(false);
+				if (t != null && !t.toLowerCase().contains("walk"))
+					taskTextCache = t;
 			}
 		}
 
 		taskTextArea = new JTextArea(2, COL_WDITH);
 		//if (taskText != null)
-		taskTextArea.setText(taskText);
+		taskTextArea.setText(taskTextCache);
 		taskTextArea.setLineWrap(true);
 		taskTextArea.setEditable(false);
 		taskPanel.add(new JScrollPane(taskTextArea), BorderLayout.CENTER);
@@ -169,10 +168,9 @@ implements ActionListener {
 		JLabel taskPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.taskPhase"), JLabel.CENTER); //$NON-NLS-1$
 		taskPhasePanel.add(taskPhaseLabel, BorderLayout.NORTH);
 
-		String taskPhaseText = "";
 		// Prepare task phase text area
 		if (dead) {
-		    taskPhaseText = deathInfo.getTaskPhase();
+			taskPhaseCache = deathInfo.getTaskPhase();
 		}
 		else {
 
@@ -185,16 +183,16 @@ implements ActionListener {
 
 
 		    if (phase != null) {
-		        taskPhaseText = phase.getName();
+		    	taskPhaseCache = phase.getName();
 		    }
 		    else {
-		        taskPhaseText = "";
+		    	taskPhaseCache = "";
 		    }
 		}
 
 		taskPhaseArea = new JTextArea(2, COL_WDITH);
 		//if (taskPhaseText != null)
-		taskPhaseArea.setText(taskPhaseText);
+		taskPhaseArea.setText(taskPhaseCache);
 		taskPhaseArea.setLineWrap(true);
 		taskPhaseArea.setEditable(false);
 		taskPhasePanel.add(new JScrollPane(taskPhaseArea), BorderLayout.CENTER);
@@ -404,10 +402,10 @@ implements ActionListener {
 			}
 
 			if (person != null) {
-				newTaskText = taskManager.getTaskDescription(true);
+				newTaskText = taskManager.getTaskDescription(false);
 			}
 			else if (robot != null) {
-				newTaskText = botTaskManager.getTaskDescription(true);
+				newTaskText = botTaskManager.getTaskDescription(false);
 			}
 
 		    TaskPhase phase = null;
@@ -427,7 +425,7 @@ implements ActionListener {
 
 		}
 
-		//if (!newTaskText.toLowerCase().contains("walk")) {
+		if (!newTaskText.toLowerCase().contains("walk")) {
 			if (!newTaskText.equals("") && !taskTextCache.equals(newTaskText)) {
 				taskTextCache = newTaskText;
 				taskTextArea.setText(newTaskText);
@@ -437,7 +435,7 @@ implements ActionListener {
 				taskPhaseCache = newTaskPhase;
 				taskPhaseArea.setText(newTaskPhase);
 			}
-		//}
+		}
 
 		// Update mission text area if necessary.
 		if (dead) {

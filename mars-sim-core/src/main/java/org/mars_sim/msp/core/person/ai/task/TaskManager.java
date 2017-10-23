@@ -50,7 +50,7 @@ implements Serializable {
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 	// Data members
-	private String taskNameCache = "", taskDescriptionCache = "", taskPhaseNameCache = "";
+	private String taskNameCache = "", taskDescriptionCache = "Relaxing", taskPhaseNameCache = "Relaxing";
 	
 	//private String oldJob = "";
 
@@ -183,10 +183,14 @@ implements Serializable {
 	 */
 	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
-			return currentTask.getDescription(subTask);
-		} else {
+			String t = currentTask.getDescription(subTask);
+			if (t != null)
+				return t;
+			else
+				return "";		
+		} 
+		else
 			return "";
-		}
 	}
 	
 	public FunctionType getFunction(boolean subTask) {
@@ -249,7 +253,7 @@ implements Serializable {
 	 */
 	// 2015-10-22 Added recordTask()
 	public void recordTask() {
-		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
+		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//getTaskClassName();//currentTask.getTaskName(); //
 		FunctionType functionType = getFunction(true);
 		
@@ -275,6 +279,7 @@ implements Serializable {
 		    if (ts == null)
 		    	ts = person.getTaskSchedule();
 		    
+		    // TODO: decide if it needs to record the same task description as the last
 			ts.recordTask(taskName, taskDescription, taskPhaseName, functionType);
 			taskDescriptionCache = taskDescription;
 

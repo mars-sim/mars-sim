@@ -89,9 +89,9 @@ implements Serializable, Comparable<Task> {
 	/** The person teaching this task if any. */
 	private Person teacher;
 	/** The person performing the task. */
-	protected Person person = null;
+	protected Person person;
 	/** The robot performing the task. */
-	protected Robot robot = null;
+	protected Robot robot;
 	/** Sub-task of the current task. */
 	protected Task subTask;
 	/** Phase of task completion. */

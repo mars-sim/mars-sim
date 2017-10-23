@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
@@ -55,6 +56,9 @@ implements Serializable {
     private List<Person> list = new ArrayList<Person>();
     
     private Person candidate = null;  
+    private Person inviter = null;
+    
+    private Settlement settlement;
     
     private static RelationshipManager relationshipManager;
     
@@ -67,12 +71,15 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        this.person = person;
+        
+        settlement = person.getSettlement();
+        
+        if (settlement != null) {
         	
             Set<Person> pool = new HashSet<Person>();
-            Settlement s = person.getSettlement();
-            
-            Collection<Person> ppl = s.getAllAssociatedPeople(); 
+
+            Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
             RoleType roleType = person.getRole().getType();
             
             if (roleType.equals(RoleType.PRESIDENT)
@@ -97,6 +104,14 @@ implements Serializable {
 
                     }
                 }    
+                
+                Person pp = ppl
+						.stream()
+						.findAny().orElse(null);	
+                
+                if (pool.size() == 0)
+                	pool.add(pp);
+                
             }
             
             else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
@@ -117,10 +132,17 @@ implements Serializable {
             if (list.size() == 0) {
                 endTask();
             }
+            else {
+    	    	int size = list.size();
+    	        
+    	        if (size == 1)
+    	        	candidate = list.get(0); 
+    	        else
+    	        	candidate = list.get(RandomUtil.getRandomInt(0, size-1));
+            }
             
         }
-        //else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {      
-        //}
+        
         else {
             endTask();
         }
@@ -130,6 +152,20 @@ implements Serializable {
         setPhase(MEET_TOGETHER);
     }
 
+    
+    public MeetTogether(Person person, Person inviter) {
+        // Use Task constructor.
+        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
+        
+        this.inviter = inviter;
+        
+        settlement = person.getSettlement();
+        
+        if (settlement != null) {
+        	
+        }
+    }
+    
     
     @Override
     protected double performMappedPhase(double time) {
@@ -151,27 +187,24 @@ implements Serializable {
      */
     private double meetingTogether(double time) {
 
-    	int size = list.size();
-        
-        if (size == 1)
-        	candidate = list.get(0); 
-        else
-        	candidate = list.get(RandomUtil.getRandomInt(0, size-1));
-    	    	
-    	if (candidate.getBuildingLocation() != null) {
-    		
-    		//if (!candidate.getBuildingLocation().getBuildingType().toLowerCase().contains("Astronomy"))  {
-	        	Building b = candidate.getBuildingLocation();
-			
-		        //System.out.println(person.getName() + " is going to meet " + candidate.getName() + " at " + b.getNickName());
-		  			
-				walkToActivitySpotInBuilding(b, FunctionType.LIFE_SUPPORT, false);
+    	if (inviter == null) {
+    		// The person is setting up and inviting the candidate
+    	    
+	 
+       		Building building = settlement.getBuildingManager()
+        					.getBuildings(FunctionType.COMMUNICATION)
+							.stream()
+							.findAny().orElse(null);	        		
+	        		
+	    	if (building != null) {
+	    				
+				walkToActivitySpotInBuilding(building, FunctionType.COMMUNICATION, false);
 
 				setDescription(Msg.getString("Task.description.meetTogether.detail", candidate.getName())); //$NON-NLS-1$
 			
-		        if (isDone()) {
-		            return time;
-		        }
+		        //if (isDone()) {
+		        //    return time;
+		        //}
 		
 		        if (getDuration() <= (getTimeCompleted() + time)) {
 		
@@ -185,14 +218,26 @@ implements Serializable {
 		            }
 		
 		            // Add 1 point to invitee's opinion of the one who starts the conversation
-			            Relationship relationship = relationshipManager.getRelationship(candidate, person);
-			            double currentOpinion = relationship.getPersonOpinion(candidate);
-			            relationship.setPersonOpinion(candidate, currentOpinion + RandomUtil.getRandomDouble(1));
+		            Relationship relationship = relationshipManager.getRelationship(candidate, person);
+		            double currentOpinion = relationship.getPersonOpinion(candidate);
+		            relationship.setPersonOpinion(candidate, currentOpinion + RandomUtil.getRandomDouble(1));
 		 
 		        }
-	    	//}
-	    }
-	        
+
+		    }
+    	}
+    	
+    	else {
+    		// The person is invited to a meeting setup by the inviter
+    		
+    		Building building = inviter.getBuildingLocation();
+  			    		
+			walkToActivitySpotInBuilding(building, FunctionType.COMMUNICATION, false);
+
+			setDescription(Msg.getString("Task.description.meetTogether.detail.invited", person.getName())); //$NON-NLS-1$
+
+    	}
+	    	
         return 0D;
     }
 

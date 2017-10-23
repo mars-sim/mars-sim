@@ -156,10 +156,10 @@ public class PersonTableModel extends UnitTableModel {
 	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
-	/** The type of source for the people table. */
+	private String taskCache = "Relaxing";
+	
 	private ValidSourceType sourceType;
 
-	// List sources.
 	private Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
@@ -415,17 +415,24 @@ public class PersonTableModel extends UnitTableModel {
 			case TASK: {
 				// If the Person is dead, there is no Task Manager
 				TaskManager mgr = person.getMind().getTaskManager();
-				// calling mgr.getTaskDescription(true) removing a lot of
-				// 'Walking Interior'
-				result = ((mgr != null) ? mgr.getTaskDescription(true) : null);
-				// result = ((mgr != null)? mgr.getTaskName() : null);
-				// //getFilteredTaskName() //getTaskDescription(false) //
-				// .getTaskClassName()
-				/*
-				 * if (mgr != null) { String s = mgr.getTaskName(); if
-				 * (!s.toLowerCase().contains("walk")) result = s; //else //
-				 * result = null; } //else // result = null;
-				 */
+				String t = taskCache;
+
+				if (mgr != null) {
+					
+					t = mgr.getTaskDescription(false);
+					
+					if (!t.toLowerCase().contains("walk") && t != null && !t.equals(taskCache))
+						result = t;
+					else
+						result = t;
+			
+				}
+				else
+					result = t;
+
+				
+				//result = ((mgr != null) ? mgr.getTaskDescription(true) : null);
+
 			}
 				break;
 

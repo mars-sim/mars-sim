@@ -143,12 +143,15 @@ implements Serializable {
 	 */
 	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
-			String doAction = currentTask.getDescription(subTask);
-
-			return doAction;
-		} else {
+			String t = currentTask.getDescription(subTask);
+			if (t != null)
+				return t;
+			else
+				return "";		
+		} 
+		
+		else
 			return "";
-		}
 	}
 	
 	public FunctionType getFunction(boolean subTask) {
@@ -199,7 +202,7 @@ implements Serializable {
 	 */
 	// 2015-10-22 Added recordTask()
 	public void recordTask() {
-		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
+		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
 		FunctionType functionType = getFunction(true);

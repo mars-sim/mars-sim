@@ -159,7 +159,7 @@ public class Sleep extends Task implements Serializable {
                 	// TODO: should allow him/her to sleep in gym or anywhere based on his/her usual preferences
                 	// endTask();
                     // Just walk to a random location.
-                    walkToRandomLocation(true);
+                    walkToRandomLocation(false);
                 }
 
 			} else {
@@ -184,14 +184,14 @@ public class Sleep extends Task implements Serializable {
 		                //logger.info("Case 4: " + person + " is walking from " + startBuilding + " to his private quarters at " + pq);
 		            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
 		                accommodations.registerSleeper(person, false);
-		                walkToBed(accommodations, person, true); // can cause StackOverflowError from excessive log or calling ExitAirlock
+		                walkToBed(accommodations, person, false); // can cause StackOverflowError from excessive log or calling ExitAirlock
 	            	}
 	            	else {
 		            	// Case 5: this designated bed is currently occupied (OD)
 	                	//logger.info("Case 5: " + person + " has a designated bed but is currently occupied. Will find a spot to fall asleep.");
 	                	// TODO: should allow him/her to sleep in gym or anywhere based on his/her usual preferences
 	                    // Just walk to a random location.
-	                    walkToRandomLocation(true);
+	                    walkToRandomLocation(false);
 	            	}
 
 
@@ -217,7 +217,7 @@ public class Sleep extends Task implements Serializable {
 			                //Point2D bed = person.getBed();
 			            	accommodations = q6.getLivingAccommodations();
 			            	accommodations.registerSleeper(person, false);
-			            	walkToBed(accommodations, person, true);
+			            	walkToBed(accommodations, person, false);
 			        		//walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);
 			                //Building startBuilding = BuildingManager.getBuilding(person);
 			                //logger.info("Case 6: " + person + " is walking from " + startBuilding + " to use his/her new quarters at " + q6);
@@ -237,7 +237,7 @@ public class Sleep extends Task implements Serializable {
 		                   	//logger.info("Case 7b: " + person + " will look for a spot to fall asleep.");
 
 	                        // Walk to random location.
-	                        walkToRandomLocation(true);
+	                        walkToRandomLocation(false);
 		            	}
 
 
@@ -247,7 +247,7 @@ public class Sleep extends Task implements Serializable {
                     	logger.info("Case 8: " + person + " couldn't find an empty bed at all. will look for a spot to fall asleep.");
                     	// TODO: should allow him/her to sleep in gym or anywhere.
                         // Walk to random location.
-                        walkToRandomLocation(true);
+                        walkToRandomLocation(false);
 	            	}
 	            }
 			}

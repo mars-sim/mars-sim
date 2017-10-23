@@ -1268,11 +1268,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	// 2017-03-08 Added setCurrentBuilding()
 	public Building computeCurrentBuilding() {
-		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (currentBuilding != null) {
+			return currentBuilding;
+		}
+		else if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(), getYLocation());
 		}
-		else
-			currentBuilding = null;
 
 		return currentBuilding;
 	}
@@ -1290,7 +1291,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	@Override
 	public String getTaskDescription() {
-		return getMind().getTaskManager().getTaskDescription(true);
+		return getMind().getTaskManager().getTaskDescription(false);
 	}
 
 	@Override

@@ -338,7 +338,7 @@ implements Serializable {
     	return remainingTime;
 */    	
     	
-		return time/2;
+		return 0;
     }
 
     /**
@@ -404,7 +404,7 @@ implements Serializable {
     	//	setPhase(CLEANING);
 */
  
-    	return time/2;
+    	return 0;
     }
 
     /**
@@ -484,7 +484,7 @@ implements Serializable {
     	return remainingTime;
 */
 
-		return time/2;
+		return 0;
     }
 
     @Override

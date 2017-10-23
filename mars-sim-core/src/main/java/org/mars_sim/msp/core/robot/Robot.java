@@ -795,7 +795,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 
 	@Override
     public String getTaskDescription() {
-        return getBotMind().getBotTaskManager().getTaskDescription(true);
+        return getBotMind().getBotTaskManager().getTaskDescription(false);
     }
 
 	@Override

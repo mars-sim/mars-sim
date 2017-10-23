@@ -151,7 +151,7 @@ implements Serializable {
         if (task.equals(""))
         	task = taskMgr.getLastTaskName();
 
-        taskPhase = taskMgr.getTaskDescription(true);
+        taskPhase = taskMgr.getTaskDescription(false);
         if (taskPhase.equals(""))
             taskPhase = taskMgr.getLastTaskDescription();
 

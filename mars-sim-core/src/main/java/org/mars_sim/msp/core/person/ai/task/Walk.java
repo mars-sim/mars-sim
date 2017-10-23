@@ -89,7 +89,7 @@ implements Serializable {
      * @param person the person performing the task.
      */
     public Walk(Person person) {
-        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+        super(null, person, false, false, STRESS_MODIFIER, false, 0D);
         //this.person = person;
 
         // Initialize data members.
@@ -224,7 +224,7 @@ implements Serializable {
      * @param robot the robot performing the task.
      */
     public Walk(Robot robot) {
-        super(NAME, robot, false, false, 0D, false, 0D);
+        super(null, robot, false, false, 0D, false, 0D);
         //this.robot = robot;
         logger.finer(robot + " starting new walk task.");
 
@@ -358,7 +358,7 @@ implements Serializable {
      * @param interiorObject the interior destination object (inhabitable building or rover).
      */
     public Walk(Person person, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
-        super("Walking", person, false, false, 0D, false, 0D);
+        super(null, person, false, false, 0D, false, 0D);
 
         logger.finer(person + " starting new walk task to a location in " + interiorObject);
 
@@ -387,7 +387,7 @@ implements Serializable {
     }
 
     public Walk(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
-        super("Walking", robot, false, false, 0D, false, 0D);
+        super(null, robot, false, false, 0D, false, 0D);
 
         logger.finer(robot + " starting new walk task to a location in " + interiorObject);
 

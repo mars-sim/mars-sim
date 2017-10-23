@@ -40,7 +40,7 @@ public class SleepMeta implements MetaTask, Serializable {
     private static Logger logger = Logger.getLogger(SleepMeta.class.getName());
 
     private static String sourceName = logger.getName();
-    
+
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 
@@ -49,13 +49,11 @@ public class SleepMeta implements MetaTask, Serializable {
     private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;// = sim.getMasterClock();
 	private static MarsClock marsClock;// = masterClock.getMarsClock();
-	
+
 	private TaskSchedule ts;// = person.getTaskSchedule();
 	private PhysicalCondition pc;// = person.getPhysicalCondition();
 	private CircadianClock circadian;// = person.getCircadianClock();
 	
-	//private int solCache = 0;
-
 	public SleepMeta() {
 		
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
@@ -64,10 +62,6 @@ public class SleepMeta implements MetaTask, Serializable {
         if (masterClock != null) { // to avoid NullPointerException during maven test
 	        marsClock = masterClock.getMarsClock();
         }
-
-		//if (marsClock == null)
-		//	if (masterClock != null)
-		//		marsClock = masterClock.getMarsClock();
 
 	}
 
@@ -84,9 +78,13 @@ public class SleepMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+    	if (person.getSettlement() == null || person.getBuildingLocation() == null)
+    		return 0;
+    	
         double result = 0;
 
         LocationSituation ls = person.getLocationSituation();
+        
         if (ls == LocationSituation.IN_SETTLEMENT || ls == LocationSituation.IN_VEHICLE) {
 
            	boolean proceed = false;
