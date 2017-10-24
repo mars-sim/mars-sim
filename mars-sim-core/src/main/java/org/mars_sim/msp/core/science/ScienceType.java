@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * ScienceType.java
+ * @version 3.1.0 2017-10-23
+ * @author stpa
+ */
 package org.mars_sim.msp.core.science;
 
 import java.util.Arrays;
@@ -20,9 +26,7 @@ import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Physicist;
 
 /**
- * science field names and researcher job descriptions.
- * @author stpa
- * 2014-03-03
+ * Science field names and researcher job descriptions.
  */
 public enum ScienceType {
 

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -125,7 +126,7 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
         }
 
         // Modify if tinkering is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
             result *= 2D;
         }
 

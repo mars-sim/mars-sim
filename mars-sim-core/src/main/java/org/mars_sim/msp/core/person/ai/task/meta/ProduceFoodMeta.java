@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -92,7 +93,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 	    	        }
 
 	                // Modify if cooking is the person's favorite activity.
-	                if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Cooking")) {
+	                if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
 	                    result *= 1.5D;
 	                }
 

@@ -189,8 +189,6 @@ implements Serializable {
 
     	if (inviter == null) {
     		// The person is setting up and inviting the candidate
-    	    
-	 
        		Building building = settlement.getBuildingManager()
         					.getBuildings(FunctionType.COMMUNICATION)
 							.stream()

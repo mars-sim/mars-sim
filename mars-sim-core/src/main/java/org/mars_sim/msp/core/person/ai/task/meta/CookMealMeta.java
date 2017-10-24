@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -116,10 +117,9 @@ public class CookMealMeta implements MetaTask, Serializable {
                     }
 
                     // Modify if cooking is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Cooking")) {
+                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING)
                         result *= 2D;
-                    }
-
+        
                     // 2015-06-07 Added Preference modifier
                     if (result > 0D) {
                         result = result + result * person.getPreference().getPreferenceScore(this)/5D;

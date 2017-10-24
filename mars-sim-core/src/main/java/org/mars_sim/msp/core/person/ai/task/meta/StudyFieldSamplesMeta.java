@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -174,7 +175,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        }
 	
 	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK) {
 	            result *= 2D;
 	        }
 	

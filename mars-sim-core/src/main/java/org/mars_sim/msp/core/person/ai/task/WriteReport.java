@@ -62,8 +62,7 @@ implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
         		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-
-        	/*
+/*
             if (roleType == null)
             	roleType = person.getRole().getType();
 
@@ -83,9 +82,8 @@ implements Serializable {
 	            if (officeBuilding != null) {
 	                // Walk to the office building.
 	                walkToActivitySpotInBuilding(officeBuilding, false);
-
-	                office = (Administration) officeBuilding.getFunction(FunctionType.ADMINISTRATION);
-
+	                office = officeBuilding.getAdministration();
+	                office.addstaff();
 	            }
 	            	            
                 // set the boolean to true so that it won't be done again today
@@ -136,9 +134,7 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double writingPhase(double time) {
-
         // Do nothing
-
         return 0D;
     }
 

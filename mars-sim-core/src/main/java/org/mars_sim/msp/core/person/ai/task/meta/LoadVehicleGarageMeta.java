@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -73,7 +74,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
             }
 
             // Modify if operations is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+            if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
                 result *= 1.5D;
             }
 

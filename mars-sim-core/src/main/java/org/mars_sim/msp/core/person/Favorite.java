@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.List;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
@@ -24,23 +25,24 @@ public class Favorite implements Serializable {
 	private String favoriteMainDish;
 	private String favoriteSideDish;
 	private String favoriteDessert;
-	private String favoriteActivity;
+	private FavoriteType favoriteActivity;
 
-	private List<HotMeal> mealConfigMealList;
-	private String[] availableDesserts;
+	private static List<HotMeal> mealConfigMealList;
+	
+	private static String[] availableDesserts;
 
-	private String[] availableActivities =
-    	{ 	"Tending Plants",
-			"Workout",
-			"Research",
-			"Field Work",
-			"Tinkering",
-			"Lab Experimentation",
-			"Cooking",
-			"Construction",
-			"Operations"
-		};
+	private static String[] availableActivities = {
+							"Tending Plants",
+							"Workout",
+							"Research",
+							"Field Work",
+							"Tinkering",
+							"Lab Experimentation",
+							"Cooking",
+							"Construction",
+							"Operations"};
 
+	
 	public Favorite(Person person) {
     	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
         mealConfigMealList = mealConfig.getMealList();
@@ -83,11 +85,10 @@ public class Favorite implements Serializable {
 		return result;
 	}
 
-	public String getRandomActivity() {
-		String result = "";
-    	int num = RandomUtil.getRandomInt(availableActivities.length - 1);
-		result = availableActivities[num];
-		return result;
+	public FavoriteType getRandomActivity() {
+    	int num = RandomUtil.getRandomInt(FavoriteType.availableFavoriteTypes.length - 1);
+		return FavoriteType.availableFavoriteTypes[num];
+
 	}
 
 	public String getFavoriteMainDish() {
@@ -102,7 +103,7 @@ public class Favorite implements Serializable {
 		return favoriteDessert;
 	}
 
-	public String getFavoriteActivity() {
+	public FavoriteType getFavoriteActivity() {
 		return favoriteActivity;
 	}
 
@@ -118,7 +119,7 @@ public class Favorite implements Serializable {
 		favoriteDessert = name;
 	}
 
-	public void setFavoriteActivity(String name) {
+	public void setFavoriteActivity(FavoriteType name) {
 		favoriteActivity = name;
 	}
 

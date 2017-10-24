@@ -1,41 +1,28 @@
 /**
  * Mars Simulation Project
  * HaveConversationMeta.java
- * @version 3.08 2016-03-01
+ * @version 3.1.0 2017-10-23
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.RoleType;
-import org.mars_sim.msp.core.person.ai.social.Relationship;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
-import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.person.ai.task.Workout;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -49,6 +36,8 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
+    
+    private static MarsClock marsClock;
     
     @Override
     public String getName() {
@@ -66,18 +55,19 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         double result = 0;
         // TODO: Probability affected by the person's stress and fatigue.
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        Settlement settlement = person.getSettlement();
+        
+        if (settlement != null) {
 
             Set<Person> pool = new HashSet<Person>();
-            Settlement s = person.getSettlement();
 
             // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
-            Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
+            Collection<Person> p_talking_all = settlement.getChattingPeople(person, false, false, true);         
                  	      	              
             pool.addAll(p_talking_all); 
             
             // pool doesn't include this person
-            pool.remove((Person)person);
+            pool.remove(person);
             
             int num = pool.size();
         	// check if someone is idling somewhere and ready for a chat 
@@ -91,7 +81,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             	return 0;
             }
             // get a list of "idle" people
-            Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);  
+            Collection<Person> p_idle_all = settlement.getChattingPeople(person, true, false, true);  
             
             pool.clear();
         	pool.addAll(p_idle_all);
@@ -165,7 +155,9 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
 
-    	int now = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+        if (marsClock == null)
+        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	int now = (int) marsClock.getMillisol();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
         	result = result/2.0;

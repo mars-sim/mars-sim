@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -55,15 +56,15 @@ public class ReadMeta implements MetaTask, Serializable {
 	        // Effort-driven task modifier.
 	        //result *= person.getPerformanceRating();
 
-            String fav = person.getFavorite().getFavoriteActivity();
+        	FavoriteType fav = person.getFavorite().getFavoriteActivity();
             // The 3 favorite activities drive the person to want to read
-            if (fav.equalsIgnoreCase("Research")) {
-                result *= 1.5D;
+            if (fav == FavoriteType.RESEARCH) {
+                result *= 1.2D;
             }
-            else if (fav.equalsIgnoreCase("Tinkering")) {
-                result *= 1.1D;
+            else if (fav == FavoriteType.TINKERING) {
+                result *= 1.2D;
             }
-            else if (fav.equalsIgnoreCase("Lab Experimentation")) {
+            else if (fav == FavoriteType.LAB_EXPERIMENTATION) {
                 result *= 1.2D;
             }
 

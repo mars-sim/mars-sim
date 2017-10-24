@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -80,23 +81,27 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
             }
 
             try {
-            	// 2016-01-10 Added checking if a person has a designated bed
-                Building quarters = person.getQuarters();    
-                if (quarters == null) {
-                	quarters = Sleep.getBestAvailableQuarters(person, true);
-
-	            	if (quarters == null) {
-		                Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
-			                if (recBuilding != null) {
-			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-			                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-			                    result *= RandomUtil.getRandomDouble(2);
-			                    // TODO: find other players using 0-3 makes it more likely to do multiplayer
-			                }
-	            	}
-	            	else
-	            		result *= RandomUtil.getRandomDouble(1.5);
-	            }
+            	
+            	Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
+           		
+            	if (recBuilding != null) {
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+                    result *= RandomUtil.getRandomDouble(3);
+            	}
+            	else {
+	            	// 2016-01-10 Added checking if a person has a designated bed
+	                Building quarters = person.getQuarters();    
+	                if (quarters == null) {
+	                	quarters = Sleep.getBestAvailableQuarters(person, true);
+	
+		            	if (quarters == null) {
+		            		result *= RandomUtil.getRandomDouble(2);
+		            	}
+		            	else
+		            		result *= RandomUtil.getRandomDouble(1.2);
+		            }
+           		}
 	
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());

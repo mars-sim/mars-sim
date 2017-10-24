@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVAMeta.java
- * @version 3.08 2015-06-17
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -25,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -128,7 +128,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
             result *= person.getPerformanceRating();
 
             // Modify if tinkering is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
                 result *= 1.5D;
             }
 

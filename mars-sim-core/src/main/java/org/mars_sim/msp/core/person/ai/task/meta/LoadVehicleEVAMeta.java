@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -119,7 +120,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	        result *= person.getPerformanceRating();
 	
 	        // Modify if operations is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations"))
+	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION)
 	            result *= 1.5D;
 	
 	        // 2015-06-07 Added Preference modifier

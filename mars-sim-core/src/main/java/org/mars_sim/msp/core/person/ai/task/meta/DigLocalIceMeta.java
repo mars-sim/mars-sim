@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalIceMeta.java
- * @version 3.1.0 2017-08-30
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -125,7 +126,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
                 result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);
 
             // Modify if field work is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work"))
+            if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
                 result *= RandomUtil.getRandomInt(1, 3);
 
             if (result > 0)

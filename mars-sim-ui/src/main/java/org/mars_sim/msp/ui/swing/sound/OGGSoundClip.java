@@ -46,7 +46,8 @@ public class OGGSoundClip {
 	private int bytes = 0;
 
 	private float balance;
-	private float gain = .8f;
+	private float gain = 0f;
+	
 	//private float oldGain;
 	//private float volume = .8f;
 

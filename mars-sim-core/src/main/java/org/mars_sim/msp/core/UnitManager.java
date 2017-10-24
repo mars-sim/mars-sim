@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.Favorite;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -750,7 +751,7 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteMainDish(mainDish);
 			person.getFavorite().setFavoriteSideDish(sideDish);
 			person.getFavorite().setFavoriteDessert(dessert);
-			person.getFavorite().setFavoriteActivity(activity);
+			person.getFavorite().setFavoriteActivity(FavoriteType.fromString(activity));
 			//System.out.println("done with setFavorite_() in createConfiguredPeople() in UnitManager");
 
 
@@ -971,7 +972,7 @@ public class UnitManager implements Serializable {
 					String mainDish = dishes[0];//f.getRandomMainDish();
 					String sideDish = dishes[1];//f.getRandomSideDish();
 					String dessert = f.getRandomDessert();
-					String activity = f.getRandomActivity();
+					FavoriteType activity = f.getRandomActivity();
 
 					f.setFavoriteMainDish(mainDish);
 					f.setFavoriteSideDish(sideDish);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkMeta.java
- * @version 3.1.0 2017-01-19
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -42,22 +42,20 @@ public class WalkMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        LocationSituation ls = person.getLocationSituation();
+        		
         // If person is outside, give high probability to walk to emergency airlock location.
-        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
-            result = 1000D;
+        if (LocationSituation.OUTSIDE == ls) {
+            result = 500D;
         }
-        else if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
+        else if (LocationSituation.IN_SETTLEMENT == ls) {
             // If person is inside a settlement building, may walk to a random location within settlement.
-            result = 2D;
+            result = .5D;
         }
-        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
+        else if (LocationSituation.IN_VEHICLE == ls) {
             // If person is inside a rover, may walk to random location within rover.
-            result = 1D;
+            result = .5D;
         }
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0)
-        	result = result + result*person.getPreference().getPreferenceScore(this)/5D;
 
         if (result < 0) result = 0;
 

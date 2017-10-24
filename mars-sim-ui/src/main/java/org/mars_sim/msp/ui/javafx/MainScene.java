@@ -2733,12 +2733,13 @@ public class MainScene {
 	 */
 	public void updateTimeLabels() {
 
-		int msol = (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
-		if (msol % 10 == 0) {
+		//int msol = (int)(masterClock.getTimeRatio());
+		//if (msol % 10 == 0) {
 			// Check to see if a background sound track is being played.
-			if (!desktop.getSoundPlayer().isMusicMute())
+			//if (!desktop.getSoundPlayer().isMusicMute())
+			if (musicSlider.getValue() > 0)	
 				soundPlayer.playRandomBackgroundTrack();
-		}
+		//}
 		
 		if (simSpeedPopup.isShowing() || solCache == 0) {
 			double tps = Math.round(masterClock.getPulsesPerSecond()*100.0)/100.0;

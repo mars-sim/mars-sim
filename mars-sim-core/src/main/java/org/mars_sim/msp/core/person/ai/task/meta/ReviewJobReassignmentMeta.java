@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -73,12 +74,8 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	            // Probability affected by the person's stress and fatigue.
 	            PhysicalCondition condition = person.getPhysicalCondition();
 	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-	                //System.out.println("ReviewJobReassignmentMeta : fatigue and stress within limits");
 
-	                //System.out.println("ReviewJobReassignmentMeta "
-	                //		+ person.getName() + " (" + roleType + ") : checking for any job reassignments");
-
-		            	//result += 150D;
+		            result += 10D;
 	/*
 		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
@@ -93,27 +90,25 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 		       	    // Get highest person skill level.
 	        	    Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
-	                    Person tempPerson = i.next();
+	                    Person p = i.next();
 
 	                    // commander and sub-commander should not approved his/her own job reassignment
 	                    if (roleType.equals(RoleType.SUB_COMMANDER)
-		                    && tempPerson.getRole().getType().equals(RoleType.SUB_COMMANDER))
-	                    	; // do nothing
+		                    && p.getRole().getType().equals(RoleType.SUB_COMMANDER))
+	                    	return 0;
 
 	                    else if (roleType.equals(RoleType.COMMANDER)
-			                    && tempPerson.getRole().getType().equals(RoleType.COMMANDER))
-		                    	; // do nothing
+			                    && p.getRole().getType().equals(RoleType.COMMANDER))
+		                    return 0;
 
 	                    else {
 
-		                    List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
+		                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 		                    JobAssignmentType status = list.get(list.size()-1).getStatus();
 
 		                    if (status != null) {
 			                    if (status.equals(JobAssignmentType.PENDING)) {
-			    	                //System.out.println("ReviewJobReassignmentMeta : "
-			    	                //		+ person.getName() + " (" + roleType
-			    	                //		+ ") : found a pending job reassignment request");
+
 			                    	result += 500D;
 			                    	//result = result + result * preference / 10D ;
 			                    	
@@ -145,8 +140,8 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 	                    }
 
-	                    // Modify if working out is the person's favorite activity.
-	                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Administration")) {
+	                    // Modify if operation is the person's favorite activity.
+	                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
 	                        result *= 1.5D;
 	                    }
 

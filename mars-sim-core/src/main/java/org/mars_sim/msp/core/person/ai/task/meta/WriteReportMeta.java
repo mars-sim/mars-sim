@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -56,15 +57,6 @@ public class WriteReportMeta implements MetaTask, Serializable {
 	            
 	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
 	
-		            // Get an available office space.
-		            Building building = WriteReport.getAvailableOffice(person);
-	
-		            // Note: if an office space is not available such as in a vehicle, one can still write reports!
-		            if (building != null) {
-		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-		                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-		            }
-	
 		            RoleType roleType = person.getRole().getType();
 	
 		            if (roleType.equals(RoleType.PRESIDENT)
@@ -83,16 +75,29 @@ public class WriteReportMeta implements MetaTask, Serializable {
 		            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
 		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
 		            
-		            	result += 20D;
+		            	result += 25D;
+		            }
+	
+		            else
+		            	result += 10D;
+		            
+		            // Get an available office space.
+		            Building building = WriteReport.getAvailableOffice(person);
+	
+		            // Note: if an office space is not available such as in a vehicle, one can still write reports!
+		            if (building != null) {
+		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+		                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 		            }
 	
 		            // Effort-driven task modifier.
 		            result *= person.getPerformanceRating();
 	
-		            // Modify if working out is the person's favorite activity.
-		            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Administration")) {
-		                result *= 2D;
-		            }
+                    // Modify if operation is the person's favorite activity.
+                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
+                        result *= 1.5D;
+                    }
+
 		            
 			        // 2015-06-07 Added Preference modifier
 			        if (result > 0)

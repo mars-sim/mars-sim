@@ -56,6 +56,7 @@ public class AudioPlayer {
 	private static Map<String, OGGSoundClip> allBackgroundSoundTracks;
 	private static Map<String, OGGSoundClip> allOGGSoundClips;
 
+	private static List<String> soundEffects;
 	private static List<String> soundTracks;
 	private static List<Integer> previous_tracks = new ArrayList<>();
 	
@@ -100,12 +101,31 @@ public class AudioPlayer {
 			}
 		}
 
+		soundEffects = new ArrayList<>();
+		soundEffects.add(SoundConstants.SND_EQUIPMENT);
+		soundEffects.add(SoundConstants.SND_PERSON_DEAD);
+		soundEffects.add(SoundConstants.SND_PERSON_FEMALE1);
+		soundEffects.add(SoundConstants.SND_PERSON_FEMALE2);
+		soundEffects.add(SoundConstants.SND_PERSON_MALE1);
+		soundEffects.add(SoundConstants.SND_PERSON_MALE2);
+
+		soundEffects.add(SoundConstants.SND_ROVER_MAINTENANCE);
+		soundEffects.add(SoundConstants.SND_ROVER_MALFUNCTION);
+		soundEffects.add(SoundConstants.SND_ROVER_MOVING);
+		soundEffects.add(SoundConstants.SND_ROVER_PARKED);
+		soundEffects.add(SoundConstants.SND_SETTLEMENT);
+		
+		for (String s : soundEffects) {
+			try {
+				allOGGSoundClips.put(s, new OGGSoundClip(s));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		if (UIConfig.INSTANCE.useUIDefault()) {
-			//setMute(false, false);
-			setMusicVolume(.8f);
-			setEffectVolume(.8f);
-		} else {
-			//setMute(UIConfig.INSTANCE.isMute(), UIConfig.INSTANCE.isMute());
+			setMusicVolume(musicGain);
+			setEffectVolume(effectGain);
 		}
 	}
 
@@ -123,12 +143,16 @@ public class AudioPlayer {
 							if (allOGGSoundClips.containsKey(filepath) && allOGGSoundClips.get(filepath) != null) {
 								currentOGGSoundClip = allOGGSoundClips.get(filepath);
 								currentOGGSoundClip.play();
+
 							}
 							else {
 								currentOGGSoundClip = new OGGSoundClip(filepath);
 								allOGGSoundClips.put(filepath, currentOGGSoundClip);
 								currentOGGSoundClip.play();
 							}
+							
+							currentOGGSoundClip.setGain(effectGain);
+							
 						} catch (IOException e) {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
@@ -148,6 +172,9 @@ public class AudioPlayer {
 								allOGGSoundClips.put(filepath, currentOGGSoundClip);
 								currentOGGSoundClip.play();
 							}
+							
+							currentOGGSoundClip.setGain(effectGain);
+							
 						} catch (IOException e) {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
@@ -172,14 +199,15 @@ public class AudioPlayer {
 							if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 								currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
 								currentBackgroundTrack.loop();
-								//if (play_times < 2) logger.info("Playing the background track " + filepath);
 							}
 							else {
 								currentBackgroundTrack = new OGGSoundClip(filepath);
 								allBackgroundSoundTracks.put(filepath, currentBackgroundTrack);
 								currentBackgroundTrack.loop();
-								//if (play_times < 2) logger.info("Playing the background track " + filepath);
 							}
+							
+							currentBackgroundTrack.setGain(musicGain);
+							
 						} catch (IOException e) {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
@@ -191,15 +219,18 @@ public class AudioPlayer {
 				SwingUtilities.invokeLater(() -> {
 					try {
 						if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
-							allBackgroundSoundTracks.get(filepath).loop();
-							if (play_times == 1) logger.info("Playing the sound track " + filepath);
+							currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
+							currentBackgroundTrack.loop();
 						}
 						else {
 							currentBackgroundTrack = new OGGSoundClip(filepath);
 							allBackgroundSoundTracks.put(filepath, currentBackgroundTrack);
 							currentBackgroundTrack.loop();
-							if (play_times == 1) logger.info("Playing the sound track " + filepath);
 						}
+						
+						currentBackgroundTrack.setGain(musicGain);
+
+						
 					} catch (IOException e) {
 						//e.printStackTrace();
 						logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
@@ -266,7 +297,7 @@ public class AudioPlayer {
 			musicGain = currentBackgroundTrack.getGain() + .05f;
 			if (musicGain > 1f)
 				musicGain = 1f;
-			setMusicVolume();
+			setLastMusicVolume();
 		//});
 	}
 
@@ -275,7 +306,7 @@ public class AudioPlayer {
 			musicGain = currentBackgroundTrack.getGain() - .05f;
 			if (musicGain < -1f)
 				musicGain = -1f;
-			setMusicVolume();
+			setLastMusicVolume();
 		//});
 	}
 
@@ -284,7 +315,7 @@ public class AudioPlayer {
 			effectGain = currentOGGSoundClip.getGain() + .05f;
 			if (effectGain > 1f)
 				effectGain = 1f;
-			setEffectVolume();
+			setLastEffectVolume();
 		//});
 	}
 
@@ -293,23 +324,23 @@ public class AudioPlayer {
 			effectGain = currentOGGSoundClip.getGain() - .05f;
 			if (effectGain < -1f)
 				effectGain = -1f;
-			setEffectVolume();
+			setLastEffectVolume();
 		//});
 	}
 	
 	@SuppressWarnings("restriction")
-	public void setMusicVolume() {
+	public void setLastMusicVolume() {
 		//Platform.runLater(() -> {
-			if (hasMasterGain && currentBackgroundTrack != null && !currentBackgroundTrack.isMute()){ //&& !isMusicMute()
+			if (hasMasterGain && currentBackgroundTrack != null) {// && !currentBackgroundTrack.isMute()){ //&& !isMusicMute()
 				currentBackgroundTrack.setGain(musicGain);
 			}
 		//});
 	}
 
 	@SuppressWarnings("restriction")
-	public void setEffectVolume() {
+	public void setLastEffectVolume() {
 		//Platform.runLater(() -> {
-			if (hasMasterGain && currentOGGSoundClip != null && !currentOGGSoundClip.isMute()){ //&& !isEffectMute()
+			if (hasMasterGain && currentOGGSoundClip != null) {// && !currentOGGSoundClip.isMute()){ //&& !isEffectMute()
 				currentOGGSoundClip.setGain(effectGain);
 			}
 		//});
@@ -358,7 +389,7 @@ public class AudioPlayer {
 	public boolean isMusicMute() {
 		boolean result = false;
 		if (currentBackgroundTrack != null) {
-			result = currentBackgroundTrack.isMute();// || currentBackgroundTrack.getGain() == 0;
+			result = currentBackgroundTrack.isMute() || currentBackgroundTrack.getGain() == 0 || musicGain == 0;
 		}
 		
 		return result;
@@ -374,7 +405,7 @@ public class AudioPlayer {
 	public boolean isEffectMute() {
 		boolean result = false;
 		if (currentOGGSoundClip != null) {
-			result = currentOGGSoundClip.isMute();// || currentOGGSoundClip.getGain() == 0 ;
+			result = currentOGGSoundClip.isMute() || currentOGGSoundClip.getGain() == 0 || effectGain == 0;
 		}
 
 		return result;
@@ -384,13 +415,13 @@ public class AudioPlayer {
 		if (isEffect && currentOGGSoundClip != null) {
 			//logger.info("restoreSound() lastMusicState:"+ lastMusicState);
 			currentOGGSoundClip.setMute(lastEffectState);
-			setEffectVolume();
+			setLastEffectVolume();
 		}
 		
 		if (isTrack && currentBackgroundTrack != null) {
 			//logger.info("restoreSound() lastEffectState:"+ lastEffectState);
 			currentBackgroundTrack.setMute(lastMusicState);
-			setMusicVolume();
+			setLastMusicVolume();
 		}
 	}
 		
@@ -425,12 +456,12 @@ public class AudioPlayer {
 	public void unmute(boolean effectMute, boolean trackMute) {
 		if (effectMute && currentOGGSoundClip != null) {
 			currentOGGSoundClip.setMute(false);
-			setMusicVolume();
+			setLastMusicVolume();
 		}
 		
 		if (trackMute && currentBackgroundTrack != null) {
 			currentBackgroundTrack.setMute(false);
-			setEffectVolume();
+			setLastEffectVolume();
 		}
 	}
 	
@@ -458,7 +489,7 @@ public class AudioPlayer {
 			rand = RandomUtil.getRandomInt(num_tracks - LOUD_TRACKS - 1);
 		}
 		else
-			RandomUtil.getRandomInt(num_tracks-1);
+			rand = RandomUtil.getRandomInt(num_tracks - 1);
 		boolean not_old = false;
 		// Do not repeat the last 4 music tracks just played
 		while (!not_old) {
@@ -470,7 +501,7 @@ public class AudioPlayer {
 			if (not_old) {
 				String name = soundTracks.get(rand);
 				playBackground(soundTracks.get(rand));
-				logger.info("Playing the background music track #" + (rand+1) + " '" + name + "'");
+				logger.info("Playing background music track #" + (rand+1) + " '" + name + "'");
 				// Add the new track
 				if (!previous_tracks.contains(rand))
 					previous_tracks.add((rand));

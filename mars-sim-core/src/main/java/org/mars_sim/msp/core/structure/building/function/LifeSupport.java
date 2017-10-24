@@ -37,7 +37,7 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
 
-	DecimalFormat fmt = new DecimalFormat("#.#######");
+	private DecimalFormat fmt = new DecimalFormat("#.#######");
 
 	private static final FunctionType THE_FUNCTION = FunctionType.LIFE_SUPPORT;
 
@@ -53,13 +53,10 @@ implements Serializable {
 
   	private String buildingType;
 
- 	//protected ThermalGeneration furnace;
 	private Building building;
-	private Heating heating;
 
 	private Inventory inv;
 	private Collection<Person> occupants;
-	//private Collection<Robot> robotOccupants;
 
 	/**
 	 * Constructor.
@@ -142,7 +139,7 @@ implements Serializable {
 				removedBuilding = true;
 			}
 			else {
-				LifeSupport lsFunction = (LifeSupport) building.getFunction(THE_FUNCTION);
+				LifeSupport lsFunction = building.getLifeSupport();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += lsFunction.occupantCapacity * wearModifier;
 			}
@@ -358,7 +355,6 @@ implements Serializable {
 		super.destroy();
 
 		building = null;
-		heating = null;
 		inv = null;
 		occupants.clear();
 		occupants = null;

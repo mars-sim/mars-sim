@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcherMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -82,7 +83,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 	            }
 
 	            // Modify if research is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+	            if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
 	                result *= 2D;
 	            }
 

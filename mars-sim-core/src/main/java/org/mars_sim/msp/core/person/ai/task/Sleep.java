@@ -97,7 +97,6 @@ public class Sleep extends Task implements Serializable {
 	// 2016-07-02 Organized into 9 branching decisions
     //A bed can be either empty(E) or occupied(O), either unmarked(U) or designated(D).
 	// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
-    @SuppressWarnings("unused")
 	public Sleep(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true,
                 (250D + RandomUtil.getRandomDouble(80D)));

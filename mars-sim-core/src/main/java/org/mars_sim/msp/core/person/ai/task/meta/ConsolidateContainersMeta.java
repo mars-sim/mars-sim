@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConsolidateContainersMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
@@ -55,9 +56,8 @@ public class ConsolidateContainersMeta implements MetaTask, Serializable {
             result *= person.getPerformanceRating();
 
             // Modify if operations is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+            if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) 
                 result *= 1.5D;
-            }
 
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {

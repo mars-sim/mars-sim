@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuildingMeta.java
-  * @version 3.1.0 2017-05-02
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -101,9 +102,8 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
         }
 
         // Modify if construction is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
+        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
             result *= 1.5D;
-        }
 
         // 2015-06-07 Added Preference modifier
         if (result > 0D) {

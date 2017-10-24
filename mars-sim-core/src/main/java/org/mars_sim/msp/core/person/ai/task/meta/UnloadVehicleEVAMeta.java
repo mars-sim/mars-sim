@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -107,8 +108,8 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
             		* settlement.getGoodsManager().getTransportationFactor();
         }
 
-        // Modify if operations is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+        // Modify if operation is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
             result *= 1.5D;
         }
 

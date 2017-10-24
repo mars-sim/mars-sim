@@ -7,20 +7,34 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.mars_sim.msp.core.Msg;
 
 public enum FavoriteType {
 
-	TENDING_PLANTS				(Msg.getString("FavoriteType.tendingPlants")), //$NON-NLS-1$
 	ASTRONOMY	 				(Msg.getString("FavoriteType.astronomy")), //$NON-NLS-1$
-	WORKOUT		 				(Msg.getString("FavoriteType.workout")), //$NON-NLS-1$
-	RESEARCH 	 				(Msg.getString("FavoriteType.research")), //$NON-NLS-1$
-	FIELD_WORK	 				(Msg.getString("FavoriteType.fieldWork")), //$NON-NLS-1$
-	TINKERING	 				(Msg.getString("FavoriteType.inkering")), //$NON-NLS-1$
-	LAB_EXPERIMENTATION			(Msg.getString("FavoriteType.labExperimentation")), //$NON-NLS-1$
 	COOKING						(Msg.getString("FavoriteType.cooking")), //$NON-NLS-1$
+	FIELD_WORK	 				(Msg.getString("FavoriteType.fieldWork")), //$NON-NLS-1$
+	LAB_EXPERIMENTATION			(Msg.getString("FavoriteType.labExperimentation")), //$NON-NLS-1$
+	OPERATION		 			(Msg.getString("FavoriteType.operation")), //$NON-NLS-1$
+	RESEARCH 	 				(Msg.getString("FavoriteType.research")), //$NON-NLS-1$
+	TENDING_PLANTS				(Msg.getString("FavoriteType.tendingPlants")), //$NON-NLS-1$
+	TINKERING	 				(Msg.getString("FavoriteType.tinkering")), //$NON-NLS-1$
 	;
 
+	static FavoriteType[] availableFavoriteTypes = new FavoriteType[] { 	
+			ASTRONOMY,
+			COOKING,
+			FIELD_WORK,
+			LAB_EXPERIMENTATION,
+			OPERATION,
+			RESEARCH,
+			TENDING_PLANTS,	
+			TINKERING
+			};
+	
 	private String name;
 
 	/** hidden constructor. */
@@ -35,5 +49,29 @@ public enum FavoriteType {
 	@Override
 	public final String toString() {
 		return getName();
+	}
+	
+	public static FavoriteType fromString(String name) {
+		if (name != null) {
+	    	for (FavoriteType f : FavoriteType.values()) {
+	    		if (name.equalsIgnoreCase(f.name)) {
+	    			return f;
+	    		}
+	    	}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * gives back a list of all valid values for the FavoriteType enum.
+	 */
+	public static List<FavoriteType> valuesList() {
+		return Arrays.asList(FavoriteType.values());
+		// Arrays.asList() returns an ArrayList which is a private static class inside Arrays. 
+		// It is not an java.util.ArrayList class.
+		// Could possibly reconfigure this method as follows: 
+		// public ArrayList<FavoriteType> valuesList() {
+		// 	return new ArrayList<FavoriteType>(Arrays.asList(FavoriteType.values())); }
 	}
 }

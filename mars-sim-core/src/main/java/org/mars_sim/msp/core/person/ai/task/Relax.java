@@ -65,7 +65,7 @@ implements Serializable {
 	 */
 	public Relax(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(3), true, 10D +
-				RandomUtil.getRandomDouble(40D));
+				RandomUtil.getRandomDouble(10D));
 
         timeFactor = 1D; // TODO: should vary this factor by person
 
@@ -114,7 +114,7 @@ implements Serializable {
 
 	public Relax(Robot robot) {
 		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D +
-				RandomUtil.getRandomDouble(40D));
+				RandomUtil.getRandomDouble(10D));
 /*
 		// If robot is in a settlement, try to find a place to relax.
 		boolean walkSite = false;

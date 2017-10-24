@@ -1,12 +1,14 @@
 /**
  * Mars Simulation Project
  * ReportingAuthorityType.java
- * @version 3.1.0 2017-01-14
+ * @version 3.1.0 2017-10-23
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.reportingAuthority;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
@@ -73,4 +75,15 @@ public enum ReportingAuthorityType {
 		return sponsorSet;
 	}
 
+	/**
+	 * gives back a list of all valid values for the ReportingAuthorityType enum.
+	 */
+	public static List<ReportingAuthorityType> valuesList() {
+		return Arrays.asList(ReportingAuthorityType.values());
+		// Arrays.asList() returns an ArrayList which is a private static class inside Arrays. 
+		// It is not an java.util.ArrayList class.
+		// Could possibly reconfigure this method as follows: 
+		// public ArrayList<ReportingAuthorityType> valuesList() {
+		// 	return new ArrayList<ReportingAuthorityType>(Arrays.asList(ReportingAuthorityType.values())); }
+	}
 }

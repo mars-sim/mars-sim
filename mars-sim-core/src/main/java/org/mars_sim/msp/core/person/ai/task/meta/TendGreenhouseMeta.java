@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -77,7 +78,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     }
 
                     // Modify if tending plants is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tending Plants")) {
+                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
                         result *= 2D;
                     }
 

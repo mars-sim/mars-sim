@@ -27,6 +27,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.robot.Robot;
@@ -139,9 +140,9 @@ extends TabPanel {
 		infoPanel.add(activityNameLabel);
 
 		// Prepare activity label
-		String activity = person.getFavorite().getFavoriteActivity();
+		FavoriteType activity = person.getFavorite().getFavoriteActivity();
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField activityTF = new JTextField(Conversion.capitalize(activity));
+		JTextField activityTF = new JTextField(Conversion.capitalize(activity.getName()));
 		activityTF.setEditable(false);
 		activityTF.setColumns(17);
 		//activityTF.requestFocus();

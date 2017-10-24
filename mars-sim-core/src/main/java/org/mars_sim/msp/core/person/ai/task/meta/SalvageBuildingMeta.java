@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -99,7 +100,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
             }
 
             // Modify if construction is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
+            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
                 result *= 2D;
             }
 

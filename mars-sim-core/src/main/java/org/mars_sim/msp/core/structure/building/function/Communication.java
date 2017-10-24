@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Communication.java
- * @version 3.07 2014-06-19
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -30,7 +30,8 @@ implements Serializable {
     
     // Data members
     private int populationSupport;
-    private int user, userCapacity;
+    private int user;
+    private int userCapacity;
 
     /**
      * Constructor.

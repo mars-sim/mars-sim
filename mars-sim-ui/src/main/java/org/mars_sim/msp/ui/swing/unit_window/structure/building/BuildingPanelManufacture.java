@@ -74,9 +74,9 @@ extends BuildingFunctionPanel {
 	/** Process selector. */
 	private JComboBoxMW processComboBox;
 	/** List of available processes. */
-	private Vector<ManufactureProcessInfo> processComboBoxCache;
+	private List<ManufactureProcessInfo> processComboBoxCache;
 	/** List of available salvage processes. */
-	private Vector<SalvageProcessInfo> salvageSelectionCache;
+	private List<SalvageProcessInfo> salvageSelectionCache;
 	/** Process selection button. */
 	private JButton newProcessButton;
 
@@ -164,7 +164,8 @@ extends BuildingFunctionPanel {
         processComboBoxCache = getAvailableProcesses();
         //2015-10-15 Enabled Collections.sorts by implementing Comparable<>
 		Collections.sort(processComboBoxCache);
-        processComboBox = new JComboBoxMW(processComboBoxCache);
+        processComboBox = new JComboBoxMW();
+        processComboBox.addItem(processComboBoxCache);
         //processComboBox.setOpaque(false);
         //processComboBox.setBackground(new Color(51,25,0,128));
         //processComboBox.setBackground(Color.LIGHT_GRAY);
@@ -292,8 +293,8 @@ extends BuildingFunctionPanel {
 		}
 
 		// Update process selection list.
-		Vector<ManufactureProcessInfo> newProcesses = getAvailableProcesses();
-		Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses();
+		List<ManufactureProcessInfo> newProcesses = getAvailableProcesses();
+		List<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses();
 		if (!newProcesses.equals(processComboBoxCache) ||
 		        !newSalvages.equals(salvageSelectionCache)) {
 			processComboBoxCache = newProcesses;
@@ -362,8 +363,8 @@ extends BuildingFunctionPanel {
 	 * Gets all manufacturing processes available at the workshop.
 	 * @return vector of processes.
 	 */
-	private Vector<ManufactureProcessInfo> getAvailableProcesses() {
-		Vector<ManufactureProcessInfo> result = new Vector<ManufactureProcessInfo>();
+	private List<ManufactureProcessInfo> getAvailableProcesses() {
+		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 
 		if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 
@@ -400,8 +401,8 @@ extends BuildingFunctionPanel {
 	 * Gets all salvage processes available at the workshop.
 	 * @return vector of salvage processes.
 	 */
-	private Vector<SalvageProcessInfo> getAvailableSalvageProcesses() {
-	    Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
+	private List<SalvageProcessInfo> getAvailableSalvageProcesses() {
+		List<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
 
 	    if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
             try {

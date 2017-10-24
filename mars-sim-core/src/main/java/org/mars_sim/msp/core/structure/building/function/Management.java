@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Management.java
- * @version 3.07 2014-06-19
+ * @version 3.1.0 2017-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;

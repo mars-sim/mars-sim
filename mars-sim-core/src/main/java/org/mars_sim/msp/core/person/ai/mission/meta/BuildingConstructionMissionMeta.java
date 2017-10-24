@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -119,9 +120,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                         double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
 
                         // Modify if construction is the person's favorite activity.
-                        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
+                        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
                             result *= 1.1D;
-                        }
 
                         if (newSiteProfit > existingSiteProfit) {
                             // Divide profit by 10 to the power of the number of existing construction sites.
