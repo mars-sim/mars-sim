@@ -2,7 +2,7 @@
  * 3-Dimensional Vector
  */
 package org.mars_sim.msp.ui.astroarts;
-import org.mars_sim.msp.ui.astroarts.ATime;
+
 import org.mars_sim.msp.ui.astroarts.Matrix;
 
 public class Xyz {

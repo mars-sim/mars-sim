@@ -157,6 +157,11 @@ public class MainMenu {
 		mainscene_height = (int) bounds.getHeight();
        
 		logger.info("Your Current Resolution is " + mainscene_width + " x " + mainscene_height);
+		
+		// Test
+		//logger.info("Earth's surface gravity : " + Math.round(PlanetType.EARTH.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
+		//logger.info("Mars's surface gravity : " + Math.round(PlanetType.MARS.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
+		
  	}
 
     /*

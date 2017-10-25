@@ -1432,7 +1432,7 @@ public class BuildingManager implements Serializable {
 
                 if (unit instanceof Person) {
                  	Person person = (Person) unit;
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = building.getLifeSupport();
 
 	                if (!lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.addPerson(person);
@@ -1443,7 +1443,7 @@ public class BuildingManager implements Serializable {
 
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
+                	RoboticStation roboticStation = building.getRoboticStation();
 
 	                if (!roboticStation.containsRobotOccupant(robot)) {
 	                	roboticStation.addRobot(robot);
@@ -1995,7 +1995,7 @@ public class BuildingManager implements Serializable {
 	        //farmBuildings = getLeastCrowdedBuildings(farmBuildings);
 	        result = new ArrayList<Building>();
 	        for (Building b : farmBuildings) {
-	            Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
+	            Farming farm = b.getFarming();
 	            if (farm.requiresWork()) {
 	                result.add(b);
 	            }

@@ -3097,7 +3097,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<!-- favorite-main-dish: the person's favorite main dish. (optional) -->
 		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
 		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
-		<!-- favorite-activity: the person's favorite hobby. (optional) -->
+		<!-- favorite-activity: the person's favorite hobby. see list in the FavoriteType class (optional) -->
 		<person name="Karen Andersen"
 			crew="alpha"
 			gender="female"
@@ -3186,7 +3186,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 			country="US"
 			job="Areologist"
 			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
-			favorite-activity="Workout">
+			favorite-activity="Operation">
 			<personality-trait-list>
 				<personality-trait name = "openness"	 value = "35"/>
 				<personality-trait name = "conscientiousness"	 value = "60"/>

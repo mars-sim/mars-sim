@@ -76,11 +76,11 @@
 	    <version>3.0.24</version>
 	</dependency>	
 	-->
-	<!-- https://mvnrepository.com/artifact/com.google.guava/guava/23.0 : 2.5 MB -->
+	<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.5 MB -->
 	<dependency>
-		<groupId>com.google.guava</groupId>
-		<artifactId>guava</artifactId>
-		<version>23.0</version>
+	    <groupId>com.google.guava</groupId>
+	    <artifactId>guava</artifactId>
+	    <version>23.2-jre</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 303 KB-->
    	<dependency>

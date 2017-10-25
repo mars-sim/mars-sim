@@ -148,7 +148,7 @@ implements Serializable {
         TaskManager taskMgr = mind.getTaskManager();
 
         task = taskMgr.getTaskName();
-        if (task.equals(""))
+        if (task == null || task.equals(""))
         	task = taskMgr.getLastTaskName();
 
         taskPhase = taskMgr.getTaskDescription(false);

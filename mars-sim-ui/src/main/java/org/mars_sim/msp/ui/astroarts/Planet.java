@@ -2,7 +2,7 @@
  * Planet Class
  */
 package org.mars_sim.msp.ui.astroarts;
-import org.mars_sim.msp.ui.astroarts.UdMath;
+
 
 public class Planet {
 	public static final int SUN     = 0;

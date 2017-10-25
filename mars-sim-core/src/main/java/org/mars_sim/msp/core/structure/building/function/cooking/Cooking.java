@@ -125,16 +125,8 @@ implements Serializable {
     private Person person;
     private Robot robot;
 
-    //public static AmountResource tableSaltAR;
-    //public static AmountResource NaClOAR;
-    //public AmountResource greyWaterAR;
-    //public static AmountResource waterAR;
-    //public static AmountResource foodWasteAR;
-    //public static AmountResource foodAR;
-
-    private Map<AmountResource, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
-    //private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
-    private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); //HashMap<String, Integer>();
+    private Map<AmountResource, Double> ingredientMap = new ConcurrentHashMap<>();
+    private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); 
 
     private static Simulation sim = Simulation.instance();
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -142,7 +134,7 @@ implements Serializable {
     private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
     private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
     private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
-    private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
+    private static MarsClock marsClock;
 
     /**
      * Constructor.
@@ -184,13 +176,6 @@ implements Serializable {
     	timeMap = ArrayListMultimap.create();
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven test
-
-        //tableSaltAR = ResourceUtil.tableSaltAR;//.findAmountResource(TABLE_SALT);
-        //foodAR = ResourceUtil.foodAR;//.findAmountResource(LifeSupportType.FOOD);
-        //foodWasteAR = ResourceUtil.foodWasteAR;//.findAmountResource(FOOD_WASTE);
-        //greyWaterAR = ResourceUtil.greyWaterAR;//.findAmountResource(GREY_WATER);
-        //NaClOAR = ResourceUtil.NaClOAR;//.findAmountResource(SODIUM_HYPOCHLORITE);
-        //waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
 
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
@@ -600,7 +585,7 @@ implements Serializable {
             //Building building = i.next();
             //Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
             //result += kitchen.getNumberOfAvailableCookedMeals();
-            result += ((Cooking) i.next().getFunction(FunctionType.COOKING)).getNumberOfAvailableCookedMeals();
+            result += ((Cooking) i.next().getCooking()).getNumberOfAvailableCookedMeals();
         }
 
         return result;
@@ -799,9 +784,7 @@ implements Serializable {
     	double mealQuality = 0;
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();
-	    Iterator<Ingredient> i = ingredientList.iterator();
-	    while (i.hasNext()) {
-	        Ingredient oneIngredient = i.next();
+	    for (Ingredient oneIngredient : ingredientList) {
 	        //String ingredientName = oneIngredient.getName();
     		AmountResource ingredientAR = oneIngredient.getAR();
 
@@ -1056,9 +1039,7 @@ implements Serializable {
             double rate = settlement.getMealsReplenishmentRate();
 
             // Handle expired cooked meals.
-            Iterator<CookedMeal> i = cookedMeals.iterator();
-            while (i.hasNext()) {
-                CookedMeal meal = i.next();
+            for (CookedMeal meal : cookedMeals) {
                 //MarsClock currentTime = marsClock;
                 if (MarsClock.getTimeDiff(meal.getExpirationTime(), marsClock) < 0D) {
 
@@ -1225,27 +1206,24 @@ implements Serializable {
         super.destroy();
         inv = null;
         oilMenuAR = null;
-        //cookedMeals.clear();
         cookedMeals = null;
         settlement = null;
-        //dailyMealList.clear();
-        //dailyMealList = null;
         aMeal = null;
-        //mealConfigMealList.clear();
         mealConfigMealList = null;
-/*
-        //dryFoodAR = null;
-        tableSaltAR = null;
-        NaClOAR = null;
-        greyWaterAR = null;
-        //waterAR = null;
-        foodWasteAR = null;
-        //foodAR = null;
-        solidWasteAR = null;
-        napkinAR = null;
-*/
-        //cropTypeList.clear();
         cropTypeList = null;
+    	qualityMap = null;
+    	timeMap = null;
+        person = null;
+        robot = null;
+        ingredientMap = null;
+        mealMap = null;
+        sim = null;
+        simulationConfig = null;
+        buildingConfig = null;
+        cropConfig = null;
+        mealConfig = null;
+        personConfig = null;
+        marsClock = null;
     }
 
 

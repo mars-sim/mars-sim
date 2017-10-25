@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -329,48 +328,57 @@ implements Serializable {
                // if (medication != null) {
                     PhysicalCondition condition = patient.getPhysicalCondition();
 
+                    boolean needMeds = false;
+                    Medication medication = null;
+                    
                     if (condition.isRadiationPoisoned()) {
                     
-                    	Medication medication = new RadioProtectiveAgent(patient);                    
+                    	medication = new RadioProtectiveAgent(patient);                    
 	                    // Check if patient already has taken medication.
 	                    if (!condition.hasMedication(medication.getName())) {
 	                        // Medicate patient.
 	                        condition.addMedication(medication);
-	
-	                		if (person != null)
-	                			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-	            	            		"[" + patient.getSettlement() + "] " + person.getName() + " is prescribing " + medication.getName()
-	                				+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-	                				+ ".", null);
-	               			else if (robot != null)
-	               				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-	            	            		"[" + patient.getSettlement() + "] " + robot.getName() + " is prescribing " + medication.getName()
-	                            	+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-	                            	+ ".", null);
+	                        needMeds = true;              
 	                    }
                     }
                     
                     else if (condition.isStressedOut()) {
                     	
-                    	Medication medication = new AnxietyMedication(patient);    
-                    	
+                    	medication = new AnxietyMedication(patient);                	
 	                    // Check if patient already has taken medication.
 	                    if (!condition.hasMedication(medication.getName())) {
 	                        // Medicate patient.
 	                        condition.addMedication(medication);
-	
-	                		if (person != null)
-	                			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-	            	            		"[" + patient.getSettlement() + "] " + person.getName() + " is prescribing " + medication.getName()
-	                				+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-	                				+ ".", null); 
-	               			else if (robot != null)
-	               				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-	            	            		"[" + patient.getSettlement() + "] " + robot.getName() + " is prescribing " + medication.getName()
-	                            	+ " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
-	                            	+ ".", null);                       
-	           
+	                        needMeds = true;            		
 	                    }
+                    }
+                    
+                    if (needMeds) {
+                    	StringBuilder phrase = new StringBuilder();
+                        
+                        if (person != null) {
+                        	if (!person.equals(patient)) {
+                        		phrase = phrase.append("[").append(patient.getSettlement())
+                        			.append("] ").append(person.getName()).append(" is prescribing ").append(medication.getName())
+                        			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
+                        			.append("."); 
+                        	}
+                        	else {
+                        		phrase = phrase.append("[").append(patient.getSettlement())
+	                        			.append("] ").append(person.getName()).append(" is self-prescribing ").append(medication.getName())
+	                        			.append(" to onself in ").append(person.getBuildingLocation().getNickName())
+	                        			.append("."); 
+                        	}
+                        }
+                        else if (robot != null) {
+                        	phrase = phrase.append("[").append(patient.getSettlement())
+                        			.append("] ").append(person.getName()).append(" is prescribing ").append(medication.getName())
+                        			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
+                        			.append("."); 
+                        }
+
+                		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, phrase.toString(), null);
+
                     }
                     
                     produceMedicalWaste();

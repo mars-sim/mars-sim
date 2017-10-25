@@ -2,7 +2,7 @@
  * CometOrbit Class
  */
 package org.mars_sim.msp.ui.astroarts;
-import org.mars_sim.msp.ui.astroarts.ATime;
+
 import org.mars_sim.msp.ui.astroarts.Xyz;
 
 public class CometOrbit {

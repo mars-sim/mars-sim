@@ -10,17 +10,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
-import java.awt.GraphicsEnvironment;
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -28,7 +22,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
@@ -194,6 +187,7 @@ import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 /**
  * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.
  */
+@SuppressWarnings("restriction")
 public class MarsProjectFX extends Application  {
 
     /** initialized logger for this class. */
@@ -282,7 +276,7 @@ public class MarsProjectFX extends Application  {
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
 
     	//logger.info(Simulation.title);
-    	LogConsolidated.log(logger, Level.INFO, 1000, logger.getName(), Simulation.title, null);
+    	LogConsolidated.log(logger, Level.INFO, 0, logger.getName(), Simulation.title, null);
 
         //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
 
