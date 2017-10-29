@@ -46,11 +46,8 @@ public class OGGSoundClip {
 	private int bytes = 0;
 
 	private float balance;
-	private float gain = 0f;
+	private float volume = 0f;
 	
-	//private float oldGain;
-	//private float volume = .8f;
-
 	private boolean mute;
 	private boolean paused;
 	private boolean isMasterGainSupported;
@@ -109,12 +106,12 @@ public class OGGSoundClip {
 	/**
 	 * Set the default gain value (default volume)
 	 */
-	public void setDefaultGain() {
-		setGain(.8f);
+	public void setDefaultVol() {
+		determineGain(.8f);
 	}
 
-	public float getGain() {
-		return gain;
+	public float getVol() {
+		return volume;
 	}
 
 	/**
@@ -160,17 +157,17 @@ public class OGGSoundClip {
 
 	/**
 	 * Compute the gain value for the playback--based on the new value of volume in the increment or decrement of 0.05f.
-	 * @param gain the gain
+	 * @param volume the volume
 	 */
-	public void setGain(float gain) {
+	public void determineGain(float volume) {
 		//System.out.println("OGGSoundClip's setGain() is on " + Thread.currentThread().getName());
 
-		if (gain > 1)
-			gain = 1;
-		else if (gain < 0)
-			gain = 0;
+		if (volume > 1)
+			volume = 1;
+		else if (volume < 0)
+			volume = 0;
 
-		this.gain = gain;
+		this.volume = volume;
 
 		//System.out.println("volume : " + volume);
 
@@ -197,11 +194,15 @@ public class OGGSoundClip {
 				//  A negative gain attenuates (cuts) it.
 				// The gain setting defaults to a value of 0.0 dB, meaning the signal's loudness is unaffected.
 				// Note that gain measures dB, not amplitude.
+				
+				
 				float max = floatControl.getMaximum();
 				float min = floatControl.getMinimum();
 
+/*				
 				float range = max - min;
-				float step = range/20f;
+				float step = range/100f;
+
 				float num = gain/0.05f;
 				float value = min + num * step;
 
@@ -209,11 +210,18 @@ public class OGGSoundClip {
 					value = min;
 				else if (value > max)
 					value = max;
+*/
+				
+			
+				float value = (max - min/2f) * volume + min/2f; 
+						
+				if (value <= -40)
+					floatControl.setValue(-80);
+				else
+					floatControl.setValue(value);
 
-				floatControl.setValue(value);
-
-				//System.out.println("max : " + max);
-				//System.out.println("min : " + min);
+				//System.out.println("max : " + max); // = 6.0206
+				//System.out.println("min : " + min); // = -80.0
 				//System.out.println("range : " + range);
 				//System.out.println("step : " + step);
 				//System.out.println("value : " + value);
@@ -312,7 +320,7 @@ public class OGGSoundClip {
 	public void pause() {
 		paused = true;
 		//oldGain = gain;
-		setGain(0);
+		determineGain(0);
 	}
 
 	/**
@@ -508,7 +516,7 @@ public class OGGSoundClip {
 			this.channels = channels;
 
 			setBalance(balance);
-			setGain(gain);
+			determineGain(volume);
 		} catch (Exception ee) {
 			System.out.println(ee);
 		}

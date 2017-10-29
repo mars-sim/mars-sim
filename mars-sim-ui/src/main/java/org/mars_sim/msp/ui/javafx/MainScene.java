@@ -216,16 +216,15 @@ public class MainScene {
 
 	private int screen_width = DEFAULT_WIDTH;
 	private int screen_height = DEFAULT_HEIGHT;
-
 	private int solCache = 0;
 
-	//private double newTimeRatio = 0;
-	//private double initial_time_ratio = 0;
-	private double musicSliderCache = 0;
-	private double effectSliderCache = 0;
+	public float musicSliderValue = 80f;
+	public float soundEffectSliderValue = 80f;
+	
+	private float musicSliderCache = 0;
+	private float effectSliderCache = 0;
 	private double tpsCache;
 	
-	//private boolean isMuteCache;
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
@@ -246,7 +245,6 @@ public class MainScene {
 			mapStackPane, minimapStackPane, speedPane, soundPane, calendarPane, // farmPane,
 			settlementBox, chatBoxPane, pausePane, savePane, sPane;
 
-	// private FlowPane flowPane;
 	private AnchorPane anchorPane, mapAnchorPane;
 	private SwingNode desktopNode, mapNode, minimapNode;//, guideNode;// monNode, missionNode, resupplyNode, sciNode,
 																	// guideNode ;
@@ -265,26 +263,16 @@ public class MainScene {
 	private Tab mainTab, dashboardTab;
 
 	private Spinner<Integer> spinner;
-
 	private JFXComboBox<Settlement> sBox;
-	// private JFXBadge badgeIcon;
-	// private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; // calendarButton,
-	private static JFXSlider zoomSlider, musicSlider, effectSlider; // timeSlider,
+	private static JFXSlider zoomSlider, musicSlider, soundEffectSlider; // timeSlider,
 	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;// , farmBtn; //																				// miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// , farmPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 	private JFXDialog exitDialog;
-	
-	private CheckBox musicMuteBox, effectMuteBox;
-	// private DndTabPane dndTabPane;
+	private CheckBox musicMuteBox, soundEffectMuteBox;
 	private ESCHandler esc = null;
-
 	private Timeline timeline;
-	// private NotificationPane notificationPane;
-
-	//private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
-	//private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 
 	private static ChatBox chatBox;
 	private static MainDesktopPane desktop;
@@ -295,8 +283,6 @@ public class MainScene {
 	private static ConstructionWizard constructionWizard;
 
 	private static QuotationPopup quote;
-	// private MessagePopup messagePopup;
-	// private BorderSlideBar topFlapBar;
 
 	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock = sim.getMasterClock();
@@ -312,8 +298,6 @@ public class MainScene {
 	private static UpTimer uptimer;
 
 	private static OrbitInfo orbitInfo;
-
-	// private List<DesktopPane> desktops;
 
 	/**
 	 * Constructor for MainScene
@@ -607,7 +591,7 @@ public class MainScene {
 		InputMap<KeyEvent> ctrlUp = consume(keyPressed(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					// soundPlayer.volumeUp();
-					effectSlider.setValue(effectSlider.getValue() + .5);
+					soundEffectSlider.setValue(soundEffectSlider.getValue() + .5);
 					musicSlider.setValue(musicSlider.getValue() + .5);
 					// soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() +.05));
 				});
@@ -616,7 +600,7 @@ public class MainScene {
 		InputMap<KeyEvent> ctrlDown = consume(
 				keyPressed(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN)), e -> {
 					// soundPlayer.volumeDown();
-					effectSlider.setValue(effectSlider.getValue() - .5);
+					soundEffectSlider.setValue(soundEffectSlider.getValue() - .5);
 					musicSlider.setValue(musicSlider.getValue() - .5);
 					// soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() -.05));
 				});
@@ -763,7 +747,7 @@ public class MainScene {
 		else
 			restoreSound(false, true);
 
-		if (effectSlider.getValue() > 0) {
+		if (soundEffectSlider.getValue() > 0) {
 			pauseSound(true, false);
 		}
 		else
@@ -784,16 +768,16 @@ public class MainScene {
 	
 	public void pauseSound(boolean isEffect, boolean isMusic) {
 		if (isMusic) {
-			musicSliderCache = musicSlider.getValue();
+			musicSliderCache = (float) musicSlider.getValue();
 			menuBar.getMusicMuteItem().setSelected(true);
 			musicSlider.setValue(0);
 			musicMuteBox.setSelected(true);
 		}
 		if (isEffect) {
-			effectSliderCache = effectSlider.getValue();
+			effectSliderCache = (float) soundEffectSlider.getValue();
 			menuBar.getEffectMuteItem().setSelected(true);
-			effectSlider.setValue(0);
-			effectMuteBox.setSelected(true);
+			soundEffectSlider.setValue(0);
+			soundEffectMuteBox.setSelected(true);
 		}
 		soundPlayer.pauseSound(isEffect, isMusic);
 	}
@@ -803,16 +787,16 @@ public class MainScene {
 		if (isMusic) {
 			musicSlider.setValue(musicSliderCache);
 			menuBar.getMusicMuteItem().setSelected(false);
-			soundPlayer.setMusicVolume((float) convertSlider2Volume(musicSliderCache));
+			soundPlayer.setMusicVolume(convertSlider2Volume(musicSliderCache));
 			//musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
 			musicMuteBox.setSelected(false);
 		}
 		if (isEffect) {
-			effectSlider.setValue(effectSliderCache);
+			soundEffectSlider.setValue(effectSliderCache);
 			menuBar.getEffectMuteItem().setSelected(false);
-			soundPlayer.setEffectVolume((float) convertSlider2Volume(effectSliderCache));
+			soundPlayer.setEffectVolume(convertSlider2Volume(effectSliderCache));
 			//effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
-			effectMuteBox.setSelected(false);
+			soundEffectMuteBox.setSelected(false);
 		}
 		
 		soundPlayer.restoreSound(isEffect, isMusic);
@@ -834,7 +818,9 @@ public class MainScene {
 		
 		// Load soundPlayer instance from desktop right after desktop has been instantiated.
 		soundPlayer = desktop.getSoundPlayer();
-				
+		//soundPlayer.setEffectVolume(sound_effect_volume);
+		//soundPlayer.setMusicVolume(music_volume);
+		
 		// Setup root for embedding key events
 		root = new Pane();// Group();
 	
@@ -1327,17 +1313,17 @@ public class MainScene {
 		musicSlider.setPadding(new Insets(0, 15, 0, 15));
 
 		musicSlider.setMin(0);
-		musicSlider.setMax(10);
-		musicSlider.setValue(convertVolume2Slider(soundPlayer.getMusicGain()));
-		musicSlider.setMajorTickUnit(1);
+		musicSlider.setMax(100);
+		musicSlider.setValue(musicSliderValue);//convertVolume2Slider(soundPlayer.getMusicGain()));
+		musicSlider.setMajorTickUnit(20);
 		// soundSlider.setMinorTickCount();
 		musicSlider.setShowTickLabels(true);
 		musicSlider.setShowTickMarks(true);
 		musicSlider.setSnapToTicks(true);
-		musicSlider.setBlockIncrement(.5);
+		musicSlider.setBlockIncrement(5);
 		musicSlider.setOrientation(Orientation.HORIZONTAL);
 		musicSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
-		setQuickToolTip(musicSlider, "adjust the background music volume"); //$NON-NLS-1$
+		setQuickToolTip(musicSlider, "Adjust the background music volume"); //$NON-NLS-1$
 		// detect dragging
 		musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
@@ -1372,7 +1358,7 @@ public class MainScene {
 				if (musicMuteBox.isSelected()) {
 					// mute it
 					//muteSound(false, true);
-					musicSliderCache = musicSlider.getValue();
+					musicSliderCache = (float) musicSlider.getValue();
 					musicSlider.setValue(0);
 					menuBar.getMusicMuteItem().setSelected(false);
 				} else {
@@ -1392,40 +1378,40 @@ public class MainScene {
 		});
 
 		// Set up a settlement view zoom bar
-		effectSlider = new JFXSlider();
+		soundEffectSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
-		effectSlider.getStyleClass().add("jfx-slider");
+		soundEffectSlider.getStyleClass().add("jfx-slider");
 		// soundSlider.setEffect(blend);
-		effectSlider.setPrefWidth(220);
-		effectSlider.setPrefHeight(20);
-		effectSlider.setPadding(new Insets(0, 15, 0, 15));
+		soundEffectSlider.setPrefWidth(220);
+		soundEffectSlider.setPrefHeight(20);
+		soundEffectSlider.setPadding(new Insets(0, 15, 0, 15));
 
-		effectSlider.setMin(0);
-		effectSlider.setMax(10);
-		effectSlider.setValue(convertVolume2Slider(soundPlayer.getEffectGain()));
-		effectSlider.setMajorTickUnit(1);
+		soundEffectSlider.setMin(0);
+		soundEffectSlider.setMax(100);
+		soundEffectSlider.setValue(soundEffectSliderValue);//convertVolume2Slider(soundPlayer.getEffectGain()));
+		soundEffectSlider.setMajorTickUnit(20);
 		// soundSlider.setMinorTickCount();
-		effectSlider.setShowTickLabels(true);
-		effectSlider.setShowTickMarks(true);
-		effectSlider.setSnapToTicks(true);
-		effectSlider.setBlockIncrement(.5);
-		effectSlider.setOrientation(Orientation.HORIZONTAL);
-		effectSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
-		setQuickToolTip(effectSlider, "adjust the sound effect volume"); //$NON-NLS-1$
+		soundEffectSlider.setShowTickLabels(true);
+		soundEffectSlider.setShowTickMarks(true);
+		soundEffectSlider.setSnapToTicks(true);
+		soundEffectSlider.setBlockIncrement(5);
+		soundEffectSlider.setOrientation(Orientation.HORIZONTAL);
+		soundEffectSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
+		setQuickToolTip(soundEffectSlider, "Adjust the sound effect volume"); //$NON-NLS-1$
 		// detect dragging
-		effectSlider.valueProperty().addListener(new ChangeListener<Number>() {
+		soundEffectSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
 					if (sliderValue <= 0) { 
-						effectMuteBox.setSelected(true);
+						soundEffectMuteBox.setSelected(true);
 						menuBar.getEffectMuteItem().setSelected(false);
 						soundPlayer.pauseSound(true, false);
 						//muteSound(true, false);
 					} else {
 						soundPlayer.setEffectVolume((float) convertSlider2Volume(sliderValue));
-						effectMuteBox.setSelected(false);
+						soundEffectMuteBox.setSelected(false);
 						menuBar.getEffectMuteItem().setSelected(true);
 						soundPlayer.restoreSound(true, false);
 						//unmuteSound(true, false);
@@ -1438,28 +1424,28 @@ public class MainScene {
 		Label effectLabel = createBlendLabel("Sound Effect");
 		effectLabel.setPadding(new Insets(0, 0, 0, 1));
 
-		effectMuteBox = new CheckBox("mute");
-		effectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+		soundEffectMuteBox = new CheckBox("mute");
+		soundEffectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
 				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
-		effectMuteBox.setAlignment(Pos.CENTER);
-		effectMuteBox.setOnAction(e -> {
+		soundEffectMuteBox.setAlignment(Pos.CENTER);
+		soundEffectMuteBox.setOnAction(e -> {
 			if (!masterClock.isPaused()) {
-				if (effectMuteBox.isSelected()) {
+				if (soundEffectMuteBox.isSelected()) {
 					// mute it
 					//muteSound(true, false);
-					effectSliderCache = effectSlider.getValue();
-					effectSlider.setValue(0);
+					effectSliderCache = (float) soundEffectSlider.getValue();
+					soundEffectSlider.setValue(0);
 					menuBar.getEffectMuteItem().setSelected(false);
 				} else {
 					// unmute it
 					//unmuteSound(true, false);
-					effectSlider.setValue(effectSliderCache);
+					soundEffectSlider.setValue(effectSliderCache);
 					menuBar.getEffectMuteItem().setSelected(true);
 				}
 			}
 			else {
-				effectMuteBox.setSelected(!effectMuteBox.isSelected());
+				soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
 				logger.info("Unable to mute or unmute while sim is on pause!");
 			}
 			
@@ -1490,24 +1476,24 @@ public class MainScene {
 		GridPane.setConstraints(trackLabel, 0, 0);
 		GridPane.setConstraints(musicMuteBox, 1, 0);
 		GridPane.setConstraints(effectLabel, 0, 0);
-		GridPane.setConstraints(effectMuteBox, 1, 0);
+		GridPane.setConstraints(soundEffectMuteBox, 1, 0);
 		
 		GridPane.setHalignment(trackLabel, HPos.LEFT);
 		GridPane.setHalignment(musicMuteBox, HPos.RIGHT);
 		GridPane.setHalignment(effectLabel, HPos.LEFT);
-		GridPane.setHalignment(effectMuteBox, HPos.RIGHT);
+		GridPane.setHalignment(soundEffectMuteBox, HPos.RIGHT);
 		
 		gridPane0.getColumnConstraints().addAll(c1, c0);
 		gridPane0.getChildren().addAll(trackLabel, musicMuteBox);
 		
 		gridPane1.getColumnConstraints().addAll(c1, c0);
-		gridPane1.getChildren().addAll(effectLabel, effectMuteBox);
+		gridPane1.getChildren().addAll(effectLabel, soundEffectMuteBox);
 
 		soundVBox = new VBox();
 		soundVBox.getStyleClass().add("jfx-popup-container");
 		soundVBox.setPadding(new Insets(1, 1, 1, 1));
 		soundVBox.setAlignment(Pos.CENTER);
-		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, effectSlider);
+		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, soundEffectSlider);
 		soundPane.getChildren().addAll(soundVBox);
 
 	}
@@ -2517,7 +2503,7 @@ public class MainScene {
 		// setStylesheet(timeSlider, cssFile);
 		setStylesheet(zoomSlider, cssFile);
 		setStylesheet(musicSlider, cssFile);
-		setStylesheet(effectSlider, cssFile);
+		setStylesheet(soundEffectSlider, cssFile);
 
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
@@ -3609,13 +3595,13 @@ public class MainScene {
 
 	}
 
-	private double convertSlider2Volume(double y) {
-		return .05 * y + .5;
+	private float convertSlider2Volume(float y) {
+		return y / 100f;
 	}
 
-	private double convertVolume2Slider(double x) {
-		return 20D * (x - .5);
-	}
+	//private float convertVolume2Slider(float x) {
+	//	return 20f * (x - .5f);
+	//}
 
 	//public double getInitialTimeRatio() {
 	//	return initial_time_ratio;
@@ -3629,8 +3615,8 @@ public class MainScene {
 		soundPlayer.enableMasterGain(false);
 		if (musicSlider != null)
 			musicSlider.setDisable(true);// .setValue(0);
-		if (effectSlider != null)
-			effectSlider.setDisable(true);// .setValue(0);
+		if (soundEffectSlider != null)
+			soundEffectSlider.setDisable(true);// .setValue(0);
 
 	}
 
@@ -3647,6 +3633,18 @@ public class MainScene {
 		return (int) sceneHeight.get();//screen_height;
 	}
 	
+	//public void setSound(float music_volume, float sound_effect_volume) {
+	//	this.music_volume = music_volume;
+	//	this.sound_effect_volume = sound_effect_volume;
+	//}
+	
+	public float getMusic() {
+		return musicSliderValue;
+	}
+	
+	public float getSoundEffect() {
+		return soundEffectSliderValue;
+	}
 	
 	
 	public void destroy() {

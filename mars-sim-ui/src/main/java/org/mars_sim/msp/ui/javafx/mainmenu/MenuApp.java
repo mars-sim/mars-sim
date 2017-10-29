@@ -66,7 +66,10 @@ public class MenuApp {
                 new Pair<String, Runnable>("Benchmark", () -> {}),
                 new Pair<String, Runnable>("Settings", () -> mainMenu.runSettings()),
                 new Pair<String, Runnable>("Credits", () -> {}),
-                new Pair<String, Runnable>("Exit", () -> mainMenu.dialogOnExit(mainMenu.getPane()))   //Platform::exit)
+                new Pair<String, Runnable>("Exit", () -> {
+                	if (!mainMenu.isShowingDialog()) 
+                		mainMenu.dialogOnExit(mainMenu.getPane());
+                	})   //Platform::exit)
         );
     }    
     

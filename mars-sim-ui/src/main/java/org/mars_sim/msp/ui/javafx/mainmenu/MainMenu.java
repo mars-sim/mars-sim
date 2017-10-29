@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.FadeTransition;
-
+import javafx.scene.control.Separator;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
@@ -37,6 +37,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.geometry.HPos;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 //import javafx.scene.SceneAntialiasing;
 //import javafx.scene.control.Alert;
 //import javafx.scene.control.Alert.AlertType;
@@ -70,6 +76,11 @@ import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXRadioButton;
+import com.jfoenix.controls.JFXDialog.DialogTransition;
+
+import eu.hansolo.tilesfx.Tile;
+import eu.hansolo.tilesfx.TileBuilder;
+import eu.hansolo.tilesfx.Tile.SkinType;
 
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
@@ -87,6 +98,9 @@ public class MainMenu {
     public static final int WIDTH = 1024;
     public static final int HEIGHT = 768;
   
+    public static final int MUSIC_VOLUME = 0;
+    public static final int SOUND_EFFECT_VOLUME = 1;
+    
 	// Data members
  
     public static String screen1ID = "main";
@@ -101,12 +115,9 @@ public class MainMenu {
 	
 	public int mainscene_width = 1366; //1920;//
 	public int mainscene_height = 768; //1080;//
-
-    //private double anchorX;
-    //private double rate;
-    //private int currentItem = 0;
-    
-	//private ObservableList<Screen> screens;
+	
+	public float music_v = 80f;
+	public float sound_effect_v = 80f;
 
     private Point2D anchorPt;
     private Point2D previousLocation;
@@ -114,10 +125,11 @@ public class MainMenu {
     private AnchorPane anchorPane;
     
     private StackPane stackPane;
+    
+    private StackPane rootPane;
 
 	private Stage primaryStage;
 	
-
 	private MainMenu mainMenu;
 	
 	private MainScene mainScene;
@@ -225,7 +237,7 @@ public class MainMenu {
        	@Override
        	public void handle(MouseEvent event) {
        		if (!isShowingDialog) {
-       			dialogOnExit(stackPane);
+       			dialogOnExit(rootPane);
        		}
        		if (!isExit) {
        			event.consume();
@@ -237,11 +249,18 @@ public class MainMenu {
        	}
        });
        
+
+       rootPane = new StackPane();
+       rootPane.setPrefSize(stackPane.getPrefWidth()-300, stackPane.getPrefHeight());//stackPane.getPrefWidth()-50, stackPane.getPrefHeight()-50);
+       //rootPane.setLayoutX((sceneWidth-stackPane.getPrefWidth()));
+       //rootPane.setLayoutY((sceneHeight-stackPane.getPrefHeight()));
+       
        Group root = new Group();
        root.getChildren().add(applicationArea);
        root.getChildren().add(stackPane);
        root.getChildren().add(closeApp);
-
+       root.getChildren().add(rootPane);
+       
        Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
 
        closeApp.translateXProperty().bind(scene.widthProperty().subtract(40));
@@ -312,7 +331,7 @@ public class MainMenu {
      
        primaryStage.setOnCloseRequest(e -> {
     		if (!isShowingDialog) {
-    			dialogOnExit(stackPane);
+    			dialogOnExit(rootPane);
     		}
     		if (!isExit) {
     			e.consume();
@@ -363,7 +382,8 @@ public class MainMenu {
 	   // creates a mainScene instance
 	   //if (mainScene != null)
 	   mainScene = new MainScene(mainscene_width, mainscene_height);
-
+	   //mainScene.setSound(music_v, sound_effect_v);
+	   
        try {
     	   // Loads Scenario Config Editor
     	   Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
@@ -401,7 +421,7 @@ public class MainMenu {
     */
    public void runSettings() {
 	   
-	   selectResolutionDialog(stackPane);
+	   selectResolutionDialog(rootPane);
    }
 
    /*
@@ -459,6 +479,7 @@ public class MainMenu {
 
 			Platform.runLater(() -> {
 				mainScene = new MainScene(mainscene_width, mainscene_height);
+				
 				mainScene.createLoadingIndicator();
 				mainScene.showWaitStage(MainScene.LOADING);
 			});
@@ -666,8 +687,9 @@ public class MainMenu {
 
 
     public StackPane getPane() {
-    	return stackPane;
+    	return rootPane;
     }
+    
     
 	/**
 	 * Open the exit dialog box
@@ -695,10 +717,11 @@ public class MainMenu {
 		sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
 		StackPane.setMargin(vb, new Insets(10,10,10,10));
 		JFXDialog dialog = new JFXDialog();
-		dialog.setDialogContainer(pane);
+		//dialog.setDialogContainer(pane);
+		dialog.setTransitionType(DialogTransition.BOTTOM);
 		dialog.setContent(sp);
-		dialog.show();
-
+		dialog.show(pane);
+		
 		b1.setOnAction(e -> {
 			isExit = true;
 			dialog.close();
@@ -715,162 +738,168 @@ public class MainMenu {
 	}	
 
 	  
-		/**
-		 * Selects the game screen resolution in this dialog box
-		 * @param pane
-		 */
-		public void selectResolutionDialog(StackPane pane) {
-			isShowingDialog = true;
+	/**
+	 * Selects the game screen resolution in this dialog box
+	 * @param pane
+	 */
+	public void selectResolutionDialog(StackPane pane) {
+		isShowingDialog = true;
 
-			Label l = new Label("Select your desire screen resolution :");//mainScene.createBlendLabel(Msg.getString("MainScene.exit.header"));
-			l.setPadding(new Insets(10, 10, 10, 10));
-			l.setFont(Font.font(null, FontWeight.BOLD, 14));
-/*
-			JFXButton b0 = new JFXButton("800 x 600");
-			b0.setStyle("-fx-background-color: white;");
-			b0.setDisable(true);
-			JFXButton b1 = new JFXButton("1024 x 768");
-			b1.setStyle("-fx-background-color: white;");
-			b1.setDisable(true);
-			JFXButton b2 = new JFXButton("1280 x 800");
-			b2.setStyle("-fx-background-color: white;");
-			b2.setDisable(true);
-			JFXButton b3 = new JFXButton("1366 x 768");
-			b3.setStyle("-fx-background-color: white;");
-			JFXButton b4 = new JFXButton("1600 x 900");
-			b4.setStyle("-fx-background-color: white;");
-			b2.setDisable(true);
-			JFXButton b5 = new JFXButton("1920 x 1080");
-			b5.setStyle("-fx-background-color: white;");
-			b2.setDisable(true);
-
-*/			
-				
-			JFXButton return_btn = new JFXButton("Done");
-			return_btn.setStyle("-fx-background-color: white;");
+		Label titleLabel = new Label("      Select Screen Resolution");
+		titleLabel.setAlignment(Pos.TOP_LEFT);
+		titleLabel.setPadding(new Insets(10, 10, 10, 10));
+		titleLabel.setStyle("-fx-text-fill: white;");
+		titleLabel.setFont(Font.font(null, FontWeight.BOLD, 14));
 			
-			HBox return_hb = new HBox();
-			return_hb.getChildren().addAll(return_btn);
-			return_hb.setAlignment(Pos.CENTER);
-			
-			HBox.setMargin(return_btn, new Insets(10, 10, 10, 10));
-	
-			final ToggleGroup group = new ToggleGroup();
+		JFXButton return_btn = new JFXButton("Done");
+		return_btn.setStyle("-fx-background-color: white;");
+		
+		HBox return_hb = new HBox();
+		return_hb.getChildren().addAll(return_btn);
+		return_hb.setAlignment(Pos.CENTER);
+		
+		HBox.setMargin(return_btn, new Insets(10, 10, 10, 10));
 
-			JFXRadioButton r7 = new JFXRadioButton("2560 x 1600");
+		final ToggleGroup group = new ToggleGroup();
+
+		JFXRadioButton r7 = new JFXRadioButton("2560 x 1600");
+		r7.setStyle("-fx-text-fill: white;");
 		    r7.setToggleGroup(group);
   
 			JFXRadioButton r6 = new JFXRadioButton("2560 x 1440");
+		r6.setStyle("-fx-text-fill: white;");
 		    r6.setToggleGroup(group);
   
 			JFXRadioButton r5 = new JFXRadioButton("1920 x 1080");
-		    r5.setToggleGroup(group);
-    
-			JFXRadioButton r4 = new JFXRadioButton("1600 x 900");
-		    r4.setToggleGroup(group);
-    
-			JFXRadioButton r3 = new JFXRadioButton("1366 x 768");
-		    r3.setToggleGroup(group);
+		r5.setStyle("-fx-text-fill: white;");
+	    r5.setToggleGroup(group);
 
-			JFXRadioButton r2 = new JFXRadioButton("1280 x 800");
-		    r2.setToggleGroup(group);
+		JFXRadioButton r4 = new JFXRadioButton("1600 x 900");
+		r4.setStyle("-fx-text-fill: white;");
+	    r4.setToggleGroup(group);
 
-			JFXRadioButton r1 = new JFXRadioButton("1280 × 720");
-		    r1.setToggleGroup(group);
+		JFXRadioButton r3 = new JFXRadioButton("1366 x 768");
+		r3.setStyle("-fx-text-fill: white;");
+	    r3.setToggleGroup(group);
 
-			JFXRadioButton r0 = new JFXRadioButton("1024 x 768");
-		    r0.setToggleGroup(group);
-		
-		    
-		    if (mainscene_width == 2560) {
-		    	if (mainscene_height == 1600) {
-				    r7.setSelected(true);
-		    	}
-		    	else if (mainscene_height == 1440) {
-				    r6.setSelected(true);
-		    	}
-		    }
-		    else if (mainscene_width == 1920)
-			    r5.setSelected(true);
-		    else if (mainscene_width == 1600)
-			    r4.setSelected(true);	 
-		    else if (mainscene_width == 1366)
-			    r3.setSelected(true);	    
-		    else if (mainscene_width == 1280) {	 
-		    	if (mainscene_height == 800) {
-				    r2.setSelected(true);
-		    	}
-		    	else if (mainscene_height == 720) {
-				    r1.setSelected(true);
-		    	}
-		    }
-		    else if (mainscene_width == 1024)
-			    r0.setSelected(true);
-		    else 
-		    	// by default, set to 1024 x 768
-		    	r0.setSelected(true);
-		    
-		    
-		    group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-		        @Override
-		        public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
-		        	if (!t.equals(t1)) {
-			        	 // Cast object to radio button
-			        	JFXRadioButton selected = (JFXRadioButton) group.getSelectedToggle();
-			            //System.out.println("Selected Radio Button - "+chk.getText());
+		JFXRadioButton r2 = new JFXRadioButton("1280 x 800");
+		r2.setStyle("-fx-text-fill: white;");
+	    r2.setToggleGroup(group);
 
-		        		if (selected.equals(r7))
-		        			setScreenSize(2560, 1600);	
-		        		else if (selected.equals(r6))
-		        			setScreenSize(2560, 1440);	
-		        		else if (selected.equals(r5))
-		        			setScreenSize(1920, 1080);	
-		        		else if (selected.equals(r4))
-		        			setScreenSize(1600, 900);	
-		        		else if (selected.equals(r3))
-		        			setScreenSize(1366, 768);	
-		        		else if (selected.equals(r2))
-		        			setScreenSize(1280, 800);
-		        		else if (selected.equals(r1))
-		        			setScreenSize(1280, 720);	
-		        		else if (selected.equals(r0))
-		        			setScreenSize(1024, 768);	
+		JFXRadioButton r1 = new JFXRadioButton("1280 × 720");
+		r1.setStyle("-fx-text-fill: white;");
+	    r1.setToggleGroup(group);
 
-		        	}
-		        }
+		JFXRadioButton r0 = new JFXRadioButton("1024 x 768");
+		r0.setStyle("-fx-text-fill: white;");
+	    r0.setToggleGroup(group);
+	
+	    
+	    if (mainscene_width == 2560) {
+	    	if (mainscene_height == 1600) {
+			    r7.setSelected(true);
+	    	}
+	    	else if (mainscene_height == 1440) {
+			    r6.setSelected(true);
+	    	}
+	    }
+	    else if (mainscene_width == 1920)
+		    r5.setSelected(true);
+	    else if (mainscene_width == 1600)
+		    r4.setSelected(true);	 
+	    else if (mainscene_width == 1366)
+		    r3.setSelected(true);	    
+	    else if (mainscene_width == 1280) {	 
+	    	if (mainscene_height == 800) {
+			    r2.setSelected(true);
+	    	}
+	    	else if (mainscene_height == 720) {
+			    r1.setSelected(true);
+	    	}
+	    }
+	    else if (mainscene_width == 1024)
+		    r0.setSelected(true);
+	    else 
+	    	// by default, set to 1024 x 768
+	    	r0.setSelected(true);
+	    
+	    
+	    group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+	        @Override
+	        public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
+	        	if (!t.equals(t1)) {
+		        	 // Cast object to radio button
+		        	JFXRadioButton selected = (JFXRadioButton) group.getSelectedToggle();
 
-		    });
+	        		if (selected.equals(r7))
+	        			setScreenSize(2560, 1600);	
+	        		else if (selected.equals(r6))
+	        			setScreenSize(2560, 1440);	
+	        		else if (selected.equals(r5))
+	        			setScreenSize(1920, 1080);	
+	        		else if (selected.equals(r4))
+	        			setScreenSize(1600, 900);	
+	        		else if (selected.equals(r3))
+	        			setScreenSize(1366, 768);	
+	        		else if (selected.equals(r2))
+	        			setScreenSize(1280, 800);
+	        		else if (selected.equals(r1))
+	        			setScreenSize(1280, 720);	
+	        		else if (selected.equals(r0))
+	        			setScreenSize(1024, 768);	
+
+	        	}
+	        }
+
+	    });
+
+	    
+	    GridPane gridpane = new GridPane();
+	    gridpane.setPadding(new Insets(15));
+	    gridpane.setHgap(15);
+	    gridpane.setVgap(15);
+	    ColumnConstraints column0 = new ColumnConstraints(120);
+	    ColumnConstraints column1 = new ColumnConstraints(120);
+	    ColumnConstraints column2 = new ColumnConstraints(120);
+	    ColumnConstraints column3 = new ColumnConstraints(120);
+	    column2.setHgrow(Priority.ALWAYS);
+	    gridpane.getColumnConstraints().addAll(column0, column1, column2, column3);
+
+	    GridPane.setHalignment(r0, HPos.LEFT);
+	    gridpane.add(r0, 0, 0);
+
+	    GridPane.setHalignment(r1, HPos.LEFT);
+	    gridpane.add(r1, 1, 0);
+
+	    GridPane.setHalignment(r2, HPos.LEFT);
+	    gridpane.add(r2, 2, 0);
+
+	    GridPane.setHalignment(r3, HPos.LEFT);
+	    gridpane.add(r3, 3, 0);
+
+	    GridPane.setHalignment(r4, HPos.LEFT);
+	    gridpane.add(r4, 0, 1);
+
+	    GridPane.setHalignment(r5, HPos.LEFT);
+	    gridpane.add(r5, 1, 1);
+
+	    GridPane.setHalignment(r6, HPos.LEFT);
+	    gridpane.add(r6, 2, 1);
+
+	    GridPane.setHalignment(r7, HPos.LEFT);
+	    gridpane.add(r7, 3, 1);
+	    
 /*		    
-			HBox hb0 = new HBox();
-			hb0.getChildren().addAll(b0, b1, b2);
-			hb0.setAlignment(Pos.CENTER);
-
-			HBox hb1 = new HBox();
-			hb1.getChildren().addAll(b3, b4, b5);
-			hb1.setAlignment(Pos.CENTER);
-
-			HBox hb2 = new HBox();
-			hb2.getChildren().add(b6);
-			hb2.setAlignment(Pos.CENTER);
-			
-			HBox.setMargin(b0, new Insets(3,3,3,3));
-			HBox.setMargin(b1, new Insets(3,3,3,3));
-			HBox.setMargin(b2, new Insets(3,3,3,3));
-			HBox.setMargin(b3, new Insets(3,3,3,3));
-			HBox.setMargin(b4, new Insets(3,3,3,3));
-			HBox.setMargin(b5, new Insets(3,3,3,3));
-			HBox.setMargin(b6, new Insets(6,6,6,6));
-*/		
-		    
 			HBox radio_hb = new HBox();
+			radio_hb.setPadding(new Insets(10, 10, 10, 10));
 			radio_hb.getChildren().addAll(r0, r1, r2, r3);
 			radio_hb.setAlignment(Pos.CENTER);
 
 			HBox radio_hb2 = new HBox();
+			radio_hb2.setPadding(new Insets(10, 10, 10, 10));
 			radio_hb2.getChildren().addAll(r4, r5, r6, r7);
 			radio_hb2.setAlignment(Pos.CENTER);
-
-			
+		
 			HBox.setMargin(r0, new Insets(5, 5, 5, 5));
 			HBox.setMargin(r1, new Insets(5, 5, 5, 5));
 			HBox.setMargin(r2, new Insets(5, 5, 5, 5));
@@ -879,60 +908,211 @@ public class MainMenu {
 			HBox.setMargin(r5, new Insets(5, 5, 5, 5));
 			HBox.setMargin(r6, new Insets(5, 5, 5, 5));
 			HBox.setMargin(r7, new Insets(5, 5, 5, 5));
-
-						
-			VBox vb = new VBox();
-			vb.setAlignment(Pos.CENTER);
-			vb.setPadding(new Insets(15, 15, 15, 15));
-			//vb.getChildren().addAll(l, hb0, hb1, hb2);
-			vb.getChildren().addAll(l, radio_hb, radio_hb2, return_hb); 
-					
-			StackPane sp = new StackPane(vb);
-			sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
-			StackPane.setMargin(vb, new Insets(10,10,10,10));
-			
-			JFXDialog dialog = new JFXDialog();
-			dialog.setDialogContainer(pane);
-			dialog.setContent(sp);
-			dialog.show();
-/*
-			b0.setOnAction(e -> {
-				mainScene.setScreenSize(800, 600);
-			});
-			
-			b1.setOnAction(e -> {
-				mainScene.setScreenSize(1024, 768);	
-			});
-
-			b2.setOnAction(e -> {
-				mainScene.setScreenSize(1280, 800);	
-			});
-
-			b3.setOnAction(e -> {
-				mainScene.setScreenSize(1366, 768);	
-			});
-
-			b4.setOnAction(e -> {
-				mainScene.setScreenSize(1600, 900);	
-			});
-
-			b5.setOnAction(e -> {
-				mainScene.setScreenSize(1920, 1024);	
-			});
 */
+	    
+		Label soundlabel = new Label("      Set Sound Volume");
+		soundlabel.setAlignment(Pos.TOP_LEFT);
+		soundlabel.setPadding(new Insets(10, 10, 10, 10));
+		soundlabel.setStyle("-fx-text-fill: white;");
+		soundlabel.setFont(Font.font(null, FontWeight.BOLD, 14));
 			
-			return_btn.setOnAction(e -> {
-				dialog.close();
-				isShowingDialog = false;
-				e.consume();
-			});
+		// Set up the slider for background music and sound effect
+		Tile soundTile0 = musicSetting();
+		HBox sound0 = new HBox();
+		sound0.setPadding(new Insets(5, 5, 5, 5));
+		sound0.getChildren().addAll(soundTile0);
+		sound0.setAlignment(Pos.CENTER);
 
-		}	
+		Tile soundTile1 = soundEffectSetting();
+		HBox sound1 = new HBox();
+		sound1.setPadding(new Insets(5, 5, 5, 5));
+		sound1.getChildren().addAll(soundTile1);
+		sound1.setAlignment(Pos.CENTER);
+		
+		//Horizontal separator
+		//Separator separator = new Separator();
+		//separator.setMaxWidth(160);
+		//separator.setHalignment(HPos.LEFT);
+		
+		VBox emptyVB = new VBox();
+		//vb.setAlignment(Pos.CENTER);
+		emptyVB.setPadding(new Insets(25, 25, 25, 25));
+		
+		VBox vb = new VBox();
+		//vb.setAlignment(Pos.CENTER);
+		vb.setPadding(new Insets(15, 15, 15, 15));
+		vb.getChildren().addAll(titleLabel, gridpane, emptyVB, soundlabel, sound0, sound1, return_hb); 
+				
+		StackPane sp = new StackPane(vb);
+		sp.setStyle("-fx-background-color:black;");//rgb(105,105,105);");//darkgrey;");//rgba(0,0,0,0.1);");
+		StackPane.setMargin(vb, new Insets(10,10,10,10));
+		JFXDialog dialog = new JFXDialog();
+		//dialog.setDialogContainer(pane);
+		dialog.setContent(sp);
+		dialog.setTransitionType(DialogTransition.BOTTOM);
+		dialog.show(pane);
+		
+		return_btn.setOnAction(e -> {
+			dialog.close();
+			isShowingDialog = false;
+			e.consume();
+		});
 
+	}	
+
+	
+    public Tile musicSetting() {
+    	
+        Tile switchSliderTile = TileBuilder.create()
+                .skinType(SkinType.SWITCH_SLIDER)
+                .prefSize(450, 100)
+                .backgroundColor(Color.BLACK)//.rgb(105,105,105))//.DARKGRAY)//.rgb(255, 255, 255, 0.1))
+                //.title(title)
+                .description("Background Music")
+                .descriptionAlignment(Pos.TOP_CENTER)
+                .textVisible(true)
+                .decimals(0)
+                .minValue(0)
+                .maxValue(100)
+                .value(music_v)
+                .build();
+        
+        switchSliderTile.setActive(true);
+
+        switchSliderTile.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+
+				if (old_val != new_val) {
+					float vol = new_val.floatValue();
+					
+					if (vol <= 5) { 
+						music_v = 0;
+			            //System.out.println("Background Music is mute.");    
+			            switchSliderTile.setValue(0);
+			            switchSliderTile.setActive(false);
+					} else {
+						music_v = vol;
+						switchSliderTile.setActive(true);
+					}
+					
+					if (!switchSliderTile.isActive()) {
+						switchSliderTile.setValue(0);
+						//switchSliderTile.setActive(false);
+					}
+				}
+
+			}
+		});
+
+		switchSliderTile.setOnSwitchPressed(e -> {
+			if (switchSliderTile.getCurrentValue() < 5 || !switchSliderTile.isActive()) {
+				switchSliderTile.setValue(0);
+				switchSliderTile.setActive(false);
+			}
+			else {
+				switchSliderTile.setActive(true);
+				if (switchSliderTile.getCurrentValue() < 5)
+					switchSliderTile.setValue(80);
+			}
+				
+		});
+		
+		switchSliderTile.setOnSwitchReleased(e -> {
+			if (switchSliderTile.getCurrentValue() < 5 || !switchSliderTile.isActive()) {
+				switchSliderTile.setValue(0);
+				switchSliderTile.setActive(false);
+			}
+			else {
+				switchSliderTile.setActive(true);
+				if (switchSliderTile.getCurrentValue() < 5)
+					switchSliderTile.setValue(80);
+			}
+		});
+
+		return switchSliderTile;
+    }	
+ 
+    
+    public Tile soundEffectSetting() {
+    	
+        Tile switchSliderTile = TileBuilder.create()
+                .skinType(SkinType.SWITCH_SLIDER)
+                .prefSize(450, 100)
+                .backgroundColor(Color.BLACK)//.rgb(105,105,105))//.DARKGRAY)//.rgb(255, 255, 255, 0.1))
+                //.title(title)
+                .description("Sound Effect")
+                .descriptionAlignment(Pos.TOP_CENTER)
+                .textVisible(true)
+                .decimals(0)
+                .minValue(0)
+                .maxValue(100)
+                .value(sound_effect_v)
+                .build();
+
+        switchSliderTile.setActive(true);
+        
+        switchSliderTile.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+
+				if (old_val != new_val) {
+					float vol = new_val.floatValue();
+
+					if (vol <= 5) { 
+						sound_effect_v = 0f;
+						switchSliderTile.setValue(0);
+			            //System.out.println("Sound Effect is mute.");    
+			            switchSliderTile.setActive(false);
+					} else {
+						sound_effect_v = vol;
+						switchSliderTile.setActive(true);
+
+					}
+					
+					if (!switchSliderTile.isActive()) {
+						switchSliderTile.setValue(0);
+						//switchSliderTile.setActive(false);
+					}
+						
+				}
+			}
+		});
+
+		switchSliderTile.setOnSwitchPressed(e -> {
+			
+			if (switchSliderTile.getCurrentValue() < 5 || !switchSliderTile.isActive()) {
+				switchSliderTile.setValue(0);
+				switchSliderTile.setActive(false);
+			}
+			else {
+				switchSliderTile.setActive(true);
+				if (switchSliderTile.getCurrentValue() < 5)
+					switchSliderTile.setValue(80);
+			}
+				
+		});
+		
+		switchSliderTile.setOnSwitchReleased(e -> {
+			if (switchSliderTile.getCurrentValue() < 5 || !switchSliderTile.isActive()) {
+				switchSliderTile.setValue(0);
+				switchSliderTile.setActive(false);
+			}
+			else {
+				switchSliderTile.setActive(true);
+				if (switchSliderTile.getCurrentValue() < 5)
+					switchSliderTile.setValue(80);
+			}
+		});
+
+		return switchSliderTile;
+    }	
     
 	public void setScreenSize(int w, int h) {
 		mainscene_width = w;
 		mainscene_height = h;
+	}
+	
+	public boolean isShowingDialog() {
+		return isShowingDialog;
 	}
 		
 	public void destroy() {
