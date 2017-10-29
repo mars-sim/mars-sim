@@ -169,7 +169,9 @@ public class BuildingConfig implements Serializable {
     private static final String WIND_POWER_SOURCE = PowerSourceType.WIND_POWER.toString();
     private static final String AREOTHERMAL_POWER_SOURCE = PowerSourceType.AREOTHERMAL_POWER.toString();
 
+    private Element root;
 	private Document buildingDoc;
+	
 	
 	private Set<String> buildingTypes;
 	private List<FunctionType> functions;
@@ -183,6 +185,8 @@ public class BuildingConfig implements Serializable {
 	public BuildingConfig(Document buildingDoc) {
 		this.buildingDoc = buildingDoc;
 
+		root = buildingDoc.getRootElement();
+		
 		generateBuildingFunctions();
 		
 		if (storageCapacities == null) {
@@ -240,7 +244,7 @@ public class BuildingConfig implements Serializable {
 
 	    if (buildingTypes == null) {
 	        buildingTypes = new HashSet<String>();
-	        Element root = buildingDoc.getRootElement();
+	        //Element root = buildingDoc.getRootElement();
 	        List<Element> buildingNodes = root.getChildren(BUILDING);
 	        for (Element buildingElement : buildingNodes) {
 	            buildingTypes.add(buildingElement.getAttributeValue(BUILDING_TYPE));
@@ -260,7 +264,7 @@ public class BuildingConfig implements Serializable {
 	private Element getBuildingElement(String buildingType) {
 		Element result = null;
 
-		Element root = buildingDoc.getRootElement();
+		//Element root = buildingDoc.getRootElement();
 		List<Element> buildingNodes = root.getChildren(BUILDING);
 		for (Element buildingElement : buildingNodes) {
 			String buidingType = buildingElement.getAttributeValue(BUILDING_TYPE);

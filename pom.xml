@@ -435,9 +435,23 @@
 		</site>
 	</distributionManagement>
 	<pluginRepositories>
+	    <pluginRepository>
+	        <id>maven central</id>
+	        <url>https://repo.example.com/maven2</url>
+        </pluginRepository>
         <pluginRepository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
+        <pluginRepository>
+			<id>sonatype</id>
+			<name>Sonatype</name>
+			<url>https://oss.sonatype.org/content/repositories/releases</url>
+        </pluginRepository>
+        <pluginRepository>
+	        <id>jcenter</id>
+	        <url>http://jcenter.bintray.com/</url>
+        </pluginRepository>
+
 	</pluginRepositories>
 </project>
