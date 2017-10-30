@@ -8,26 +8,16 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.DateFormatSymbols;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * The EarthClock class keeps track of Earth Universal Time.
@@ -172,9 +162,10 @@ implements Serializable {
 	 * @return date/time formatted in a string. eg "2055-May-06 03:37:22"
 	 */
 	public String getCurrentDateTimeString(EarthClock clock) {
-		String result = f3.format(cal.getTime());
+		//String result = f3.format(cal.getTime());
 		//System.out.println("getCurrentDateTimeString() is " + result);
-		return result;
+		//return result;
+		return f3.format(clock.getCalender().getTime());
 	}
 
 	/*

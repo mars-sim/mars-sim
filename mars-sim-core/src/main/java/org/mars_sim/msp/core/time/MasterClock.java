@@ -644,16 +644,17 @@ public class MasterClock implements Serializable { // Runnable,
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
         if (!isPaused) {
             // Update elapsed milliseconds.
-            long elapsedMilliseconds = updateElapsedMilliseconds();
+            long millis = updateElapsedMilliseconds();
             // Get the time pulse length in millisols.
-            double timePulse = computeTimePulseInMillisols(elapsedMilliseconds);
+            double timePulse = computeTimePulseInMillisols(millis);
             // Incrementing total time pulse number.
             totalPulses++;
             //logger.info(timePulse+"");
             if (timePulse > 0) {
 	            if (keepRunning) {
 	                // Add time pulse length to Earth and Mars clocks.
-	            	earthTime.addTime(Math.round(elapsedMilliseconds));//timePulse*MarsClock.SECONDS_IN_MILLISOL);
+	            	//logger.info(millis + "");
+	            	earthTime.addTime(millis* (long)timeRatio);//timePulse*MarsClock.SECONDS_IN_MILLISOL);
 	            	marsTime.addTime(timePulse);
 				  	if (!isPaused
 				  			|| !clockListenerExecutor.isTerminating()

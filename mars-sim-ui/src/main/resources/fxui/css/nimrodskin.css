@@ -423,13 +423,16 @@
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
     -fx-text-fill: dark-green;
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-font-family: "Libeartion Mono";    
+    -fx-stroke-width: 4;
+    -fx-font-family: "Monospaced";  
 }
 
 #rich-green Text {
+	-fx-font-smoothing-type: lcd;
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+    -fx-stroke-width: 2;    
 }
 
 #rich-red {
@@ -442,18 +445,18 @@
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
     -fx-text-fill: #cc6308;
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-font-family: "Libeartion Mono";
+    -fx-stroke-width: 4;    
+    -fx-font-family: "Monospaced";  
 }
 
 #rich-red Text {
+	-fx-font-smoothing-type: lcd;
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+    -fx-stroke-width: 2;    
 }
 
-#rich-red Text {
-    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
-}
 
 #button-orange {
     -fx-background-color:

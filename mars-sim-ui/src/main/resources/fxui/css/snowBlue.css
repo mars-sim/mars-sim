@@ -424,11 +424,14 @@
     -fx-text-fill: dark-green;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
+    -fx-stroke-width: 4;
     -fx-font-family: "Monospaced";    
 }
 
 #rich-green Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+     -fx-stroke-width: 4;
+    
 }
 
 #rich-red {
@@ -443,11 +446,13 @@
     -fx-text-fill: #cc6308;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
+    -fx-stroke-width: 4;
     -fx-font-family: "Monospaced";
 }
 
 #rich-red Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+    -fx-stroke-width: 4;    
 }
 
 #button-orange {

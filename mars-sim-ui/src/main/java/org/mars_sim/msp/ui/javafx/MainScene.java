@@ -16,6 +16,7 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
+
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXToggleButton;
 
@@ -25,14 +26,11 @@ import org.fxmisc.wellbehaved.event.Nodes;
 
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background; 
-//import javafx.scene.layout.BackgroundFill; 
-//import javafx.scene.layout.CornerRadii; 
+import javafx.scene.layout.Background;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-//import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.animation.KeyFrame;
@@ -59,8 +57,8 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-//import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
+
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -143,11 +141,11 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
  */
 @SuppressWarnings("restriction")
 public class MainScene {
- 
+
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	public static String OS = Simulation.OS.toLowerCase();
-	// System.getProperty("os.name").toLowerCase(); 
+	// System.getProperty("os.name").toLowerCase();
 	// e.g. 'linux', 'mac os x'
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
@@ -168,28 +166,28 @@ public class MainScene {
 	public static final int AUTOSAVING = 2;
 	public static final int PAUSED = 3;
 
-	public static final int DEFAULT_WIDTH = 1366; //1920;//
-	public static final int DEFAULT_HEIGHT = 768; //1080;//
+	public static final int DEFAULT_WIDTH = 1366; // 1920;//
+	public static final int DEFAULT_HEIGHT = 768; // 1080;//
 	public static final int TAB_PANEL_HEIGHT = 35;
 	public static final int TITLE_BAR_HEIGHT = 25;
-		
+
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
-	//private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
+	// private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
 
-	//private static final String PAUSE = "PAUSE";
-	//private static final String ESC_TO_RESUME = "ESC to resume";
-	//private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
+	// private static final String PAUSE = "PAUSE";
+	// private static final String ESC_TO_RESUME = "ESC to resume";
+	// private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
-	private static final String EARTH_DATE_TIME = "  EARTH : ";
-	private static final String MARS_DATE_TIME = "  MARS : ";
-	//private static final String UMST = " (UMST)";
+	private static final String EARTH_DATE_TIME = " EARTH : ";
+	private static final String MARS_DATE_TIME = " MARS : ";
+	// private static final String UMST = " (UMST)";
 	private static final String ONE_SPACE = " ";
 	private static final String MONTH = "    Month : ";
 	private static final String ORBIT = "Orbit : ";
 	private static final String ADIR = "Adir";
 
-	//private static final String BENCHMARK = "Benchmark :";
+	// private static final String BENCHMARK = "Benchmark :";
 	private static final String UPTIME = "UpTime :";
 	private static final String TPS = "Ticks/s :";
 	private static final String SEC = "1 real sec :";
@@ -220,11 +218,11 @@ public class MainScene {
 
 	public float musicSliderValue = 80f;
 	public float soundEffectSliderValue = 80f;
-	
+
 	private float musicSliderCache = 0;
 	private float effectSliderCache = 0;
 	private double tpsCache;
-	
+
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
@@ -246,18 +244,29 @@ public class MainScene {
 			settlementBox, chatBoxPane, pausePane, savePane, sPane;
 
 	private AnchorPane anchorPane, mapAnchorPane;
-	private SwingNode desktopNode, mapNode, minimapNode;//, guideNode;// monNode, missionNode, resupplyNode, sciNode,
-																	// guideNode ;
+	private SwingNode desktopNode, mapNode, minimapNode;// , guideNode;// monNode, missionNode, resupplyNode, sciNode,
+														// guideNode ;
 	private Stage stage, loadingStage, savingStage;
 	private Scene scene, savingScene;
 
 	private File fileLocn = null;
 	private Thread newSimThread;
 
-	private IconNode soundIcon, marsNetIcon, speedIcon;// , farmIcon;
-	private Button earthTimeButton, marsTimeButton;// , northHemi, southHemi;
-	private Label lastSaveLabel, tpsLabel, upTimeLabel, noteLabel;//, benchmarkLabel; // monthLabel, yearLabel, LSLabel
+	private HBox earthTimeBox;
+	private HBox marsTimeBox;
+
+	private Label earthTime;
+	private Label lastSaveLabel;
+	private Label tpsLabel;
+	private Label upTimeLabel;
+	private Label noteLabel;
+
+	private Button marsTimeButton;
+
 	private Text LSText, monthText, yearText, northText, southText;
+
+	private IconNode soundIcon, marsNetIcon, speedIcon;// , farmIcon;
+
 	private Blend blend;
 	private VBox mapLabelBox, speedVBox, soundVBox;
 	private Tab mainTab, dashboardTab;
@@ -266,7 +275,8 @@ public class MainScene {
 	private JFXComboBox<Settlement> sBox;
 	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; // calendarButton,
 	private static JFXSlider zoomSlider, musicSlider, soundEffectSlider; // timeSlider,
-	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;// , farmBtn; //																				// miniMapBtn, mapBtn,
+	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;// , farmBtn; // //
+																								// miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// , farmPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 	private JFXDialog exitDialog;
@@ -306,8 +316,8 @@ public class MainScene {
 		screen_width = width;
 		screen_height = height;
 		sceneWidth = new SimpleDoubleProperty(width);
-		sceneHeight = new SimpleDoubleProperty(height-TAB_PANEL_HEIGHT);
-		
+		sceneHeight = new SimpleDoubleProperty(height - TAB_PANEL_HEIGHT);
+
 		isMainSceneDoneLoading = false;
 
 		stage = new Stage();
@@ -319,8 +329,8 @@ public class MainScene {
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
-			//if (!isShowingDialog)
-				dialogOnExit();
+			// if (!isShowingDialog)
+			dialogOnExit();
 			e.consume();
 		});
 
@@ -349,7 +359,7 @@ public class MainScene {
 			stage.requestFocus();
 
 			createSavingIndicator();
-			
+
 			openInitialWindows();
 			hideWaitStage(MainScene.LOADING);
 		});
@@ -440,11 +450,11 @@ public class MainScene {
 		// resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
 		Platform.runLater(() -> {
-			//boolean previous = startPause(); ?
-			pauseSimulation(false);		
+			// boolean previous = startPause(); ?
+			pauseSimulation(false);
 			transportWizard.deliverBuildings(buildingManager);
 			unpauseSimulation();
-			//endPause(previous);
+			// endPause(previous);
 		});
 	}
 
@@ -454,15 +464,16 @@ public class MainScene {
 
 	/**
 	 * Pauses sim and opens the construction wizard
+	 * 
 	 * @param mission
 	 */
 	public void openConstructionWizard(BuildingConstructionMission mission) {
 		Platform.runLater(() -> {
-			//double previous = slowDownTimeRatio();
+			// double previous = slowDownTimeRatio();
 			pauseSimulation(false);
 			constructionWizard.selectSite(mission);
 			unpauseSimulation();
-			//speedUpTimeRatio(previous);
+			// speedUpTimeRatio(previous);
 		});
 	}
 
@@ -607,7 +618,7 @@ public class MainScene {
 		Nodes.addInputMap(rootStackPane, ctrlDown);
 
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)),
-				e -> {		
+				e -> {
 					adjustSound();
 				});
 		Nodes.addInputMap(rootStackPane, ctrlM);
@@ -617,7 +628,7 @@ public class MainScene {
 		// newSimulation();
 		// });
 		// Nodes.addInputMap(root, ctrlN);
- 
+
 		InputMap<KeyEvent> ctrlS = consume(keyPressed(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					saveSimulation(Simulation.SAVE_DEFAULT);
@@ -632,8 +643,8 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					//if (!isShowingDialog)
-						dialogOnExit();
+					// if (!isShowingDialog)
+					dialogOnExit();
 					e.consume();
 				});
 		Nodes.addInputMap(rootStackPane, ctrlX);
@@ -743,29 +754,23 @@ public class MainScene {
 	public void adjustSound() {
 		if (musicSlider.getValue() > 0) {
 			pauseSound(false, true);
-		}
-		else
+		} else
 			restoreSound(false, true);
 
 		if (soundEffectSlider.getValue() > 0) {
 			pauseSound(true, false);
-		}
-		else
+		} else
 			restoreSound(true, false);
-		
-/*		
-		//if (!masterClock.isPaused()) {
-			boolean isMute = menuBar.getEffectMuteItem().isSelected();
-			if (isMute) {
-				restoreSound(isEffect, isMusic);
-			} else {
-				pauseSound(isEffect, isMusic);
-			}
-		//}
 
-*/
+		/*
+		 * //if (!masterClock.isPaused()) { boolean isMute =
+		 * menuBar.getEffectMuteItem().isSelected(); if (isMute) {
+		 * restoreSound(isEffect, isMusic); } else { pauseSound(isEffect, isMusic); }
+		 * //}
+		 * 
+		 */
 	}
-	
+
 	public void pauseSound(boolean isEffect, boolean isMusic) {
 		if (isMusic) {
 			musicSliderCache = (float) musicSlider.getValue();
@@ -782,28 +787,26 @@ public class MainScene {
 		soundPlayer.pauseSound(isEffect, isMusic);
 	}
 
-	
 	public void restoreSound(boolean isEffect, boolean isMusic) {
 		if (isMusic) {
 			musicSlider.setValue(musicSliderCache);
 			menuBar.getMusicMuteItem().setSelected(false);
 			soundPlayer.setMusicVolume(convertSlider2Volume(musicSliderCache));
-			//musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+			// musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
 			musicMuteBox.setSelected(false);
 		}
 		if (isEffect) {
 			soundEffectSlider.setValue(effectSliderCache);
 			menuBar.getEffectMuteItem().setSelected(false);
 			soundPlayer.setEffectVolume(convertSlider2Volume(effectSliderCache));
-			//effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+			// effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
 			soundEffectMuteBox.setSelected(false);
 		}
-		
+
 		soundPlayer.restoreSound(isEffect, isMusic);
 
 	}
-	
-	
+
 	/**
 	 * initializes the scene
 	 *
@@ -814,19 +817,20 @@ public class MainScene {
 		IconFontFX.register(FontAwesome.getIconFont());
 
 		createDesktopNode();
-		//JFXToolbar toolbar = new JFXToolbar();
-		
-		// Load soundPlayer instance from desktop right after desktop has been instantiated.
+		// JFXToolbar toolbar = new JFXToolbar();
+
+		// Load soundPlayer instance from desktop right after desktop has been
+		// instantiated.
 		soundPlayer = desktop.getSoundPlayer();
-		//soundPlayer.setEffectVolume(sound_effect_volume);
-		//soundPlayer.setMusicVolume(music_volume);
-		
+		// soundPlayer.setEffectVolume(sound_effect_volume);
+		// soundPlayer.setMusicVolume(music_volume);
+
 		// Setup root for embedding key events
 		root = new Pane();// Group();
-	
+
 		marsNetBox = createFlyout();
 		flag = false;
-		
+
 		// EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(),
 		// chatBox);
 		// Create ControlFX's StatusBar
@@ -872,47 +876,46 @@ public class MainScene {
 			AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 			AnchorPane.setTopAnchor(soundBtn, 3.0);
 			// AnchorPane.setTopAnchor(farmBtn, 3.0);
-			AnchorPane.setTopAnchor(earthTimeButton, 0.0);
-			AnchorPane.setTopAnchor(marsTimeButton, 0.0);
-		} else if (OS.contains("linux")) {
+			AnchorPane.setTopAnchor(earthTimeBox, 0.0);
+			AnchorPane.setTopAnchor(marsTimeBox, 0.0);
+		}
+
+		else if (OS.contains("linux")) {
 			AnchorPane.setTopAnchor(speedBtn, 0.0);
 			AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 			AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 			AnchorPane.setTopAnchor(soundBtn, 0.0);
 			// AnchorPane.setTopAnchor(farmBtn, 0.0);
-			AnchorPane.setTopAnchor(earthTimeButton, 0.0);
-			AnchorPane.setTopAnchor(marsTimeButton, 0.0);
-		} else if (OS.contains("mac")) {
+			AnchorPane.setTopAnchor(earthTimeBox, 0.0);
+			AnchorPane.setTopAnchor(marsTimeBox, 0.0);
+		}
+
+		else if (OS.contains("mac")) {
 			AnchorPane.setTopAnchor(speedBtn, 0.0);
 			AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 			AnchorPane.setTopAnchor(lastSaveLabel, 0.0);
 			AnchorPane.setTopAnchor(soundBtn, 0.0);
 			// AnchorPane.setTopAnchor(farmBtn, 0.0);
-			AnchorPane.setTopAnchor(earthTimeButton, 0.0);
-			AnchorPane.setTopAnchor(marsTimeButton, 0.0);
+			AnchorPane.setTopAnchor(earthTimeBox, 0.0);
+			AnchorPane.setTopAnchor(marsTimeBox, 0.0);
 		}
 
 		AnchorPane.setRightAnchor(speedBtn, 5.0);
 		AnchorPane.setRightAnchor(marsNetBtn, 45.0);
 		AnchorPane.setRightAnchor(soundBtn, 85.0);
-		// AnchorPane.setRightAnchor(farmBtn, 125.0);
-		
-		//AnchorPane.setRightAnchor(marsTimeButton, 165.0);
-		//AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 165);
-		AnchorPane.setRightAnchor(marsTimeButton, sceneWidth.get()/2);
-		AnchorPane.setRightAnchor(earthTimeButton, sceneWidth.get()/2 - marsTimeButton.getPrefWidth());
-		
-		//AnchorPane.setRightAnchor(lastSaveLabel, marsTimeButton.getMinWidth() + marsTimeButton.getMinWidth() + 165);
+		AnchorPane.setRightAnchor(marsTimeBox, sceneWidth.get() / 2);
+		AnchorPane.setRightAnchor(earthTimeBox, sceneWidth.get() / 2 - marsTimeBox.getPrefWidth());
 		AnchorPane.setRightAnchor(lastSaveLabel, 105.0);
-		
+
 		anchorPane = new AnchorPane();
-		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeButton,
-				marsTimeButton, soundBtn);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
+		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
+				soundBtn);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(anchorPane);
-		//rootStackPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
-		
+		// rootStackPane.setBackground(new Background(new
+		// BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+
 		scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
 
 		// pausePane.prefWidthProperty().bind(scene.widthProperty());
@@ -920,18 +923,17 @@ public class MainScene {
 		pausePane.setLayoutX((sceneWidth.get() - pausePane.getPrefWidth()) / 2D);
 		pausePane.setLayoutY((sceneHeight.get() - pausePane.getPrefHeight()) / 2D);
 
-		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
+		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 
-		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
+		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
 		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
 
-		
-		mainStackPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
+		mainStackPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
 		mainStackPane.prefWidthProperty().bind(scene.widthProperty());
-		
+
 		// anchorTabPane is within jfxTabPane
-		mapAnchorPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(TITLE_HEIGHT));
+		mapAnchorPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
 		mapAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 
 		// Setup key events using wellbehavedfx
@@ -940,64 +942,33 @@ public class MainScene {
 		return scene;
 	}
 
-	/*
-	 * public void createJFXSnackbar() { snackbar = new JFXSnackbar();
-	 * //snackbar.getStylesheets().clear();
-	 * //snackbar.getStylesheets().add(getClass().getResource(
-	 * "/css/jfoenix-design.css").toExternalForm());
-	 * //snackbar.getStylesheets().add(getClass().getResource(
-	 * "/css/jfoenix-components.css").toExternalForm()); snackbar.setPrefSize(300,
-	 * 40); snackbar.getStyleClass().add("jfx-snackbar");
-	 * snackbar.registerSnackbarContainer(root);
-	 * 
-	 * Icon icon = new Icon("INBOX"); icon.setPadding(new Insets(10)); badgeIcon =
-	 * new JFXBadge(icon); badgeIcon.getStylesheets().clear();
-	 * //badge1.getStylesheets().add(getClass().getResource(
-	 * "/css/jfoenix-design.css").toExternalForm());
-	 * //badge1.getStylesheets().add(getClass().getResource(
-	 * "/css/jfoenix-components.css").toExternalForm());
-	 * //badge1.getStyleClass().add("icons-badge");
-	 * //badge1.setStyle("icons-badge"); badgeIcon.setText("0");
-	 * 
-	 * badgeIcon.setOnMouseClicked((e) -> { int value =
-	 * Integer.parseInt(badgeIcon.getText()); if (e.getButton() ==
-	 * MouseButton.PRIMARY) { value++; } else if (e.getButton() ==
-	 * MouseButton.SECONDARY) { if (value > 0) value--; }
-	 * 
-	 * if (value == 0) { badgeIcon.setEnabled(false); } else {
-	 * badgeIcon.setEnabled(true); } badgeIcon.setText(String.valueOf(value));
-	 * 
-	 * // trigger snackbar if (count++%2==0){ snackbar.fireEvent(new
-	 * SnackbarEvent("Toast Message " + count)); } else { snackbar.fireEvent(new
-	 * SnackbarEvent("Snackbar Message "+ count,"UNDO",3000,(b)->{})); } }); }
-	 */
-
 	public void createEarthTimeBar() {
-		earthTimeButton = new Button();
+
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
+
+		if (earthClock == null)
+			earthClock = masterClock.getEarthClock();
+
+		earthTime = new Label();
+		earthTime.setId("rich-green");
+
+		earthTimeBox = new HBox(earthTime);
+		earthTimeBox.setId("rich-green");
+
+		earthTimeBox.setAlignment(Pos.CENTER_LEFT);
 
 		if (OS.contains("linux")) {
-			earthTimeButton.setPrefWidth(LINUX_WIDTH);
-			earthTimeButton.setPrefSize(LINUX_WIDTH, 29);
+			earthTimeBox.setMaxWidth(LINUX_WIDTH);
+			earthTimeBox.setPrefSize(LINUX_WIDTH, 29);
 		} else if (OS.contains("mac")) {
-			earthTimeButton.setPrefWidth(MACOS_WIDTH);
-			earthTimeButton.setPrefSize(MACOS_WIDTH, 30);
+			earthTimeBox.setMaxWidth(MACOS_WIDTH);
+			earthTimeBox.setPrefSize(MACOS_WIDTH, 30);
 		} else {
-			earthTimeButton.setPrefWidth(WIN_WIDTH);
-			earthTimeButton.setPrefSize(WIN_WIDTH, 35);
+			earthTimeBox.setMaxWidth(WIN_WIDTH);
+			earthTimeBox.setPrefSize(WIN_WIDTH, 35);
 		}
 
-		if (masterClock == null) {
-			masterClock = sim.getMasterClock();
-		}
-
-		if (earthClock == null) {
-			earthClock = masterClock.getEarthClock();
-		}
-
-		earthTimeButton.setId("rich-green");
-		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
-		earthTimeButton.setTextAlignment(TextAlignment.LEFT);		
-		earthTimeButton.setAlignment(Pos.CENTER_LEFT);
 	}
 
 	/**
@@ -1019,7 +990,7 @@ public class MainScene {
 		speedBtn.setOnAction(e -> {
 			int current = (int) masterClock.getTimeRatio();
 			spinner.getValueFactory().setValue(current);
-			
+
 			if (simSpeedPopup.isShowing()) {
 				simSpeedPopup.hide();// close();
 			} else {
@@ -1033,15 +1004,16 @@ public class MainScene {
 		speedPane.getStyleClass().add("jfx-popup-container");
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
-		speedPane.setPrefWidth(earthTimeButton.getPrefWidth());
+		speedPane.setPrefWidth(200);// earthTimeButton.getPrefWidth());
 		simSpeedPopup = new JFXPopup(speedPane);
 
-		//initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
+		// initial_time_ratio =
+		// Simulation.instance().getMasterClock().getDefaultTimeRatio();
 
 		Text header_label = createTextHeader("SPEED PANEL");
 
-		//String DEFAULT = " (Default : ";
-		//String CLOSE_PAR = ")";
+		// String DEFAULT = " (Default : ";
+		// String CLOSE_PAR = ")";
 		int default_ratio = (int) masterClock.getDefaultTimeRatio();
 		StringBuilder s0 = new StringBuilder();
 
@@ -1096,7 +1068,8 @@ public class MainScene {
 
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
-		// String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+		// String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio);
+		// //$NON-NLS-1$
 		s1.append(masterClock.getTimeTruncated(ratio));
 		real_time_label.setText(s1.toString());
 
@@ -1122,13 +1095,13 @@ public class MainScene {
 		// spinner.setAlignment(Pos.CENTER);
 		spinner.getValueFactory().setValue(default_ratio);
 		spinner.valueProperty().addListener((o, old_val, new_val) -> {
-					
+
 			if (old_val != new_val) {
-				//newTimeRatio = value;
-				int value = (int) new_val; 
-				//boolean previous = startPause();
+				// newTimeRatio = value;
+				int value = (int) new_val;
+				// boolean previous = startPause();
 				masterClock.setTimeRatio(value);
-				//endPause(previous);
+				// endPause(previous);
 
 				StringBuilder s3 = new StringBuilder();
 				s3.append(masterClock.getTimeTruncated(value));
@@ -1176,28 +1149,27 @@ public class MainScene {
 		if (uptimer != null)
 			upTimeLabel.setText(uptimer.getUptime());
 		setQuickToolTip(upTimeLabel, "e.g. 03m 05s means 3 minutes and 5 seconds"); //$NON-NLS-1$
-/*
-		Label benchmarkLabel0 = new Label(BENCHMARK);
-		// upTimeLabel0.setEffect(blend);
-		benchmarkLabel0.setAlignment(Pos.CENTER_RIGHT);
-		benchmarkLabel0.setTextAlignment(TextAlignment.RIGHT);
-		benchmarkLabel0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
-		benchmarkLabel0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(benchmarkLabel0,
-				"how well this machine perform in mars-sim \n (the lower the number the better the performance)"); //$NON-NLS-1$
-
-		benchmarkLabel = new Label();
-		benchmarkLabel.setAlignment(Pos.CENTER);
-		// upTimeLabel.setEffect(blend);
-		benchmarkLabel.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
-		benchmarkLabel.setPadding(new Insets(1, 1, 1, 2));
-		benchmarkLabel.setText(masterClock.getDiffCache() + "");
-		setQuickToolTip(benchmarkLabel, "a real time metric of performance"); //$NON-NLS-1$
-*/
+		/*
+		 * Label benchmarkLabel0 = new Label(BENCHMARK); //
+		 * upTimeLabel0.setEffect(blend);
+		 * benchmarkLabel0.setAlignment(Pos.CENTER_RIGHT);
+		 * benchmarkLabel0.setTextAlignment(TextAlignment.RIGHT);
+		 * benchmarkLabel0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;" +
+		 * "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+		 * + "-fx-font-weight: italic;"); benchmarkLabel0.setPadding(new Insets(1, 1, 1,
+		 * 2)); setQuickToolTip(benchmarkLabel0,
+		 * "how well this machine perform in mars-sim \n (the lower the number the better the performance)"
+		 * ); //$NON-NLS-1$
+		 * 
+		 * benchmarkLabel = new Label(); benchmarkLabel.setAlignment(Pos.CENTER); //
+		 * upTimeLabel.setEffect(blend);
+		 * benchmarkLabel.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;" +
+		 * "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+		 * + "-fx-font-weight: italic;"); benchmarkLabel.setPadding(new Insets(1, 1, 1,
+		 * 2)); benchmarkLabel.setText(masterClock.getDiffCache() + "");
+		 * setQuickToolTip(benchmarkLabel, "a real time metric of performance");
+		 * //$NON-NLS-1$
+		 */
 		GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container");
 		gridPane.setAlignment(Pos.CENTER);
@@ -1206,42 +1178,42 @@ public class MainScene {
 		gridPane.setVgap(1.0);
 
 		ColumnConstraints right = new ColumnConstraints();
-		right.setPrefWidth(earthTimeButton.getPrefWidth() * .6);
+		right.setPrefWidth(120);// earthTimeButton.getPrefWidth() * .6);
 		ColumnConstraints left = new ColumnConstraints();
-		left.setPrefWidth(earthTimeButton.getPrefWidth() * .4);
+		left.setPrefWidth(80);// earthTimeButton.getPrefWidth() * .4);
 
 		GridPane.setConstraints(spinner, 1, 0);
 		GridPane.setConstraints(default_ratio_label, 1, 1);
 		GridPane.setConstraints(real_time_label, 1, 2);
 		GridPane.setConstraints(tpsLabel, 1, 3);
 		GridPane.setConstraints(upTimeLabel, 1, 4);
-		//GridPane.setConstraints(benchmarkLabel, 1, 5);
+		// GridPane.setConstraints(benchmarkLabel, 1, 5);
 
 		GridPane.setConstraints(spinner_label0, 0, 0);
 		GridPane.setConstraints(default_ratio_label0, 0, 1);
 		GridPane.setConstraints(real_time_label0, 0, 2);
 		GridPane.setConstraints(tpsLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
-		//GridPane.setConstraints(benchmarkLabel0, 0, 5);
+		// GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
 		GridPane.setHalignment(spinner, HPos.CENTER);
 		GridPane.setHalignment(default_ratio_label, HPos.CENTER);
 		GridPane.setHalignment(real_time_label, HPos.CENTER);
 		GridPane.setHalignment(tpsLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
-		//GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
+		// GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
 
 		GridPane.setHalignment(spinner_label0, HPos.RIGHT);
 		GridPane.setHalignment(default_ratio_label0, HPos.RIGHT);
 		GridPane.setHalignment(real_time_label0, HPos.RIGHT);
 		GridPane.setHalignment(tpsLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
-		//GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
+		// GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
 		gridPane.getChildren().addAll(spinner_label0, spinner, default_ratio_label0, default_ratio_label,
-				real_time_label0, real_time_label, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel);//, benchmarkLabel0,
-				//benchmarkLabel);
+				real_time_label0, real_time_label, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel);// , benchmarkLabel0,
+		// benchmarkLabel);
 
 		speedVBox = new VBox();
 		speedVBox.getStyleClass().add("jfx-popup-container");
@@ -1274,7 +1246,7 @@ public class MainScene {
 		// value.setPadding(new Insets(1));
 		// Label bell = createIconLabel("\uf0a2", 15);
 		// IconFontFX.register(FontAwesome.getIconFont());
-		soundIcon = new IconNode(FontAwesome.MUSIC);//.BELL_O);
+		soundIcon = new IconNode(FontAwesome.MUSIC);// .BELL_O);
 		soundIcon.setIconSize(20);
 		// soundIcon.setFill(Color.YELLOW);
 		// soundIcon.setStroke(Color.WHITE);
@@ -1314,7 +1286,7 @@ public class MainScene {
 
 		musicSlider.setMin(0);
 		musicSlider.setMax(100);
-		musicSlider.setValue(musicSliderValue);//convertVolume2Slider(soundPlayer.getMusicGain()));
+		musicSlider.setValue(musicSliderValue);// convertVolume2Slider(soundPlayer.getMusicGain()));
 		musicSlider.setMajorTickUnit(20);
 		// soundSlider.setMinorTickCount();
 		musicSlider.setShowTickLabels(true);
@@ -1329,17 +1301,17 @@ public class MainScene {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
-					if (sliderValue <= 0) { 
+					if (sliderValue <= 0) {
 						soundPlayer.pauseSound(false, true);
 						musicMuteBox.setSelected(true);
 						menuBar.getMusicMuteItem().setSelected(false);
-						//muteSound(false, true);
+						// muteSound(false, true);
 					} else {
 						soundPlayer.restoreSound(false, true);
 						soundPlayer.setMusicVolume((float) convertSlider2Volume(sliderValue));
 						musicMuteBox.setSelected(false);
 						menuBar.getMusicMuteItem().setSelected(true);
-						//unmuteSound(false, true);
+						// unmuteSound(false, true);
 					}
 				}
 			}
@@ -1357,23 +1329,22 @@ public class MainScene {
 			if (!masterClock.isPaused()) {
 				if (musicMuteBox.isSelected()) {
 					// mute it
-					//muteSound(false, true);
+					// muteSound(false, true);
 					musicSliderCache = (float) musicSlider.getValue();
 					musicSlider.setValue(0);
 					menuBar.getMusicMuteItem().setSelected(false);
 				} else {
 					// unmute it
-					//unmuteSound(false, true);
+					// unmuteSound(false, true);
 					musicSlider.setValue(musicSliderCache);
 					menuBar.getMusicMuteItem().setSelected(true);
 				}
-				
-			}
-			else {
+
+			} else {
 				musicMuteBox.setSelected(!musicMuteBox.isSelected());
 				logger.info("Unable to mute or unmute while sim is on pause!");
 			}
-			
+
 			e.consume();
 		});
 
@@ -1388,7 +1359,7 @@ public class MainScene {
 
 		soundEffectSlider.setMin(0);
 		soundEffectSlider.setMax(100);
-		soundEffectSlider.setValue(soundEffectSliderValue);//convertVolume2Slider(soundPlayer.getEffectGain()));
+		soundEffectSlider.setValue(soundEffectSliderValue);// convertVolume2Slider(soundPlayer.getEffectGain()));
 		soundEffectSlider.setMajorTickUnit(20);
 		// soundSlider.setMinorTickCount();
 		soundEffectSlider.setShowTickLabels(true);
@@ -1404,22 +1375,22 @@ public class MainScene {
 
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
-					if (sliderValue <= 0) { 
+					if (sliderValue <= 0) {
 						soundEffectMuteBox.setSelected(true);
 						menuBar.getEffectMuteItem().setSelected(false);
 						soundPlayer.pauseSound(true, false);
-						//muteSound(true, false);
+						// muteSound(true, false);
 					} else {
 						soundPlayer.setEffectVolume((float) convertSlider2Volume(sliderValue));
 						soundEffectMuteBox.setSelected(false);
 						menuBar.getEffectMuteItem().setSelected(true);
 						soundPlayer.restoreSound(true, false);
-						//unmuteSound(true, false);
+						// unmuteSound(true, false);
 					}
 				}
 			}
 		});
-		
+
 		// Sound effect
 		Label effectLabel = createBlendLabel("Sound Effect");
 		effectLabel.setPadding(new Insets(0, 0, 0, 1));
@@ -1433,26 +1404,25 @@ public class MainScene {
 			if (!masterClock.isPaused()) {
 				if (soundEffectMuteBox.isSelected()) {
 					// mute it
-					//muteSound(true, false);
+					// muteSound(true, false);
 					effectSliderCache = (float) soundEffectSlider.getValue();
 					soundEffectSlider.setValue(0);
 					menuBar.getEffectMuteItem().setSelected(false);
 				} else {
 					// unmute it
-					//unmuteSound(true, false);
+					// unmuteSound(true, false);
 					soundEffectSlider.setValue(effectSliderCache);
 					menuBar.getEffectMuteItem().setSelected(true);
 				}
-			}
-			else {
+			} else {
 				soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
 				logger.info("Unable to mute or unmute while sim is on pause!");
 			}
-			
+
 			e.consume();
 		});
-		
-		//Label empty = new Label();
+
+		// Label empty = new Label();
 
 		GridPane gridPane0 = new GridPane();
 		gridPane0.getStyleClass().add("jfx-popup-container");
@@ -1467,7 +1437,7 @@ public class MainScene {
 		gridPane1.setPadding(new Insets(1, 1, 1, 1));
 		gridPane1.setHgap(1.0);
 		gridPane1.setVgap(1.0);
-		
+
 		ColumnConstraints c0 = new ColumnConstraints();
 		c0.setPrefWidth(60);
 		ColumnConstraints c1 = new ColumnConstraints();
@@ -1477,15 +1447,15 @@ public class MainScene {
 		GridPane.setConstraints(musicMuteBox, 1, 0);
 		GridPane.setConstraints(effectLabel, 0, 0);
 		GridPane.setConstraints(soundEffectMuteBox, 1, 0);
-		
+
 		GridPane.setHalignment(trackLabel, HPos.LEFT);
 		GridPane.setHalignment(musicMuteBox, HPos.RIGHT);
 		GridPane.setHalignment(effectLabel, HPos.LEFT);
 		GridPane.setHalignment(soundEffectMuteBox, HPos.RIGHT);
-		
+
 		gridPane0.getColumnConstraints().addAll(c1, c0);
 		gridPane0.getChildren().addAll(trackLabel, musicMuteBox);
-		
+
 		gridPane1.getColumnConstraints().addAll(c1, c0);
 		gridPane1.getChildren().addAll(effectLabel, soundEffectMuteBox);
 
@@ -1538,21 +1508,30 @@ public class MainScene {
 	 * }
 	 */
 
-	public void createMarsTimeBar() {
+	public void createMarsTimeBar() {	
+		
 		marsTimeButton = new Button();
+		marsTimeButton.setId("rich-red");
+		
+		marsTimeBox = new HBox(marsTimeButton);
+		marsTimeBox.setId("rich-red");
+		
+		marsTimeBox.setAlignment(Pos.CENTER_LEFT);
+
+		//marsTimeButton.setMaxWidth(Double.MAX_VALUE);
+		if (OS.contains("linux")) {
+			marsTimeBox.setMaxWidth(LINUX_WIDTH);
+			marsTimeBox.setPrefSize(LINUX_WIDTH, 29);
+		} else if (OS.contains("mac")) {
+			marsTimeBox.setMaxWidth(MACOS_WIDTH);
+			marsTimeBox.setPrefSize(MACOS_WIDTH, 30);
+		} else {
+			marsTimeBox.setMaxWidth(WIN_WIDTH);
+			marsTimeBox.setPrefSize(WIN_WIDTH, 35);
+		}
+		
 		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
 		
-		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
-		if (OS.contains("linux")) {
-			marsTimeButton.setPrefWidth(LINUX_WIDTH);
-			marsTimeButton.setPrefSize(LINUX_WIDTH, 29);
-		} else if (OS.contains("mac")) {
-			marsTimeButton.setPrefWidth(MACOS_WIDTH);
-			marsTimeButton.setPrefSize(MACOS_WIDTH, 30);
-		} else {
-			marsTimeButton.setPrefWidth(WIN_WIDTH);
-			marsTimeButton.setPrefSize(WIN_WIDTH, 35);
-		}
 
 		if (masterClock == null) {
 			masterClock = sim.getMasterClock();
@@ -1571,10 +1550,12 @@ public class MainScene {
 			e.consume();
 		});
 
-		marsTimeButton.setId("rich-red");
-		marsTimeButton.setTextAlignment(TextAlignment.LEFT);
-		marsTimeButton.setAlignment(Pos.CENTER_LEFT);
+
+		//marsTimeButton.setTextAlignment(TextAlignment.LEFT);
+		//marsTimeButton.setAlignment(Pos.CENTER_LEFT);
 	
+		marsTimeBox.setAlignment(Pos.CENTER_LEFT);
+		
 		calendarDisplay = new MarsCalendarDisplay(marsClock, desktop);
 
 		SwingNode calNode = new SwingNode();
@@ -1726,7 +1707,7 @@ public class MainScene {
 				mapToggle.toFront();
 			} else
 				cacheToggle.setText("Map Cache Off");
-			
+
 			e.consume();
 		});
 
@@ -1946,61 +1927,52 @@ public class MainScene {
 	@SuppressWarnings("restriction")
 	public void createJFXTabs() {
 		jfxTabPane = new JFXTabPane();
-/*		
-		String cssFile = null;
+		/*
+		 * String cssFile = null;
+		 * 
+		 * if (theme == 0 || theme == 6) cssFile = "/fxui/css/jfx_blue.css"; else if
+		 * (theme == 7) cssFile = "/fxui/css/jfx_orange.css";
+		 * 
+		 * jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).
+		 * toExternalForm()); jfxTabPane.getStyleClass().add("jfx-tab-pane");
+		 */
 
-		if (theme == 0 || theme == 6)
-			cssFile = "/fxui/css/jfx_blue.css";
-		else if (theme == 7)
-			cssFile = "/fxui/css/jfx_orange.css";
-
-		jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		jfxTabPane.getStyleClass().add("jfx-tab-pane");
-*/
-		
 		mainStackPane = new StackPane();
 		mainStackPane.getChildren().add(desktopNode);
-		
+
 		dashboardStackPane = new StackPane();
 
 		dashboardTab = new Tab();
 		dashboardTab.setText("Dashboard");
 		dashboardTab.setContent(dashboardStackPane);
-		
-		
+
 		Parent parent = null;
 		DashboardController controller = null;
 		FXMLLoader fxmlLoader = null;
-/*		
+		/*
+		 * try { fxmlLoader = new FXMLLoader(); parent = (Parent)
+		 * fxmlLoader.load(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml")
+		 * ); //fxmlLoader.setController(controller); controller = (DashboardController)
+		 * fxmlLoader.getController(); } catch (IOException e) { e.printStackTrace(); }
+		 * 
+		 */
+
 		try {
 			fxmlLoader = new FXMLLoader();
-			parent = (Parent) fxmlLoader.load(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml"));
-			//fxmlLoader.setController(controller);
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml")); // //
+			parent = (Parent) fxmlLoader.load();
 			controller = (DashboardController) fxmlLoader.getController();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
-		
-*/
- 
-		
-		try {
-			fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml"));														// //
-			parent = (Parent) fxmlLoader.load();
-			controller = (DashboardController)fxmlLoader.getController();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		
 
-		//AnchorPane anchorPane = (AnchorPane)parent.lookup("#anchorPane");
-		//anchorPane.setPrefSize(screen_width, screen_height);
-		
-		controller.setSize(screen_width, screen_height-TAB_PANEL_HEIGHT);
-		
+		// AnchorPane anchorPane = (AnchorPane)parent.lookup("#anchorPane");
+		// anchorPane.setPrefSize(screen_width, screen_height);
+
+		controller.setSize(screen_width, screen_height - TAB_PANEL_HEIGHT);
+
 		dashboardStackPane.getChildren().add(parent);
-		
+
 		mainTab = new Tab();
 		mainTab.setText("Main");
 		mainTab.setContent(mainStackPane);
@@ -2056,7 +2028,6 @@ public class MainScene {
 				// event.consume();
 			}
 		});
-
 
 		BrowserJFX helpBrowser = desktop.getBrowserJFX();
 		// StackPane guidePane = new StackPane(guideNode);
@@ -2132,7 +2103,7 @@ public class MainScene {
 				break;
 			}
 		}
-		
+
 		if (!flag)
 			mapAnchorPane.getChildren().addAll(minimapStackPane);
 		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
@@ -2230,7 +2201,7 @@ public class MainScene {
 	public boolean isMapOn() {
 		return mapToggle.isSelected();
 	}
-	
+
 	public void closeMinimap() {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
@@ -2267,7 +2238,7 @@ public class MainScene {
 				mapToggle.setText("Settlement Map Off");
 			});
 		}
-		jfxTabPane.requestFocus(); 
+		jfxTabPane.requestFocus();
 	}
 
 	public boolean isCacheButtonOn() {
@@ -2401,25 +2372,20 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		}
-/*
-		else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel"
-			try {
-				NimRODTheme nt = new NimRODTheme(
-						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme"));
-				// NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
-				// working if switching to a brand new .theme file
-				NimRODLookAndFeel nf = new NimRODLookAndFeel();
-				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme
-										// file
-				UIManager.setLookAndFeel(nf);
-				changed = true;
-				// System.out.println("found Nimrod");
-
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-		}
-*/
+		/*
+		 * else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel" try {
+		 * NimRODTheme nt = new NimRODTheme(
+		 * getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
+		 * NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
+		 * // working if switching to a brand new .theme file NimRODLookAndFeel nf = new
+		 * NimRODLookAndFeel(); nf.setCurrentTheme(nt); // must be declared non-static
+		 * or not working if switching to a brand new .theme // file
+		 * UIManager.setLookAndFeel(nf); changed = true; //
+		 * System.out.println("found Nimrod");
+		 * 
+		 * } catch (Exception e) { logger.log(Level.WARNING,
+		 * Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
+		 */
 		else if (choice == NIMBUS_THEME) {
 			try {
 				boolean foundNimbus = false;
@@ -2484,7 +2450,7 @@ public class MainScene {
 		jfxTabPane.getStylesheets().clear();
 
 		setStylesheet(marsTimeButton, cssFile);
-		setStylesheet(earthTimeButton, cssFile);
+		setStylesheet(earthTime, cssFile);
 
 		setStylesheet(lastSaveLabel, cssFile);
 		setStylesheet(cacheToggle, cssFile);
@@ -2509,13 +2475,13 @@ public class MainScene {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
 			if (settlementWindow != null) {
 				settlementWindow.setTheme(txtColor);
-				//settlementWindow.setStatusBarTheme(cssFile);
+				// settlementWindow.setStatusBarTheme(cssFile);
 			}
 		}
 
 		else {
 			settlementWindow.setTheme(txtColor);
-			//settlementWindow.setStatusBarTheme(cssFile);
+			// settlementWindow.setStatusBarTheme(cssFile);
 		}
 
 		if (theme == 7) {
@@ -2558,6 +2524,11 @@ public class MainScene {
 
 		chatBox.update();
 
+	}
+
+	public void setStylesheet(Text t, String cssFile) {
+		// t.getStyle().clear();
+		t.setStyle(getClass().getResource(cssFile).toExternalForm());
 	}
 
 	public void setStylesheet(JFXSlider s, String cssFile) {
@@ -2611,6 +2582,7 @@ public class MainScene {
 
 	/**
 	 * Creates and returns a {@link Flyout}
+	 * 
 	 * @return a new {@link Flyout}
 	 */
 	public JFXPopup createFlyout() {
@@ -2657,6 +2629,7 @@ public class MainScene {
 
 	/*
 	 * Creates a chat box
+	 * 
 	 * @return StackPane
 	 */
 	public StackPane createChatBox() {
@@ -2719,16 +2692,16 @@ public class MainScene {
 	 */
 	public void updateTimeLabels() {
 
-		//int msol = (int)(masterClock.getTimeRatio());
-		//if (msol % 10 == 0) {
-			// Check to see if a background sound track is being played.
-			//if (!desktop.getSoundPlayer().isMusicMute())
-			if (musicSlider.getValue() > 0)	
-				soundPlayer.playRandomBackgroundTrack();
-		//}
-		
+		// int msol = (int)(masterClock.getTimeRatio());
+		// if (msol % 10 == 0) {
+		// Check to see if a background sound track is being played.
+		// if (!desktop.getSoundPlayer().isMusicMute())
+		if (musicSlider.getValue() > 0)
+			soundPlayer.playRandomBackgroundTrack();
+		// }
+
 		if (simSpeedPopup.isShowing() || solCache == 0) {
-			double tps = Math.round(masterClock.getPulsesPerSecond()*100.0)/100.0;
+			double tps = Math.round(masterClock.getPulsesPerSecond() * 100.0) / 100.0;
 			if (tpsCache != tps) {
 				tpsCache = tps;
 				tpsLabel.setText(tps + HZ);
@@ -2738,13 +2711,13 @@ public class MainScene {
 				upTimeCache = upt;
 				upTimeLabel.setText(upt);
 			}
-			//benchmarkLabel.setText(masterClock.getDiffCache() + "");
+			// benchmarkLabel.setText(masterClock.getDiffCache() + "");
 		}
-		
+
 		int solOfMonth = marsClock.getSolOfMonth();
 		if (solCache != solOfMonth) {
 			solCache = solOfMonth;
-			
+
 			if (solOfMonth == 1) {
 				String mn = marsClock.getMonthName();
 				if (mn != null) {
@@ -2762,21 +2735,21 @@ public class MainScene {
 
 			double L_s = orbitInfo.getL_s();
 			LSText.setText(Math.round(L_s * 100D) / 100D + Msg.getString("direction.degreeSign"));
-	
+
 			if (L_s > 68 && L_s < 72) {
 				noteLabel.setText(NOTE_MARS + APHELION);
-	
+
 			} else if (L_s > 248 && L_s < 252) {
 				noteLabel.setText(NOTE_MARS + PERIHELION);
-	
+
 			} else
 				noteLabel.setEffect(null);
-	
+
 			northText.setText(marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
 			southText.setText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
-	
+
 		}
-		
+
 		StringBuilder m = new StringBuilder();
 		m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(ONE_SPACE)
 				.append(marsClock.getTrucatedTimeStringUMST());
@@ -2784,8 +2757,9 @@ public class MainScene {
 
 		StringBuilder e = new StringBuilder();
 		e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF0());
-		earthTimeButton.setText(e.toString());
-		
+		earthTime.setText(e.toString());
+
+
 		// Check on whether autosave is due
 		if (masterClock.getAutosave()) {
 			// Trigger an autosave instance
@@ -2803,11 +2777,12 @@ public class MainScene {
 
 			}
 		}
-		
+
 	}
 
 	/**
 	 * Gets the main desktop panel.
+	 * 
 	 * @return desktop
 	 */
 	public MainDesktopPane getDesktop() {
@@ -2865,6 +2840,7 @@ public class MainScene {
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
+	 * 
 	 * @param type
 	 */
 	public void saveSimulation(int type) {
@@ -2976,7 +2952,7 @@ public class MainScene {
 			// messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER,
 			// PNotification.PAUSE_ICON)
 			boolean hasIt = false;
-			for (Node node : rootStackPane.getChildren()) {//root.getChildrenUnmodifiable()) {
+			for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
 				if (node == pausePane) {
 					hasIt = true;
 					break;
@@ -2985,7 +2961,7 @@ public class MainScene {
 			if (!hasIt) {
 				pausePane.setLayoutX((scene.getWidth() - pausePane.getPrefWidth()) / 2D);
 				pausePane.setLayoutY((scene.getHeight() - pausePane.getPrefHeight()) / 2D);
-				//root.getChildrenUnmodifiable().add(pausePane);
+				// root.getChildrenUnmodifiable().add(pausePane);
 				rootStackPane.getChildren().add(pausePane);
 			}
 		});
@@ -2996,7 +2972,7 @@ public class MainScene {
 		Platform.runLater(() -> {
 			// messagePopup.stop()
 			boolean hasIt = false;
-			for (Node node : rootStackPane.getChildren()) {//root.getChildrenUnmodifiable()) {
+			for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
 				if (node == pausePane) {
 					hasIt = true;
 					break;
@@ -3004,13 +2980,14 @@ public class MainScene {
 			}
 			if (hasIt)
 				rootStackPane.getChildren().remove(pausePane);
-				//root.getChildrenUnmodifiable().remove(pausePane);
+			// root.getChildrenUnmodifiable().remove(pausePane);
 		});
 
 	}
 
 	/**
 	 * Creates the pause box to be displayed on the root pane.
+	 * 
 	 * @return VBox
 	 */
 	// 2017-04-12 Add pause pane
@@ -3078,15 +3055,14 @@ public class MainScene {
 			if (now == 1.0) {
 				masterClock.setTimeRatio(previous);
 			}
-		}
-		else {
+		} else {
 			if (now != 1) {
 				masterClock.setTimeRatio(1.0);
 			}
 		}
 		now = masterClock.getTimeRatio();
 	}
-	
+
 	public void endPause(boolean previous) {
 		boolean now = masterClock.isPaused();
 		if (!previous) {
@@ -3141,26 +3117,25 @@ public class MainScene {
 		// Add main pane
 		mainPane.add(desktop, BorderLayout.CENTER);
 		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
-		desktopNode.requestFocus(); 
+		desktopNode.requestFocus();
 	}
 
 	public SwingNode getDesktopNode() {
 		return desktopNode;
 	}
 
-
 	/**
 	 * Open the exit dialog box
 	 */
-	public void dialogOnExit() {		
+	public void dialogOnExit() {
 		if (!masterClock.isPaused()) {
 			if (exitDialog == null) {
 				isShowingDialog = true;
-	
+
 				Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
 				l.setPadding(new Insets(10, 10, 10, 10));
 				l.setFont(Font.font(null, FontWeight.BOLD, 14));
-				
+
 				HBox hb = new HBox();
 				JFXButton b0 = new JFXButton("Save & Exit");
 				b0.setStyle("-fx-background-color: white;");
@@ -3169,30 +3144,30 @@ public class MainScene {
 				JFXButton b2 = new JFXButton("Back");
 				b2.setStyle("-fx-background-color: white;");
 				// b0.setPadding(new Insets(2, 2, 2, 2));
-				
+
 				hb.getChildren().addAll(b0, b1, b2);
 				HBox.setMargin(b0, new Insets(3, 3, 3, 3));
 				HBox.setMargin(b1, new Insets(3, 3, 3, 3));
 				HBox.setMargin(b2, new Insets(3, 3, 3, 3));
-				
+
 				VBox vb = new VBox();
 				vb.setPadding(new Insets(5, 5, 5, 5));
 				vb.getChildren().addAll(l, hb);
 				StackPane sp = new StackPane(vb);
 				sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
 				StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
-				
+
 				exitDialog = new JFXDialog();
 				exitDialog.setDialogContainer(rootStackPane);
 				exitDialog.setContent(sp);
 				exitDialog.show();
-				
+
 				b0.setOnAction(e -> {
 					exitDialog.close();
 					saveOnExit();
 					e.consume();
 				});
-		
+
 				b1.setOnAction(e -> {
 					exitDialog.close();
 					endSim();
@@ -3201,15 +3176,15 @@ public class MainScene {
 					System.exit(0);
 					e.consume();
 				});
-		
+
 				b2.setOnAction(e -> {
 					isShowingDialog = false;
 					exitDialog.close();
 					e.consume();
 				});
-	
+
 			}
-			
+
 			else if (!exitDialog.isVisible()) {
 				isShowingDialog = true;
 				exitDialog.show();
@@ -3289,26 +3264,23 @@ public class MainScene {
 	public AnchorPane getAnchorPane() {
 		return anchorPane;
 	}
-	
+
 	public MenuBar getMenuBar() {
 		return menuBar;
 	}
 
 	private MenuItem registerAction(MenuItem menuItem) {
-/*	
-		menuItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent t) {
-				// showPopup(borderPane, "You clicked the " + menuItem.getText() + " icon");
-				System.out.println("You clicked the " + menuItem.getText() + " icon");
-				?
-			}
-		});
-*/		
+		/*
+		 * menuItem.setOnAction(new EventHandler<ActionEvent>() { public void
+		 * handle(ActionEvent t) { // showPopup(borderPane, "You clicked the " +
+		 * menuItem.getText() + " icon"); System.out.println("You clicked the " +
+		 * menuItem.getText() + " icon"); ? } });
+		 */
 		menuItem.setOnAction(e -> {
 			System.out.println("You clicked the " + menuItem.getText() + " icon");
 			e.consume();
 		});
-		
+
 		return menuItem;
 	}
 
@@ -3413,6 +3385,7 @@ public class MainScene {
 
 	/**
 	 * Starts the wait stage in an executor thread
+	 * 
 	 * @param type
 	 */
 	public void showWaitStage(int type) {
@@ -3427,6 +3400,7 @@ public class MainScene {
 
 	/*
 	 * Set up a wait stage
+	 * 
 	 * @param type
 	 */
 	class LoadWaitStageTask implements Runnable {
@@ -3495,8 +3469,8 @@ public class MainScene {
 			StackPane pane = new StackPane();// starfield);
 			pane.setPrefHeight(sceneWidth.get());
 			pane.setPrefWidth(sceneHeight.get());
-			//pane.prefHeightProperty().bind(scene.heightProperty());
-			//pane.prefWidthProperty().bind(scene.widthProperty());
+			// pane.prefHeightProperty().bind(scene.heightProperty());
+			// pane.prefWidthProperty().bind(scene.widthProperty());
 
 			startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());
 		} else {
@@ -3523,7 +3497,7 @@ public class MainScene {
 	public JFXTabPane getJFXTabPane() {
 		return jfxTabPane;
 	}
-	
+
 	public boolean isMapTabOpen() {
 		if (jfxTabPane != null)
 			return jfxTabPane.getSelectionModel().isSelected(MainScene.MAP_TAB);
@@ -3568,6 +3542,7 @@ public class MainScene {
 	 */
 	/**
 	 * Sets up the JavaFX's tooltip
+	 * 
 	 * @param n
 	 *            Node
 	 * @param s
@@ -3581,7 +3556,7 @@ public class MainScene {
 			@Override
 			public void handle(MouseEvent event) {
 				// position tooltip at bottom right of the node
-				Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); 
+				Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY());
 				tt.show(n, p.getX(), p.getY());
 			}
 		});
@@ -3599,13 +3574,13 @@ public class MainScene {
 		return y / 100f;
 	}
 
-	//private float convertVolume2Slider(float x) {
-	//	return 20f * (x - .5f);
-	//}
+	// private float convertVolume2Slider(float x) {
+	// return 20f * (x - .5f);
+	// }
 
-	//public double getInitialTimeRatio() {
-	//	return initial_time_ratio;
-	//}
+	// public double getInitialTimeRatio() {
+	// return initial_time_ratio;
+	// }
 
 	public JFXButton getMarsNetBtn() {
 		return marsNetBtn;
@@ -3624,29 +3599,28 @@ public class MainScene {
 		screen_width = w;
 		screen_height = h;
 	}
-	
+
 	public int getWidth() {
 		return screen_width;
 	}
-	
+
 	public int getHeight() {
-		return (int) sceneHeight.get();//screen_height;
+		return (int) sceneHeight.get();// screen_height;
 	}
-	
-	//public void setSound(float music_volume, float sound_effect_volume) {
-	//	this.music_volume = music_volume;
-	//	this.sound_effect_volume = sound_effect_volume;
-	//}
-	
+
+	// public void setSound(float music_volume, float sound_effect_volume) {
+	// this.music_volume = music_volume;
+	// this.sound_effect_volume = sound_effect_volume;
+	// }
+
 	public float getMusic() {
 		return musicSliderValue;
 	}
-	
+
 	public float getSoundEffect() {
 		return soundEffectSliderValue;
 	}
-	
-	
+
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;
@@ -3658,16 +3632,16 @@ public class MainScene {
 		mainStackPane = null;
 		dashboardStackPane = null;
 		root = null;
-		rootStackPane = null; 
-		minimapStackPane = null; 
-		speedPane = null; 
-		soundPane = null; 
-		calendarPane = null; 
-		settlementBox = null; 
-		chatBoxPane = null; 
-		pausePane = null; 
-		savePane = null; 
-		sPane = null; 
+		rootStackPane = null;
+		minimapStackPane = null;
+		speedPane = null;
+		soundPane = null;
+		calendarPane = null;
+		settlementBox = null;
+		chatBoxPane = null;
+		pausePane = null;
+		savePane = null;
+		sPane = null;
 
 		anchorPane = null;
 		newSimThread = null;
