@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -59,14 +61,17 @@ public class AudioPlayer {
 
 	private static List<String> soundEffects;
 	private static List<String> soundTracks;
-	private static List<Integer> previous_tracks = new ArrayList<>();
+	private static List<Integer> played_tracks = new ArrayList<>();
 	
+	private static MasterClock masterClock;
 
 	public AudioPlayer(MainDesktopPane desktop) {
 		//logger.info("constructor is on " + Thread.currentThread().getName());
 		this.desktop = desktop;
 		mainScene = desktop.getMainScene();
 
+		masterClock = Simulation.instance().getMasterClock();
+		
 		currentOGGSoundClip = null;
 		currentBackgroundTrack = null;
 
@@ -265,7 +270,7 @@ public class AudioPlayer {
 			v = 1f;
 		if (hasMasterGain && currentBackgroundTrack != null)
 			currentBackgroundTrack.determineGain(v);	
-		setLastMusicVolume();
+		//setLastMusicVolume();
 	}
 
 	public void musicVolumeDown() {
@@ -274,7 +279,7 @@ public class AudioPlayer {
 			v = -1f;
 		if (hasMasterGain && currentBackgroundTrack != null)
 			currentBackgroundTrack.determineGain(v);
-		setLastMusicVolume();
+		//setLastMusicVolume();
 	}
 
 	public void effectVolumeUp() {
@@ -283,26 +288,30 @@ public class AudioPlayer {
 			v = 1f;
 		if (hasMasterGain && currentOGGSoundClip != null)
 			currentOGGSoundClip.determineGain(v);
-		setLastEffectVolume();
+		//setLastEffectVolume();
 	}
 
 	public void effectVolumeDown() {
 		float volume = currentOGGSoundClip.getVol() - .05f;
 		if (volume < -1f)
 			volume = -1f;
-		if (hasMasterGain && currentOGGSoundClip != null)
-			currentOGGSoundClip.determineGain(volume);
-		setLastEffectVolume();
+		//if (hasMasterGain && currentOGGSoundClip != null)
+		//	currentOGGSoundClip.determineGain(volume);
+		//setLastEffectVolume();
 	}
 	
 
 	public void setLastMusicVolume() {
-		musicVol = currentBackgroundTrack.getVol();
+		//musicVol = currentBackgroundTrack.getVol();
+		if (hasMasterGain && currentBackgroundTrack != null)
+			currentBackgroundTrack.determineGain(musicVol);
 	}
 
 
-	public void setLastEffectVolume() {
-		effectVol = currentOGGSoundClip.getVol();
+	public void setLastSoundEffectVolume() {
+		//effectVol = currentOGGSoundClip.getVol();
+		if (hasMasterGain && currentOGGSoundClip != null)
+			currentOGGSoundClip.determineGain(effectVol);
 	}
 
 	/**
@@ -374,7 +383,7 @@ public class AudioPlayer {
 		if (isEffect && currentOGGSoundClip != null) {
 			//logger.info("restoreSound() lastMusicState:"+ lastMusicState);
 			currentOGGSoundClip.setMute(lastEffectState);
-			setLastEffectVolume();
+			setLastSoundEffectVolume();
 		}
 		
 		if (isTrack && currentBackgroundTrack != null) {
@@ -420,7 +429,7 @@ public class AudioPlayer {
 		
 		if (trackMute && currentBackgroundTrack != null) {
 			currentBackgroundTrack.setMute(false);
-			setLastEffectVolume();
+			setLastSoundEffectVolume();
 		}
 	}
 	
@@ -444,36 +453,40 @@ public class AudioPlayer {
 	public void pickANewTrack() {
 		int rand = 0;
 		// At the start of the sim, refrain from playing the last few tracks due to their sudden loudness
-		if (previous_tracks.isEmpty()) {
+		if (played_tracks.isEmpty()) {
+			// Do not repeat the last 4 music tracks just played
 			rand = RandomUtil.getRandomInt(num_tracks - LOUD_TRACKS - 1);
 		}
 		else
 			rand = RandomUtil.getRandomInt(num_tracks - 1);
-		boolean not_old = false;
+		boolean isNewTrack = false;
 		// Do not repeat the last 4 music tracks just played
-		while (!not_old) {
-			if (previous_tracks.isEmpty())
-				not_old = true;
-			else if (!previous_tracks.contains(rand))
-				not_old = true;
+		while (!isNewTrack) {
+			
+			if (played_tracks.isEmpty() || !played_tracks.contains(rand)) {
+				isNewTrack = true;
 		
-			if (not_old) {
 				String name = soundTracks.get(rand);
-				playBackground(soundTracks.get(rand));
+				playBackground(name);
 				logger.info("Playing background music track #" + (rand+1) + " '" + name + "'");
 				// Add the new track
-				if (!previous_tracks.contains(rand))
-					previous_tracks.add((rand));
+				played_tracks.add((rand));
 				// Remove the earliest track 
-				if (previous_tracks.size() > REPEATING_TRACKS)
-					previous_tracks.remove(0);
+				if (played_tracks.size() > REPEATING_TRACKS)
+					played_tracks.remove(0);
 				// Reset the play times to 1 for this new track
 				play_times = 1;
-				break;
+				//break;
 			}
-			else
-				// need to pick another track and run while loop again
-				rand = RandomUtil.getRandomInt(num_tracks - LOUD_TRACKS - 1);
+			else {
+				// At the start of the sim, refrain from playing the last few tracks due to their sudden loudness
+				if (played_tracks.isEmpty()) {
+					// Do not repeat the last 4 music tracks just played
+					rand = RandomUtil.getRandomInt(num_tracks - LOUD_TRACKS - 1);
+				}
+				else
+					rand = RandomUtil.getRandomInt(num_tracks - 1);
+			}
 		}
 		
 	}
@@ -482,7 +495,7 @@ public class AudioPlayer {
 	 * Play a randomly selected music track
 	 */
 	public void playRandomBackgroundTrack() {
-		if (isBackgroundTrackStopped()) {
+		if (isBackgroundTrackStopped() && !masterClock.isPaused()) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay them
 			if (currentBackgroundTrack != null
 					&& currentBackgroundTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
@@ -513,7 +526,7 @@ public class AudioPlayer {
 		currentOGGSoundClip = null;
 		currentBackgroundTrack = null;
 		soundTracks = null;
-		previous_tracks = null;
+		played_tracks = null;
 	}
 	
 }

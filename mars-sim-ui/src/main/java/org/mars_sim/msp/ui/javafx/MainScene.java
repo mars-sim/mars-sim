@@ -179,8 +179,8 @@ public class MainScene {
 	// private static final String ESC_TO_RESUME = "ESC to resume";
 	// private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
-	private static final String EARTH_DATE_TIME = " EARTH : ";
-	private static final String MARS_DATE_TIME = " MARS : ";
+	private static final String EARTH_DATE_TIME = " ";//EARTH : ";
+	private static final String MARS_DATE_TIME = " ";//MARS : ";
 	// private static final String UMST = " (UMST)";
 	private static final String ONE_SPACE = " ";
 	private static final String MONTH = "    Month : ";
@@ -952,6 +952,9 @@ public class MainScene {
 
 		earthTime = new Label();
 		earthTime.setId("rich-green");
+		
+		setQuickToolTip(earthTime, "Earth Time");
+		
 
 		earthTimeBox = new HBox(earthTime);
 		earthTimeBox.setId("rich-green");
@@ -1511,6 +1514,7 @@ public class MainScene {
 	public void createMarsTimeBar() {	
 		
 		marsTimeButton = new Button();
+		marsTimeButton.setStyle("-fx-background-color: transparent;");
 		marsTimeButton.setId("rich-red");
 		
 		marsTimeBox = new HBox(marsTimeButton);
@@ -2683,7 +2687,7 @@ public class MainScene {
 		lastSaveLabel.setTextAlignment(TextAlignment.RIGHT);
 		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
 
-		setQuickToolTip(lastSaveLabel, "Last time when the sim was saved or auto-saved");
+		setQuickToolTip(lastSaveLabel, "Last time the sim was saved");
 
 	}
 
