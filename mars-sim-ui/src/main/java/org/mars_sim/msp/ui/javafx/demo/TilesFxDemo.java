@@ -209,8 +209,7 @@ public class TilesFxDemo extends Application {
 		flipTile = TileBuilder.create().skinType(SkinType.FLIP).prefSize(TILE_WIDTH, TILE_HEIGHT)
 				.characters(Helper.ALPHANUMERIC)
                 .flipTimeInMS(500)
-                .value(60)
-                .flipText(" ")
+                .flipText("60")
                 .build();
 		
 		

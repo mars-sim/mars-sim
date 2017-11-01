@@ -50,6 +50,8 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
+import javafx.application.Platform;
+
 
 /**
  * The LocationTabPanel is a tab panel for location information.
@@ -455,7 +457,7 @@ implements ActionListener {
         				// out there on a mission
         				desktop.openToolWindow(NavigatorWindow.NAME);
         				if (mainScene != null)
-        					mainScene.openMinimap();
+        					Platform.runLater(() -> mainScene.openMinimap());
     
         				desktop.centerMapGlobe(p.getCoordinates());
         			}
@@ -515,7 +517,7 @@ implements ActionListener {
             				// out there on a mission
             				desktop.openToolWindow(NavigatorWindow.NAME);
             				if (mainScene != null)
-            					mainScene.openMinimap();
+            					Platform.runLater(() -> mainScene.openMinimap());
             				// he's stepped outside a vehicle
             				desktop.centerMapGlobe(p.getCoordinates());
             			}
@@ -628,7 +630,7 @@ implements ActionListener {
     				// out there on a mission
     				desktop.openToolWindow(NavigatorWindow.NAME);
     				if (mainScene != null)
-    					mainScene.openMinimap();
+    					Platform.runLater(() -> mainScene.openMinimap());
         			desktop.centerMapGlobe(unit.getCoordinates());
         		}
 	    	} 

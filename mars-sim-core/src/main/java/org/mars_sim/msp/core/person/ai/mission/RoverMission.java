@@ -684,16 +684,18 @@ extends VehicleMission {
 		if (member instanceof Person) {
 		    Person person = (Person) member;
 
-		    if (lastOperateVehicleTaskPhase != null) {
-		        result = new DriveGroundVehicle(person, getRover(),
-		                getNextNavpoint().getLocation(),
-		                getCurrentLegStartingTime(), getCurrentLegDistance(),
-		                lastOperateVehicleTaskPhase);
-		    }
-		    else {
-		        result = new DriveGroundVehicle(person, getRover(),
-		                getNextNavpoint().getLocation(),
-		                getCurrentLegStartingTime(), getCurrentLegDistance());
+		    if (person.getFatigue() < 750) {
+			    if (lastOperateVehicleTaskPhase != null) {
+			        result = new DriveGroundVehicle(person, getRover(),
+			                getNextNavpoint().getLocation(),
+			                getCurrentLegStartingTime(), getCurrentLegDistance(),
+			                lastOperateVehicleTaskPhase);
+			    }
+			    else {
+			        result = new DriveGroundVehicle(person, getRover(),
+			                getNextNavpoint().getLocation(),
+			                getCurrentLegStartingTime(), getCurrentLegDistance());
+			    }
 		    }
 		}
 

@@ -416,47 +416,39 @@
 }
 
 #rich-green {
-    -fx-background-color:
-        linear-gradient(#2c9310 0%, #6ec10f 50%, #1b6307 100%),
-        linear-gradient(from 0% 5% to 50% 100%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
     -fx-background-insets: 0,0,0,0;
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
-    -fx-text-fill: dark-green;
-    -fx-font-size: 11px;
+    -fx-text-fill: deepskyblue;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-stroke-width: 4;
-    -fx-font-family: "Monospaced";  
+    -fx-font-family: "Monospaced";    
 }
 
 #rich-green Text {
-	-fx-font-smoothing-type: lcd;
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
-    -fx-stroke-width: 2;    
+     -fx-stroke-width: 4;
+    
 }
 
 #rich-red {
-    -fx-background-color:
-        linear-gradient(#ff845b, #e68400),
-        linear-gradient(#ffef84, #f2ba44),
-        linear-gradient(#ffea6a, #efaa22),
-        linear-gradient(from 100% 50% to 5% 0%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);	
     -fx-background-insets: 0,0,0,0;
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
     -fx-text-fill: #cc6308;
-    -fx-font-size: 11px;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-stroke-width: 4;    
-    -fx-font-family: "Monospaced";  
+    -fx-stroke-width: 4;
+    -fx-font-family: "Monospaced";
 }
 
 #rich-red Text {
-	-fx-font-smoothing-type: lcd;
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
-    -fx-stroke-width: 2;    
+    -fx-stroke-width: 4;    
 }
-
 
 #button-orange {
     -fx-background-color:
@@ -474,11 +466,11 @@
     -fx-font-weight: bold;
 }
 
-#rich-orange:hover {
-    -fx-text-fill: black;
+#rich-red:hover {
+    -fx-font-weight: italic;
 }
-#rich-blue:hover {
-    -fx-text-fill: white;
+#rich-green:hover {
+    -fx-font-weight: italic;
 }
 
 #save-label {
@@ -487,5 +479,5 @@
     -fx-padding: 3 10 3 10;
     -fx-text-fill: white;
     -fx-font-size: 10px;
-    -fx-font-weight: bold;
+    -fx-font-weight: italic;
 }

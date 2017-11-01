@@ -420,7 +420,7 @@
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
     -fx-text-fill: deepskyblue;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-stroke-width: 4;
     -fx-font-family: "Monospaced";    
@@ -437,8 +437,8 @@
     -fx-background-insets: 0,0,0,0;
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
-    -fx-text-fill: tomato;
-    -fx-font-size: 12px;
+    -fx-text-fill: #cc6308;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-stroke-width: 4;
     -fx-font-family: "Monospaced";

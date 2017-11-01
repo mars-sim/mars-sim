@@ -375,7 +375,6 @@ implements Serializable {
      */
     protected double getSpeedLightConditionModifier() {
     	// Ground vehicles travel at 30% speed at night.
-    	//SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
     	double lightConditions = surface.getSolarIrradiance(getVehicle().getCoordinates());
         double result = ((lightConditions / 600D) * .7D) + .3D;
         return result;

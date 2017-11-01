@@ -78,8 +78,8 @@ public class SleepMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-    	if (person.getSettlement() == null || person.getBuildingLocation() == null)
-    		return 0;
+    	//if (person.getVehicle() == null && (person.getSettlement() == null || person.getBuildingLocation() == null))
+    	//	return 0;
     	
         double result = 0;
 

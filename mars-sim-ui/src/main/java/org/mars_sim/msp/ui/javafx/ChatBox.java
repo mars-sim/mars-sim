@@ -766,9 +766,21 @@ public class ChatBox extends BorderPane {
     			}
     		}
 
-    		else if (num == 1 || text.equalsIgnoreCase("where") || text.equalsIgnoreCase("location")) {// || text.contains("location")) {
-	    		questionText = YOU_PROMPT + "Where are you ? "; //what is your Location State [Expert Mode only] ?";
-	    		//LocationState state = cache.getLocationState();
+	    	else if (num == 1 || text.toLowerCase().contains("where")) { 
+	    		questionText = YOU_PROMPT + "Where are you ?"; //what is your Location Situation [Expert Mode only] ?";
+	    		responseText.append("I'm located at ");
+	    		if (personCache != null) {
+	    			responseText.append(Conversion.capitalize(personCache.getLocationSituation().getName()));
+	    		}
+	    		else if (robotCache != null) {
+	    			responseText.append(Conversion.capitalize(robotCache.getLocationSituation().getName()));    			
+	    		}
+	    		
+	    	}
+    		
+    		else if (num == 2 || text.contains("located") || text.contains("location") && text.contains("situation")) {
+	    		questionText = YOU_PROMPT + "What is your exact location ?"; 
+
 	    		LocationStateType stateType = cache.getLocationStateType();
 
 	    		if (stateType != null) {
@@ -779,7 +791,7 @@ public class ChatBox extends BorderPane {
 
 	    				if (personCache.getBuildingLocation() != null) {
 	    					responseText.append(" (");
-	    					responseText.append(personCache.getBuildingLocation().getNickName());
+	    					responseText.append(personCache.getLocationTag().getLongLocationName());//.getBuildingLocation().getNickName());
 	    					responseText.append(")");
 	    				}
 
@@ -790,24 +802,12 @@ public class ChatBox extends BorderPane {
 	    	    		responseText.append("I'm ");
 	    	    		responseText.append(stateType.getName());
 	    	    		responseText.append(" (");
-	    	    		responseText.append(robotCache.getBuildingLocation().getNickName());
+	    	    		responseText.append(robotCache.getLocationTag().getLongLocationName());//.getBuildingLocation().getNickName());
 	    	    		responseText.append(")");
 	    	    	}
 	    		}
 	    		else
 	    			responseText.append("It may sound strange but I don't know where I'm at. ");
-	    	}
-
-	    	else if (num == 2 || text.contains("located") || text.contains("location") && text.contains("situation")) {
-	    		questionText = YOU_PROMPT + "Where are you located ? "; //what is your Location Situation [Expert Mode only] ?";
-	    		responseText.append("I'm located at ");
-	    		if (personCache != null) {
-	    			responseText.append(Conversion.capitalize(personCache.getLocationSituation().getName()));
-	    		}
-	    		else if (robotCache != null) {
-	    			responseText.append(Conversion.capitalize(robotCache.getLocationSituation().getName()));    			
-	    		}
-	    		
 	    	}
 
 	       	else if (num == 3 || text.equalsIgnoreCase("task") || text.equalsIgnoreCase("activity")

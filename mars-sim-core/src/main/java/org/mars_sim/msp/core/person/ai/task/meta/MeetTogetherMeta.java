@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
@@ -42,9 +43,14 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
     	
-    	if (person.getSettlement() == null || person.getBuildingLocation() == null)
-    		return 0;
+    	//if (person.getSettlement() == null || person.getBuildingLocation() == null)
+    	//	return 0;
     	
+        LocationSituation ls = person.getLocationSituation();
+        
+        if (ls != LocationSituation.IN_SETTLEMENT && ls != LocationSituation.IN_VEHICLE)
+        	return 0;
+
         double result = 0D;
 
         RoleType roleType = person.getRole().getType();

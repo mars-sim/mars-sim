@@ -578,19 +578,25 @@ implements UnitListener {
 		    if (member instanceof Person) {
 		        Person person = (Person) member;
 
-		        // Don't operate vehicle if person was the last operator.
+		        // Drivers should rotate. Filter out this person if he/she was the last operator.
 		        if (person != lastOperator && vehicle != null) {
 		            // If vehicle doesn't currently have an operator, set this person as the operator.
 		            if (vehicle.getOperator() == null) {
 		                if (operateVehicleTask != null) {
 		                    operateVehicleTask = getOperateVehicleTask(person,
 		                            operateVehicleTask.getTopPhase());
-		                } else {
+		                } 
+		                else {
 		                    operateVehicleTask = getOperateVehicleTask(person, null);
 		                }
-		                assignTask(person, operateVehicleTask);
-		                lastOperator = person;
-		            } else {
+		                
+		                if (operateVehicleTask != null) {
+			                assignTask(person, operateVehicleTask);
+			                lastOperator = person;
+		                }
+		            } 
+		            
+		            else {
 		                // If emergency, make sure current operate vehicle task is pointed home.
 		                if (!operateVehicleTask.getDestination().equals(
 		                        destination.getLocation())) {
@@ -600,7 +606,9 @@ implements UnitListener {
 		                            getNextNavpoint().getDescription())); //$NON-NLS-1$
 		                }
 		            }
-		        } else {
+		        } 
+		        
+		        else {
 		            lastOperator = null;
 		        }
 		    }

@@ -149,17 +149,17 @@ public class AudioPlayer {
 						try {
 							if (allOGGSoundClips.containsKey(filepath) && allOGGSoundClips.get(filepath) != null) {
 								currentOGGSoundClip = allOGGSoundClips.get(filepath);
+								currentOGGSoundClip.determineGain(effectVol);
 								currentOGGSoundClip.play();
 
 							}
 							else {
 								currentOGGSoundClip = new OGGSoundClip(filepath);
 								allOGGSoundClips.put(filepath, currentOGGSoundClip);
+								currentOGGSoundClip.determineGain(effectVol);
 								currentOGGSoundClip.play();
 							}
-							
-							currentOGGSoundClip.determineGain(effectVol);
-							
+													
 						} catch (IOException e) {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
@@ -172,16 +172,16 @@ public class AudioPlayer {
 						try {
 							if (allOGGSoundClips.containsKey(filepath) && allOGGSoundClips.get(filepath) != null) {
 								currentOGGSoundClip = allOGGSoundClips.get(filepath);
+								currentOGGSoundClip.determineGain(effectVol);
 								currentOGGSoundClip.play();
 							}
 							else {
 								currentOGGSoundClip = new OGGSoundClip(filepath);
 								allOGGSoundClips.put(filepath, currentOGGSoundClip);
+								currentOGGSoundClip.determineGain(effectVol);
 								currentOGGSoundClip.play();
 							}
-							
-							currentOGGSoundClip.determineGain(effectVol);
-							
+														
 						} catch (IOException e) {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
@@ -205,16 +205,18 @@ public class AudioPlayer {
 						try {
 							if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 								currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
+								currentBackgroundTrack.determineGain(musicVol);
+
 								currentBackgroundTrack.loop();
 							}
 							else {
 								currentBackgroundTrack = new OGGSoundClip(filepath);
 								allBackgroundSoundTracks.put(filepath, currentBackgroundTrack);
+								currentBackgroundTrack.determineGain(musicVol);
+
 								currentBackgroundTrack.loop();
 							}
-							
-							currentBackgroundTrack.determineGain(musicVol);
-							
+														
 						} catch (IOException e) {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
@@ -227,16 +229,17 @@ public class AudioPlayer {
 					try {
 						if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
 							currentBackgroundTrack = allBackgroundSoundTracks.get(filepath);
+							currentBackgroundTrack.determineGain(musicVol);
+
 							currentBackgroundTrack.loop();
 						}
 						else {
 							currentBackgroundTrack = new OGGSoundClip(filepath);
 							allBackgroundSoundTracks.put(filepath, currentBackgroundTrack);
+							currentBackgroundTrack.determineGain(musicVol);
+
 							currentBackgroundTrack.loop();
 						}
-						
-						currentBackgroundTrack.determineGain(musicVol);
-
 						
 					} catch (IOException e) {
 						//e.printStackTrace();
