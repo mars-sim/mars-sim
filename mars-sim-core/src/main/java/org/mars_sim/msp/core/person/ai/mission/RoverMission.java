@@ -440,12 +440,12 @@ extends VehicleMission {
 
 		Vehicle v = getVehicle();
 		Rover rover = (Rover) v;
-		
+/*		
 		// If rover is not parked at settlement, park it.
-		if ((v != null) && (v.getSettlement() == null)) {
+		if (v != null && v.getSettlement() == null) {
 			disembarkSettlement.getInventory().storeUnit(v);
 			
-			//v.determinedSettlementParkedLocationAndFacing();
+			v.determinedSettlementParkedLocationAndFacing();
 
 			// Test if this rover is towing another vehicle or is being towed
 	        boolean tethered = v.isBeingTowed() || (v.getTowingVehicle() != null);
@@ -462,7 +462,7 @@ extends VehicleMission {
 	            }
 			}
 		}
-
+*/
 		// Have member exit rover if necessary.
 		if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
 			// member should be in a vehicle

@@ -95,7 +95,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                    }
 	                }
 	                catch (Exception e) {
-	                    logger.severe("getProbability(): " + e.getMessage());
+                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
 	                }
 	            }
 	        }
@@ -129,7 +129,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                        }
 	                    }
 	                    catch (Exception e) {
-	                        logger.severe("getProbability(): " + e.getMessage());
+	                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
 	                    }
 	                }
 	            }

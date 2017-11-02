@@ -82,15 +82,10 @@ public class MainDetailPanel
 extends JPanel
 implements ListSelectionListener, MissionListener, UnitListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Custom mission panel IDs.
 	private final static String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	// Private members
-	private Mission currentMission;
-	private Vehicle currentVehicle;
 	private JLabel descriptionLabel;
 	private JLabel typeLabel;
 	private JLabel phaseLabel;
@@ -103,13 +98,18 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	private JLabel speedLabel;
 	private JLabel distanceNextNavLabel;
 	private JLabel traveledLabel;
-	private MainDesktopPane desktop;
+	
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("MainDetailPanel.decimalFormat")); //$NON-NLS-1$
 	private CardLayout customPanelLayout;
 	private JPanel missionCustomPane;
-	private Map<String, MissionCustomInfoPanel> customInfoPanels;
+	
+	private Mission currentMission;
+	private Vehicle currentVehicle;
 	private MissionWindow missionWindow;
-
+	private MainDesktopPane desktop;
+	
+	private Map<String, MissionCustomInfoPanel> customInfoPanels;
+	
     private static AmountResource iceAR = ResourceUtil.iceAR;//.findAmountResource("ice");
     private static AmountResource regolithAR = ResourceUtil.regolithAR;//AmountResource.findAmountResource("regolith");
 
@@ -130,20 +130,21 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		setLayout(new BorderLayout());
 
 		// Create the main panel.
-		Box mainPane = Box.createVerticalBox();
+		Box mainBox = Box.createVerticalBox();
 		//JPanel mainPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		mainPane.setBorder(new MarsPanelBorder());
-		add(mainPane, BorderLayout.CENTER);
+		mainBox.setBorder(new MarsPanelBorder());
+		add(mainBox, BorderLayout.CENTER);
 
 		// Create the description panel.
 		Box infoPane = new CustomBox();
 		infoPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JPanel topPane = new JPanel(new SpringLayout());
 		infoPane.setSize(new Dimension(200, 150));
 		infoPane.setBorder(new MarsPanelBorder());
+		mainBox.add(infoPane);
+		
+		JPanel topPane = new JPanel(new SpringLayout());
 		infoPane.add(topPane);
-		mainPane.add(infoPane);
-
+		
 		//JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		//descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		//springPane0.add(descriptionPane);
@@ -210,7 +211,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		travelPane.setSize(new Dimension(200, 300));
 		//travelPane.setBorder(new MarsPanelBorder());
 		travelBox.add(travelPane);
-		mainPane.add(travelBox);
+		mainBox.add(travelBox);
 
 		// Create the vehicle panel.
 		JPanel vehiclePane = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -327,7 +328,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// Create the member panel.
 		Box memberPane = new CustomBox();
 		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(memberPane);
+		mainBox.add(memberPane);
 
 		// Create the member number label.
 		memberNumLabel = new JLabel(Msg.getString("MainDetailPanel.missionMembersMinMax","","","", JLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -387,12 +388,18 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				});
 		memberScrollPane.setViewportView(memberTable);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBorder(new MarsPanelBorder());
+		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		mainBox.add(scrollPane,  BorderLayout.CENTER);
+		
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
 		missionCustomPane = new JPanel(customPanelLayout);
 		missionCustomPane.setBorder(new MarsPanelBorder());
 		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(missionCustomPane);
+		scrollPane.add(missionCustomPane);
 
 		// Create custom empty panel.
 		JPanel emptyCustomPane1 = new JPanel();

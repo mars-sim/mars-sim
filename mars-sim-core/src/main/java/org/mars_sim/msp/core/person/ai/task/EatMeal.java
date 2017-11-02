@@ -628,6 +628,7 @@ public class EatMeal extends Task implements Serializable {
 			    			setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
 			    		double amount = waterFinal/1000D*RATION_FACTOR;
 			    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			    				"[" + person.getLocationTag().getShortLocationName() +  "] " +
 			    				person + " is on ration when drinking " + Math.round(amount * 1000.0)/1000.0 + " kg of water", null);	
 			    		inv.retrieveAmountResource(ResourceUtil.waterAR, amount);
 			    		inv.addAmountDemand(ResourceUtil.waterAR, amount);

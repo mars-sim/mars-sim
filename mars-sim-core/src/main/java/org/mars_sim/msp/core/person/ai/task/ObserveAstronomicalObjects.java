@@ -382,11 +382,11 @@ implements ResearchScientificStudy, Serializable {
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
     			if (person != null) {
-    				logger.info(person.getName() + " has accident while observing astronomical objects.");
+    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while observing astronomical objects.");
                     entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
     				}
     			else if (robot != null) {
-    				logger.info(robot.getName() + " has accident while observing astronomical objects.");
+    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while observing astronomical objects.");
                     entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
     			}
             }

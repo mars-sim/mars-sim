@@ -216,8 +216,8 @@ public class MainScene {
 	private int screen_height = DEFAULT_HEIGHT;
 	private int solCache = 0;
 
-	public float musicSliderValue = 80f;
-	public float soundEffectSliderValue = 80f;
+	public float musicSliderValue = AudioPlayer.DEFAULT_VOL * 100;
+	public float soundEffectSliderValue = AudioPlayer.DEFAULT_VOL * 100;
 
 	private float musicSliderCache = 0;
 	private float effectSliderCache = 0;
@@ -233,7 +233,7 @@ public class MainScene {
 	private volatile transient ExecutorService mainSceneExecutor;
 
 	private String upTimeCache = "";
-	private String themeSkin = "nimrod";
+	//private String themeSkin = "nimrod";
 	private String title = null;
 	private String dir = null;
 	private String oldLastSaveStamp = null;
@@ -2289,52 +2289,46 @@ public class MainScene {
 			if (theme == 0) { // snow blue
 				// for numbus theme
 				cssFile = "/fxui/css/snowBlue.css";
-				updateThemeColor(0, Color.rgb(0, 107, 184), Color.rgb(0, 107, 184), cssFile); // CADETBLUE //
-																								// Color.rgb(23,138,255)
-				themeSkin = "numbus";
-
+				updateThemeColor(0, Color.rgb(0, 107, 184), Color.rgb(0, 107, 184), cssFile); // CADETBLUE //																						// Color.rgb(23,138,255)
+				//themeSkin = "numbus";
 				// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
 
 			} else if (theme == 1) { // olive green
 				cssFile = "/fxui/css/oliveskin.css";
 				updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssFile); // DARKOLIVEGREEN
-				themeSkin = "LightTabaco";
+				//themeSkin = "LightTabaco";
 
 			} else if (theme == 2) { // burgundy red
 				cssFile = "/fxui/css/burgundyskin.css";
 				updateThemeColor(2, Color.rgb(140, 0, 26), Color.YELLOW, cssFile); // ORANGERED
-				themeSkin = "Burdeos";
+				//themeSkin = "Burdeos";
 
 			} else if (theme == 3) { // dark chocolate
 				cssFile = "/fxui/css/darkTabaco.css";
 				updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssFile);
-				themeSkin = "DarkTabaco";
+				//themeSkin = "DarkTabaco";
 
 			} else if (theme == 4) { // grey
 				cssFile = "/fxui/css/darkGrey.css";
 				updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssFile);
-				themeSkin = "DarkGrey";
+				//themeSkin = "DarkGrey";
 
 			} else if (theme == 5) { // + purple
 				cssFile = "/fxui/css/nightViolet.css";
 				updateThemeColor(5, Color.rgb(73, 55, 125), Color.rgb(73, 55, 125), cssFile); // DARKMAGENTA, SLATEBLUE
-				themeSkin = "Night";
+				//themeSkin = "Night";
 
 			} else if (theme == 6) { // + skyblue
 
 				cssFile = "/fxui/css/snowBlue.css";
-				updateThemeColor(6, Color.rgb(0, 107, 184), Color.rgb(255, 255, 255), cssFile); // (144, 208, 229) light
-																								// blue // CADETBLUE
-																								// (0,107,184)//
-																								// Color.rgb(23,138,255)
-				themeSkin = "snowBlue";
-
+				updateThemeColor(6, Color.rgb(0, 107, 184), Color.rgb(255, 255, 255), cssFile); 
+				// (144, 208, 229) light blue , CADETBLUE (0,107,184), Color.rgb(23,138,255)
+				//themeSkin = "snowBlue";
 			} else if (theme == 7) { // mud orange/standard
 
 				cssFile = "/fxui/css/nimrodskin.css";
 				updateThemeColor(7, Color.rgb(156, 77, 0), Color.rgb(255, 255, 255), cssFile); // DARKORANGE, CORAL
-				themeSkin = "nimrod";
-
+				//themeSkin = "nimrod";
 			}
 
 			// SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));

@@ -150,7 +150,7 @@ public class LocationTag implements LocationState, Serializable {
 					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
 				}
 				else {
-					return p.getVehicle().getName() + " in " + p.getCoordinates().getFormattedString();
+					return p.getVehicle().getName() + " at " + p.getCoordinates().getFormattedString();
 				}
 			}
  

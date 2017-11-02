@@ -525,11 +525,11 @@ implements ResearchScientificStudy, Serializable {
             if (RandomUtil.lessThanRandPercent(chance * time)) {
 
     			if (person != null) {
-    				logger.info(person.getName() + " has a lab accident while doing " + science + " research.");
+    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has a lab accident while doing " + science + " research.");
                     entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
     			}
     			else if (robot != null) {
-    				logger.info(robot.getName() + " has a lab accident while doing " + science + " research.");
+    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has a lab accident while doing " + science + " research.");
     				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
     			}
             }

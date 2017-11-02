@@ -401,11 +401,11 @@ implements Serializable {
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
     			if (person != null) {
-    				logger.info(person.getName() + " ran into an accident while salvage a building");
+    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " +person.getName() + " ran into an accident while salvage a building");
                     luv.getMalfunctionManager().createASeriesOfMalfunctions(person);
     			}
     			else if (robot != null) {
-    				logger.info(robot.getName() + " ran into an accident while salvage a building");
+    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " ran into an accident while salvage a building");
     				luv.getMalfunctionManager().createASeriesOfMalfunctions(robot);
     			}
             }

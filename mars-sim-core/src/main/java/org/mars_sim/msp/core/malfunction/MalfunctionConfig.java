@@ -370,17 +370,21 @@ public class MalfunctionConfig implements Serializable {
      */
     public void destroy() {
         malfunctionDoc = null;
+        
         if(malfunctionList != null){
 
             malfunctionList.clear();
             malfunctionList = null;
         }
+        
         if(repairParts != null){
 
             repairParts.clear();
             repairParts = null;
         }
+
     }
+    
     
     /**
      * Private inner class for repair part information.

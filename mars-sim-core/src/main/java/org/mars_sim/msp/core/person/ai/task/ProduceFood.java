@@ -736,11 +736,11 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-				logger.info(person.getName() + " has an accident during food production.");
+				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident during food production.");
                 foodFactory.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has an accident during food production.");
+				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident during food production.");
 				foodFactory.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 		}

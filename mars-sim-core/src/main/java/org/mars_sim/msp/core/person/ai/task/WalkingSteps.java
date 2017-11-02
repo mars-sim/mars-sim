@@ -1031,13 +1031,15 @@ implements Serializable {
                     canWalkAllSteps = false;
 
                     if (person != null)
-                    	logger.severe(person.getName()
-                    		+ " in " + person.getBuildingLocation().getNickName()
-                    		+ " cannot find walkable airlock from building airlock exterior to building interior.");
+                    	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+            					"[" + person.getLocationTag().getShortLocationName()  + "] " + person.getName()
+            					+ " in " + person.getBuildingLocation().getNickName()
+                        		+ " cannot find walkable airlock from building airlock exterior to building interior.", null);
                     else if (robot != null)
-                       	logger.severe(robot.getName()
+                    	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+            					"[" + robot.getLocationTag().getShortLocationName()  + "] " + robot.getName()
                         		+ " in " + robot.getBuildingLocation().getNickName()
-                        		+ " cannot find walkable airlock from building airlock exterior to building interior.");
+                        		+ " cannot find walkable airlock from building airlock exterior to building interior.", null);
 
                 }
             }
@@ -1068,7 +1070,18 @@ implements Serializable {
 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from rover airlock exterior to building interior.");
+                
+                if (person != null)
+                	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+        					"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+        					+ " in " + person.getBuildingLocation().getNickName()
+                    		+ " cannot find walkable airlock from rover airlock exterior to building interior.", null);
+                else if (robot != null)
+                	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+        					"[" + robot.getLocationTag().getShortLocationName()  + "] " + robot.getName()
+                    		+ " in " + robot.getBuildingLocation().getNickName()
+                    		+ " cannot find walkable airlock from rover airlock exterior to building interior.", null);
+                
             }
         }
         else {
@@ -1131,7 +1144,18 @@ implements Serializable {
 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from airlock exterior to rover in garage.");
+           
+                if (person != null)
+                	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+        					"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+        					+ " in " + person.getBuildingLocation().getNickName()
+                    		+ " cannot find walkable airlock from airlock exterior to rover in garage.", null);
+                else if (robot != null)
+                	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+        					"[" + robot.getLocationTag().getShortLocationName() + "] " + robot.getName()
+                    		+ " in " + robot.getBuildingLocation().getNickName()
+                    		+ " cannot find walkable airlock from airlock exterior to rover in garage.", null);
+                
             }
         }
         else {
@@ -1242,6 +1266,19 @@ implements Serializable {
             // Cannot walk to destination building.
             canWalkAllSteps = false;
             logger.severe("Cannot find walkable airlock from outside to building interior.");
+            
+            if (person != null)
+            	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+    					"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+    					+ " in " + person.getBuildingLocation().getNickName()
+                		+ " cannot find walkable airlock from outside to building interior.", null);
+            else if (robot != null)
+            	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+    					"[" + robot.getLocationTag().getShortLocationName() + "] " + robot.getName()
+                		+ " in " + robot.getBuildingLocation().getNickName()
+                		+ " cannot find walkable airlock from outside to building interior.", null);
+            
+            
         }
     }
 
@@ -1281,7 +1318,18 @@ implements Serializable {
 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from outside to rover in garage.");
+                
+                if (person != null)
+                	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+        					"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+        					+ " in " + person.getBuildingLocation().getNickName()
+                    		+ " cannot find walkable airlock from outside to rover in garage.", null);
+                else if (robot != null)
+                	LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+        					"[" + robot.getLocationTag().getShortLocationName()  + "] " + robot.getName()
+                    		+ " in " + robot.getBuildingLocation().getNickName()
+                    		+ " cannot find walkable airlock from outside to rover in garage.", null);
+                
             }
         }
         else {

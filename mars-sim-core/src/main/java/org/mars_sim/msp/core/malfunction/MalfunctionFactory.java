@@ -354,5 +354,11 @@ implements Serializable {
 	 */
 	public void destroy() {
 		malfunctions = null;
+
+		config = null;
+		
+		meteoriteMalfunction = null;
+		
+		missionManager = null;
 	}
 }

@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,8 +33,6 @@ public class Malfunction implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	//private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
-    //private static Logger logger = Logger.getLogger(CLASS_NAME);
 	private static Logger logger = Logger.getLogger(Malfunction.class.getName());
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
@@ -373,5 +370,15 @@ public class Malfunction implements Serializable {
      */
     public String toString() {
     	return name;
+    }
+    
+
+    public void destroy() {
+        systems = null;
+        resourceEffects = null;
+        lifeSupportEffects = null;
+        medicalComplaints = null;
+        repairParts = null;
+        config = null;
     }
 }

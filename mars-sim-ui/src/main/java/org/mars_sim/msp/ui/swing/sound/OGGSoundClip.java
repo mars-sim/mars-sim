@@ -107,7 +107,7 @@ public class OGGSoundClip {
 	 * Set the default gain value (default volume)
 	 */
 	public void setDefaultVol() {
-		determineGain(.8f);
+		determineGain(AudioPlayer.DEFAULT_VOL);
 	}
 
 	public float getVol() {
@@ -215,8 +215,8 @@ public class OGGSoundClip {
 			
 				float value = (max - min/2f) * volume + min/2f; 
 						
-				if (value <= -40)
-					floatControl.setValue(-80);
+				if (value <= min/2)
+					floatControl.setValue(min);
 				else
 					floatControl.setValue(value);
 

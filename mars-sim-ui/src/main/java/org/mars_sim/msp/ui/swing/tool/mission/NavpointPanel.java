@@ -56,9 +56,6 @@ public class NavpointPanel
 extends JPanel
 implements ListSelectionListener, MissionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Private members.
 	private Mission currentMission;
 	private MapPanel mapPane;

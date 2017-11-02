@@ -345,11 +345,15 @@ implements Serializable {
     protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
 
         // Unload towed vehicle if any.
-        if (!isDone() && (getRover().getTowedVehicle() != null)) {
+        if (!isDone() && (getRover().getTowedVehicle() != null && emergencyVehicle !=  null)) {
             emergencyVehicle.setReservedForMission(false);
-            getRover().setTowedVehicle(null);
-            emergencyVehicle.setTowingVehicle(null);
+                         
             disembarkSettlement.getInventory().storeUnit(emergencyVehicle);
+
+            getRover().setTowedVehicle(null);
+            
+            emergencyVehicle.setTowingVehicle(null);
+            
             emergencyVehicle.determinedSettlementParkedLocationAndFacing();
         }
 

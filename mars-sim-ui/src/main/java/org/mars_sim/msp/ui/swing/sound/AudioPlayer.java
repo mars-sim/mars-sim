@@ -36,11 +36,13 @@ public class AudioPlayer {
 	private final static int LOUD_TRACKS = 6;
 	private final static int REPEATING_TRACKS = 4; // track the last 4 tracks and avoid playing them repetitively.
 	
+	public final static float DEFAULT_VOL = .5f;
+	
 	private static int num_tracks;
 	
 	/** The volume of the audio player (0.0 to 1.0) */
-	private float musicVol = .8f;
-	private float effectVol = .8f;
+	private float musicVol = DEFAULT_VOL;
+	private float effectVol = DEFAULT_VOL;
 
 	private int play_times = 0;
 

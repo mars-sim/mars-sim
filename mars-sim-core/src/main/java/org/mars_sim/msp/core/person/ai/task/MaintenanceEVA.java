@@ -303,12 +303,12 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-				logger.info(person.getName() + " has an accident while performing EVA maintenance on "
+				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while performing EVA maintenance on "
 					     + entity.getNickName() + ".");
 	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has an accident while performing EVA maintenance on "
+				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while performing EVA maintenance on "
 						     + entity.getNickName() + ".");
 				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}

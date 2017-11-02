@@ -33,9 +33,6 @@ import org.mars_sim.msp.core.tool.Conversion;
 public class ExplorationCustomInfoPanel
 extends MissionCustomInfoPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private Exploration mission;
 	private Map<String, ExplorationSitePanel> sitePanes;

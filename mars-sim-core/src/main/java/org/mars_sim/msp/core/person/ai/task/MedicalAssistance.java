@@ -309,11 +309,11 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-				logger.info(person.getName() + " has accident while offering medical assistance.");
+				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while offering medical assistance.");
                 entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has accident while offering medical assistance.");
+				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while offering medical assistance.");
 				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 		}

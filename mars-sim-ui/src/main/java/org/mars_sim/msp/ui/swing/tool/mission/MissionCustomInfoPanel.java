@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionCustomInfoPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-11-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -17,9 +16,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
  */
 public abstract class MissionCustomInfoPanel
 extends JPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Updates the panel based on a mission event.

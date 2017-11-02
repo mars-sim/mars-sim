@@ -495,11 +495,11 @@ implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-	            logger.info(person.getName() + " has an accident while toggling a resource process.");
+	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while toggling a resource process.");
 	            building.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has an accident while toggling a resource process.");
+				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while toggling a resource process.");
 	            building.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 

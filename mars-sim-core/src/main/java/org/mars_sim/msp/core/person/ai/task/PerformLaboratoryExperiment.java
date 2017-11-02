@@ -547,12 +547,12 @@ implements ResearchScientificStudy, Serializable {
             if (RandomUtil.lessThanRandPercent(chance * time)) {
 
     			if (person != null) {
-    				logger.info(person.getName() + " has a lab accident while performing " +
+    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has a lab accident while performing " +
                         science.getName() + " experiment");
                 	entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 				}
     			else if (robot != null) {
-    				logger.info(robot.getName() + " has a lab accident while performing " +
+    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has a lab accident while performing " +
                         science.getName() + " experiment");
                 	entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
             	}

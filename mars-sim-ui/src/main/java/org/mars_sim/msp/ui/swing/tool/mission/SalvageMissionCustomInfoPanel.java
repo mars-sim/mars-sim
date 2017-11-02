@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageMissionCustomInfoPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-11-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -28,9 +27,6 @@ import java.util.Iterator;
 public class SalvageMissionCustomInfoPanel
 extends MissionCustomInfoPanel 
 implements ConstructionListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members.
 	private MainDesktopPane desktop;

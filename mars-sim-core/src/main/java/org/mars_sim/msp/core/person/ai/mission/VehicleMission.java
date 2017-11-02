@@ -598,7 +598,7 @@ implements UnitListener {
 		            
 		            else {
 		                // If emergency, make sure current operate vehicle task is pointed home.
-		                if (!operateVehicleTask.getDestination().equals(
+		                if (operateVehicleTask != null && !operateVehicleTask.getDestination().equals(
 		                        destination.getLocation())) {
 		                    operateVehicleTask.setDestination(destination
 		                            .getLocation());

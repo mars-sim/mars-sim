@@ -619,11 +619,11 @@ implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
   
 			if (person != null) {
-				logger.info(person.getName() + " has an accident while manufacturing construction materials.");
+				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while manufacturing construction materials.");
 	            workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has an accident while manufacturing construction materials.");
+				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while manufacturing construction materials.");
 				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
         }

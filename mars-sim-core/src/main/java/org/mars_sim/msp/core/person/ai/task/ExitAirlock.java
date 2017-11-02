@@ -199,7 +199,9 @@ implements Serializable {
                     }
                     catch (Exception e) {
         	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-        	    				person + " could not take this EVA suit." + e.getMessage(), null);
+        	    				"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+        	    				 + " could not take this EVA suit." + e.getMessage(), null);
+
                     }
                 }
             }
@@ -207,7 +209,8 @@ implements Serializable {
             // If person still doesn't have an EVA suit, end task.
             if (!hasSuit) {
 	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-	    				person.getName() + " does not have an EVA suit, ending procuringEVASuit()", null);
+	    				"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+	    				+ " does not have an EVA suit.", null);
 	    		
             	person.getMind().getTaskManager().clearTask();
             	person.getMind().getTaskManager().getNewTask();
@@ -278,7 +281,8 @@ implements Serializable {
                     boolean activationSuccessful = airlock.addCycleTime(activationTime);
                     if (!activationSuccessful) {
         	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
-        	    				"Problem with airlock activation: " + person.getName(), null);
+        	    				"[" + person.getSettlement() + "] " + person.getName()
+        	    				+ " has problems with airlock activation." , null);
                     }
                 }
                 else {
@@ -324,7 +328,8 @@ implements Serializable {
                     boolean activationSuccessful = airlock.addCycleTime(activationTime);
                     if (!activationSuccessful) {
         	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
-        	    				"Problem with airlock activation: " + robot.getName(), null);
+        	    				"[" + robot.getSettlement() + "] " + robot.getName()
+        	    				+ " has problems with airlock activation." , null);
                     }
                 }
                 else {
@@ -404,7 +409,8 @@ implements Serializable {
 		                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
 		                    if (!activationSuccessful) {
 		        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
-		        	    				"Problem with airlock activation: " + person.getName(), null);
+        	    				"[" + person.getSettlement() + "] " + person.getName()
+        	    				+ " has problems with airlock activation." , null);
 		                    }
 		                }
 		                else {
@@ -485,7 +491,8 @@ implements Serializable {
 		                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
 		                    if (!activationSuccessful) {
 		        	    		LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
-		        	    				"Problem with airlock activation: " + robot.getName(), null);
+        	    				"[" + robot.getSettlement() + "] " + robot.getName()
+        	    				+ " has problems with airlock activation." , null);
 		                    }
 		                }
 		                else {

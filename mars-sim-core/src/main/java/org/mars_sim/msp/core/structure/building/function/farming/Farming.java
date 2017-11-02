@@ -520,7 +520,8 @@ implements Serializable {
 
 	    	if (amountStored < 0.0000000001) {
 	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	    				"Run out of " + tissueName + " in " + settlement, null);
+	    				"[" + settlement + "]" + 
+	    				"Run out of " + tissueName, null);
 	    		percent = 0;
 	    	}
 
@@ -529,21 +530,22 @@ implements Serializable {
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount = amountStored ;
 	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+	    				"[" + settlement + "]" + 
 	    				Math.round(requestedAmount*100.0)/100.0 + " kg " +
-	    				tissueName + " is partially available in " + settlement, null);
+	    				tissueName + " is partially available." , null);
 	    	}
 
 	    	else {
 	    		available = true;
 	    		percent = 100D ;
 	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+	    				"[" + settlement + "]" + 
 	    				Math.round(requestedAmount*100.0)/100.0 + " kg " +
-	    				tissueName + " is fully available in " + settlement, null);
+	    				tissueName + " is fully available." , null);
 	    	}
 
-	    	if (available) {
+	    	if (available)
 	    		inv.retrieveAmountResource(tissueAR, requestedAmount);
-	    	}
 
 			inv.addAmountDemand(tissueAR, requestedAmount);
 

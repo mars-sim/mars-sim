@@ -394,11 +394,11 @@ public class TreatMedicalPatient extends Task implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null) {
-				logger.info(person.getName() + " has accident while providing medical treatment.");
+				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while providing medical treatment.");
 	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has accident while providing medical treatment.");
+				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while providing medical treatment.");
 				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
         	}
         }

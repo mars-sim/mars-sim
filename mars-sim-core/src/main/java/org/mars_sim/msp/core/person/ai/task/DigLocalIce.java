@@ -58,7 +58,7 @@ implements Serializable {
             "Task.phase.collectIce")); //$NON-NLS-1$
 
 	/**  Collection rate of ice during EVA (kg/millisol). */
-	private static final double COLLECTION_RATE = 2D;
+	private static final double COLLECTION_RATE = 20D;
 
 	// Domain members
 	/** Airlock to be used for EVA. */
@@ -76,7 +76,7 @@ implements Serializable {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 0D);
+        super(NAME, person, false, 10D);
 
         sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
@@ -310,8 +310,9 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
-	    LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-	    		person.getName() + " collected " + Math.round(iceCollected*10D)/10D 
+	    LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+	    		"[" + person.getLocationTag().getShortLocationName() +  "] " +
+	    		person.getName() + " collected " + Math.round(iceCollected*100D)/100D 
 	    		+ " kg of ice outside " + person.getAssociatedSettlement(), null);
  
         // Add experience points

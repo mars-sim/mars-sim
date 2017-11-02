@@ -76,7 +76,7 @@ implements Serializable {
 	 */
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 0D);
+        super(NAME, person, false, 10D);
 
         settlement = person.getAssociatedSettlement();
         
@@ -309,8 +309,9 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
         }
 
-        LogConsolidated.log(logger, Level.INFO, 5000, logger.getName(), 
-        		person.getName() + " collected " + Math.round(regolithCollected*10D)/10D 
+        LogConsolidated.log(logger, Level.INFO, 10000, logger.getName(), 
+        		"[" + person.getLocationTag().getShortLocationName() +  "] " +
+        		person.getName() + " collected " + Math.round(regolithCollected*100D)/100D 
         		+ " kg of regolith outside " + person.getAssociatedSettlement(), null);
  
         // Add experience points

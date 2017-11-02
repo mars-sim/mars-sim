@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -339,8 +340,9 @@ implements Serializable {
      */
     private void rendezvousPhase(MissionMember member) {
 
-        logger.info(member.getName() + " is driving " + getVehicle().getName() 
-        		+ " to rendezvous with " + vehicleTarget.getName());
+        logger.info("[" + member.getLocationTag().getShortLocationName() + "] " 
+        		+ getVehicle().getName() + " has arrived to rendezvous with " 
+        		+ vehicleTarget.getName() + ".");
 
         // If rescuing vehicle crew, load rescue life support resources into vehicle (if possible).
         if (rescue) {
@@ -413,7 +415,7 @@ implements Serializable {
 
         if (rover.getTowedVehicle() != null) {
             Vehicle towedVehicle = rover.getTowedVehicle();
-
+     
             // Unhook towed vehicle.
             rover.setTowedVehicle(null);
             towedVehicle.setTowingVehicle(null);
@@ -424,10 +426,14 @@ implements Serializable {
             towedVehicle.determinedSettlementParkedLocationAndFacing();
             
             // Store towed vehicle in settlement.
-            Inventory inv = disembarkSettlement.getInventory();
-            inv.storeUnit(towedVehicle);
-            towedVehicle.determinedSettlementParkedLocationAndFacing();
-            logger.info(towedVehicle + " salvaged at " + disembarkSettlement.getName());
+            disembarkSettlement.getInventory().storeUnit(towedVehicle);
+            
+            // Add vehicle to a garage if available.
+        	BuildingManager.addToRandomBuilding((GroundVehicle) towedVehicle, disembarkSettlement);
+ 	       
+            //towedVehicle.determinedSettlementParkedLocationAndFacing();
+            logger.info(towedVehicle + " has been towed to " + disembarkSettlement.getName());
+            
             HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, 
             		this, person.getSettlement().getName(), EventType.MISSION_SALVAGE_VEHICLE);
             Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
@@ -435,25 +441,54 @@ implements Serializable {
             // Unload any crew at settlement.
             if (towedVehicle instanceof Crewable) {
                 Crewable crewVehicle = (Crewable) towedVehicle;
-                Iterator<Person> i = crewVehicle.getCrew().iterator();
-                while (i.hasNext()) {
-                    Person crewmember = i.next();
-                    towedVehicle.getInventory().retrieveUnit(crewmember);
-                    disembarkSettlement.getInventory().storeUnit(crewmember);
-                    BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
-                    crewmember.setAssociatedSettlement(disembarkSettlement);
-                    crewmember.getMind().getTaskManager().clearTask();
-                    logger.info(crewmember.getName() + " rescued.");
+                
+                for (Person p : crewVehicle.getCrew()) {
+                    towedVehicle.getInventory().retrieveUnit(p);
+                    
+                    if (p.isDead()) {
+                    	p.setBuriedSettlement(disembarkSettlement);
+                    	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
+                    }
+                    else {
+                    	disembarkSettlement.getInventory().storeUnit(p);
+                    }
+                    
+                    BuildingManager.addToRandomBuilding(p, disembarkSettlement);
+                    p.setAssociatedSettlement(disembarkSettlement);
+                    p.getMind().getTaskManager().clearTask();
+                    logger.info(p.getName() + " rescued.");
                     HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, 
                     		this, person.getSettlement().getName(), EventType.MISSION_RESCUE_PERSON);
                     Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
                 }
             }
 
+	        // Retrieve the person if he/she is dead
+			for (Person p : rover.getCrew()) {
+				rover.getInventory().retrieveUnit(p);
+
+                if (p.isDead()) {
+                	p.setBuriedSettlement(disembarkSettlement);
+                	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
+                }
+                else {
+                	disembarkSettlement.getInventory().storeUnit(p);
+                }
+                
+                BuildingManager.addToRandomBuilding(p, disembarkSettlement);
+                p.setAssociatedSettlement(disembarkSettlement);
+                p.getMind().getTaskManager().clearTask();
+                logger.info(p.getName() + " has completed the rescue operation.");
+                //HistoricalEvent rescueEvent = new MissionHistoricalEvent(p, 
+                //		this, p.getSettlement().getName(), EventType..MISSION_RESCUE_PERSON);
+                //Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
+
+			}
+			
             // Unhook the towed vehicle this vehicle is towing if any.
-            if (towedVehicle instanceof Rover) {
-                disembarkTowedVehicles(person, (Rover) towedVehicle, disembarkSettlement);
-            }
+            //if (towedVehicle instanceof Rover) {
+            //    disembarkTowedVehicles(person, (Rover) towedVehicle, disembarkSettlement);
+            //}
         }
     }
 

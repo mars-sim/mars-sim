@@ -532,11 +532,11 @@ implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null) {
-	            logger.info(person.getName() + " has an accident while tending greenhouse.");
+	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while tending greenhouse.");
 	           	farmBuilding.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has an accident while tending greenhouse.");
+				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while tending greenhouse.");
 		       	farmBuilding.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 
