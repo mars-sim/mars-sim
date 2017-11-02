@@ -150,7 +150,9 @@ public class GoodsManager implements Serializable {
     public static double WATER_VALUE_MODIFIER = 3D;
     public static double REGOLITH_VALUE_MODIFIER = 3D;
     public static double SAND_VALUE_MODIFIER = 2D;
-    
+    public static double OXYGEN_VALUE_MODIFIER = 2D;
+    public static double METHANE_VALUE_MODIFIER = 2D;
+        
 
     // Data members
     // 2016-11-02 Added modifiers due to Settlement Development Objectives

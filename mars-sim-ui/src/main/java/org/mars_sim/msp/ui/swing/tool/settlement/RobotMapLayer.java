@@ -70,7 +70,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 		g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
 		// Draw all robots.
-		drawRobots(g2d, settlement);
+		drawRobots(g2d, settlement, scale);
 
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -112,7 +112,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement to draw robots at.
 	 */
-	private void drawRobots(Graphics2D g2d, Settlement settlement) {
+	private void drawRobots(Graphics2D g2d, Settlement settlement, double scale) {
 
 		List<Robot> robots = getRobotsToDisplay(settlement);
 		Robot selectedRobot = mapPanel.getSelectedRobot();
@@ -122,13 +122,13 @@ public class RobotMapLayer implements SettlementMapLayer {
 		while (i.hasNext()) {
 			Robot robot = i.next();
 			if (!robot.equals(selectedRobot)) {
-				drawRobot(g2d, robot, ROBOT_COLOR, ROBOT_OUTLINE_COLOR);
+				drawRobot(g2d, robot, ROBOT_COLOR, ROBOT_OUTLINE_COLOR, scale);
 			}
 		}
 
 		// Draw selected robot.
 		if (robots.contains(selectedRobot)) {
-			drawRobot(g2d, selectedRobot, SELECTED_COLOR, SELECTED_OUTLINE_COLOR);
+			drawRobot(g2d, selectedRobot, SELECTED_COLOR, SELECTED_OUTLINE_COLOR, scale);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context.
 	 * @param robot the robot to draw.
 	 */
-	private void drawRobot(Graphics2D g2d, Robot robot, Color iconColor, Color outlineColor) {
+	private void drawRobot(Graphics2D g2d, Robot robot, Color iconColor, Color outlineColor, double scale) {
 
 		if (robot != null) {
 
@@ -148,8 +148,8 @@ public class RobotMapLayer implements SettlementMapLayer {
 			double centerX = circleDiameter / 2D;
 			double centerY = circleDiameter / 2D;
 
-			double translationX = (-1D * robot.getXLocation() * mapPanel.getScale() - centerX);
-			double translationY = (-1D * robot.getYLocation() * mapPanel.getScale() - centerY);
+			double translationX = (-1D * robot.getXLocation() * scale - centerX);
+			double translationY = (-1D * robot.getYLocation() * scale - centerY);
 
 			// Apply graphic transforms for label.
 			AffineTransform newTransform = new AffineTransform(saveTransform);
@@ -158,16 +158,22 @@ public class RobotMapLayer implements SettlementMapLayer {
 			g2d.setTransform(newTransform);
 
 			// Set color outline color.
-			g2d.setColor(outlineColor);
+			//g2d.setColor(outlineColor);
 
 			// Draw outline circle.
-			g2d.fillOval(0,  0, 11, 11);
+			//g2d.fillOval(0,  0, 11, 11);
 
 			// Set circle color.
 			g2d.setColor(iconColor);
 
-			// Draw circle.
-			g2d.fillOval(0, 0, 10, 10);
+			int size = 1;
+			if (scale > 0)
+				size = (int)(size * scale/2.5);
+			else if (scale <= 0)
+				size = 1;
+			
+			// Draw circle
+			g2d.fillOval(0, 0, size, size);
 
 			// Restore original graphic transforms.
 			g2d.setTransform(saveTransform);

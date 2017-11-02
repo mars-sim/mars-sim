@@ -68,7 +68,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 		g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
 		// Draw all people.
-		drawPeople(g2d, settlement);
+		drawPeople(g2d, settlement, scale);
 
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -111,7 +111,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement to draw people at.
 	 */
-	private void drawPeople(Graphics2D g2d, Settlement settlement) {
+	private void drawPeople(Graphics2D g2d, Settlement settlement, double scale) {
 
 		List<Person> people = getPeopleToDisplay(settlement);
 		Person selectedPerson = mapPanel.getSelectedPerson();
@@ -121,13 +121,13 @@ public class PersonMapLayer implements SettlementMapLayer {
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (!person.equals(selectedPerson)) {
-				drawPerson(g2d, person, PERSON_COLOR, PERSON_OUTLINE_COLOR);
+				drawPerson(g2d, person, PERSON_COLOR, PERSON_OUTLINE_COLOR, scale);
 			}
 		}
 
 		// Draw selected person.
 		if (people.contains(selectedPerson)) {
-			drawPerson(g2d, selectedPerson, SELECTED_COLOR, SELECTED_OUTLINE_COLOR);
+			drawPerson(g2d, selectedPerson, SELECTED_COLOR, SELECTED_OUTLINE_COLOR, scale);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context.
 	 * @param person the person to draw.
 	 */
-	private void drawPerson(Graphics2D g2d, Person person, Color iconColor, Color outlineColor) {
+	private void drawPerson(Graphics2D g2d, Person person, Color iconColor, Color outlineColor, double scale) {
 
 		if (person != null) {
 
@@ -147,8 +147,8 @@ public class PersonMapLayer implements SettlementMapLayer {
 			double centerX = circleDiameter / 2D;
 			double centerY = circleDiameter / 2D;
 
-			double translationX = (-1D * person.getXLocation() * mapPanel.getScale() - centerX);
-			double translationY = (-1D * person.getYLocation() * mapPanel.getScale() - centerY);
+			double translationX = (-1D * person.getXLocation() * scale - centerX);
+			double translationY = (-1D * person.getYLocation() * scale - centerY);
 
 			// Apply graphic transforms for label.
 			AffineTransform newTransform = new AffineTransform(saveTransform);
@@ -157,16 +157,22 @@ public class PersonMapLayer implements SettlementMapLayer {
 			g2d.setTransform(newTransform);
 
 			// Set color outline color.
-			g2d.setColor(outlineColor);
+			//g2d.setColor(outlineColor);
 
 			// Draw outline circle.
-			g2d.fillOval(0,  0, 11, 11);
+			//g2d.fillOval(0,  0, 11, 11);
 
 			// Set circle color.
 			g2d.setColor(iconColor);
 
-			// Draw circle.
-			g2d.fillOval(0, 0, 10, 10);
+			int size = 1;
+			if (scale > 0)
+				size = (int)(size * scale/2.5);
+			else if (scale <= 0)
+				size = 1;
+			
+			// Draw circle
+			g2d.fillOval(0, 0, size, size);
 
 			// Restore original graphic transforms.
 			g2d.setTransform(saveTransform);

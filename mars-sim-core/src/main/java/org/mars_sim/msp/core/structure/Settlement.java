@@ -101,7 +101,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	public static final int SUPPLY_DEMAND_REFRESH = 10;
 
-	private static final int RESOURCE_UPDATE_FREQ = 25;
+	private static final int RESOURCE_UPDATE_FREQ = 50;
 
 	private static final int SAMPLING_FREQ = 250; // in millisols
 
@@ -161,7 +161,13 @@ implements Serializable, LifeSupportType, Objective {
 
 	public double dessertsReplenishmentRate = 0.7;
 
-	private double iceProbabilityValue = 0, regolithProbabilityValue = 0;
+	private double iceProbabilityValue = 0;
+	
+	private double regolithProbabilityValue = 0;
+
+	private double oxygenProbabilityValue = 0;
+	
+	private double methaneProbabilityValue = 0;
 
 	private double outside_temperature; 
 	
@@ -982,10 +988,9 @@ implements Serializable, LifeSupportType, Objective {
 		int overCrowding = getNumCurrentPopulation() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
-			Iterator<Person> i = getInhabitants().iterator();
-			while (i.hasNext()) {
-				PhysicalCondition condition = i.next().getPhysicalCondition();
-				condition.setStress(condition.getStress() + stressModifier);
+			for (Person p : getInhabitants()) {
+				PhysicalCondition c = p.getPhysicalCondition();
+				c.setStress(c.getStress() + stressModifier);
 			}
 		}
 
@@ -1057,6 +1062,14 @@ implements Serializable, LifeSupportType, Objective {
 	    if (remainder == 10) {
 	    	regolithProbabilityValue = computeRegolithProbability();
 	    }
+
+	    //if (remainder == 15) {
+	    //	oxygenProbabilityValue = computeOxygenProbability();
+	    //}
+
+	    //if (remainder == 20) {
+	    //	methaneProbabilityValue = computeMethaneProbability();
+	    //}
 	    
 	    if (!adjacentBuildingMap.isEmpty()) {
 			int numConnectors = adjacentBuildingMap.size();
@@ -1080,82 +1093,64 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	public void sampleOneResource(int resourceType) {
-	     String resource = null;
+		AmountResource resource = null;
 
-			if (resourceType == 0) {
-				resource = LifeSupportType.OXYGEN;
-			}
-			else if (resourceType == 1) {
-				resource = "hydrogen";
-			}
-			else if (resourceType == 2) {
-				resource = "carbon dioxide";
-				}
-			else if (resourceType == 3) {
-				resource = "methane";
-				}
-			else if (resourceType == 4) {
-				resource = LifeSupportType.WATER;
-			}
-			else if (resourceType == 5) {
-				resource = "grey water";
-			}
-			else if (resourceType == 6) {
-				resource = "black water";
-			}
-			else if (resourceType == 7) {
-				resource = "rock samples";
-			}
-			else if (resourceType == 8) {
-				resource = "ice";
-			}
+		if (resourceType == 0) {
+			resource = ResourceUtil.oxygenAR;//LifeSupportType.OXYGEN;
+		}
+		else if (resourceType == 1) {
+			resource = ResourceUtil.hydrogenAR;//"hydrogen";
+		}
+		else if (resourceType == 2) {
+			resource = ResourceUtil.carbonDioxideAR;//"carbon dioxide";
+		}
+		else if (resourceType == 3) {
+			resource = ResourceUtil.methaneAR;//"methane";
+		}
+		else if (resourceType == 4) {
+			resource = ResourceUtil.waterAR;//LifeSupportType.WATER;
+		}
+		else if (resourceType == 5) {
+			resource = ResourceUtil.greyWaterAR;//"grey water";
+		}
+		else if (resourceType == 6) {
+			resource = ResourceUtil.blackWaterAR;//"black water";
+		}
+		else if (resourceType == 7) {
+			resource = ResourceUtil.rockSamplesAR;//"rock samples";
+		}
+		else if (resourceType == 8) {
+			resource = ResourceUtil.iceAR;//"ice";
+		}
 
-			AmountResource ar = AmountResource.findAmountResource(resource);
-			//double newAmount = getInventory().getAmountResourceStored(ar, false);
-			//setOneResource(resourceType, newAmount);
-	//}
-	/*
-	 * Saves the amount of a resource onto the resourceStat map
-	 */
-	//public void setOneResource(int resourceType, double newAmount) {
 
-		//if (resourceStat.get(solCache) != null) {
-			if (resourceStat.containsKey(solCache)) {
-				Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
-			//Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
-			//if (todayMap != null) {
-				//List<Double> list = todayMap.get(resourceType);
-				//if (list != null) {
-				if (todayMap.containsKey(resourceType)) {
-					List<Double> list = todayMap.get(resourceType);
-					double newAmount = getInventory().getAmountResourceStored(ar, false);
-					list.add(newAmount);
-					//todayMap.put(resourceType, list); // is it needed?
-					//resourceStat.put(solCache, todayMap); // is it needed?
-					//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
-				}
+		if (resourceStat.containsKey(solCache)) {
+			Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
 
-				else {
-					List<Double> list = new ArrayList<>();
-					double newAmount = getInventory().getAmountResourceStored(ar, false);
-					list.add(newAmount);
-					//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
-					todayMap.put(resourceType, list);
-					//resourceStat.put(solCache, todayMap); // is it needed?
-					//System.out.println("add a new amount and a new resource map");
-				}
-
-			} else {
-				List<Double> list = new ArrayList<>();
-				Map<Integer, List<Double>> todayMap = new HashMap<>();
-				double newAmount = getInventory().getAmountResourceStored(ar, false);
+			if (todayMap.containsKey(resourceType)) {
+				List<Double> list = todayMap.get(resourceType);
+				double newAmount = getInventory().getAmountResourceStored(resource, false);
 				list.add(newAmount);
-				//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
-				todayMap.put(resourceType, list);
-				resourceStat.put(solCache, todayMap);
-				//System.out.println("add a new amount, a new resource map and a new sol");
+
 			}
-		//}
+
+			else {
+				List<Double> list = new ArrayList<>();
+				double newAmount = getInventory().getAmountResourceStored(resource, false);
+				list.add(newAmount);
+				todayMap.put(resourceType, list);
+			}
+
+		} 
+		
+		else {
+			List<Double> list = new ArrayList<>();
+			Map<Integer, List<Double>> todayMap = new HashMap<>();
+			double newAmount = getInventory().getAmountResourceStored(resource, false);
+			list.add(newAmount);
+			todayMap.put(resourceType, list);
+			resourceStat.put(solCache, todayMap);
+		}
 	}
 
 
@@ -3312,39 +3307,50 @@ implements Serializable, LifeSupportType, Objective {
         double requiredDrinkingWaterOrbit = water_consumption * getNumCurrentPopulation() *
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
-        // If stored water is less than 10% of required drinking water for Orbit, wash water should be rationed.
+        // If stored water is less than 20% of required drinking water for Orbit, wash water should be rationed.
         if (storedWater < (requiredDrinkingWaterOrbit * .0025D)) {
             result = 11;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 64;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .005D)) {
             result = 10;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 48;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .01D)) {
             result = 9;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 32;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .015D)) {
             result = 8;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 24;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .025D)) {
             result = 7;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 16;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .05D)) {
             result = 6;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 12;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .075D)) {
             result = 5;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 8;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
             result = 4;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 6;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .125D)) {
             result = 3;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 4;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .15D)) {
             result = 2;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 3;
         }
         else if (storedWater < (requiredDrinkingWaterOrbit * .2D)) {
             result = 1;
+            GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 2;
         }
         return result;
     }
@@ -3550,22 +3556,30 @@ implements Serializable, LifeSupportType, Objective {
 
         double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
         ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
-    	if (ice_value > 4000)
-    		ice_value = 4000;
-    	if (ice_value < 2)
-    		return 0;
+    	if (ice_value > 8000)
+    		ice_value = 8000;
+    	if (ice_value < 1)
+    		ice_value = 1;
 
         double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
         water_value = water_value * GoodsManager.WATER_VALUE_MODIFIER;
-        if (water_value > 4000)
-    		water_value = 4000;
-    	if (water_value < 3)
-    		return 0;
+        if (water_value > 8000)
+    		water_value = 8000;
+    	if (water_value < 1)
+    		water_value =  1;
 
-        // 2016-10-14 Compare the available amount of water and ice reserve
+        double oxygen_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.oxygenAR));
+        oxygen_value = oxygen_value * GoodsManager.OXYGEN_VALUE_MODIFIER;
+        if (oxygen_value > 4000)
+        	oxygen_value = 4000;
+    	if (oxygen_value < 1)
+    		oxygen_value = 1;
+    	
+    	// 2016-10-14 Compare the available amount of water and ice reserve
         double ice_available = getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
         double water_available = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
-
+        double oxygen_available = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+        
         int pop = getAllAssociatedPeople().size();//getCurrentPopulationNum();
 
         // TODO: create a task to find local ice and simulate the probability of finding local ice and its quantity
@@ -3581,7 +3595,7 @@ implements Serializable, LifeSupportType, Objective {
         	result = 20D * result + (MIN_WATER_RESERVE * pop - water_available);
         }
         else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
-        	result = 10D * result + (MIN_WATER_RESERVE * pop - water_available) ;
+        	result = 10D * result + (MIN_WATER_RESERVE * pop - water_available);
         }
         else
         	result = 5D * result + (MIN_WATER_RESERVE * pop - water_available);
@@ -3597,6 +3611,14 @@ implements Serializable, LifeSupportType, Objective {
 		return regolithProbabilityValue;
 	}
 
+	public double getOxygenProbabilityValue() {
+		return oxygenProbabilityValue;
+	}
+
+	public double getMethaneProbabilityValue() {
+		return methaneProbabilityValue;
+	}
+	
 	public double getOutsideTemperature() {
 		return outside_temperature;
 	}

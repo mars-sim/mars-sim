@@ -2,7 +2,6 @@
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dee6a80651fe420b85adf22c4ca79574)](https://www.codacy.com/app/mokun/mars-sim?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mars-sim/mars-sim&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/mars-sim/mars-sim.svg?branch=master)](https://travis-ci.org/mars-sim/mars-sim)
-[![Dependency Status](https://www.versioneye.com/user/projects/9ffb7e9ead4f58524bc9/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5936417e98442b00398eb873?child=summary#dialog_dependency_badge)
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 
@@ -12,7 +11,9 @@ The Mars Simulation Project is a Java based open source project that simulates t
 
 
 ## Simulation
-mars-sim is a general purpose simulation for the human settlement on Mars. While computer simulation is a particularly useful tool for the mathematical modeling of many systems or branches of science (such as in physics, climatology, chemistry, biology, economics, psychology, and social science), mars-sim attempts to simulate the behaviors of these systems and sub-systems under the Object-Oriented programming paradigm of Java. 
+mars-sim is a "general purpose" simulator depicting the early development of the human settlements on Mars. According to Encyclopædia Britannica, Computer simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. A simulation uses a mathematical description, or model, of a real system in the form of a computer program. 
+
+mars-sim attempts to incorporate Mathematical modeling of many systems or scientific disciplines (such as in physics, chemistry, biology, economics, psychology, and social science) and simulate the behaviors of these systems under the Object-Oriented programming paradigm in Java. 
 
 As each settler in mars-sim is a computer agent possessing certain properties, based on these properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
 

@@ -284,6 +284,7 @@ public class LivingAccommodations extends Function implements Serializable {
         if (level != 0)
             usage = usage / 1.5D / level / 2D;
  
+        
         //System.out.println("numBed : " + numBed);
         //System.out.println("level : " + level);
         //System.out.println("usage : " + usage);

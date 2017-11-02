@@ -440,29 +440,33 @@ extends VehicleMission {
 
 		Vehicle v = getVehicle();
 		Rover rover = (Rover) v;
-/*		
+		
 		// If rover is not parked at settlement, park it.
-		if (v != null && v.getSettlement() == null) {
-			disembarkSettlement.getInventory().storeUnit(v);
+		if (v != null) {// && v.getSettlement() == null) {
 			
-			v.determinedSettlementParkedLocationAndFacing();
-
+			if (v.getSettlement() == null) {
+				disembarkSettlement.getInventory().storeUnit(v);
+				v.determinedSettlementParkedLocationAndFacing();
+			}
+			
+/*			
 			// Test if this rover is towing another vehicle or is being towed
 	        boolean tethered = v.isBeingTowed() || (v.getTowingVehicle() != null);
 	        
 			// Add vehicle to a garage if available.
 	        if (!tethered)
 	        	BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
-
+*/
 	        // Retrieve the person if he/she is dead
 			for (Person p : rover.getCrew()) {
 	            if (p.isDead()) {
 					v.getInventory().retrieveUnit(p);
+                	p.setBuriedSettlement(disembarkSettlement);
 	            	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
 	            }
 			}
 		}
-*/
+
 		// Have member exit rover if necessary.
 		if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
 			// member should be in a vehicle

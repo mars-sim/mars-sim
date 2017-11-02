@@ -392,13 +392,13 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		mainBox.add(scrollPane,  BorderLayout.CENTER);
+		mainBox.add(scrollPane);//,  BorderLayout.CENTER);
 		
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
 		missionCustomPane = new JPanel(customPanelLayout);
 		missionCustomPane.setBorder(new MarsPanelBorder());
-		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		//missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		scrollPane.add(missionCustomPane);
 
 		// Create custom empty panel.

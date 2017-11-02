@@ -65,8 +65,8 @@ implements ClockListener {
 	private double yPos;
 	private double rotation;
 	private double scale;
-	private int width;
-	private int height;
+	//private int width;
+	//private int height;
 
 	/** Last X mouse drag position. */
 	private int xLast;
@@ -86,8 +86,8 @@ implements ClockListener {
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
 
-	private Graphics dbg;
-	private Image dbImage = null;
+	//private Graphics dbg;
+	//private Image dbImage = null;
 	
 	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 	private MainScene mainScene;
@@ -104,6 +104,7 @@ implements ClockListener {
 		super();
 		this.settlementWindow = settlementWindow;
 		this.mainScene = desktop.getMainScene();
+/*
 		if (mainScene != null) {
 			width = mainScene.getWidth();
 			height = mainScene.getHeight();
@@ -112,7 +113,7 @@ implements ClockListener {
 			width = SettlementWindow.HORIZONTAL;
 			height = SettlementWindow.VERTICAL;
 		}
-		
+*/		
 		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
 
 		setLayout(new BorderLayout());

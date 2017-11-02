@@ -1775,32 +1775,35 @@ public class MainScene {
 		// zoom.setMinHeight(100);
 		// zoom.setMaxHeight(200);
 		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
-		zoomSlider.setMin(-2);
-		zoomSlider.setMax(5);
-		zoomSlider.setValue(0);
-		zoomSlider.setMajorTickUnit(5);
+		zoomSlider.setMin(1);
+		zoomSlider.setMax(30);
+		zoomSlider.setValue(5);
+		zoomSlider.setMajorTickUnit(29);	
+		zoomSlider.setMinorTickCount(1);	
 		zoomSlider.setShowTickLabels(true);
 		zoomSlider.setShowTickMarks(true);
-		zoomSlider.setBlockIncrement(.2);
+		zoomSlider.setSnapToTicks(false);
+		zoomSlider.setBlockIncrement(.5);
 		zoomSlider.setOrientation(Orientation.VERTICAL);
 		zoomSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 
 		setQuickToolTip(zoomSlider, Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-
 		// detect dragging on zoom scroll bar
 		zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
-				// Change scale of map based on slider position.
-				int sliderValue = (int) new_val.doubleValue();
-				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
-				double newScale = defaultScale;
-				if (sliderValue > 0) {
-					newScale += defaultScale * (double) sliderValue * SettlementTransparentPanel.ZOOM_CHANGE;
-				} else if (sliderValue < 0) {
-					newScale = defaultScale
-							/ (1D + ((double) sliderValue * -1D * SettlementTransparentPanel.ZOOM_CHANGE));
+				if (old_val != new_val) {
+					// Change scale of map based on slider position.
+					double sliderValue = new_val.doubleValue();
+					double d = SettlementMapPanel.DEFAULT_SCALE;
+					double newScale = 0;
+					if (sliderValue > 0) {
+						newScale = sliderValue;//* SettlementTransparentPanel.ZOOM_CHANGE;
+					} 
+					//else if (sliderValue < 0) {
+					//	newScale = 1 + sliderValue;//* SettlementTransparentPanel.ZOOM_CHANGE));
+					//}
+					mapPanel.setScale(newScale);
 				}
-				mapPanel.setScale(newScale);
 			}
 		});
 	}
