@@ -98,7 +98,7 @@ public class MarsClock implements Serializable {
 	private static final String ONE_ZERO = "0";
 	private static final String TWO_ZEROS = "00";
 	private static final String THREE_ZEROS = "000";
-	private static final String UMST = " (UMST)";
+	private static final String UMST = "(UMST) ";
 	private static final String EARLY = "Early ";
 	private static final String MID = "Mid ";
 	private static final String LATE = "Late ";

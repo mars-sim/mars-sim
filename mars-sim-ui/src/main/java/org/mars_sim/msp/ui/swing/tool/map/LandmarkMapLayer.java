@@ -86,6 +86,7 @@ implements MapLayer {
 		g.setFont(MAP_LABEL_FONT);
 
 		// Draw the landmark name.
-		g.drawString(landmark.getLandmarkName(), locLabelX, locLabelY);
+		if (landmark != null)
+			g.drawString(landmark.getLandmarkName(), locLabelX, locLabelY);
 	}
 }

@@ -10,9 +10,14 @@ package org.mars_sim.msp.core.time;
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
@@ -32,13 +37,13 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private GregorianCalendar cal;
+	private GregorianCalendar gregCal;
 
 	private SimpleDateFormat f0, f2, f1, f3;
 
 	private SimpleTimeZone zone;
 
-
+	private ZonedDateTime zonedDateTime;
 
 	/**
 	 * Constructor.
@@ -55,18 +60,18 @@ implements Serializable {
 		// see http://stackoverflow.com/questions/26142864/how-to-get-utc0-date-in-java-8
 
 		// 2017-03-23 Use ZonedDate
-		ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
+		zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
 
 		// Convert to GregorianCalendar
-		cal = GregorianCalendar.from(zonedDateTime);
+		gregCal = GregorianCalendar.from(zonedDateTime);
 
 		// Set GMT timezone for calendar
 		zone = new SimpleTimeZone(0, "GMT");
 
 		// see http://www.diffen.com/difference/GMT_vs_UTC
 
-		cal.setTimeZone(zone);
-		cal.clear();
+		gregCal.setTimeZone(zone);
+		gregCal.clear();
 
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
@@ -86,7 +91,7 @@ implements Serializable {
 		f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 		f2.setTimeZone(zone);
 		try {
-			cal.setTime(f2.parse(fullDateTimeString));
+			gregCal.setTime(f2.parse(fullDateTimeString));
 		} catch (Exception ex) {//ParseException ex) {
 			ex.printStackTrace();
 			//throw new IllegalStateException(ex);
@@ -118,7 +123,7 @@ implements Serializable {
 	}
 
 	public Calendar getCalender() {
-		return cal;
+		return gregCal;
 	}
 
 	/**
@@ -288,7 +293,7 @@ implements Serializable {
 	 */
 	//2015-01-08 Added if clause
 	public String getTimeStampF0() {
-		String result = f0.format(cal.getTime());
+		String result = f0.format(gregCal.getTime());
 		if (result == null) result = "0";
 		return result;
 	}
@@ -299,7 +304,7 @@ implements Serializable {
 	 */
 	//2016-09-24 Added getTimeStampF1()
 	public String getTimeStampF1() {
-		String result = f1.format(cal.getTime());
+		String result = f1.format(gregCal.getTime());
 		if (result == null) result = "0";
 		return result;
 	}
@@ -318,7 +323,7 @@ implements Serializable {
 	 * @param ms milliseconds added to the calendar
 	 */
 	public void addTime(long ms) {
-		cal.add(Calendar.MILLISECOND, (int) ms);
+		gregCal.add(Calendar.MILLISECOND, (int) ms);
 	}
 
 	/**
@@ -332,12 +337,12 @@ implements Serializable {
 
 	public int getDayOfMonth()
 	{
-		return cal.get(Calendar.DATE);
+		return gregCal.get(Calendar.DATE);
 	}
 
 	public int getMonth()
 	{
-		return cal.get(Calendar.MONTH);
+		return gregCal.get(Calendar.MONTH);
 	}
 
 	// Used by scheduleSecondTask() in EarthMinimalClock only
@@ -372,10 +377,10 @@ implements Serializable {
 	}
 
 	public int getYear() {
-		return cal.get(Calendar.YEAR);
+		return gregCal.get(Calendar.YEAR);
 	}
 
-	public int getSecond() { return cal.get(Calendar.SECOND);}
+	public int getSecond() { return gregCal.get(Calendar.SECOND);}
 
 	public String getSecondString() {
 		StringBuilder s = new StringBuilder();
@@ -387,7 +392,7 @@ implements Serializable {
 		return s.toString();
 	}
 
-	public int getMinute() { return cal.get(Calendar.MINUTE);}
+	public int getMinute() { return gregCal.get(Calendar.MINUTE);}
 
 	public String getMinuteString() {
 		StringBuilder s = new StringBuilder();
@@ -399,7 +404,7 @@ implements Serializable {
 		return s.toString();
 	}
 
-	public int getHour() { return cal.get(Calendar.HOUR);}
+	public int getHour() { return gregCal.get(Calendar.HOUR);}
 
 	public String getHourString() {
 		StringBuilder s = new StringBuilder();
@@ -412,7 +417,7 @@ implements Serializable {
 	}
 
 	public String getDayOfWeekString() {
-		int w = cal.get(Calendar.DAY_OF_WEEK);
+		int w = gregCal.get(Calendar.DAY_OF_WEEK);
 		StringBuilder s = new StringBuilder();
 		if (w == Calendar.SUNDAY)
 			s.append("Sunday");
@@ -433,8 +438,27 @@ implements Serializable {
 		return s.toString();
 	}
 
+	public ZonedDateTime convert2ZonedDT() {
+		return ZonedDateTime.ofInstant(gregCal.toInstant(), ZoneId.of("UTC"));
+		//return zonedDateTime = gregCal.toZonedDateTime();
+	}
+	
+	public LocalDate getLocalDate() {
+		return convert2ZonedDT().toLocalDate();
+	}
+
+	public LocalTime getLocalTime() {
+		return convert2ZonedDT().toLocalTime();
+	}
+	
+	//public Date getDT() {
+	//	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    //LocalDate localDate = zonedDateTime //LocalDate.parse(dateString, formatter);
+	//    Date.from(java.time.ZonedDateTime.now().toInstant());
+	//}
+	
 	public void destroy() {
-		cal = null;
+		gregCal = null;
 		f0 = null;
 		f2 = null;
 		f1 = null;

@@ -429,16 +429,18 @@
 
 #rich-green Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
-     -fx-stroke-width: 4;
+    -fx-stroke-width: 4;
     
 }
 
 #rich-red {
+	-fx-background-color: #f8c202;
+		
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);	
-    -fx-background-insets: 0,0,0,0;
+    -fx-background-insets: 4,0,0,0;
     -fx-background-radius: 2,2,2,2;
     -fx-padding: 0 0 0 0;
-    -fx-text-fill: #cc6308;
+    -fx-text-fill: #654b00;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-stroke-width: 4;
@@ -472,6 +474,17 @@
 #rich-green:hover {
     -fx-font-weight: italic;
 }
+
+#rich-date {
+	-jfx-default-color: #654b00;
+    -fx-padding: 0 5 0 5;
+	-fx-background-color: #f8c202;
+	-fx-text-fill: #654b00;
+	-fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Monospaced";
+}
+
 
 #save-label {
     -fx-background-insets: 0,1,2,3;

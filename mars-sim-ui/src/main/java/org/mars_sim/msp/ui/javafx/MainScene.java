@@ -12,12 +12,14 @@ import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 
 import com.jfoenix.controls.JFXTabPane;
+import com.jfoenix.controls.JFXTimePicker;
 import com.jfoenix.controls.JFXToggleButton;
 
 import org.controlsfx.control.MaskerPane;
@@ -84,6 +86,7 @@ import javafx.scene.input.ScrollEvent;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -179,7 +182,7 @@ public class MainScene {
 	// private static final String ESC_TO_RESUME = "ESC to resume";
 	// private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
-	private static final String EARTH_DATE_TIME = " ";//EARTH : ";
+	//private static final String EARTH_DATE_TIME = " ";//EARTH : ";
 	private static final String MARS_DATE_TIME = " ";//MARS : ";
 	// private static final String UMST = " (UMST)";
 	private static final String ONE_SPACE = " ";
@@ -252,10 +255,13 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
+	private JFXDatePicker datePickerFX;
+	private JFXTimePicker timePickerFX;
+	
 	private HBox earthTimeBox;
 	private HBox marsTimeBox;
 
-	private Label earthTime;
+	//private Label earthTime;
 	private Label lastSaveLabel;
 	private Label tpsLabel;
 	private Label upTimeLabel;
@@ -949,28 +955,70 @@ public class MainScene {
 
 		if (earthClock == null)
 			earthClock = masterClock.getEarthClock();
-
+/*
 		earthTime = new Label();
 		earthTime.setId("rich-green");
 		
 		setQuickToolTip(earthTime, "Earth Time");
+*/
+		datePickerFX = new JFXDatePicker();
+		datePickerFX.setValue(earthClock.getLocalDate());
+		datePickerFX.setEditable(false);
+		//datePickerFX.setDefaultColor(Color.valueOf("#065185"));
+		//datePickerFX.setOverLay(true);
+		datePickerFX.setShowWeekNumbers(true);
+		datePickerFX.setPromptText("Earth Date");
+		datePickerFX.setId("rich-date");
+
+		setQuickToolTip(datePickerFX, "Earth Date");
+		
+		timePickerFX = new JFXTimePicker();
+		timePickerFX.setValue(earthClock.getLocalTime());
+		//timePickerFX.setIs24HourView(true);
+		timePickerFX.setEditable(false);
+		//timePickerFX.setDefaultColor(Color.valueOf("#065185"));
+		//blueDatePicker.setOverLay(true);
+		timePickerFX.setPromptText("Earth Time");
+		timePickerFX.setId("rich-date");
+		
+		setQuickToolTip(datePickerFX, "Earth Time");
+		
+		HBox box = new HBox(5, datePickerFX, timePickerFX);
+		
+		final String cssDefault = "-fx-background-color: transparent;"
+				+ "-fx-border-color: #065185;\n"
+                //+ "-fx-border-insets: 3;\n"
+				+ "-fx-border-radius:0;\n"
+                + "-fx-border-width:0;\n";
+                //+ "-fx-border-style: dashed;\n";
+		
+		earthTimeBox = new HBox(box);
+		//earthTimeBox.getChildren().addAll(timePickerFX, timePickerFX);
+		//earthTimeBox.setStyle(cssDefault);
+		earthTimeBox.setPadding(new Insets(4,0,0,0));
+
+		earthTimeBox.setAlignment(Pos.CENTER);
+
+		
+		if (OS.contains("linux")) {
+			earthTimeBox.setMaxWidth(LINUX_WIDTH+45);
+			//earthTimeBox.setPrefSize(LINUX_WIDTH+30, 29); // 270
+			datePickerFX.setPrefSize(160, 29);
+			timePickerFX.setPrefSize(140, 29);
+		} else if (OS.contains("mac")) {
+			earthTimeBox.setMaxWidth(MACOS_WIDTH+30);
+			//earthTimeBox.setPrefSize(MACOS_WIDTH+20, 29);  // 230
+			datePickerFX.setPrefSize(135, 29);
+			timePickerFX.setPrefSize(115 - 120, 29);
+		} else {
+			earthTimeBox.setMaxWidth(WIN_WIDTH+30);
+			//earthTimeBox.setPrefSize(WIN_WIDTH+10, 25);
+			datePickerFX.setPrefSize(130, 25);
+			timePickerFX.setPrefSize(110, 25);
+		}
 		
 
-		earthTimeBox = new HBox(earthTime);
-		earthTimeBox.setId("rich-green");
 
-		earthTimeBox.setAlignment(Pos.CENTER_LEFT);
-
-		if (OS.contains("linux")) {
-			earthTimeBox.setMaxWidth(LINUX_WIDTH);
-			earthTimeBox.setPrefSize(LINUX_WIDTH, 29);
-		} else if (OS.contains("mac")) {
-			earthTimeBox.setMaxWidth(MACOS_WIDTH);
-			earthTimeBox.setPrefSize(MACOS_WIDTH, 30);
-		} else {
-			earthTimeBox.setMaxWidth(WIN_WIDTH);
-			earthTimeBox.setPrefSize(WIN_WIDTH, 35);
-		}
 
 	}
 
@@ -1514,42 +1562,40 @@ public class MainScene {
 	public void createMarsTimeBar() {	
 		
 		marsTimeButton = new Button();
-		marsTimeButton.setStyle("-fx-background-color: transparent;");
+		//marsTimeButton.setStyle("-fx-background-color: transparent;");
 		marsTimeButton.setId("rich-red");
 		
 		marsTimeBox = new HBox(marsTimeButton);
-		marsTimeBox.setId("rich-red");
+		//marsTimeBox.setId("rich-red");
 		
 		marsTimeBox.setAlignment(Pos.CENTER_LEFT);
 
-		//marsTimeButton.setMaxWidth(Double.MAX_VALUE);
+		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			marsTimeBox.setMaxWidth(LINUX_WIDTH);
+			marsTimeButton.setPrefSize(LINUX_WIDTH-30, 29);
 			marsTimeBox.setPrefSize(LINUX_WIDTH, 29);
 		} else if (OS.contains("mac")) {
-			marsTimeBox.setMaxWidth(MACOS_WIDTH);
-			marsTimeBox.setPrefSize(MACOS_WIDTH, 30);
-		} else {
-			marsTimeBox.setMaxWidth(WIN_WIDTH);
+			marsTimeButton.setPrefSize(MACOS_WIDTH-20, 26);
+			marsTimeBox.setPrefSize(MACOS_WIDTH, 26);
+		} else if (OS.contains("win")) {
+			marsTimeButton.setPrefSize(WIN_WIDTH-20, 35);
 			marsTimeBox.setPrefSize(WIN_WIDTH, 35);
 		}
 		
-		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
-		
+		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");	
 
-		if (masterClock == null) {
+		if (masterClock == null)
 			masterClock = sim.getMasterClock();
-		}
 
-		if (marsClock == null) {
+		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
-		}
 
 		marsTimeButton.setOnAction(e -> {
 			if (marsCalendarPopup.isShowing()) {
 				marsCalendarPopup.hide();// close();
-			} else {
-				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.RIGHT, -20, 25);
+			} 
+			else {
+				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.RIGHT, -10, 25);
 			}
 			e.consume();
 		});
@@ -2451,7 +2497,7 @@ public class MainScene {
 		jfxTabPane.getStylesheets().clear();
 
 		setStylesheet(marsTimeButton, cssFile);
-		setStylesheet(earthTime, cssFile);
+		//setStylesheet(earthTime, cssFile);
 
 		setStylesheet(lastSaveLabel, cssFile);
 		setStylesheet(cacheToggle, cssFile);
@@ -2472,6 +2518,21 @@ public class MainScene {
 		setStylesheet(musicSlider, cssFile);
 		setStylesheet(soundEffectSlider, cssFile);
 
+		datePickerFX.getStylesheets().clear();
+		datePickerFX.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+
+//		if (cssFile.toLowerCase().contains("blue"))
+//			datePickerFX.setDefaultColor(Color.valueOf("#065185"));
+//		else
+//			datePickerFX.setDefaultColor(Color.valueOf("#654b00"));
+
+		timePickerFX.getStylesheets().clear();
+		timePickerFX.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+//		if (cssFile.toLowerCase().contains("blue"))
+//			timePickerFX.setDefaultColor(Color.valueOf("#065185"));
+//		else
+//			timePickerFX.setDefaultColor(Color.valueOf("#654b00"));
+		
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
 			if (settlementWindow != null) {
@@ -2532,6 +2593,11 @@ public class MainScene {
 		t.setStyle(getClass().getResource(cssFile).toExternalForm());
 	}
 
+	public void setStylesheet(Node n, String cssFile) {
+		//n.getStylesheets().clear();
+		//n.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}
+	
 	public void setStylesheet(JFXSlider s, String cssFile) {
 		s.getStylesheets().clear();
 		s.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -2756,10 +2822,12 @@ public class MainScene {
 				.append(marsClock.getTrucatedTimeStringUMST());
 		marsTimeButton.setText(m.toString());
 
-		StringBuilder e = new StringBuilder();
-		e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF0());
-		earthTime.setText(e.toString());
-
+		//StringBuilder e = new StringBuilder();
+		//e.append(EARTH_DATE_TIME).append(earthClock.getLT());//getTimeStampF0());
+		//earthTime.setText(e.toString());
+		
+		datePickerFX.setValue(earthClock.getLocalDate());
+		timePickerFX.setValue(earthClock.getLocalTime());
 
 		// Check on whether autosave is due
 		if (masterClock.getAutosave()) {

@@ -44,7 +44,7 @@ public class UnitLabelMapLayer extends UnitMapLayer {
         	
         g.setFont(displayInfo.getMapLabelFont());
         
-        if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
+        if (!(displayInfo.isMapBlink(unit) && getBlinkFlag() && unit != null)) {
         	g.drawString(unit.getName(), 
         	labelLocation.getiX(), labelLocation.getiY());
         }
