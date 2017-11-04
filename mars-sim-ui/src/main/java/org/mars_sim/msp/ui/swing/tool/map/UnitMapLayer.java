@@ -68,10 +68,10 @@ abstract class UnitMapLayer implements MapLayer {
         for (Unit unit : units) {
             //UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
-            if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
+            if (unit != null && UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
                 double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
-                if (mapCenter.getAngle(unit.getCoordinates()) < angle) {
+                if ( mapCenter.getAngle(unit.getCoordinates()) < angle) {
                     displayUnit(unit, mapCenter, mapType, g);
                 }
             }

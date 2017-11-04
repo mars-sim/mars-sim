@@ -232,25 +232,28 @@ extends BuildingFunctionPanel {
 		if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 
 			// Add process panels for new processes.
-			//Iterator<ManufactureProcess> i = processes.iterator();
-			//while (i.hasNext()) {
-			for (ManufactureProcess process : processes) {//= i.next();
+			Iterator<ManufactureProcess> i = processes.iterator();
+			while (i.hasNext()) {
+				ManufactureProcess process = i.next();
+			//for (ManufactureProcess process : processes) {//= i.next();
 				if (!processCache.contains(process))
 					processListPane.add(new ManufacturePanel(process, false,  processStringWidth));
 			}
 
 			// Add salvage panels for new salvage processes.
-			//Iterator<SalvageProcess> k = salvages.iterator();
-			//while (k.hasNext()) {
-			for (SalvageProcess salvage : salvages) {//= k.next();
+			Iterator<SalvageProcess> k = salvages.iterator();
+			while (k.hasNext()) {
+				SalvageProcess salvage = k.next();
+			//for (SalvageProcess salvage : salvages) {//= k.next();
 			    if (!salvageCache.contains(salvage))
 			        processListPane.add(new SalvagePanel(salvage, false,  processStringWidth));
 			}
 
 			// Remove process panels for old processes.
-			//Iterator<ManufactureProcess> j = processCache.iterator();
-			//while (j.hasNext()) {
-			for (ManufactureProcess process : processCache) {//= j.next();
+			Iterator<ManufactureProcess> j = processCache.iterator();
+			while (j.hasNext()) {
+				ManufactureProcess process = j.next();
+			//for (ManufactureProcess process : processCache) {//= j.next();
 				if (!processes.contains(process)) {
 					ManufacturePanel panel = getManufacturePanel(process);
 					if (panel != null) processListPane.remove(panel);
@@ -258,9 +261,10 @@ extends BuildingFunctionPanel {
 			}
 
 			// Remove salvage panels for old salvages.
-			//Iterator<SalvageProcess> l = salvageCache.iterator();
-            //while (l.hasNext()) {
-    		for (SalvageProcess salvage : salvageCache) {//= k.next();
+			Iterator<SalvageProcess> l = salvageCache.iterator();
+            while (l.hasNext()) {
+				SalvageProcess salvage = k.next();
+    		//for (SalvageProcess salvage : salvageCache) {//= k.next();
                 if (!salvages.contains(salvage)) {
                     SalvagePanel panel = getSalvagePanel(salvage);
                     if (panel != null) processListPane.remove(panel);

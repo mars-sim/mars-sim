@@ -148,9 +148,9 @@ extends TabPanel {
 		// Create new building selection.
 		buildingComboBoxCache = getManufacturingBuildings();
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
-		buildingComboBox.setOpaque(false);
-		buildingComboBox.setBackground(new Color(51,25,0,128));
-		buildingComboBox.setForeground(Color.orange);
+		//buildingComboBox.setOpaque(false);
+		//buildingComboBox.setBackground(new Color(51,25,0,128));
+		//buildingComboBox.setForeground(Color.orange);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
 		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
@@ -167,9 +167,9 @@ extends TabPanel {
 		processSelectionCache = getAvailableProcesses(workshopBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
 		// 2014-12-01 Modified ManufactureSelectionListCellRenderer() & Added setSelectedIndex(-1)
-		processSelection.setOpaque(false);
-		processSelection.setBackground(new Color(51,25,0,128));
-		processSelection.setForeground(Color.ORANGE);
+		//processSelection.setOpaque(false);
+		//processSelection.setBackground(new Color(51,25,0,128));
+		//processSelection.setForeground(Color.ORANGE);
 		processSelection.setSelectedIndex(-1);
 		processSelection.setRenderer(new ManufactureSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectAvailableProcess")); //$NON-NLS-1$
@@ -182,9 +182,9 @@ extends TabPanel {
 
 		// Create new process button.
 		newProcessButton = new JButton(Msg.getString("TabPanelManufacture.button.createNewProcess")); //$NON-NLS-1$
-        newProcessButton.setOpaque(false);
-        newProcessButton.setBackground(new Color(51,25,0,128));
-        newProcessButton.setForeground(Color.ORANGE);
+        //newProcessButton.setOpaque(false);
+        //newProcessButton.setBackground(new Color(51,25,0,128));
+        //newProcessButton.setForeground(Color.ORANGE);
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.addActionListener(new ActionListener() {
@@ -415,7 +415,7 @@ extends TabPanel {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			//			try {
-			Manufacture workshop = (Manufacture) i.next().getFunction(FunctionType.MANUFACTURE);
+			Manufacture workshop = i.next().getManufacture();
 			result.addAll(workshop.getProcesses());
 			//			}
 			//			catch (BuildingException e) {}
@@ -434,7 +434,7 @@ extends TabPanel {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			//            try {
-			Manufacture workshop = (Manufacture) i.next().getFunction(FunctionType.MANUFACTURE);
+			Manufacture workshop = i.next().getManufacture();
 			result.addAll(workshop.getSalvageProcesses());
 			//            }
 			//            catch (BuildingException e) {}
@@ -509,7 +509,7 @@ extends TabPanel {
 	                }
 	            }
 
-				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
+				Manufacture workshop = manufactureBuilding.getManufacture();
 				if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 					Iterator<ManufactureProcessInfo> j =
 							ManufactureUtil.getManufactureProcessesForTechSkillLevel(
@@ -535,7 +535,7 @@ extends TabPanel {
 		Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
 		try {
 			if (manufactureBuilding != null) {
-				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
+				Manufacture workshop = manufactureBuilding.getManufacture();
 				if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 					Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
 							ManufactureUtil.getSalvageProcessesForTechLevel(

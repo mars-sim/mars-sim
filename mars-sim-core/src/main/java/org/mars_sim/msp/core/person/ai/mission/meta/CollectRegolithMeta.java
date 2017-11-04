@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;

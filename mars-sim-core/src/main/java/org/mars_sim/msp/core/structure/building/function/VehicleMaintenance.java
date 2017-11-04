@@ -131,7 +131,9 @@ implements Serializable {
      * @throws BuildingException if vehicle is not in the building.
      */
     public void removeVehicle(Vehicle vehicle) {
-        if (!containsVehicle(vehicle)) throw new IllegalStateException("Vehicle not in building.");
+        if (!containsVehicle(vehicle)) 
+        	throw new IllegalStateException("Vehicle not in building.");
+        
         else {
             vehicles.remove(vehicle);
 
@@ -170,9 +172,7 @@ implements Serializable {
     public void timePassing(double time) { 
 
         // Check to see if any vehicles are in the garage that don't need to be.
-        //Iterator<Vehicle> i = vehicles.iterator();
-        //while (i.hasNext()) {
-        for (Vehicle vehicle : vehicles) {//= i.next();
+        for (Vehicle vehicle : vehicles) {
             if (!vehicle.isReserved()) {
                 if (vehicle instanceof Crewable) {
                     Crewable crewableVehicle = (Crewable) vehicle;

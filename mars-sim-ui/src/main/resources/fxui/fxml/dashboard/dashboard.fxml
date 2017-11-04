@@ -15,16 +15,13 @@
 <AnchorPane id="AnchorPane" fx:id="mainPane" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/8.0" 
 	xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.dashboard.DashboardController">
    <children>
-      <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 45; -fx-background-color: #222D32;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 45; -fx-background-color: #2A3F54;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
-			<Label fx:id="insertLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="45.0" prefWidth="228.0" text="Mission Control" 
-				textAlignment="CENTER" textFill="#945f16">
+			<Label fx:id="insertLabel" prefHeight="50.0" prefWidth="750.0" text="" textFill="white"
+			    style="-fx-alignment: center;" >
 				<font>
-					<Font name="Verdana Bold" size="18.0" />
+					<Font name="Roboto Bold" size="20.0" />
 				</font>
-				<padding>
- 					<Insets top="5.0" /><Insets left="20.0" />
- 				</padding>
 			</Label>
          </left>
       </JFXToolbar>

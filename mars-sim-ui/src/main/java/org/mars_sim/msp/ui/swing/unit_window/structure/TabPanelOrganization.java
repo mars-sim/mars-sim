@@ -54,7 +54,6 @@ import com.jidesoft.swing.TreeSearchable;
 public class TabPanelOrganization
 extends TabPanel {
 
-
 	private Settlement settlement;
 
 	private JPanel infoPanel;
@@ -385,8 +384,9 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		tree = null;
-		createTree();
+		//tree = null;
+		// TODO: create a button to refresh instead of recreating the tree ?
+		//createTree();
 	}
 
 	/**
@@ -401,10 +401,11 @@ extends TabPanel {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT)
-				update();
-			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT)
-				update();
+			if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT || eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+				tree = null;
+				// TODO: create a button to refresh instead of recreating the tree ?
+				createTree();
+			}
 		}
 	}
 
@@ -422,13 +423,22 @@ extends TabPanel {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
 			if (unit instanceof Person) {
-				if (eventType == UnitManagerEventType.ADD_UNIT) {
-						update();
-				}
-				else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-						update();
+				if (eventType == UnitManagerEventType.ADD_UNIT || eventType == UnitManagerEventType.REMOVE_UNIT) {
+					tree = null;
+					// TODO: create a button to refresh instead of recreating the tree ?
+					createTree();
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+		settlement = null;
+		infoPanel = null;
+		tree = null;
 	}
 }

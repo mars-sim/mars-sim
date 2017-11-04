@@ -65,14 +65,11 @@ extends BuildingFunctionPanel {
 	private JScrollPane scrollPanel;
 	/** List of foodProduction processes in building. */
 	private List<FoodProductionProcess> processCache;
-	/** List of salvage processes in building. */
-	//private List<SalvageProcess> salvageCache;
 	/** Process selector. */
 	private JComboBoxMW processComboBox;
 	/** List of available processes. */
 	private Vector<FoodProductionProcessInfo> processComboBoxCache;
-	/** List of available salvage processes. */
-	//private Vector<SalvageProcessInfo> salvageSelectionCache;
+
 	/** Process selection button. */
 	private JButton newProcessButton;
 
@@ -92,18 +89,14 @@ extends BuildingFunctionPanel {
         setLayout(new BorderLayout());
 
         // Prepare label panel
-        //JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 0));
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new GridLayout(3, 1, 0, 0));
-		//labelPanel.setOpaque(false);
-		//labelPanel.setBackground(new Color(0,0,0,128));
 
         add(labelPanel, BorderLayout.NORTH);
 
         // Prepare manufacturing label
         JLabel foodProductionLabel = new JLabel("Food Production", JLabel.CENTER);
         foodProductionLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        //foodProductionLabel.setForeground(new Color(102, 51, 0)); // dark brown
         labelPanel.add(foodProductionLabel);
 
         // Prepare tech level label
@@ -128,15 +121,11 @@ extends BuildingFunctionPanel {
         // Create process list main panel
         JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
         scrollPanel.setViewportView(processListMainPane);
-        //processListMainPane.setOpaque(false);
-        //processListMainPane.setBackground(new Color(0,0,0,128));
 
         // Create process list panel
         processListPane = new JPanel();
         processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
         processListMainPane.add(processListPane, BorderLayout.NORTH);
-        //processListPane.setOpaque(false);
-        //processListPane.setBackground(new Color(0,0,0,128));
 
         List<FoodProductionProcess> list = foodFactory.getProcesses();
 		//Collections.sort(list);
@@ -146,42 +135,25 @@ extends BuildingFunctionPanel {
         Iterator<FoodProductionProcess> i = processCache.iterator();
         while (i.hasNext()) processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth));
 
-        // Create salvage panels.
-        //salvageCache = new ArrayList<SalvageProcess>(foodFactory.getSalvageProcesses());
-        //Iterator<SalvageProcess> j = salvageCache.iterator();
-        //while (j.hasNext()) processListPane.add(new SalvagePanel(j.next(), false, processStringWidth));
-
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
         add(interactionPanel, BorderLayout.SOUTH);
-        //interactionPanel.setOpaque(false);
-        //interactionPanel.setBackground(new Color(0,0,0,128));
-
+ 
         // Create new foodProduction process selection.
         processComboBoxCache = getAvailableProcesses();
         //2015-10-15 Enabled Collections.sorts by implementing Comparable<>
         Collections.sort(processComboBoxCache);
         processComboBox = new JComboBoxMW(processComboBoxCache);
-        //processComboBox.setOpaque(false);
-        //processComboBox.setBackground(new Color(51,25,0,128));
-        //processComboBox.setForeground(Color.orange);
-        //processComboBox.setBackground(Color.LIGHT_GRAY);
+
         processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
         processComboBox.setToolTipText("Select An Available Food Production Process");
         interactionPanel.add(processComboBox);
-
-        // Add available salvage processes.
-        //salvageSelectionCache = getAvailableSalvageProcesses();
-        //Iterator<SalvageProcessInfo> k = salvageSelectionCache.iterator();
-        //while (k.hasNext()) processComboBox.addItem(k.next());
 
         // Create new process button.
         JPanel btnPanel = new JPanel(new FlowLayout()); 
         newProcessButton = new JButton("Create New Process");
         btnPanel.add(newProcessButton);
-        //newProcessButton.setOpaque(false);
-        //newProcessButton.setBackground(new Color(51,25,0,128));
-        //newProcessButton.setForeground(Color.ORANGE);
+
         newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
         newProcessButton.setToolTipText("Create a New Food Production Process or Salvage a Process");
         newProcessButton.addActionListener(new ActionListener() {
@@ -196,18 +168,7 @@ extends BuildingFunctionPanel {
                                 update();
                             }
         		        }
-        		        /*
-        		        else if (selectedItem instanceof SalvageProcessInfo) {
-        		            SalvageProcessInfo selectedSalvage = (SalvageProcessInfo) selectedItem;
-        		            if (FoodProductionUtil.canSalvageProcessBeStarted(selectedSalvage, getFoodFactory())) {
-        		                Unit salvagedUnit = FoodProductionUtil.findUnitForSalvage(selectedSalvage,
-        		                        getFoodFactory().getBuilding().getBuildingManager().getSettlement());
-                                getFoodFactory().addSalvageProcess(new SalvageProcess(selectedSalvage,
-                                        getFoodFactory(), salvagedUnit));
-                                update();
-                            }
-        		        }
-        		        */
+
         		    }
         		}
         		catch (Exception e) {
@@ -224,8 +185,6 @@ extends BuildingFunctionPanel {
 
 		// Update processes and salvage processes if necessary.
 		List<FoodProductionProcess> processes = foodFactory.getProcesses();
-		//List<SalvageProcess> salvages = foodFactory.getSalvageProcesses();
-		//if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 		if (!processCache.equals(processes)) {
 
 			// Add process panels for new processes.
@@ -234,18 +193,8 @@ extends BuildingFunctionPanel {
 				FoodProductionProcess process = i.next();
 				if (!processCache.contains(process))
 					processListPane.add(new FoodProductionPanel(process, false, processStringWidth));
-					//processListPane.setOpaque(false);
-					//processListPane.setBackground(new Color(0,0,0,128));
 			}
-			/*
-			// Add salvage panels for new salvage processes.
-			Iterator<SalvageProcess> k = salvages.iterator();
-			while (k.hasNext()) {
-			    SalvageProcess salvage = k.next();
-			    if (!salvageCache.contains(salvage))
-			        processListPane.add(new SalvagePanel(salvage, false, processStringWidth));
-			}
-			*/
+
 			// Remove process panels for old processes.
 			Iterator<FoodProductionProcess> j = processCache.iterator();
 			while (j.hasNext()) {
@@ -255,24 +204,11 @@ extends BuildingFunctionPanel {
 					if (panel != null) processListPane.remove(panel);
 				}
 			}
-			/*
-			// Remove salvage panels for old salvages.
-			Iterator<SalvageProcess> l = salvageCache.iterator();
-            while (l.hasNext()) {
-                SalvageProcess salvage = l.next();
-                if (!salvages.contains(salvage)) {
-                    SalvagePanel panel = getSalvagePanel(salvage);
-                    if (panel != null) processListPane.remove(panel);
-                }
-            }
-			*/
+
 			// Update processCache
 			processCache.clear();
 			processCache.addAll(processes);
 
-			// Update salvageCache
-			//salvageCache.clear();
-			//salvageCache.addAll(salvages);
 
 			scrollPanel.validate();
 		}
@@ -282,23 +218,12 @@ extends BuildingFunctionPanel {
 		while (i.hasNext()) {
 			FoodProductionPanel panel = getFoodProductionPanel(i.next());
 			if (panel != null) panel.update();
-			//panel.setOpaque(false);
-			//panel.setBackground(new Color(0,0,0,128));
+
 		}
-		/*
-		// Update all salvage panels.
-		Iterator<SalvageProcess> j = salvages.iterator();
-		while (j.hasNext()) {
-		    SalvagePanel panel = getSalvagePanel(j.next());
-		    if (panel != null) panel.update();
-		}
-		*/
 		// Update process selection list.
 		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses();
-		//Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses();
-		//if (!newProcesses.equals(processComboBoxCache) ||
-		 //       !newSalvages.equals(salvageSelectionCache)) {
-			if (!newProcesses.equals(processComboBoxCache)) {
+
+		if (!newProcesses.equals(processComboBoxCache)) {
 
 			processComboBoxCache = newProcesses;
 			//salvageSelectionCache = newSalvages;
@@ -309,12 +234,6 @@ extends BuildingFunctionPanel {
 			
 			Iterator<FoodProductionProcessInfo> k = processComboBoxCache.iterator();
 			while (k.hasNext()) processComboBox.addItem(k.next());
-			//processComboBoxCache.forEach(k -> processComboBox.addItem(k));
-
-
-			//Iterator<SalvageProcessInfo> l = salvageSelectionCache.iterator();
-            //while (l.hasNext()) processComboBox.addItem(l.next());
-
 			if (currentSelection != null) {
 				if (processComboBoxCache.contains(currentSelection))
 					processComboBox.setSelectedItem(currentSelection);
@@ -338,33 +257,13 @@ extends BuildingFunctionPanel {
 			if (component instanceof FoodProductionPanel) {
 				FoodProductionPanel panel = (FoodProductionPanel) component;
 				if (panel.getFoodProductionProcess().equals(process)) result = panel;
-				//panel.setOpaque(false);
-				//panel.setBackground(new Color(0,0,0,128));
+
 			}
 		}
 
 		return result;
 	}
 
-	/**
-	 * Gets the panel for a salvage process.
-	 * @param process the salvage process.
-	 * @return the salvage panel or null if none.
-
-	private SalvagePanel getSalvagePanel(SalvageProcess process) {
-	    SalvagePanel result = null;
-
-        for (int x = 0; x < processListPane.getComponentCount(); x++) {
-            Component component = processListPane.getComponent(x);
-            if (component instanceof SalvagePanel) {
-                SalvagePanel panel = (SalvagePanel) component;
-                if (panel.getSalvageProcess().equals(process)) result = panel;
-            }
-        }
-
-        return result;
-	}
-	 */
 	/**
 	 * Gets all manufacturing processes available at the foodFactory.
 	 * @return vector of processes.
@@ -404,30 +303,6 @@ extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Gets all salvage processes available at the foodFactory.
-	 * @return vector of salvage processes.
-
-	private Vector<SalvageProcessInfo> getAvailableSalvageProcesses() {
-	    Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
-
-	    if (foodFactory.getProcesses().size() < foodFactory.getSupportingProcesses()) {
-            try {
-                Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
-                        FoodProductionUtil.getSalvageProcessesForTechLevel(
-                        foodFactory.getTechLevel())).iterator();
-                while (i.hasNext()) {
-                    SalvageProcessInfo process = i.next();
-                    if (FoodProductionUtil.canSalvageProcessBeStarted(process, foodFactory))
-                        result.add(process);
-                }
-            }
-            catch (Exception e) {}
-	    }
-
-	    return result;
-	}
-	*/
-	/**
 	 * Gets the foodFactory for this panel.
 	 * @return foodFactory
 	 */
@@ -454,17 +329,8 @@ extends BuildingFunctionPanel {
 			        ((JLabel) result).setText(processName);
 			        ((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
 			    }
-			}/*
-			else if (value instanceof SalvageProcessInfo) {
-			    SalvageProcessInfo info = (SalvageProcessInfo) value;
-			    if (info != null) {
-			    	// 2014-11-21 Capitalized processName
-			        String processName = WordUtils.capitalize(info.toString());
-			        if (processName.length() > processStringWidth) processName = processName.substring(0, processStringWidth) + "...";
-                    ((JLabel) result).setText(processName);
-                    ((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
-			    }
-			}*/
+			}
+
 			return result;
 		}
 	}

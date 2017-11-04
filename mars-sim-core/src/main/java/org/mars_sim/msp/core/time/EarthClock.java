@@ -15,9 +15,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
@@ -439,8 +437,12 @@ implements Serializable {
 	}
 
 	public ZonedDateTime convert2ZonedDT() {
-		return ZonedDateTime.ofInstant(gregCal.toInstant(), ZoneId.of("UTC"));
+		return zonedDateTime = ZonedDateTime.ofInstant(gregCal.toInstant(), ZoneId.of("UTC"));
 		//return zonedDateTime = gregCal.toZonedDateTime();
+	}
+	
+	public ZonedDateTime getZonedDateTime() {
+		return zonedDateTime;
 	}
 	
 	public LocalDate getLocalDate() {

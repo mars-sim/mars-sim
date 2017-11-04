@@ -86,7 +86,6 @@ import javafx.scene.input.ScrollEvent;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -129,7 +128,6 @@ import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementTransparentPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
@@ -955,12 +953,7 @@ public class MainScene {
 
 		if (earthClock == null)
 			earthClock = masterClock.getEarthClock();
-/*
-		earthTime = new Label();
-		earthTime.setId("rich-green");
-		
-		setQuickToolTip(earthTime, "Earth Time");
-*/
+
 		datePickerFX = new JFXDatePicker();
 		datePickerFX.setValue(earthClock.getLocalDate());
 		datePickerFX.setEditable(false);
@@ -981,17 +974,17 @@ public class MainScene {
 		timePickerFX.setPromptText("Earth Time");
 		timePickerFX.setId("rich-date");
 		
-		setQuickToolTip(datePickerFX, "Earth Time");
+		setQuickToolTip(timePickerFX, "Earth Time in UTC");
 		
 		HBox box = new HBox(5, datePickerFX, timePickerFX);
-		
+/*		
 		final String cssDefault = "-fx-background-color: transparent;"
 				+ "-fx-border-color: #065185;\n"
                 //+ "-fx-border-insets: 3;\n"
 				+ "-fx-border-radius:0;\n"
                 + "-fx-border-width:0;\n";
                 //+ "-fx-border-style: dashed;\n";
-		
+*/	
 		earthTimeBox = new HBox(box);
 		//earthTimeBox.getChildren().addAll(timePickerFX, timePickerFX);
 		//earthTimeBox.setStyle(cssDefault);
@@ -1058,13 +1051,8 @@ public class MainScene {
 		speedPane.setPrefWidth(200);// earthTimeButton.getPrefWidth());
 		simSpeedPopup = new JFXPopup(speedPane);
 
-		// initial_time_ratio =
-		// Simulation.instance().getMasterClock().getDefaultTimeRatio();
-
 		Text header_label = createTextHeader("SPEED PANEL");
 
-		// String DEFAULT = " (Default : ";
-		// String CLOSE_PAR = ")";
 		int default_ratio = (int) masterClock.getDefaultTimeRatio();
 		StringBuilder s0 = new StringBuilder();
 

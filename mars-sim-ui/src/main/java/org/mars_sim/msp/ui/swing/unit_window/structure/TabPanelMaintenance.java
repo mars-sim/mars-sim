@@ -98,7 +98,7 @@ extends TabPanel {
 		// Create malfunctions label.
 		JLabel malfunctionsLabel = new JLabel("Building Malfunctions", JLabel.CENTER);
 		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		malfunctionsPanel.add(malfunctionsLabel, BorderLayout.NORTH);
 
 		// Create scroll panel for malfunctions list panel.
@@ -273,6 +273,7 @@ extends TabPanel {
 			setBorder(new MarsPanelBorder());
 
 			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
+			buildingLabel.setFont(new Font("Serif", Font.BOLD, 16));
 			add(buildingLabel);
 
 			// 2015-03-12 Added wear condition cache and label.
