@@ -33,7 +33,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
 		<!-- base-power-down-power: the baseline power (kW) required by this building in 'power down' mode. -->
 		<!-- There can be additional power requirements by the building's functions. -->
-		<power-required base-power="5.0" base-power-down-power="0.5" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 
 		<!-- The functions the building is capable of performing/fulfilling. -->
@@ -641,7 +641,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a botany research lab with instruments. It has a spacious interior
 			for high volume crop cultivation and has a high resource storage capability.
 		</description>
-		<power-required base-power="5.0" base-power-down-power="0.5" />
+		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
 			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="225.0">
@@ -791,7 +791,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			converted into CH4 and H2O via Sabatier with RWGS. It performs also 
 			water electrolysis to generate H2 and O2.
 		</description>
-		<power-required base-power="2.0" base-power-down-power="0.2"/>
+		<power-required base-power="1.0" base-power-down-power="0.1"/>
 
 		<functions>
 			<earth-return crew-capacity="4" />
@@ -861,7 +861,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		as those in Starting ERV Base. If not used for the return for the next 
 		crew, it can be reconfigured to provide for habitation space.
 		</description>
-		<power-required base-power="2.0" base-power-down-power="0.2"/>
+		<power-required base-power="1.0" base-power-down-power="0.1"/>
 
 		<functions>
 			<earth-return crew-capacity="4" />
@@ -985,7 +985,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<!-- see water tank calculation on Mars 
 		    at https://www.physicsforums.com/threads/pressure-a-water-tank-on-mars.242305/ -->
 		
-		<power-required base-power="3.0" base-power-down-power="0.3"/>
+		<power-required base-power=".5" base-power-down-power=".05"/>
 
 		<functions>
 			<power-generation>
@@ -1055,7 +1055,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			that is configured to house as many as twelve beds. It also provides storage space
 			for critical amount resources. It is furnised with a solar panel rooftop.
 		</description>
-		<power-required base-power="3.0" base-power-down-power="0.3" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<life-support capacity="12" power-required="1.2" />
@@ -1467,7 +1467,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		instruments, computers and tablets and peer collaboration communication
 		suites of equipment that enables making scientific inquiries on the frontier of Mars.
 		</description>
-		<power-required base-power="3.0" base-power-down-power="0.3" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<life-support capacity="10" power-required="1.0" />
@@ -1867,7 +1867,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Manufacturing Shed is a small brick manufacturing
 			building for forming, cutting, coating and glazing bricks for construction projects.
 		</description>
-		<power-required base-power="3.0" base-power-down-power="0.3" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<life-support capacity="2" power-required="0.2" />
@@ -1914,7 +1914,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			elevated temperatures and pressures in the presence of a  
 			catalyst to produce methane and water.
 		</description>
-		<power-required base-power="5.0" base-power-down-power="0.5" />
+		<power-required base-power=".5" base-power-down-power=".05" />
 
 		<functions>
 			<resource-processing power-down-level=".5">
@@ -1957,7 +1957,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			furnished with an optical telescope, research workbenches and laboratory equipment
 			as well as a built-in EVA airlock for ingress and egress.
 		</description>
-		<power-required base-power="3.0" base-power-down-power="0.3" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<astronomical-observation tech-level="2" capacity="1" power-required="4.0">
@@ -2042,7 +2042,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			building for scientific research. It can be custom-tailored with computer
 			systems for	up to four research subjects and has built-in solar panels.
 		</description>
-		<power-required base-power="3.0" base-power-down-power="0.3" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
@@ -2088,7 +2088,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			quarters for living accommodation of up to 8 persons. It uses solar
 			panels as backup power source.
 		</description>
-		<power-required base-power="5.0" base-power-down-power="0.5" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
@@ -2172,7 +2172,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		 	for making items and synthesizing resource. It provides storage space for
 		 	housing commonly used resources.
 		</description>
-		<power-required base-power="3.0" base-power-down-power="0.3" />
+		<power-required base-power="3.0" base-power-down-power=".3" />
 
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
@@ -2258,7 +2258,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			as the main hub of a trading or mining outpost. Like its cousin
 			Lander Hab, it hosts a suite of functions to its inhabitants.
 		</description>
-		<power-required base-power="4.0" base-power-down-power="0.4" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<administration population-support="2">
@@ -2477,7 +2477,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			two beds. It is a retractable housing custom-tailored for
 			temporary mining outpost operation.
 		</description>
-		<power-required base-power="2.0" base-power-down-power="0.2" />
+		<power-required base-power="1.5" base-power-down-power="0.15" />
 
 		<functions>
 			<life-support capacity="2" power-required="0.2" />
@@ -2513,7 +2513,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Storage Shed is a small brick building for
 			storing resources for the settlement.
 		</description>
-		<power-required base-power="1.0" base-power-down-power="0.1" />
+		<power-required base-power=".3" base-power-down-power="0.03" />
 
 		<functions>
 			<life-support capacity="2" power-required="0.2" />
@@ -2590,7 +2590,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
 		</description>
-		<power-required base-power="3.0" base-power-down-power="0.3" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<life-support capacity="2" power-required="0.2" />

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.08 2015-12-16
+ * @version 3.1.0 2017-11-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -29,11 +29,6 @@ implements Serializable , Comparable<BuildingTemplate>{
 
 	/** an unique template id for this particular settlement template */
 	private int id;
-	/**
-	 * an id for this building in a particular building type. e.g. ERV Base 1, ERV Base 2.
-	 */
-	//private int typeID;
-
 	private double width;
 	private double length;
 	private double xLoc;
@@ -41,7 +36,6 @@ implements Serializable , Comparable<BuildingTemplate>{
 	private double facing;
 
 	private String buildingType;
-    // 2014-10-28 Added nickName
 	private String nickName;
 	private String scenario;
 
@@ -54,7 +48,6 @@ implements Serializable , Comparable<BuildingTemplate>{
 	 * * BuildingTemplate Constructor.
 	 */
 	// May also be called by ResupplyConfig.java when buildings arrived
-	// 2014-10-27 Added nickName
 	public BuildingTemplate(String missionName, int id, String scenario, String buildingType, String nickName,
 		double width, double length,
 		double xLoc, double yLoc,

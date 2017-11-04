@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGrid.java
- * @version 3.1.0 2018-08-19
+ * @version 3.1.0 2017-11-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -12,14 +12,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 

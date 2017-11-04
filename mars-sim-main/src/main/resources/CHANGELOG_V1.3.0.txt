@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4209) - 2017-11-04
+## v3.1.0-Preview 9 (build 4210) - 2017-11-04
 
 
 ### KNOWN LIMITATIONS :
@@ -51,12 +51,15 @@ https://github.com/mars-sim/mars-sim
 
 15. Add thirst indicator and track if a person is dehydrated.
 
-16. Add ability for settlers to tag one's own EVA suit(s).
+16. Add ability for settlers to tag an EVA suit and stick to using it as 
+    much as possible.
 
 17. Stabilize the value points (VP) based economy. Add variable inflation to
     prevent abrupt changes.
 
 18. Add new background music tracks.
+
+19. Rework input/outpost of various resource processes.
 
 
 ### UI IMPROVEMENT :

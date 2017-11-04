@@ -97,17 +97,17 @@ implements Serializable {
 	/**
 	 * Switch to producing the full output
 	 */
-	public abstract void switchFull();
+	public abstract void switch2Full();
 
 	/**
 	 * Switch to producing only half of the output
 	 */
-	public abstract void switchHalf();
+	public abstract void switch2Half();
 
 	/**
 	 * Switch to producing only a quarter of the output
 	 */
-	public abstract void switchQuarter();
+	public abstract void switch2Quarter();
 	
 	
 	/**

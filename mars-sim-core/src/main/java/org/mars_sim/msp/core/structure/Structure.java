@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Structure.java
- * @version 3.1.0 2017-09-08
+ * @version 3.1.0 2017-11-04
  * @author Scott Davis
  */
 

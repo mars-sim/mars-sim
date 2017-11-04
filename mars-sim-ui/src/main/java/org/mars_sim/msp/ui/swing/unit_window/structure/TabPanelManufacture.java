@@ -276,6 +276,7 @@ extends TabPanel {
 				setText( prompt );
 				return this;
 			}
+/*
 			if (c instanceof JLabel) {
 	            if (isSelected) {
 	                c.setBackground(Color.orange);
@@ -287,6 +288,7 @@ extends TabPanel {
 	            c = super.getListCellRendererComponent(
 	                    list, value, index, isSelected, cellHasFocus);
 	        }
+*/
 	        return c;
 		}
 	}

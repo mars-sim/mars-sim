@@ -163,14 +163,14 @@ implements Serializable {
 			
 		Iterator<PowerSource> i = powerSources.iterator();
 		while (i.hasNext()) {
-				PowerSource powerSource = i.next();
-			    if (powerSource.getType().equals(PowerSourceType.FUEL_POWER)) {
-			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-			    	powerSource.setTime(time);
-			    	result += powerSource.getCurrentPower(getBuilding());
-			    }
-			    else
-					result += powerSource.getCurrentPower(getBuilding());
+			PowerSource powerSource = i.next();
+		    if (powerSource.getType().equals(PowerSourceType.FUEL_POWER)) {
+		    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+		    	powerSource.setTime(time);
+		    	result += powerSource.getCurrentPower(getBuilding());
+		    }
+		    else
+				result += powerSource.getCurrentPower(getBuilding());
 		}			
 		//}
 

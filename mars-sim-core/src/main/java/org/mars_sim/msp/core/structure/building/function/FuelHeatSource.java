@@ -230,19 +230,19 @@ implements Serializable {
 	}
 	 
 	@Override
-	public void switchHalf() {
+	public void switch2Half() {
 		factor = 1/2D;
 		toggle = true;
 	}
 	
 	@Override
-	public void switchQuarter() {
+	public void switch2Quarter() {
 		factor = 1/4D;
 		toggle = true;
 	}
 	
 	@Override
-	public void switchFull() {
+	public void switch2Full() {
 		factor = 1D;
 		toggle = true;
 	}
