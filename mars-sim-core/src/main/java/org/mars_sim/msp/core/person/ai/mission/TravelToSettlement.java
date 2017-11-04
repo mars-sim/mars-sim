@@ -75,10 +75,12 @@ implements Serializable {
         // Use RoverMission constructor
         super(DEFAULT_DESCRIPTION, startingMember);
 
-        if (!isDone()) {
+        Settlement s = startingMember.getSettlement();
+
+        if (!isDone() && s != null) {
 
             // Initialize data members
-            setStartingSettlement(startingMember.getSettlement());
+            setStartingSettlement(s);
 
             // Set mission capacity.
             if (hasVehicle()) {
@@ -124,118 +126,15 @@ implements Serializable {
             if (hasVehicle() && !isVehicleLoadable()) {
                 endMission("Vehicle is not loadable. (TravelToSettlement)");
             }
+            
+            
+            // Set initial phase
+            setPhase(VehicleMission.EMBARKING);
+            setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
+                    getStartingSettlement().getName())); //$NON-NLS-1$
         }
-
-        // Set initial phase
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
-
         //logger.info("Travel to Settlement mission");
     }
-//    public TravelToSettlement(Robot robot) {
-//        // Use RoverMission constructor
-//        super(DEFAULT_DESCRIPTION, robot);
-//
-//        if (!isDone()) {
-//
-//            // Initialize data members
-//            setStartingSettlement(robot.getSettlement());
-//
-//            // Set mission capacity.
-//            if (hasVehicle()) {
-//                setMissionCapacity(getRover().getCrewCapacity());
-//            }
-//            int availableSuitNum = Mission
-//                    .getNumberAvailableEVASuitsAtSettlement(robot
-//                            .getSettlement());
-//            if (availableSuitNum < getMissionCapacity()) {
-//                setMissionCapacity(availableSuitNum);
-//            }
-//
-//            // Choose destination settlement.
-//            setDestinationSettlement(getRandomDestinationSettlement(
-//                    robot, getStartingSettlement()));
-//            if (destinationSettlement != null) {
-//                addNavpoint(new NavPoint(
-//                        destinationSettlement.getCoordinates(),
-//                        destinationSettlement, destinationSettlement.getName()));
-//                setDescription(Msg.getString("Mission.description.travelToSettlement.detail",
-//                        destinationSettlement.getName())); //$NON-NLS-1$)
-//            }
-//            else {
-//                endMission("Destination is null.");
-//            }
-//
-//            // Check mission available space
-//            if (!isDone()) {
-//                int availableSpace = destinationSettlement.getPopulationCapacity()
-//                        - destinationSettlement.getAllAssociatedPeople().size();
-//
-//                if (availableSpace < getMissionCapacity()) {
-//                    setMissionCapacity(availableSpace);
-//                }
-//            }
-//
-//            // Check if vehicle can carry enough supplies for the mission.
-//            if (hasVehicle() && !isVehicleLoadable()) {
-//                endMission("Vehicle is not loadable. (TravelToSettlement)");
-//            }
-//        }
-//
-//        // Set initial phase
-//        setPhase(VehicleMission.EMBARKING);
-//        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-//                getStartingSettlement().getName())); //$NON-NLS-1$
-//
-//        logger.info("Travel to Settlement mission");
-//    }
-    /**
-     * Constructor with explicit data.
-     * @param members collection of mission members.
-     * @param startingSettlement the starting settlement.
-     * @param destinationSettlement the destination settlement.
-     * @param rover the rover to use.
-     * @param description the mission's description.
-     * @throws MissionException if error constructing mission.
-     */
- /*   public TravelToSettlement(Collection<Person> members,
-            Settlement startingSettlement, Settlement destinationSettlement,
-            Rover rover, String description) {
-        // Use RoverMission constructor.
-        super(description, (Person) members.toArray()[0], 1, rover);
-
-        // Initialize data members
-        setStartingSettlement(startingSettlement);
-
-        // Sets the mission capacity.
-        setMissionCapacity(getRover().getCrewCapacity());
-        int availableSuitNum = Mission
-                .getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-        if (availableSuitNum < getMissionCapacity())
-            setMissionCapacity(availableSuitNum);
-
-        // Set mission destination.
-        setDestinationSettlement(destinationSettlement);
-        addNavpoint(new NavPoint(this.destinationSettlement.getCoordinates(),
-                this.destinationSettlement, this.destinationSettlement
-                        .getName()));
-
-        // Add mission members.
-        Iterator<Person> i = members.iterator();
-        while (i.hasNext())
-            i.next().getMind().setMission(this);
-
-        // Set initial phase
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
-
-        // Check if vehicle can carry enough supplies for the mission.
-        if (hasVehicle() && !isVehicleLoadable()) {
-            endMission("Vehicle is not loadable. (TravelToSettlement)");
-        }
-    } */
 
     public TravelToSettlement(Collection<MissionMember> members,
             Settlement startingSettlement, Settlement destinationSettlement,

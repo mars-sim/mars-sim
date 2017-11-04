@@ -99,7 +99,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
@@ -560,7 +560,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="3" power-required="0.3" />
+			<life-support capacity="6" power-required="0.3" />
 
 			<power-storage capacity="40.0" />
 
@@ -659,7 +659,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="10" power-required="1.0" />
+			<life-support capacity="16" power-required=".8" />
 
 			<power-storage capacity="80.0" />
 
@@ -1058,7 +1058,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="12" power-required="1.2" />
+			<life-support capacity="16" power-required="0.8" />
 			<living-accommodations beds="12">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.2" />
@@ -1201,7 +1201,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</food-production>
 
-			<life-support capacity="40" power-required="4.0" />
+			<life-support capacity="64" power-required="3.2" />
 			
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -1344,7 +1344,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="10" power-required="1.0" />
+			<life-support capacity="12" power-required="0.6" />
 			<medical-care tech-level="5" beds="8">
 				<activity>
 					<activity-spot xloc="1.8" yloc="2.4" />
@@ -1421,7 +1421,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
   			<EVA airlock-capacity="8" xloc="-3.0" yloc="2.3" interior-xloc="-2.5" interior-yloc="2.3"
 			exterior-xloc="-4.5" exterior-yloc="2.3" />
 -->
-			<life-support capacity="10" power-required="1.0" />
+			<life-support capacity="12" power-required="0.6" />
 			<management population-support="25">
 				<activity>
 					<activity-spot xloc="1.32" yloc="0.92" />
@@ -1470,7 +1470,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="10" power-required="1.0" />
+			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -1543,7 +1543,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-.75" yloc="1.0" />
 				</activity>
 			</ground-vehicle-maintenance>
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -1578,7 +1578,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 			<manufacture tech-level="4" concurrent-processes="4">
 				<activity>
 					<activity-spot xloc=".6" yloc="2.9" />
@@ -1870,7 +1870,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="2" power-required="0.2" />
+			<life-support capacity="4" power-required="0.2" />
 			<manufacture tech-level="3" concurrent-processes="2">
 				<activity>
 					<activity-spot xloc=".95" yloc="1.05" />
@@ -1967,7 +1967,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</astronomical-observation>
 			<EVA airlock-capacity="1" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
 			exterior-xloc="0.0" exterior-yloc="4.5" />
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 
 			<power-storage capacity="40.0" />
 			<research tech-level="2" capacity="4">
@@ -2010,7 +2010,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -2047,7 +2047,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -2093,7 +2093,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="8" power-required="0.8" />
+			<life-support capacity="8" power-required="0.4" />
 			<living-accommodations beds="5">
 				<activity>
 					<activity-spot xloc="1.13" yloc="2.67" />
@@ -2134,7 +2134,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 			<medical-care tech-level="4" beds="4">
 				<activity>
 					<activity-spot xloc="3.04" yloc="-1.3" />
@@ -2177,7 +2177,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="8" power-required="0.4" />
 			<manufacture tech-level="3" concurrent-processes="3">
 				<activity>
 					<activity-spot xloc="2.16" yloc="1.45" />
@@ -2231,7 +2231,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<building-connection />
-			<life-support capacity="1" power-required="0.1" />
+			<life-support capacity="3" power-required="0.15" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="1.0" />
 			</power-generation>
@@ -2298,7 +2298,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</food-production>
 
-			<life-support capacity="6" power-required="0.6" />
+			<life-support capacity="8" power-required="0.4" />
 
 			<manufacture tech-level="4" concurrent-processes="1">
 				<activity>
@@ -2480,7 +2480,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="1.5" base-power-down-power="0.15" />
 
 		<functions>
-			<life-support capacity="2" power-required="0.2" />
+			<life-support capacity="4" power-required="0.2" />
 			<living-accommodations beds="2">
 				<activity>
 					<activity-spot xloc="1.35" yloc="-1.35" />
@@ -2516,7 +2516,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power=".3" base-power-down-power="0.03" />
 
 		<functions>
-			<life-support capacity="2" power-required="0.2" />
+			<life-support capacity="4" power-required="0.2" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -2559,7 +2559,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.0" yloc="-6.25" />
 				</activity>
 			</ground-vehicle-maintenance>
-			<life-support capacity="4" power-required="0.4" />
+			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -2593,7 +2593,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="2" power-required="0.2" />
+			<life-support capacity="4" power-required="0.2" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -2645,7 +2645,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="3" power-required="0.3" />
+			<life-support capacity="6" power-required="0.3" />
 
 			<power-storage capacity="40.0" />
 
@@ -2717,7 +2717,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<building-connection />
-			<life-support capacity="1" power-required="0.1" />
+			<life-support capacity="3" power-required="0.15" />
 			<robotic-station slots="1">
 				<activity>
 					<activity-spot xloc="1.0" yloc="0.0" />

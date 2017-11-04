@@ -71,7 +71,7 @@ abstract class UnitMapLayer implements MapLayer {
             if (unit != null && UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
                 double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
-                if ( mapCenter.getAngle(unit.getCoordinates()) < angle) {
+                if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
                     displayUnit(unit, mapCenter, mapType, g);
                 }
             }

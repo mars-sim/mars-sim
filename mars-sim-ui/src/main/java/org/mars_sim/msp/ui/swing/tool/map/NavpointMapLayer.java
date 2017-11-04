@@ -123,7 +123,7 @@ public class NavpointMapLayer implements MapLayer {
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, String mapType, Graphics g) {
 		//double angle = CannedMarsMap.HALF_MAP_ANGLE;
 		
-		if (mapCenter.getAngle(navpoint.getLocation()) < angle) {
+		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < angle) {
 			
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;

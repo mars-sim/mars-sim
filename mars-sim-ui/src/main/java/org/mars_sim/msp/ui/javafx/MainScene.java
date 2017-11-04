@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.javafx;
 
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
+import com.alee.laf.WebLookAndFeel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -21,6 +22,8 @@ import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTimePicker;
 import com.jfoenix.controls.JFXToggleButton;
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+import com.nilo.plaf.nimrod.NimRODTheme;
 
 import org.controlsfx.control.MaskerPane;
 import org.fxmisc.wellbehaved.event.InputMap;
@@ -151,11 +154,16 @@ public class MainScene {
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
-	private static final int SYSTEM_THEME = -1;
-	private static final int NIMROD_THEME = 7;
-	private static final int NIMBUS_THEME = 0;
+	private enum ThemeType {
+	    System,
+	    Nimbus,
+	    Nimrod,
+	    Weblaf
+	}
 
-	private static int choice_theme = NIMBUS_THEME;
+	private ThemeType defaultThemeType = ThemeType.Nimrod;//.Web;
+
+	private static int defaultThemeColor = 7;
 
 	public static final int DASHBOARD_TAB = 0;
 	public static final int MAIN_TAB = 1;
@@ -222,6 +230,7 @@ public class MainScene {
 
 	private float musicSliderCache = 0;
 	private float effectSliderCache = 0;
+	
 	private double tpsCache;
 
 	private boolean flag = true;
@@ -234,7 +243,7 @@ public class MainScene {
 	private volatile transient ExecutorService mainSceneExecutor;
 
 	private String upTimeCache = "";
-	//private String themeSkin = "nimrod";
+	private String themeSkin = "nimrod";
 	private String title = null;
 	private String dir = null;
 	private String oldLastSaveStamp = null;
@@ -1810,9 +1819,9 @@ public class MainScene {
 		// zoom.setMaxHeight(200);
 		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
 		zoomSlider.setMin(1);
-		zoomSlider.setMax(30);
+		zoomSlider.setMax(40);
 		zoomSlider.setValue(5);
-		zoomSlider.setMajorTickUnit(29);	
+		zoomSlider.setMajorTickUnit(39);	
 		zoomSlider.setMinorTickCount(1);	
 		zoomSlider.setShowTickLabels(true);
 		zoomSlider.setShowTickMarks(true);
@@ -2305,7 +2314,17 @@ public class MainScene {
 		/*
 		 * if (OS.contains("linux")) { setTheme(0); } else { setTheme(7); }
 		 */
-		setTheme(choice_theme); // 0 = nimbus
+/*		
+		if (choice_theme == ThemeType.Nimrod)
+			setTheme(0);
+		else if (choice_theme == ThemeType.Nimbus)
+			setTheme(0);
+		else if (choice_theme == ThemeType.Web)
+			setTheme(0);
+*/		
+		setTheme(defaultThemeColor);
+
+		// SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));
 
 		// logger.info("done with MainScene's initializeTheme()");
 	}
@@ -2327,62 +2346,59 @@ public class MainScene {
 				// for numbus theme
 				cssFile = "/fxui/css/snowBlue.css";
 				updateThemeColor(0, Color.rgb(0, 107, 184), Color.rgb(0, 107, 184), cssFile); // CADETBLUE //																						// Color.rgb(23,138,255)
-				//themeSkin = "numbus";
+				themeSkin = "snowBlue";
 				// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
 
 			} else if (theme == 1) { // olive green
 				cssFile = "/fxui/css/oliveskin.css";
 				updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssFile); // DARKOLIVEGREEN
-				//themeSkin = "LightTabaco";
+				themeSkin = "LightTabaco";
 
 			} else if (theme == 2) { // burgundy red
 				cssFile = "/fxui/css/burgundyskin.css";
 				updateThemeColor(2, Color.rgb(140, 0, 26), Color.YELLOW, cssFile); // ORANGERED
-				//themeSkin = "Burdeos";
+				themeSkin = "Burdeos";
 
 			} else if (theme == 3) { // dark chocolate
 				cssFile = "/fxui/css/darkTabaco.css";
 				updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssFile);
-				//themeSkin = "DarkTabaco";
+				themeSkin = "DarkTabaco";
 
 			} else if (theme == 4) { // grey
 				cssFile = "/fxui/css/darkGrey.css";
 				updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssFile);
-				//themeSkin = "DarkGrey";
+				themeSkin = "DarkGrey";
 
 			} else if (theme == 5) { // + purple
 				cssFile = "/fxui/css/nightViolet.css";
 				updateThemeColor(5, Color.rgb(73, 55, 125), Color.rgb(73, 55, 125), cssFile); // DARKMAGENTA, SLATEBLUE
-				//themeSkin = "Night";
+				themeSkin = "Night";
 
 			} else if (theme == 6) { // + skyblue
 
 				cssFile = "/fxui/css/snowBlue.css";
 				updateThemeColor(6, Color.rgb(0, 107, 184), Color.rgb(255, 255, 255), cssFile); 
 				// (144, 208, 229) light blue , CADETBLUE (0,107,184), Color.rgb(23,138,255)
-				//themeSkin = "snowBlue";
+				themeSkin = "snowBlue";
 			} else if (theme == 7) { // mud orange/standard
 
 				cssFile = "/fxui/css/nimrodskin.css";
 				updateThemeColor(7, Color.rgb(156, 77, 0), Color.rgb(255, 255, 255), cssFile); // DARKORANGE, CORAL
-				//themeSkin = "nimrod";
+				themeSkin = "nimrod";
 			}
 
-			// SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));
-
 			SwingUtilities.invokeLater(() -> {
-				// 2016-06-17 Added checking for OS.
 				if (OS.contains("linux")) {
 					// Note: NIMROD theme lib doesn't work on linux
-					setLookAndFeel(NIMBUS_THEME);
-				} else {
-					if (theme == 0 || theme == 6)
-						setLookAndFeel(NIMBUS_THEME);
-					else if (theme == 7)
-						setLookAndFeel(NIMROD_THEME);
+					setLookAndFeel(ThemeType.Nimbus);
+				} 
+				
+				else {
+					setLookAndFeel(defaultThemeType);
 				}
+				
 			});
-
+			
 		}
 
 	}
@@ -2393,11 +2409,21 @@ public class MainScene {
 	 * @param choice
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
-	public void setLookAndFeel(int choice) {
+	public void setLookAndFeel(ThemeType choice) {
 		// logger.info("MainScene's setLookAndFeel() is on " +
 		// Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
-		if (choice == SYSTEM_THEME) { // theme == "nativeLookAndFeel"
+		if (choice == ThemeType.Weblaf) {
+			try {
+				WebLookAndFeel.install();
+				//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				changed = true;
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		}
+		
+		else if (choice == ThemeType.System) { // theme == "nativeLookAndFeel"
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
@@ -2407,21 +2433,25 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		}
-		/*
-		 * else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel" try {
-		 * NimRODTheme nt = new NimRODTheme(
-		 * getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
-		 * NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
-		 * // working if switching to a brand new .theme file NimRODLookAndFeel nf = new
-		 * NimRODLookAndFeel(); nf.setCurrentTheme(nt); // must be declared non-static
-		 * or not working if switching to a brand new .theme // file
-		 * UIManager.setLookAndFeel(nf); changed = true; //
-		 * System.out.println("found Nimrod");
-		 * 
-		 * } catch (Exception e) { logger.log(Level.WARNING,
-		 * Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
-		 */
-		else if (choice == NIMBUS_THEME) {
+		
+		else if (choice == ThemeType.Nimrod) { 
+			try {
+				//String themeSkin = "snowBlue";
+				NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
+				NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
+				// working if switching to a brand new .theme file 
+				NimRODLookAndFeel nf = new NimRODLookAndFeel();
+				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme // file
+				UIManager.setLookAndFeel(nf); 
+				changed = true; //
+				//System.out.println("found Nimrod");
+		 
+			} catch (Exception e) { 
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
+			}
+		 }
+		 
+		 else if (choice == ThemeType.Nimbus) {
 			try {
 				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
