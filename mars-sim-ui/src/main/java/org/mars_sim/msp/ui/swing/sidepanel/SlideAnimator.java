@@ -143,7 +143,7 @@ public class SlideAnimator extends Object {
             offscreenGraphics.fillRect(0, 0,
                     source.getWidth(), source.getHeight());
             // paint from source to offscreen buffer
-            source.paint(offscreenGraphics);
+            //source.paint(offscreenGraphics); // doesn't work with WebTabbedPaneUI
         }
 
         public Dimension getPreferredSize() {

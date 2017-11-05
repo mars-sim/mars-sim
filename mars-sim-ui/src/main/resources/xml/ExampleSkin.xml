@@ -1,0 +1,29 @@
+<skin>
+
+    <!-- This is the unique ID of our skin -->
+    <id>example.skin</id>
+
+    <!-- And its title, whatever you like it to be -->
+    <title>Example skin</title>
+
+    <!-- Short description if you want to have any -->
+    <description>This is an example skin for WebLaF wiki</description>
+
+    <!-- And all the glory goes to... -->
+    <author>Mikle Garin</author>
+
+    <!-- Let's support all platforms, why not -->
+    <supportedSystems>all</supportedSystems>
+
+    <!-- This is our base skin class -->
+    <!-- It is used to find relative resources like includes and painter classes -->
+    <class>com.alee.managers.style.skin.web.WebSkin</class>
+
+    <!-- Including WebLaF default skin -->
+    <!-- This will generally include all default styles into our custom skin -->
+    <include>resources/skin.xml</include>
+
+    <!-- Additional styles used for our customized panel -->
+    <include nearClass="com.alee.wiki.introduction.Example">ExamplePanel.xml</include>
+
+</skin>

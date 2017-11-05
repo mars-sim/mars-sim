@@ -27,8 +27,7 @@ import javafx.scene.control.CheckMenuItem;
  * Particular tool windows should be derived from this.
  */
 @SuppressWarnings("restriction")
-public abstract class ToolWindow
-extends JInternalFrame {
+public abstract class ToolWindow extends JInternalFrame { // WebInternalFrame { //
 
 	// Data members
 	/** The name of the tool the window is for. */

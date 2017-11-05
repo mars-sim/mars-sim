@@ -973,8 +973,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 			try {
 				tempWindow.setIcon(false);
-			} catch (java.beans.PropertyVetoException e) {
-				logger.log(Level.SEVERE,Msg.getString("MainDesktopPane.log.problemReopening") + e); //$NON-NLS-1$
+			} catch (PropertyVetoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		} 
 		

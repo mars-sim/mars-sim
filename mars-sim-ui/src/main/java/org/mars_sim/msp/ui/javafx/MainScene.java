@@ -102,6 +102,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -161,9 +162,9 @@ public class MainScene {
 	    Weblaf
 	}
 
-	private ThemeType defaultThemeType = ThemeType.Nimrod;//.Web;
+	private ThemeType defaultThemeType = ThemeType.Weblaf;
 
-	private static int defaultThemeColor = 7;
+	private static int defaultThemeColor = 0;
 
 	public static final int DASHBOARD_TAB = 0;
 	public static final int MAIN_TAB = 1;
@@ -182,6 +183,8 @@ public class MainScene {
 
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
+	private static final int DEFAULT_ZOOM = 10;
+	
 	// private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
 
 	// private static final String PAUSE = "PAUSE";
@@ -1802,7 +1805,7 @@ public class MainScene {
 		setQuickToolTip(recenterBtn, Msg.getString("SettlementTransparentPanel.tooltip.recenter"));
 		recenterBtn.setOnAction(e -> {
 			mapPanel.reCenter();
-			zoomSlider.setValue(0);
+			zoomSlider.setValue(DEFAULT_ZOOM);
 			e.consume();
 		});
 
@@ -1819,9 +1822,9 @@ public class MainScene {
 		// zoom.setMaxHeight(200);
 		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
 		zoomSlider.setMin(1);
-		zoomSlider.setMax(40);
-		zoomSlider.setValue(5);
-		zoomSlider.setMajorTickUnit(39);	
+		zoomSlider.setMax(35);
+		zoomSlider.setValue(DEFAULT_ZOOM);
+		zoomSlider.setMajorTickUnit(34);	
 		zoomSlider.setMinorTickCount(1);	
 		zoomSlider.setShowTickLabels(true);
 		zoomSlider.setShowTickMarks(true);
@@ -1837,7 +1840,7 @@ public class MainScene {
 				if (old_val != new_val) {
 					// Change scale of map based on slider position.
 					double sliderValue = new_val.doubleValue();
-					double d = SettlementMapPanel.DEFAULT_SCALE;
+					//double d = SettlementMapPanel.DEFAULT_SCALE;
 					double newScale = 0;
 					if (sliderValue > 0) {
 						newScale = sliderValue;//* SettlementTransparentPanel.ZOOM_CHANGE;
@@ -2394,7 +2397,10 @@ public class MainScene {
 				} 
 				
 				else {
-					setLookAndFeel(defaultThemeType);
+					//if (theme == 0 || theme == 6)
+						setLookAndFeel(defaultThemeType);
+					//else
+					//	setLookAndFeel(ThemeType.Nimrod);
 				}
 				
 			});
@@ -2415,15 +2421,30 @@ public class MainScene {
 		boolean changed = false;
 		if (choice == ThemeType.Weblaf) {
 			try {
+				// use the weblaf skin
 				WebLookAndFeel.install();
-				//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				//UIManagers.initialize();
+					        
+				// need to load an uimanager
+				//if (theme == 0 || theme == 6)
+				//	UIManager.setLookAndFeel (NimbusLookAndFeel.class.getCanonicalName());
+				//else if (theme == 7){
+					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
+					NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
+					// working if switching to a brand new .theme file 
+					NimRODLookAndFeel nf = new NimRODLookAndFeel();
+					nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme // file
+					UIManager.setLookAndFeel(nf); 
+				//}
+				
 				changed = true;
+				
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		}
 		
-		else if (choice == ThemeType.System) { // theme == "nativeLookAndFeel"
+		else if (choice == ThemeType.System) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;

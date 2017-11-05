@@ -278,7 +278,7 @@
 .jfx-toggle-button:selected:focused {
   	-jfx-toggle-color: #f8c202;
     -fx-background-color: transparent;
-    -fx-text-fill: yellow;
+    -fx-text-fill: #f8c202;
     -fx-font-weight: bold;
 }
 
@@ -329,7 +329,7 @@
 	-fx-background-color: black;
 	-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));
     -fx-background-radius: 10px;
-	-fx-text-fill: yellow;
+	-fx-text-fill: #f8c202;
 	-fx-border-color: transparent;
 	-fx-border-radius: 10px;
 	-fx-border-width: 3px;
@@ -346,7 +346,7 @@
 .jfx-check-box > .box {
     -jfx-checked-color: gray;
     -jfx-unchecked-color: gray;
-    -fx-text-fill: yellow;
+    -fx-text-fill: #f8c202;
 	-jfx-background-color: transparent; 
 }
 
@@ -354,7 +354,7 @@
 .jfx-check-box {
     -jfx-checked-color: gray;
     -jfx-unchecked-color: gray;
-    -fx-text-fill: yellow;
+    -fx-text-fill: #f8c202;
 	-fx-background-color: transparent;  
     -fx-font-weight: BOLD;
     -fx-font-size: 12;
@@ -366,7 +366,7 @@
 .combo-box-base {
     -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
     -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: yellow;
+    -fx-text-fill: #f8c202;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-background-radius: 3px, 3px, 2px, 1px;
 }
@@ -375,14 +375,14 @@
 	-fx-font-size: 12.0;
 	-fx-background: transparent;
     -fx-background-color: #917215; /* #917215; */
-    -fx-text-fill: yellow;
+    -fx-text-fill: #f8c202;
 }
 
 .jfx-combo-box .text-field {
 	-fx-font-size: 12.0;
 	-fx-background: transparent;
     -fx-background-color: #654b00;
-    -fx-text-fill: yellow;
+    -fx-text-fill: #f8c202;
     -fx-cell-size: 1.66667em;
     -fx-pref-height: 25;
 }
@@ -437,13 +437,13 @@
 	-fx-background-color: #f8c202;
 		
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);	
-    -fx-background-insets: 4,0,0,0;
-    -fx-background-radius: 2,2,2,2;
-    -fx-padding: 0 0 0 0;
+    -fx-background-insets: 4,0,4,0;
+    -fx-background-radius: 3,3,3,3;
+    -fx-padding: 0 4 2 4;
     -fx-text-fill: #654b00;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-stroke-width: 4;
+    -fx-stroke-width: 1;
     -fx-font-family: "Monospaced";
 }
 

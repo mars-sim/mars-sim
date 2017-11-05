@@ -436,13 +436,13 @@
 	-fx-background-color: #C6D9D9;
 	
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);	
-    -fx-background-insets: 4,0,0,0;
-    -fx-background-radius: 2,2,2,2;
-    -fx-padding: 0 0 0 0;
+    -fx-background-insets: 4,0,4,0;
+    -fx-background-radius: 3,3,3,3;
+    -fx-padding: 0 4 2 4;
     -fx-text-fill: #065185;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-stroke-width: 4;
+    -fx-stroke-width: 1;
     -fx-font-family: "Monospaced";
 }
 

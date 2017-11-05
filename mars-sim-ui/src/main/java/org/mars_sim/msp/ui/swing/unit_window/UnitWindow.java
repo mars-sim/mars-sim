@@ -22,6 +22,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -34,22 +35,25 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.sidepanel.SlidePaneFactory;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-import com.jidesoft.plaf.LookAndFeelFactory;
-import com.jidesoft.swing.JideTabbedPane;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 
-import javafx.application.Platform;
 
 /**
  * The UnitWindow is the base window for displaying units.
  */
-public abstract class UnitWindow extends JInternalFrame {
+public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { //
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
     //private static final int BLUR_SIZE = 7;
+	
+	public static final int WIDTH = 512;
+	public static final int HEIGHT = 600;
 	
 	//private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
@@ -89,9 +93,8 @@ public abstract class UnitWindow extends JInternalFrame {
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
 	//private JTabbedPane centerPanel;
-	// 2015-06-20 Replaced with JideTabbedPane
-	private JideTabbedPane centerPanel;
-	
+	//private JideTabbedPane centerPanel;
+	private JTabbedPane tabPanel;
 	
 	/** Main window. */
 	protected MainDesktopPane desktop;
@@ -117,8 +120,8 @@ public abstract class UnitWindow extends JInternalFrame {
         mainScene = desktop.getMainScene();
         this.unit = unit;
 
-    	this.setMaximumSize(new Dimension(480, 580));
-    	this.setPreferredSize(new Dimension(480, 580));
+    	this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+    	this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
         //BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
@@ -145,10 +148,10 @@ public abstract class UnitWindow extends JInternalFrame {
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         String name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
         if (unit instanceof Person) {
-            namePanel.setPreferredSize(new Dimension(465,160));
+            namePanel.setPreferredSize(new Dimension(WIDTH-5,160));
         }
         else
-            namePanel.setPreferredSize(new Dimension(465,70));
+            namePanel.setPreferredSize(new Dimension(WIDTH-5,70));
 
         namePanel.setBorder(null);
         int theme = 0;
@@ -271,6 +274,17 @@ public abstract class UnitWindow extends JInternalFrame {
         }
 
         // Create center panel
+        tabPanel = new WebTabbedPane();
+        //centerPanel.setBackground(new Color (188, 181, 171));
+        //tabPanel.setPreferredSize(new Dimension(WIDTH-5, 512));
+        //tabPanel.setBorder(new MarsPanelBorder()); 
+        tabPanel.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
+        tabPanel.setTabPlacement(WebTabbedPane.TOP);
+        tabPanel.setFont(new Font("Serif", Font.BOLD, 12));
+        WebPanel centerPanel = new WebPanel(tabPanel);
+        centerPanel.setPreferredSize(new Dimension(WIDTH-5, 512));
+  
+/*        
         centerPanel = new JideTabbedPane();
         centerPanel.setPreferredSize(new Dimension(465,480));
         centerPanel.setBorder(null);
@@ -292,6 +306,8 @@ public abstract class UnitWindow extends JInternalFrame {
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
+*/   
+        
         factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
         //update();
 
@@ -432,7 +448,7 @@ public abstract class UnitWindow extends JInternalFrame {
         tabPanels.stream().sorted(
         		(t1, t2) -> t2.getTabTitle().compareTo(t1.getTabTitle()));
         tabPanels.forEach(panel -> {
-	            centerPanel.addTab(panel.getTabTitle(), panel.getTabIcon(),
+	            tabPanel.addTab(panel.getTabTitle(), panel.getTabIcon(),
 	                panel, null);//panel.getTabToolTip());
         });
 
@@ -589,7 +605,7 @@ public abstract class UnitWindow extends JInternalFrame {
         if (tabPanels != null)
         	tabPanels.clear();
 		tabPanels = null;
-		centerPanel = null;
+		tabPanel = null;
 		oldShiftType = null;
 		townLabel = null;
 	    jobLabel = null;

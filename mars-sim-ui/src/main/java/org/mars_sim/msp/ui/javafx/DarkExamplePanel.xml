@@ -1,0 +1,32 @@
+<skin>
+
+    <!-- Modification for our custom panel -->
+    <style type="panel" id="shaded">
+        <component>
+            <background>77,81,83</background>
+        </component>
+        <painter class="WebPanelPainter">
+            <borderColor>67,72,73</borderColor>
+        </painter>
+
+        <!-- Scroll pane style -->
+        <style type="scrollpane" id="scroll">
+            <component>
+                <background>77,81,83</background>
+            </component>
+            <painter class="WebScrollPanePainter">
+                <borderColor>77,81,83</borderColor>
+            </painter>
+
+            <!-- Text area style -->
+            <style type="textarea" id="text">
+                <component>
+                    <foreground>235,235,235</foreground>
+                </component>
+            </style>
+
+        </style>
+
+    </style>
+
+</skin>
