@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.1.0 2016-10-14
+ * @version 3.1.0 2017-11-04
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -36,7 +36,6 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
@@ -123,8 +122,6 @@ extends ToolWindow {
 	private static MarsClock marsClock;
 	//private javax.swing.Timer marsTimer = null;
 
-	//private BalloonToolTip balloonToolTip;
-
 	private MarqueeTicker marqueeTicker;
 
 	private JFXPanel jfxPanel;
@@ -145,8 +142,6 @@ extends ToolWindow {
 
     	if (marsClock == null)
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-        //balloonToolTip = new BalloonToolTip();
 
         init();
 

@@ -41,6 +41,8 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
+import com.jidesoft.plaf.LookAndFeelFactory;
+import com.jidesoft.swing.JideTabbedPane;
 
 
 /**
@@ -92,9 +94,9 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
-	//private JTabbedPane centerPanel;
-	//private JideTabbedPane centerPanel;
-	private JTabbedPane tabPanel;
+	//private JTabbedPane tabPanel;
+	private JideTabbedPane tabPanel;
+	//private JTabbedPane tabPanel;
 	
 	/** Main window. */
 	protected MainDesktopPane desktop;
@@ -274,6 +276,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
         }
 
         // Create center panel
+/*        
         tabPanel = new WebTabbedPane();
         //centerPanel.setBackground(new Color (188, 181, 171));
         //tabPanel.setPreferredSize(new Dimension(WIDTH-5, 512));
@@ -281,32 +284,35 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
         tabPanel.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
         tabPanel.setTabPlacement(WebTabbedPane.TOP);
         tabPanel.setFont(new Font("Serif", Font.BOLD, 12));
-        WebPanel centerPanel = new WebPanel(tabPanel);
-        centerPanel.setPreferredSize(new Dimension(WIDTH-5, 512));
+*/        
+        
   
-/*        
-        centerPanel = new JideTabbedPane();
-        centerPanel.setPreferredSize(new Dimension(465,480));
-        centerPanel.setBorder(null);
+        
+        tabPanel = new JideTabbedPane();
+        tabPanel.setPreferredSize(new Dimension(WIDTH-15,512));
+        tabPanel.setBorder(null);
 
-        centerPanel.setBoldActiveTab(true);
-        centerPanel.setScrollSelectedTabOnWheel(true);
-        centerPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
+        tabPanel.setBoldActiveTab(true);
+        tabPanel.setScrollSelectedTabOnWheel(true);
+        tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
 		if (MainScene.getTheme() == 7) {
 	        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
-			centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
+			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
 		}
 		else {
 	        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
-			centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
+			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
 		}
         // Setting foreground color for tab text.
-        centerPanel.setForeground(Color.DARK_GRAY);
+        tabPanel.setForeground(Color.DARK_GRAY);
         //centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
-        centerPanel.setTabPlacement(JideTabbedPane.LEFT);
+        tabPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
-*/   
+  
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        centerPanel.add(tabPanel);
+        centerPanel.setPreferredSize(new Dimension(WIDTH-5, 512));
         
         factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
         //update();

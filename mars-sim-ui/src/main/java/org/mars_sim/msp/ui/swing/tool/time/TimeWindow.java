@@ -39,8 +39,10 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
 
 
 /**
@@ -122,7 +124,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
 	private JButton pauseButton;
-	private BalloonToolTip balloonToolTip;
+	//private BalloonToolTip balloonToolTip;
 	private MainScene mainScene;
 
 	/**
@@ -150,7 +152,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
 		uptimer = masterClock.getUpTimer();
-		balloonToolTip = new BalloonToolTip();
+		//balloonToolTip = new BalloonToolTip();
 
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -504,9 +506,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 
 			northernSeasonTip = getSeasonTip(northernSeason);
-			balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
+			//balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
 																					// //$NON-NLS-1$
-
+	   		TooltipManager.setTooltip (northernSeasonLabel, northernSeasonTip, TooltipWay.down);
 		}
 
 		if (!southernSeasonCache.equals(southernSeason)) {
@@ -518,9 +520,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 
 			southernSeasonTip = getSeasonTip(southernSeason);
-			balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
+			//balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
 																					// //$NON-NLS-1$
-
+	   		TooltipManager.setTooltip (southernSeasonLabel, southernSeasonTip, TooltipWay.down);
 		}
 
 	}

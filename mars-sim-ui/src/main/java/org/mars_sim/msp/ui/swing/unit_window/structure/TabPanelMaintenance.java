@@ -37,6 +37,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
+
 public class TabPanelMaintenance
 extends TabPanel {
 
@@ -280,7 +283,11 @@ extends TabPanel {
 			wearConditionCache = (int) Math.round(manager.getWearCondition());
 			wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition",
 					wearConditionCache), JLabel.CENTER);
-			wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.toolTip"));
+			//wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.toolTip"));
+			//WebLabel tip = new WebLabel (Msg.getString("BuildingPanelMaintenance.toolTip"));
+	        TooltipManager.setTooltip (wearConditionLabel, Msg.getString("BuildingPanelMaintenance.toolTip"), TooltipWay.down);
+	        //wearConditionLabel.setMargin (4);
+
 			add(wearConditionLabel);
 
 			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
@@ -313,7 +320,8 @@ extends TabPanel {
 			add(partsLabel);
 
 			// Add tooltip.
-			lastLabel.setToolTipText(getToolTipString());
+			//lastLabel.setToolTipText(getToolTipString());
+	        TooltipManager.setTooltip (lastLabel, getToolTipString(), TooltipWay.down);
 		}
 
 		/**
@@ -347,10 +355,12 @@ extends TabPanel {
 			partsLabel.setText(getPartsString(parts, false));
 
 			// Update tool tip.
-			lastLabel.setToolTipText(getToolTipString());
+			//lastLabel.setToolTipText(getToolTipString());
+	        TooltipManager.setTooltip (lastLabel, getToolTipString(), TooltipWay.down);
 
 	        // Update tool tip.
-			partsLabel.setToolTipText("<html>" + getPartsString(parts, true) + "</html>");
+			//partsLabel.setToolTipText("<html>" + getPartsString(parts, true) + "</html>");
+	        TooltipManager.setTooltip (partsLabel, "<html>" + getPartsString(parts, true) + "</html>", TooltipWay.down);
 
 		}
 
@@ -369,7 +379,7 @@ extends TabPanel {
 		*/
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
-			result.append("The Last Complete Maintenance Was Done ").append(lastCompletedCache).append(" Sols Ago<br>");
+			result.append("The Last Complete Maintenance Was Done ").append(lastCompletedCache).append(" Sols Ago");
 			result.append("</html>");
 			return result.toString();
 		}
@@ -443,7 +453,8 @@ extends TabPanel {
 			add(partsLabel);
 
 			// Add tooltip.
-			setToolTipText(getToolTipString());
+			//setToolTipText(getToolTipString());
+			TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.down);
 		}
 
 		/**
@@ -473,7 +484,8 @@ extends TabPanel {
 			partsLabel.setText(getPartsString(malfunction.getRepairParts(), false));
 
 			// Update tool tip.
-			setToolTipText(getToolTipString());
+			//setToolTipText(getToolTipString());
+			TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.down);
 		}
 
 		/**

@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.ai.PersonalityType;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.QualityGauge;
 import org.mars_sim.msp.ui.steelseries.gauges.Radial2Top;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -66,10 +67,14 @@ public class TabPanelPersonality
 extends TabPanel {
 
 	// Data members
+	private int themeCache;
+	
 	private JFXPanel jfxpanel;
 	private Scene scene;
 	private StackPane stack;
 	private Person person;
+	
+	private MainScene mainScene;
 	
 	/**
 	 * Constructor.
@@ -86,6 +91,8 @@ extends TabPanel {
 			unit, desktop
 		);
 
+		mainScene = desktop.getMainScene();
+		
 		this.person = (Person) unit;
 
 		//createSwingGUI();
@@ -99,8 +106,10 @@ extends TabPanel {
 			@Override
 			public void run() {
 				stack = new StackPane();
-				stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
-						+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+				// Updates the stack pane's background color
+				update();
+				//stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+				//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
 
 				scene = new Scene(stack, width, height);
 				scene.setFill(Color.TRANSPARENT);// .BLACK);
@@ -487,5 +496,26 @@ extends TabPanel {
 	public void update() {
 		// Person person = (Person) unit;
 		// Fill in as we have more to update on this panel.
+    	if (mainScene != null) {
+	    	int theme = MainScene.getTheme();
+	    	if (theme != themeCache) {
+	        	themeCache = theme;
+	        	// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
+	        	// pale grey : Color(214,217,223) = D6D9DF
+	        	// pale mud : (193, 191, 157) = C1BF9D
+				if (theme == 7)
+					stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+							+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+		    	else
+					stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #D6D9DF;"
+							+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+	    	}
+    	}
+    	
+    	else {
+			stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+					+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+    	}
+		
 	}
 }

@@ -1,5 +1,5 @@
 package org.mars_sim.msp.ui.swing.tool;
-
+/*
 import java.awt.Color;
 
 import javax.swing.JComponent;
@@ -174,3 +174,4 @@ public class BalloonToolTip extends BalloonTip {
 		//desktop.updateToolWindowLF();
 	}
 }
+*/

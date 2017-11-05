@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -51,8 +50,7 @@ extends TabPanel {
 
 	private JTable table;
 	private PreferenceTableModel tableModel;
-	private BalloonToolTip balloonToolTip = new BalloonToolTip();
-
+	
 
 	/**
 	 * Constructor.

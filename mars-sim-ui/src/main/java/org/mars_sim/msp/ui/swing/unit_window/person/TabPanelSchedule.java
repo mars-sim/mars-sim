@@ -44,10 +44,12 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
 
 
 /**
@@ -96,7 +98,6 @@ extends TabPanel {
 	private TaskSchedule taskSchedule;
 	private PlannerWindow plannerWindow;
 	private MainDesktopPane desktop;
-	private BalloonToolTip balloonToolTip;
 
 
 	/**
@@ -129,8 +130,6 @@ extends TabPanel {
         //schedules = taskSchedule.getSchedules();
         allActivities = taskSchedule.getAllActivities();
 
-        balloonToolTip = new BalloonToolTip();
-
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
@@ -154,7 +153,8 @@ extends TabPanel {
     		shiftCache = shiftType;
     		shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift.label"), JLabel.CENTER); //$NON-NLS-1$
 
-    		balloonToolTip.createBalloonTip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
+    		TooltipManager.setTooltip (shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip"), TooltipWay.down);
+    		//balloonToolTip.createBalloonTip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
     		buttonPane.add(shiftLabel);
 
     		fillColorCache = shiftLabel.getBackground();
@@ -166,9 +166,11 @@ extends TabPanel {
     		shiftTF.setColumns(4);
 
     		if (shiftCache != ShiftType.OFF)
-    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
+    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
+    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
     		else
-    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
+    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip"), TooltipWay.down);
+    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
     		shiftTF.setHorizontalAlignment(JTextField.CENTER);
     		buttonPane.add(shiftTF);
     		//buttonPane.add(new JLabel("           "));
@@ -198,7 +200,8 @@ extends TabPanel {
 		//hideRepeatedTasksCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
 		hideBox.setFont(new Font("Serif", Font.PLAIN, 12));
 		//hideRepeatedTasksCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$
-		balloonToolTip.createBalloonTip(hideBox, Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$);
+		TooltipManager.setTooltip (hideBox, Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask"), TooltipWay.down);
+		//balloonToolTip.createBalloonTip(hideBox, Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$);
 		hideBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (hideBox.isSelected()) {
@@ -281,7 +284,8 @@ extends TabPanel {
 		realTimeBox.setHorizontalTextPosition(SwingConstants.RIGHT);
 		realTimeBox.setFont(new Font("Serif", Font.PLAIN, 12));
 		//realTimeUpdateCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate")); //$NON-NLS-1$
-		balloonToolTip.createBalloonTip(realTimeBox, Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate"));
+		//balloonToolTip.createBalloonTip(realTimeBox, Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate"));
+		TooltipManager.setTooltip (realTimeBox, Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate"), TooltipWay.down);
 		realTimeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (realTimeBox.isSelected()){
@@ -354,9 +358,11 @@ extends TabPanel {
 			}
 
     		if (shiftCache != ShiftType.OFF)
-    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
+    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
+    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
     		else
-    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
+    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off"), TooltipWay.down);
+    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
 
 /*
 			//System.out.println("fillColorCache is "+ fillColorCache);
@@ -693,7 +699,7 @@ extends TabPanel {
 		taskSchedule = null;
 		plannerWindow = null;
 		desktop = null;
-		balloonToolTip = null;
+		//balloonToolTip = null;
 
 	}
 

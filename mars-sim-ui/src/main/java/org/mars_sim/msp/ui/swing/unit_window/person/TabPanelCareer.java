@@ -56,6 +56,9 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
+
 /**
  * The TabPanelCareer is a tab panel for viewing a person's career path and job history.
  */
@@ -88,8 +91,6 @@ implements ActionListener {
 
 	private StarRater starRater, aveRater;
 	private MarsClock marsClock;
-
-	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 
 	/**
 	 * Constructor.
@@ -158,7 +159,8 @@ implements ActionListener {
 			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.RIGHT); //$NON-NLS-1$
 			topPanel.add(jobLabel);
 			//balloonToolTip.createBalloonTip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
-
+			TooltipManager.setTooltip (jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip"), TooltipWay.down);
+			
 			// Prepare job combo box
 			jobCache = mind.getJob().getName(person.getGender());
 			List<String> jobNames = new ArrayList<String>();
@@ -175,7 +177,7 @@ implements ActionListener {
 			jobPanel.add(jobComboBox);
 
 			topPanel.add(jobPanel);
-
+			TooltipManager.setTooltip (jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip"), TooltipWay.down);
 			//balloonToolTip.createBalloonTip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip")); //$NON-NLS-1$
 
 			// check if a job reassignment is still pending for review
@@ -206,11 +208,10 @@ implements ActionListener {
 			jobChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
 			jobChangeLabel.setForeground(Color.blue);
 			firstPanel.add(jobChangeLabel, BorderLayout.SOUTH);
-
-			//String roleTip = Msg.getString("TabPanelCareer.roleType.tooltip"); //$NON-NLS-1$
 			//balloonToolTip.createBalloonTip(roleLabel, roleTip);
 			//balloonToolTip.createBalloonTip(roleTF, roleTip);
-
+			TooltipManager.setTooltip (roleLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
+			
 			// 2017-03-28 Prepare SpringLayout
 			SpringUtilities.makeCompactGrid(topPanel,
 			                                2, 2, //rows, cols
@@ -240,11 +241,14 @@ implements ActionListener {
 			//String tip = Msg.getString("TabPanelCareer.aveRater.tooltip");
 			//balloonToolTip.createBalloonTip(aveRatingLabel, tip); //$NON-NLS-1$
 			//balloonToolTip.createBalloonTip(aveRater, tip); //$NON-NLS-1$
-
+			TooltipManager.setTooltip (aveRatingLabel, Msg.getString("TabPanelCareer.aveRater.tooltip"), TooltipWay.down);//$NON-NLS-1$
+			
 			JLabel raterLabel = new JLabel("Your Rating : ", JLabel.RIGHT);
 			springPanel.add(raterLabel);
 			starRater = new StarRater(5, 0, 0);
-
+			
+			TooltipManager.setTooltip (raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip"), TooltipWay.down);//$NON-NLS-1$
+			TooltipManager.setTooltip (starRater, Msg.getString("TabPanelCareer.starRater.tooltip"), TooltipWay.down);//$NON-NLS-1$
 			//starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
 			//balloonToolTip.createBalloonTip(raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip")); //$NON-NLS-1$
 			//balloonToolTip.createBalloonTip(starRater, Msg.getString("TabPanelCareer.starRater.tooltip")); //$NON-NLS-1$

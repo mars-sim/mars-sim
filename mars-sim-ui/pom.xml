@@ -316,11 +316,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<!-- https://github.com/timmolderez/balloontip
 			balloontip is 39 KB
 			balloontip-examples is 124 KB -->
-		<dependency>
+		<!--dependency>
 			<groupId>net.java.balloontip</groupId>
 			<artifactId>balloontip</artifactId>
 			<version>1.2.4.1</version>
-		</dependency>
+		</dependency-->
 
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries : 409 KB
 		<dependency>
