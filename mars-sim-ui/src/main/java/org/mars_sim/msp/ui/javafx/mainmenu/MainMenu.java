@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.FadeTransition;
-import javafx.scene.control.Separator;
+//import javafx.scene.control.Separator;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
@@ -38,8 +38,8 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.geometry.HPos;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+//mport javafx.scene.control.Button;
+//import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -59,7 +59,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
+//import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
@@ -98,8 +98,8 @@ public class MainMenu {
     public static final int WIDTH = 1024;
     public static final int HEIGHT = 768;
   
-    public static final int MUSIC_VOLUME = 0;
-    public static final int SOUND_EFFECT_VOLUME = 1;
+    //public static final int MUSIC_VOLUME = 0;
+    //public static final int SOUND_EFFECT_VOLUME = 1;
     
 	// Data members
     public static String screen1ID = "main";
@@ -114,11 +114,14 @@ public class MainMenu {
 	public int mainscene_width = 1366; //1920;//
 	public int mainscene_height = 768; //1080;//
 	
-	public float music_v = 80f;
-	public float sound_effect_v = 80f;
+	private double x = 0;
+    private double y= 0;
+    
+	public float music_v = 50f;
+	public float sound_effect_v = 50f;
 
-    private Point2D anchorPt;
-    private Point2D previousLocation;
+    //private Point2D anchorPt;
+    //private Point2D previousLocation;
     
     private AnchorPane anchorPane;
     
@@ -265,7 +268,23 @@ public class MainMenu {
        Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
 
        closeApp.translateXProperty().bind(scene.widthProperty().subtract(40));
-   	
+ 
+       menuApp.getTitleStackPane().setOnMousePressed(new EventHandler<MouseEvent>() {
+           @Override
+           public void handle(MouseEvent event) {
+               x = event.getSceneX();
+               y = event.getSceneY();
+           }
+       });
+       menuApp.getTitleStackPane().setOnMouseDragged(new EventHandler<MouseEvent>() {
+           @Override
+           public void handle(MouseEvent event) {
+               stage.setX(event.getScreenX() - x);
+               stage.setY(event.getScreenY() - y);
+           }
+       });
+       
+/*       
        // starting initial anchor point
        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event){
@@ -289,8 +308,10 @@ public class MainMenu {
                 previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY());
             }
         });
-        
+
+       
         previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY()); 
+  */
        
 	   //scene = new Scene(stackPane, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
         // Add keyboard control

@@ -12,7 +12,7 @@ import javafx.scene.Parent;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-//import javafx.scene.layout.StackPane;
+import javafx.scene.layout.StackPane;
 //import javafx.scene.AmbientLight;
 //import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -86,15 +86,17 @@ public class Globe {
     //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-1k.png").toExternalForm()); //.toString());
 
 	private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
+    //private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
+    //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
     private final Group root = new Group();
     private final Group axisGroup = new Group();
 
+    private StackPane stackPane;
+    
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
-    private final double cameraDistance = 1450;//450;
+    private final double cameraDistance = 1450;//1450;//450;
 
     private final Xform world = new Xform();
     private final Xform cameraXform = new Xform();
@@ -115,7 +117,9 @@ public class Globe {
 
 
 	public Globe() {
-	    root.getChildren().addAll(world);
+		stackPane = new StackPane();
+		stackPane.getChildren().add(world);
+	    root.getChildren().addAll(stackPane);
 	    buildCamera();
 	    buildSphereGroup();
 	}
@@ -129,7 +133,9 @@ public class Globe {
 	}
 
     private void buildCamera() {
-	    root.getChildren().add(cameraXform);
+	    //root.getChildren().add(cameraXform);
+	    stackPane.getChildren().add(cameraXform);
+	    
         cameraXform.getChildren().add(cameraXform2);
         cameraXform2.getChildren().add(cameraXform3);
         cameraXform3.getChildren().add(camera);
@@ -176,7 +182,7 @@ public class Globe {
     }
 
     protected void handleMouse(Scene scene) {//, final Node root) {
-        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+    	scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent me) {
                 mousePosX = me.getSceneX();
                 mousePosY = me.getSceneY();
@@ -184,7 +190,7 @@ public class Globe {
                 mouseOldY = me.getSceneY();
             }
         });
-        scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+    	scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent me) {
             	
@@ -199,8 +205,8 @@ public class Globe {
 	                mouseDeltaX = -(mousePosX - mouseOldX);
 	                mouseDeltaY = -(mousePosY - mouseOldY);
 	
-	                double modifier = 1.0;
-	                double modifierFactor = 0.1;
+	                double modifier = 0.05;
+	                double modifierFactor = 3.5;
 	
 	                if (me.isControlDown()) {
 	                    modifier = 0.1;

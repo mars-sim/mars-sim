@@ -17,6 +17,7 @@ import javafx.scene.effect.DropShadow;
 //import javafx.scene.image.Image;
 //import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -40,6 +41,7 @@ public class MenuApp {
 
 
     private AnchorPane root = new AnchorPane();
+    private StackPane titleStackPane;
     private VBox menuBox;
     private HBox optionMenu = new HBox();
     private Line line;
@@ -54,6 +56,7 @@ public class MenuApp {
     	
     	this.mainMenu = mainMenu;
   
+    	root.setMaxSize(WIDTH-10, HEIGHT-20);
     }
     
     public void setupMenuData() {
@@ -74,27 +77,30 @@ public class MenuApp {
         );
     }    
     
-    AnchorPane createContent() {
+    public AnchorPane createContent() {
         //addBackground();
-    	addRect();
+    	//addRect();    	
+
     	addStarfield();
-        addTitle();
         addGlobe();
         
         addLine(X_OFFSET, Y_OFFSET);
         addMenu(X_OFFSET + 10, Y_OFFSET - 25);
         //startAnimation();
-        addFooter();
+        //addFooter();
+        
+        addTitle();
+
         
         return root;
     }
-
+/*
     private void addRect() {
         Rectangle rect = new Rectangle(WIDTH, HEIGHT);
         rect.setFill(Color.rgb(0, 0, 0, .80));
         root.getChildren().add(rect);
     }
-
+*/
     private void addStarfield() {
         StarfieldFX sf = new StarfieldFX();
         Parent starfield = sf.createStars(WIDTH-2, HEIGHT-2);
@@ -105,8 +111,8 @@ public class MenuApp {
     private void addGlobe() {
     	spinningGlobe = new SpinningGlobe(mainMenu);
         Parent globe = spinningGlobe.createDraggingGlobe();   
-        globe.setTranslateX(WIDTH/3D - SpinningGlobe.WIDTH/2D);
-        globe.setTranslateY(50);
+        globe.setTranslateX(WIDTH/3D - SpinningGlobe.WIDTH/2D + 40);
+        globe.setTranslateY(0);
  
         root.getChildren().add(globe);	
     }
@@ -129,19 +135,25 @@ public class MenuApp {
         version.setTranslateX(WIDTH / 2 - version.getTitleWidth() / 2);
         version.setTranslateY(80);
         
-        root.getChildren().addAll(title, version);
+        MenuTitle build = new MenuTitle("Build " + Simulation.BUILD + "", 16, Color.DARKGOLDENROD, true);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        build.setTranslateX(15);
+        build.setTranslateY(HEIGHT-10);
+
+        MenuTitle year = new MenuTitle("All Rights Reserved, 2017", 16, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        year.setTranslateX(WIDTH - 200);
+        year.setTranslateY(HEIGHT-10);
+     
+        MenuTitle site = new MenuTitle("https://mars-sim.github.io/", 18, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        site.setTranslateX(400);
+        site.setTranslateY(HEIGHT-10);
+     
+        
+        titleStackPane = new StackPane(title, version, year, site, build, optionMenu);
+        root.getChildren().addAll(titleStackPane);
         
     }
 
-    private void addFooter() {
-
-        MenuTitle build = new MenuTitle("Build " + Simulation.BUILD + "", 16, Color.BURLYWOOD, true);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
-        build.setTranslateX(WIDTH - build.getTitleWidth() - 10);
-        build.setTranslateY(HEIGHT-15);
-        
-        root.getChildren().addAll(build);
-        
-    }
+    
     private void addLine(double x, double y) {
         line = new Line(x, y, x, y + 430);
         line.setStrokeWidth(2);
@@ -175,7 +187,7 @@ public class MenuApp {
         optionMenu.getChildren().add(menuBox);
         optionMenu.setTranslateX(WIDTH/1.45);//2.6);
         optionMenu.setTranslateY(y);
-        
+/*        
         boolean flag = false;
 	    for (Node node : root.getChildren()) {
 	    	if (node == optionMenu) {
@@ -184,7 +196,8 @@ public class MenuApp {
 	    	}
 	    }
     	if (!flag)
-        	root.getChildren().add(optionMenu);
+    		root.getChildren().add(optionMenu);
+*/    	
     	
     }
 
@@ -235,6 +248,10 @@ public class MenuApp {
     
     public Pane getRoot() {
     	return root;
+    }
+
+    public Pane getTitleStackPane() {
+    	return titleStackPane;
     }
     
     public SpinningGlobe getSpinningGlobe() {

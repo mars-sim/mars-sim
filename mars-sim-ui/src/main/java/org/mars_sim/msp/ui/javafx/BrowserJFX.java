@@ -848,6 +848,9 @@ public class BrowserJFX {
                 engine.getLoadWorker().exceptionProperty().addListener(new ChangeListener<Throwable>() {
                 	@Override
 	                public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
+                		
+                		System.out.println("Received exception: " + value.getMessage());
+                		
 	                	if (engine.getLoadWorker().getState() == FAILED) {
 	                		//SwingUtilities.invokeLater(()-> {
 	                			if (engine.getLocation() != null)

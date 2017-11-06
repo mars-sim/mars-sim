@@ -11,6 +11,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -31,8 +32,10 @@ public class MenuTitle extends Pane {
 	        text.setFont(Font.loadFont(MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), size));
 	        text.setEffect(new DropShadow(50, Color.BLACK));
         }
-        else
+        else {
             text = new Text(name);
+            text.setFont(Font.font(null, FontWeight.LIGHT, size));
+        }
 
         text.setFill(color);
         text.setTextAlignment(TextAlignment.CENTER);

@@ -109,15 +109,15 @@ public class SpinningGlobe extends Application {
     public static final int WIDTH = 768;
     public static final int HEIGHT = 768;
 
-    private static final double MIN_SCALE = .5;
-    private static final double MAX_SCALE = 4;
-    private static final double DEFAULT_SCALE = 2;
+    //private static final double MIN_SCALE = .5;
+    //private static final double MAX_SCALE = 4;
+    //private static final double DEFAULT_SCALE = 2;
 
-    private double anchorX, anchorY;
-    private double rate, total_scale = DEFAULT_SCALE;
+    //private double anchorX, anchorY;
+   // private double rate, total_scale = DEFAULT_SCALE;
 
     @SuppressWarnings("restriction")
-	private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
+	private final DoubleProperty sunDistance = new SimpleDoubleProperty(50);
     private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
 
     private RotateTransition rt;
