@@ -435,11 +435,23 @@
 
 #rich-red {
 	-fx-background-color: #f8c202;
-		
-    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);	
-    -fx-background-insets: 4,0,4,0;
-    -fx-background-radius: 3,3,3,3;
-    -fx-padding: 0 4 2 4;
+    -fx-text-fill: #654b00;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-stroke-width: 1;
+    -fx-font-family: "Monospaced";
+}
+
+#rich-red-button {
+	-fx-background-color: #f8c202;
+	-fx-background-insets: 0 0 0 0;
+}
+
+#rich-red-Label {
+	-fx-background-color: #f8c202;
+    -fx-background-radius: 4,4,4,4;	
+	-fx-background-insets: 4,0,4,0;
+	-fx-padding: 2 0 2 0;
     -fx-text-fill: #654b00;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
@@ -477,7 +489,7 @@
 
 #rich-date {
 	-jfx-default-color: #654b00;
-    -fx-padding: 0 5 0 5;
+    -fx-padding: 0 4 0 4;
 	-fx-background-color: #f8c202;
 	-fx-text-fill: #654b00;
 	-fx-font-size: 13px;

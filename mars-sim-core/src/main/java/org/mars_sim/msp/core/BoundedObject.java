@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BoundedObject.java
- * @version 3.08 2015-12-07
+ * @version 3.1.0 2017-11-06
  * @author Manny Kung
  */
 

@@ -1,10 +1,10 @@
 <!ELEMENT simulation-configuration (time-configuration)>
-<!ELEMENT time-configuration (time-ratio, time-between-updates, no-delays-per-yield, max-frame-skips, 
+<!ELEMENT time-configuration (base-time-ratio, base-time-between-updates, no-delays-per-yield, max-frame-skips, 
 earth-start-date-time, mars-start-date-time, autosave-interval, average-transit-time)>
-<!ELEMENT time-ratio EMPTY>
-<!ATTLIST time-ratio value CDATA #REQUIRED>
-<!ELEMENT time-between-updates EMPTY>
-<!ATTLIST time-between-updates value CDATA #REQUIRED>
+<!ELEMENT base-time-ratio EMPTY>
+<!ATTLIST base-time-ratio value CDATA #REQUIRED>
+<!ELEMENT base-time-between-updates EMPTY>
+<!ATTLIST base-time-between-updates value CDATA #REQUIRED>
 <!ELEMENT no-delays-per-yield EMPTY>
 <!ATTLIST no-delays-per-yield value CDATA #REQUIRED>
 <!ELEMENT max-frame-skips EMPTY>

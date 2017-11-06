@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.1.0 2016-09-30
+ * @version 3.1.0 2017-11-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -77,8 +77,8 @@ public class SimulationConfig implements Serializable {
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 	
-	private static final String TIME_RATIO = "time-ratio";
-	private static final String TIME_BETWEEN_UPDATES = "time-between-updates";
+	private static final String BASE_TIME_RATIO = "base-time-ratio";
+	private static final String BASE_TIME_BETWEEN_UPDATES = "base-time-between-updates";
 
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
@@ -227,7 +227,7 @@ public class SimulationConfig implements Serializable {
 	 * @return ratio
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
-	public double getSimulationTimeRatio() {
+	public double getTimeRatio() {
 		if (tr != 0) {
 			return tr;
 		}
@@ -235,7 +235,7 @@ public class SimulationConfig implements Serializable {
 		else {
 			Element root = simulationDoc.getRootElement();
 			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element timeRatioEL = timeConfig.getChild(TIME_RATIO);
+			Element timeRatioEL = timeConfig.getChild(BASE_TIME_RATIO);
 			String str = timeRatioEL.getAttributeValue(VALUE);
 
 			double d = 0;
@@ -276,7 +276,7 @@ public class SimulationConfig implements Serializable {
 		else {
 			Element root = simulationDoc.getRootElement();
 			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element el = timeConfig.getChild(TIME_BETWEEN_UPDATES);
+			Element el = timeConfig.getChild(BASE_TIME_BETWEEN_UPDATES);
 			String str = el.getAttributeValue(VALUE);
 
 			double l = 0;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.1.0 2017-03-03
+ * @version 3.1.0 2017-11-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Container;
@@ -44,7 +43,7 @@ implements Serializable {
 
     private static Logger logger = Logger.getLogger(Inventory.class.getName());
     
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;

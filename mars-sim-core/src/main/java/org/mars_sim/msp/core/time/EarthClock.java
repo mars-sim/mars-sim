@@ -90,6 +90,7 @@ implements Serializable {
 		f2.setTimeZone(zone);
 		try {
 			gregCal.setTime(f2.parse(fullDateTimeString));
+			
 		} catch (Exception ex) {//ParseException ex) {
 			ex.printStackTrace();
 			//throw new IllegalStateException(ex);

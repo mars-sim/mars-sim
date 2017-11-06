@@ -102,7 +102,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -271,7 +270,7 @@ public class MainScene {
 	private HBox earthTimeBox;
 	private HBox marsTimeBox;
 
-	//private Label earthTime;
+	private Label marsTimeLabel;
 	private Label lastSaveLabel;
 	private Label tpsLabel;
 	private Label upTimeLabel;
@@ -1561,25 +1560,35 @@ public class MainScene {
 
 	public void createMarsTimeBar() {	
 		
+		marsTimeLabel = new Label();
+		marsTimeLabel.setId("rich-red-Label");
+		marsTimeLabel.setAlignment(Pos.CENTER);
+		
+		setQuickToolTip(marsTimeLabel, "Martian Date and Time");	
+
 		marsTimeButton = new Button();
-		//marsTimeButton.setStyle("-fx-background-color: transparent;");
-		marsTimeButton.setId("rich-red");
+		marsTimeButton.setPrefSize(16, 16);
+		marsTimeButton.setId("rich-red-button");
 		
-		marsTimeBox = new HBox(marsTimeButton);
-		//marsTimeBox.setId("rich-red");
+		IconNode marsTimeIcon = new IconNode(FontAwesome.CALENDAR_TIMES_O);
+		marsTimeIcon.setStyle("-fx-background-color: transparent;");
+		marsTimeIcon.setIconSize(16);
+		marsTimeButton.setGraphic(marsTimeIcon);
 		
-		marsTimeBox.setAlignment(Pos.CENTER_LEFT);
+		marsTimeBox = new HBox(marsTimeButton, marsTimeLabel);
+		marsTimeBox.setId("rich-red");
+		marsTimeBox.setAlignment(Pos.CENTER);
 
 		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			marsTimeButton.setPrefSize(LINUX_WIDTH-30, 29);
-			marsTimeBox.setPrefSize(LINUX_WIDTH, 29);
+			marsTimeLabel.setPrefSize(LINUX_WIDTH, 29);
+			marsTimeBox.setPrefSize(LINUX_WIDTH+25, 29);
 		} else if (OS.contains("mac")) {
-			marsTimeButton.setPrefSize(MACOS_WIDTH-20, 26);
-			marsTimeBox.setPrefSize(MACOS_WIDTH, 26);
+			marsTimeLabel.setPrefSize(MACOS_WIDTH, 26);
+			marsTimeBox.setPrefSize(MACOS_WIDTH+20, 26);
 		} else if (OS.contains("win")) {
-			marsTimeButton.setPrefSize(WIN_WIDTH-20, 35);
-			marsTimeBox.setPrefSize(WIN_WIDTH, 35);
+			marsTimeLabel.setPrefSize(WIN_WIDTH, 35);
+			marsTimeBox.setPrefSize(WIN_WIDTH+20, 35);
 		}
 		
 		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");	
@@ -1595,16 +1604,11 @@ public class MainScene {
 				marsCalendarPopup.hide();// close();
 			} 
 			else {
-				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.RIGHT, -10, 25);
+				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.LEFT, 0, 38);
 			}
 			e.consume();
 		});
 
-
-		//marsTimeButton.setTextAlignment(TextAlignment.LEFT);
-		//marsTimeButton.setAlignment(Pos.CENTER_LEFT);
-	
-		marsTimeBox.setAlignment(Pos.CENTER_LEFT);
 		
 		calendarDisplay = new MarsCalendarDisplay(marsClock, desktop);
 
@@ -2535,9 +2539,10 @@ public class MainScene {
 
 		jfxTabPane.getStylesheets().clear();
 
+		setStylesheet(marsTimeBox, cssFile);
 		setStylesheet(marsTimeButton, cssFile);
-		//setStylesheet(earthTime, cssFile);
-
+		setStylesheet(marsTimeLabel, cssFile);
+		
 		setStylesheet(lastSaveLabel, cssFile);
 		setStylesheet(cacheToggle, cssFile);
 		setStylesheet(minimapToggle, cssFile);
@@ -2859,7 +2864,7 @@ public class MainScene {
 		StringBuilder m = new StringBuilder();
 		m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(ONE_SPACE)
 				.append(marsClock.getTrucatedTimeStringUMST());
-		marsTimeButton.setText(m.toString());
+		marsTimeLabel.setText(m.toString());
 
 		//StringBuilder e = new StringBuilder();
 		//e.append(EARTH_DATE_TIME).append(earthClock.getLT());//getTimeStampF0());

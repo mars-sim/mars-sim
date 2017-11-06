@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * TestSIMDFMT.java
+ * @version 3.1.0 2017-11-06
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.core;
 
 /**

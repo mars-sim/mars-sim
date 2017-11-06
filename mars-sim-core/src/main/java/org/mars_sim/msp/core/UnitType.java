@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitType.java
- * @version 3.07 2015-01-21
+ * @version 3.1.0 2017-11-06
  * @author stpa
  */
 

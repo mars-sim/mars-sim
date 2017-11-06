@@ -555,7 +555,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 
 		//SwingUtilities.invokeLater(() -> updateTime(time));
-		else if (desktop.isToolWindowOpen(TimeWindow.NAME))
+		
+		if (desktop.isToolWindowOpen(TimeWindow.NAME))
 			updateTime(time);
 	}
 

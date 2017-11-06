@@ -9,8 +9,6 @@ package org.mars_sim.msp.core;
 
 import java.util.HashMap;
 import java.util.logging.Level;
-//import org.apache.log4j.Level;
-//import org.apache.log4j.Logger;
 import java.util.logging.Logger;
 
 

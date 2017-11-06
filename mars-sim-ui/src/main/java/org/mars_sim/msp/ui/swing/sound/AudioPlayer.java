@@ -133,9 +133,10 @@ public class AudioPlayer {
 		}
 		
 		//if (UIConfig.INSTANCE.useUIDefault()) {
+		if (mainScene != null) {
 			musicVol = mainScene.getMusic()/100f;
 			effectVol = mainScene.getSoundEffect()/100f;
-		//}
+		}
 	}
 
 	/**

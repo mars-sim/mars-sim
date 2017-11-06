@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocalAreaUtil.java
- * @version 3.1.0 2017-04-13
+ * @version 3.1.0 2017-11-06
  * @author Scott Davis
  */
 
@@ -13,7 +13,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;

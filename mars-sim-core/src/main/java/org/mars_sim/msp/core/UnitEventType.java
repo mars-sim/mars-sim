@@ -1,12 +1,12 @@
-package org.mars_sim.msp.core;
-
 /**
  * Mars Simulation Project
  * UnitEventType.java
- * @version 3.07 2014-12-19
+ * @version 3.1.0 2017-11-06
  * @author stpa
- *
  */
+
+package org.mars_sim.msp.core;
+
 public enum UnitEventType {
 
 	// from Crewable.java but was never used

@@ -149,7 +149,7 @@ public class MasterClock implements Serializable { // Runnable,
         clockThreadTask = new ClockThreadTask();
 
         // Setting the initial time ratio.
-        double tr = config.getSimulationTimeRatio();
+        double tr = config.getTimeRatio();
         double tbu = config.getTimeBetweenUpdates();
 
         int threads = Simulation.NUM_THREADS;
