@@ -249,7 +249,6 @@ public class MainScene {
 
 	private volatile transient ExecutorService mainSceneExecutor;
 
-	private String cssFile = CSS_PATH;
 	private String upTimeCache = "";
 	private String themeSkin = "nimrod";
 	private String title = null;
@@ -2338,6 +2337,8 @@ public class MainScene {
 	 */
 	public void setTheme(int theme) {
 
+		String cssFile = CSS_PATH;
+		
 		if (menuBar.getStylesheets() != null)
 			menuBar.getStylesheets().clear();
 

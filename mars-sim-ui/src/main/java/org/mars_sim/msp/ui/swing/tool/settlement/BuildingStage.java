@@ -124,9 +124,9 @@ public class BuildingStage {
         String cssFile = null;
         int theme = MainScene.getTheme(); 
         if (theme == 0 || theme == 6)
-        	cssFile = "/fxui/css/snowBlue.css";
+        	cssFile = MainDesktopPane.BLUE_CSS;
         else if (theme == 7)
-        	cssFile = "/fxui/css/nimrodskin.css";
+        	cssFile = MainDesktopPane.ORANGE_CSS;
         
         buildingNameLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         buildingNameLabel.getStyleClass().add("label-large");

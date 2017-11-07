@@ -90,6 +90,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	private static final double PERIOD_IN_MILLISOLS = 750D / MarsClock.SECONDS_IN_MILLISOL;
 
+	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
+	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
+	
 	// Data members
 	private double timeCache = 0;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;

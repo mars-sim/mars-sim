@@ -17,6 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 
@@ -76,12 +77,12 @@ public class UnitDescriptionStage {
 
     public void applyTheme() {
         String cssFile = null;
-
-        if (desktop.getMainScene().getTheme() == 6)
-        	cssFile = "/fxui/css/snowBlue.css";
-        else
-        	cssFile = "/fxui/css/nimrodskin.css";
-
+        int theme = MainScene.getTheme(); 
+        if (theme == 0 || theme == 6)
+        	cssFile = MainDesktopPane.BLUE_CSS;
+        else if (theme == 7)
+        	cssFile = MainDesktopPane.ORANGE_CSS;
+        
         name.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         name.getStyleClass().add("label-large");
 
