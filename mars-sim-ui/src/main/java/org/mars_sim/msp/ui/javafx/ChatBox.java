@@ -47,6 +47,9 @@ import javafx.scene.control.*;
 @SuppressWarnings("restriction")
 public class ChatBox extends BorderPane {
 
+	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
+	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
+	
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
 	public final static String REQUEST_HEIGHT_CHANGE = YOU_PROMPT + "I'd like to change the chat box height to ";
@@ -227,12 +230,11 @@ public class ChatBox extends BorderPane {
 
     	int theme = MainScene.getTheme();
         if (theme == 7) {
-    		String cssFile = "/fxui/css/nimrodskin.css";
         	broadcastButton.getStylesheets().clear();
         	//broadcastButton.setStyle("-fx-text-fill: #E5AB00;");
     		broadcastButton.getStyleClass().clear();
     		broadcastButton.getStyleClass().add("button-broadcast");
-    		broadcastButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+    		broadcastButton.getStylesheets().add(getClass().getResource(ORANGE_CSS).toExternalForm());
 
         	titleLabel.getStylesheets().clear();
             titleLabel.setStyle("-fx-text-fill: #E5AB00;"
@@ -240,22 +242,21 @@ public class ChatBox extends BorderPane {
             		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
             		);
         	textArea.getStylesheets().clear();
-            textArea.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+            textArea.getStylesheets().add(getClass().getResource(ORANGE_CSS).toExternalForm());
         }
         else {
-    		String cssFile = "/fxui/css/snowBlue.css";
         	broadcastButton.getStylesheets().clear();
         	//broadcastButton.setStyle("-fx-text-fill: #3291D2;");
     		broadcastButton.getStyleClass().clear();
     		broadcastButton.getStyleClass().add("button-broadcast");
-    		broadcastButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+    		broadcastButton.getStylesheets().add(getClass().getResource(BLUE_CSS).toExternalForm());
         	titleLabel.getStylesheets().clear();
         	titleLabel.setStyle("-fx-text-fill: #3291D2;"
         			+ " -fx-font: bold 12pt 'Corbel';"
         			//+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
         			);
         	textArea.getStylesheets().clear();
-            textArea.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+            textArea.getStylesheets().add(getClass().getResource(BLUE_CSS).toExternalForm());
         }
 
 		textArea.setStyle("-fx-text-fill: black;");

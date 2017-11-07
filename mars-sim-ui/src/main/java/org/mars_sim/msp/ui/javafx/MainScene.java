@@ -148,6 +148,11 @@ public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
+	public final static String CSS_PATH = "/fxui/css/theme/";
+
+	public final static String ORANGE_CSS_JFX = "/fxui/css/tab/jfx_orange.css";
+	public final static String BLUE_CSS_JFX = "/fxui/css/tab/jfx_blue.css";
+	
 	public static String OS = Simulation.OS.toLowerCase();
 	// System.getProperty("os.name").toLowerCase();
 	// e.g. 'linux', 'mac os x'
@@ -244,7 +249,7 @@ public class MainScene {
 
 	private volatile transient ExecutorService mainSceneExecutor;
 
-	private String cssFile = "/fxui/css/theme/";
+	private String cssFile = CSS_PATH;
 	private String upTimeCache = "";
 	private String themeSkin = "nimrod";
 	private String title = null;
@@ -2595,7 +2600,7 @@ public class MainScene {
 			soundBtn.setGraphic(soundIcon);
 			// farmIcon.setFill(Color.YELLOW);
 			// farmBtn.setGraphic(farmIcon);
-			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/tab/jfx_orange.css").toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource(ORANGE_CSS_JFX).toExternalForm());
 			jfxTabPane.getStyleClass().add("jfx-tab-pane");
 		}
 
@@ -2614,7 +2619,7 @@ public class MainScene {
 			soundBtn.setGraphic(soundIcon);
 			// farmIcon.setFill(Color.LAVENDER);
 			// farmBtn.setGraphic(farmIcon);
-			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/tab/jfx_blue.css").toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm()); 
 			jfxTabPane.getStyleClass().add("jfx-tab-pane");
 		}
 

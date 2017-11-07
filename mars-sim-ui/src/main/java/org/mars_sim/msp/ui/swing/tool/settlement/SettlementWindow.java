@@ -80,7 +80,10 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	public static String css_file = "/fxui/css/snowBlue.css";
+	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
+	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
+	
+	public static String css_file = BLUE_CSS;
 
 	public static final String SOL  = " Sol : ";
 	public static final String POPULATION  = "  Population : ";
@@ -574,11 +577,11 @@ extends ToolWindow {
 				// blue theme : 3291D2
 				//String color = txtColor.replace("0x", "");
 				if (theme == 0 || theme == 6) {
-					css_file = "/fxui/css/snowBlue.css";
+					css_file = BLUE_CSS;
 					c = Color.rgb(0,107,184);
 				}
 				else if (theme == 7) {
-					css_file = "/fxui/css/nimrodskin.css";	
+					css_file = ORANGE_CSS;	
 					c = Color.rgb(156,77,0);
 				}
 
