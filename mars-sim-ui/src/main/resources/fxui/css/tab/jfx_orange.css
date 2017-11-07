@@ -1,0 +1,47 @@
+.jfx-popup-container{
+	-fx-background-color: WHITE;
+	-fx-background-radius: 10px;
+	-fx-padding: 3;
+}
+
+.jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label  {
+    -fx-text-fill: #654b00;
+    -fx-background-color: #654b00; /* #654b00; or (101,75,0) is mild brown, #F9BF00; is yellowish orange */
+}
+.jfx-tab-pane .tab-header-background {
+    -fx-text-fill: #654b00;
+    -fx-background-color: #654b00;
+}
+.jfx-tab-pane .tab-selected-line {
+    -fx-stroke: #F9BF00;
+    -fx-stroke-width: 3pt;
+}
+
+#commit-button {
+    -fx-background-color:
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 10;
+    -fx-background-insets: 0,5,0,5,0;
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 5 5 5 5;
+}
+
+.jfx-tab-pane {
+/*	-fx-padding: 0px 5px -2px 5px;
+	-fx-background-insets: 0 -20 0 0;
+	-fx-border-color:red;
+	-fx-background-color: red;   */
+	-fx-text-fill: #654b00;
+}
+
+.jfx-tab-pane:selected {
+/* -fx-border-color:red; */
+	-fx-text-fill: #333333; /* 333333 is grey */
+}
+

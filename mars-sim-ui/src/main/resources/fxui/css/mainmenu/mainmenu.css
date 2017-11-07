@@ -1,0 +1,63 @@
+/**
+ * Mars Simulation Project
+ * mainmenu.css
+ * General CSS classes for MSP UI
+ * @version 3.08 2015-10-15
+ * @author Manny Kung
+ */
+
+#menu-button{
+	-fx-font-size: 20.0px;
+	-fx-stroke-width: 1;
+    -fx-text-fill: #FFB03B; /* very light yellow #f9efe0, light mud color: #FFB03B , dark mud : #945f16*/
+    -fx-font-weight: italic;
+}
+
+
+#menu-button:hover {
+	-fx-font-size: 24.0px;
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+    -fx-text-fill: white; /*light mud color*/ /* #FFDF00; gold */
+	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
+    -fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+
+}
+
+
+/*******************************************************************************/
+
+.combo-box-base {
+    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
+    -fx-background-color: transparent, transparent, transparent, transparent;
+    -fx-text-fill: white; /* #7ebcea; #c9ddea;*/
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+}
+
+.jfx-combo-box .list-cell  {
+	-fx-font-size: 16.0;
+	-fx-background: transparent;
+    -fx-background-color: black;
+    -fx-text-fill: lightgoldenrodyellow;
+}
+
+.jfx-combo-box .text-field {
+	-fx-font-size: 16.0;
+	-fx-background: transparent;
+    -fx-background-color: black;
+    -fx-text-fill: lightgoldenrodyellow; /*#7ebcea;#c9ddea; #03a9f4;*/
+    -fx-cell-size: 1.66667em;
+    -fx-pref-height: 25;
+}
+
+/*******************************************************************************/
+
+/*
+.label {
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e5f3f6;
+    -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
+}
+*/

@@ -413,8 +413,8 @@ public class CrewEditorFX {
 	    scrollPane.setMinWidth(WIDTH);
 
 		Scene scene = new Scene(scrollPane);//, HEIGHT, WIDTH); // Color.TRANSPARENT
-		scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");//
-		scene.getStylesheets().add("/fxui/css/crewEditorFXOrange.css");// configEditorFXOrange.css");//
+		scene.getStylesheets().add("/fxui/css/config/configEditorFXOrange.css");//
+		scene.getStylesheets().add("/fxui/css/config/crewEditorFXOrange.css");// configEditorFXOrange.css");//
 		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white
 											// border
 

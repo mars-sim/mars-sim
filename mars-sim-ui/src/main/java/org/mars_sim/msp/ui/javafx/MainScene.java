@@ -244,6 +244,7 @@ public class MainScene {
 
 	private volatile transient ExecutorService mainSceneExecutor;
 
+	private String cssFile = "/fxui/css/theme/";
 	private String upTimeCache = "";
 	private String themeSkin = "nimrod";
 	private String title = null;
@@ -1984,15 +1985,6 @@ public class MainScene {
 	@SuppressWarnings("restriction")
 	public void createJFXTabs() {
 		jfxTabPane = new JFXTabPane();
-		/*
-		 * String cssFile = null;
-		 * 
-		 * if (theme == 0 || theme == 6) cssFile = "/fxui/css/jfx_blue.css"; else if
-		 * (theme == 7) cssFile = "/fxui/css/jfx_orange.css";
-		 * 
-		 * jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).
-		 * toExternalForm()); jfxTabPane.getStyleClass().add("jfx-tab-pane");
-		 */
 
 		mainStackPane = new StackPane();
 		mainStackPane.getChildren().add(desktopNode);
@@ -2344,52 +2336,50 @@ public class MainScene {
 		if (menuBar.getStylesheets() != null)
 			menuBar.getStylesheets().clear();
 
-		String cssFile;
-
 		if (this.theme != theme) {
 			this.theme = theme;
 
 			if (theme == 0) { // snow blue
 				// for numbus theme
-				cssFile = "/fxui/css/snowBlue.css";
+				cssFile += "snowBlue.css";
 				updateThemeColor(0, Color.rgb(0, 107, 184), Color.rgb(0, 107, 184), cssFile); // CADETBLUE //																						// Color.rgb(23,138,255)
 				themeSkin = "snowBlue";
 				// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
 
 			} else if (theme == 1) { // olive green
-				cssFile = "/fxui/css/oliveskin.css";
+				cssFile += "oliveskin.css";
 				updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssFile); // DARKOLIVEGREEN
 				themeSkin = "LightTabaco";
 
 			} else if (theme == 2) { // burgundy red
-				cssFile = "/fxui/css/burgundyskin.css";
+				cssFile += "burgundyskin.css";
 				updateThemeColor(2, Color.rgb(140, 0, 26), Color.YELLOW, cssFile); // ORANGERED
 				themeSkin = "Burdeos";
 
 			} else if (theme == 3) { // dark chocolate
-				cssFile = "/fxui/css/darkTabaco.css";
+				cssFile += "darkTabaco.css";
 				updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssFile);
 				themeSkin = "DarkTabaco";
 
 			} else if (theme == 4) { // grey
-				cssFile = "/fxui/css/darkGrey.css";
+				cssFile += "darkGrey.css";
 				updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssFile);
 				themeSkin = "DarkGrey";
 
 			} else if (theme == 5) { // + purple
-				cssFile = "/fxui/css/nightViolet.css";
+				cssFile += "nightViolet.css";
 				updateThemeColor(5, Color.rgb(73, 55, 125), Color.rgb(73, 55, 125), cssFile); // DARKMAGENTA, SLATEBLUE
 				themeSkin = "Night";
 
 			} else if (theme == 6) { // + skyblue
 
-				cssFile = "/fxui/css/snowBlue.css";
+				cssFile += "snowBlue.css";
 				updateThemeColor(6, Color.rgb(0, 107, 184), Color.rgb(255, 255, 255), cssFile); 
 				// (144, 208, 229) light blue , CADETBLUE (0,107,184), Color.rgb(23,138,255)
 				themeSkin = "snowBlue";
 			} else if (theme == 7) { // mud orange/standard
 
-				cssFile = "/fxui/css/nimrodskin.css";
+				cssFile += "nimrodskin.css";
 				updateThemeColor(7, Color.rgb(156, 77, 0), Color.rgb(255, 255, 255), cssFile); // DARKORANGE, CORAL
 				themeSkin = "nimrod";
 			}
@@ -2605,7 +2595,7 @@ public class MainScene {
 			soundBtn.setGraphic(soundIcon);
 			// farmIcon.setFill(Color.YELLOW);
 			// farmBtn.setGraphic(farmIcon);
-			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_orange.css").toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/tab/jfx_orange.css").toExternalForm());
 			jfxTabPane.getStyleClass().add("jfx-tab-pane");
 		}
 
@@ -2624,7 +2614,7 @@ public class MainScene {
 			soundBtn.setGraphic(soundIcon);
 			// farmIcon.setFill(Color.LAVENDER);
 			// farmBtn.setGraphic(farmIcon);
-			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/tab/jfx_blue.css").toExternalForm());
 			jfxTabPane.getStyleClass().add("jfx-tab-pane");
 		}
 

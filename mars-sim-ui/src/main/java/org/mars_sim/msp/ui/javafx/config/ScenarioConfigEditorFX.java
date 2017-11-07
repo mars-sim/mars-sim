@@ -212,8 +212,8 @@ public class ScenarioConfigEditorFX {
 			final UndecoratorScene undecoratorScene = new UndecoratorScene(stage, root);
 
 			// Overrides defaults
-			undecoratorScene.addStylesheet("/fxui/css/app.css");
-			undecoratorScene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");
+			undecoratorScene.addStylesheet("/fxui/css/config/undecorator.css");
+			undecoratorScene.getStylesheets().add("/fxui/css/config/configEditorFXOrange.css");
 
 			// Enable fade transition
 			undecoratorScene.setFadeInTransition();

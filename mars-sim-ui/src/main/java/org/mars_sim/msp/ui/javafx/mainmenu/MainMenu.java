@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -16,18 +18,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.scene.text.TextAlignment;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.FadeTransition;
 //import javafx.scene.control.Separator;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+//import javafx.scene.control.Toggle;
+//import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-//import javafx.scene.layout.HBox;
-//import javafx.scene.layout.StackPane;
-//import javafx.scene.layout.VBox;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -37,12 +38,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.geometry.HPos;
+//import javafx.geometry.HPos;
 //mport javafx.scene.control.Button;
 //import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
+//import javafx.scene.layout.ColumnConstraints;
+//import javafx.scene.layout.GridPane;
+//import javafx.scene.layout.Priority;
 //import javafx.scene.SceneAntialiasing;
 //import javafx.scene.control.Alert;
 //import javafx.scene.control.Alert.AlertType;
@@ -74,8 +75,9 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXRadioButton;
+//import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
 
 import eu.hansolo.tilesfx.Tile;
@@ -146,6 +148,8 @@ public class MainMenu {
 	
 	private JFXDialog exitDialog;
 
+	private List<Resolution> resList;
+	
     public MainMenu() {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	mainMenu = this;
@@ -168,11 +172,13 @@ public class MainMenu {
 */
 		
 		Screen screen = Screen.getPrimary(); 
-		Rectangle2D bounds = screen.getVisualBounds();
+		Rectangle2D bounds = screen.getBounds();//.getVisualBounds();
 		
 		mainscene_width = (int) bounds.getWidth();
 		mainscene_height = (int) bounds.getHeight();
        
+		createResolution();
+		
 		logger.info("Your Current Resolution is " + mainscene_width + " x " + mainscene_height);
 		
 		// Test
@@ -321,7 +327,7 @@ public class MainMenu {
 
        //scene.setFill(Color.BLACK);//DARKGOLDENROD);//Color.BLACK);
 
-        scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm());
+        scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
         scene.setCursor(Cursor.HAND);
@@ -377,6 +383,30 @@ public class MainMenu {
 
 
    }
+	
+	public void createResolution() {
+		Resolution res0 = new Resolution(1024, 768); 
+		Resolution res1 = new Resolution(1280, 720); 
+		Resolution res2 = new Resolution(1280, 800); 
+		Resolution res3 = new Resolution(1366, 768); 
+		Resolution res4 = new Resolution(1440, 900); 
+		Resolution res5 = new Resolution(1600, 900); 
+		Resolution res6 = new Resolution(1920, 1080); 
+		Resolution res7 = new Resolution(2560, 1440); 
+		Resolution res8 = new Resolution(2560, 1600); 
+		
+		resList = new ArrayList<>();
+		
+		resList.add(res0);
+		resList.add(res1);
+		resList.add(res2);
+		resList.add(res3);
+		resList.add(res4);
+		resList.add(res5);
+		resList.add(res6);
+		resList.add(res7);
+		resList.add(res8);
+	}
 	
 	public void createMenuApp() {
 		 menuApp = new MenuApp(mainMenu);
@@ -765,30 +795,85 @@ public class MainMenu {
 	}	
 
 	  
+	public Resolution obtainResolution() {
+		Resolution r = null;
+	    if (mainscene_width == 2560) {
+	    	if (mainscene_height == 1600) {
+			    r = resList.get(8);
+	    	}
+	    	else if (mainscene_height == 1440) {
+	    		r = resList.get(7);
+	    	}
+	    }
+	    else if (mainscene_width == 1920)
+	    	r = resList.get(6);
+	    else if (mainscene_width == 1600)
+	    	r = resList.get(5);	 
+	    else if (mainscene_width == 1440)
+	    	r = resList.get(4);	    
+	    else if (mainscene_width == 1366)
+	    	r = resList.get(3);	    
+	    else if (mainscene_width == 1280) {	 
+	    	if (mainscene_height == 800) {
+	    		r = resList.get(2);
+	    	}
+	    	else if (mainscene_height == 720) {
+	    		r = resList.get(1);
+	    	}
+	    }
+	    else if (mainscene_width == 1024)
+	    	r = resList.get(0);
+	    else 
+	    	// by default, set to 1024 x 768
+	    	r = resList.get(0);
+	    
+	    return r;
+	}
+	
 	/**
 	 * Selects the game screen resolution in this dialog box
 	 * @param pane
 	 */
 	public void selectResolutionDialog(StackPane pane) {
 		if (settingDialog == null && (exitDialog == null || (exitDialog != null && !exitDialog.isVisible()))) {
-			
-			Label titleLabel = new Label("      Select Screen Resolution");
-			titleLabel.setAlignment(Pos.TOP_LEFT);
+
+			Label titleLabel = new Label("S E T T I N G S");
+			titleLabel.setAlignment(Pos.TOP_CENTER);
+			titleLabel.setTextAlignment(TextAlignment.CENTER);
+			titleLabel.setContentDisplay(ContentDisplay.TOP);
 			titleLabel.setPadding(new Insets(10, 10, 10, 10));
-			titleLabel.setStyle("-fx-text-fill: white;");
-			titleLabel.setFont(Font.font(null, FontWeight.BOLD, 14));
-				
-			JFXButton return_btn = new JFXButton("Done");
-			return_btn.setStyle("-fx-background-color: white;");
+			titleLabel.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			titleLabel.setFont(Font.loadFont(MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), 20));
+			//titleLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
+							
+			JFXButton done_btn = new JFXButton("Done");
+			done_btn.setStyle("-fx-background-color: lightgoldenrodyellow;");//lightgrey;");
 			
 			HBox return_hb = new HBox();
-			return_hb.getChildren().addAll(return_btn);
+			return_hb.getChildren().addAll(done_btn);
 			return_hb.setAlignment(Pos.CENTER);
 			
-			HBox.setMargin(return_btn, new Insets(10, 10, 10, 10));
+			HBox.setMargin(done_btn, new Insets(10, 10, 10, 10));
 	
+			Label reslabel = new Label("Select Resolution  :  ");
+			reslabel.setAlignment(Pos.TOP_LEFT);
+			reslabel.setPadding(new Insets(10, 10, 10, 10));
+			reslabel.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			reslabel.setFont(Font.font(null, FontWeight.NORMAL, 16));
+			
+			JFXComboBox<Resolution> resCombo = new JFXComboBox<>();
+			resCombo.getStyleClass().add("jfx-combo-box");
+			resCombo.getItems().addAll(resList);
+			 
+			Resolution currentRes = obtainResolution();
+			
+			resCombo.setValue(currentRes);
+			
+			resCombo.setPromptText("Select your desired resolution");
+			
+/*			
 			final ToggleGroup group = new ToggleGroup();
-	
+					
 			JFXRadioButton r7 = new JFXRadioButton("2560 x 1600");
 			r7.setStyle("-fx-text-fill: white;");
 			    r7.setToggleGroup(group);
@@ -819,8 +904,7 @@ public class MainMenu {
 	
 			JFXRadioButton r0 = new JFXRadioButton("1024 x 768");
 			r0.setStyle("-fx-text-fill: white;");
-		    r0.setToggleGroup(group);
-		
+		    r0.setToggleGroup(group);	
 		    
 		    if (mainscene_width == 2560) {
 		    	if (mainscene_height == 1600) {
@@ -917,12 +1001,14 @@ public class MainMenu {
 		    gridpane.add(r7, 3, 1);
 		    
 		    
-			Label soundlabel = new Label("      Set Sound Volume");
+		    
+			Label soundlabel = new Label("      Sound Volume");
 			soundlabel.setAlignment(Pos.TOP_LEFT);
 			soundlabel.setPadding(new Insets(10, 10, 10, 10));
 			soundlabel.setStyle("-fx-text-fill: white;");
 			soundlabel.setFont(Font.font(null, FontWeight.BOLD, 14));
-				
+*/
+			
 			// Set up the slider for background music and sound effect
 			Tile soundTile0 = musicSetting();
 			HBox sound0 = new HBox();
@@ -944,11 +1030,15 @@ public class MainMenu {
 			VBox emptyVB = new VBox();
 			//vb.setAlignment(Pos.CENTER);
 			emptyVB.setPadding(new Insets(25, 25, 25, 25));
+						
+			HBox comboBox = new HBox();
+			comboBox.getChildren().addAll(reslabel, resCombo);
+			comboBox.setAlignment(Pos.CENTER);
 			
 			VBox vb = new VBox();
-			//vb.setAlignment(Pos.CENTER);
+			vb.setAlignment(Pos.CENTER);
 			vb.setPadding(new Insets(15, 15, 15, 15));
-			vb.getChildren().addAll(titleLabel, gridpane, emptyVB, soundlabel, sound0, sound1, return_hb); 
+			vb.getChildren().addAll(titleLabel, emptyVB, comboBox, sound0, sound1, return_hb); 
 					
 			StackPane sp = new StackPane(vb);
 			sp.setStyle("-fx-background-color:black;");//rgb(105,105,105);");//darkgrey;");//rgba(0,0,0,0.1);");
@@ -959,7 +1049,7 @@ public class MainMenu {
 			settingDialog.setTransitionType(DialogTransition.BOTTOM);
 			settingDialog.show(pane);
 			
-			return_btn.setOnAction(e -> {
+			done_btn.setOnAction(e -> {
 				//pane.setPrefWidth(stackPane.getPrefWidth()-300);
 				settingDialog.close();
 				e.consume();
@@ -978,10 +1068,10 @@ public class MainMenu {
     public Tile musicSetting() {
         Tile switchSliderTile = TileBuilder.create()
                 .skinType(SkinType.SWITCH_SLIDER)
-                .prefSize(450, 100)
+                .prefSize(450, 150)
                 .backgroundColor(Color.BLACK)//.rgb(105,105,105))//.DARKGRAY)//.rgb(255, 255, 255, 0.1))
                 //.title(title)
-                .description("Background Music")
+                .description("Background Music Volume")
                 .descriptionAlignment(Pos.TOP_CENTER)
                 .textVisible(true)
                 .decimals(0)
@@ -1050,10 +1140,10 @@ public class MainMenu {
 
         Tile switchSliderTile = TileBuilder.create()
                 .skinType(SkinType.SWITCH_SLIDER)
-                .prefSize(450, 100)
+                .prefSize(450, 150)
                 .backgroundColor(Color.BLACK)//.rgb(105,105,105))//.DARKGRAY)//.rgb(255, 255, 255, 0.1))
                 //.title(title)
-                .description("Sound Effect")
+                .description("Sound Effect Volume")
                 .descriptionAlignment(Pos.TOP_CENTER)
                 .textVisible(true)
                 .decimals(0)
@@ -1136,4 +1226,20 @@ public class MainMenu {
 		
 	}
 
+	private class Resolution {
+		
+		int width;
+		int height;
+		
+		Resolution(int width, int height) {
+			this.width = width;
+			this.height	= height;
+			
+		}
+				
+		@Override
+		public String toString() {
+			return width + " x " + height;
+		}
+	}
 }
