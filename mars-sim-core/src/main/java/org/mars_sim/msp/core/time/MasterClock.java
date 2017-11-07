@@ -20,8 +20,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -111,8 +111,10 @@ public class MasterClock implements Serializable { // Runnable,
 
 	private ClockThreadTask clockThreadTask;
 
-	private transient ThreadPoolExecutor clockListenerExecutor;
+	//private transient ThreadPoolExecutor clockListenerExecutor;
+	private transient ExecutorService clockListenerExecutor;
 
+	
 	private static Simulation sim;
 	
 	private static SimulationConfig config;
@@ -657,7 +659,7 @@ public class MasterClock implements Serializable { // Runnable,
 	            	earthTime.addTime(millis* (long)timeRatio);//timePulse*MarsClock.SECONDS_IN_MILLISOL);
 	            	marsTime.addTime(timePulse);
 				  	if (!isPaused
-				  			|| !clockListenerExecutor.isTerminating()
+				  			//|| !clockListenerExecutor.isTerminating()
 				  			|| !clockListenerExecutor.isTerminated()
 				  			|| !clockListenerExecutor.isShutdown())
 				  		fireClockPulse(timePulse);
@@ -734,7 +736,10 @@ public class MasterClock implements Serializable { // Runnable,
      */
 	public void fireClockPulse(double time) {
 		for (ClockListenerTask task : clockListenerTaskList) {
-	  		if ((task != null) && !(clockListenerExecutor.isTerminating() || clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown())) {
+	  		if ((task != null) && 
+	  				!( //clockListenerExecutor.isTerminating()  || 
+	  				clockListenerExecutor.isTerminated() 
+	  				|| clockListenerExecutor.isShutdown())) {
   		  		task.addTime(time);
 	  			clockListenerExecutor.execute(task);
 	  		}
@@ -930,8 +935,9 @@ public class MasterClock implements Serializable { // Runnable,
 
     	//if ( clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown() )
     	if (clockListenerExecutor == null)
-    		clockListenerExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-    	//Executors.newSingleThreadExecutor();// Executors.newFixedThreadPool(1); // newCachedThreadPool(); //
+    		//clockListenerExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+    		clockListenerExecutor = Executors.newSingleThreadExecutor();
+
     }
 
     /**
@@ -955,10 +961,14 @@ public class MasterClock implements Serializable { // Runnable,
     }
 
 
-	public ThreadPoolExecutor getClockListenerExecutor() {
+	//public ThreadPoolExecutor getClockListenerExecutor() {
+	//	return clockListenerExecutor;
+	//}
+
+	public ExecutorService getClockListenerExecutor() {
 		return clockListenerExecutor;
 	}
-
+	
 	public long getDiffCache() {
 		return diffCache;
 	}

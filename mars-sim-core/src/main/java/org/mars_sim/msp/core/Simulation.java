@@ -18,7 +18,6 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -152,8 +151,8 @@ implements ClockListener, Serializable {
     /** All historical info. */
     private transient HistoricalEventManager eventManager;
 
-    private transient ThreadPoolExecutor clockScheduler;
-
+    //private transient ThreadPoolExecutor clockScheduler;
+    private transient ExecutorService clockScheduler;
     private transient ExecutorService simExecutor;
 
     // Intransient data members (stored in save file)
@@ -366,15 +365,18 @@ implements ClockListener, Serializable {
 	    //    testConsole();
 		//});
 
-    	if (masterClock ==  null)
-    		System.out.println("masterClock ==  null");
+    	//if (masterClock ==  null)
+    	//	System.out.println("masterClock ==  null");
+    	
         masterClock.addClockListener(this);
         masterClock.startClockListenerExecutor();
 
         if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
 
+        	clockScheduler = Executors.newSingleThreadExecutor();
+        	
         	//if (NUM_THREADS <= 3)
-        		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+        	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
         		//clockScheduler = (ThreadPoolExecutor) Executors.newSingleThreadExecutor();
         	//else if (NUM_THREADS <= 8)
         	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);// newSingleThreadExecutor();// newCachedThreadPool(); //
@@ -1102,10 +1104,14 @@ implements ClockListener, Serializable {
     }
 
 
-	public ThreadPoolExecutor getClockScheduler() {
-	   return clockScheduler;
-	}
+	//public ThreadPoolExecutor getClockScheduler() {
+	//   return clockScheduler;
+	//}
 
+	public ExecutorService getClockScheduler() {
+		   return clockScheduler;
+		}
+	
     //public PausableThreadPoolExecutor getClockScheduler() {
     //	return clockScheduler;
     //}
