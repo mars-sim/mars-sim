@@ -326,7 +326,7 @@ public class PhysicalCondition implements Serializable {
 				if (solCache == 0) {
 
 					// Modify personalMaxEnergy at the start of the sim
-					int d1 = 2 * (35 - person.getAge()); // Assume that after age 35, metabolism slows down
+					int d1 = 2 * (35 - person.updateAge()); // Assume that after age 35, metabolism slows down
 					double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
 					double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
 					personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
@@ -1269,7 +1269,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	public void examBody(HealthProblem problem) {
-		logger.log(Level.SEVERE, "A post-mortem examination was ordered on " + person + ". The cause of death : "
+		logger.log(Level.SEVERE, "[" + person.getLocationTag().getShortLocationName() + "] A post-mortem examination was ordered on " + person + ". The cause of death : "
 				+ problem.toString().toLowerCase());
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);

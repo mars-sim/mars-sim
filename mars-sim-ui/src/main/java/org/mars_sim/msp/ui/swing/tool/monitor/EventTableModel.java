@@ -26,9 +26,11 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
@@ -53,6 +55,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private static final int CATEGORY = 3;
 	private static final int ACTOR = 4;
 	private static final int LOCATION = 5;
+	
 	private static final int COLUMNCOUNT = 6;
 
 	private boolean showMedical = true;
@@ -88,7 +91,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	// Event categories to be displayed.
 	private boolean displayMalfunction = true;
 	private boolean displayMedical = true;
-	private boolean displayMission = false;
+	private boolean displayMission = true;
+	
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
 
@@ -116,9 +120,6 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	}
 
 	private void updateCachedEvents() {
-
-		//System.out.println("EventTableModel.java : just called updateCachedEvents()");
-
 		// Clean out cached events.
 		cachedEvents = new ArrayList<HistoricalEvent>();
 
@@ -128,20 +129,32 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 			HistoricalEvent event = manager.getEvent(x);
 			HistoricalEventCategory category = event.getCategory();
 
-			if (category.equals(HistoricalEventCategory.MALFUNCTION) && displayMalfunction)
+			if (category.equals(HistoricalEventCategory.MALFUNCTION) && displayMalfunction
+				&& (event.getType() == EventType.MALFUNCTION_UNFIXED
+					|| event.getType() == EventType.MALFUNCTION_FIXED)) {
 				cachedEvents.add(event);
-
-			if (category.equals(HistoricalEventCategory.MEDICAL) && displayMedical)
+			}
+			
+			else if (category.equals(HistoricalEventCategory.MEDICAL) && displayMedical
+				&& (event.getType() == EventType.MEDICAL_STARTS
+					|| event.getType() == EventType.MEDICAL_DEATH)) {
 				cachedEvents.add(event);
-
-			if (category.equals(HistoricalEventCategory.MISSION) && displayMission)
+			}
+			
+			else if (category.equals(HistoricalEventCategory.MISSION) && displayMission
+				&& (event.getType() == EventType.MISSION_EMERGENCY_BEACON_ON
+			            || event.getType() == EventType.MISSION_EMERGENCY_DESTINATION
+			            || event.getType() == EventType.MISSION_RESCUE_PERSON
+			            || event.getType() == EventType.MISSION_RENDEZVOUS)) {
 				cachedEvents.add(event);
-
-			if (category.equals(HistoricalEventCategory.TASK) && displayTask)
+			}
+/*
+			else if (category.equals(HistoricalEventCategory.TASK) && displayTask)
 				cachedEvents.add(event);
 
 			if (category.equals(HistoricalEventCategory.TRANSPORT) && displayTransport)
 				cachedEvents.add(event);
+*/
 		}
 
 		// Update all table listeners.
@@ -363,29 +376,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 			} else if (mainSceneMenu != null) {
 
-				// 2015-01-14 Added noFiring condition
-				//Boolean noFiring = false;
-/*
-				showMedical = nMenu.getShowMedical();
-				if (showMedical != showMedicalCache ) {
-					showMedicalCache = showMedical;
-				}
-
-				showMalfunction = nMenu.getShowMalfunction();
-				if (showMalfunction != showMalfunctionCache ) {
-					showMalfunctionCache = showMalfunction;
-				}
-
-				if (!showMedical && !showMalfunction) {
-					notifyBox.emptyQueue();
-					noFiring = true;
-				}
-*/
 				if (!noFiring && index == 0 && event != null) {
 
 					int type = 0;
 					String header = null ;
-					String message = event.getDescription(); //.toUpperCase();
+					String message = event.getType().toString();// event.getDescription(); //.toUpperCase();
 					// reset willNotify to false
 					boolean willNotify = false;
 
@@ -402,8 +397,9 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					            willNotify = true;
 					        }
 					        
-					        //Malfunction mal = (Malfunction) event.getSource();
-
+					        Malfunction mal = (Malfunction) event.getSource();
+					        message = mal.getName();
+					        
 					        type = 0;
 					    }
 
@@ -420,6 +416,23 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 					        type = 1;
 					    }
+					    
+					    else if (category.equals(HistoricalEventCategory.MISSION)) {
+					           // && showMalfunction ) {
+					        header = Msg.getString("NotificationManager.message.mission"); //$NON-NLS-1$
+
+					        // Only display notification window when malfunction has occurred, not when fixed.
+					        if (event.getType() == EventType.MISSION_EMERGENCY_BEACON_ON
+					            || event.getType() == EventType.MISSION_EMERGENCY_DESTINATION
+					            || event.getType() == EventType.MISSION_RESCUE_PERSON
+					            || event.getType() == EventType.MISSION_RENDEZVOUS) {
+					            	willNotify = true;
+					        }
+					       
+
+					        type = 2;
+					    }
+					    
 					}
 
 					if (willNotify)
@@ -553,6 +566,12 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 			}
 
+			else if (type == 1) {
+				pos = Pos.TOP_RIGHT;
+				v = new ImageView(getClass().getResource("/icons/notification/repair_48.png").toExternalForm());
+
+			}
+			
 			else {
 				pos = Pos.TOP_LEFT;
 
@@ -563,39 +582,46 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    public void run() {
 	    	//Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
 
-	    	if (type == 0 || type == 1) {
-		    	Notifications.create()
-	    		.title(header)
-	    		.text(message)
-	    		.position(pos)
-	    		.onAction(new EventHandler<ActionEvent>() {
-	    			@Override
-	    			public void handle(ActionEvent event){
-	    				System.out.println("[Placeholder] The notification box '" + message + "' has just been clicked.");
-	    			}
-	    		})
-	    		.graphic(v)
-	    		.darkStyle()
-	    		.owner(desktop.getMainScene().getStage())
-	    		.show();
-	    	}
+	    	if (type == 0 || type == 1 || type == 2) {
+	    		
+	    		int theme = MainScene.getTheme();
+	    		
+	    		if (theme == 7) {
+			    	Notifications.create()
+		    		.title(header)
+		    		.text(message)
+		    		.position(pos)
+		    		.onAction(new EventHandler<ActionEvent>() {
+		    			@Override
+		    			public void handle(ActionEvent event){
+		    				System.out.println("[Placeholder] The notification box '" + message + "' has just been clicked.");
+		    			}
+		    		})
+		    		.graphic(v)
+		    		.darkStyle()
+		    		.owner(desktop.getMainScene().getStage())
+		    		.show();
+		    	}
 
-	    	else {
-		    	Notifications.create()
-	    		.title(header)
-	    		.text(message)
-	    		.position(pos)
-	    		.onAction(new EventHandler<ActionEvent>() {
-	    			@Override
-	    			public void handle(ActionEvent event){
-	    				System.out.println("[Placeholder] You just clicked on the message '" + message + "'.");
-	    			}
-	    		})
-	    		.owner(desktop.getMainScene().getStage())
-	    		.showWarning();
+		    	else {
+			    	Notifications.create()
+		    		.title(header)
+		    		.text(message)
+		    		.position(pos)
+		    		.onAction(new EventHandler<ActionEvent>() {
+		    			@Override
+		    			public void handle(ActionEvent event){
+		    				System.out.println("[Placeholder] You just clicked on the message '" + message + "'.");
+		    			}
+		    		})
+		    		.graphic(v)
+		    		.owner(desktop.getMainScene().getStage())
+		    		.showWarning();
+		    	}
 	    	}
 	    }
 	}
+	
 	/**
 	 * Internal class for launching a notify window.
 	 */

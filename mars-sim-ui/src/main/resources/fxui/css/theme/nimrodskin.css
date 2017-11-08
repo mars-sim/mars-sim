@@ -416,7 +416,7 @@
 }
 
 #earth-time-box {
-	-fx-padding: 4 0 0 0;
+	-fx-padding: 3 0 0 0;
 	-fx-background-color: transparent;
 	-fx-text-fill: #654b00;
 	-fx-font-size: 13px;
@@ -429,7 +429,7 @@
     -fx-background-insets: 0,0,0,0;
     -fx-background-radius: 2,2,2,2;
     -fx-background-color: #654b00;
-    -fx-padding: 4 0 0 0;
+    -fx-padding: 3 0 0 0;
     -fx-text-fill: #654b00;
     -fx-font-size: 13px;
     -fx-font-weight: bold;

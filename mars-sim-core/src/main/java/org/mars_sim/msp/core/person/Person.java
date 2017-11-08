@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -160,6 +159,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	private Vehicle vehicle;
 
+	private Vehicle associatedVehicle;
 	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -636,12 +636,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			s.append(0);
 		s.append(second);
 
-		// return month + "/" + day + "/" + year + " " + hour + ":"
-		// + minute + ":" + second;
-
-		// return year + "-" + monthString + "-" + day + " "
-		// + hour + ":" + minute + ":" + second;
-
 		return s.toString();
 	}
 
@@ -662,14 +656,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			else
 				return LocationSituation.UNKNOWN;
 		}
-		/*
-		 * if (isBuried) return LocationSituation.OUTSIDE; else if
-		 * (declaredDead) return LocationSituation.DEAD; else { Unit container =
-		 * getContainerUnit(); if (container == null) return
-		 * LocationSituation.OUTSIDE; else if (container instanceof Settlement)
-		 * return LocationSituation.IN_SETTLEMENT; else if (container instanceof
-		 * Vehicle) return LocationSituation.IN_VEHICLE; } return null;
-		 */
+
 	}
 
 	/**
@@ -714,33 +701,54 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return the person's settlement
 	 */
-	// 2015-12-04 Changed getSettlement() to fit the original specs of the
-	// Location Matrix
 	public Settlement getSettlement() {
+
+		Unit container = getContainerUnit();
+		
+		if (container instanceof Settlement) {
+			return (Settlement) container;
+		}
+		
+		else if (container instanceof Vehicle){
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return b.getSettlement();
+			else 
+				// either at the vicinity of a settlement or already outside on a mission
+				// TODO: need to differentiate which case in future better granularity 
+				return null;
+		}
+		
+		else if (container == null) {
+			return null;
+
+		}
+		
+		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
+		return null;
+/*		
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			//Settlement settlement = (Settlement) getContainerUnit();
-			//return settlement;
 			return (Settlement) getContainerUnit();
 		}
 
-		else if (getLocationSituation() == LocationSituation.OUTSIDE)
+		else if (getLocationSituation() == LocationSituation.OUTSIDE) {
 			return null;
-
+		}
+		
 		else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-			Vehicle vehicle = (Vehicle) getContainerUnit();
-			// Note: a vehicle's container unit may be null if it's outside a settlement
-			Settlement settlement = (Settlement) vehicle.getContainerUnit();
-			return settlement;
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				return b.getSettlement();
 		}
 
 		else if (getLocationSituation() == LocationSituation.BURIED) {
 			return null;
 		}
 
-		else {
-			System.err.println("Error in determining " + getName() + "'s getSettlement() ");
-			return null;
-		}
+		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
+		return null;
+*/		
 	}
 
 
@@ -751,6 +759,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *            the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit containerUnit) {
+		if (containerUnit instanceof Vehicle) {
+			vehicle = (Vehicle) containerUnit;
+		}
 		super.setContainerUnit(containerUnit);
 	}
 
@@ -762,17 +773,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void buryBody() {
 		Unit containerUnit = getContainerUnit();
 		if (containerUnit != null) {
-			// TODO: if a person is dead inside a vehicle that's outside on
-			// Mars,
+			// Note: if a person is dead inside a vehicle that's outside on Mars,
 			// should NOT be retrieved until the body arrives at a settlement
-			//Vehicle v = getVehicle();
-			//if (v != null)
-			//	v.getInventory().retrieveUnit(this);
 			containerUnit.getInventory().retrieveUnit(this);
 		}
+		
+		// Bury the body
 		isBuried = true;
+		
 		//setAssociatedSettlement(null);
+		
+		// Set his/her buried settlement
 		setBuriedSettlement(associatedSettlement);
+		
+		// Set unit description to "Dead"
 		super.setDescription("Dead");
 		
         // Throw unit event.
@@ -780,11 +794,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Person has died. Update the status to reflect the change and remove this
-	 * Person from any Task and remove the associated Mind.
+	 * Declares the person dead, removes the designated quarter and work shift
 	 */
 	void setDead() {
-		//mind.setInactive();
+
 		declaredDead = true;
 
 		setShiftType(ShiftType.OFF);
@@ -835,8 +848,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				int solElapsed = marsClock.getMissionSol();
 
 				if (solCache != solElapsed) {
-					// 2016-04-20 Added updating a person's age
-					age = getAge();
+					// Update a person's age
+					age = updateAge();
 					solCache = solElapsed;
 				}
 			}
@@ -847,10 +860,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			mind.setInactive();
 		}
 		
-		else if (!isBuried) {
-
-			if (condition.getDeathDetails() != null)
-				if (condition.getDeathDetails().getBodyRetrieved())
+		else if (!isBuried 
+				&& condition.getDeathDetails() != null 
+				&& condition.getDeathDetails().getBodyRetrieved()) {
 					buryBody();
 
 		}
@@ -924,14 +936,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Returns the person's age
+	 * Updates and returns the person's age
 	 *
 	 * @return the person's age
 	 */
-	// 2016-04-20 Corrected the use of the day of month
-	public int getAge() {
-		// EarthClock earthClock =
-		// Simulation.instance().getMasterClock().getEarthClock();
+	public int updateAge() {
 		age = earthClock.getYear() - birthTimeStamp.getYear() - 1;
 		if (earthClock.getMonth() >= birthTimeStamp.getMonth())
 			if (earthClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth())
@@ -977,23 +986,33 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
 
 				if (BuildingManager.getBuilding(vehicle) != null) {
+					// if the vehicle is inside a garage
 					lifeSupportUnits.add(vehicle.getSettlement());
 				} else {
 					lifeSupportUnits.add((LifeSupportType) vehicle);
 				}
 			}
 		}
+/*
 
-		// Get all contained units.
 		Iterator<Unit> i = getInventory().getContainedUnits().iterator();
+		
 		while (i.hasNext()) {
 			Unit contained = i.next();
 			if (contained instanceof LifeSupportType) {
 				lifeSupportUnits.add((LifeSupportType) contained);
 			}
 		}
-
-		// Get first life support unit that checks out.
+*/		
+		// Get all contained units.
+		Collection<Unit> units = getInventory().getContainedUnits();
+		for (Unit u : units) {
+			if (u instanceof LifeSupportType)
+				lifeSupportUnits.add((LifeSupportType) u);
+		}
+		
+		
+/*
 		Iterator<LifeSupportType> j = lifeSupportUnits.iterator();
 		while (j.hasNext() && (result == null)) {
 			LifeSupportType goodUnit = j.next();
@@ -1001,7 +1020,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				result = goodUnit;
 			}
 		}
-
+*/	
+		// Get first life support unit that checks out.
+		for (LifeSupportType goodUnit : lifeSupportUnits) {
+			if (result ==  null && goodUnit.lifeSupportCheck()) {
+				result = goodUnit;
+			}
+		}
+		
 		// If no good units, just get first life support unit.
 		if ((result == null) && (lifeSupportUnits.size() > 0)) {
 			result = lifeSupportUnits.get(0);
@@ -1369,7 +1395,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return lastWord;
 	}
 
-	@Override
+	//@Override
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
@@ -1379,12 +1405,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		if (getLocationSituation() == LocationSituation.IN_VEHICLE)
-			return (Vehicle) getContainerUnit();
-		else
+		//if (getLocationSituation() == LocationSituation.IN_VEHICLE)
+		//	return (Vehicle) getContainerUnit();
+		//else
 			return vehicle;
 	}
 
+	public Vehicle getAssociatedVehicle() {
+		return associatedVehicle;
+	}
+
+	public void setAssociatedVehicle(Vehicle v) {
+		associatedVehicle = v;
+	}
+	
 	public CircadianClock getCircadianClock() {
 		return circadian;
 	}
@@ -1401,8 +1435,27 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	@Override
 	public void destroy() {
 		super.destroy();
+		
 		circadian = null;
 		vehicle = null;
+		associatedVehicle = null;
+		associatedSettlement = null;
+		buriedSettlement = null;
+		quarters = null;	
+		diningBuilding = null;	
+		currentBuilding = null;
+		condition = null;
+		favorite = null;
+		taskSchedule = null;
+		jobHistory = null;
+		role = null;
+		preference = null;
+		support = null;
+		kitchenWithMeal = null;	
+		kitchenWithDessert = null;
+		ra = null;
+		bed = null;
+		
 		attributes.destroy();
 		attributes = null;
 		mind.destroy();
@@ -1411,7 +1464,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		condition = null;
 		gender = null;
 		birthTimeStamp = null;
-		associatedSettlement = null;
+
 		scientificAchievement.clear();
 		scientificAchievement = null;
 	}

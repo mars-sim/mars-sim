@@ -143,7 +143,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         infoLabelPanel.add(statusLabel);
 
         // Prepare beacon label
-        beaconCache = vehicle.isEmergencyBeacon();
+        beaconCache = vehicle.isBeaconOn();
         String beaconString;
         if (beaconCache) beaconString = "on";
         else beaconString = "off";
@@ -321,8 +321,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update beacon label
-        if (beaconCache != vehicle.isEmergencyBeacon()) {
-        	beaconCache = vehicle.isEmergencyBeacon();
+        if (beaconCache != vehicle.isBeaconOn()) {
+        	beaconCache = vehicle.isBeaconOn();
         	if (beaconCache) beaconLabel.setText("Emergency Beacon: on");
         	else beaconLabel.setText("Emergency Beacon: off");
         }

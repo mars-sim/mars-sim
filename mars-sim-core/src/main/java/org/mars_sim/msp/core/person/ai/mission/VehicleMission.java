@@ -385,17 +385,18 @@ implements UnitListener {
 
 			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES_TO_CONTINUE)
 					|| reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
-					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)) {
+					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
+					|| reason.equals(Mission.MEDICAL_EMERGENCY)) {
 				// Set emergency beacon if vehicle is not at settlement.
 				// TODO: need to find out if there are other matching reasons for setting emergency beacon.
 				if (vehicle.getSettlement() == null) {
 					// if the vehicle somewhere on Mars and is outside the settlement
-					if (!vehicle.isEmergencyBeacon()) {
+					if (!vehicle.isBeaconOn()) {
 						//if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
 						if (!vehicle.isBeingTowed()) {
-							setEmergencyBeacon(null, vehicle, true);
-							logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
+							setEmergencyBeacon(startingMember, vehicle, true);
+							logger.warning("[" + startingMember + "] turned on " + vehicle + "'s emergency beacon and request for towing.");
 							//don't end the mission yet
 						}
 
@@ -620,13 +621,12 @@ implements UnitListener {
 			setPhaseEnded(true);
 		}
 
-		// Check if enough resources for remaining trip
-		// or if there is an emergency medical problem.
-		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
-
+		// if there is an emergency medical problem or not enough resources for remaining trip
+		//if (hasEmergency() || !hasEnoughResourcesForRemainingMission(false)) {
 			// If not, determine an emergency destination.
 			determineEmergencyDestination(member);
-		}
+		//}
+		
 
 		// If vehicle has unrepairable malfunction, end mission.
 		if (hasUnrepairableMalfunction()) {
@@ -862,56 +862,83 @@ implements UnitListener {
 	 */
 	protected final void determineEmergencyDestination(MissionMember member) {
 
-		// Determine closest settlement.
-		Settlement newDestination = findClosestSettlement();
-		if (newDestination != null) {
-
-			// Check if enough resources to get to settlement.
-			double distance = getCurrentMissionLocation().getDistance(
-					newDestination.getCoordinates());
-			if (hasEnoughResources(getResourcesNeededForTrip(false, distance))
-					|| hasEmergencyAllCrew()) {
-					//&& !hasEmergencyAllCrew()) {
-
-				// Check if closest settlement is already the next navpoint.
-				boolean sameDestination = false;
-				NavPoint nextNav = getNextNavpoint();
-				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
-					sameDestination = true;
-					returnHome();
-				}
-
-				if (!sameDestination) {
-					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,					
-						"Due to emergency situation, " + vehicle.getName() + ", currently at " 
-							+ Math.round(distance*100D)/100D 
-							+ " km away from its origin, is heading toward to the closet settlement "
-							+ newDestination.getName(), null);
-
-					// Creating emergency destination mission event.
-					HistoricalEvent newEvent = new MissionHistoricalEvent(
-							member, this, vehicle.getCoordinates().toString(), 
-							EventType.MISSION_EMERGENCY_DESTINATION);
-					Simulation.instance().getEventManager().registerNewEvent(newEvent);
-
-					// Set the new destination as the travel mission's next and final navpoint.
-					clearRemainingNavpoints();
-					addNavpoint(new NavPoint(newDestination.getCoordinates(),
-							newDestination, "emergency destination: "
-									+ newDestination.getName()));
-					associateAllMembersWithSettlement(newDestination);
-					// 2016-09-19 Added updateTravelDestination() below
-					updateTravelDestination();
-				}
-
-			} else {
-				endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
-
-			}
-
-		} else {
-			endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
+		boolean hasEmergency = false;
+		
+		if ((member instanceof Person && ((Person)member).getPhysicalCondition().hasSeriousMedicalProblems()) || hasEmergencyAllCrew()) {
+			hasEmergency = true;	
 		}
+
+		boolean lackingResources = !hasEnoughResources(getResourcesNeededForRemainingMission(false));
+
+		if (hasEmergency || lackingResources) {
+			// Determine closest settlement.
+			Settlement newDestination = findClosestSettlement();
+			if (newDestination != null) {
+	
+				// Check if enough resources to get to settlement.
+				double distance = getCurrentMissionLocation().getDistance(
+						newDestination.getCoordinates());
+									
+				if (distance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, distance))) {
+						//&& !hasEmergencyAllCrew()) {
+	
+					// Check if closest settlement is already the next navpoint.
+					boolean sameDestination = false;
+					NavPoint nextNav = getNextNavpoint();
+					
+					if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
+						sameDestination = true;
+						returnHome();
+					}
+	
+					if (!sameDestination) {
+						LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,					
+							"Due to an emergency situation, " + vehicle.getName() + ", currently at " 
+								+ Math.round(distance*100D)/100D 
+								+ " km away from its origin, is heading toward to the closet settlement "
+								+ newDestination.getName(), null);
+	
+						// Creating emergency destination mission event.
+						HistoricalEvent newEvent = new MissionHistoricalEvent(
+								member, this, vehicle.getCoordinates().toString(), 
+								EventType.MISSION_EMERGENCY_DESTINATION);
+						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+	
+						// Set the new destination as the travel mission's next and final navpoint.
+						clearRemainingNavpoints();
+						addNavpoint(new NavPoint(newDestination.getCoordinates(),
+								newDestination, "emergency destination: "
+										+ newDestination.getName()));
+						associateAllMembersWithSettlement(newDestination);
+						// 2016-09-19 Added updateTravelDestination() below
+						updateTravelDestination();
+					}
+					// else {} // heading toward the same destination next.
+	
+				}
+				else { // can't go anywhere, turn on beacon next
+					if (hasEmergency)
+						endMission(MEDICAL_EMERGENCY);
+					else
+						endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
+				}
+	
+			}
+			else { // can't find a destination
+				if (hasEmergency)
+					endMission(MEDICAL_EMERGENCY);
+				else
+					endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);	
+			
+			}
+		}
+		else { // can't go anywhere, turn on beacon next
+			if (hasEmergency)
+				endMission(MEDICAL_EMERGENCY);
+			else
+				endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
+		}
+		
 	}
 
 	/**
@@ -922,17 +949,16 @@ implements UnitListener {
      */
 	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn) {
 
-		// Creating mission emergency beacon event.
-		
-		HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
-				this, vehicle.getCoordinates().toString(), EventType.MISSION_EMERGENCY_BEACON);
-
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		if (beaconOn) {
-			logger.info("Emergency beacon activated on " + vehicle.getName() + ".");
+			// Creating mission emergency beacon event.
+			HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
+					this, vehicle.getCoordinates().toString(), EventType.MISSION_EMERGENCY_BEACON_ON);
+
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " + member + " activated emergency beacon on " + vehicle.getName() + ".");
 		}
 		else {
-			logger.info("Emergency beacon deactivated on " + vehicle.getName() + ".");
+			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " + member + " deactivated emergency beacon on " + vehicle.getName() + ".");
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);

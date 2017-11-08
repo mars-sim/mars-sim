@@ -119,7 +119,7 @@ public class CircadianClock implements Serializable {
 
 	    	if (solCache == 0) {
 	    		double dev = Math.sqrt(person.getBaseMass()/Person.AVERAGE_WEIGHT * person.getHeight()/Person.AVERAGE_HEIGHT); //condition.getBodyMassDeviation(); //person.getBaseMass() / Person.AVERAGE_WEIGHT;
-	    		double age = person.getAge();
+	    		double age = person.updateAge();
 
 	    	 	// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin and higher when you're fat. 
 	    		leptin_threshold *= dev ;

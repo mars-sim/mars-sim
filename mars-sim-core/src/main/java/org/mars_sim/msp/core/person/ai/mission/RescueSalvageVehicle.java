@@ -380,7 +380,7 @@ implements Serializable {
         setPhaseEnded(true);
 
         // Turn off vehicle's emergency beacon.
-        if (vehicleTarget.isEmergencyBeacon())
+        if (vehicleTarget.isBeaconOn())
         	setEmergencyBeacon(member, vehicleTarget, false);
 
         // Set mission event.
@@ -552,7 +552,7 @@ implements Serializable {
         //Iterator<Vehicle> iV = unitManager.getVehicles().iterator();
         //while (iV.hasNext()) {
         for (Vehicle vehicle : unitManager.getVehicles()) {// = iV.next();
-            if (vehicle.isEmergencyBeacon() && !isVehicleAlreadyMissionTarget(vehicle)) {
+            if (vehicle.isBeaconOn() && !isVehicleAlreadyMissionTarget(vehicle)) {
                 emergencyBeaconVehicles.add(vehicle);
 
                 if (vehicle instanceof Crewable) {

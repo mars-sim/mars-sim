@@ -82,7 +82,7 @@ extends TabPanel {
 		String birthdate = Msg.getString(
 			"TabPanelGeneral.birthDateAndAge",
 			person.getBirthDate(),
-			Integer.toString(person.getAge())
+			Integer.toString(person.updateAge())
 		); //$NON-NLS-1$
 		//JLabel birthDateLabel = new JLabel(birthdate, JLabel.RIGHT);
 		JTextField birthDateTF = new JTextField(birthdate);

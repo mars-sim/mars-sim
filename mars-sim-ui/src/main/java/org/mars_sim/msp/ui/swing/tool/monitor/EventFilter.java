@@ -93,11 +93,11 @@ implements ActionListener {
 		pack();
 		
         // 2016-10-22 Add to its own tab pane
-        if (desktop.getMainScene() != null)
+        //if (desktop.getMainScene() != null)
         	desktop.add(this);
         	//desktop.getMainScene().getDesktops().get(0).add(this);
-        else 
-        	desktop.add(this);
+       // else 
+       // 	desktop.add(this);
 	    
 	}
 
@@ -121,5 +121,14 @@ implements ActionListener {
 			model.setDisplayTask(taskCheck.isSelected());
 		else if (check == transportCheck)
 			model.setDisplayTransport(transportCheck.isSelected());
+	}
+	
+	public void destroy() {
+		model = null;
+		malfunctionCheck = null;
+		medicalCheck = null;
+		missionCheck = null;
+		taskCheck = null;
+		transportCheck = null;
 	}
 }

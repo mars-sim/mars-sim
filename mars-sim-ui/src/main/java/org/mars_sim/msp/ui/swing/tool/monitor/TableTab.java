@@ -216,11 +216,12 @@ extends MonitorTab {
                 /**
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell
-                 */
+                 
                 public String getToolTipText(MouseEvent e) {
                 	// TODO: create tooltip text for greenhouse crop
                     return getCellText(e);
                 };
+                */
             };
 
 

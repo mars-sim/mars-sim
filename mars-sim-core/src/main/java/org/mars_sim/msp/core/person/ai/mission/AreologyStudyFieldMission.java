@@ -96,16 +96,14 @@ implements Serializable {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
 
-        Settlement s = null;
+        Settlement s = startingPerson.getSettlement();
         
-		if (!isDone()) {
+		if (!isDone() && s != null) {
 			// Set the lead areology researcher and study.
 			leadResearcher = startingPerson;
 			study = determineStudy(leadResearcher);
 			if (study == null) endMission("Scientific study could not be determined.");
 
-			// Initialize data members.
-			s = startingPerson.getSettlement();
             setStartingSettlement(s);
             
 			// Set mission capacity.
@@ -123,21 +121,24 @@ implements Serializable {
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
+			addNavpoint(new NavPoint(s.getCoordinates(),
 					s, s.getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable())
 				endMission("Vehicle is not loadable. (AreologyStudyFieldMission)");
 		}
-
-		// Add researching site phase.
-		addPhase(RESEARCH_SITE);
-
-		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-				s.getName())); //$NON-NLS-1$
+		
+		if (s != null) {
+			// Add researching site phase.
+			addPhase(RESEARCH_SITE);
+	
+			// Set initial mission phase.
+			setPhase(VehicleMission.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
+					s.getName())); //$NON-NLS-1$
+			
+		}
 	}
 
 	/**

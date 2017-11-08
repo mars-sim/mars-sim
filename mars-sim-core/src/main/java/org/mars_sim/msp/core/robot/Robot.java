@@ -188,7 +188,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         earthClock = masterClock.getEarthClock();
 
         config = SimulationConfig.instance().getRobotConfiguration();
-        support = getLifeSupportType();
+        //support = getLifeSupportType();
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -340,9 +340,35 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
      * Get settlement robot is at, null if robot is not at a settlement
      * @return the robot's settlement
      */
-   // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
-   @Override
-   public Settlement getSettlement() {
+    @Override
+	public Settlement getSettlement() {
+
+		Unit container = getContainerUnit();
+		
+		if (container instanceof Settlement) {
+			return (Settlement) container;
+		}
+		
+		else if (container instanceof Vehicle){
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return b.getSettlement();
+			else 
+				// either at the vicinity of a settlement or already outside on a mission
+				// TODO: need to differentiate which case in future better granularity 
+				return null;
+		}
+		
+		else if (container == null) {
+			return null;
+
+		}
+		
+		logger.warning("Error in determining " + getName() + "'s settlement when calling getSettlement().");
+		return null;
+/*		
+		
        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     	   Settlement settlement = (Settlement) getContainerUnit();
     	   return settlement;
@@ -365,6 +391,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
     	   System.err.println("Error in determining " + getName() + "'s getSettlement() ");
     	   return null;
        }
+*/       
    }
 
 
@@ -386,6 +413,9 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
      * @param containerUnit the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
+		//if (containerUnit instanceof Vehicle) {
+		//	vehicle = (Vehicle) containerUnit;
+		//}
         super.setContainerUnit(containerUnit);
     }
 
@@ -427,10 +457,10 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         // If robot is dead, then skip
         if (!health.isInoperable()) {
 
-        	support = getLifeSupportType();
+        	//support = getLifeSupportType();
             // Pass the time in the physical condition first as this may
             // result in death.
-            if (health.timePassing(time, support, config)) {
+            if (health.timePassing(time, config)) {
 
                 // Mental changes with time passing.
                 botMind.timePassing(time);
@@ -479,10 +509,10 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
     }
 
     /**
-     * Returns the robot's age
+     * Updates and returns the robot's age
      * @return the robot's age
      */
-    public int getAge() {
+    public int updateAge() {
         //EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
         int age = earthClock.getYear() - birthTimeStamp.getYear() - 1;
         if (earthClock.getMonth() >= birthTimeStamp.getMonth()
@@ -510,61 +540,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         return birthTimeStamp.getDateString();
     }
 
-    /**
-     * Get the LifeSupport system supporting this robot. This may be from the
-     * Settlement, Vehicle or Equipment.
-     * @return Life support system.
-     */
-    private LifeSupportType getLifeSupportType() {
-
-        LifeSupportType result = null;
-        List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
-
-        Settlement settlement = getSettlement();
-        if (settlement != null) {
-            lifeSupportUnits.add(settlement);
-        }
-        else {
-            Vehicle vehicle = getVehicle();
-            if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
-
-                if (BuildingManager.getBuilding(vehicle) != null) {
-                    lifeSupportUnits.add(vehicle.getSettlement());
-                }
-                else {
-                    lifeSupportUnits.add((LifeSupportType) vehicle);
-                }
-            }
-        }
-
-        // Get all contained units.
-        Iterator<Unit> i = getInventory().getContainedUnits().iterator();
-        while (i.hasNext()) {
-            Unit contained = i.next();
-            if (contained instanceof LifeSupportType) {
-                lifeSupportUnits.add((LifeSupportType) contained);
-            }
-        }
-
-        // Get first life support unit that checks out.
-        Iterator<LifeSupportType> j = lifeSupportUnits.iterator();
-        while (j.hasNext() && (result == null)) {
-            LifeSupportType goodUnit = j.next();
-            // TODO: turn off the checking of oxygen and water for robot.
-            // Rather check for power
-            if (goodUnit.lifeSupportCheck()) {
-                result = goodUnit;
-            }
-        }
-
-        // If no good units, just get first life support unit.
-        if ((result == null) && (lifeSupportUnits.size() > 0)) {
-            result = lifeSupportUnits.get(0);
-        }
-
-        return result;
-    }
-
+    
     /**
      * robot consumes given amount of power.
      * @param amount the amount of power to consume (in kg)

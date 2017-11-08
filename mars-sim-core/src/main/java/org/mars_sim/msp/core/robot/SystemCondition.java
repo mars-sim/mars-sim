@@ -134,7 +134,7 @@ implements Serializable {
      * @param config robot configuration.
      * @return True still alive.
      */
-    public boolean timePassing(double time, LifeSupportType support, RobotConfig config) {
+    public boolean timePassing(double time, RobotConfig config) {
 
     	//1. Check malfunction
         //performSystemCheck();

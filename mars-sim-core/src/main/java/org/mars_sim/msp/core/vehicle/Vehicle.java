@@ -863,7 +863,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      * Checks if the vehicle's emergency beacon is turned on.
      * @return true if beacon is on.
      */
-    public boolean isEmergencyBeacon() {
+    public boolean isBeaconOn() {
     	return emergencyBeacon;
     }
 

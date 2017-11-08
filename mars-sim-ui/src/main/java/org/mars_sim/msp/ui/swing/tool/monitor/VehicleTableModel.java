@@ -285,7 +285,7 @@ extends UnitTableModel {
 				} break;
 
 				case BEACON : {
-					if (vehicle.isEmergencyBeacon()) result = ON;
+					if (vehicle.isBeaconOn()) result = ON;
 					else result = OFF;
 				} break;
 

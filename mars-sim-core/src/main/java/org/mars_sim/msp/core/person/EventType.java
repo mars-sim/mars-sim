@@ -26,7 +26,7 @@ public enum EventType {
 	MISSION_FINISH					(Msg.getString("EventType.mission.finished")), //$NON-NLS-1$
 	MISSION_DEVELOPMENT				(Msg.getString("EventType.mission.development")), //$NON-NLS-1$
 	MISSION_EMERGENCY_DESTINATION	(Msg.getString("EventType.mission.emergencyDestination")), //$NON-NLS-1$
-	MISSION_EMERGENCY_BEACON		(Msg.getString("EventType.mission.emergencyBeacon")), //$NON-NLS-1$
+	MISSION_EMERGENCY_BEACON_ON		(Msg.getString("EventType.mission.emergencyBeacon")), //$NON-NLS-1$
 	MISSION_RENDEZVOUS				(Msg.getString("EventType.mission.rendezvous")), //$NON-NLS-1$
 	MISSION_SALVAGE_VEHICLE			(Msg.getString("EventType.mission.salvageVehicle")), //$NON-NLS-1$
 	MISSION_RESCUE_PERSON			(Msg.getString("EventType.mission.rescuePerson")), //$NON-NLS-1$

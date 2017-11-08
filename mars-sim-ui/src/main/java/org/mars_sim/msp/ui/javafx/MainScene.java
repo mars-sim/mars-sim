@@ -1006,9 +1006,9 @@ public class MainScene {
 			datePickerFX.setPrefSize(25, 25);//160, 29);
 			timePickerFX.setPrefSize(25, 25);//140, 29);
 		} else if (OS.contains("mac")) {
-			earthTimeBox.setPrefSize(50, 25);  // 230
-			datePickerFX.setPrefSize(25, 25);
-			timePickerFX.setPrefSize(25, 25);
+			earthTimeBox.setPrefSize(50, 23);  // 230
+			datePickerFX.setPrefSize(23, 23);
+			timePickerFX.setPrefSize(23, 23);
 		} else {
 			earthTimeBox.setPrefSize(50, 25);
 			datePickerFX.setPrefSize(25, 25);//130, 25);

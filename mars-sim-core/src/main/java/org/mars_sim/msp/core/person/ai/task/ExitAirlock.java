@@ -763,19 +763,17 @@ implements Serializable {
 	    		Mission m = person.getMind().getMission();
 	    		//Mission m = missionManager.getMission(person);
 	    		
-	    		
-	    		if (!v.isEmergencyBeacon()) {
-					//if the emergency beacon is off
-					// Question: could the emergency beacon itself be broken ?
-					if (!v.isBeingTowed()) {
-						((VehicleMission)m).setEmergencyBeacon(null, v, true);
+	    		if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
+					// Set the emergency beacon on since no EVA suit is available
+					((VehicleMission)m).setEmergencyBeacon(person, v, true);
 						LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-								v + "'s emergency beacon is on, awaiting response for rescue right now.", null);
-					}
+								"[" + person + "] doesn't have a working EVA suit, turns on " + v + "'s emergency beacon, awaiting the response for rescue."
+								, null);
 	    		}
-	    		
-	        	person.getMind().getNewAction(true, true);
+	    		//else
+	    		//	person.getMind().getNewAction(true, true);
 	    		//person.getMind().getTaskManager().clearTask();
+	    		
 	    		return false;
         	}
         	
@@ -912,11 +910,11 @@ implements Serializable {
         
         for (EVASuit suit : suits) { 
         	if (suit.getLastOwner() == p)
-        		// prefer to pick the same suit that a person used to wear in the past
+        		// Prefers to pick the same suit that a person has been tagged in the past
         		return suit;
         }
 
-        // pick any one of the good suits
+        // Picks any one of the good suits
         int size = suits.size();
         if (size == 0)
         	return null;

@@ -62,6 +62,8 @@ implements Serializable {
 	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
 	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
+	public static String MEDICAL_EMERGENCY = "A member has a medical emergency";
+	
 
 	/** The marginal factor for the amount of water to be brought during a mission. */
 	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle

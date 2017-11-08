@@ -280,7 +280,7 @@ class RendezvousVehiclePanel extends WizardPanel {
         	Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
         	while (i.hasNext()) {
         		Vehicle vehicle = i.next();
-        		if (vehicle.isEmergencyBeacon()) result.add(vehicle);
+        		if (vehicle.isBeaconOn()) result.add(vehicle);
         	}
         	return result;
     	}

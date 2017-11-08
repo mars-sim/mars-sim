@@ -172,8 +172,9 @@ implements Serializable {
 	                s.getName())); //$NON-NLS-1$
 	        if (logger.isLoggable(Level.INFO)) {
 	            if (startingPerson != null && getRover() != null) {
-	                logger.info(startingPerson.getName() + " started an emergency supply mission from " + s +
-	                        " to " + getEmergencySettlement() + " using " + getRover().getName());
+	                logger.info("[" + s + "] " + startingPerson.getName() 
+	                	+ " started an emergency supply mission to help out " 
+	                		+ getEmergencySettlement() + " using " + getRover().getName());
 	            }
 	        }
         }
@@ -265,8 +266,9 @@ implements Serializable {
         if (logger.isLoggable(Level.INFO)) {
             Person startingPerson = (Person) members.toArray()[0];
             if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " started an emergency supply mission from " + getStartingSettlement() +
-                        " to " + getEmergencySettlement() + "on " + getRover().getName());
+                logger.info("[" + startingSettlement + "] " + startingPerson.getName() + startingPerson.getName() 
+                	+ " started an emergency supply mission to help out " 
+                		+ getEmergencySettlement() + "on " + getRover().getName());
             }
         }
     }

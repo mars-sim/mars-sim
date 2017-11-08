@@ -83,7 +83,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
      * @return true if blink
      */
     public boolean isMapBlink(Unit unit) {
-    	return ((Vehicle) unit).isEmergencyBeacon();
+    	return ((Vehicle) unit).isBeaconOn();
     }
     
     /** 
