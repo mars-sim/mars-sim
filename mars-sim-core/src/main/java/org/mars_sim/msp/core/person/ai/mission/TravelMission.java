@@ -94,9 +94,7 @@ extends Mission {
         // Use Mission constructor.
         super(missionName, startingMember, minPeople);
 
-//        Person person = null;
-//        Robot robot = null;
-                
+             
         NavPoint startingNavPoint = null;
         
         if (startingMember.getSettlement() != null) {
@@ -109,28 +107,7 @@ extends Mission {
                     "starting location");
         }
         
-//        if (unit instanceof Person) {
-//        	person = (Person) unit; 
-//            if (person.getSettlement() != null) 
-//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-//                		person.getSettlement(), person
-//                                .getSettlement().getName());          
-//            else 
-//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-//                        "starting location");
-//
-//        }
-//        else if (unit instanceof Robot) {
-//        	robot = (Robot) unit;
-//            if (robot.getSettlement() != null)
-//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-//                        robot.getSettlement(), robot
-//                                .getSettlement().getName()); 
-//            else 
-//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-//                        "starting location");
-//        }
- 
+
         addNavpoint(startingNavPoint);
         lastStopNavpoint = startingNavPoint;
 

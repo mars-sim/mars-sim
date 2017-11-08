@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.OneActivity;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -342,14 +343,17 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		int new_theme = -1;
+		
 		if (desktop.getMainScene() != null)
-			theme = desktop.getMainScene().getTheme();
+			new_theme = MainScene.getTheme();
 
-		TableStyle.setTableStyle(table);
-
+		if (theme != new_theme) {
+			TableStyle.setTableStyle(table);
+		}
+		
 		if (person != null) {
-			shiftType = person.getTaskSchedule().getShiftType();
+			shiftType = taskSchedule.getShiftType();
 
 			//if (shiftCache != null)
 			if (shiftCache != shiftType) {
@@ -357,6 +361,9 @@ extends TabPanel {
 				shiftTF.setText(shiftCache.toString());
 			}
 
+    		start = taskSchedule.getShiftStart();
+    		end = taskSchedule.getShiftEnd();
+    		
     		if (shiftCache != ShiftType.OFF)
     			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
     			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$

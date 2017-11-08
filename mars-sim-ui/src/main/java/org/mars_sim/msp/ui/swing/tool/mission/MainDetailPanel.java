@@ -138,7 +138,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// Create the description panel.
 		Box infoPane = new CustomBox();
 		infoPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		infoPane.setSize(new Dimension(200, 150));
+		//infoPane.setSize(new Dimension(200, 200));
 		infoPane.setBorder(new MarsPanelBorder());
 		mainBox.add(infoPane);
 		
@@ -388,19 +388,23 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				});
 		memberScrollPane.setViewportView(memberTable);
 		
+/*		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBorder(new MarsPanelBorder());
+		//scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		mainBox.add(scrollPane);//,  BorderLayout.CENTER);
-		
+*/		
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
+		//missionCustomPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		missionCustomPane = new JPanel(customPanelLayout);
+		//missionCustomPane.add(customPanelLayout);
 		missionCustomPane.setBorder(new MarsPanelBorder());
-		//missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		scrollPane.add(missionCustomPane);
-
+		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		//scrollPane.add(missionCustomPane);
+		mainBox.add(missionCustomPane);
+				
 		// Create custom empty panel.
 		JPanel emptyCustomPane1 = new JPanel();
 		missionCustomPane.add(emptyCustomPane1, EMPTY);

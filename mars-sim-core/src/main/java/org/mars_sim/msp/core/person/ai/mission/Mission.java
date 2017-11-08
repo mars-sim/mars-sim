@@ -677,14 +677,9 @@ implements Serializable {
 			
 			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 			
-			if (startingMember.getSettlement() != null)
-			    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,  
-				        "[" + startingMember.getSettlement() + "] " + startingMember.getName() + " ended the " 
+			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,  
+				        "[" + startingMember.getLocationTag().getShortLocationName() + "] " + startingMember.getName() + " ended the " 
 				        + missionName + " mission. Reason : " + reason, null);
-			else
-			    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-			    		startingMember.getName() + " ended the " 
-			    		+ missionName + " mission. Reason : " + reason, null);
 
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
@@ -693,7 +688,7 @@ implements Serializable {
 			if (members != null) {
 				if (!members.isEmpty()) {	
 				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-				    	"[" + startingMember.getSettlement() + "] " + "Mission members removed : " + members, null);
+				    	"[" + startingMember.getLocationTag().getShortLocationName() + "] Removing the following mission members : " + members, null);
 				    Iterator<MissionMember> i = members.iterator();
 					while (i.hasNext()) {
 	                    removeMember(i.next());
@@ -706,7 +701,7 @@ implements Serializable {
 		}
 		else
 		    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-		    		"[" + startingMember.getSettlement() + "] " + startingMember.getName()  
+		    		"[" + startingMember.getLocationTag().getShortLocationName() + "] " + startingMember.getName()  
 		    		+ " is calling endMission() to end the " + missionName 
 	        		+ ". Reason : '" + reason + "'", null);
 	}
@@ -1084,7 +1079,9 @@ implements Serializable {
 	        result = member.getCoordinates();
 	    }
 		else {
-		    throw new IllegalStateException(phase + " : No people or robots in the mission.");
+		    //throw new IllegalStateException(phase + " : No people or robots in the mission.");
+		    LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+		    		phase + " : No people or robots in the mission.", null);
 		}
 
 	    return result;

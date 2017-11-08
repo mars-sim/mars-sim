@@ -397,8 +397,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					            willNotify = true;
 					        }
 					        
-					        Malfunction mal = (Malfunction) event.getSource();
-					        message = mal.getName();
+					        //Malfunction mal = (Malfunction) event.getSource();
+					        //message = mal.getName();
 					        
 					        type = 0;
 					    }
@@ -566,9 +566,9 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 			}
 
-			else if (type == 1) {
+			else if (type == 2) {
 				pos = Pos.TOP_RIGHT;
-				v = new ImageView(getClass().getResource("/icons/notification/repair_48.png").toExternalForm());
+				v = new ImageView(getClass().getResource("/icons/notification/siren_48.png").toExternalForm());
 
 			}
 			

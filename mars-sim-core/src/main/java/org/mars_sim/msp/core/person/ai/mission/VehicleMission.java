@@ -390,13 +390,15 @@ implements UnitListener {
 				// Set emergency beacon if vehicle is not at settlement.
 				// TODO: need to find out if there are other matching reasons for setting emergency beacon.
 				if (vehicle.getSettlement() == null) {
-					// if the vehicle somewhere on Mars and is outside the settlement
+					// if the vehicle somewhere on Mars and is outside the settlement vicinity
 					if (!vehicle.isBeaconOn()) {
 						//if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
 						if (!vehicle.isBeingTowed()) {
 							setEmergencyBeacon(startingMember, vehicle, true);
-							logger.warning("[" + startingMember + "] turned on " + vehicle + "'s emergency beacon and request for towing.");
+							logger.warning("[" + startingMember.getLocationTag().getShortLocationName() + "] " 
+							+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
+							+ reason);
 							//don't end the mission yet
 						}
 
@@ -622,10 +624,11 @@ implements UnitListener {
 		}
 
 		// if there is an emergency medical problem or not enough resources for remaining trip
-		//if (hasEmergency() || !hasEnoughResourcesForRemainingMission(false)) {
+		//if (hasEmergency() || 
+		if (!hasEnoughResourcesForRemainingMission(false)) {
 			// If not, determine an emergency destination.
 			determineEmergencyDestination(member);
-		//}
+		}
 		
 
 		// If vehicle has unrepairable malfunction, end mission.
@@ -867,10 +870,12 @@ implements UnitListener {
 		if ((member instanceof Person && ((Person)member).getPhysicalCondition().hasSeriousMedicalProblems()) || hasEmergencyAllCrew()) {
 			hasEmergency = true;	
 		}
+		
+		// Note : hasEnoughResourcesForRemainingMission() is false
+		
+		//boolean lackingResources = !hasEnoughResources(getResourcesNeededForRemainingMission(false));
 
-		boolean lackingResources = !hasEnoughResources(getResourcesNeededForRemainingMission(false));
-
-		if (hasEmergency || lackingResources) {
+		//if (hasEmergency || lackingResources) {
 			// Determine closest settlement.
 			Settlement newDestination = findClosestSettlement();
 			if (newDestination != null) {
@@ -931,13 +936,13 @@ implements UnitListener {
 					endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);	
 			
 			}
-		}
-		else { // can't go anywhere, turn on beacon next
-			if (hasEmergency)
-				endMission(MEDICAL_EMERGENCY);
-			else
-				endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
-		}
+		//}
+		//else { // can't go anywhere, turn on beacon next
+		//	if (hasEmergency)
+		//		endMission(MEDICAL_EMERGENCY);
+		//	else
+		//		endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
+		//}
 		
 	}
 

@@ -1,9 +1,9 @@
 /**
  * Mars Simulation Project
  * InsideSettlement.java
-* @version 3.1.0 2017-10-10
+ * @version 3.1.0 2017-10-10
  * @author Manny Kung
- */
+
 package org.mars_sim.msp.core.location;
 
 import java.io.Serializable;
@@ -28,6 +28,8 @@ public class InsideSettlement implements LocationState, Serializable {
 	public InsideSettlement(Unit unit) {
 		this.unit = unit;
 	}
+	
+*/	
 /*
 	public void leaveBuilding() {
 		unit.setLocationState(unit.getSettlementVicinity());
@@ -88,4 +90,4 @@ public class InsideSettlement implements LocationState, Serializable {
 		//unit.setLocationState(unit.getOnAPerson());
 	}
 	 */
-}
+//}
