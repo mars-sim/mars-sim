@@ -393,7 +393,8 @@ public class MapPanel extends JPanel implements ClockListener {
                 	//}
 
                 	for (MapLayer l : mapLayers) {
-                		l.displayLayer(centerCoords, mapType, dbg);
+                		if (dbg != null)
+                			l.displayLayer(centerCoords, mapType, dbg);
                 	}
                 }
         	}

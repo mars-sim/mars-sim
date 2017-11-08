@@ -24,14 +24,14 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("restriction")
 public class UnitDescriptionStage {
 
-	private MainDesktopPane desktop;
+	//private MainDesktopPane desktop;
 	private TextArea ta;
 	private VBox box1, box0;
 	private BorderPane mainPane;
 	private Label name;
 
-    public UnitDescriptionStage(MainDesktopPane desktop) {
-    	this.desktop = desktop;
+    public UnitDescriptionStage() {//MainDesktopPane desktop) {
+    	//this.desktop = desktop;
     }
 
 	@SuppressWarnings("restriction")

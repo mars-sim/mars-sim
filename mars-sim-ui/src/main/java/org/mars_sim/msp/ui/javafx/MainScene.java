@@ -272,6 +272,8 @@ public class MainScene {
 	private JFXDatePicker datePickerFX;
 	private JFXTimePicker timePickerFX;
 	
+	private IconNode marsTimeIcon;
+	
 	private HBox earthTimeBox;
 	private HBox marsTimeBox;
 
@@ -924,7 +926,7 @@ public class MainScene {
 		AnchorPane.setRightAnchor(marsNetBtn, 45.0);
 		AnchorPane.setRightAnchor(soundBtn, 85.0);
 		AnchorPane.setRightAnchor(marsTimeBox, sceneWidth.get() / 2);
-		AnchorPane.setRightAnchor(earthTimeBox, sceneWidth.get() / 2 - marsTimeBox.getPrefWidth());
+		AnchorPane.setRightAnchor(earthTimeBox, sceneWidth.get() / 2 - earthTimeBox.getPrefWidth() - 30);
 		AnchorPane.setRightAnchor(lastSaveLabel, 105.0);
 
 		anchorPane = new AnchorPane();
@@ -977,53 +979,40 @@ public class MainScene {
 		//datePickerFX.setOverLay(true);
 		datePickerFX.setShowWeekNumbers(true);
 		datePickerFX.setPromptText("Earth Date");
-		datePickerFX.setId("rich-date");
+		datePickerFX.setId("earth-time");
 
 		setQuickToolTip(datePickerFX, "Earth Date");
 		
 		timePickerFX = new JFXTimePicker();
 		timePickerFX.setValue(earthClock.getLocalTime());
-		//timePickerFX.setIs24HourView(true);
+		timePickerFX.setIs24HourView(true);
 		timePickerFX.setEditable(false);
 		//timePickerFX.setDefaultColor(Color.valueOf("#065185"));
 		//blueDatePicker.setOverLay(true);
 		timePickerFX.setPromptText("Earth Time");
-		timePickerFX.setId("rich-date");
+		timePickerFX.setId("earth-time");
 		
 		setQuickToolTip(timePickerFX, "Earth Time in UTC");
 		
 		HBox box = new HBox(5, datePickerFX, timePickerFX);
-/*		
-		final String cssDefault = "-fx-background-color: transparent;"
-				+ "-fx-border-color: #065185;\n"
-                //+ "-fx-border-insets: 3;\n"
-				+ "-fx-border-radius:0;\n"
-                + "-fx-border-width:0;\n";
-                //+ "-fx-border-style: dashed;\n";
-*/	
-		earthTimeBox = new HBox(box);
-		//earthTimeBox.getChildren().addAll(timePickerFX, timePickerFX);
-		//earthTimeBox.setStyle(cssDefault);
-		earthTimeBox.setPadding(new Insets(4,0,0,0));
 
+		earthTimeBox = new HBox(box);
+		earthTimeBox.setId("earth-time-box");
 		earthTimeBox.setAlignment(Pos.CENTER);
 
 		
 		if (OS.contains("linux")) {
-			earthTimeBox.setMaxWidth(LINUX_WIDTH+45);
-			//earthTimeBox.setPrefSize(LINUX_WIDTH+30, 29); // 270
-			datePickerFX.setPrefSize(160, 29);
-			timePickerFX.setPrefSize(140, 29);
+			earthTimeBox.setPrefSize(50, 25); // 270
+			datePickerFX.setPrefSize(25, 25);//160, 29);
+			timePickerFX.setPrefSize(25, 25);//140, 29);
 		} else if (OS.contains("mac")) {
-			earthTimeBox.setMaxWidth(MACOS_WIDTH+30);
-			//earthTimeBox.setPrefSize(MACOS_WIDTH+20, 29);  // 230
-			datePickerFX.setPrefSize(135, 29);
-			timePickerFX.setPrefSize(115 - 120, 29);
+			earthTimeBox.setPrefSize(50, 25);  // 230
+			datePickerFX.setPrefSize(25, 25);
+			timePickerFX.setPrefSize(25, 25);
 		} else {
-			earthTimeBox.setMaxWidth(WIN_WIDTH+30);
-			//earthTimeBox.setPrefSize(WIN_WIDTH+10, 25);
-			datePickerFX.setPrefSize(130, 25);
-			timePickerFX.setPrefSize(110, 25);
+			earthTimeBox.setPrefSize(50, 25);
+			datePickerFX.setPrefSize(25, 25);//130, 25);
+			timePickerFX.setPrefSize(25, 25);//110, 25);
 		}
 		
 
@@ -1566,22 +1555,22 @@ public class MainScene {
 	public void createMarsTimeBar() {	
 		
 		marsTimeLabel = new Label();
-		marsTimeLabel.setId("rich-red-Label");
+		marsTimeLabel.setId("mars-time-label");
 		marsTimeLabel.setAlignment(Pos.CENTER);
 		
 		setQuickToolTip(marsTimeLabel, "Martian Date and Time");	
 
 		marsTimeButton = new Button();
-		marsTimeButton.setPrefSize(16, 16);
-		marsTimeButton.setId("rich-red-button");
+		marsTimeButton.setPrefSize(20, 20);
+		marsTimeButton.setId("mars-time-button");
 		
-		IconNode marsTimeIcon = new IconNode(FontAwesome.CALENDAR_TIMES_O);
-		marsTimeIcon.setStyle("-fx-background-color: transparent;");
-		marsTimeIcon.setIconSize(16);
+		marsTimeIcon = new IconNode(FontAwesome.CALENDAR_O);
+		marsTimeIcon.setIconSize(20);
+		marsTimeIcon.setId("mars-time-icon");
 		marsTimeButton.setGraphic(marsTimeIcon);
 		
 		marsTimeBox = new HBox(marsTimeButton, marsTimeLabel);
-		marsTimeBox.setId("rich-red");
+		marsTimeBox.setId("mars-time-box");
 		marsTimeBox.setAlignment(Pos.CENTER);
 
 		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
@@ -1589,8 +1578,8 @@ public class MainScene {
 			marsTimeLabel.setPrefSize(LINUX_WIDTH, 29);
 			marsTimeBox.setPrefSize(LINUX_WIDTH+25, 29);
 		} else if (OS.contains("mac")) {
-			marsTimeLabel.setPrefSize(MACOS_WIDTH, 26);
-			marsTimeBox.setPrefSize(MACOS_WIDTH+20, 26);
+			marsTimeLabel.setPrefSize(MACOS_WIDTH, 30);
+			marsTimeBox.setPrefSize(MACOS_WIDTH+20, 30);
 		} else if (OS.contains("win")) {
 			marsTimeLabel.setPrefSize(WIN_WIDTH, 35);
 			marsTimeBox.setPrefSize(WIN_WIDTH+20, 35);
@@ -2539,6 +2528,9 @@ public class MainScene {
 		setStylesheet(marsTimeButton, cssFile);
 		setStylesheet(marsTimeLabel, cssFile);
 		
+		marsTimeIcon.getStyleClass().clear();
+		marsTimeIcon.getStyleClass().add(getClass().getResource(cssFile).toExternalForm());
+		
 		setStylesheet(lastSaveLabel, cssFile);
 		setStylesheet(cacheToggle, cssFile);
 		setStylesheet(minimapToggle, cssFile);
@@ -3128,6 +3120,7 @@ public class MainScene {
 		if (exitDialog == null || !exitDialog.isVisible()) {
 			isShowingDialog = true;
 			masterClock.setPaused(true, showPane);
+			timeline.pause();
 			if (showPane && !masterClock.isSavingSimulation())
 				startPausePopup();
 		}
@@ -3139,6 +3132,7 @@ public class MainScene {
 	public void unpauseSimulation() {
 		isShowingDialog = false;
 		masterClock.setPaused(false, true);
+		timeline.play();
 		stopPausePopup();
 	}
 
@@ -3195,6 +3189,7 @@ public class MainScene {
 		Simulation.instance().getSimExecutor().shutdownNow();
 		mainSceneExecutor.shutdownNow();
 		getDesktop().clearDesktop();
+		timeline.stop();
 		stage.close();
 	}
 

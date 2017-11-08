@@ -228,7 +228,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 			height = 450;
 
 
-		UnitDescriptionStage unitInfo = new UnitDescriptionStage(desktop);
+		UnitDescriptionStage unitInfo = new UnitDescriptionStage();//desktop);
 		BorderPane pane = (BorderPane) unitInfo.init(name, type, description);
 
 	   	Scene scene = new Scene(pane, 350, (int) height, javafx.scene.paint.Color.TRANSPARENT);

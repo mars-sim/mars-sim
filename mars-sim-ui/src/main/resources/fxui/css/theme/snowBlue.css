@@ -414,11 +414,23 @@
 	-fx-shape: " ";
 }
 
-#rich-green {
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+
+#earth-time-box {
+	-fx-padding: 4 0 0 0;
+	-fx-background-color: transparent;
+	-fx-text-fill: #065185;
+	-fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Monospaced";
+}
+
+
+#earth-time {
+	-jfx-default-color: #C6D9D9;
     -fx-background-insets: 0,0,0,0;
     -fx-background-radius: 2,2,2,2;
-    -fx-padding: 0 0 0 0;
+	-fx-background-color: #065185;    
+    -fx-padding: 4 0 0 0;
     -fx-text-fill: #065185;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
@@ -426,13 +438,13 @@
     -fx-font-family: "Monospaced";    
 }
 
-#rich-green Text {
+#earth-time Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
     -fx-stroke-width: 4;
     
 }
 
-#rich-red {
+#mars-time-box {
 	-fx-background-color: #C6D9D9;
     -fx-text-fill: #065185;
     -fx-font-size: 13px;
@@ -441,12 +453,19 @@
     -fx-font-family: "Monospaced";
 }
 
-#rich-red-button {
-	-fx-background-color: #C6D9D9;
+#mars-time-button {
+	-fx-background-color: transparent;
+	-fx-text-fill: #C6D9D9;
+	-fx-fill: #C6D9D9;
 	-fx-background-insets: 0 0 0 0;	
 }
 
-#rich-red-Label {
+#mars-time-icon {
+	-fx-background-color: transparent;
+	-fx-fill: #C6D9D9;
+}
+
+#mars-time-label {
 	-fx-background-color: #C6D9D9;
     -fx-background-radius: 4,4,4,4;	
 	-fx-background-insets: 4,0,4,0;
@@ -458,9 +477,13 @@
     -fx-font-family: "Monospaced";
 }
 
-#rich-red Text {
+#mars-time Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
     -fx-stroke-width: 4;    
+}
+
+#mars-time-label:hover {
+    -fx-font-weight: italic;
 }
 
 #button-orange {
@@ -479,22 +502,6 @@
     -fx-font-weight: bold;
 }
 
-#rich-red:hover {
-    -fx-font-weight: italic;
-}
-#rich-green:hover {
-    -fx-font-weight: italic;
-}
-
-#rich-date {
-	-jfx-default-color: #065185;
-	-fx-padding: 0 4 0 4;
-	-fx-background-color: #C6D9D9;
-	-fx-text-fill: #065185;
-	-fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-font-family: "Monospaced";
-}
 
 
 #save-label {
