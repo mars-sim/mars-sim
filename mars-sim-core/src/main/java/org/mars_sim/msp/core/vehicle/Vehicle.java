@@ -931,6 +931,16 @@ public abstract class Vehicle extends Unit implements Serializable,
 		return associatedSettlement;
 	}
 
+	@Override
+	public String getShortLocationName() {
+		return getLocationTag().getShortLocationName();
+	}
+
+	@Override
+	public String getLongLocationName() {
+		return getLocationTag().getLongLocationName();
+	}
+
     @Override
     public void destroy() {
         super.destroy();

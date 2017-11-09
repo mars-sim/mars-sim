@@ -41,6 +41,9 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
+
 /**
  * The HealthTabPanel is a tab panel for a person's health.
  */
@@ -72,7 +75,6 @@ extends TabPanel {
 	private HealthProblemTableModel healthProblemTableModel;
 	private RadiationTableModel radiationTableModel;
 	private JTable radiationTable, medicationTable, healthProblemTable;
-	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 
@@ -190,10 +192,11 @@ extends TabPanel {
 		centerContentPanel.add(radiationPanel, BorderLayout.CENTER);
 
 		// Prepare radiation label
-		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelRadiation.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.label"), JLabel.CENTER); //$NON-NLS-1$
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
-		radiationLabel.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
-
+		//radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
+		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.tooltip"), TooltipWay.down);
+			 
 
 		// Prepare radiation scroll panel
 		JScrollPane radiationScrollPanel = new JScrollPane();
@@ -205,10 +208,11 @@ extends TabPanel {
 		// Create radiation table
 		radiationTable = new ZebraJTable(radiationTableModel) {
 		    //2016-04-15 Implemented radiation table header tool tips
+/*			
 		    protected JTableHeader createDefaultTableHeader() {
 		        return new JTableHeader(columnModel) {
 		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
+		                //String tip = null;
 		                java.awt.Point p = e.getPoint();
 		                int index = columnModel.getColumnIndexAtX(p.x);
 		                if (index > -1) {
@@ -216,17 +220,18 @@ extends TabPanel {
 			                return radiationToolTips[realIndex];
 		            	}
 		                else {
-		                	return Msg.getString("TabPanelRadiation.tooltip");
+		                	return Msg.getString("TabPanelHealth.tooltip");
 		                }
 		            }
 		        };
 		    }
+*/		        
 		};
-		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 30));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
-		//radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+		//radiationTable.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
 		// 2015-06-08 Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
         //if (!MainScene.OS.equals("linux")) {
@@ -403,13 +408,9 @@ extends TabPanel {
 
 		private double dose[][];
 
-		//private BalloonToolTip balloonToolTip = new BalloonToolTip();
-
 		private RadiationTableModel(Person person) {
 			radiation = person.getPhysicalCondition().getRadiationExposure();
 			dose = radiation.getDose();
-
-			//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
 
 		}
 
@@ -440,16 +441,16 @@ extends TabPanel {
 
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) {
-			    return Msg.getString("TabPanelRadiation.column.interval"); //$NON-NLS-1$
+			    return Msg.getString("TabPanelHealth.column.interval"); //$NON-NLS-1$
 			}
 			else if (columnIndex == 1) {
-			    return Msg.getString("TabPanelRadiation.column.BFO"); //$NON-NLS-1$
+			    return Msg.getString("TabPanelHealth.column.BFO"); //$NON-NLS-1$
 			}
 			else if (columnIndex == 2) {
-			    return Msg.getString("TabPanelRadiation.column.ocular"); //$NON-NLS-1$
+			    return Msg.getString("TabPanelHealth.column.ocular"); //$NON-NLS-1$
 			}
 			else if (columnIndex == 3) {
-			    return Msg.getString("TabPanelRadiation.column.skin"); //$NON-NLS-1$
+			    return Msg.getString("TabPanelHealth.column.skin"); //$NON-NLS-1$
 			}
 			else {
 			    return null;

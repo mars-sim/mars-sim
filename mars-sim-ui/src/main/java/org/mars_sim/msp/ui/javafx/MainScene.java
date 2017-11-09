@@ -87,6 +87,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.ScrollEvent;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -3655,6 +3656,10 @@ public class MainScene {
 	public void setQuickToolTip(Node n, String s) {
 		Tooltip tt = new Tooltip(s);
 		tt.getStyleClass().add("ttip");
+		Tooltip.install(n, tt);
+		tt.setOnShowing(ev -> tt.setText(s));
+/*		
+		
 
 		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
@@ -3671,7 +3676,7 @@ public class MainScene {
 				tt.hide();
 			}
 		});
-
+*/
 	}
 
 	private float convertSlider2Volume(float y) {

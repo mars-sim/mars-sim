@@ -122,10 +122,14 @@ implements Serializable, Malfunctionable, Salvagable {
 		return getName();
 	}
 
+	@Override
+	public String getShortLocationName() {
+		return getLocationTag().getShortLocationName();
+	}
 
 	@Override
-	public String getLocationName() {
-		return getLocationTag().getLongLocationName();//getSettlementName();
+	public String getLongLocationName() {
+		return getLocationTag().getLongLocationName();
 	}
 	
 	@Override

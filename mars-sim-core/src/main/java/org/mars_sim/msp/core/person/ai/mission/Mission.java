@@ -60,10 +60,12 @@ implements Serializable {
 	public static String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction";
 	public static String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
 	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
-	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
+	public static String NOT_ENOUGH_RESOURCES = "Not enough resources";
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
 	public static String MEDICAL_EMERGENCY = "A member has a medical emergency";
-	
+	public static String NO_TRADING_SETTLEMENT = "No trading settlement";
+	public static String NO_GOOD_EVA_SUIT = "No good EVA suit";
+	public static String REQUEST_RESCUE = "Request rescue";	
 
 	/** The marginal factor for the amount of water to be brought during a mission. */
 	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle
@@ -135,7 +137,7 @@ implements Serializable {
 	    if (s != null) {
 	   		// Created mission starting event.
 	   		HistoricalEvent newEvent = new MissionHistoricalEvent(startingMember, this, 
-	   				s.getName(), EventType.MISSION_START);
+	   				s.getName(), this.getName(), EventType.MISSION_START);
 
 	   		Simulation.instance().getEventManager().registerNewEvent(newEvent);
  
@@ -238,7 +240,7 @@ implements Serializable {
 
 	        // Creating mission joining event.
             HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, 
-            		member.getSettlement().getName(), EventType.MISSION_JOINING);
+            		member.getSettlement().getName(), this.getName(), EventType.MISSION_JOINING);
             Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
             fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
@@ -282,7 +284,7 @@ implements Serializable {
             if (location == null)
             	location = member.getCoordinates().toString();
             Simulation.instance().getEventManager().registerNewEvent(new MissionHistoricalEvent(member,
-            		this, location, EventType.MISSION_FINISH));
+            		this, location, this.getName(), EventType.MISSION_FINISH));
             fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
         	if ((members.size() == 0) && !done) {
@@ -344,13 +346,6 @@ implements Serializable {
         return minMembers;
     }
 
-//	/**
-//	 * Gets the minimum number of people required for mission.
-//	 * @return minimum number of people
-//	 */
-//	public final int getMinPeople() {
-//		return minPeople;
-//	}
 
     /**
      * Sets the minimum number of members required for a mission.
@@ -361,14 +356,6 @@ implements Serializable {
         fireMissionUpdate(MissionEventType.MIN_MEMBERS_EVENT, minMembers);
     }
 
-//	/**
-//	 * Sets the minimum number of people required for a mission.
-//	 * @param minPeople minimum number of people
-//	 */
-//	protected final void setMinPeople(int minPeople) {
-//		this.minPeople = minPeople;
-//		fireMissionUpdate(MissionEventType.MIN_PEOPLE_EVENT, minPeople);
-//	}
 
     /**
      * Gets a collection of the members in the mission.
@@ -400,47 +387,6 @@ implements Serializable {
 		//return new ConcurrentLinkedQueue<Person>(people);
 	}
 
-//	/**
-//	 * Determines if a mission includes the given robot.
-//	 * @param robot to be checked
-//	 * @return true if robot is member of mission
-//	 */
-//	public final boolean hasRobot(Robot robot) {
-//		return robots.contains(robot);
-//	}
-
-//	/**
-//	 * Gets the number of robots in the mission.
-//	 * @return number of robots
-//	 */
-//	public final int getRobotsNumber() {
-//		return robots.size();
-//	}
-
-//	/**
-//	 * Gets the minimum number of robots required for mission.
-//	 * @return minimum number of robots
-//	 */
-//	public final int getMinRobots() {
-//		return minRobots;
-//	}
-
-//	/**
-//	 * Sets the minimum number of robots required for a mission.
-//	 * @param minRobots minimum robots of people
-//	 */
-//	protected final void setMinRobots(int minRobots) {
-//		this.minRobots = minRobots;
-//		fireMissionUpdate(MissionEventType.MIN_ROBOTS_EVENT, minRobots);
-//	}
-
-//	/**
-//	 * Gets a collection of the robots in the mission.
-//	 * @return collection of robots
-//	 */
-//	public final Collection<Robot> getRobots() {
-//		return new ConcurrentLinkedQueue<Robot>(robots);
-//	}
 
 	/**
 	 * Determines if mission is completed.
@@ -1081,7 +1027,7 @@ implements Serializable {
 		else {
 		    //throw new IllegalStateException(phase + " : No people or robots in the mission.");
 		    LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-		    		phase + " : No people or robots in the mission.", null);
+		    		"No people or robots in phase " + phase + " of mission " + this.toString(), null);
 		}
 
 	    return result;

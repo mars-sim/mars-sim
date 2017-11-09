@@ -153,8 +153,8 @@ public class ZebraJTable extends javax.swing.JTable {
     }
 
     public String getToolTipText(MouseEvent e) {
+		//TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelRadiation.tooltip"), TooltipWay.down);
 		return super.getToolTipText();
-
     }
 
     public int[] getSelectedRows() {

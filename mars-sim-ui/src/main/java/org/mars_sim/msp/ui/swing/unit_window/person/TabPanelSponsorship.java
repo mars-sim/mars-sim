@@ -25,6 +25,9 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
+
 /**
  * The TabPanelSponsorship is a tab panel for showing the Reporting Authority and mission objective of a settler.
  */
@@ -80,7 +83,8 @@ extends TabPanel {
 		sponsorTF.setColumns(16);
 		sponsorTF.setCaretPosition(0);
 		if (person.getReportingAuthority() != null) {
-		    sponsorTF.setToolTipText(person.getReportingAuthority().getToolTipStr());
+		    //sponsorTF.setToolTipText(person.getReportingAuthority().getToolTipStr());
+			TooltipManager.setTooltip (sponsorTF, person.getReportingAuthority().getToolTipStr(), TooltipWay.down);
 		}
 		//JLabel sponsorLabel = new JLabel(sponsor, JLabel.RIGHT);
 		infoPanel.add(sponsorTF);

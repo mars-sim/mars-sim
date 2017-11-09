@@ -19,6 +19,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
+
 import javax.swing.*;
 
 import java.awt.*;
@@ -133,7 +136,8 @@ implements ActionListener {
 		JButton centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
 		centerMapButton.addActionListener(this);
-		centerMapButton.setToolTipText(Msg.getString("TabPanelDeath.tooltip.centerMap")); //$NON-NLS-1$
+		TooltipManager.setTooltip (centerMapButton, Msg.getString("TabPanelDeath.tooltip.centerMap"), TooltipWay.down);
+		//centerMapButton.setToolTipText(Msg.getString("TabPanelDeath.tooltip.centerMap")); //$NON-NLS-1$
 		locationLabelPanel.add(centerMapButton);
 
 		// Prepare location label

@@ -283,41 +283,7 @@ implements UnitListener {
 
 		return hasVehicle();
 	}
-//	protected final boolean reserveVehicle(Robot robot) {
-//
-//		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
-//
-//		// Create list of best unreserved vehicles for the mission.
-//		Iterator<Vehicle> i = getAvailableVehicles(robot.getSettlement())
-//				.iterator();
-//		while (i.hasNext()) {
-//			Vehicle availableVehicle = i.next();
-//			if (bestVehicles.size() > 0) {
-//				int comparison = compareVehicles(availableVehicle,
-//						(Vehicle) bestVehicles.toArray()[0]);
-//				if (comparison == 0) {
-//					bestVehicles.add(availableVehicle);
-//				}
-//				else if (comparison == 1) {
-//					bestVehicles.clear();
-//					bestVehicles.add(availableVehicle);
-//				}
-//			} else
-//				bestVehicles.add(availableVehicle);
-//		}
-//
-//		// Randomly select from the best vehicles.
-//		if (bestVehicles.size() > 0) {
-//			int bestVehicleIndex = RandomUtil
-//					.getRandomInt(bestVehicles.size() - 1);
-//			try {
-//				setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
-//			} catch (Exception e) {
-//			}
-//		}
-//
-//		return hasVehicle();
-//	}
+
 	/**
 	 * Gets a collection of available vehicles at a settlement that are usable for this mission.
 	 * @param settlement the settlement to find vehicles.
@@ -383,7 +349,7 @@ implements UnitListener {
 */
 			}
 
-			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES_TO_CONTINUE)
+			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES)
 					|| reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
 					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
 					|| reason.equals(Mission.MEDICAL_EMERGENCY)) {
@@ -395,10 +361,10 @@ implements UnitListener {
 						//if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
 						if (!vehicle.isBeingTowed()) {
-							setEmergencyBeacon(startingMember, vehicle, true);
+							setEmergencyBeacon(startingMember, vehicle, true, reason);
 							logger.warning("[" + startingMember.getLocationTag().getShortLocationName() + "] " 
-							+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
-							+ reason);
+									+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
+									+ reason);
 							//don't end the mission yet
 						}
 
@@ -869,6 +835,20 @@ implements UnitListener {
 		
 		if ((member instanceof Person && ((Person)member).getPhysicalCondition().hasSeriousMedicalProblems()) || hasEmergencyAllCrew()) {
 			hasEmergency = true;	
+			// Creating emergency destination mission event.
+			HistoricalEvent newEvent = new MissionHistoricalEvent(
+					member, this, member.getLocationTag().getLongLocationName(), 
+					Mission.MEDICAL_EMERGENCY,
+					EventType.MISSION_MEDICAL_EMERGENCY);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		}
+		else {
+			// Creating emergency destination mission event.
+			HistoricalEvent newEvent = new MissionHistoricalEvent(
+					member, this, member.getLocationTag().getLongLocationName(), 
+					Mission.NOT_ENOUGH_RESOURCES,
+					EventType.MISSION_NOT_ENOUGH_RESOURCES);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
 		
 		// Note : hasEnoughResourcesForRemainingMission() is false
@@ -903,12 +883,23 @@ implements UnitListener {
 								+ " km away from its origin, is heading toward to the closet settlement "
 								+ newDestination.getName(), null);
 	
+						if (hasEmergency) {
 						// Creating emergency destination mission event.
-						HistoricalEvent newEvent = new MissionHistoricalEvent(
-								member, this, vehicle.getCoordinates().toString(), 
+							HistoricalEvent newEvent = new MissionHistoricalEvent(
+								member, this, member.getLocationTag().getLongLocationName(), 
+								Mission.MEDICAL_EMERGENCY,
 								EventType.MISSION_EMERGENCY_DESTINATION);
-						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-	
+							Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						}
+						else {
+							// Creating emergency destination mission event.
+							HistoricalEvent newEvent = new MissionHistoricalEvent(
+								member, this, member.getLocationTag().getLongLocationName(), 
+								Mission.NOT_ENOUGH_RESOURCES,
+								EventType.MISSION_EMERGENCY_DESTINATION);
+							Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						}
+						
 						// Set the new destination as the travel mission's next and final navpoint.
 						clearRemainingNavpoints();
 						addNavpoint(new NavPoint(newDestination.getCoordinates(),
@@ -919,13 +910,13 @@ implements UnitListener {
 						updateTravelDestination();
 					}
 					// else {} // heading toward the same destination next.
-	
+
 				}
 				else { // can't go anywhere, turn on beacon next
 					if (hasEmergency)
 						endMission(MEDICAL_EMERGENCY);
 					else
-						endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
+						endMission(NOT_ENOUGH_RESOURCES);
 				}
 	
 			}
@@ -952,18 +943,23 @@ implements UnitListener {
      * @param vehicle the vehicle on the mission.
      * @param beaconOn true if beacon is on, false if not.
      */
-	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn) {
+	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
 			// Creating mission emergency beacon event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
-					this, vehicle.getCoordinates().toString(), EventType.MISSION_EMERGENCY_BEACON_ON);
+					this, 
+					vehicle.getLocationTag().getLongLocationName(), 
+					reason,
+					EventType.MISSION_EMERGENCY_BEACON_ON);
 
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " + member + " activated emergency beacon on " + vehicle.getName() + ".");
+			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " 
+					+ member + " activated emergency beacon on " + vehicle.getName() + ".");
 		}
 		else {
-			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " + member + " deactivated emergency beacon on " + vehicle.getName() + ".");
+			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " 
+					+ member + " deactivated emergency beacon on " + vehicle.getName() + ".");
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);

@@ -210,7 +210,7 @@ implements Serializable {
             if (!hasSuit) {
 	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	    				"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
-	    				+ " does not have an EVA suit.", null);
+	    				+ " cannot find a working EVA suit.", null);
 	    		
             	person.getMind().getTaskManager().clearTask();
             	person.getMind().getTaskManager().getNewTask();
@@ -754,21 +754,22 @@ implements Serializable {
         	// Check if EVA suit is available.
         	if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
         	
-		    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-	                    " since no working EVA suit is available.";
-	    		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
+		    	//String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
+	            //        " since no working EVA suit is available.";
+	    		//LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
 	    		// TODO: how to have someone deliver him a working EVASuit
-	
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+						"[" + person.getLocationTag().getShortLocationName() 
+						+ "] " + person + " can't find a working EVA suit and is awaiting the response for rescue."
+						, null);
+
 	    		Vehicle v = person.getVehicle();
 	    		Mission m = person.getMind().getMission();
 	    		//Mission m = missionManager.getMission(person);
 	    		
 	    		if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
 					// Set the emergency beacon on since no EVA suit is available
-					((VehicleMission)m).setEmergencyBeacon(person, v, true);
-						LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-								"[" + person + "] doesn't have a working EVA suit, turns on " + v + "'s emergency beacon, awaiting the response for rescue."
-								, null);
+					((VehicleMission)m).setEmergencyBeacon(person, v, true, Mission.NO_GOOD_EVA_SUIT);
 	    		}
 	    		//else
 	    		//	person.getMind().getNewAction(true, true);
@@ -903,7 +904,11 @@ implements Serializable {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace(System.err);
+                //e.printStackTrace(System.err);
+        		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+            			"[" + p.getLocationTag().getShortLocationName() + "] " 
+            				+ p + " detects malfunctions when examing " 
+            					+ suit.getName() + e.getMessage(), null);
             }
         }
         
@@ -965,7 +970,7 @@ implements Serializable {
      */
     private void loadEVASuit(EVASuit suit) {
 
-    	if (person != null) {
+    	//if (person != null) {
 
             Inventory suitInv = suit.getInventory();
             Inventory entityInv = person.getContainerUnit().getInventory();
@@ -985,7 +990,9 @@ implements Serializable {
             }
             catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
-        				person + " can't feed oxygen to an EVA suit. " + e.getMessage(), null);
+            			"[" + person.getLocationTag().getShortLocationName() + "] " 
+            				+ person + " does NOT have enough oxygen when preparing " 
+            					+ suit.getName() + e.getMessage(), null);
             }
 
             // Fill water in suit from entity's inventory.
@@ -1005,12 +1012,13 @@ implements Serializable {
             }
             catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
-        				person + " can't feed water to an EVA suit. " + e.getMessage(), null);
+        			"[" + person.getLocationTag().getShortLocationName() + "] " 
+        				+ person + " does NOT have enough water when preparing " 
+        					+ suit.getName() + e.getMessage(), null);
             }
-    	}
-    	else if (robot != null) {
-
-    	}
+    	//}
+    	//else if (robot != null) {
+    	//}
 
     }
 

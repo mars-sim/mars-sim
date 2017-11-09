@@ -69,8 +69,8 @@ implements Serializable {
 	/** amount of crop tissue culture needed for each square meter of growing area */
     public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
-	private static final int NUM_INSPECTIONS = 5;
-	private static final int NUM_CLEANING = 5;
+	private static final int NUM_INSPECTIONS = 2;
+	private static final int NUM_CLEANING = 2;
 
 	
 	/** The list of crop types from CropConfig. */
@@ -228,6 +228,7 @@ implements Serializable {
 	 * @param isStartup - true if it is called at the start of the sim
 	 * @return {@link CropType}
 	 */
+  	// TODO: need to specify the person who is doing it using the work time in the lab
 	public CropType pickACrop(boolean isStartup, boolean noCorn) {
 		CropType ct = null;
 		boolean flag = true;
@@ -539,7 +540,7 @@ implements Serializable {
 	    		available = true;
 	    		percent = 100D ;
 	    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	    				"[" + settlement + "]" + 
+	    				"[" + settlement + "] " + 
 	    				Math.round(requestedAmount*100.0)/100.0 + " kg " +
 	    				tissueName + " is fully available." , null);
 	    	}
@@ -929,6 +930,8 @@ implements Serializable {
         		}
           	}
           	
+          	
+          	// TODO: need to specify the person who is doing it using the work time in the lab
             //System.out.println("Farming timePassing() : calling plantACrop()");
           	Crop crop = plantACrop(cropType, false, 0);
             crops.add(crop);
@@ -1565,12 +1568,20 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
-        //LED_Item = null;
-    	//HPS_Item = null;
+        plantedCrops = null;
+
+        cleaningMap = null; 
+        inspectionMap = null;
+        inspectionList = null;
+        cleaningList = null;
+
+        cropDailyWaterUsage = null;
+        cropDailyO2Generated = null;
+        cropDailyCO2Consumed = null;
 
         marsClock = null;
         inv = null;
-		//b_inv = null;
+        lab = null;
         settlement = null;
         building = null;
 
@@ -1595,7 +1606,6 @@ implements Serializable {
 
         cropTypeList = null;
 
-        plantedCrops = null;
     }
 
 }

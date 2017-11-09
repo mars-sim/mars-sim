@@ -130,7 +130,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 			HistoricalEventCategory category = event.getCategory();
 
 			if (category.equals(HistoricalEventCategory.MALFUNCTION) && displayMalfunction
-				&& (event.getType() == EventType.MALFUNCTION_UNFIXED
+				&& (event.getType() == EventType.MALFUNCTION_OCCURRED
 					|| event.getType() == EventType.MALFUNCTION_FIXED)) {
 				cachedEvents.add(event);
 			}
@@ -393,7 +393,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
 
 					        // Only display notification window when malfunction has occurred, not when fixed.
-					        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
+					        if (event.getType() == EventType.MALFUNCTION_OCCURRED) {
 					            willNotify = true;
 					        }
 					        

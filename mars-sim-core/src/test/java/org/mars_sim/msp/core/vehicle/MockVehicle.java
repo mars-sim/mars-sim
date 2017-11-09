@@ -29,7 +29,7 @@ public class MockVehicle extends Vehicle {
 	}
 	
 	@Override
-	public String getLocationName() {
+	public String getShortLocationName() {
 		return getLocationTag().getSettlementName();
 	}
 

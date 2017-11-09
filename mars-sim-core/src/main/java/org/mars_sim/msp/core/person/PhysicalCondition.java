@@ -378,17 +378,14 @@ public class PhysicalCondition implements Serializable {
 				Iterator<HealthProblem> hp = currentProblems.iterator();
 				while (hp.hasNext()) {
 					HealthProblem problem = hp.next();
-
 					// Advance each problem, they may change into a worse problem.
 					// If the current is completed or a new problem exists then
 					// remove this one.
-					Complaint next = problem.timePassing(time, this);
+					Complaint ct = problem.timePassing(time, this);
 
-					if (problem.isCured() || (next != null)) {
+					if (problem.isCured() || (ct != null)) {
 						Complaint c = problem.getIllness();
-						problems.remove(c);
 
-						// 2017-01-19 Added resetting isCollapsed and isStressedOut
 						if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
 							isCollapsed = false;
 
@@ -403,11 +400,14 @@ public class PhysicalCondition implements Serializable {
 
 						else if (c.getType() == ComplaintType.RADIATION_SICKNESS)
 							isRadiationPoisoned = false;
+						
+						problems.remove(c);
+
 					}
 
 					// If a new problem, check it doesn't exist already
-					if (next != null) {
-						newProblems.add(next);
+					if (ct != null) {
+						newProblems.add(ct);
 					}
 				}
 
@@ -460,7 +460,7 @@ public class PhysicalCondition implements Serializable {
 			// reduceEnergy(time);
 
 			checkStarvation(hunger);
-			checkHydration(thirst);
+			checkDehydration(thirst);
 			// System.out.println("PhysicalCondition : hunger : "+
 			// Math.round(hunger*10.0)/10.0);
 
@@ -716,11 +716,11 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is starving or no longer starving
+	 * Checks if a person is dehydrated
 	 * 
 	 * @param hunger
 	 */
-	public void checkHydration(double thirst) {
+	public void checkDehydration(double thirst) {
 
 		if (dehydration == null)
 			dehydration = getMedicalManager().getDehydration();

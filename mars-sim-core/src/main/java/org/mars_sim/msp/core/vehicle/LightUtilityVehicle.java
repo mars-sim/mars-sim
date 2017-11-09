@@ -172,11 +172,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return getName();
 	}
 
-	@Override
-	public String getLocationName() {
-		return getLocationTag().getSettlementName();
-	}
-
     @Override
     public void destroy() {
         super.destroy();

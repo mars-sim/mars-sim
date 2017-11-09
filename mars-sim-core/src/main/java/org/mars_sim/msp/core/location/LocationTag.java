@@ -52,13 +52,13 @@ public class LocationTag implements LocationState, Serializable {
 			if (p.getSettlement() != null)
 				return p.getSettlement().getName();
 			else
-				return p.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
+				return p.getCoordinates().getFormattedString();	
 		}
 		else if (e != null) {
 			if (e.getSettlement() != null)
 				return e.getSettlement().getName();
 			else
-				return e.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
+				return e.getCoordinates().getFormattedString();	
 		}
 		else if (r != null) {
 			if (r.getSettlement() != null)
@@ -86,15 +86,13 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getShortLocationName() {
 		if (p != null) {
-			if (p.getVehicle() != null)
+			if (p.getSettlement() != null)
+				return p.getSettlement().getName();
+			else if (p.getVehicle() != null)
 				return p.getVehicle().getName();
-			else {
-				if (p.getSettlement() != null) {
-					return p.getSettlement().getName();
-				}
-				else
-					return p.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
-			}
+			else
+				return p.getCoordinates().getFormattedString();
+			
 		}
 		
 		else if (e != null) {
@@ -102,22 +100,18 @@ public class LocationTag implements LocationState, Serializable {
 				return e.getContainerUnit().getName();
 			else if (e.getTopContainerUnit() != null)
 				return e.getTopContainerUnit().getName();
-			//if (e.getSettlement() != null)
-			//	return e.getSettlement().getName();
 			else
-				return e.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
+				return e.getCoordinates().getFormattedString();	
 		}
 		
 		else if (r != null) {
-			if (r.getVehicle() != null)
+			if (r.getSettlement() != null)
+				return r.getSettlement().getName();
+			else if (r.getVehicle() != null)
 				return r.getVehicle().getName();
-			else {
-				if (r.getSettlement() != null) {
-					return r.getSettlement().getName();
-				}
-				else
-					return r.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
-			}
+			else
+				return r.getCoordinates().getFormattedString();
+	
 		}
 		else if (b != null) {
 			return b.getNickName() + " in " + b.getSettlement().getName();
@@ -125,15 +119,13 @@ public class LocationTag implements LocationState, Serializable {
 		
 		else if (v != null) {
 			if (v.getSettlement() != null) {
-				if (v.getBuildingLocation() != null) {
-					return v.getBuildingLocation().getNickName() + " in " + v.getSettlement().getName();
-				}
-				else {
+				if (v.getBuildingLocation() != null)
+					return v.getBuildingLocation().getNickName();
+				else
 					return v.getSettlement().getName();
-				}
 			}
 			else
-				return v.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
+				return v.getCoordinates().getFormattedString();	
 		}
 		
 		return UNKNOWN;
@@ -145,7 +137,15 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getLongLocationName() {
 		if (p != null) {
-			if (p.getVehicle() != null) {
+			if (p.getSettlement() != null) {
+				if (p.getBuildingLocation() != null) {
+					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
+				}
+				else {
+					return p.getSettlement().getName();
+				}
+			}
+			else if (p.getVehicle() != null) {
 				if (p.getVehicle().getBuildingLocation() != null) {
 					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
 				}
@@ -153,19 +153,8 @@ public class LocationTag implements LocationState, Serializable {
 					return p.getVehicle().getName() + " at " + p.getCoordinates().getFormattedString();
 				}
 			}
- 
-			else {
-				if (p.getSettlement() != null) {
-					if (p.getBuildingLocation() != null) {
-						return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
-					}
-					else {
-						return p.getSettlement().getName();
-					}
-				}
-				else
-					return p.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
-			}
+			else
+				return p.getCoordinates().getFormattedString(); 
 		}
 		
 		else if (e != null) {
@@ -173,27 +162,24 @@ public class LocationTag implements LocationState, Serializable {
 				return e.getContainerUnit().getName();
 			else if (e.getTopContainerUnit() != null)
 				return e.getTopContainerUnit().getName();
-			//if (e.getSettlement() != null)
-			//	return e.getSettlement().getName();
 			else
-				return e.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;		
+				return e.getCoordinates().getFormattedString();	
 		}
 		
 		else if (r != null) {
-			if (r.getVehicle() != null)
-				return r.getVehicle().getName();
-			else {
-				if (r.getSettlement() != null) {
-					if (r.getBuildingLocation() != null) {
-						return r.getBuildingLocation().getNickName() + " in " + r.getSettlement().getName();
-					}
-					else {
-						return r.getSettlement().getName();
-					}
+			if (r.getSettlement() != null) {
+				if (r.getBuildingLocation() != null) {
+					return r.getBuildingLocation().getNickName() + " in " + r.getSettlement().getName();
 				}
-				else
-					return r.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
+				else {
+					return r.getSettlement().getName();
+				}
 			}
+			else if (r.getVehicle() != null)
+				return r.getVehicle().getName();
+			else
+				return p.getCoordinates().getFormattedString(); 
+			
 		}
 		else if (b != null) {
 			return b.getNickName() + " in " + b.getSettlement().getName();
@@ -209,7 +195,7 @@ public class LocationTag implements LocationState, Serializable {
 				}
 			}
 			else
-				return v.getCoordinates().getFormattedString();//OUTSIDE_ON_MARS;	
+				return v.getCoordinates().getFormattedString();
 		}
 		
 		return UNKNOWN;
@@ -242,5 +228,13 @@ public class LocationTag implements LocationState, Serializable {
 	}
 	
 
+	public void destroy() {
+		unit = null;
+		p = null;
+		r = null;
+		e = null;
+		b = null;
+		v = null;
+	}
 
 }

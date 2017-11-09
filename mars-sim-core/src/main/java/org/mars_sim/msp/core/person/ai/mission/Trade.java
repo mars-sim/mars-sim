@@ -113,9 +113,10 @@ implements Serializable {
         // Use RoverMission constructor.
         super(DEFAULT_DESCRIPTION, startingMember);
 
+        Settlement s = startingMember.getSettlement();
         // Set the mission capacity.
         setMissionCapacity(MAX_MEMBERS);
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingMember.getSettlement());
+        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
         if (availableSuitNum < getMissionCapacity()) {
             setMissionCapacity(availableSuitNum);
         }
@@ -123,14 +124,14 @@ implements Serializable {
         outbound = true;
         doNegotiation = true;
 
-        if (!isDone()) {
+        if (!isDone() && s != null) {
 
             // Initialize data members
-            setStartingSettlement(startingMember.getSettlement());
+            setStartingSettlement(s);
 
             // Get trading settlement
-            tradingSettlement = TRADE_SETTLEMENT_CACHE.get(getStartingSettlement());
-            if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
+            tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
+            if ((tradingSettlement != null) && (tradingSettlement != s)) {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
                 setDescription(Msg.getString("Mission.description.trade.detail",
@@ -141,17 +142,17 @@ implements Serializable {
                 TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
             }
             else {
-                endMission("Could not determine trading settlement.");
+                endMission(Mission.NO_TRADING_SETTLEMENT);
             }
 
             if (!isDone()) {
                 // Get the credit that the starting settlement has with the destination settlement.
                 CreditManager creditManager = Simulation.instance().getCreditManager();
-                double credit = creditManager.getCredit(getStartingSettlement(), tradingSettlement);
+                double credit = creditManager.getCredit(s, tradingSettlement);
 
                 if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
                     // Determine desired buy load,
-                    desiredBuyLoad = TradeUtil.getDesiredBuyLoad(getStartingSettlement(), getRover(), tradingSettlement);
+                    desiredBuyLoad = TradeUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
                 }
                 else {
                     // Cannot buy from settlement due to credit limit.
@@ -160,7 +161,7 @@ implements Serializable {
 
                 if (credit < TradeUtil.SELL_CREDIT_LIMIT) {
                     // Determine sell load.
-                    sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(), getRover(), tradingSettlement);
+                    sellLoad = TradeUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
                 }
                 else {
                     // Will not sell to settlement due to credit limit.
@@ -186,254 +187,16 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingMember != null && getRover() != null) {
-                logger.info(startingMember.getName() + " starting Trade mission on " + getRover().getName());
+                logger.info("[" + startingMember.getLocationTag().getShortLocationName() + "] " +
+                		startingMember.getName() + " starting Trade mission on " + getRover().getName());
             }
         }
     }
 
-    /*
-	public Trade(Person startingPerson) {
-        // Use RoverMission constructor.
-        super(DEFAULT_DESCRIPTION, startingPerson);
-
-        // Set the mission capacity.
-        setMissionCapacity(MAX_MEMBERS);
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
-        if (availableSuitNum < getMissionCapacity()) {
-            setMissionCapacity(availableSuitNum);
-        }
-
-        outbound = true;
-        doNegotiation = true;
-
-        if (!isDone()) {
-
-            // Initialize data members
-            setStartingSettlement(startingPerson.getSettlement());
-
-            // Get trading settlement
-            tradingSettlement = TRADE_SETTLEMENT_CACHE.get(getStartingSettlement());
-            if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
-                addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
-                        tradingSettlement.getName()));
-                setDescription(Msg.getString("Mission.description.trade.detail",
-                        tradingSettlement.getName())); //$NON-NLS-1$
-                TRADE_PROFIT_CACHE.remove(getStartingSettlement());
-                TRADE_PROFIT_CACHE.remove(tradingSettlement);
-                TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
-                TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
-            } else {
-                endMission("Could not determine trading settlement.");
-            }
-
-            if (!isDone()) {
-                // Get the credit that the starting settlement has with the destination settlement.
-                CreditManager creditManager = Simulation.instance().getCreditManager();
-                double credit = creditManager.getCredit(getStartingSettlement(), tradingSettlement);
-
-                if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
-                    // Determine desired buy load,
-                    desiredBuyLoad = TradeUtil.getDesiredBuyLoad(getStartingSettlement(), getRover(), tradingSettlement);
-                }
-                else {
-                    // Cannot buy from settlement due to credit limit.
-                    desiredBuyLoad = new HashMap<Good, Integer>(0);
-                }
-
-                if (credit < TradeUtil.SELL_CREDIT_LIMIT) {
-                    // Determine sell load.
-                    sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(), getRover(), tradingSettlement);
-                }
-                else {
-                    // Will not sell to settlement due to credit limit.
-                    sellLoad = new HashMap<Good, Integer>(0);
-                }
-
-                // Determine desired trade profit.
-                desiredProfit = estimateTradeProfit(desiredBuyLoad);
-            }
-
-            // Recruit additional people to mission.
-            if (!isDone()) {
-                recruitPeopleForMission(startingPerson);
-            }
-        }
-
-        // Add trade mission phases.
-        addPhase(TRADE_DISEMBARKING);
-        addPhase(TRADE_NEGOTIATING);
-        addPhase(UNLOAD_GOODS);
-        addPhase(LOAD_GOODS);
-        addPhase(TRADE_EMBARKING);
-
-        // Set initial phase
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
-        if (logger.isLoggable(Level.INFO)) {
-            if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
-            }
-        }
-    }
-
-    public Trade(Robot robot) {
-        // Use RoverMission constructor.
-        super(DEFAULT_DESCRIPTION, robot);
-
-        // Set the mission capacity.
-        setMissionCapacity(MAX_MEMBERS);
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(robot.getSettlement());
-        if (availableSuitNum < getMissionCapacity()) {
-            setMissionCapacity(availableSuitNum);
-        }
-
-        outbound = true;
-        doNegotiation = true;
-
-        if (!isDone()) {
-
-            // Initialize data members
-            setStartingSettlement(robot.getSettlement());
-
-            // Get trading settlement
-            tradingSettlement = TRADE_SETTLEMENT_CACHE.get(getStartingSettlement());
-            if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
-                addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
-                        tradingSettlement.getName()));
-                setDescription(Msg.getString("Mission.description.trade.detail",
-                        tradingSettlement.getName())); //$NON-NLS-1$
-                TRADE_PROFIT_CACHE.remove(getStartingSettlement());
-                TRADE_PROFIT_CACHE.remove(tradingSettlement);
-                TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
-                TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
-            } else {
-                endMission("Could not determine trading settlement.");
-            }
-
-            if (!isDone()) {
-                // Get the credit that the starting settlement has with the destination settlement.
-                CreditManager creditManager = Simulation.instance().getCreditManager();
-                double credit = creditManager.getCredit(getStartingSettlement(), tradingSettlement);
-
-                if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
-                    // Determine desired buy load,
-                    desiredBuyLoad = TradeUtil.getDesiredBuyLoad(getStartingSettlement(), getRover(), tradingSettlement);
-                }
-                else {
-                    // Cannot buy from settlement due to credit limit.
-                    desiredBuyLoad = new HashMap<Good, Integer>(0);
-                }
-
-                if (credit < TradeUtil.SELL_CREDIT_LIMIT) {
-                    // Determine sell load.
-                    sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(), getRover(), tradingSettlement);
-                }
-                else {
-                    // Will not sell to settlement due to credit limit.
-                    sellLoad = new HashMap<Good, Integer>(0);
-                }
-
-                // Determine desired trade profit.
-                desiredProfit = estimateTradeProfit(desiredBuyLoad);
-            }
-
-            // Recruit additional people to mission.
-
-            // TODO: Tentatively, robot may go on solo delivery mission. May change later
-
-            //if (!isDone()) {
-            //    recruitPeopleForMission(robot);
-            //}
-        }
-
-        // Add trade mission phases.
-        addPhase(TRADE_DISEMBARKING);
-        addPhase(TRADE_NEGOTIATING);
-        addPhase(UNLOAD_GOODS);
-        addPhase(LOAD_GOODS);
-        addPhase(TRADE_EMBARKING);
-
-        // Set initial phase
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
-        if (logger.isLoggable(Level.INFO)) {
-            if (robot != null && getRover() != null) {
-                logger.info(robot.getName() + " starting Trade mission on " + getRover().getName());
-            }
-        }
-    }
-    */
-    /**
-     * Constructor with explicit data.
-     * @param members collection of mission members.
-     * @param startingSettlement the starting settlement.
-     * @param tradingSettlement the trading settlement.
-     * @param rover the rover to use.
-     * @param description the mission's description.
-     * @param sellGoods map of mission sell goods and integer amounts.
-     * @param buyGoods map of mission buy goods and integer amounts
-
-    public Trade(Collection<Person> members, Settlement startingSettlement, Settlement tradingSettlement,
-            Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
-        // Use RoverMission constructor.
-        super(description, (Person) members.toArray()[0], 1, rover);
-
-        outbound = true;
-        doNegotiation = false;
-
-        // Initialize data members
-        setStartingSettlement(startingSettlement);
-
-        // Sets the mission capacity.
-        setMissionCapacity(MAX_MEMBERS);
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-        if (availableSuitNum < getMissionCapacity()) {
-            setMissionCapacity(availableSuitNum);
-        }
-
-        // Set mission destination.
-        this.tradingSettlement = tradingSettlement;
-        addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
-                tradingSettlement.getName()));
-
-        // Add mission members.
-        Iterator<Person> i = members.iterator();
-        while (i.hasNext()) {
-            i.next().getMind().setMission(this);
-        }
-
-        // Set trade goods.
-        sellLoad = sellGoods;
-        buyLoad = buyGoods;
-        desiredBuyLoad = new HashMap<Good, Integer>(buyGoods);
-        profit = estimateTradeProfit(buyLoad);
-        desiredProfit = profit;
-
-        // Add trade mission phases.
-        addPhase(TRADE_DISEMBARKING);
-        addPhase(TRADE_NEGOTIATING);
-        addPhase(UNLOAD_GOODS);
-        addPhase(LOAD_GOODS);
-        addPhase(TRADE_EMBARKING);
-
-        // Set initial phase
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
-        if (logger.isLoggable(Level.INFO)) {
-            Person startingPerson = (Person) members.toArray()[0];
-            if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
-            }
-        }
-    }
-    */
+  
     public Trade(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
             Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
         // Use RoverMission constructor.
@@ -497,7 +260,8 @@ implements Serializable {
         if (logger.isLoggable(Level.INFO)) {
             MissionMember startingMember = (MissionMember) members.toArray()[0];
             if (startingMember != null && getRover() != null) {
-                logger.info(startingMember.getName() + " starting Trade mission on " + getRover().getName());
+                logger.info("[" + startingMember.getLocationTag().getShortLocationName() + "] " +
+                		startingMember.getName() + " starting Trade mission on " + getRover().getName());
             }
         }
     }
@@ -611,8 +375,9 @@ implements Serializable {
                         assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
                     }
                     else {
-                        logger.severe(person.getName() + " is unable to walk to building " + destinationBuilding 
-                        		+ " at " + tradingSettlement);
+                        logger.severe("[" + person.getLocationTag().getShortLocationName() + "] " +
+                        			person.getName() + " is unable to walk to building " + destinationBuilding);
+                        		//+ " at " + tradingSettlement);
                     }
                 }
                 else if (member instanceof Robot) {
@@ -621,8 +386,9 @@ implements Serializable {
                         assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
                     }
                     else {
-                        logger.severe(robot.getName() + " is unable to walk to building " + destinationBuilding
-                        		+ " at " + tradingSettlement);
+                        logger.severe("[" + robot.getLocationTag().getShortLocationName() + "] " +
+                        		robot.getName() + " is unable to walk to building " + destinationBuilding);
+                        		//+ " at " + tradingSettlement);
                     }
                 }
             }
@@ -824,37 +590,7 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
-//    private void performUnloadGoodsPhase(Robot robot) {
-//
-//        // Unload towed vehicle (if necessary).
-//        unloadTowedVehicle();
-//
-//        // Unload rover if necessary.
-//        boolean roverUnloaded = getRover().getSettlementInventory().getTotalInventoryMass(false) == 0D;
-//        if (!roverUnloaded) {
-//            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//                // Random chance of having robot unload (this allows robot to do other things sometimes)
-//                if (RandomUtil.lessThanRandPercent(50)) {
-//                    if (isRoverInAGarage()) {
-//                        assignTask(robot, new UnloadVehicleGarage(robot, getRover()));
-//                    }
-//                    else {
-//                        // Check if it is day time.
-//                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-//                        if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) ||
-//                                surface.inDarkPolarRegion(robot.getCoordinates())) {
-//                            assignTask(robot, new UnloadVehicleEVA(robot, getRover()));
-//                        }
-//                    }
-//
-//                    return;
-//                }
-//            }
-//        }
-//        else {
-//            setPhaseEnded(true);
-//        }
-//    }
+
     /**
      * Performs the load goods phase.
      * @param member the mission member performing the phase.
@@ -905,43 +641,7 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
-//    private void performLoadGoodsPhase(Robot robot) {
-//
-//        if (!isDone()) {
-//
-//            // Load towed vehicle (if necessary).
-//            loadTowedVehicle();
-//        }
-//
-//        if (!isDone() && !isVehicleLoaded()) {
-//
-//            // Check if vehicle can hold enough supplies for mission.
-//            if (isVehicleLoadable()) {
-//                if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//                    // Random chance of having robot load (this allows robot to do other things sometimes)
-//                    if (RandomUtil.lessThanRandPercent(50)) {
-//                        if (isRoverInAGarage()) {
-//                            assignTask(robot, new LoadVehicleGarage(robot, getVehicle(), getRequiredResourcesToLoad(),
-//                                    getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-//                        }
-//                        else {
-//                            // Check if it is day time.
-//                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-//                            if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) ||
-//                                    surface.inDarkPolarRegion(robot.getCoordinates())) {
-//                                assignTask(robot, new LoadVehicleEVA(robot, getVehicle(), getRequiredResourcesToLoad(),
-//                                        getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-//                            }
-//                        }
-//                    }
-//                }
-//            } else {
-//                endMission("Vehicle is not loadable (RoverMission).");
-//            }
-//        } else {
-//            setPhaseEnded(true);
-//        }
-//    }
+
     /**
      * Unload any towed vehicles.
      */
@@ -1044,56 +744,7 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
-//    private void performTradeEmbarkingPhase(Robot robot) {
-//
-//        // If robot is not aboard the rover, board rover.
-//        if (!isDone() && robot.getLocationSituation() != LocationSituation.IN_VEHICLE &&
-//                robot.getLocationSituation() != LocationSituation.BURIED) {
-//
-//            // Move robot to random location within rover.
-//            Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-//            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-//                    vehicleLoc.getY(), getVehicle());
-//            if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-//                assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
-//            }
-//            else {
-//                logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
-//                endMission(robot.getName() + " unable to enter rover " + getVehicle());
-//            }
-//
-//            if (!isDone() && isRoverInAGarage()) {
-//
-//                // Store one EVA suit for robot (if possible).
-//                if (tradingSettlement.getSettlementInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
-//                    EVASuit suit = (EVASuit) tradingSettlement.getSettlementInventory().findUnitOfClass(EVASuit.class);
-//                    if (getVehicle().getSettlementInventory().canStoreUnit(suit, false)) {
-//                        tradingSettlement.getSettlementInventory().retrieveUnit(suit);
-//                        getVehicle().getSettlementInventory().storeUnit(suit);
-//                    }
-//                    else {
-//                        endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
-//                        return;
-//                    }
-//                }
-//            }
-//        }
-//
-//        // If rover is loaded and everyone is aboard, embark from settlement.
-//        if (!isDone() && isEveryoneInRover()) {
-//
-//            // Remove from garage if in garage.
-//            Building garageBuilding = BuildingManager.getBuilding(getVehicle());
-//            if (garageBuilding != null) {
-//                VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
-//                garage.removeVehicle(getVehicle());
-//            }
-//
-//            // Embark from settlement
-//            tradingSettlement.getSettlementInventory().retrieveUnit(getVehicle());
-//            setPhaseEnded(true);
-//        }
-//    }
+
     @Override
     protected void performEmbarkFromSettlementPhase(MissionMember member) {
         super.performEmbarkFromSettlementPhase(member);
@@ -1113,24 +764,6 @@ implements Serializable {
             }
         }
     }
-//    protected void performEmbarkFromSettlementPhase(Robot robot) {
-//        super.performEmbarkFromSettlementPhase(robot);
-//
-//        if (!isDone() && (getRover().getTowedVehicle() == null)) {
-//            String vehicleType = getLoadVehicleType(false);
-//            if (vehicleType != null) {
-//                Vehicle sellVehicle = getInitialLoadVehicle(vehicleType, false);
-//                if (sellVehicle != null) {
-//                    sellVehicle.setReservedForMission(true);
-//                    getRover().setTowedVehicle(sellVehicle);
-//                    sellVehicle.setTowingVehicle(getRover());
-//                    getStartingSettlement().getSettlementInventory().retrieveUnit(sellVehicle);
-//                } else {
-//                    endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
-//                }
-//            }
-//        }
-//    }
 
     @Override
     protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
@@ -1147,20 +780,7 @@ implements Serializable {
 
         super.performDisembarkToSettlementPhase(member, disembarkSettlement);
     }
-//    protected void performDisembarkToSettlementPhase(Robot robot, Settlement disembarkSettlement) {
-//
-//        // Unload towed vehicle if any.
-//        if (!isDone() && (getRover().getTowedVehicle() != null)) {
-//            Vehicle towed = getRover().getTowedVehicle();
-//            towed.setReservedForMission(false);
-//            getRover().setTowedVehicle(null);
-//            towed.setTowingVehicle(null);
-//            disembarkSettlement.getSettlementInventory().storeUnit(towed);
-//            towed.determinedSettlementParkedLocationAndFacing();
-//        }
-//
-//        super.performDisembarkToSettlementPhase(robot, disembarkSettlement);
-//    }
+
 
     @Override
     public void endMission(String reason) {
@@ -1370,22 +990,7 @@ implements Serializable {
 
         return bestTrader;
     }
-//    private Robot getMissionRobotTrader() {
-//    	Robot bestTrader = null;
-//        int bestTradeSkill = -1;
-//
-//        Iterator<Robot> i = getRobots().iterator();
-//        while (i.hasNext()) {
-//        	Robot robot = i.next();
-//            int tradeSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
-//            if (tradeSkill > bestTradeSkill) {
-//                bestTradeSkill = tradeSkill;
-//                bestTrader = robot;
-//            }
-//        }
-//
-//        return bestTrader;
-//    }
+
 
     /**
      * Gets the trader and the destination settlement for the mission.
@@ -1409,24 +1014,7 @@ implements Serializable {
 
         return bestTrader;
     }
-//    private Robot getSettlementRobotTrader() {
-//        Robot bestTrader = null;
-//        int bestTradeSkill = -1;
-//
-//        Iterator<Robot> i = tradingSettlement.getRobots().iterator();
-//        while (i.hasNext()) {
-//            Robot robot = i.next();
-//            if (!getRobots().contains(robot)) {
-//                int tradeSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
-//                if (tradeSkill > bestTradeSkill) {
-//                    bestTradeSkill = tradeSkill;
-//                    bestTrader = robot;
-//                }
-//            }
-//        }
-//
-//        return bestTrader;
-//    }
+
     /**
      * Gets the load that is being sold in the trade.
      * @return sell load.

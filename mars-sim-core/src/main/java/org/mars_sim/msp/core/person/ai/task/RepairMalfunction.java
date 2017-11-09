@@ -509,11 +509,11 @@ implements Repair, Serializable {
   
 			if (person != null) {
 				logger.info(person.getName() + " ran into an accident while repairing "  + entity.getNickName());
-                entity.getMalfunctionManager().createASeriesOfMalfunctions("malfunction repair in " + entity.getNickName(), person);
+                entity.getMalfunctionManager().createASeriesOfMalfunctions("repairing " + entity.getNickName(), person);
 			}
 			else if (robot != null) {
 				logger.info(robot.getName() + " ran into an accident while repairing "  + entity.getNickName());
-                entity.getMalfunctionManager().createASeriesOfMalfunctions("malfunction repair in " + entity.getNickName(), robot);
+                entity.getMalfunctionManager().createASeriesOfMalfunctions("repairing " + entity.getNickName(), robot);
             }
         }
     }

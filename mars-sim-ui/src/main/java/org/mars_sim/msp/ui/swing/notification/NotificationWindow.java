@@ -259,7 +259,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
 
 		        // Only display notification window when malfunction has occurred, not when fixed.
-		        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
+		        if (event.getType() == EventType.MALFUNCTION_OCCURRED) {
 		            willNotify = true;
 		        }
 		    }

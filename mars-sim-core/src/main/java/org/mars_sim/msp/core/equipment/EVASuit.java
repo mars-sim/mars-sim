@@ -343,10 +343,21 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		malfunctionManager = null;
 		weather = null;
 	}
-
+/*
 	@Override
-	public String getLocationName() {
+	public String getShortLocationName() {
 		return getLocationTag().getLongLocationName();//getSettlementName();
 	}
+*/
+	@Override
+	public String getShortLocationName() {
+		return getLocationTag().getShortLocationName();
+	}
 
+	@Override
+	public String getLongLocationName() {
+		return getLocationTag().getLongLocationName();
+	}
+
+	
 }

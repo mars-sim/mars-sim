@@ -1452,10 +1452,20 @@ LocalBoundedObject, InsidePathLocation {
 
 		heating.setHeatLoss(heat);
 	}
-	
+/*	
 	@Override
-	public String getLocationName() {
+	public String getShortLocationName() {
 		return nickName + " in " + getSettlement().getName(); //getLocationTag().getSettlementName();
+	}
+*/
+	@Override
+	public String getShortLocationName() {
+		return getLocationTag().getShortLocationName();
+	}
+
+	@Override
+	public String getLongLocationName() {
+		return getLocationTag().getLongLocationName();
 	}
 
 	/**

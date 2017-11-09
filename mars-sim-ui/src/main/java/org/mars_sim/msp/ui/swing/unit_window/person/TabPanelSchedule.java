@@ -366,11 +366,9 @@ extends TabPanel {
     		
     		if (shiftCache != ShiftType.OFF)
     			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
-    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
     		else
     			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off"), TooltipWay.down);
-    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
-
+ 
 /*
 			//System.out.println("fillColorCache is "+ fillColorCache);
 			if (fillColorCache != shiftTF.getBackground()) {

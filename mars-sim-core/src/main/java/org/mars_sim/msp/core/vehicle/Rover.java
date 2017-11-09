@@ -519,6 +519,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
                 towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing() + 90D);
             }
         }
+        
     }
 
 	@Override
@@ -536,11 +537,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		return getName();
 	}
 	
-	@Override
-	public String getLocationName() {
-		return getLocationTag().getSettlementName();
-	}
-
+	
     @Override
     public void destroy() {
         super.destroy();

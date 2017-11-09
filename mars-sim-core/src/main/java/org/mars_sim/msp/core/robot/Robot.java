@@ -825,9 +825,9 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	public String getNickName() {
 		return name;
 	}
-
+/*
 	@Override
-	public String getLocationName() {
+	public String getShortLocationName() {
 		if (getVehicle() != null)
 			return getVehicle().getName();
 		else if (getSettlement() != null) {
@@ -840,6 +840,16 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 		}
 		else
 			return LocationTag.OUTSIDE_ON_MARS;	
+	}
+*/
+	@Override
+	public String getShortLocationName() {
+		return getLocationTag().getShortLocationName();
+	}
+
+	@Override
+	public String getLongLocationName() {
+		return getLocationTag().getLongLocationName();
 	}
 
     @Override

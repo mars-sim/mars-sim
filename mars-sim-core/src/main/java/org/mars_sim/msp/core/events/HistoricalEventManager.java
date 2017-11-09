@@ -88,9 +88,9 @@ public class HistoricalEventManager implements Serializable {
 		//MarsClock timestamp;
 
 		// TODO: for debugging the NullPointerException when calling registerNewEvent()
-        if (newEvent == null) {
-            throw new IllegalStateException("newEvent is null");
-        }
+        //if (newEvent == null) {
+        //    throw new IllegalStateException("newEvent is null");
+        //}
 
 		//System.out.println("HistoricalEventManager.java : calling registerNewEvent() : newEvent is " + newEvent);
 		// check if event is MALFUNCTION or MEDICAL, save it for notification box display

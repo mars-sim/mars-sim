@@ -11,8 +11,8 @@ import org.mars_sim.msp.core.Msg;
 
 public enum EventType {
 
-	MALFUNCTION_FIXED	(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$
-	MALFUNCTION_UNFIXED	(Msg.getString("EventType.malfunction.occured")), //$NON-NLS-1$
+	MALFUNCTION_FIXED		(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$
+	MALFUNCTION_OCCURRED	(Msg.getString("EventType.malfunction.occurred")), //$NON-NLS-1$
 
 	MEDICAL_CURED		(Msg.getString("EventType.illness.cured")), //$NON-NLS-1$
 	MEDICAL_STARTS		(Msg.getString("EventType.illness.starts")), //$NON-NLS-1$
@@ -26,6 +26,8 @@ public enum EventType {
 	MISSION_FINISH					(Msg.getString("EventType.mission.finished")), //$NON-NLS-1$
 	MISSION_DEVELOPMENT				(Msg.getString("EventType.mission.development")), //$NON-NLS-1$
 	MISSION_EMERGENCY_DESTINATION	(Msg.getString("EventType.mission.emergencyDestination")), //$NON-NLS-1$
+	MISSION_NOT_ENOUGH_RESOURCES	(Msg.getString("EventType.mission.notEnoughResource")), //$NON-NLS-1$
+	MISSION_MEDICAL_EMERGENCY		(Msg.getString("EventType.mission.medicalEmergency")), //$NON-NLS-1$
 	MISSION_EMERGENCY_BEACON_ON		(Msg.getString("EventType.mission.emergencyBeacon")), //$NON-NLS-1$
 	MISSION_RENDEZVOUS				(Msg.getString("EventType.mission.rendezvous")), //$NON-NLS-1$
 	MISSION_SALVAGE_VEHICLE			(Msg.getString("EventType.mission.salvageVehicle")), //$NON-NLS-1$

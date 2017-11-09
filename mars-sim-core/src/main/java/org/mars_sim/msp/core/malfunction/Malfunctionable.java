@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.malfunction;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
 
 import java.util.Collection;
 
@@ -50,8 +49,15 @@ public interface Malfunctionable {
     public Inventory getInventory();
 
     /**
-     * Gets the location associated with this entity.
+     * Gets the short location name associated with this entity.
      * @return location
      */
-    public String getLocationName();
+    public String getShortLocationName();
+
+    /**
+     * Gets the long location name associated with this entity.
+     * @return location
+     */
+    public String getLongLocationName();
+
 }

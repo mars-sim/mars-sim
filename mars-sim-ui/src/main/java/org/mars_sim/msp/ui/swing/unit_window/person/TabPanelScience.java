@@ -45,6 +45,9 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
+
 /**
  * A tab panel displaying a person's scientific studies and achievements.
  */
@@ -137,7 +140,8 @@ extends TabPanel {
 		scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
 		scienceToolButton.setEnabled(false);
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
-		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science")); //$NON-NLS-1$
+		//scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science")); //$NON-NLS-1$
+		TooltipManager.setTooltip (scienceToolButton, Msg.getString("TabPanelScience.tooltip.science"), TooltipWay.down);
 		scienceToolButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				displayStudyInScienceTool();

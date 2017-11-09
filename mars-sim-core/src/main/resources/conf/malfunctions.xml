@@ -20,7 +20,7 @@
 		<probability value="5.0" />
 
 		<!-- Normal (non-EVA) repair time to fix. (millisols) (optional) -->
-		<repair-time value="100.0" />
+		<repair-time value="20.0" />
 
 		<!-- Emergency repair time to fix. (millisols) (optional) -->
 		<emergency-repair-time value="10.0" />
@@ -171,7 +171,7 @@
 	<malfunction name="Class C Fire">
 		<severity value="100" />
 		<probability value="1" />
-		<repair-time value="400.0" />
+		<repair-time value="200.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
 			<system name="power generation" />		
@@ -203,7 +203,7 @@
 	<malfunction name="Class D Fire">
 		<severity value="100" />
 		<probability value="1" />
-		<repair-time value="400.0" />
+		<repair-time value="100.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
 			<system name="research" />		
@@ -237,7 +237,7 @@
 	<malfunction name="Class K Fire">
 		<severity value="100" />
 		<probability value="1" />
-		<repair-time value="400.0" />
+		<repair-time value="200.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
 			<system name="cooking" />		
@@ -431,7 +431,7 @@
 	<malfunction name="Water Leak">
 		<severity value="50" />
 		<probability value="3.0" />
-		<emergency-repair-time value="100.0" />
+		<emergency-repair-time value="50.0" />
 		<system-list>
 			<system name="rover" />
 			<system name="living accommodations" />
@@ -459,7 +459,7 @@
 	<malfunction name="Heating Unit Failure">
 		<severity value="70" />
 		<probability value="3.0" />
-		<repair-time value="100.0" />
+		<repair-time value="20.0" />
 		<emergency-repair-time value="20.0" />
 		<system-list>
 			<system name="EVA suit" />
@@ -480,7 +480,7 @@
 	<malfunction name="Water Contamination">
 		<severity value="60" />
 		<probability value="3.0" />
-		<repair-time value="500.0" />
+		<repair-time value="100.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
 			<system name="living accommodations" />
@@ -512,7 +512,7 @@
 	<malfunction name="Food Contamination">
 		<severity value="60" />
 		<probability value="3.0" />
-		<repair-time value="500.0" />
+		<repair-time value="100.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
 			<system name="cooking" />
@@ -541,7 +541,7 @@
 	<malfunction name="Chemical Spill">
 		<severity value="50" />
 		<probability value="2.0" />
-		<repair-time value="500.0" />
+		<repair-time value="100.0" />
 		<emergency-repair-time value="100.0" />
 		<system-list>
 			<system name="farming" />
@@ -568,8 +568,8 @@
 	<malfunction name="Suit Tear">
 		<severity value="70" />
 		<probability value="2.0" />
-		<repair-time value="20.0" />
-		<emergency-repair-time value="10.0" />
+		<repair-time value="5.0" />
+		<emergency-repair-time value="5.0" />
 		<system-list>
 			<system name="EVA suit" />
 		</system-list>
@@ -585,7 +585,7 @@
 	<malfunction name="EVA Radio Failure">
 		<severity value="50" />
 		<probability value="5.0" />
-		<repair-time value="20.0" />
+		<repair-time value="5.0" />
 		<system-list>
 			<system name="EVA suit" />
 		</system-list>
@@ -602,7 +602,7 @@
 	<malfunction name="Electrical Short">
 		<severity value="20" />
 		<probability value="3.0" />
-		<repair-time value="20.0" />
+		<repair-time value="10.0" />
 		<system-list>
 			<system name="robot" />			
 			<system name="vehicle" />
@@ -643,7 +643,7 @@
 		<severity value="50" />
 		<probability value="2.0" />
 		<repair-time value="100.0" />
-		<emergency-repair-time value="50.0" />
+		<emergency-repair-time value="100.0" />
 		<system-list>
 			<system name="rover" /> 
 			<system name="fuel power source" /> 			

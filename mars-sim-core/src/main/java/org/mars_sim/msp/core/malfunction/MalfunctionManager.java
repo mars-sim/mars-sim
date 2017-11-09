@@ -420,13 +420,17 @@ implements Serializable {
 				e.printStackTrace(System.err);
 			}
 
-			if (!registerEvent)
-				return;
+			//if (!registerEvent)
+			//	return;
 			
-			HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, entity.getLocationName(), false);
-			//if (eventManager == null)
-			//	eventManager = sim.getEventManager();
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			if (registerEvent) {
+				HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, entity.getLongLocationName(), false);
+				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+	        			"The malfunction event '" + malfunction.getName() + "' has been registered", null);
+			}
+			else
+				return;
 			
 			if (mal_name.equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE))
 				return;
@@ -461,7 +465,7 @@ implements Serializable {
 				 String name = p.getName();
 				 double needed = malfunctionConfig.getRepairPartProbability(malfunction.getName(), name);
 				 double weight =  (100-rel) * needed/100D;
-				 logger.info("Updating " + Conversion.capitalize(p.getName()) + "'s field data : (Part Reliability: " 
+				 logger.info("Updating '" + p.getName() + "' field data : (Part Reliability: " 
 						 + Math.round(rel*1000.0)/1000.0 
 						 + " %  Part Malfunction Probability: " + Math.round(needed*1000.0)/1000.0 
 						 + " %  Part Failure Rate: " + Math.round(weight*1000.0)/1000.0 
@@ -470,7 +474,7 @@ implements Serializable {
 				 new_p += weight; 
 				 
 				 double old_p = malfunction.getProbability();
-				 logger.info("Updating '" + mal_name + "'s Failure Rate : " 
+				 logger.info("Updating '" + mal_name + "' failure rate : " 
 						 + Math.round(old_p*10000.0)/10000.0  
 						 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
 				 malfunction.setProbability(new_p);
@@ -540,7 +544,7 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
         	LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-        			"[" + entity.getLocationName() + "] "
+        			"[" + entity.getShortLocationName() + "] "
         			+ entity.getNickName() + " is behind on maintenance.  "
 					+ "Time since last check-up: " + solsLastMaint
 					+ " sols.  Condition: " + wearCondition + " %.", null);
@@ -574,9 +578,7 @@ implements Serializable {
 					e.printStackTrace(System.err);
 				}
 
-				HistoricalEvent newEvent = new MalfunctionEvent(entity, item, entity.getLocationName(), true);
-				//if (eventManager == null)
-				//	eventManager = sim.getEventManager();
+				HistoricalEvent newEvent = new MalfunctionEvent(entity, item, entity.getLongLocationName(), true);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			}
 		}
@@ -694,25 +696,30 @@ implements Serializable {
 		if (s.contains("EVA")) {
 			sb.insert(0, "with ");
 		}
-		
+	
 		else {
+			// if it's a vehicle, no need of a/an
+			sb.insert(0, "in ");
+		}
+/*			
 
+		if (s.contains("EVA")) {
+			sb.insert(0, "with ");
+		}
+	
+		else {
+			// if it's a vehicle, no need of a/an
+			sb.insert(0, "in ");
+			
 			if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") || s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
 				sb.insert(0, "in an ");
 			else
 				sb.insert(0, "in a ");
 		}
+*/		
 
-		String loc = "";
-		if (u.getSettlement() != null)
-			loc = u.getSettlement().getName();
-		else if (u.getVehicle() != null)
-			loc = u.getVehicle().getName();
-		else
-			loc = "At " + u.getCoordinates().getFormattedString();
-		
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-    			"[" + loc + "] An accident occurs " + sb.toString() + ".", null);
+    			"[" + u.getLocationTag().getShortLocationName() + "] A Type-I accident occurs " + sb.toString() + ".", null);
 
 	}
 	
@@ -735,24 +742,25 @@ implements Serializable {
 	
 	public void handleStringTypeTwo() {
 		String n = entity.getNickName();
-		StringBuilder sb = new StringBuilder(Conversion.capitalize(n));
-
+/*
+  		StringBuilder sb = new StringBuilder();//Conversion.capitalize(n));
 		if (n.contains("EVA")) {
 			sb.insert(0, "with ");
 		}
 		
-		//else {
-		//	sb.insert(0, "in ");
-		//}
-
-		if (entity.getLocationName() != null) {
-			sb.append(" at " + entity.getLocationName());
+		else {
+			sb.insert(0, "in ");
 		}
-
+*/
+		String sName = null;
+		if (entity.getShortLocationName() != null) {
+			sName = entity.getShortLocationName().replace(Conversion.capitalize(n), "")
+					.replace(" in ", "");
+		}
+		
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-    			//"[" + entity.getLocationName() + "] "
-    			"An accident occurs " + sb.toString() + ".", null);
-
+    			//"[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
+			"[" + sName + "] A Type-II accident occurs in " + Conversion.capitalize(n), null);
 	}
 	
 	/**
