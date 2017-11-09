@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 3.1.0 2017-08-08
+ * @version 3.1.0 2017-11-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -15,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -38,8 +38,12 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
@@ -56,6 +60,8 @@ public class NavpointPanel
 extends JPanel
 implements ListSelectionListener, MissionListener {
 
+	private static int theme;
+	
 	// Private members.
 	private Mission currentMission;
 	private MapPanel mapPane;
@@ -74,16 +80,31 @@ implements ListSelectionListener, MissionListener {
 		setLayout(new BorderLayout());
 		
 		// Create the main panel.
-		Box mainPane = Box.createVerticalBox();
+		//Box mainPane = Box.createVerticalBox();
+		JPanel mainPane = new JPanel(new BorderLayout(0, 0));
+		mainPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainPane.setSize(new Dimension(300, 300));
+		mainPane.setPreferredSize(new Dimension(300, 300));
 		mainPane.setBorder(new MarsPanelBorder());
-		add(mainPane, BorderLayout.WEST);
+		add(mainPane, BorderLayout.CENTER);
 		
 		// Create the map display panel.
 		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
-		mainPane.add(mapDisplayPane);
-		
+		mapDisplayPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mapDisplayPane.setSize(new Dimension(300, 300));
+		mapDisplayPane.setPreferredSize(new Dimension(300, 300));
+        JPanel left = new JPanel();
+        left.setPreferredSize(new Dimension(48, 300));
+        JPanel right = new JPanel();
+        right.setPreferredSize(new Dimension(48, 300));
+		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
+		mainPane.add(left, BorderLayout.WEST);
+		mainPane.add(right, BorderLayout.EAST);
+		//mainPane.add(Box.createVerticalStrut(10));
+	
 		// Create the map panel.
 		mapPane = new MapPanel(500L);
+		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPane.addMapLayer(new ShadingMapLayer(mapPane), 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 2);
 		mapPane.addMapLayer(new UnitLabelMapLayer(), 3);
@@ -95,8 +116,8 @@ implements ListSelectionListener, MissionListener {
         // Forcing map panel to be 300x300 size.
         mapPane.setSize(new Dimension(300, 300));
         mapPane.setPreferredSize(new Dimension(300, 300));
-		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
-		
+        mapDisplayPane.add(mapPane, BorderLayout.CENTER);
+        
 		// Create the north button.
 		JButton northButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.north"))); //$NON-NLS-1$
 		northButton.addActionListener(new ActionListener() {
@@ -166,8 +187,9 @@ implements ListSelectionListener, MissionListener {
 		// Create the navpoint table panel.
 		JPanel navpointTablePane = new JPanel(new BorderLayout(0, 0));
 		navpointTablePane.setBorder(new MarsPanelBorder());
-		navpointTablePane.setPreferredSize(new Dimension(-1, 180));
-		mainPane.add(navpointTablePane);
+		navpointTablePane.setPreferredSize(new Dimension(-1, 297));
+		//mainPane.add(navpointTablePane);
+		add(navpointTablePane, BorderLayout.SOUTH);
 		
 		// Create the navpoint scroll panel.
 		JScrollPane navpointScrollPane = new JScrollPane();
@@ -177,7 +199,8 @@ implements ListSelectionListener, MissionListener {
         navpointTableModel = new NavpointTableModel();
         
         // Create the navpoint table.
-        navpointTable = new JTable(navpointTableModel);
+        navpointTable = new ZebraJTable(navpointTableModel);
+		TableStyle.setTableStyle(navpointTable);
         navpointTable.setRowSelectionAllowed(true);
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         navpointTable.getSelectionModel().addListSelectionListener(
@@ -262,6 +285,12 @@ implements ListSelectionListener, MissionListener {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					navpointTableModel.updateNavpoints();
+					int t = MainScene.getTheme();		
+					if (theme != t) {
+						theme = t;
+						TableStyle.setTableStyle(navpointTable);
+					}
+
 				}
 			});
 		}
@@ -327,9 +356,9 @@ implements ListSelectionListener, MissionListener {
 		public Object getValueAt(int row, int column) {
             if (row < navpoints.size()) {
             	NavPoint navpoint = navpoints.get(row);
-            	if (column == 0) return Msg.getString("NavpointPanel.column.navpoint") + (row + 1); //$NON-NLS-1$
+            	if (column == 0) return Msg.getString("NavpointPanel.column.navpoint") + " " + (row + 1); //$NON-NLS-1$
             	else if (column == 1) return navpoint.getLocation().getFormattedString();
-            	else if (column == 2) return navpoint.getDescription();
+            	else if (column == 2) return Conversion.capitalize(navpoint.getDescription());
             	else return Msg.getString("unknown"); //$NON-NLS-1$
             }   
             else return Msg.getString("unknown"); //$NON-NLS-1$

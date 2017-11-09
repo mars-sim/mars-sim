@@ -189,6 +189,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
+		if (mainScene == null) soundPlayer.playRandomBackgroundTrack();
 		//soundPlayer.playBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.ST_AREOLOGIE); // play our intro music
 		//soundPlayer.playRandomBackgroundTrack();
 		

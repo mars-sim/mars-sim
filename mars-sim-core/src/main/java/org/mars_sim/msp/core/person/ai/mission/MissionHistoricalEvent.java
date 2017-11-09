@@ -32,6 +32,6 @@ public class MissionHistoricalEvent extends HistoricalEvent implements Serializa
         		eventType, 
         		member, 
         		location,
-        		reason);
+        		reason + " on " + mission.getName());
     }
 }

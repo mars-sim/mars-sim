@@ -131,7 +131,7 @@ implements Serializable {
 
             // Get trading settlement
             tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
-            if ((tradingSettlement != null) && (tradingSettlement != s)) {
+            if (tradingSettlement != null && !tradingSettlement.equals(s)) {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
                 setDescription(Msg.getString("Mission.description.trade.detail",

@@ -175,7 +175,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	        	// Note: !s1.equals(s2) is troublesome if s1 or s2 is null
 
 				// check to see if a person is a trader or on a trading mission
-				if (s1 != s2) {
+				if (s1 != null && !s1.equals(s2)) {
 	        	//if (person.getMind().getJob() instanceof Trader) {
 	        		// yes he is a trader/guest
 	            	logger.fine("SleepMeta : " + person + " is a trader or a guest of a trade mission and will need to "

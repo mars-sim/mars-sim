@@ -30,8 +30,9 @@ public class NavpointMapLayer implements MapLayer {
 	private static final String WHITE_ICON_NAME = "FlagWhite";
 	private static final String GREEN_ICON_NAME = "FlagGreen";
 	
-	private double angle;
 	// Domain members
+	private double angle;
+	
 	private Component displayComponent;
 	private Icon navpointIconColor;
 	private Icon navpointIconWhite;

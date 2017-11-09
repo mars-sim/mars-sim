@@ -45,55 +45,9 @@ extends Mission {
 	/** The time the last leg of the mission started at. */
 	private MarsClock legStartingTime;
 
-    /**
-     * Constructor (note: The constructor handles setting the initial nav point.)
-     * @param missionName the name of the mission.
-     * @param startingPerson the person starting the mission.
-     * @param minPeople the minimum number of people required for mission.
-     * @throws MissionException if error constructing mission.
-   protected TravelMission(String name, Person startingPerson, int minPeople) {
-        // Use Mission constructor.
-        super(name, startingPerson, minPeople);
-
-        NavPoint startingNavPoint = null;
-        if (startingPerson.getSettlement() != null) {
-            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                    startingPerson.getSettlement(), startingPerson
-                            .getSettlement().getName());
-        }
-        else {
-            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                    "starting location");
-        }
-        addNavpoint(startingNavPoint);
-        lastStopNavpoint = startingNavPoint;
-
-        setTravelStatus(AT_NAVPOINT);
-    }
-    protected TravelMission(String name, Robot robot, int minPeople) {
-        // Use Mission constructor.
-        super(name, robot, minPeople);
-
-        NavPoint startingNavPoint = null;
-        if (robot.getSettlement() != null) {
-            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                    robot.getSettlement(), robot
-                            .getSettlement().getName());
-        }
-        else {
-            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                    "starting location");
-        }
-        addNavpoint(startingNavPoint);
-        lastStopNavpoint = startingNavPoint;
-
-        setTravelStatus(AT_NAVPOINT);
-    }
-    */
     protected TravelMission(String missionName, MissionMember startingMember, int minPeople) {
         // Use Mission constructor.
         super(missionName, startingMember, minPeople);
-
              
         NavPoint startingNavPoint = null;
         
@@ -107,7 +61,6 @@ extends Mission {
                     "starting location");
         }
         
-
         addNavpoint(startingNavPoint);
         lastStopNavpoint = startingNavPoint;
 
@@ -198,12 +151,11 @@ extends Mission {
         if (newNavIndex < getNumberOfNavpoints()) {
             navIndex = newNavIndex;
         } else
-        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
-        			getPhase() + " : newNavIndex: "
-                    + newNavIndex + " is outOfBounds.", null);
+        	LogConsolidated.log(logger, Level.SEVERE, 0, logger.getName(), 
+        			getPhase() + "'s newNavIndex "
+                    + newNavIndex + " is out of bounds.", null);
             //throw new IllegalStateException(getPhase() + " : newNavIndex: "
                     //+ newNavIndex + " is outOfBounds.");
-        	
     }
 
     /**
@@ -216,8 +168,8 @@ extends Mission {
         if ((index >= 0) && (index < getNumberOfNavpoints()))
             return navPoints.get(index);
         else {
-        	LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
-        			"index: " + index
+        	LogConsolidated.log(logger, Level.SEVERE, 0, logger.getName(), 
+        			getPhase() + " index " + index
                     + " out of bounds.", null);
             //throw new IllegalArgumentException("index: " + index
             //        + " out of bounds.");

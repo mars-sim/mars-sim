@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,7 +24,6 @@ import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -34,6 +32,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.Medication;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -55,6 +54,7 @@ extends TabPanel {
 	private static final String CAREER = "Career";
 
 	// Data cache
+	private static int theme;
 	private double fatigueCache;
 	private double thirstCache;
 	private double hungerCache;
@@ -311,10 +311,14 @@ extends TabPanel {
 	 */
 	public void update() {
 
-		TableStyle.setTableStyle(radiationTable);
-		TableStyle.setTableStyle(medicationTable);
-		TableStyle.setTableStyle(healthProblemTable);
-
+		int t = MainScene.getTheme();		
+		if (theme != t) {
+			theme = t;
+			TableStyle.setTableStyle(radiationTable);
+			TableStyle.setTableStyle(medicationTable);
+			TableStyle.setTableStyle(healthProblemTable);
+		}
+		
 		// Update fatigue if necessary.
 		double newF = Math.round(condition.getFatigue()* 1.0)/1.0;
 		//if (fatigueCache *.95 > newF || fatigueCache *1.05 < newF) {
