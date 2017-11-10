@@ -48,7 +48,7 @@ public class OGGSoundClip {
 	private float balance;
 	private float volume = 0f;
 	
-	private boolean mute;
+	private boolean mute = false;
 	private boolean paused;
 	private boolean isMasterGainSupported;
 

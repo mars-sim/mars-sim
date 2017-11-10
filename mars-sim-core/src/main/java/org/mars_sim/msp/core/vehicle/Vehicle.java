@@ -405,7 +405,8 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     	// Update status based on current situation.
     	StatusType newStatus = StatusType.PARKED;
-    	if (getGarage() != null) newStatus = StatusType.GARAGED;
+    	if (getGarage() != null) 
+    		newStatus = StatusType.GARAGED;
     	if (reservedForMaintenance) newStatus = StatusType.MAINTENANCE;
     	else if (towingVehicle != null) newStatus = StatusType.TOWED;
 		else if (malfunctionManager.hasMalfunction()) newStatus = StatusType.MALFUNCTION;

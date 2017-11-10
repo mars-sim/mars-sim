@@ -1771,12 +1771,12 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		if (isPaused) {
 			marqueeTicker.pauseMarqueeTimer(true);
 			//if (!soundPlayer.isMute(true, true))
-				soundPlayer.pauseSound(true, true);
+				soundPlayer.pause(true, true);
 		} 
 		else {
 			marqueeTicker.pauseMarqueeTimer(false);
 			//if (soundPlayer.isMute(true, true))
-				soundPlayer.restoreSound(true, true);
+				soundPlayer.restore(true, true);
 		}
 	}
 

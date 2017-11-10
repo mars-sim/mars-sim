@@ -56,21 +56,21 @@ public class EatMealMeta implements MetaTask, Serializable {
         double hunger = pc.getHunger();
         double energy = pc.getEnergy();
         
-    	CircadianClock cc = person.getCircadianClock();
-    	double ghrelin = cc.getSurplusGhrelin();
-    	double leptin = cc.getSurplusLeptin();
+    	//CircadianClock cc = person.getCircadianClock();
+    	//double ghrelin = cc.getSurplusGhrelin();
+    	//double leptin = cc.getSurplusLeptin();
         // Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ persson per sol
         
-    	// When thirst is greater than 50, a person may start feeling thirsty
-    	if (thirst > 50) {
+    	// When thirst is greater than 100, a person may start feeling thirsty
+    	if (thirst > PhysicalCondition.THIRST_THRESHOLD) {
     		 result = thirst/10;
+    		 pc.setThirsty(true);
     	}
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
-    	else if (hunger > 250 || energy < 2525 || ghrelin-leptin > 300) {
-        	thirst = thirst / 10;
-        	hunger = hunger / 10;
-            energy = (2525 - energy) / 100;
-            result = thirst + hunger + energy;// +  (ghrelin-leptin - 300);
+    	else if (hunger > 250 || energy < 2525) {// || ghrelin-leptin > 300) {
+    		result = thirst / 10;
+    		result += hunger / 10;
+    		result += (2525 - energy) / 50; // +  (ghrelin-leptin - 300);
             if (result <= 0)
             	return 0;
         }
@@ -115,7 +115,7 @@ public class EatMealMeta implements MetaTask, Serializable {
                 // If no preserved food, person can't eat a meal.
             //    return 0;
             //}
-        	result *= 1.5D; 
+        	result *= 2D; 
         	// TODO : how to ration food and water if running out of it ?
         }
         

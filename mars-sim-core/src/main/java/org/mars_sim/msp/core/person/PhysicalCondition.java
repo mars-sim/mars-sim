@@ -62,6 +62,8 @@ public class PhysicalCondition implements Serializable {
 	public static final String FOOD = "food";
 	public static final String CO2 = "carbon dioxide";
 
+	public static final int THIRST_THRESHOLD = 100;
+	
 	/** Life support minimum value. */
 	private static int MIN_VALUE = 0;
 	/** Life support maximum value. */
@@ -227,14 +229,11 @@ public class PhysicalCondition implements Serializable {
 
 		medicalManager = sim.getMedicalManager();
 
-		// dehydration =
-		// medicalManager.getComplaintByName(ComplaintType.DEHYDRATION);//.getDehydration();
-		// starvation =
-		// medicalManager.getComplaintByName(ComplaintType.STARVATION);//.getStarvation();
+		// dehydration = medicalManager.getComplaintByName(ComplaintType.DEHYDRATION);//.getDehydration();
+		// starvation = medicalManager.getComplaintByName(ComplaintType.STARVATION);//.getStarvation();
 		// depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
 		// panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-		// highFatigue =
-		// medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+		// highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 
 		endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
 		strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
@@ -459,14 +458,16 @@ public class PhysicalCondition implements Serializable {
 			// unless dead. - Scott
 			// reduceEnergy(time);
 
-			checkStarvation(hunger);
-			checkDehydration(thirst);
+
 			// System.out.println("PhysicalCondition : hunger : "+
 			// Math.round(hunger*10.0)/10.0);
 
 			int msol = (int) (marsClock.getMillisol() * masterClock.getTimeRatio());
 			if (msol % 10 == 0) {
 
+				checkStarvation(hunger);
+				checkDehydration(thirst);
+				
 				// If person is at high stress, check for mental breakdown.
 				if (!isStressedOut)
 					if (stress > MENTAL_BREAKDOWN)
@@ -645,7 +646,7 @@ public class PhysicalCondition implements Serializable {
 	public void setThirst(double t) {
 		if (thirst != t)
 			thirst = t;
-		if (t > 50 && !isThirsty)
+		if (t > THIRST_THRESHOLD && !isThirsty)
 			isThirsty = true;
 		// else if (isThirsty)
 		// isThirsty = false;
@@ -709,7 +710,7 @@ public class PhysicalCondition implements Serializable {
 				starved = problems.get(starvation);
 			if (starved != null) {
 				starved.startRecovery();
-				isStarving = false;
+				//isStarving = false;
 			}
 		}
 
@@ -738,7 +739,7 @@ public class PhysicalCondition implements Serializable {
 			if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
 				// Stop any on-going tasks
 				taskMgr.clearTask();
-				// go eat a meal
+				// go drink water by eating a meal
 				taskMgr.addTask(new EatMeal(person));
 			}
 
@@ -749,7 +750,7 @@ public class PhysicalCondition implements Serializable {
 				dehydrated = problems.get(dehydration);
 			if (dehydrated != null) {
 				dehydrated.startRecovery();
-				isDehydrated = false;
+				//isDehydrated = false;
 			}
 		}
 	}
@@ -1262,22 +1263,42 @@ public class PhysicalCondition implements Serializable {
 
 		person.getMind().setInactive();
 
-		if (person.getVehicle() != null && deathDetails.getBodyRetrieved()) {
-			examBody(problem);
-			person.buryBody();
+		if (person.getVehicle() != null) {
+			handleBody();
+			//deathDetails.getBodyRetrieved();
+			//examBody(problem);
+			//person.buryBody();
 		}
 	}
 
+	/** 
+	 * Handles the body of a dead person.
+	 * @param problem
+	 */
+	public void handleBody() {
+		deathDetails.getBodyRetrieved();
+		examBody(getDeathDetails().getProblem());
+		person.buryBody();
+	}
+
+	/** 
+	 * Retrieves the body.
+	 * @param problem
+	 */
+	public void retrieveBody() {
+		deathDetails.setBodyRetrieved(true);
+	}
+	
+	/** 
+	 * Exams the body and creates the medical event.
+	 * @param problem
+	 */
 	public void examBody(HealthProblem problem) {
 		logger.log(Level.SEVERE, "[" + person.getLocationTag().getShortLocationName() + "] A post-mortem examination was ordered on " + person + ". The cause of death : "
 				+ problem.toString().toLowerCase());
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
 		Simulation.instance().getEventManager().registerNewEvent(event);
-	}
-
-	public void retrieveBody() {
-		deathDetails.setBodyRetrieved(true);
 	}
 
 	/**

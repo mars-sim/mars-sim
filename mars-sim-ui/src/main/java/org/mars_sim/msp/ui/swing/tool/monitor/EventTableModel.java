@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -380,7 +381,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 					int type = 0;
 					String header = null ;
-					String message = event.getType().toString();// event.getDescription(); //.toUpperCase();
+					String message = event.getDescription(); //event.getType().toString();//  //.toUpperCase();
 					// reset willNotify to false
 					boolean willNotify = false;
 
@@ -397,8 +398,9 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					            willNotify = true;
 					        }
 					        
-					        //Malfunction mal = (Malfunction) event.getSource();
-					        //message = mal.getName();
+					        Malfunctionable mal = (Malfunctionable) event.getSource();
+					        
+					        message = message + "(" + mal.getNickName() + ") in " + mal.getLongLocationName();
 					        
 					        type = 0;
 					    }

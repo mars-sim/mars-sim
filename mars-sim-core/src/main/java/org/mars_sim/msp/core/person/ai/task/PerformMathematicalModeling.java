@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -72,6 +71,8 @@ implements ResearchScientificStudy, Serializable {
     /** The research assistant. */
     private Person researchAssistant;
 
+    private static ScientificStudyManager manager;// = Simulation.instance().getScientificStudyManager();
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -79,7 +80,7 @@ implements ResearchScientificStudy, Serializable {
     public PerformMathematicalModeling(Person person) {
         // Use task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER,
-                true, 10D + RandomUtil.getRandomDouble(30D));
+                true, 10D + RandomUtil.getRandomDouble(10D));
 
         // Determine study.
         study = determineStudy();
@@ -89,13 +90,19 @@ implements ResearchScientificStudy, Serializable {
                 addPersonToLab();
             }
             else {
-            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + " can't find a lab slot.", null);
-                endTask();
+            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+            		"[" + person.getLocationTag().getShortLocationName() + "] " 
+            			+ person + " can't find a lab slot.", null);
+            	endTask();
+            	person.getMind().getTaskManager().clearTask();
+            	//person.getMind().getTaskManager().getNewTask();
             }
         }
         else {
         	//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + " can't find a research collaboration.", null);
-            endTask();
+        	endTask();
+        	person.getMind().getTaskManager().clearTask();
+        	//person.getMind().getTaskManager().getNewTask();
         }
 
         // Check if person is in a moving rover.
@@ -144,7 +151,8 @@ implements ResearchScientificStudy, Serializable {
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
         // Add primary study if mathematics and in research phase.
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+        if (manager == null)
+        	manager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
@@ -214,8 +222,9 @@ implements ResearchScientificStudy, Serializable {
         if (labBuildings.size() > 0) {
             Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                     person, labBuildings);
-            Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-            result = (Research) building.getFunction(FunctionType.RESEARCH);
+            //return Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
+            //result = building.getResearch();
+            return RandomUtil.getWeightedRandomObject(labBuildingProbs).getResearch();
         }
 
         return result;

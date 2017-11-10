@@ -817,7 +817,7 @@ public class MainScene {
 			soundEffectSlider.setValue(0);
 			soundEffectMuteBox.setSelected(true);
 		}
-		soundPlayer.pauseSound(isEffect, isMusic);
+		soundPlayer.pause(isEffect, isMusic);
 	}
 
 	public void restoreSound(boolean isEffect, boolean isMusic) {
@@ -831,12 +831,12 @@ public class MainScene {
 		if (isEffect) {
 			soundEffectSlider.setValue(effectSliderCache);
 			menuBar.getEffectMuteItem().setSelected(false);
-			soundPlayer.setEffectVolume(convertSlider2Volume(effectSliderCache));
+			soundPlayer.setSoundVolume(convertSlider2Volume(effectSliderCache));
 			// effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
 			soundEffectMuteBox.setSelected(false);
 		}
 
-		soundPlayer.restoreSound(isEffect, isMusic);
+		soundPlayer.restore(isEffect, isMusic);
 
 	}
 
@@ -1356,17 +1356,14 @@ public class MainScene {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
+					// Set to the new music volume in the sound player 
+					soundPlayer.setMusicVolume((float) convertSlider2Volume(sliderValue));
 					if (sliderValue <= 0) {
-						soundPlayer.pauseSound(false, true);
+						// check the music mute box
 						musicMuteBox.setSelected(true);
-						menuBar.getMusicMuteItem().setSelected(false);
-						// muteSound(false, true);
 					} else {
-						soundPlayer.restoreSound(false, true);
-						soundPlayer.setMusicVolume((float) convertSlider2Volume(sliderValue));
+						// uncheck the music mute box
 						musicMuteBox.setSelected(false);
-						menuBar.getMusicMuteItem().setSelected(true);
-						// unmuteSound(false, true);
 					}
 				}
 			}
@@ -1384,21 +1381,27 @@ public class MainScene {
 			if (!masterClock.isPaused()) {
 				if (musicMuteBox.isSelected()) {
 					// mute it
-					// muteSound(false, true);
+					soundPlayer.pause(false, true);
+					// save the slider value into the cache
 					musicSliderCache = (float) musicSlider.getValue();
+					// set the slider value to zero
 					musicSlider.setValue(0);
-					menuBar.getMusicMuteItem().setSelected(false);
+					// check the music mute item in menuBar
+					menuBar.getMusicMuteItem().setSelected(true);
 				} else {
 					// unmute it
-					// unmuteSound(false, true);
+					soundPlayer.restore(false, true);
+					// restore the slider value from the cache
 					musicSlider.setValue(musicSliderCache);
-					menuBar.getMusicMuteItem().setSelected(true);
+					// uncheck the music mute item in menuBar
+					menuBar.getMusicMuteItem().setSelected(false);
 				}
 
-			} else {
-				musicMuteBox.setSelected(!musicMuteBox.isSelected());
-				logger.info("Unable to mute or unmute while sim is on pause!");
-			}
+			} 
+			//else {
+			//	musicMuteBox.setSelected(!musicMuteBox.isSelected());
+			//	logger.info("Unable to mute or unmute while sim is on pause!");
+			//}
 
 			e.consume();
 		});
@@ -1430,17 +1433,15 @@ public class MainScene {
 
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
+					// Set to the new sound effect volume in the sound player 
+					soundPlayer.setSoundVolume((float) convertSlider2Volume(sliderValue));
+					
 					if (sliderValue <= 0) {
+						// check the sound effect mute box
 						soundEffectMuteBox.setSelected(true);
-						menuBar.getEffectMuteItem().setSelected(false);
-						soundPlayer.pauseSound(true, false);
-						// muteSound(true, false);
 					} else {
-						soundPlayer.setEffectVolume((float) convertSlider2Volume(sliderValue));
+						// uncheck the sound effect mute box
 						soundEffectMuteBox.setSelected(false);
-						menuBar.getEffectMuteItem().setSelected(true);
-						soundPlayer.restoreSound(true, false);
-						// unmuteSound(true, false);
 					}
 				}
 			}
@@ -1456,23 +1457,30 @@ public class MainScene {
 		// cb.setPadding(new Insets(0,0,0,5));
 		soundEffectMuteBox.setAlignment(Pos.CENTER);
 		soundEffectMuteBox.setOnAction(e -> {
-			if (!masterClock.isPaused()) {
+			if (!masterClock.isPaused()) {			
 				if (soundEffectMuteBox.isSelected()) {
 					// mute it
-					// muteSound(true, false);
+					soundPlayer.pause(true, false);
+					// save the slider value into the cache
 					effectSliderCache = (float) soundEffectSlider.getValue();
+					// set the slider value to zero
 					soundEffectSlider.setValue(0);
-					menuBar.getEffectMuteItem().setSelected(false);
+					// check the sound effect mute item in menuBar
+					menuBar.getEffectMuteItem().setSelected(true);
 				} else {
 					// unmute it
-					// unmuteSound(true, false);
+					soundPlayer.restore(true, false);
+					// restore the slider value from the cache
 					soundEffectSlider.setValue(effectSliderCache);
-					menuBar.getEffectMuteItem().setSelected(true);
+					// uncheck the sound effect mute item in menuBar
+					menuBar.getEffectMuteItem().setSelected(false);
 				}
-			} else {
-				soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
-				logger.info("Unable to mute or unmute while sim is on pause!");
-			}
+			} 
+	
+			//else {
+			//	soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
+			//	logger.info("Unable to mute or unmute while sim is on pause!");
+			//}
 
 			e.consume();
 		});

@@ -159,7 +159,7 @@ public class EatMeal extends Task implements Serializable {
         
         boolean notHungry = startingHunger < 150 && energy > 1500;
         // if a person is thirsty and not hungry
-        if (condition.isThirsty() && thirst > 300 && notHungry) {
+        if (condition.isThirsty() && notHungry) {
         	consumeWater(true);
         	endTask();
         }

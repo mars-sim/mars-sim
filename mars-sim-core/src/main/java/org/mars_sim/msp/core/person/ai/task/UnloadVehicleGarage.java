@@ -467,9 +467,10 @@ implements Serializable {
             		logger.info("Retrieving the dead body of " + p + " from " + vehicle.getName()
         			+ " parked inside " + settlement);
             		PhysicalCondition pc = p.getPhysicalCondition();
-            		pc.retrieveBody();
-            		pc.examBody(pc.getDeathDetails().getProblem());
-            		p.buryBody();
+            		pc.handleBody();
+            		//pc.retrieveBody();
+            		//pc.examBody(pc.getDeathDetails().getProblem());
+            		//p.buryBody();
             	}
             }
         }

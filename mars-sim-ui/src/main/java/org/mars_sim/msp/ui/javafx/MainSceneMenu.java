@@ -439,7 +439,7 @@ public class MainSceneMenu extends MenuBar  {
             public void handle(ActionEvent arg0) {
             	//float oldvolume = desktop.getSoundPlayer().getVolume();
     			//desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
-    			desktop.getSoundPlayer().effectVolumeUp();
+    			desktop.getSoundPlayer().soundVolumeUp();
             }
         });
 
@@ -448,7 +448,7 @@ public class MainSceneMenu extends MenuBar  {
             public void handle(ActionEvent arg0) {
             	//float oldvolume = desktop.getSoundPlayer().getVolume();
     			//desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
-    			desktop.getSoundPlayer().effectVolumeDown();
+    			desktop.getSoundPlayer().soundVolumeDown();
             }
         });
 
@@ -456,9 +456,9 @@ public class MainSceneMenu extends MenuBar  {
             @Override
             public void handle(ActionEvent arg0) {
             	if (musicMuteItem.isSelected())
-            		desktop.getSoundPlayer().pauseSound(false, true);
+            		desktop.getSoundPlayer().pause(false, true);
             	else
-            		desktop.getSoundPlayer().restoreSound(false, true);
+            		desktop.getSoundPlayer().restore(false, true);
             }
         });
         
@@ -466,9 +466,9 @@ public class MainSceneMenu extends MenuBar  {
             @Override
             public void handle(ActionEvent arg0) {
             	if (effectMuteItem.isSelected())
-            		desktop.getSoundPlayer().pauseSound(true, false);
+            		desktop.getSoundPlayer().pause(true, false);
             	else
-            		desktop.getSoundPlayer().restoreSound(true, false);
+            		desktop.getSoundPlayer().restore(true, false);
             }
         });
 /*

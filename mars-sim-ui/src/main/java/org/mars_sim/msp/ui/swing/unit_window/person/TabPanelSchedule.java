@@ -313,6 +313,7 @@ extends TabPanel {
 
 		// Create schedule table
 		table = new ZebraJTable(scheduleTableModel);
+		TableStyle.setTableStyle(table);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(8);
 		table.getColumnModel().getColumn(1).setPreferredWidth(100);
@@ -343,12 +344,13 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		int new_theme = -1;
+		int t = -1;
 		
 		if (desktop.getMainScene() != null)
-			new_theme = MainScene.getTheme();
+			t = MainScene.getTheme();
 
-		if (theme != new_theme) {
+		if (theme != t) {
+			theme = t;
 			TableStyle.setTableStyle(table);
 		}
 		
@@ -364,7 +366,7 @@ extends TabPanel {
     		start = taskSchedule.getShiftStart();
     		end = taskSchedule.getShiftEnd();
     		
-    		if (shiftCache != ShiftType.OFF)
+    		if (shiftCache != ShiftType.OFF && shiftTF != null)
     			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
     		else
     			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off"), TooltipWay.down);

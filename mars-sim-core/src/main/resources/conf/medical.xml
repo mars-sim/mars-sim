@@ -252,8 +252,8 @@
 		<!-- 2016-06-15 Food Poisoning occurs when a kitchen equipment malfunction -->
 		<!-- The effects do not last long, however. (See Food Contamination in malfunctions.xml.)-->
 		<medical-complaint name="Food Poisoning">
-			<seriousness value="60" />
-			<degrade-time value="2.0" />
+			<seriousness value="55" />
+			<degrade-time value="3.0" />
 			<recovery-time value="3.0" />
 			<probability value="2.0" />
 			<performance-percent value="40.0" />
@@ -372,7 +372,7 @@
 		<treatment name="Hospitalization">
 			<skill value="2" />
 			<medical-tech-level value="3" />
-			<treatment-time value="2000.0" />
+			<treatment-time value="1000.0" />
 			<self-admin value="false" />
 		</treatment>
 
@@ -392,8 +392,8 @@
         </treatment>
 
         <treatment name="Radioprotective Agent">
-        	<skill value="0" />
-        	<medical-tech-level value="1" />
+        	<skill value="1" />
+        	<medical-tech-level value="2" />
         	<treatment-time value="100.0" />
         	<self-admin value="true" />
         </treatment>        

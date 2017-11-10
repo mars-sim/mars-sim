@@ -288,7 +288,7 @@ implements ActionListener, MenuListener {
 		// Create Volume slider menu item
 		//MainDesktopPane desktop = mainWindow.getDesktop();
 		final AudioPlayer soundPlayer = desktop.getSoundPlayer();
-		float volume = soundPlayer.getMusicGain();
+		float volume = soundPlayer.getMusicVolume();
 		int intVolume = Math.round(volume * 10F);
 
 		musicVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); //$NON-NLS-1$
@@ -318,7 +318,7 @@ implements ActionListener, MenuListener {
 		effectVolumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				float newVolume = (float) effectVolumeItem.getValue()/10F;
-				soundPlayer.setEffectVolume(newVolume);			
+				soundPlayer.setSoundVolume(newVolume);			
 			}
 			});
 		settingsMenu.add(effectVolumeItem);
@@ -476,39 +476,39 @@ implements ActionListener, MenuListener {
 		}
 
 		else if (selectedItem == musicVolumeUpItem) {
-			float oldvolume = desktop.getSoundPlayer().getMusicGain();
+			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
 			desktop.getSoundPlayer().setMusicVolume(oldvolume+0.05F);
 		}
 
 		else if (selectedItem == musicVolumeDownItem) {
-			float oldvolume = desktop.getSoundPlayer().getMusicGain();
+			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
 			desktop.getSoundPlayer().setMusicVolume(oldvolume-0.05F);
 		}
 
 
 		else if (selectedItem == effectVolumeUpItem) {
-			float oldvolume = desktop.getSoundPlayer().getEffectGain();
-			desktop.getSoundPlayer().setEffectVolume(oldvolume+0.05F);
+			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
+			desktop.getSoundPlayer().setSoundVolume(oldvolume+0.05F);
 		}
 
 		else if (selectedItem == effectVolumeDownItem) {
-			float oldvolume = desktop.getSoundPlayer().getEffectGain();
-			desktop.getSoundPlayer().setEffectVolume(oldvolume-0.05F);
+			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
+			desktop.getSoundPlayer().setSoundVolume(oldvolume-0.05F);
 		}
 
 		
 		else if (selectedItem == musicMuteItem) {
 			if (musicMuteItem.isSelected())
-				desktop.getSoundPlayer().pauseSound(false, true);
+				desktop.getSoundPlayer().pause(false, true);
 			else
-				desktop.getSoundPlayer().restoreSound(false, true);
+				desktop.getSoundPlayer().restore(false, true);
 		}
 
 		else if (selectedItem == effectMuteItem) {
 			if (effectMuteItem.isSelected())
-				desktop.getSoundPlayer().pauseSound(true, false);
+				desktop.getSoundPlayer().pause(true, false);
 			else
-				desktop.getSoundPlayer().restoreSound(true, false);
+				desktop.getSoundPlayer().restore(true, false);
 		}
 		
 		else if (selectedItem == aboutMspItem) {
@@ -550,12 +550,12 @@ implements ActionListener, MenuListener {
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
 
-		musicVolumeItem.setValue(Math.round(desktop.getSoundPlayer().getMusicGain() * 10F));
+		musicVolumeItem.setValue(Math.round(desktop.getSoundPlayer().getMusicVolume() * 10F));
 		musicVolumeItem.setEnabled(!desktop.getSoundPlayer().isMusicMute());
-		effectVolumeItem.setValue(Math.round(desktop.getSoundPlayer().getEffectGain() * 10F));
-		effectVolumeItem.setEnabled(!desktop.getSoundPlayer().isEffectMute());
+		effectVolumeItem.setValue(Math.round(desktop.getSoundPlayer().getEffectVolume() * 10F));
+		effectVolumeItem.setEnabled(!desktop.getSoundPlayer().isSoundMute());
 		musicMuteItem.setSelected(desktop.getSoundPlayer().isMusicMute());
-		effectMuteItem.setSelected(desktop.getSoundPlayer().isEffectMute());
+		effectMuteItem.setSelected(desktop.getSoundPlayer().isSoundMute());
 	}
 
 
