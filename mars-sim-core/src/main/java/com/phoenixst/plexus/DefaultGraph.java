@@ -15,10 +15,26 @@
 
 package com.phoenixst.plexus;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+//import java.io.*;
+//import java.util.*;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import com.phoenixst.collections.*;
@@ -228,6 +244,12 @@ public class DefaultGraph
     protected DefaultGraph( int nodeSize )
     {
         super();
+        BasicConfigurator.configure();
+        //URL url = DefaultGraph.class.getResource("../log4j.properties");
+        //URL url = getClass().getResource("../log4j.properties");
+        //System.out.println("url : " + url);
+        //String log4jConfPath = url.toString();//.toExternalForm();
+        //PropertyConfigurator.configure(log4jConfPath);
         observableDelegate = new ObservableGraphDelegate( this, EVENT_LOGGER );
         nodeMap = new HashMap( nodeSize );
     }

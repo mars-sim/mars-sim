@@ -85,7 +85,13 @@ implements Serializable {
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;
 
+	private static ScienceType areology = ScienceType.AREOLOGY;
 
+	private static PersonConfig personConfig;
+	
+	private static ScientificStudyManager manager;
+
+	
 	/**
 	 * Constructor.
 	 * @param startingPerson {@link Person} the person starting the mission.
@@ -102,7 +108,7 @@ implements Serializable {
 			// Set the lead areology researcher and study.
 			leadResearcher = startingPerson;
 			study = determineStudy(leadResearcher);
-			if (study == null) endMission("Scientific study could not be determined.");
+			if (study == null) endMission(NO_ONGOING_SCIENTIFIC_STUDY);
 
             setStartingSettlement(s);
             
@@ -126,7 +132,7 @@ implements Serializable {
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable())
-				endMission("Vehicle is not loadable. (AreologyStudyFieldMission)");
+				endMission(VEHICLE_NOT_LOADABLE);
 		}
 		
 		if (s != null) {
@@ -194,7 +200,7 @@ implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission("Vehicle is not loadable. (AreologyStudyFieldMission)");
+			endMission(VEHICLE_NOT_LOADABLE);
 		}
 	}
 
@@ -222,11 +228,12 @@ implements Serializable {
 	private ScientificStudy determineStudy(Person researcher) {
 		ScientificStudy result = null;
 
-		ScienceType areology = ScienceType.AREOLOGY;
+		//ScienceType areology = ScienceType.AREOLOGY;
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+		if (manager == null)
+			manager = Simulation.instance().getScientificStudyManager();
 		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(researcher);
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
@@ -272,11 +279,11 @@ implements Serializable {
 
 		double timeLimit = Double.MAX_VALUE;
 
-		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		// Check food capacity as time limit.
-		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-		double foodConsumptionRate = config.getFoodConsumptionRate() * Mission.FOOD_MARGIN;
+		double foodConsumptionRate = personConfig.getFoodConsumptionRate() * Mission.FOOD_MARGIN;
 		double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
@@ -294,8 +301,7 @@ implements Serializable {
  */
 
 		// Check water capacity as time limit.
-		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double waterConsumptionRate = config.getWaterConsumptionRate() * Mission.WATER_MARGIN;
+		double waterConsumptionRate = personConfig.getWaterConsumptionRate() * Mission.WATER_MARGIN;
 		double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
@@ -303,8 +309,7 @@ implements Serializable {
 		}
 
 		// Check oxygen capacity as time limit.
-		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenConsumptionRate = config.getNominalO2ConsumptionRate() * Mission.OXYGEN_MARGIN;
+		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate() * Mission.OXYGEN_MARGIN;
 		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
@@ -371,7 +376,7 @@ implements Serializable {
 		    Person person = (Person) member;
 
 			// Add modifier if person is a researcher on the same scientific study.
-			ScienceType areology = ScienceType.AREOLOGY;
+			//ScienceType areology = ScienceType.AREOLOGY;
 			if (study != null) {
 				if (person == study.getPrimaryResearcher()) {
 					result += 2D;

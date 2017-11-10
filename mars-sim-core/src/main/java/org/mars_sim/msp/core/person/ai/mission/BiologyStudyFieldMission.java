@@ -82,6 +82,12 @@ implements Serializable {
 	private static AmountResource waterAR = Rover.waterAR;
 	private static AmountResource foodAR = Rover.foodAR;
 
+	private static ScienceType biology = ScienceType.BIOLOGY;
+	
+	private static PersonConfig personConfig;
+	
+	private static ScientificStudyManager manager;
+	
 	/**
 	 * Constructor.
 	 * @param startingPerson {@link Person} the person starting the mission.
@@ -98,7 +104,7 @@ implements Serializable {
 			// Set the lead biology researcher and study.
 			leadResearcher = startingPerson;
 			study = determineStudy(leadResearcher);
-			if (study == null) endMission("Scientific study could not be determined.");
+			if (study == null) endMission(NO_ONGOING_SCIENTIFIC_STUDY);
 
 			// Set mission capacity.
 			if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
@@ -124,7 +130,7 @@ implements Serializable {
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable())
-				endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
+				endMission(VEHICLE_NOT_LOADABLE);
 		}
 
 		if (s != null) {
@@ -188,7 +194,7 @@ implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable())
-			endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
+			endMission(VEHICLE_NOT_LOADABLE);
 	}
 
 	/**
@@ -215,11 +221,12 @@ implements Serializable {
 	private ScientificStudy determineStudy(Person researcher) {
 		ScientificStudy result = null;
 
-		ScienceType biology = ScienceType.BIOLOGY;
+		//ScienceType biology = ScienceType.BIOLOGY;
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+		if (manager == null)
+			manager = Simulation.instance().getScientificStudyManager();
 		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(researcher);
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
@@ -264,11 +271,11 @@ implements Serializable {
 
 		double timeLimit = Double.MAX_VALUE;
 
-		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		// Check food capacity as time limit.
-		//AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-		double foodConsumptionRate = config.getFoodConsumptionRate();
+		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
 		double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
@@ -285,15 +292,13 @@ implements Serializable {
    */
 
 		// Check water capacity as time limit.
-		//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double waterConsumptionRate = config.getWaterConsumptionRate();
+		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
 		double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
-		//AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenConsumptionRate = config.getNominalO2ConsumptionRate();
+		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
 		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
@@ -362,7 +367,7 @@ implements Serializable {
 	        if (job != null) result = job.getJoinMissionProbabilityModifier(this.getClass());
 
 	        // Add modifier if person is a researcher on the same scientific study.
-	        ScienceType biology = ScienceType.BIOLOGY;
+	        //ScienceType biology = ScienceType.BIOLOGY;
 	        if (study != null) {
 	            if (person == study.getPrimaryResearcher()) {
 	                result += 2D;

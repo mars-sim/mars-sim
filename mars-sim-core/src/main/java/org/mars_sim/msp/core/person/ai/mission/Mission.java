@@ -65,8 +65,11 @@ implements Serializable {
 	public static String MEDICAL_EMERGENCY = "A member has a medical emergency";
 	public static String NO_TRADING_SETTLEMENT = "No trading settlement";
 	public static String NO_GOOD_EVA_SUIT = "No good EVA suit";
-	public static String REQUEST_RESCUE = "Request rescue";	
-
+	public static String REQUEST_RESCUE = "Requesting rescue";	
+	public static String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going Scientific study in this subject";
+	public static String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
+	public static String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
+	
 	/** The marginal factor for the amount of water to be brought during a mission. */
 	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle
 	/** The marginal factor for the amount of oxygen to be brought during a mission. */

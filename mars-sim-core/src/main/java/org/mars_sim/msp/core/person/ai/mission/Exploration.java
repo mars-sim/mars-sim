@@ -94,6 +94,9 @@ implements Serializable {
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;
+	
+	private static PersonConfig personConfig;
+
     /**
      * Constructor.
      * @param startingPerson the person starting the mission.
@@ -104,19 +107,20 @@ implements Serializable {
         // Use RoverMission constructor.
         super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
-        if (!isDone()) {
+        Settlement s = startingPerson.getSettlement();
+        
+        if (s != null & !isDone()) {
 
             // Set mission capacity.
             if (hasVehicle())
                 setMissionCapacity(getRover().getCrewCapacity());
             int availableSuitNum = Mission
-                    .getNumberAvailableEVASuitsAtSettlement(startingPerson
-                            .getSettlement());
+                    .getNumberAvailableEVASuitsAtSettlement(s);
             if (availableSuitNum < getMissionCapacity())
                 setMissionCapacity(availableSuitNum);
 
             // Initialize data members.
-            setStartingSettlement(startingPerson.getSettlement());
+            setStartingSettlement(s);
             exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
             explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 
@@ -131,78 +135,29 @@ implements Serializable {
                             getPeopleNumber(), true), NUM_SITES, skill);
                 }
             } catch (Exception e) {
-                endMission("Exploration sites could not be determined.");
+                endMission(NO_EXPLORATION_SITES);
             }
 
             // Add home settlement
             addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
-                    getStartingSettlement(), getStartingSettlement().getName()));
+                    s, s.getName()));
 
             // Check if vehicle can carry enough supplies for the mission.
             if (hasVehicle() && !isVehicleLoadable())
-                endMission("Vehicle is not loadable. (Exploration)");
+                endMission(VEHICLE_NOT_LOADABLE);
         }
-
-        // Add exploring site phase.
-        addPhase(EXPLORE_SITE);
-
-        // Set initial mission phase.
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
+        
+        if (s != null) {
+	        // Add exploring site phase.
+	        addPhase(EXPLORE_SITE);
+	
+	        // Set initial mission phase.
+	        setPhase(VehicleMission.EMBARKING);
+	        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
+	                s.getName())); //$NON-NLS-1$
+        }
     }
-//    public Exploration(Robot startingRobot) {
-//
-//        // Use RoverMission constructor.
-//        super(DEFAULT_DESCRIPTION, startingRobot, RoverMission.MIN_PEOPLE);
-//
-//        if (!isDone()) {
-//
-//            // Set mission capacity.
-//            if (hasVehicle())
-//                setMissionCapacity(getRover().getCrewCapacity());
-//            int availableSuitNum = Mission
-//                    .getNumberAvailableEVASuitsAtSettlement(startingRobot
-//                            .getSettlement());
-//            if (availableSuitNum < getMissionCapacity())
-//                setMissionCapacity(availableSuitNum);
-//
-//            // Initialize data members.
-//            setStartingSettlement(startingRobot.getSettlement());
-//            exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
-//            explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
-//
-//            // Recruit additional people to mission.
-//            recruitRobotsForMission(startingRobot);
-//
-//            // Determine exploration sites
-//            try {
-//                if (hasVehicle()) {
-//                    int skill = startingRobot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-//                    determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(),
-//                            getPeopleNumber(), true), NUM_SITES, skill);
-//                }
-//            } catch (Exception e) {
-//                endMission("Exploration sites could not be determined.");
-//            }
-//
-//            // Add home settlement
-//            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
-//                    getStartingSettlement(), getStartingSettlement().getName()));
-//
-//            // Check if vehicle can carry enough supplies for the mission.
-//            if (hasVehicle() && !isVehicleLoadable())
-//                endMission("Vehicle is not loadable. (Exploration)");
-//        }
-//
-//        // Add exploring site phase.
-//        addPhase(EXPLORE_SITE);
-//
-//        // Set initial mission phase.
-//        setPhase(VehicleMission.EMBARKING);
-//        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-//                getStartingSettlement().getName())); //$NON-NLS-1$
-//    }
+
     /**
      * Constructor with explicit data.
      * @param members collection of mission members.
@@ -268,11 +223,11 @@ implements Serializable {
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
         setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
+        		startingSettlement.getName())); //$NON-NLS-1$
 
         // Check if vehicle can carry enough supplies for the mission.
         if (hasVehicle() && !isVehicleLoadable())
-            endMission("Vehicle is not loadable. (Exploration)");
+            endMission(VEHICLE_NOT_LOADABLE);
     }
 
     /**
@@ -694,12 +649,11 @@ implements Serializable {
 
         double timeLimit = Double.MAX_VALUE;
 
-        PersonConfig config = SimulationConfig.instance()
-                .getPersonConfiguration();
+        if (personConfig == null)
+        	personConfig = SimulationConfig.instance().getPersonConfiguration();
 
         // Check food capacity as time limit.
-        //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        double foodConsumptionRate = config.getFoodConsumptionRate();
+        double foodConsumptionRate = personConfig.getFoodConsumptionRate();
         double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
@@ -715,8 +669,7 @@ implements Serializable {
             timeLimit = dessert1TimeLimit;
 */
         // Check water capacity as time limit.
-        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double waterConsumptionRate = config.getWaterConsumptionRate();
+        double waterConsumptionRate = personConfig.getWaterConsumptionRate();
         double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
@@ -724,8 +677,7 @@ implements Serializable {
             timeLimit = waterTimeLimit;
 
         // Check oxygen capacity as time limit.
-        //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenConsumptionRate = config.getNominalO2ConsumptionRate();
+        double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
         double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
@@ -828,7 +780,7 @@ implements Serializable {
         }
         else {
             sites = unorderedSites;
-            double totalDistance = getTotalDistance(startingLocation, unorderedSites);
+            //double totalDistance = getTotalDistance(startingLocation, unorderedSites);
         }
 
         int explorationSiteNum = 1;
