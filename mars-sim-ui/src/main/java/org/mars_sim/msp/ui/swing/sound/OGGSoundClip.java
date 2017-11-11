@@ -46,7 +46,7 @@ public class OGGSoundClip {
 	private int bytes = 0;
 
 	private float balance;
-	private float volume = 0f;
+	private float volume = .5f;
 	
 	private boolean mute = false;
 	private boolean paused;
@@ -316,13 +316,14 @@ public class OGGSoundClip {
 
 	/**
 	 * Pause the playback
-	 */
+
 	public void pause() {
 		paused = true;
 		//oldGain = gain;
 		determineGain(0);
 	}
-
+	 */
+	
 	/**
 	 * Check if the stream is paused
 	 *
@@ -334,7 +335,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Resume the playback
-	 
+	 */	 
 	public void resume() {
 		if (!paused) {
 			play();
@@ -348,9 +349,10 @@ public class OGGSoundClip {
 				playerThread.notify();
 			}
 		}
-		setGain(oldGain);
+		
+		//determineGain(oldGain);
 	}
-*/
+
 	
 	/**
 	 * Check if the clip has been stopped

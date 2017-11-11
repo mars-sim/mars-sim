@@ -29,6 +29,7 @@ import org.controlsfx.control.MaskerPane;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
 
+//import javafx.stage.Screen;
 import javafx.scene.Parent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -49,6 +50,7 @@ import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+//import javafx.geometry.Rectangle2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
@@ -93,11 +95,11 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
-import javafx.geometry.Point2D;
+//import javafx.geometry.Point2D;
 import javafx.scene.input.ScrollEvent;
 
 import java.awt.BorderLayout;
-import java.awt.Point;
+//import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -306,11 +308,14 @@ public class MainScene {
 
 	private Spinner<Integer> spinner;
 	private JFXComboBox<Settlement> sBox;
-	private JFXToggleButton cacheToggle, minimapToggle, mapToggle; // calendarButton,
-	private static JFXSlider zoomSlider, musicSlider, soundEffectSlider; // timeSlider,
-	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;// , farmBtn; // //
-																								// miniMapBtn, mapBtn,
-	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// , farmPopup;// marsTimePopup;
+	private JFXToggleButton cacheToggle, minimapToggle, mapToggle;
+	private JFXSlider zoomSlider;
+
+	private static JFXSlider musicSlider;
+	private static JFXSlider soundEffectSlider; 
+	
+	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;
+	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;
 	private JFXTabPane jfxTabPane;
 	private JFXDialog exitDialog;
 	private CheckBox musicMuteBox, soundEffectMuteBox;
@@ -382,15 +387,16 @@ public class MainScene {
 			prepareScene();
 			initializeTheme();
 			prepareOthers();
-			// 2016-02-07 Added calling setMonitor() for screen detection and placing
-			// quotation pop at top right corner
+			
+			// Call setMonitor() for screen detection and placing quotation pop at top right corner
 			setMonitor(stage);
-			stage.centerOnScreen();
+
+			//stage.centerOnScreen();
 			stage.setTitle(Simulation.title);
 			stage.setResizable(false);
 			stage.show();
 			stage.requestFocus();
-
+			
 			createSavingIndicator();
 
 			openInitialWindows();
@@ -651,16 +657,8 @@ public class MainScene {
 		Nodes.addInputMap(rootStackPane, ctrlDown);
 
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)),
-				e -> {
-					adjustSound();
-				});
+				e -> adjustVolume());
 		Nodes.addInputMap(rootStackPane, ctrlM);
-
-		// InputMap<KeyEvent> ctrlN = consume(keyPressed(new
-		// KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), e -> {
-		// newSimulation();
-		// });
-		// Nodes.addInputMap(root, ctrlN);
 
 		InputMap<KeyEvent> ctrlS = consume(keyPressed(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)),
 				e -> {
@@ -784,59 +782,75 @@ public class MainScene {
 		return text;
 	}
 
-	public void adjustSound() {
-		if (musicSlider.getValue() > 0) {
-			pauseSound(false, true);
-		} else
-			restoreSound(false, true);
-
-		if (soundEffectSlider.getValue() > 0) {
-			pauseSound(true, false);
-		} else
-			restoreSound(true, false);
-
-		/*
-		 * //if (!masterClock.isPaused()) { boolean isMute =
-		 * menuBar.getEffectMuteItem().isSelected(); if (isMute) {
-		 * restoreSound(isEffect, isMusic); } else { pauseSound(isEffect, isMusic); }
-		 * //}
-		 * 
-		 */
+	public void adjustVolume() {
+		if (!masterClock.isPaused()) {
+			
+			musicMuteBox.setSelected(!musicMuteBox.isSelected());
+			soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
+/*			
+			if (musicMuteBox.isSelected()) {// || musicSlider.getValue() > 0) { //musicMuteBox.isSelected()) {//
+				//musicMuteBox.setSelected(true);
+				mute(false, true);
+			} else
+				//musicMuteBox.setSelected(false);
+				unmute(false, true);
+			
+			if (soundEffectMuteBox.isSelected()) {// || soundEffectSlider.getValue() > 0) { //soundEffectMuteBox.isSelected()) {//
+				//soundEffectMuteBox.setSelected(true);
+				mute(true, false);
+			} else
+				//soundEffectMuteBox.setSelected(false);
+				unmute(true, false);
+*/			
+		}
 	}
 
-	public void pauseSound(boolean isEffect, boolean isMusic) {
+	public void mute(boolean isEffect, boolean isMusic) {
 		if (isMusic) {
+			// mute it
+			soundPlayer.mute(false, true);
+			// save the slider value into the cache
 			musicSliderCache = (float) musicSlider.getValue();
-			menuBar.getMusicMuteItem().setSelected(true);
+			// set the slider value to zero
 			musicSlider.setValue(0);
-			musicMuteBox.setSelected(true);
+			// check the music mute item in menuBar
+			menuBar.getMusicMuteItem().setSelected(true);
 		}
 		if (isEffect) {
+			// mute it
+			soundPlayer.mute(true, false);
+			// save the slider value into the cache
 			effectSliderCache = (float) soundEffectSlider.getValue();
-			menuBar.getEffectMuteItem().setSelected(true);
+			// set the slider value to zero
 			soundEffectSlider.setValue(0);
-			soundEffectMuteBox.setSelected(true);
+			// check the sound effect mute item in menuBar
+			menuBar.getSoundEffectMuteItem().setSelected(true);
+			
+			
 		}
-		soundPlayer.pause(isEffect, isMusic);
+		//soundPlayer.pause(isEffect, isMusic);
 	}
 
-	public void restoreSound(boolean isEffect, boolean isMusic) {
+	public void unmute(boolean isEffect, boolean isMusic) {
 		if (isMusic) {
+			// unmute it
+			soundPlayer.unmute(false, true);
+			// restore the slider value from the cache
 			musicSlider.setValue(musicSliderCache);
+			// uncheck the music mute item in menuBar
 			menuBar.getMusicMuteItem().setSelected(false);
-			soundPlayer.setMusicVolume(convertSlider2Volume(musicSliderCache));
-			// musicSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
-			musicMuteBox.setSelected(false);
+			
 		}
 		if (isEffect) {
+			// unmute it
+			soundPlayer.unmute(true, false);
+			// restore the slider value from the cache
 			soundEffectSlider.setValue(effectSliderCache);
-			menuBar.getEffectMuteItem().setSelected(false);
-			soundPlayer.setSoundVolume(convertSlider2Volume(effectSliderCache));
-			// effectSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
-			soundEffectMuteBox.setSelected(false);
+			// uncheck the sound effect mute item in menuBar
+			menuBar.getSoundEffectMuteItem().setSelected(false);
 		}
 
-		soundPlayer.restore(isEffect, isMusic);
+		//soundPlayer.restore(isEffect, isMusic);
 
 	}
 
@@ -1372,40 +1386,40 @@ public class MainScene {
 		Label trackLabel = createBlendLabel("Background Music");
 		trackLabel.setPadding(new Insets(0, 0, 0, 0));
 
-		musicMuteBox = new CheckBox("mute");
+		musicMuteBox = new JFXCheckBox("mute");
 		musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
 				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
 		musicMuteBox.setAlignment(Pos.CENTER);
+		
+		musicMuteBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		    	//System.out.println("oldValue : " + oldValue + "   newValue : " + newValue);
+		    	if (oldValue != newValue) {
+			    	musicMuteBox.setSelected(newValue);
+					if (!masterClock.isPaused()) {			
+						if (musicMuteBox.isSelected()) {				
+							mute(false, true);	
+						} else {					
+							unmute(false, true);			
+						}
+					}
+		    	}
+		    }
+		});
+/*		
 		musicMuteBox.setOnAction(e -> {
 			if (!masterClock.isPaused()) {
-				if (musicMuteBox.isSelected()) {
-					// mute it
-					soundPlayer.pause(false, true);
-					// save the slider value into the cache
-					musicSliderCache = (float) musicSlider.getValue();
-					// set the slider value to zero
-					musicSlider.setValue(0);
-					// check the music mute item in menuBar
-					menuBar.getMusicMuteItem().setSelected(true);
-				} else {
-					// unmute it
-					soundPlayer.restore(false, true);
-					// restore the slider value from the cache
-					musicSlider.setValue(musicSliderCache);
-					// uncheck the music mute item in menuBar
-					menuBar.getMusicMuteItem().setSelected(false);
+				if (musicMuteBox.isSelected()) {					
+					mute(false, true);			
+				} else {				
+					unmute(false, true);			
 				}
-
 			} 
-			//else {
-			//	musicMuteBox.setSelected(!musicMuteBox.isSelected());
-			//	logger.info("Unable to mute or unmute while sim is on pause!");
-			//}
-
 			e.consume();
 		});
-
+*/
 		// Set up a settlement view zoom bar
 		soundEffectSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
@@ -1451,40 +1465,39 @@ public class MainScene {
 		Label effectLabel = createBlendLabel("Sound Effect");
 		effectLabel.setPadding(new Insets(0, 0, 0, 1));
 
-		soundEffectMuteBox = new CheckBox("mute");
+		soundEffectMuteBox = new JFXCheckBox("mute");
 		soundEffectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
 				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
 		soundEffectMuteBox.setAlignment(Pos.CENTER);
+		
+		soundEffectMuteBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		    	if (oldValue != newValue) {
+			    	soundEffectMuteBox.setSelected(newValue);
+					if (!masterClock.isPaused()) {			
+						if (soundEffectMuteBox.isSelected()) {				
+							mute(true, false);
+						} else {					
+							unmute(true, false);			
+						}
+					}
+		    	}
+		    }
+		});
+/*		
 		soundEffectMuteBox.setOnAction(e -> {
 			if (!masterClock.isPaused()) {			
-				if (soundEffectMuteBox.isSelected()) {
-					// mute it
-					soundPlayer.pause(true, false);
-					// save the slider value into the cache
-					effectSliderCache = (float) soundEffectSlider.getValue();
-					// set the slider value to zero
-					soundEffectSlider.setValue(0);
-					// check the sound effect mute item in menuBar
-					menuBar.getEffectMuteItem().setSelected(true);
-				} else {
-					// unmute it
-					soundPlayer.restore(true, false);
-					// restore the slider value from the cache
-					soundEffectSlider.setValue(effectSliderCache);
-					// uncheck the sound effect mute item in menuBar
-					menuBar.getEffectMuteItem().setSelected(false);
+				if (soundEffectMuteBox.isSelected()) {				
+					mute(true, false);
+				} else {					
+					unmute(true, false);			
 				}
-			} 
-	
-			//else {
-			//	soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
-			//	logger.info("Unable to mute or unmute while sim is on pause!");
-			//}
-
+			}
 			e.consume();
 		});
-
+*/
 		// Label empty = new Label();
 
 		GridPane gridPane0 = new GridPane();
@@ -2813,9 +2826,9 @@ public class MainScene {
 		// int msol = (int)(masterClock.getTimeRatio());
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
-		// if (!desktop.getSoundPlayer().isMusicMute())
-		if (musicSlider.getValue() > 0)
-			soundPlayer.playRandomBackgroundTrack();
+		if (!soundPlayer.isMusicMute())
+		//if (musicSlider.getValue() > 0)
+			soundPlayer.playRandomMusicTrack();
 		// }
 
 		if (simSpeedPopup.isShowing() || solCache == 0) {
@@ -3178,7 +3191,7 @@ public class MainScene {
 				masterClock.setTimeRatio(previous);
 			}
 		} else {
-			if (now != 1) {
+			if (now != 1.0) {
 				masterClock.setTimeRatio(1.0);
 			}
 		}
@@ -3497,9 +3510,9 @@ public class MainScene {
 
 		}
 
-		else if (type == PAUSED) {
+		//else if (type == PAUSED) {
 			// messagePopup = new MessagePopup();
-		}
+		//}
 
 		else
 			System.out.println("MainScene's createProgressCircle() : type is invalid");
@@ -3508,7 +3521,6 @@ public class MainScene {
 
 	/**
 	 * Starts the wait stage in an executor thread
-	 * 
 	 * @param type
 	 */
 	public void showWaitStage(int type) {
@@ -3523,7 +3535,6 @@ public class MainScene {
 
 	/*
 	 * Set up a wait stage
-	 * 
 	 * @param type
 	 */
 	class LoadWaitStageTask implements Runnable {
@@ -3540,17 +3551,9 @@ public class MainScene {
 				if (type == AUTOSAVING || type == SAVING) {
 					stopPausePopup();
 					setMonitor(savingStage);
-					// System.out.println("sPane.getWidth() / 2 : " + sPane.getWidth() / 2); //
-					// equals 0.0
-					// System.out.println("savingStage.getWidth() / 2 : " + savingStage.getWidth() /
-					// 2); // equals : NaN
 					savingStage.setX((int) (stage.getX() + scene.getWidth() / 2 - 50));
 					savingStage.setY((int) (stage.getY() + scene.getHeight() / 2 - 50));
 					savingStage.show();
-					// System.out.println("sPane.getWidth() / 2 : " + sPane.getWidth() / 2); //
-					// equals 50.0
-					// System.out.println("savingStage.getWidth() / 2 : " + savingStage.getWidth() /
-					// 2); // equals 50.0
 				} else if (type == LOADING) {
 					setMonitor(loadingStage);
 					loadingStage.show();
@@ -3576,16 +3579,15 @@ public class MainScene {
 
 	}
 
-	// 2016-06-27 Added setMonitor()
+	/**
+	 * Sets the stage properly on the monitor where the mouse pointer is
+	 * @param stage
+	 */
 	public void setMonitor(Stage stage) {
-		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by
-		// user ?
-		// "active monitor is defined by whichever computer screen the mouse pointer is
-		// or where the command console that starts mars-sim.
-		// by default MSP runs on the primary monitor (aka monitor 0 as reported by
-		// windows os) only.
-		// see
-		// http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
+		// TODO: how to run on the "Active monitor" as chosen by user ?
+		// Note : "Active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
+		// By default, it runs on the primary monitor (aka monitor 0 as reported by windows os only.
+		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 		StartUpLocation startUpLoc = null;
 
 		if (anchorPane == null) {
@@ -3603,15 +3605,32 @@ public class MainScene {
 		double xPos = startUpLoc.getXPos();
 		double yPos = startUpLoc.getYPos();
 		// Set Only if X and Y are not zero and were computed correctly
-		if (xPos != 0 && yPos != 0) {
+		//if (xPos != 0 && yPos != 0) {
 			stage.setX(xPos);
 			stage.setY(yPos);
-		}
+		//}
+		
+		//System.out.println("xPos : " + xPos);
+		//System.out.println("yPos : " + yPos);
 
-		stage.centerOnScreen();
+/*	
+		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+		stage.setX(bounds.getMinX());
+		stage.setY(bounds.getMinY());
+		
+		//stage.setWidth(bounds.getWidth());
+		//stage.setHeight(bounds.getHeight());			
+
+		System.out.println("bounds.getMinX() : " + bounds.getMinX());
+		System.out.println("bounds.getMinY() : " + bounds.getMinY());
+*/
+
+		//stage.centerOnScreen(); // this will cause the stage to be pinned slight upward.
 	}
 
-	// 2016-10-01 Added mainSceneExecutor for executing wait stages
+	/**
+	 * Starts the main scene executor thread
+	 */
 	private void startMainSceneExecutor() {
 		// INFO: Simulation's startSimExecutor() is on JavaFX-Launcher Thread
 		mainSceneExecutor = Executors.newSingleThreadExecutor();
@@ -3650,26 +3669,15 @@ public class MainScene {
 
 	public void setSettlement(Settlement s) {
 		Platform.runLater(() -> {
-			// if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
 			openSettlementMap();
 			sBox.getSelectionModel().select(s);
 		});
 	}
-
-	// public CheckComboBox<String> getMapLabelBox() {
-	// return mapLabelBox;
-	// }
-	/*
-	 * public void sendSnackBar(String msg) { snackbar.fireEvent(new
-	 * SnackbarEvent(msg, "UNDO",3000,(b)->{})); }
-	 */
+	
 	/**
 	 * Sets up the JavaFX's tooltip
-	 * 
-	 * @param n
-	 *            Node
-	 * @param s
-	 *            tooltip's hint text
+	 * @param n Node
+	 * @param s tooltip's hint text
 	 */
 	public void setQuickToolTip(Node n, String s) {
 		Tooltip tt = new Tooltip(s);
@@ -3701,13 +3709,6 @@ public class MainScene {
 		return y / 100f;
 	}
 
-	// private float convertVolume2Slider(float x) {
-	// return 20f * (x - .5f);
-	// }
-
-	// public double getInitialTimeRatio() {
-	// return initial_time_ratio;
-	// }
 
 	public JFXButton getMarsNetBtn() {
 		return marsNetBtn;

@@ -499,16 +499,16 @@ implements ActionListener, MenuListener {
 		
 		else if (selectedItem == musicMuteItem) {
 			if (musicMuteItem.isSelected())
-				desktop.getSoundPlayer().pause(false, true);
+				desktop.getSoundPlayer().mute(false, true);
 			else
-				desktop.getSoundPlayer().restore(false, true);
+				desktop.getSoundPlayer().unmute(false, true);
 		}
 
 		else if (selectedItem == effectMuteItem) {
 			if (effectMuteItem.isSelected())
-				desktop.getSoundPlayer().pause(true, false);
+				desktop.getSoundPlayer().mute(true, false);
 			else
-				desktop.getSoundPlayer().restore(true, false);
+				desktop.getSoundPlayer().unmute(true, false);
 		}
 		
 		else if (selectedItem == aboutMspItem) {

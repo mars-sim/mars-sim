@@ -61,8 +61,8 @@ public class AudioPlayer {
 	private static OGGSoundClip currentSoundClip;
 	private static OGGSoundClip currentMusicTrack;
 
-	private static Map<String, OGGSoundClip> allBackgroundSoundTracks;
-	private static Map<String, OGGSoundClip> allOGGSoundClips;
+	private static Map<String, OGGSoundClip> allMusicTracks;
+	private static Map<String, OGGSoundClip> allSoundClips;
 
 	private static List<String> soundEffects;
 	private static List<String> soundTracks;
@@ -77,8 +77,8 @@ public class AudioPlayer {
 
 		masterClock = Simulation.instance().getMasterClock();
 		
-		allBackgroundSoundTracks = new HashMap<>();
-		allOGGSoundClips = new HashMap<>();
+		allMusicTracks = new HashMap<>();
+		allSoundClips = new HashMap<>();
 		
 		soundTracks = new ArrayList<>();
 		soundTracks.add(SoundConstants.ST_AREOLOGIE);
@@ -104,7 +104,7 @@ public class AudioPlayer {
 		
 		for (String p : soundTracks) {
 			try {
-				allBackgroundSoundTracks.put(p, new OGGSoundClip(p));
+				allMusicTracks.put(p, new OGGSoundClip(p));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -126,13 +126,13 @@ public class AudioPlayer {
 		
 		for (String s : soundEffects) {
 			try {
-				allOGGSoundClips.put(s, new OGGSoundClip(s));
+				allSoundClips.put(s, new OGGSoundClip(s));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		currentSoundClip = allOGGSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
+		currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
 		currentMusicTrack = null;
 
 		//if (UIConfig.INSTANCE.useUIDefault()) {
@@ -159,8 +159,8 @@ public class AudioPlayer {
 	 * @param filepath the file path to the music track.
 	 */
 	public void loadSound(String filepath) {
-		if (allOGGSoundClips.containsKey(filepath) && allOGGSoundClips.get(filepath) != null) {
-			currentSoundClip = allOGGSoundClips.get(filepath);
+		if (allSoundClips.containsKey(filepath) && allSoundClips.get(filepath) != null) {
+			currentSoundClip = allSoundClips.get(filepath);
 			currentSoundClip.determineGain(currentSoundVol);
 			currentSoundClip.play();
 		}
@@ -171,7 +171,7 @@ public class AudioPlayer {
 				//e.printStackTrace();
 				logger.log(Level.SEVERE, "IOException in AudioPlayer's playSound()", e.getMessage());
 			}
-			allOGGSoundClips.put(filepath, currentSoundClip);
+			allSoundClips.put(filepath, currentSoundClip);
 			currentSoundClip.determineGain(currentSoundVol);
 			currentSoundClip.play();
 		}
@@ -198,8 +198,8 @@ public class AudioPlayer {
 	 * @param filepath the file path to the music track.
 	 */
 	public void loadMusic(String filepath) {
-		if (allBackgroundSoundTracks.containsKey(filepath) && allBackgroundSoundTracks.get(filepath) != null) {
-			currentMusicTrack = allBackgroundSoundTracks.get(filepath);
+		if (allMusicTracks.containsKey(filepath) && allMusicTracks.get(filepath) != null) {
+			currentMusicTrack = allMusicTracks.get(filepath);
 			currentMusicTrack.determineGain(currentMusicVol);
 			currentMusicTrack.loop();
 		}
@@ -210,7 +210,7 @@ public class AudioPlayer {
 				//e.printStackTrace();
 				logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
 			}
-			allBackgroundSoundTracks.put(filepath, currentMusicTrack);
+			allMusicTracks.put(filepath, currentMusicTrack);
 			currentMusicTrack.determineGain(currentMusicVol);
 			currentMusicTrack.loop();
 		}
@@ -273,8 +273,10 @@ public class AudioPlayer {
 	
 
 	public void restoreLastMusicVolume() {
-		if (hasMasterGain && currentMusicTrack != null)
+		if (hasMasterGain && currentMusicTrack != null) {
+			//currentMusicTrack.resume();
 			currentMusicTrack.determineGain(lastMusicVol);
+		}
 	}
 
 
@@ -345,7 +347,7 @@ public class AudioPlayer {
 		//}
 		return currentSoundVol == 0;
 	}
-
+/*
 	public void restore(boolean isSound, boolean isMusic) {
 		if (isSound)  {
 			if (currentSoundClip != null) 
@@ -360,7 +362,7 @@ public class AudioPlayer {
 			restoreLastMusicVolume();
 		}
 	}
-		
+*/	
 	public void unmute(boolean isSound, boolean isMusic) {
 		if (isSound) {
 			if (currentSoundClip != null) 
@@ -375,7 +377,7 @@ public class AudioPlayer {
 		}
 	}
 	
-
+/*
 	public void pause(boolean isSound, boolean isMusic) {
 		if (currentMusicTrack != null)// && !currentMusicTrack.isMute())
 			lastMusicState = currentMusicTrack.isMute();
@@ -383,7 +385,7 @@ public class AudioPlayer {
 			lastSoundState = currentSoundClip.isMute();		
 		mute(isSound, isMusic);
 	}
-	
+*/
 	/**
 	 * Sets the state of the audio player to mute or unmute.
 	 * @param mute true if it will be set to mute
@@ -417,7 +419,7 @@ public class AudioPlayer {
 	 * Checks if the music track ever started or has stopped 
 	 * @return true if no music track is playing
 	 */
-	public boolean isBackgroundTrackStopped() {
+	public boolean isMusicTrackStopped() {
 		if (currentMusicTrack == null)
 			return true;
 		return currentMusicTrack.checkState();
@@ -462,8 +464,8 @@ public class AudioPlayer {
 	/**
 	 * Play a randomly selected music track
 	 */
-	public void playRandomBackgroundTrack() {
-		if (isBackgroundTrackStopped() && !masterClock.isPaused()) {
+	public void playRandomMusicTrack() {
+		if (isMusicTrackStopped() && !masterClock.isPaused()) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay them
 			if (currentMusicTrack != null
 					&& currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
@@ -488,8 +490,8 @@ public class AudioPlayer {
 	}
 	
 	public void destroy() {
-		allOGGSoundClips = null;
-		allBackgroundSoundTracks = null;
+		allSoundClips = null;
+		allMusicTracks = null;
 		desktop = null;
 		currentSoundClip = null;
 		currentMusicTrack = null;

@@ -189,7 +189,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
-		if (mainScene == null) soundPlayer.playRandomBackgroundTrack();
+		if (mainScene == null) soundPlayer.playRandomMusicTrack();
 		//soundPlayer.playBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.ST_AREOLOGIE); // play our intro music
 		//soundPlayer.playRandomBackgroundTrack();
 		
@@ -1027,14 +1027,21 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			Platform.runLater(() -> ssm.select(MainScene.MAIN_TAB));
 		}
 
-		playSound(unit);
+		
+		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+		if ((soundFilePath != null) && soundFilePath.length() != 0) {
+			//soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+			soundPlayer.playSound(soundFilePath);
+		}
+		
+		//playSound(unit);
 
 	}
 
 	/**
 	 * Set up playing a sound clip for the unit
 	 * @param unit the unit the window is for.
-	 */
+	 
 	// 2016-09-28 Added playSound()
 	@SuppressWarnings("restriction")
 	public void playSound(Unit unit) {
@@ -1062,10 +1069,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				}
 			//});
 		}
-
-
 	}
-
+*/
+	
 	/**
 	 * Finds an existing unit window for a unit.
 	 * @param unit the unit to search for.
@@ -1771,12 +1777,14 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		if (isPaused) {
 			marqueeTicker.pauseMarqueeTimer(true);
 			//if (!soundPlayer.isMute(true, true))
-				soundPlayer.pause(true, true);
+				//soundPlayer.pause(true, true);
+				soundPlayer.mute(true, true);
 		} 
 		else {
 			marqueeTicker.pauseMarqueeTimer(false);
 			//if (soundPlayer.isMute(true, true))
-				soundPlayer.restore(true, true);
+				//soundPlayer.restore(true, true); // not working
+				soundPlayer.unmute(true, true);
 		}
 	}
 
