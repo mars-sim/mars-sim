@@ -153,7 +153,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		//super(mainScene);
 	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
-
+	
 		init();
 	}
 
@@ -198,7 +198,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		browserJFX = new BrowserJFX(this);
 
-		prepareToolWindows();
+		prepareToolWindows();	
 		// Prepare unit windows.
 		unitWindows = new ArrayList<UnitWindow>();
 		// Create update thread.
@@ -552,8 +552,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
 
-//		if (mainScene != null) {
-
+		//if (mainScene != null) {			
+			//mainScene.initializeTheme();
+		//}
+		
+		//WebLookAndFeel.install();
+		//UIManagers.initialize();
+		
 			// Prepare monitor tool window
 			MonitorWindow monitorWindow = new MonitorWindow(this);
 			try { monitorWindow.setClosed(true); }

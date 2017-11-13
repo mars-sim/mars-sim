@@ -24,13 +24,8 @@ import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.application.Platform;
-import javafx.scene.input.KeyCode;
 
 @SuppressWarnings("restriction")
 public class MarsProjectFXGL extends GameApplication {
@@ -90,6 +85,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 	@Override
 	protected void initInput() {
+/*		
 		Input input = getInput(); // get input service
 
 		input.addAction(new UserAction("Move Right") {
@@ -123,18 +119,19 @@ public class MarsProjectFXGL extends GameApplication {
 				getGameState().increment("pixelsMoved", +5);
 			}
 		}, KeyCode.S);
-	
+*/	
 	}
 
 	@Override
 	protected void initGameVars(Map<String, Object> vars) {
-		vars.put("pixelsMoved", 0);
+		//vars.put("pixelsMoved", 0);
 	}
 
-	private GameEntity player;
+	//private GameEntity player;
 
 	@Override
 	protected void initGame() {
+/*
 		player = Entities.builder().at(300, 300).viewFromTexture("brick.png").buildAndAttach(getGameWorld());
 
 		getGameState().<Integer>addListener("pixelsMoved", (prev, now) -> {
@@ -142,7 +139,7 @@ public class MarsProjectFXGL extends GameApplication {
 				getAudioPlayer().playSound("drop.wav");
 			}
 		});
-		
+*/		
 		setLogging();
 		setDirectory();
 		// general text antialiasing
@@ -256,7 +253,7 @@ public class MarsProjectFXGL extends GameApplication {
 	        	}
 	   		}
 		}
-
+/*
 		else {
 		   	logger.info("Entering headless mode and skip loading the Main Menu");
 		   	if (newSim) {
@@ -272,6 +269,7 @@ public class MarsProjectFXGL extends GameApplication {
 		   		// CASE D //
 			}
 		}
+*/		
 	}
 
 	public void setLogging() {
@@ -368,14 +366,14 @@ public class MarsProjectFXGL extends GameApplication {
 	    		System.setProperty( "sun.java2d.ddforcevram", "true" );
 	    	}
 
-		   	if (newSim) {
+		   	//if (newSim) {
 		   		// CASE D1 and D2 //
 		   		// Note 1 : should NOT run createNewSimulation() until after clicking "Start" in Config Editor
-	   		}
+	   		//}
 
-	   		else if (loadSim) {
+	   		//else if (loadSim) {
 		   		// CASE E //
-	   		}
+	   		//}
 
 		} else {
 			// Using -headless (GUI-less mode)

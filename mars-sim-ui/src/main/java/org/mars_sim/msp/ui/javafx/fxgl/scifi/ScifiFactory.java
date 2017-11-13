@@ -24,6 +24,7 @@ import javafx.geometry.Point2D;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+@SuppressWarnings("restriction")
 @SetEntityFactory
 public class ScifiFactory implements EntityFactory {
 

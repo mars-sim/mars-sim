@@ -22,10 +22,12 @@ import org.jfree.chart.plot.dial.DialValueIndicator;
 import org.jfree.chart.plot.dial.StandardDialFrame;
 import org.jfree.chart.plot.dial.StandardDialRange;
 import org.jfree.chart.plot.dial.StandardDialScale;
+import org.jfree.chart.ui.GradientPaintTransformType;
+import org.jfree.chart.ui.StandardGradientPaintTransformer;
 import org.jfree.data.general.DefaultValueDataset;
 import org.jfree.data.general.ValueDataset;
-import org.jfree.ui.GradientPaintTransformType;
-import org.jfree.ui.StandardGradientPaintTransformer;
+//import org.jfree.ui.GradientPaintTransformType;
+//import org.jfree.ui.StandardGradientPaintTransformer;
 
 public class TemperatureDial  extends JPanel  {
 

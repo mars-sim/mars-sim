@@ -32,9 +32,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.util.Rotation;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.PieDataset;
-import org.jfree.util.Rotation;
+//import org.jfree.util.Rotation;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 

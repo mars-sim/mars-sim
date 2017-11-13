@@ -60,12 +60,18 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>orsoncharts</artifactId>
 		    <version>1.5</version>
  		</dependency-->
- 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart/1.0.19 : 1.9MB -->
+ 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.0.19</version>
+			<version>1.5.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart-fx -->	
+		<dependency>
+		    <groupId>org.jfree</groupId>
+		    <artifactId>jfreechart-fx</artifactId>
+		    <version>1.0.0</version>
+		</dependency>	
 		<!-- <dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout-swing</artifactId>

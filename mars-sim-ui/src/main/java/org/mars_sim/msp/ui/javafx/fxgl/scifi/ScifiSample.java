@@ -47,6 +47,7 @@ import static com.almasb.fxgl.app.DSLKt.set;
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
+@SuppressWarnings("restriction")
 public class ScifiSample extends GameApplication {
 
     @Override

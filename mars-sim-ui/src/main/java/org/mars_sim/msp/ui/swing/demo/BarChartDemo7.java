@@ -46,6 +46,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GradientPaint;
 
+import org.apache.batik.bridge.TextUtilities;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -58,16 +59,20 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.ui.ApplicationFrame;
+import org.jfree.chart.ui.Layer;
+import org.jfree.chart.ui.RectangleAnchor;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.text.TextUtilities;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.Layer;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.RefineryUtilities;
-import org.jfree.ui.TextAnchor;
-import org.jfree.util.Log;
-import org.jfree.util.PrintStreamLogTarget;
+//import org.jfree.text.TextUtilities;
+//import org.jfree.ui.ApplicationFrame;
+//import org.jfree.ui.Layer;
+//import org.jfree.ui.RectangleAnchor;
+//import org.jfree.ui.RefineryUtilities;
+//import org.jfree.ui.TextAnchor;
+//import org.jfree.util.Log;
+//import org.jfree.util.PrintStreamLogTarget;
 
 /**
 * A simple demonstration application showing how to create a bar chart with a custom item
@@ -224,12 +229,12 @@ public class BarChartDemo7 extends ApplicationFrame {
        renderer.setSeriesPaint(2, gp2);
        
  //      renderer.setLabelGenerator(new BarChartDemo7.LabelGenerator());
-       renderer.setItemLabelsVisible(true);
+       renderer.setDefaultItemLabelsVisible(true);
        final ItemLabelPosition p = new ItemLabelPosition(
            ItemLabelAnchor.INSIDE12, TextAnchor.CENTER_RIGHT, 
            TextAnchor.CENTER_RIGHT, -Math.PI / 2.0
        );
-       renderer.setPositiveItemLabelPosition(p);
+       renderer.setDefaultPositiveItemLabelPosition(p);
 
        final ItemLabelPosition p2 = new ItemLabelPosition(
            ItemLabelAnchor.OUTSIDE12, TextAnchor.CENTER_LEFT, 
@@ -262,14 +267,14 @@ public class BarChartDemo7 extends ApplicationFrame {
     * @param args  ignored.
     */
    public static void main(final String[] args) {
-
-       Log.getInstance().addTarget(new PrintStreamLogTarget());
+/*
+       //Log.getInstance().addTarget(new PrintStreamLogTarget());
        TextUtilities.setUseFontMetricsGetStringBounds(false);
        final BarChartDemo7 demo = new BarChartDemo7("Bar Chart Demo 7");
        demo.pack();
        RefineryUtilities.centerFrameOnScreen(demo);
        demo.setVisible(true);
-
+*/
    }
 
 }

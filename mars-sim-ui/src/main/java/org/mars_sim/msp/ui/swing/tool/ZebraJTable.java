@@ -12,10 +12,11 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JTable;
 
+
 /**
  * A JTable that draws a zebra striped background.
  */
-public class ZebraJTable extends javax.swing.JTable {
+public class ZebraJTable extends JTable {
 
     private java.awt.Color rowColors[] = new java.awt.Color[2];
     private boolean drawStripes = false;

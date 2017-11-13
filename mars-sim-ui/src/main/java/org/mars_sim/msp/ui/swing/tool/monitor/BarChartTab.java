@@ -32,10 +32,12 @@ import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer3D;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.ui.TextAnchor;
+//import org.jfree.chart.renderer.category.BarRenderer3D;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractSeriesDataset;
-import org.jfree.ui.TextAnchor;
+//import org.jfree.ui.TextAnchor;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -286,10 +288,11 @@ extends MonitorTab {
 		setName(title);
 
 		barModel = new TableBarDataset(model, columns);
-		chart = ChartFactory.createBarChart3D(null, null, null, barModel, PlotOrientation.VERTICAL, true, true, false);
+		chart = ChartFactory.createBarChart(null, null, null, barModel, PlotOrientation.VERTICAL, true, true, false);
 
 		// 2015-10-18 Limits the size of the bar to 35% if there are only very few category
-		BarRenderer3D renderer = (BarRenderer3D) chart.getCategoryPlot().getRenderer();
+		//BarRenderer3D renderer = (BarRenderer3D) chart.getCategoryPlot().getRenderer();
+		BarRenderer renderer = (BarRenderer) chart.getCategoryPlot().getRenderer();
 		renderer.setMaximumBarWidth(.1); // set maximum width to 10% of chart
 		//renderer.setItemMargin(-1);
 
@@ -345,7 +348,7 @@ extends MonitorTab {
 		    }
 		});
 */
-		renderer.setBaseToolTipGenerator(new MyToolTipGenerator());
+		renderer.setDefaultToolTipGenerator(new MyToolTipGenerator());
 
 /*
 		class CustomToolTipGenerator implements CategoryToolTipGenerator  {

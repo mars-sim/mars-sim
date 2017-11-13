@@ -235,7 +235,8 @@ extends ModalInternalFrame {
 		int index = -1;
 		if (okPressed) {
 			int selected = columnList.getSelectedIndex();
-			index = columnMappings[selected];
+			if (selected > -1)
+				index = columnMappings[selected];
 		}
 
 		return index;

@@ -25,6 +25,7 @@ import javafx.util.Duration;
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
+@SuppressWarnings("restriction")
 public class AnimationSample3 extends GameApplication {
 
     private GameEntity player;

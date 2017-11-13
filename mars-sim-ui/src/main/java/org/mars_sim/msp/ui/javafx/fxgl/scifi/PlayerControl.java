@@ -25,6 +25,7 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+@SuppressWarnings("restriction")
 public class PlayerControl extends Control {
 
     private PositionComponent position;

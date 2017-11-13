@@ -19,6 +19,7 @@ import java.util.Map;
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
+@SuppressWarnings("restriction")
 public class VarsSample extends GameApplication {
 
     @Override

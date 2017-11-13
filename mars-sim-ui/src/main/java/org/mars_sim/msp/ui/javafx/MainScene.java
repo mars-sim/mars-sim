@@ -2380,7 +2380,7 @@ public class MainScene {
 
 		String cssFile = CSS_PATH;
 		
-		if (menuBar.getStylesheets() != null)
+		if (menuBar != null && menuBar.getStylesheets() != null)
 			menuBar.getStylesheets().clear();
 
 		if (this.theme != theme) {
