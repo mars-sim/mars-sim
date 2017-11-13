@@ -265,7 +265,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.40.13</version>
+			<version>8.40.14</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->
@@ -332,7 +332,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>tilesfx</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa : 1018 KB -->
 		<dependency>
@@ -730,9 +730,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <groupId>org.jogamp.jogl</groupId>
 	    <artifactId>jogl-all-main</artifactId>
 	    <version>2.3.2</version>
-	</dependency>
+	</dependency>	
 -->	
-	</dependencies>
+	<dependency>
+		<groupId>com.github.almasb</groupId>
+		<artifactId>fxgl</artifactId>
+		<version>0.3.9</version>
+	</dependency>
+  
+  </dependencies>
+  
 	<repositories>
 	    <repository>
 	        <id>maven-central-repo</id>

@@ -39,6 +39,7 @@ public class MenuApp {
     private static final int X_OFFSET = 10;
     private static final int Y_OFFSET = 240;
 
+    private boolean isFXGL;
 
     private AnchorPane root = new AnchorPane();
     private StackPane titleStackPane;
@@ -46,24 +47,26 @@ public class MenuApp {
     private HBox optionMenu = new HBox();
     private Line line;
     
-
     private MainMenu mainMenu;
     private SpinningGlobe spinningGlobe;   
     
     private List<Pair<String, Runnable>> menuData;
     
-    public MenuApp(MainMenu mainMenu) {
+    public MenuApp(MainMenu mainMenu, boolean isFXGL) {
     	
     	this.mainMenu = mainMenu;
-  
+    	this.isFXGL = isFXGL;
+    	
     	root.setMaxSize(WIDTH-10, HEIGHT-20);
     }
     
     public void setupMenuData() {
     	
     	menuData = Arrays.asList(
-                new Pair<String, Runnable>("New Sim", () -> mainMenu.runNew()),
-                new Pair<String, Runnable>("Load Sim", () -> mainMenu.runLoad()),
+                new Pair<String, Runnable>("New Sim", () -> {
+               		mainMenu.runNew(isFXGL);
+                }),
+                new Pair<String, Runnable>("Load Sim", () -> mainMenu.runLoad(isFXGL)),
                 //new Pair<String, Runnable>("Multiplayer", () -> {}),
                 new Pair<String, Runnable>("Tutorial", () -> {}),
                 new Pair<String, Runnable>("Benchmark", () -> {}),
@@ -76,6 +79,8 @@ public class MenuApp {
                 )   //Platform::exit)
         );
     }    
+    
+ 
     
     public AnchorPane createContent() {
         //addBackground();
@@ -168,7 +173,7 @@ public class MenuApp {
 
     private void addMenu(double x, double y) {
     	setupMenuData();
-    	
+    		
     	menuBox = new VBox(-5);
         menuData.forEach(data -> {
             MenuItem item = new MenuItem(data.getKey());

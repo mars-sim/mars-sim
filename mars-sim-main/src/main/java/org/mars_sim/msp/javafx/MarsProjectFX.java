@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
+
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 
 
@@ -193,7 +194,7 @@ public class MarsProjectFX extends Application  {
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
 
-    static String[] args;
+	static String[] args;
 
 	private static final String manpage = "\n> java -jar mars-sim-main-[version/build].jar\n"
 		+ "                    (Note : start a new sim)\n"
@@ -230,13 +231,8 @@ public class MarsProjectFX extends Application  {
 
     private List<String> argList;
 
-    //private ExecutorService worker;
-
-    //private MarsProjectFX marsProjectFX;
-
     private static Simulation sim = Simulation.instance();
-    //private static SimulationConfig simulationConfig = SimulationConfig.instance();
-    //private static ExecutorService simExecutor;// = sim.getSimExecutor();
+
     /*
      * Default Constructor
      */
@@ -264,7 +260,7 @@ public class MarsProjectFX extends Application  {
      */
     @SuppressWarnings("restriction")
 	@Override
-    public void init() throws Exception {
+    public final void init() throws Exception {
 	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
 	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
 		setLogging();
@@ -283,24 +279,8 @@ public class MarsProjectFX extends Application  {
         String major, minor, update, build = null, dateStamp = null;
 
         // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
-/*
-        System.out.println("java.vm.specification.version :\t" + System.getProperty("java.vm.specification.version"));
-        System.out.println("java.vm.specification.vendor :\t" + System.getProperty("java.vm.specification.vendor"));
-        System.out.println("java.vm.specification.name :\t" + System.getProperty("java.vm.specification.name"));
-        System.out.println("java.vm.version :\t\t" + System.getProperty("java.vm.version"));
-        System.out.println("java.vm.vendor :\t\t" + System.getProperty("java.vm.vendor"));
-        System.out.println("java.vm.name :\t\t\t" + System.getProperty("java.vm.name"));
-        System.out.println("java.specification.version :\t" + System.getProperty("java.specification.version"));
-        System.out.println("java.specification.vendor :\t" + System.getProperty("java.specification.vendor"));
-        System.out.println("java.specification.name :\t" + System.getProperty("java.specification.name"));
-        System.out.println("java.version :\t\t\t" + System.getProperty("java.version"));
-        System.out.println("java.vendor :\t\t\t" + System.getProperty("java.vendor"));
-        System.out.println("java.class.version :\t\t" + System.getProperty("java.class.version"));
-        System.out.println("VersionInfo.getRuntimeVersion() :\t\t" + VersionInfo.getRuntimeVersion());
-*/
+
         String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
-        //System.out.println("os.arch :\t\t\t" + System.getProperty("os.arch"));
-        //System.out.println("os.version :\t\t\t" + System.getProperty("os.version"));
 
         //String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
         String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");
@@ -315,30 +295,10 @@ public class MarsProjectFX extends Application  {
         	dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
         }
 
-/*
-        System.out.println("Major :\t\t\t\t" + major);
-        System.out.println("Minor :\t\t\t\t" + minor);
-        System.out.println("Update :\t\t\t" + update);
-
-        if (build != null) {
-	        if (build.contains("(")) {
-	            System.out.println("Date Stamp :\t\t\t" + dateStamp);
-	            //System.out.println("build : " + build);
-	        }
-	        else {
-	            System.out.println("Build :\t\t\t\t" + build);
-	        }
-        }
-*/
-
-
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
     	if (!"8".equals(minor) || Double.parseDouble(build) < 77.0) {
     		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
-    		//System.out.println("Note: mars-sim requires at least Java 8.0.71. Terminating...");
     		exitWithError("Note: mars-sim requires at least Java 8.0.77. Terminated.");
-    		//Platform.exit();
-	        //System.exit(1);
     	}
 
     	else {
@@ -351,7 +311,6 @@ public class MarsProjectFX extends Application  {
 
     		if (generateHTML || helpPage || argList.contains("-headless"))
     			headless = true;
-
 
         	int size = argList.size();
         	boolean flag = true;
@@ -376,16 +335,11 @@ public class MarsProjectFX extends Application  {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-		   	//logger.info("MarsProjectFX's SimulationTask's run() is on " + Thread.currentThread().getName());
-		   	//INFO: MarsProjectFX's SimulationTask's run() is on pool-2-thread-1 Thread
 			prepare();
 		}
     }
 
 	public void prepare() {
-	   	//logger.info("MarsProjectFX's prepare() is on " + Thread.currentThread().getName());
-	   	//INFO: MarsProjectFX's prepare() is on pool-2-thread-1 Thread
-	   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
         SimulationConfig.loadConfig();
 
 	    if (!headless) {
@@ -481,7 +435,8 @@ public class MarsProjectFX extends Application  {
 		}
 	}
 
-	public void start(Stage primaryStage) {
+	@Override
+	public void start(Stage primaryStage) {	
 	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName());
 	   	if (!headless) {
 		   //logger.info("start() : in GUI mode, loading the Main Menu");
@@ -714,13 +669,13 @@ public class MarsProjectFX extends Application  {
             appLaunch.start(this, primaryStage);
         }
     }
-*/
 
     @Override
     public void stop() throws Exception {
 	   	//logger.info("MarsProjectFX's stop is on " + Thread.currentThread().getName() );
     }
-
+*/
+    
     public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException{
     	//logger.info("MarsProjectFX's main() is on " + Thread.currentThread().getName() + " Thread" );
     	MarsProjectFX.args = args;

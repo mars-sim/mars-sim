@@ -542,12 +542,14 @@ implements ClockListener, Serializable {
         	if (loadBuild == null)
         		loadBuild = "unknown";
 
-			logger.info("Note : this sim file was made in build " + loadBuild + " (size : "+ fileStr + ")");
+			logger.info("This sim file was made in build " + loadBuild + " (size : "+ fileStr + ")");
 
-        	if (instance().BUILD.equals(loadBuild))
-        		logger.info("Proceed to loading the saved sim");
+        	if (instance().BUILD.equals(loadBuild)) {
+        		logger.info("Proceed to loading the saved sim.");
+        		logger.info("Last Saved Martian Date/Time : " + masterClock.getMarsClock().getDateTimeStamp());
+        	}
         	else
-        		logger.warning("Attempting to load the saved sim made in build " + loadBuild + " while running mars-sim in build " + Simulation.BUILD + " but ");
+        		logger.warning("Attempting to load the saved sim made in build " + loadBuild + " while running mars-sim in build " + Simulation.BUILD);
 
         } catch (FileNotFoundException e) {
         	logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());

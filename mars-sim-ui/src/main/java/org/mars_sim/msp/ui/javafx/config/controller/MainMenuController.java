@@ -55,12 +55,12 @@ public class MainMenuController implements Initializable, ControlledScreen {
 
     @FXML
     private void goToOne(ActionEvent event){
-    	switcher.getMainMenu().runNew();
+    	switcher.getMainMenu().runNew(false);
     }
 
     @FXML
     private void goToTwo(ActionEvent event){
-    	switcher.getMainMenu().runLoad();
+    	switcher.getMainMenu().runLoad(false);
     }
 
     @FXML

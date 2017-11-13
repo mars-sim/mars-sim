@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.javafx;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.alee.laf.WebLookAndFeel;
+import com.almasb.fxgl.scene.GameScene;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -43,6 +44,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,6 +55,7 @@ import javafx.fxml.FXMLLoader;
 //import javafx.geometry.Rectangle2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Button;
@@ -256,7 +259,8 @@ public class MainScene {
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
-
+	//private boolean isFXGL = false;
+	
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
 
@@ -268,6 +272,7 @@ public class MainScene {
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
+	private GameScene gameScene;
 	private Parent root;
 	private StackPane rootStackPane, mainStackPane, dashboardStackPane, // monPane,
 			mapStackPane, minimapStackPane, speedPane, soundPane, calendarPane, // farmPane,
@@ -350,15 +355,20 @@ public class MainScene {
 	/**
 	 * Constructor for MainScene
 	 */
-	public MainScene(int width, int height) {
+	public MainScene(int width, int height, GameScene gameScene) {
 		screen_width = width;
 		screen_height = height;
+		this.gameScene = gameScene;
 		sceneWidth = new SimpleDoubleProperty(width);
 		sceneHeight = new SimpleDoubleProperty(height - TAB_PANEL_HEIGHT);
 
 		isMainSceneDoneLoading = false;
 
-		stage = new Stage();
+		if (gameScene != null)
+			stage = ((Stage) gameScene.getRoot().getScene().getWindow());
+		else
+			stage = new Stage();
+		
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 		stage.setMinWidth(sceneWidth.get());
 		stage.setMinHeight(sceneHeight.get());
@@ -414,7 +424,9 @@ public class MainScene {
 		// creates and initialize scene
 		scene = initializeScene();
 		// switch from the main menu's scene to the main scene's scene
-		stage.setScene(scene);
+		if (gameScene == null) {
+			stage.setScene(scene);
+		}
 
 	}
 
@@ -960,10 +972,18 @@ public class MainScene {
 
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(anchorPane);
+		rootStackPane.setPrefWidth(sceneWidth.get());
+		rootStackPane.setPrefHeight(sceneHeight.get());
 		// rootStackPane.setBackground(new Background(new
 		// BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
 
-		scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
+		if (gameScene != null) {
+			scene = gameScene.getRoot().getScene();
+			gameScene.addUINode(rootStackPane);
+		}
+		else {
+			scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
+		}
 
 		// pausePane.prefWidthProperty().bind(scene.widthProperty());
 		// pausePane.prefHeightProperty().bind(scene.heightProperty());
@@ -3431,6 +3451,13 @@ public class MainScene {
 			// indicator.setOpacity(.5);
 			indicator.setStyle("-fx-background-color: transparent; ");
 			StackPane stackPane = new StackPane();
+			Rectangle2D rect = Screen.getPrimary().getBounds();
+			int w = (int) rect.getWidth();
+			int h = (int) rect.getHeight();
+			//stackPane.setLayoutX(w/2);
+			//stackPane.setLayoutY(h/2);
+			stackPane.setTranslateX(w/2);
+			stackPane.setTranslateY(h/2);
 			// stackPane.setOpacity(0.5);
 			stackPane.getChildren().add(indicator);
 			StackPane.setAlignment(indicator, Pos.CENTER);
@@ -3443,9 +3470,10 @@ public class MainScene {
 			Scene scene = new Scene(stackPane, 100, 100);
 			scene.setFill(Color.TRANSPARENT);
 			loadingStage = new Stage();
+			//loadingStage.centerOnScreen();
 			// loadingCircleStage.setOpacity(1);
 			setEscapeEventHandler(true, loadingStage);
-			loadingStage.initOwner(stage);
+			//loadingStage.initOwner(stage);
 			loadingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
 																// specified.
 			loadingStage.getIcons()

@@ -249,8 +249,8 @@ public class SpinningGlobe extends Application {
         }
         else {
             // Add mouse and keyboard control
-            getGlobe().handleMouse(scene);
-            getGlobe().handleKeyboard(scene);
+            getGlobe().handleMouse(root);
+            getGlobe().handleKeyboard(root);
         }
 
 

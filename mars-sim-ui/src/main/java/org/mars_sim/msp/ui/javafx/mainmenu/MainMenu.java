@@ -32,7 +32,6 @@ import javafx.scene.layout.VBox;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -74,6 +73,7 @@ import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
+import com.almasb.fxgl.scene.GameScene;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
@@ -122,9 +122,12 @@ public class MainMenu {
 	public float music_v = 50f;
 	public float sound_effect_v = 50f;
 
+	public boolean isFXGL = false;
     //private Point2D anchorPt;
     //private Point2D previousLocation;
     
+	private Group root;
+	
     private AnchorPane anchorPane;
     
     private StackPane stackPane;
@@ -132,6 +135,8 @@ public class MainMenu {
     private StackPane rootPane;
 
 	private Stage primaryStage;
+	
+	private GameScene gameScene;
 	
 	private MainMenu mainMenu;
 	
@@ -177,16 +182,150 @@ public class MainMenu {
 		mainscene_width = (int) bounds.getWidth();
 		mainscene_height = (int) bounds.getHeight();
        
-		createResolution();
+		setupResolutions();
 		
 		logger.info("Your Current Resolution is " + mainscene_width + " x " + mainscene_height);
 		
 		// Test
 		//logger.info("Earth's surface gravity : " + Math.round(PlanetType.EARTH.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
-		//logger.info("Mars's surface gravity : " + Math.round(PlanetType.MARS.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
-		
+		//logger.info("Mars's surface gravity : " + Math.round(PlanetType.MARS.getSurfaceGravity()*100.0)/100.0 + " m/s^2");		
  	}
 
+    /*
+     * Sets up and shows the MainMenu and prepare the stage for MainScene
+     */
+	@SuppressWarnings("restriction")
+	public void initMainMenu(GameScene gameScene) {
+		System.setProperty("sampler.mode", "true");   
+		isFXGL = true;
+		this.gameScene = gameScene;
+		
+    	Platform.setImplicitExit(false);
+
+    	menuApp = new MenuApp(mainMenu, true);
+    	
+    	anchorPane = menuApp.createContent();
+       
+    	stackPane = new StackPane(anchorPane);
+    	stackPane.setPrefSize(WIDTH, HEIGHT);
+    	stackPane.setLayoutX(10);
+    	stackPane.setLayoutY(10);
+       
+    	double sceneWidth = stackPane.getPrefWidth() + 30;
+    	double sceneHeight = stackPane.getPrefHeight() + 30;
+
+    	// Create application area
+    	@SuppressWarnings("restriction")
+    	Rectangle applicationArea = RectangleBuilder.create()
+                .width(sceneWidth - 10)
+                .height(sceneHeight - 10)
+                .arcWidth(20)
+                .arcHeight(20)
+                .fill(Color.rgb(0, 0, 0, 1))
+                .x(0)
+                .y(0)
+                .strokeWidth(2)
+                .stroke(Color.rgb(255, 255, 255, .70))
+                .build();
+       
+	
+    	Node closeRect = RectangleBuilder.create()
+               .width(25)
+               .height(25)
+               .arcWidth(15)
+               .arcHeight(15)
+               .fill(Color.rgb(0, 0, 0, 1))
+               .stroke(Color.WHITE)
+               .build();
+       
+    	Text closeXmark = new Text(9, 16.5, "X");
+    	closeXmark.setStroke( Color.WHITE);
+    	closeXmark.setFill(Color.WHITE);
+    	closeXmark.setStrokeWidth(2);
+    	
+    	// Create close button
+    	final Group closeApp = new Group();
+        //closeApp.translateXProperty().bind(gameScene.getWidth()-40);//.widthProperty().subtract(40));
+    	closeApp.setTranslateX(WIDTH-40);
+    	closeApp.setTranslateY(5);
+    	closeApp.getChildren().addAll(closeRect, closeXmark);
+    	closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	       	@Override
+	       	public void handle(MouseEvent event) {
+	       		dialogOnExit(rootPane);
+	
+	       		if (!isExit) {
+	       			event.consume();
+	       		}
+	       		else {
+	       			Platform.exit();
+	           		System.exit(0);
+	       		}
+	       	}
+       });
+
+       rootPane = new StackPane();
+       rootPane.setPrefSize(stackPane.getPrefWidth()-300, stackPane.getPrefHeight());//stackPane.getPrefWidth()-50, stackPane.getPrefHeight()-50);
+ 
+       root = new Group();
+       root.getChildren().add(applicationArea);
+       root.getChildren().add(stackPane);
+       root.getChildren().add(closeApp);
+       root.getChildren().add(rootPane);
+       
+       gameScene.addUINode(root);
+/*       
+       menuApp.getTitleStackPane().setOnMousePressed(new EventHandler<MouseEvent>() {
+           @Override
+           public void handle(MouseEvent event) {
+               x = event.getSceneX();
+               y = event.getSceneY();
+           }
+       });
+       menuApp.getTitleStackPane().setOnMouseDragged(new EventHandler<MouseEvent>() {
+           @Override
+           public void handle(MouseEvent event) {
+        	   gameScene.getRoot().setTranslateX(event.getScreenX() - x);
+        	   gameScene.getRoot().setTranslateX(event.getScreenY() - y);
+           }
+       });
+*/
+       
+       // Add keyboard control
+       menuApp.getSpinningGlobe().getGlobe().handleKeyboard(gameScene.getContentRoot());
+       // Add mouse control
+       menuApp.getSpinningGlobe().getGlobe().handleMouse(gameScene.getContentRoot());
+
+       //gameScene.getRoot().getScene().getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
+       //scene.setCursor(Cursor.HAND);
+
+       // Makes the menu option box fades in
+        root.setOnMouseEntered(new EventHandler<MouseEvent>(){
+           public void handle(MouseEvent mouseEvent){
+        	   menuApp.startAnimation();
+               FadeTransition fadeTransition
+                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+               fadeTransition.setFromValue(0.0);
+               fadeTransition.setToValue(1.0);
+               fadeTransition.play();
+           }
+        });
+
+       // Makes the menu option box fades out
+        root.setOnMouseExited(new EventHandler<MouseEvent>(){
+           public void handle(MouseEvent mouseEvent){
+        	   menuApp.endAnimation();
+               FadeTransition fadeTransition
+                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+               fadeTransition.setFromValue(1.0);
+               fadeTransition.setToValue(0.0);
+               fadeTransition.play();
+        	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
+           }
+        });
+  
+   }
+	
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
@@ -202,7 +341,7 @@ public class MainMenu {
 		// If this attribute is false, the application will continue to run normally even after the last window is closed,
 		// until the application calls exit. The default value is true.
 
-    	menuApp = new MenuApp(mainMenu);
+    	menuApp = new MenuApp(mainMenu, false);
     	anchorPane = menuApp.createContent();
        
     	stackPane = new StackPane(anchorPane);
@@ -319,11 +458,10 @@ public class MainMenu {
         previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY()); 
   */
        
-	   //scene = new Scene(stackPane, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
         // Add keyboard control
-        menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene);
+        menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene.getRoot());
        // Add mouse control
-        menuApp.getSpinningGlobe().getGlobe().handleMouse(scene);
+        menuApp.getSpinningGlobe().getGlobe().handleMouse(scene.getRoot());
 
        //scene.setFill(Color.BLACK);//DARKGOLDENROD);//Color.BLACK);
 
@@ -357,7 +495,7 @@ public class MainMenu {
            }
         });
      
-       primaryStage.setOnCloseRequest(e -> {
+       stage.setOnCloseRequest(e -> {
     		dialogOnExit(rootPane);
 
     		if (!isExit) {
@@ -371,20 +509,23 @@ public class MainMenu {
 
        //primaryStage.setResizable(false);
        //primaryStage.setTitle(Simulation.title);
-       primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
        //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       primaryStage.setScene(scene);
+       stage.setScene(scene);
        
        setMonitor(stage);
        
-       primaryStage.centerOnScreen();
-       primaryStage.initStyle(StageStyle.TRANSPARENT);
-       primaryStage.show();
+       stage.centerOnScreen();
+       stage.initStyle(StageStyle.TRANSPARENT);
+       stage.show();
 
 
    }
 	
-	public void createResolution() {
+	/**
+	 * Setups the resolution list
+	 */
+	public void setupResolutions() {
 		Resolution res0 = new Resolution(1024, 768); 
 		Resolution res1 = new Resolution(1280, 720); 
 		Resolution res2 = new Resolution(1280, 800); 
@@ -407,11 +548,13 @@ public class MainMenu {
 		resList.add(res7);
 		resList.add(res8);
 	}
-	
+
+/*	
 	public void createMenuApp() {
 		 menuApp = new MenuApp(mainMenu);
 		 anchorPane = menuApp.createContent();
 	}
+*/
 	
 	public Stage getStage() {
 		return primaryStage;
@@ -424,17 +567,16 @@ public class MainMenu {
    public MultiplayerMode getMultiplayerMode() {
 	   return multiplayerMode;
 	}
-
-   public void runNew() {
-	   primaryStage.setIconified(true);
-	   primaryStage.hide();
-	   primaryStage.close();
-	   
+   
+   public void runNew(boolean isFXGL) {
+	   closeStage(isFXGL);
+	   createMainScene();
+   }
+   
+   public void createMainScene() {
 	   // creates a mainScene instance
-	   //if (mainScene != null)
-	   mainScene = new MainScene(mainscene_width, mainscene_height);
-	   //mainScene.setSound(music_v, sound_effect_v);
-	   
+	   mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
+
        try {
     	   // Loads Scenario Config Editor
     	   Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
@@ -444,8 +586,9 @@ public class MainMenu {
     	   exitWithError("Error : could not create a new simulation ", e);
        }
 
-
    }
+   
+   
 
 	public class ConfigEditorTask implements Runnable {
 		  public void run() {
@@ -457,14 +600,22 @@ public class MainMenu {
    /**
     * Opens the file chooser to select a saved sim to load 
     */
-   public void runLoad() {
-
-	   primaryStage.setIconified(true);
-	   primaryStage.hide();
-	   primaryStage.close();
-
+   public void runLoad(boolean isFXGL) {
+	   closeStage(isFXGL);
 	   loadSim(null);
-
+   }
+   
+   public void closeStage(boolean isFXGL) {
+	   if (isFXGL) {
+		   ((Stage) gameScene.getRoot().getScene().getWindow()).hide();
+		   gameScene.removeUINode(root);
+		   //((Stage) gameScene.getRoot().getScene().getWindow()).close();   
+	   }
+	   else {
+		   primaryStage.setIconified(true);
+		   primaryStage.hide();
+		   primaryStage.close();
+	   }
    }
 
    /**
@@ -504,13 +655,15 @@ public class MainMenu {
 			   chooser.getExtensionFilters().addAll(simFilter, allFilter);
 
 			   // Show open file dialog
-			   selectedFile = chooser.showOpenDialog(primaryStage);
+			   if (isFXGL)
+				   selectedFile = chooser.showOpenDialog(gameScene.getRoot().getScene().getWindow());
+			   else
+				   selectedFile = chooser.showOpenDialog(primaryStage);
 		   }
 
-		   else {
+		   //else {
 	   			// if user wants to load the default saved sim
-
-		   }
+		   //}
 
 	   } catch (NullPointerException e) {
 	       System.err.println("NullPointerException in loading sim. " + e.getMessage());
@@ -528,7 +681,7 @@ public class MainMenu {
 			final File fileLocn = selectedFile;
 
 			Platform.runLater(() -> {
-				mainScene = new MainScene(mainscene_width, mainscene_height);
+				mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
 				
 				mainScene.createLoadingIndicator();
 				mainScene.showWaitStage(MainScene.LOADING);
@@ -574,6 +727,7 @@ public class MainMenu {
 			try {
 				// Loading settlement data from the default saved simulation
 				sim.loadSimulation(fileLocn); // null means loading "default.sim"
+				
 
 	        } catch (Exception e) {
 	            //e.printStackTrace();
@@ -655,15 +809,15 @@ public class MainMenu {
 		   }
 	}
 
+/*	
 	public void chooseScreen(int num) {
-
 		ObservableList<Screen> screens = Screen.getScreens();//.getScreensForRectangle(xPos, yPos, 1, 1);
     	Screen currentScreen = screens.get(num);
 		Rectangle2D rect = currentScreen.getVisualBounds();
-
 		Screen primaryScreen = Screen.getPrimary();
 	}
-
+*/
+	
 	public void setMonitor(Stage stage) {
 		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
 		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
@@ -794,7 +948,9 @@ public class MainMenu {
 		}
 	}	
 
-	  
+	/**
+	 * Obtains the resolution of the current screen
+	 */
 	public Resolution obtainResolution() {
 		Resolution r = null;
 	    if (mainscene_width == 2560) {
@@ -862,7 +1018,8 @@ public class MainMenu {
 			reslabel.setFont(Font.font(null, FontWeight.NORMAL, 16));
 			
 			JFXComboBox<Resolution> resCombo = new JFXComboBox<>();
-			resCombo.getStyleClass().add("jfx-combo-box");
+			resCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			resCombo.getStyleClass().add("jfx-combo-box");	
 			resCombo.getItems().addAll(resList);
 			 
 			Resolution currentRes = obtainResolution();
@@ -870,144 +1027,6 @@ public class MainMenu {
 			resCombo.setValue(currentRes);
 			
 			resCombo.setPromptText("Select your desired resolution");
-			
-/*			
-			final ToggleGroup group = new ToggleGroup();
-					
-			JFXRadioButton r7 = new JFXRadioButton("2560 x 1600");
-			r7.setStyle("-fx-text-fill: white;");
-			    r7.setToggleGroup(group);
-	  
-				JFXRadioButton r6 = new JFXRadioButton("2560 x 1440");
-			r6.setStyle("-fx-text-fill: white;");
-			    r6.setToggleGroup(group);
-	  
-				JFXRadioButton r5 = new JFXRadioButton("1920 x 1080");
-			r5.setStyle("-fx-text-fill: white;");
-		    r5.setToggleGroup(group);
-	
-			JFXRadioButton r4 = new JFXRadioButton("1600 x 900");
-			r4.setStyle("-fx-text-fill: white;");
-		    r4.setToggleGroup(group);
-	
-			JFXRadioButton r3 = new JFXRadioButton("1366 x 768");
-			r3.setStyle("-fx-text-fill: white;");
-		    r3.setToggleGroup(group);
-	
-			JFXRadioButton r2 = new JFXRadioButton("1280 x 800");
-			r2.setStyle("-fx-text-fill: white;");
-		    r2.setToggleGroup(group);
-	
-			JFXRadioButton r1 = new JFXRadioButton("1280 × 720");
-			r1.setStyle("-fx-text-fill: white;");
-		    r1.setToggleGroup(group);
-	
-			JFXRadioButton r0 = new JFXRadioButton("1024 x 768");
-			r0.setStyle("-fx-text-fill: white;");
-		    r0.setToggleGroup(group);	
-		    
-		    if (mainscene_width == 2560) {
-		    	if (mainscene_height == 1600) {
-				    r7.setSelected(true);
-		    	}
-		    	else if (mainscene_height == 1440) {
-				    r6.setSelected(true);
-		    	}
-		    }
-		    else if (mainscene_width == 1920)
-			    r5.setSelected(true);
-		    else if (mainscene_width == 1600)
-			    r4.setSelected(true);	 
-		    else if (mainscene_width == 1366)
-			    r3.setSelected(true);	    
-		    else if (mainscene_width == 1280) {	 
-		    	if (mainscene_height == 800) {
-				    r2.setSelected(true);
-		    	}
-		    	else if (mainscene_height == 720) {
-				    r1.setSelected(true);
-		    	}
-		    }
-		    else if (mainscene_width == 1024)
-			    r0.setSelected(true);
-		    else 
-		    	// by default, set to 1024 x 768
-		    	r0.setSelected(true);
-		    
-		    
-		    group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-		        @Override
-		        public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
-		        	if (!t.equals(t1)) {
-			        	 // Cast object to radio button
-			        	JFXRadioButton selected = (JFXRadioButton) group.getSelectedToggle();
-	
-		        		if (selected.equals(r7))
-		        			setScreenSize(2560, 1600);	
-		        		else if (selected.equals(r6))
-		        			setScreenSize(2560, 1440);	
-		        		else if (selected.equals(r5))
-		        			setScreenSize(1920, 1080);	
-		        		else if (selected.equals(r4))
-		        			setScreenSize(1600, 900);	
-		        		else if (selected.equals(r3))
-		        			setScreenSize(1366, 768);	
-		        		else if (selected.equals(r2))
-		        			setScreenSize(1280, 800);
-		        		else if (selected.equals(r1))
-		        			setScreenSize(1280, 720);	
-		        		else if (selected.equals(r0))
-		        			setScreenSize(1024, 768);	
-	
-		        	}
-		        }
-	
-		    });
-	
-		    
-		    GridPane gridpane = new GridPane();
-		    gridpane.setPadding(new Insets(15));
-		    gridpane.setHgap(15);
-		    gridpane.setVgap(15);
-		    ColumnConstraints column0 = new ColumnConstraints(120);
-		    ColumnConstraints column1 = new ColumnConstraints(120);
-		    ColumnConstraints column2 = new ColumnConstraints(120);
-		    ColumnConstraints column3 = new ColumnConstraints(120);
-		    column2.setHgrow(Priority.ALWAYS);
-		    gridpane.getColumnConstraints().addAll(column0, column1, column2, column3);
-	
-		    GridPane.setHalignment(r0, HPos.LEFT);
-		    gridpane.add(r0, 0, 0);
-	
-		    GridPane.setHalignment(r1, HPos.LEFT);
-		    gridpane.add(r1, 1, 0);
-	
-		    GridPane.setHalignment(r2, HPos.LEFT);
-		    gridpane.add(r2, 2, 0);
-	
-		    GridPane.setHalignment(r3, HPos.LEFT);
-		    gridpane.add(r3, 3, 0);
-	
-		    GridPane.setHalignment(r4, HPos.LEFT);
-		    gridpane.add(r4, 0, 1);
-	
-		    GridPane.setHalignment(r5, HPos.LEFT);
-		    gridpane.add(r5, 1, 1);
-	
-		    GridPane.setHalignment(r6, HPos.LEFT);
-		    gridpane.add(r6, 2, 1);
-	
-		    GridPane.setHalignment(r7, HPos.LEFT);
-		    gridpane.add(r7, 3, 1);
-		    
-		    
-		    
-			Label soundlabel = new Label("      Sound Volume");
-			soundlabel.setAlignment(Pos.TOP_LEFT);
-			soundlabel.setPadding(new Insets(10, 10, 10, 10));
-			soundlabel.setStyle("-fx-text-fill: white;");
-			soundlabel.setFont(Font.font(null, FontWeight.BOLD, 14));
-*/
 			
 			// Set up the slider for background music and sound effect
 			Tile soundTile0 = musicSetting();
@@ -1041,7 +1060,7 @@ public class MainMenu {
 			vb.getChildren().addAll(titleLabel, emptyVB, comboBox, sound0, sound1, return_hb); 
 					
 			StackPane sp = new StackPane(vb);
-			sp.setStyle("-fx-background-color:black;");//rgb(105,105,105);");//darkgrey;");//rgba(0,0,0,0.1);");
+			sp.setStyle("-fx-background-color: black;-fx-background: grey;-fx-text-fill: lightgoldenrodyellow;");
 			StackPane.setMargin(vb, new Insets(10,10,10,10));
 			settingDialog = new JFXDialog();
 			//dialog.setDialogContainer(pane);

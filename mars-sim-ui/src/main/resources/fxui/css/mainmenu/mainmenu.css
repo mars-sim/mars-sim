@@ -27,26 +27,19 @@
 
 /*******************************************************************************/
 
-.combo-box-base {
-    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
-    -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: white; /* #7ebcea; #c9ddea;*/
-    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-background-radius: 3px, 3px, 2px, 1px;
-}
-
 .jfx-combo-box .list-cell  {
+	-fx-opacity: 0.75;	
 	-fx-font-size: 16.0;
-	-fx-background: transparent;
+	-fx-background: black;
     -fx-background-color: black;
     -fx-text-fill: lightgoldenrodyellow;
 }
 
 .jfx-combo-box .text-field {
 	-fx-font-size: 16.0;
-	-fx-background: transparent;
-    -fx-background-color: black;
-    -fx-text-fill: lightgoldenrodyellow; /*#7ebcea;#c9ddea; #03a9f4;*/
+	-fx-background: black;
+	-fx-background-color: black;
+    -fx-text-fill: lightgoldenrodyellow;  /*#7ebcea;#c9ddea; #03a9f4;lightgoldenrodyellow;*/
     -fx-cell-size: 1.66667em;
     -fx-pref-height: 25;
 }

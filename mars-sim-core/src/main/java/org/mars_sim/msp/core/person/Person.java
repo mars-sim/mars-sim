@@ -1460,7 +1460,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		attributes = null;
 		mind.destroy();
 		mind = null;
-		condition.destroy();
+		//condition.destroy();
 		condition = null;
 		gender = null;
 		birthTimeStamp = null;

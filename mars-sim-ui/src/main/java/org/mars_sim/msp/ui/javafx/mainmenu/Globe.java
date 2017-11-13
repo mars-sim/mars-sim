@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
+
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.beans.binding.Bindings;
@@ -14,7 +15,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.StackPane;
 //import javafx.scene.AmbientLight;
-//import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -181,8 +182,8 @@ public class Globe {
         world.getChildren().addAll(sphereGroup);//, ambientXform);
     }
 
-    protected void handleMouse(Scene scene) {//, final Node root) {
-    	scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+    protected void handleMouse(Node scene) {//, final Node root) {
+ /*   	scene.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent me) {
                 mousePosX = me.getSceneX();
                 mousePosY = me.getSceneY();
@@ -190,6 +191,51 @@ public class Globe {
                 mouseOldY = me.getSceneY();
             }
         });
+*/   	
+    	scene.addEventFilter(MouseEvent.MOUSE_PRESSED,
+                me -> {
+                    mousePosX = me.getSceneX();
+                    mousePosY = me.getSceneY();
+                    mouseOldX = me.getSceneX();
+                    mouseOldY = me.getSceneY();
+                });
+    	scene.addEventFilter(MouseEvent.MOUSE_DRAGGED,
+                me -> {
+                   	
+                	if (mousePosX > root.getLayoutX()
+                			&& mousePosX < root.getLayoutX() + SpinningGlobe.WIDTH
+                			&& mousePosY > root.getLayoutY()
+                			&& mousePosY < root.getLayoutY() + SpinningGlobe.HEIGHT) {
+    	                mouseOldX = mousePosX;
+    	                mouseOldY = mousePosY;
+    	                mousePosX = me.getSceneX();
+    	                mousePosY = me.getSceneY();
+    	                mouseDeltaX = -(mousePosX - mouseOldX);
+    	                mouseDeltaY = -(mousePosY - mouseOldY);
+    	
+    	                double modifier = 0.05;
+    	                double modifierFactor = 3.5;
+    	
+    	                if (me.isControlDown()) {
+    	                    modifier = 0.1;
+    	                }
+    	                if (me.isShiftDown()) {
+    	                    modifier = 10.0;
+    	                }
+    	                if (me.isPrimaryButtonDown()) {
+    	                    cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 1.0);  // +
+    	                    cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 1.0);  // -
+    	                } else if (me.isSecondaryButtonDown()) {
+    	                    double z = camera.getTranslateZ();
+    	                    double newZ = z + mouseDeltaX * modifierFactor * modifier;
+    	                    camera.setTranslateZ(newZ);
+    	                } else if (me.isMiddleButtonDown()) {
+    	                    cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
+    	                    cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
+    	                }
+                	}
+                });
+/*    	
     	scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent me) {
@@ -228,9 +274,10 @@ public class Globe {
             	}
             }
         });
+*/        
     }
 
-    protected void handleKeyboard(Scene scene) {//, final Node root) {
+    protected void handleKeyboard(Node scene) {//, final Node root) {
         final boolean moveCamera = true;
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override

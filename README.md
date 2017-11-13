@@ -79,13 +79,14 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 * Linux (cannot input text in text fields)
 
 
-## OS Environment Setup
-* Requires Java 8u77 or above
-* For Windows OS, may need to manually set up the following : 
+## OS Setup
+* Requires Java 8u77 or above, preferably 8u151 (Note : Java 8u152 won't work for mars-sim's inline browser).  
+* Does not work with Java 9.
+* For Windows OS, one may need to manually set up the following : 
   - Edit the `JAVA_HOME` and `PATH` in System's Environment Variables in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_144` or `C:\Program Files\Java\jdk1.8.0_144`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
-* Note 1 : sometimes, the `C:\ProgramData\Oracle\Java\javapath;`  in `PATH`  interferes with which version of the Java should be loaded. Be sure to remove it first.
+* Note 1 : in Windows OS, the `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` may interfere with which version of the Java should be loaded. Be sure to remove that path and add `JAVA_HOME`.
 * Note 2 : in Windows OS, the Java Control Panel from Settings define which version of Java is enabled. Be sure to uncheck any versions of JRE/JDK you don't need.
 
 

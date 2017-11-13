@@ -99,13 +99,13 @@ public class MasterClock implements Serializable { // Runnable,
 	//private double time_ratio;
 
 	/** Martian Clock. */
-	private static MarsClock marsTime;
+	private MarsClock marsTime;
 	/** Initial Martian time. */
 	private static MarsClock initialMarsTime;
 	/** Earth Clock. */
-	private static EarthClock earthTime;
+	private EarthClock earthTime;
 	/** Uptime Timer. */
-	private static UpTimer uptimer;
+	private UpTimer uptimer;
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
 
