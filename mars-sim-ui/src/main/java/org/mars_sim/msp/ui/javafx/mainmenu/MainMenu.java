@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.javafx.mainmenu;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -115,6 +116,9 @@ public class MainMenu {
 	
 	public int mainscene_width = 1366; //1920;//
 	public int mainscene_height = 768; //1080;//
+
+	public int native_width = 1366; //1920;//
+	public int native_height = 768; //1080;//
 	
 	private double x = 0;
     private double y= 0;
@@ -179,12 +183,15 @@ public class MainMenu {
 		Screen screen = Screen.getPrimary(); 
 		Rectangle2D bounds = screen.getBounds();//.getVisualBounds();
 		
-		mainscene_width = (int) bounds.getWidth();
-		mainscene_height = (int) bounds.getHeight();
-       
+		native_width = (int) bounds.getWidth();
+		native_height = (int) bounds.getHeight();
+
+		mainscene_height = native_height;//currentRes.getHeight();
+		mainscene_width = native_width;//currentRes.getWidth();
+
 		setupResolutions();
 		
-		logger.info("Your Current Resolution is " + mainscene_width + " x " + mainscene_height);
+		logger.info("Current Screen Resolution is " + native_width + " x " + native_height);
 		
 		// Test
 		//logger.info("Earth's surface gravity : " + Math.round(PlanetType.EARTH.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
@@ -458,20 +465,18 @@ public class MainMenu {
         previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY()); 
   */
        
-        // Add keyboard control
-        menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene.getRoot());
+       // Add keyboard control
+       menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene.getRoot());
        // Add mouse control
-        menuApp.getSpinningGlobe().getGlobe().handleMouse(scene.getRoot());
+       menuApp.getSpinningGlobe().getGlobe().handleMouse(scene.getRoot());
 
-       //scene.setFill(Color.BLACK);//DARKGOLDENROD);//Color.BLACK);
-
-        scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
-       //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
-       //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
-        scene.setCursor(Cursor.HAND);
+       scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
+       //scene.setFill(Color.BLACK); // if using Group, a black border will remain
+       //scene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
+       scene.setCursor(Cursor.HAND);
 
        // Makes the menu option box fades in
-        scene.setOnMouseEntered(new EventHandler<MouseEvent>(){
+       scene.setOnMouseEntered(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
         	   menuApp.startAnimation();
                FadeTransition fadeTransition
@@ -480,10 +485,10 @@ public class MainMenu {
                fadeTransition.setToValue(1.0);
                fadeTransition.play();
            }
-        });
+       });
 
        // Makes the menu option box fades out
-        scene.setOnMouseExited(new EventHandler<MouseEvent>(){
+       scene.setOnMouseExited(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
         	   menuApp.endAnimation();
                FadeTransition fadeTransition
@@ -507,8 +512,7 @@ public class MainMenu {
     		}
         });
 
-       //primaryStage.setResizable(false);
-       //primaryStage.setTitle(Simulation.title);
+
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
        //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        stage.setScene(scene);
@@ -522,40 +526,65 @@ public class MainMenu {
 
    }
 	
+	/** 
+	 * Removes unsupported resolutions 
+	 * @param size the highest width index supported
+	 */
+	public void removeRes(int size) {
+		List<Resolution> newRes = new ArrayList<>();
+		for (int i = 0; i < size + 1; i++)
+			newRes.add(resList.get(i));
+		resList = newRes;
+	}
+	
 	/**
 	 * Setups the resolution list
 	 */
 	public void setupResolutions() {
-		Resolution res0 = new Resolution(1024, 768); 
-		Resolution res1 = new Resolution(1280, 720); 
-		Resolution res2 = new Resolution(1280, 800); 
-		Resolution res3 = new Resolution(1366, 768); 
-		Resolution res4 = new Resolution(1440, 900); 
-		Resolution res5 = new Resolution(1600, 900); 
-		Resolution res6 = new Resolution(1920, 1080); 
-		Resolution res7 = new Resolution(2560, 1440); 
-		Resolution res8 = new Resolution(2560, 1600); 
+		//resList = new ArrayList<>();
+		resList = Arrays.asList(
+				new Resolution(1024, 768),
+				new Resolution(1280, 720),
+				new Resolution(1280, 800),
+				new Resolution(1366, 768),
+				new Resolution(1440, 900), 
+				new Resolution(1600, 900), 
+				new Resolution(1920, 1080),
+				new Resolution(2560, 1440), 
+				new Resolution(2560, 1600)); 
+
+		if (native_width > 2560) {
+			; // resList to stay the same
+		}
 		
-		resList = new ArrayList<>();
-		
-		resList.add(res0);
-		resList.add(res1);
-		resList.add(res2);
-		resList.add(res3);
-		resList.add(res4);
-		resList.add(res5);
-		resList.add(res6);
-		resList.add(res7);
-		resList.add(res8);
+		else if (native_width == 2560) {
+	    	if (native_height == 1600) {
+			    ; // resList to stay the same
+	    	}
+	    	else if (native_height == 1440) {
+	    		removeRes(7);
+	    	}
+	    }
+	    else if (native_width == 1920)
+	    	removeRes(6);
+	    else if (native_width == 1600)
+	    	removeRes(5);	 
+	    else if (native_width == 1440)
+	    	removeRes(4);	    
+	    else if (native_width == 1366)
+	    	removeRes(3);	    
+	    else if (native_width == 1280) {	 
+	    	if (native_height == 800) {
+	    		removeRes(2);
+	    	}
+	    	else if (native_height == 720) {
+	    		removeRes(1);
+	    	}
+	    }
+	    else if (native_width == 1024)
+	    	removeRes(1);
 	}
 
-/*	
-	public void createMenuApp() {
-		 menuApp = new MenuApp(mainMenu);
-		 anchorPane = menuApp.createContent();
-	}
-*/
-	
 	public Stage getStage() {
 		return primaryStage;
 	}
@@ -953,31 +982,31 @@ public class MainMenu {
 	 */
 	public Resolution obtainResolution() {
 		Resolution r = null;
-	    if (mainscene_width == 2560) {
-	    	if (mainscene_height == 1600) {
+	    if (native_width == 2560) {
+	    	if (native_height == 1600) {
 			    r = resList.get(8);
 	    	}
-	    	else if (mainscene_height == 1440) {
+	    	else if (native_height == 1440) {
 	    		r = resList.get(7);
 	    	}
 	    }
-	    else if (mainscene_width == 1920)
+	    else if (native_width == 1920)
 	    	r = resList.get(6);
-	    else if (mainscene_width == 1600)
+	    else if (native_width == 1600)
 	    	r = resList.get(5);	 
-	    else if (mainscene_width == 1440)
+	    else if (native_width == 1440)
 	    	r = resList.get(4);	    
-	    else if (mainscene_width == 1366)
+	    else if (native_width == 1366)
 	    	r = resList.get(3);	    
-	    else if (mainscene_width == 1280) {	 
-	    	if (mainscene_height == 800) {
+	    else if (native_width == 1280) {	 
+	    	if (native_height == 800) {
 	    		r = resList.get(2);
 	    	}
-	    	else if (mainscene_height == 720) {
+	    	else if (native_height == 720) {
 	    		r = resList.get(1);
 	    	}
 	    }
-	    else if (mainscene_width == 1024)
+	    else if (native_width == 1024)
 	    	r = resList.get(0);
 	    else 
 	    	// by default, set to 1024 x 768
@@ -1025,8 +1054,19 @@ public class MainMenu {
 			Resolution currentRes = obtainResolution();
 			
 			resCombo.setValue(currentRes);
+						
+			//System.out.println(mainscene_width + " x " + mainscene_height);
+					
+			resCombo.setPromptText("Select desired screen resolution");
 			
-			resCombo.setPromptText("Select your desired resolution");
+			resCombo.valueProperty().addListener(new ChangeListener<Resolution>() {
+		        @Override public void changed(ObservableValue ov, Resolution t, Resolution t1) {
+		        	if (!t.equals(t1)) {
+		        		mainscene_width = t1.getWidth();
+		        		mainscene_height = t1.getHeight();
+		        	}
+		        }    
+		    });
 			
 			// Set up the slider for background music and sound effect
 			Tile soundTile0 = musicSetting();
@@ -1228,10 +1268,10 @@ public class MainMenu {
 		return switchSliderTile;
     }	
     
-	public void setScreenSize(int w, int h) {
-		mainscene_width = w;
-		mainscene_height = h;
-	}
+	//public void setScreenSize(int w, int h) {
+	//	mainscene_width = w;
+	//	mainscene_height = h;
+	//}
 	
 	public void destroy() {
 		anchorPane = null;
@@ -1242,6 +1282,7 @@ public class MainMenu {
 		multiplayerMode = null;
 		mainMenuController = null;
 		menuApp = null;
+		resList = null;
 		
 	}
 
@@ -1256,6 +1297,14 @@ public class MainMenu {
 			
 		}
 				
+		public int getHeight() {
+			return height;
+		}
+
+		public int getWidth() {
+			return width;
+		}
+
 		@Override
 		public String toString() {
 			return width + " x " + height;

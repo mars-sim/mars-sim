@@ -29,7 +29,7 @@ public class UpTimer implements Serializable {
 	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
 
 	/** The time limit (ms) allowed between time pulses. */
-	private static final long TIME_LIMIT = 100L;
+	private static final long TIME_LIMIT = 1000L;
 
 	private transient long thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 	private transient long lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;

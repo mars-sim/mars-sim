@@ -322,7 +322,7 @@ implements Serializable {
 	 * @param ms milliseconds added to the calendar
 	 */
 	public void addTime(double ms) {
-		gregCal.add(Calendar.MILLISECOND, (int) ms);
+		gregCal.add(Calendar.MILLISECOND, (int) (Math.round(ms)));
 	}
 	
 	/**

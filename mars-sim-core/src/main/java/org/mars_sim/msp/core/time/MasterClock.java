@@ -10,14 +10,11 @@ package org.mars_sim.msp.core.time;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 
-import com.almasb.fxgl.ecs.GameWorld;
-
 //import javafx.animation.Timeline;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -34,7 +31,7 @@ import java.util.logging.Logger;
  * Mars. mars-sim has only one master clock and it delivers a clock pulse 
  * per frame.  All units are synchronized with this clock pulse.
  */
-public class MasterClock implements Serializable { // Runnable,
+public class MasterClock implements Serializable {
 
 	/** default serial id. */
 	static final long serialVersionUID = -1688463735489226493L;
@@ -190,9 +187,9 @@ public class MasterClock implements Serializable { // Runnable,
         	cal_tr = tr;
         }
 
-        cal_tbu_ns = cal_tbu_ms * 1_000_000; // convert from millis to nano
-     	cal_tbu_s = cal_tbu_ms / 1_000;
-     	cal_fps = 1/cal_tbu_s;
+        cal_tbu_ns = cal_tbu_ms * 1_000_000.0; // convert from millis to nano
+     	cal_tbu_s = cal_tbu_ms / 1_000.0;
+     	cal_fps = 1.0/cal_tbu_s;
         current_tbu_ns = (long) cal_tbu_ns;
 
     	current_TR = cal_tr;
