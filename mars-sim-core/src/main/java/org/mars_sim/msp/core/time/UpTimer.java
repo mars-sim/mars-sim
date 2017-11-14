@@ -26,10 +26,10 @@ public class UpTimer implements Serializable {
 	/** Initialized logger. */
     private static Logger logger = Logger.getLogger(UpTimer.class.getName());
 
-	private static final long NANOSECONDS_PER_MILLISECONDS = 1000000L;
+	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
 
 	/** The time limit (ms) allowed between time pulses. */
-	private static final long TIME_LIMIT = 3000L;
+	private static final long TIME_LIMIT = 100L;
 
 	private transient long thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 	private transient long lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
@@ -44,7 +44,7 @@ public class UpTimer implements Serializable {
 
 	private transient boolean paused = true;
 
-	private MasterClock masterClock;// = Simulation.instance().getMasterClock();
+	private static MasterClock masterClock;// = Simulation.instance().getMasterClock();
 
     public UpTimer(MasterClock masterclock) {
     	this.masterClock = masterclock;
@@ -122,6 +122,9 @@ public class UpTimer implements Serializable {
 
     }
 
+    /**
+     * Gets the uptime in milliseconds
+     */
     public long getUptimeMillis() {
         thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
         if (paused) {
@@ -137,7 +140,7 @@ public class UpTimer implements Serializable {
                 thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
                 // 2017-01-09 Add calling resetTotalPulses()
                 masterClock.resetTotalPulses();
-                logger.info("Time limit exceeded between the last and this call, resetting the total # of pules");
+                //logger.info("Time limit exceeded between the last and this call, resetting the total # of pules");
                 return uptime;
             }
         }
@@ -171,4 +174,11 @@ public class UpTimer implements Serializable {
             thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
         }
     }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+	public void destroy() {
+		masterClock = null;
+	}
 }

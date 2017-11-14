@@ -272,6 +272,8 @@ public class MainScene {
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
+	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
+	
 	private GameScene gameScene;
 	private Parent root;
 	private StackPane rootStackPane, mainStackPane, dashboardStackPane, // monPane,
@@ -1103,7 +1105,7 @@ public class MainScene {
 
 		Text header_label = createTextHeader("SPEED PANEL");
 
-		int default_ratio = (int) masterClock.getDefaultTimeRatio();
+		int default_ratio = (int) masterClock.getCalculatedTimeRatio();
 		StringBuilder s0 = new StringBuilder();
 
 		Label default_ratio_label0 = new Label(DTR);
@@ -2842,7 +2844,6 @@ public class MainScene {
 	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
 	 */
 	public void updateTimeLabels() {
-
 		// int msol = (int)(masterClock.getTimeRatio());
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
@@ -2852,7 +2853,12 @@ public class MainScene {
 		// }
 
 		if (simSpeedPopup.isShowing() || solCache == 0) {
-			double tps = Math.round(masterClock.getPulsesPerSecond() * 100.0) / 100.0;
+			double tps = 0;
+			if (gameScene != null)
+				tps = masterClock.getFPS();
+			else
+				tps = Math.round(masterClock.getPulsesPerSecond() * 100.0) / 100.0;
+			
 			if (tpsCache != tps) {
 				tpsCache = tps;
 				tpsLabel.setText(tps + HZ);
@@ -2948,7 +2954,7 @@ public class MainScene {
 
 	/**
 	 * Create a new simulation.
-	 */
+
 	public void newSimulation() {
 		if ((newSimThread == null) || !newSimThread.isAlive()) {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
@@ -2965,10 +2971,11 @@ public class MainScene {
 		}
 
 	}
-
+	 */
+	
 	/**
 	 * Performs the process of creating a new simulation.
-	 */
+
 	private void newSimulationProcess() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Starting new sim");
@@ -2989,13 +2996,49 @@ public class MainScene {
 			return;
 		}
 	}
-
+*/
+	
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
 	 * 
 	 * @param type
 	 */
+	public void saveSimulation(int type) {
+		if (!masterClock.isPaused()) {
+			// hideWaitStage(PAUSED);
+			if (type == Simulation.SAVE_DEFAULT || type == Simulation.SAVE_AS)
+				showWaitStage(SAVING);
+			else
+				showWaitStage(AUTOSAVING);
+
+			saveExecutor.execute(new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					saveSimulationProcess(type);
+					while (masterClock.isSavingSimulation())
+						TimeUnit.MILLISECONDS.sleep(200L);
+					return null;
+				}
+
+				@Override
+				protected void succeeded() {
+					super.succeeded();
+					hideWaitStage(SAVING);
+				}
+			});
+			
+
+		}
+		// endPause(previous);
+	}
+
+	/**
+	 * Save the current simulation. This displays a FileChooser to select the
+	 * location to save the simulation if the default is not to be used.
+	 * 
+	 * @param type
+
 	public void saveSimulation(int type) {
 		if (!masterClock.isPaused()) {
 			// hideWaitStage(PAUSED);
@@ -3024,7 +3067,8 @@ public class MainScene {
 		}
 		// endPause(previous);
 	}
-
+*/
+	
 	/**
 	 * Performs the process of saving a simulation.
 	 */
@@ -3069,7 +3113,7 @@ public class MainScene {
 
 				showWaitStage(SAVING);
 
-				Task<Void> task = new Task<Void>() {
+				saveExecutor.execute(new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
 						try {
@@ -3091,51 +3135,53 @@ public class MainScene {
 						super.succeeded();
 						hideWaitStage(SAVING);
 					}
-				};
-				new Thread(task).start();
+				});
+
 			});
 		}
 
 	}
 
 	public void startPausePopup() {
-		// if (messagePopup.numPopups() < 1) {
-		// Note: (NOT WORKING) popups.size() is always zero no matter what.
-		Platform.runLater(() -> {
-			// messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER,
-			// PNotification.PAUSE_ICON)
-			boolean hasIt = false;
-			for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
-				if (node == pausePane) {
-					hasIt = true;
-					break;
+		if (gameScene == null) {
+			// if (messagePopup.numPopups() < 1) {
+			// Note: (NOT WORKING) popups.size() is always zero no matter what.
+			Platform.runLater(() -> {
+				// messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER,
+				// PNotification.PAUSE_ICON)
+				boolean hasIt = false;
+				for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
+					if (node == pausePane) {
+						hasIt = true;
+						break;
+					}
 				}
-			}
-			if (!hasIt) {
-				pausePane.setLayoutX((scene.getWidth() - pausePane.getPrefWidth()) / 2D);
-				pausePane.setLayoutY((scene.getHeight() - pausePane.getPrefHeight()) / 2D);
-				// root.getChildrenUnmodifiable().add(pausePane);
-				rootStackPane.getChildren().add(pausePane);
-			}
-		});
-
+				if (!hasIt) {
+					pausePane.setLayoutX((scene.getWidth() - pausePane.getPrefWidth()) / 2D);
+					pausePane.setLayoutY((scene.getHeight() - pausePane.getPrefHeight()) / 2D);
+					// root.getChildrenUnmodifiable().add(pausePane);
+					rootStackPane.getChildren().add(pausePane);
+				}
+			});
+		}
 	}
 
 	public void stopPausePopup() {
-		Platform.runLater(() -> {
-			// messagePopup.stop()
-			boolean hasIt = false;
-			for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
-				if (node == pausePane) {
-					hasIt = true;
-					break;
+		if (gameScene == null) {
+			Platform.runLater(() -> {
+				// messagePopup.stop()
+				boolean hasIt = false;
+				for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
+					if (node == pausePane) {
+						hasIt = true;
+						break;
+					}
 				}
-			}
-			if (hasIt)
-				rootStackPane.getChildren().remove(pausePane);
-			// root.getChildrenUnmodifiable().remove(pausePane);
-		});
-
+				if (hasIt)
+					rootStackPane.getChildren().remove(pausePane);
+				// root.getChildrenUnmodifiable().remove(pausePane);
+			});
+		}
 	}
 
 	/**
@@ -3358,7 +3404,7 @@ public class MainScene {
 		// Save the simulation as default.sim
 		masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
 
-		Task<Void> task = new Task<Void>() {
+		saveExecutor.execute(new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
 				try {
@@ -3383,8 +3429,7 @@ public class MainScene {
 				Platform.exit();
 				System.exit(0);
 			}
-		};
-		new Thread(task).start();
+		});
 
 	}
 

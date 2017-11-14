@@ -39,6 +39,8 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
+import com.almasb.fxgl.ecs.GameWorld;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -139,6 +141,8 @@ implements ClockListener, Serializable {
 
     private boolean changed = true;
     
+    private boolean isFXGL = false;
+    
     private String lastSaveTimeStamp;
 				
     /* The build version of the SimulationConfig of the loading .sim */
@@ -152,7 +156,7 @@ implements ClockListener, Serializable {
     private transient HistoricalEventManager eventManager;
 
     //private transient ThreadPoolExecutor clockScheduler;
-    private transient ExecutorService clockScheduler;
+    private transient ExecutorService clockExecutor;
     private transient ExecutorService simExecutor;
 
     // Intransient data members (stored in save file)
@@ -176,7 +180,9 @@ implements ClockListener, Serializable {
     private static ScientificStudyManager scientificStudyManager;
     /** Manages transportation of settlements and resupplies from Earth. */
     private static TransportManager transportManager;
-
+    /** The GameWorld instance for FXGL frameworld */
+    //private GameWorld gameWorld;
+    
     /**
      * Private constructor for the Singleton Simulation. This prevents instantiation from other classes.
      * */
@@ -307,7 +313,7 @@ implements ClockListener, Serializable {
         missionManager = new MissionManager();
         relationshipManager = new RelationshipManager();
         medicalManager = new MedicalManager();
-        masterClock = new MasterClock();
+        masterClock = new MasterClock(isFXGL);
         unitManager = new UnitManager();
 		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
 		creditManager = new CreditManager();
@@ -357,23 +363,14 @@ implements ClockListener, Serializable {
      * Start the simulation.
      */
     public void start(boolean autosaveDefault) {
-        //logger.info("Simulation's start() -- where clockScheduler is initialized -- is on " + Thread.currentThread().getName());
-        //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
-        //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
+		//SwingUtilities.invokeLater(() -> testConsole());
 
-		//SwingUtilities.invokeLater(() -> {
-	    //    testConsole();
-		//});
-
-    	//if (masterClock ==  null)
-    	//	System.out.println("masterClock ==  null");
-    	
         masterClock.addClockListener(this);
         masterClock.startClockListenerExecutor();
 
-        if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
+        if (clockExecutor == null || clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
 
-        	clockScheduler = Executors.newSingleThreadExecutor();
+        	clockExecutor = Executors.newSingleThreadExecutor();
         	
         	//if (NUM_THREADS <= 3)
         	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
@@ -385,11 +382,11 @@ implements ClockListener, Serializable {
         	//else
         	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// newSingleThreadExecutor();// newCachedThreadPool(); //
 
-        	clockScheduler.execute(masterClock.getClockThreadTask());
-       }
+        	if (masterClock.getClockThreadTask() != null)
+        		clockExecutor.execute(masterClock.getClockThreadTask());
+        }
 
-        //2016-04-28 Relocated the autosave timer from MainMenu to here
-		startAutosaveTimer(autosaveDefault);
+        startAutosaveTimer(autosaveDefault);
 
     }
 
@@ -756,7 +753,7 @@ implements ClockListener, Serializable {
         instance().defaultLoad = false;
         instance().stop();
         masterClock.endClockListenerExecutor();
-        clockScheduler.shutdownNow();
+        if (clockExecutor != null) clockExecutor.shutdownNow();
     }
 
     public void endMasterClock() {
@@ -791,7 +788,7 @@ implements ClockListener, Serializable {
      * Adds and starts the master clock and unpauses the simulation
      */
     public void proceed() {
-        if (clockScheduler != null) {
+        if (masterClock != null) {
             masterClock.addClockListener(this);
             masterClock.setPaused(false, false);
             masterClock.restart();
@@ -1111,8 +1108,8 @@ implements ClockListener, Serializable {
 	//}
 
 	public ExecutorService getClockScheduler() {
-		   return clockScheduler;
-		}
+		return clockExecutor;
+	}
 	
     //public PausableThreadPoolExecutor getClockScheduler() {
     //	return clockScheduler;
@@ -1130,6 +1127,20 @@ implements ClockListener, Serializable {
     @Override
     public void pauseChange(boolean isPaused, boolean showPane) {
         // Do nothing
+    }
+
+    //public void setGameWorld(GameWorld gw) {
+    //	gameWorld = gw;
+    //}
+    
+    public void setFXGL(boolean isFXGL) {
+    	this.isFXGL = isFXGL;
+    }
+        
+    
+    public void onUpdate(double tpf) {
+    	if (masterClock != null)
+    		masterClock.onUpdate(tpf); 
     }
 
     /**

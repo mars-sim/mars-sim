@@ -29,53 +29,14 @@
 		<version>${junit.version}</version>
 		<scope>test</scope>
 	</dependency>
-<!-- 	
-	<dependency>
-		<groupId>org.assertj</groupId>
-		<artifactId>assertj-core</artifactId>
-		 use 2.7.0 for Java 7 projects 
-		<version>3.7.0</version>
-		<scope>test</scope>
-	</dependency>
- -->
+
     <!--  https://mvnrepository.com/artifact/org.jdom/jdom/1.1.3 : 230 KB   -->
 	<dependency>
     	<groupId>org.jdom</groupId>
     	<artifactId>jdom</artifactId>
     	<version>1.1.3</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.jdom/jdom : 788 KB
-	<dependency>
-	    <groupId>org.jdom</groupId>
-	    <artifactId>jdom</artifactId>
-	    <version>2.0.2</version>
-	</dependency> -->
-	<!-- https://mvnrepository.com/artifact/org.jdom/jdom2 : 840 KB
-	<dependency>
-	    <groupId>org.jdom</groupId>
-	    <artifactId>jdom2</artifactId>
-	    <version>2.0.6</version>
-	</dependency> -->
-	<!-- <dependency>
-	    <groupId>jaxen</groupId>
-	    <artifactId>jaxen</artifactId>
-	    <version>1.1.6</version>
-	</dependency> -->
-	<!-- Loaded from SF's mars-sim repo 
-		 Used by RelationshipManager, CreditManager 		
-	<dependency>
-		<groupId>com.phoenixst</groupId>
-		<artifactId>plexus-core</artifactId>
-		<version>0.9</version>
-	</dependency>
-    -->	
-	<!-- https://github.com/codehaus-plexus/plexus-utils
-	<dependency>
-	    <groupId>org.codehaus.plexus</groupId>
-	    <artifactId>plexus-utils</artifactId>
-	    <version>3.0.24</version>
-	</dependency>	
-	-->
+
 	<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.5 MB -->
 	<dependency>
 	    <groupId>com.google.guava</groupId>
@@ -142,96 +103,20 @@
 		<artifactId>reactfx</artifactId>
 		<version>1.4.1</version>
 	</dependency>
-	<!-- dependency>
-	 https://github.com/libgdx/ashley/wiki
-		<groupId>com.badlogicgames.ashley</groupId>
-		<artifactId>ashley</artifactId>
-		<version>1.7.0</version>
-	</dependency>
-	-->
-	<!--dependency>
-	<https://github.com/junkdog/artemis-odb
-		<groupId>net.onedaybeard.artemis</groupId>
-		<artifactId>artemis-odb</artifactId>
-		<version>2.1.0</version>
-	</dependency>
-	  -->
-	<!-- https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava : 1.2 MB
-	<dependency>
-	    <groupId>io.reactivex.rxjava2</groupId>
-	    <artifactId>rxjava</artifactId>
-	    <version>2.0.8</version>
-	</dependency>-->
-	<!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all
-	<dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>2.4.11</version>
-	</dependency>-->
-<!--
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
-		<version>${springboot.version}</version>
-	</dependency>
-	  <dependency>
-		  <groupId>org.springframework.boot</groupId>
-		  <artifactId>spring-boot-starter-test</artifactId>
-		  <version>${springboot.version}</version>
-	  </dependency>
-	  <dependency>
-		  <groupId>org.springframework.boot</groupId>
-		  <artifactId>spring-boot-starter-actuator</artifactId>
-		  <version>${springboot.version}</version>
-	  </dependency>
-	  <dependency>
-		  <groupId>org.springframework.boot</groupId>
-		  <artifactId>spring-boot-cli</artifactId>
-		  <version>${springboot.version}</version>
-	  </dependency>
 
-    <dependency>
-        <groupId>edu.rice.pcdp</groupId>
-        <artifactId>pcdp-core</artifactId>
-        <version>0.0.4-SNAPSHOT</version>
-    </dependency>
--->
+	<dependency>
+		<groupId>com.github.almasb</groupId>
+		<artifactId>fxgl</artifactId>
+		<version>0.3.9</version>
+	</dependency>
   </dependencies>
-<!--
-  	<dependencyManagement>
-	     <dependencies>
-
-	        <dependency>
-     Import dependency management from Spring Boot
-	            <groupId>org.springframework.boot</groupId>
-	            <artifactId>spring-boot-dependencies</artifactId>
-	            <version>${springboot.version}</version>
-	            <type>pom</type>
-	            <scope>import</scope>
-	        </dependency>
-
- 
-	    </dependencies>
-	</dependencyManagement>
- -->	
+	
 	<repositories>
 		<repository>
 			<id>sonatype</id>
 			<name>Sonatype</name>
 			<url>https://oss.sonatype.org/content/repositories/releases</url>
 		</repository>
-<!--
-	    <repository>
-	        <id>pcdp-repo</id>
-	        <url>https://raw.github.com/habanero-maven/hjlib-maven-repo/mvn-repo-pcdp-0.0.4-SNAPSHOT/</url>
-	        <snapshots>
-	            <enabled>true</enabled>
-	            <updatePolicy>always</updatePolicy>
-	        </snapshots>
-	        <releases>
-                <enabled>true</enabled>
-            </releases>        
-	    </repository>
- -->	    
+    
 	</repositories>
 </project>

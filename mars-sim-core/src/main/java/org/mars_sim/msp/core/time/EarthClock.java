@@ -321,10 +321,10 @@ implements Serializable {
 	 * Adds time to the calendar
 	 * @param ms milliseconds added to the calendar
 	 */
-	public void addTime(long ms) {
+	public void addTime(double ms) {
 		gregCal.add(Calendar.MILLISECOND, (int) ms);
 	}
-
+	
 	/**
 	 * Displays the string version of the clock.
 	 * @return time stamp string.

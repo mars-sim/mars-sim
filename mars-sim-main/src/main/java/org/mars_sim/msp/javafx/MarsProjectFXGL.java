@@ -192,8 +192,13 @@ public class MarsProjectFXGL extends GameApplication {
 				}
 			}
 
+			// Insert the GameWorld instance into Simulation class
+			//sim.setGameWorld(getGameWorld());
+			sim.setFXGL(true);
+			
 			sim.startSimExecutor();
 			sim.getSimExecutor().execute(new SimulationTask());
+			
 		}		
 		
 	}
@@ -513,8 +518,21 @@ public class MarsProjectFXGL extends GameApplication {
 	    startSimulation(true);
     }
     
+    protected void onUpdate(double tpf) {
+    	sim.onUpdate(tpf); //System.out.print(Math.round(tpf *100.0)/100.0 + " ");
+    }
+    
 	public static void main(String[] args) {
     	MarsProjectFXGL.args = args;
 		launch(args);
+	}
+	
+    /**
+     * Prepare object for garbage collection.
+     */
+	public void destroy() {
+	    mainMenu = null;
+	    argList = null;
+	    sim = null;
 	}
 }

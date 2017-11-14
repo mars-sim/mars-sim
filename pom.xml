@@ -78,25 +78,6 @@
 			</roles>
 			<timezone>+1</timezone>
 		</developer>
-		<!--  	<developer>
-                    <id>sebturku</id>
-                    <name>Sebastien Venot</name>
-                    <email>sebturku@users.sourceforge.net</email>
-                    <roles>
-                        <role>developer</role>
-                    </roles>
-                    <timezone>+2</timezone>
-                </developer>
-                <developer>
-                    <id>saga2</id>
-                    <name>Christian Domsch</name>
-                    <email>saga2@users.sourceforge.net</email>
-                    <roles>
-                        <role>developer</role>
-                    </roles>
-                    <timezone>+1</timezone>
-                </developer>
-        -->
 		<developer>
 			<id>mkung</id>
 			<name>Manny Kung</name>

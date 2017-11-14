@@ -7,11 +7,12 @@
 	<!-- Time related configuration -->
 	<time-configuration>
 
-		<!-- The base time ratio (TR) is the default simulation time ratio : the ratio of real time to sim time prior to modification -->
-		<!-- It denotes the speed of the simulation -->
-		<!-- Value must be positive number between 16 and 2048 and cannot be zero -->
-		<!-- Note that the time-ratio is now determined by the # of cpu thread on
-		     the user's machine. The value below will be overriden -->
+		<!-- The base time ratio (TR) is the default simulation time ratio : the ratio of real time to sim time prior to modification
+			Note 1 : It denotes the speed of the simulation
+			     2 : Value must be positive number between 16 and 2048 and cannot be zero
+			     3 : the calculated TR is dependent upon the # of cpu threads available on user's machine. 
+			         The base TR value below will be overridden by the calculated TR at the start of the sim..
+		-->
 		<!-- Default: 256.0 -->
 		<base-time-ratio value="256" />
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
@@ -20,18 +21,22 @@
 			 4. Minimum is 64, maximum is 1024
 		-->
 
-		<!-- The base time between updates (TBU) is the ideal time interval between two successive updates [in milliseconds] prior to modification -->
-		<!-- It is essentially the maximum sleep time between two game iterations or updates.
-			 The smaller the TBU, the better the "resolution" of the simulation -->
-		<!-- Frames Per Second (FPS) or Ticks Per Seconds (TPS) [in hertz] is just the reciprocal of TBU  -->
-		<!-- Value must be positive number between 40.0 and 250.0 and preferably be a multiple of 2 and cannot be zero -->
-		<!-- Default: 40.0 Will automatically set to a multiple of its value if having less threads-->
-		<base-time-between-updates value="40.0" />
-		<!-- e.g. 40 ms is equal to 25 Hz ( 1/40ms = 25 Hz ) -->
-		<!-- NOTE: the product of time-ratio and time-between-updates is the default time elapsed -->
-		<!-- e.g. 40 ms * 25 Hz = 20,000 ms or 20 seconds -->
-		<!-- since 1 millisols = 88.78 seconds, 20 seconds is 0.2253 millisols -->
-		<!-- For each interval of real time (40 ms), a time period of 0.2253 millisols has just been elapsed in the simulation-->
+		<!-- The base time between updates (TBU) is the ideal time interval between two successive updates [in milliseconds] 
+		     prior to modification. It is essentially the maximum sleep time between two game iterations or updates.
+			 Note 1 : The smaller the TBU, the better the "resolution" of the simulation
+		          2 : Frames Per Second (FPS) or Ticks Per Seconds (TPS) [in hertz] is just the reciprocal of TBU
+		          3 : Value must be positive number between 40.0 and 250.0 and preferably be a multiple of 2 and cannot be zero 
+		          4 : the product of time-ratio and time-between-updates is the default time elapsed
+			      5 : the calculated TBU is dependent upon the number of cpu threads available in user's machine.
+			           The base TBU value below will be overridden by the calculated TBU at the start of the sim. 
+		-->
+		<!-- Default: 50.0 -->
+		<base-time-between-updates value="50.0" />
+		<!-- e.g. 50 ms is equal to 20 Hz (1/50ms = 20 Hz)
+			       c. 1 real sec = 50 ms * 20 Hz ; 1 sim sec = base-time-ratio * 1 real sec = 256 secs
+			 	   d. since 1 millisols = 88.775244 secs, 1 real sec = 0.0113 millisols 
+			       e. 1 sim sec = 0.0113 millisols 256 secs = 2.8837 millisols 
+		-->
 
 
 		<!-- no-delays-per-yield is the maximum number of counts allowed in waiting for other threads to execute -->

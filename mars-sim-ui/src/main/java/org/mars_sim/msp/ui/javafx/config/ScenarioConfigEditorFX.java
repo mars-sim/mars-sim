@@ -573,27 +573,13 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-			// logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
-			// boolean isDone = false;
 			Simulation.createNewSimulation();
-			// System.out.println("ScenarioConfigEditorFX : done calling
-			// Simulation.instance().createNewSimulation()");
 			Simulation.instance().start(false);
-			// System.out.println("ScenarioConfigEditorFX : done calling
-			// Simulation.instance().start()");
 			Platform.runLater(() -> {
-				//mainMenu.prepareScene();
-				//mainMenu.prepareStage();
 				mainScene.finalizeMainScene();
-				//mainScene.hideWaitStage(MainScene.LOADING);
-				// System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
 			});
 			if (multiplayerClient != null)
 				multiplayerClient.prepareListeners();
-			// logger.info("ScenarioConfigEditorFX : done calling
-			// SimulationTask");
-			// JmeCanvas jme = new JmeCanvas();
-			// jme.setupJME();
 		}
 	}
 
