@@ -96,7 +96,7 @@ implements ListSelectionListener {
 		arrivedListPane.getArrivedList().addListSelectionListener(incomingListPane);
 
 		// Create detail panel.
-		detailPane = new TransportDetailPanel();
+		detailPane = new TransportDetailPanel(desktop);
 		incomingListPane.getIncomingList().addListSelectionListener(detailPane);
 		arrivedListPane.getArrivedList().addListSelectionListener(detailPane);
 		mainPane.add(detailPane, BorderLayout.CENTER);

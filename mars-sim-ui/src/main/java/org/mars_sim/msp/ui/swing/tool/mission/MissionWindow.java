@@ -35,14 +35,17 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = "Mission Tool";
 
-	private double previous;
 	// Private members
+	private double previous;
+	
+	private JTabbedPane tabPane;
 	private JList<Mission> missionList;
+	
 	private NavpointPanel navpointPane;
 	private MainScene mainScene;
 	private CreateMissionWizard createMissionWizard;
 	private EditMissionDialog editMissionDialog;
-	//private Mission mission;
+	
 
 	/**
 	 * Constructor.
@@ -70,18 +73,18 @@ extends ToolWindow {
 		missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
 
 		// Create the info tab panel.
-		JTabbedPane infoPane = new JTabbedPane();
-		mainPane.add(infoPane, BorderLayout.CENTER);
+		tabPane = new JTabbedPane();
+		mainPane.add(tabPane, BorderLayout.CENTER);
 
 		// Create the main detail panel.
-		MainDetailPanel mainDetailPane = new MainDetailPanel(desktop, this);
-		missionList.addListSelectionListener(mainDetailPane);
-		infoPane.add("Info", mainDetailPane);
+		MainDetailPanel infoPane = new MainDetailPanel(desktop, this);
+		missionList.addListSelectionListener(infoPane);
+		tabPane.add("Info", infoPane);
 
 		// Create the navpoint panel.
-		navpointPane = new NavpointPanel();
+		navpointPane = new NavpointPanel(desktop);
 		missionList.addListSelectionListener(navpointPane);
-		infoPane.add("Navpoints", navpointPane);
+		tabPane.add("Navigation", navpointPane);
 
 		// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout());
@@ -221,6 +224,17 @@ extends ToolWindow {
 		return createMissionWizard;
 	}
 
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
+	
+	public boolean isNavPointsMapTabOpen() {
+		if (tabPane.getSelectedIndex() == 1)
+			return true;
+		else
+			return false;
+	}
+	
 	/**
 	 * Prepares tool window for deletion.
 	 */

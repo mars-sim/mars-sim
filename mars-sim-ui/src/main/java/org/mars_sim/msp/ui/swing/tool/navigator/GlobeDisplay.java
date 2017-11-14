@@ -16,8 +16,6 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.MemoryImageSource;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -33,6 +31,8 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -104,7 +104,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private MainDesktopPane desktop;
 	private NavigatorWindow navwin;
 	private SurfaceFeatures surfaceFeatures;
-
+	private MainScene mainScene;
+	
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	
 	private Graphics dbg;
 	private Image dbImage = null;
 	private Image starfield;
@@ -124,7 +127,8 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
-
+		this.mainScene = desktop.getMainScene();
+		
 		// Initialize data members
 		this.width = GLOBE_BOX_WIDTH;
 		this.height = GLOBE_BOX_HEIGHT;
@@ -655,12 +659,22 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		timeCache = timeCache + time;
-		if (timeCache > PERIOD_IN_MILLISOLS) {
-			//System.out.println("calling GlobeDisplay's clockPulse()");
-			updateDisplay();
-			//justLoaded = false;
-			timeCache = 0;
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMinimapOn()) {// && !masterClock.isPaused()) {		
+				timeCache += time;
+				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					// Repaint map panel
+					updateDisplay();
+					timeCache = 0;
+				}
+			}
+		}
+		else if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+			timeCache += time;
+			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				updateDisplay();
+				timeCache = 0;
+			}
 		}
 	}
 

@@ -39,11 +39,16 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 /**
  * A panel showing a selected resupply mission details.
@@ -51,6 +56,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 public class ResupplyDetailPanel
 extends JPanel
 implements ClockListener, HistoricalEventListener {
+
+	private static final int PERIOD_IN_MILLISOLS = 3;
 
 	// Data members
 	private Resupply resupply;
@@ -60,17 +67,31 @@ implements ClockListener, HistoricalEventListener {
 	private JLabel launchDateValueLabel;
 	private JLabel timeArrivalValueLabel;
 	private JLabel immigrantsValueLabel;
-	private int solsToArrival = -1;
 	private JPanel innerSupplyPane;
 
+	private static MarsClock currentTime;
+	private static MasterClock masterClock;
+	
+	private MainDesktopPane desktop;
+	private MainScene mainScene;
+	
+	private double timeCache = 0;
+	private int solsToArrival = -1;
+	
 	/**
 	 * Constructor.
 	 */
-	public ResupplyDetailPanel() {
+	public ResupplyDetailPanel(MainDesktopPane desktop) {
 
 		// Use JPanel constructor
 		super();
 
+		this.desktop = desktop;
+		this.mainScene = desktop.getMainScene();
+		
+		currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		masterClock = Simulation.instance().getMasterClock();
+		
 		// Initialize data members.
 		resupply = null;
 
@@ -668,9 +689,28 @@ implements ClockListener, HistoricalEventListener {
 
 	@Override
 	public void clockPulse(double time) {
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
+				timeCache += time;
+				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					updateArrival();
+					timeCache = 0;
+				}
+			}
+		}
+		else if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
+			timeCache += time;
+			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				updateArrival();
+				timeCache = 0;
+			}
+		}	
+	}
+	
+	public void updateArrival() {
 		// Determine if change in time to arrival display value.
 		if ((resupply != null) && (solsToArrival >= 0)) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+			//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {

@@ -42,6 +42,8 @@ implements ActionListener {
 	private TypePanel typePanel;
 	private MissionWindow missionWindow;
 	
+	private MainDesktopPane desktop;
+	
 	private List<WizardPanel> wizardPanels;
 
 	/**
@@ -53,6 +55,7 @@ implements ActionListener {
         super("Create Mission Wizard");
         //2016-09-24 Added missionWindow param
         this.missionWindow = missionWindow;
+        this.desktop = desktop;
         
 		// Set mission data bean.
 		missionBean = new MissionDataBean();
@@ -333,4 +336,7 @@ implements ActionListener {
 		return missionBean;
 	}
 	
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
 }

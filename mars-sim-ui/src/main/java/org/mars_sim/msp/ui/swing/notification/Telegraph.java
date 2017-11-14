@@ -307,10 +307,12 @@ public class Telegraph implements ClockListener {
 		t.start();	
 		*/
 		// Window is still in position
-		isPaused = false;
-		if (timelineIntro.isDone() && !timelineStay.isDone())
-			// Resume animation
-			timelineStay.resume();
+		//if (!desktop.isEmpty()) {
+			isPaused = false;
+			if (timelineIntro.isDone() && !timelineStay.isDone())
+				// Resume animation
+				timelineStay.resume();
+		//}
 	}
 
 	@Override

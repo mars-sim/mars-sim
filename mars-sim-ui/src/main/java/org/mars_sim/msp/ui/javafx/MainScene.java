@@ -256,6 +256,7 @@ public class MainScene {
 	
 	private double tpsCache;
 
+	private boolean minimized = false;
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
@@ -384,6 +385,15 @@ public class MainScene {
 			e.consume();
 		});
 
+		stage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
+		    	if (!t.equals(t1)) {
+		    		minimized = t1;
+		    	}
+		    }
+		});
+		
 		// Detect if a user hits ESC
 		esc = new ESCHandler();
 		setEscapeEventHandler(true, stage);
@@ -2298,6 +2308,10 @@ public class MainScene {
 		return mapToggle.isSelected();
 	}
 
+	public boolean isMinimapOn() {
+		return mapToggle.isSelected();
+	}
+	
 	public void closeMinimap() {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
@@ -3720,6 +3734,13 @@ public class MainScene {
 			return false;
 	}
 
+	public boolean isMainTabOpen() {
+		if (jfxTabPane != null)
+			return jfxTabPane.getSelectionModel().isSelected(MainScene.MAIN_TAB);
+		else
+			return false;
+	}
+	
 	public Parent getRoot() {
 		return root;
 	}
@@ -3822,6 +3843,10 @@ public class MainScene {
 		return soundEffectSliderValue;
 	}
 
+	public boolean isMinimized() {
+		return minimized;
+	}
+	
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;

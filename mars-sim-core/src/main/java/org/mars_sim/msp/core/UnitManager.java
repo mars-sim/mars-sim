@@ -2090,7 +2090,7 @@ public class UnitManager implements Serializable {
 
 	@SuppressWarnings("restriction")
 	public ObservableList<Settlement> getSettlementOList() {
-		return 	FXCollections.observableArrayList(getSettlements());
+		return FXCollections.observableArrayList(getSettlements());
 	}
 
 	public String getCountry(String sponsor) {

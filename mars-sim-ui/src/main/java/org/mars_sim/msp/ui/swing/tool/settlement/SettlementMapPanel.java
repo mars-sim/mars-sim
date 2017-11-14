@@ -12,7 +12,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
@@ -40,6 +39,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 
 
 /**
@@ -82,20 +82,20 @@ implements ClockListener {
 	private boolean showRobotLabels;
 	private boolean showDaylightLayer;
 
-	private List<SettlementMapLayer> mapLayers;
-	private Map<Settlement, Person> selectedPerson;
-	private Map<Settlement, Robot> selectedRobot;
-
-	//private Graphics dbg;
-	//private Image dbImage = null;
-	
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 	private MainScene mainScene;
+	private MainDesktopPane desktop;
+
 	private Building building;
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
 	private SettlementTransparentPanel settlementTransparentPanel;
+
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	
+	private List<SettlementMapLayer> mapLayers;
+	private Map<Settlement, Person> selectedPerson;
+	private Map<Settlement, Robot> selectedRobot;
 
 	/** Constructor 1
 	 * 	A panel for displaying a settlement map.
@@ -103,6 +103,7 @@ implements ClockListener {
 	public SettlementMapPanel(MainDesktopPane desktop, final SettlementWindow settlementWindow) {
 		super();
 		this.settlementWindow = settlementWindow;
+		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
 /*
 		if (mainScene != null) {
@@ -1091,27 +1092,23 @@ implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		if (mainScene != null && mainScene.isMapTabOpen() && mainScene.isMapOn() && !masterClock.isPaused()) {
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMapOn()) {//&& !masterClock.isPaused()) {			
+				timeCache += time;
+				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					// Repaint map panel
+					repaint();
+					timeCache = 0;
+				}	
+			}
+		}
+		else if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 			timeCache += time;
 			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				//logger.info("repaint");
-				// Repaint map panel
-				//paintDoubleBuffer();
 				repaint();
 				timeCache = 0;
 			}
 		}
-		else if (!masterClock.isPaused()) {
-			timeCache += time;
-			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				//logger.info("repaint");
-				// Repaint map panel
-				//paintDoubleBuffer();
-				repaint();
-				timeCache = 0;
-			}
-		}
-		
 	}
 
 	public SettlementTransparentPanel getSettlementTransparentPanel() {

@@ -156,7 +156,8 @@ implements ActionListener {
 	public NavigatorWindow(MainDesktopPane desktop) {
 		// use ToolWindow constructor
 		super(NAME, desktop);
-
+		this.desktop = desktop;
+		
 		landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 
 		if (desktop.getMainScene() != null) {
@@ -207,7 +208,7 @@ implements ActionListener {
 			detailPane.setOpaque(true);
 			detailPane.add(mapPaneInner);
 
-			map = new MapPanel(500L);
+			map = new MapPanel(desktop, 500L);
 			map.setNavWin(this);
 			map.addMouseListener(new mapListener());
 			map.addMouseMotionListener(new mouseMotionListener());
@@ -457,7 +458,7 @@ implements ActionListener {
 			mapPaneInner.setOpaque(true);
 	//		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-			map = new MapPanel(500L);
+			map = new MapPanel(desktop, 500L);
 			map.setNavWin(this);
 			map.addMouseListener(new mapListener());
 			map.addMouseMotionListener(new mouseMotionListener());

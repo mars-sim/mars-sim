@@ -605,11 +605,11 @@ public class NotificationWindow extends JDialog implements ClockListener {
 	
 	// 2014-12-17 Added clockPulse()
 	public void clockPulse(double time) {
-		isPaused = false;
+		//isPaused = false;
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		isPaused = true;
+		this.isPaused = isPaused;
 	};
 }

@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.*;
@@ -43,10 +44,15 @@ class ExplorationSitesPanel extends WizardPanel {
 	private EllipseLayer ellipseLayer;
 	private NavpointEditLayer navLayer;
     private MineralMapLayer mineralLayer;
-	private int navSelected;
+
 	private IntPoint navOffset;
 	private JPanel siteListPane;
 	private JButton addButton;
+	
+	private MainDesktopPane desktop;
+	
+	private int navSelected;
+	
 	private double range;
 	private double missionTimeLimit;
 	private double timePerSite;
@@ -58,6 +64,8 @@ class ExplorationSitesPanel extends WizardPanel {
 	ExplorationSitesPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
+		
+		desktop = wizard.getDesktop();
 		
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -85,7 +93,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		centerPane.add(mapMainPane, BorderLayout.WEST);
 		
 		// Create the map panel.
-		mapPane = new MapPanel(200L);
+		mapPane = new MapPanel(desktop, 200L);
         mineralLayer = new MineralMapLayer(mapPane);
         mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);

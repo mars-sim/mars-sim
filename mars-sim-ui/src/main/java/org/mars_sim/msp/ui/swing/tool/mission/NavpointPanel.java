@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -70,11 +71,13 @@ implements ListSelectionListener, MissionListener {
     private MineralMapLayer mineralLayer;
 	private NavpointTableModel navpointTableModel;
 	private JTable navpointTable;
+	private MainDesktopPane desktop;
 	
 	/**
 	 * Constructor.
 	 */
-	protected NavpointPanel() {
+	protected NavpointPanel(MainDesktopPane desktop) {
+		this.desktop = desktop;
 		
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -103,7 +106,7 @@ implements ListSelectionListener, MissionListener {
 		//mainPane.add(Box.createVerticalStrut(10));
 	
 		// Create the map panel.
-		mapPane = new MapPanel(500L);
+		mapPane = new MapPanel(desktop, 500L);
 		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPane.addMapLayer(new ShadingMapLayer(mapPane), 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 2);

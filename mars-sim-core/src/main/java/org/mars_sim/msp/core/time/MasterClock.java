@@ -85,8 +85,8 @@ public class MasterClock implements Serializable {
 	private transient long elapsedLast;
 
 	/** Clock listeners. */
-	private transient List<ClockListener> listeners;
-	private transient List<ClockListenerTask> clockListenerTaskList =  new CopyOnWriteArrayList<>();
+	private transient List<ClockListener> clockListeners;
+	private transient List<ClockListenerTask> clockListenerTasks =  new CopyOnWriteArrayList<>();
 
 	//private double time_ratio;
 	private boolean isFXGL = false;
@@ -136,9 +136,9 @@ public class MasterClock implements Serializable {
 
         // Create an Uptime Timer
         uptimer = new UpTimer(this);
-
+     
         // Create listener list.
-        listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+        clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         elapsedLast = uptimer.getUptimeMillis();
 
         if (!isFXGL)
@@ -246,9 +246,9 @@ public class MasterClock implements Serializable {
     // 2015-04-02 Modified addClockListener()
     public final void addClockListener(ClockListener newListener) {
         // if listeners list does not exist, create one
-    	if (listeners == null) listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+    	if (clockListeners == null) clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         // if the listeners list does not contain newListener, add it to the list
-    	if (!listeners.contains(newListener)) listeners.add(newListener);
+    	if (!clockListeners.contains(newListener)) clockListeners.add(newListener);
     	// will check if clockListenerTaskList already contain the newListener's task, if it doesn't, create one
     	addClockListenerTask(newListener);
       }
@@ -260,11 +260,11 @@ public class MasterClock implements Serializable {
      */
     // 2015-04-02 Modified removeClockListener()
     public final void removeClockListener(ClockListener oldListener) {
-        if (listeners == null) listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
-        if (listeners.contains(oldListener)) listeners.remove(oldListener);
+        if (clockListeners == null) clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+        if (clockListeners.contains(oldListener)) clockListeners.remove(oldListener);
        	// Check if clockListenerTaskList contain the newListener's task, if it does, delete it
         ClockListenerTask task = retrieveClockListenerTask(oldListener);
-        if (task != null) clockListenerTaskList.remove(task);
+        if (task != null) clockListenerTasks.remove(task);
     }
 
     /**
@@ -275,16 +275,16 @@ public class MasterClock implements Serializable {
     // 2015-04-02 addClockListenerTask()
     public void addClockListenerTask(ClockListener listener) {
     	boolean hasIt = false;
-    	if (clockListenerTaskList == null)
-    		clockListenerTaskList =  new CopyOnWriteArrayList<ClockListenerTask>();
-    	Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
+    	if (clockListenerTasks == null)
+    		clockListenerTasks =  new CopyOnWriteArrayList<ClockListenerTask>();
+    	Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
     	while (i.hasNext()) {
     		ClockListenerTask c = i.next();
     		if (c.getClockListener().equals(listener))
     			hasIt = true;
     	}
     	if (!hasIt) {
-	    	clockListenerTaskList.add(new ClockListenerTask(listener));
+	    	clockListenerTasks.add(new ClockListenerTask(listener));
     	}
     }
 
@@ -302,7 +302,7 @@ public class MasterClock implements Serializable {
     	});
 */
     	ClockListenerTask t = null;
-    	Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
+    	Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
     	while (i.hasNext()) {
     		ClockListenerTask c = i.next();
     		if (c.getClockListener().equals(oldListener))
@@ -580,13 +580,8 @@ public class MasterClock implements Serializable {
 
 	 	            t1 = System.nanoTime();
 
-	 	         // 2015-07-03 Added skipping the sleep time if the statusUpdate() or other processes take too long
+	 	            // Skip the sleep time if the statusUpdate() or other processes take too long
 	 	            int skips = 0;
-
-	 	            //if (excess > timeBetweenUpdates) {
-	 	            //	timeBetweenUpdates = (long) (timeBetweenUpdates * 1.015); // increment by 1.5%
-	 	            //	logger.info("excess > timeBetweenUpdates");
-	 	            //}
 
 	 	            while ((excess > current_tbu_ns) && (skips < maxFrameSkips)) {
 	 	            	excess -= current_tbu_ns;
@@ -596,7 +591,7 @@ public class MasterClock implements Serializable {
 	 	            	skips++;
 
 	 	            	if (skips >= maxFrameSkips) {
-	 		            	logger.info("# of skips has reached the maximum # of frame skips. Reseting total pulse and slowing down Time Between Updates (TBU).");
+	 		            	logger.info("# of skips has reached the maximum # of frame skips. Resetting total pulse and slowing down (TBU).");
 	 		            	resetTotalPulses();
 	 		            	if (current_tbu_ns > (long) (cal_tbu_ns * 1.25))
 	 		            		current_tbu_ns = (long) (cal_tbu_ns * 1.25);
@@ -677,7 +672,7 @@ public class MasterClock implements Serializable {
      */
     // 2015-04-02 setupClockListenerTask()
     public void setupClockListenerTask() {
-		listeners.forEach(t -> {
+		clockListeners.forEach(t -> {
 			// Check if it has a corresponding task or not, if it doesn't, create a task for t
 			addClockListenerTask(t);
 		});
@@ -716,7 +711,7 @@ public class MasterClock implements Serializable {
      * Fires the clock pulse to each clock listener
      */
 	public void fireClockPulse(double time) {
-		for (ClockListenerTask task : clockListenerTaskList) {
+		for (ClockListenerTask task : clockListenerTasks) {
 	  		if (task != null) {
   		  		task.addTime(time);
 	  			clockListenerExecutor.execute(task);
@@ -773,7 +768,7 @@ public class MasterClock implements Serializable {
      */
     public void firePauseChange(boolean showPane) {
 
-        listeners.forEach(cl -> cl.pauseChange(isPaused, showPane));
+        clockListeners.forEach(cl -> cl.pauseChange(isPaused, showPane));
 /*
         synchronized (listeners) {
             Iterator<ClockListener> i = listeners.iterator();
@@ -1044,7 +1039,7 @@ public class MasterClock implements Serializable {
     	clockListenerExecutor = null;
     	file = null;
     	
-    	listeners = null;
+    	clockListeners = null;
     	clockListenerExecutor = null;
     }
 }

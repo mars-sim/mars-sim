@@ -543,30 +543,33 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	@SuppressWarnings("restriction")
 	@Override
 	public void clockPulse(double time) {
-
 		if (mainScene != null) {
-			StringBuilder s0 = new StringBuilder();
-			double ratio = masterClock.getTimeRatio();
-			String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-			s0.append(ONE_REAL_SEC);
-			s0.append(masterClock.getTimeString(ratio));
-			if (timeRatioLabel != null) timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
-			if (timeCompressionLabel != null) timeCompressionLabel.setText(s0.toString());
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(TimeWindow.NAME)) {			
+				updateFXLabel();
+			}
+		}
+		else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+			updateSwingLabel(time);
 		}
 
-		//SwingUtilities.invokeLater(() -> updateTime(time));
-		
-		if (desktop.isToolWindowOpen(TimeWindow.NAME))
-			updateTime(time);
 	}
-
+	
+	public void updateFXLabel() {
+		StringBuilder s0 = new StringBuilder();
+		double ratio = masterClock.getTimeRatio();
+		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+		s0.append(ONE_REAL_SEC);
+		s0.append(masterClock.getTimeString(ratio));
+		if (timeRatioLabel != null) timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
+		if (timeCompressionLabel != null) timeCompressionLabel.setText(s0.toString());
+	}
+	
 	/**
 	 * Updates date and time in Time Tool
 	 *
 	 * @param time
 	 */
-	// 2015-01-09 Added updateTime()
-	public void updateTime(double time) {
+	public void updateSwingLabel(double time) {
 		if (marsTime != null) {
 			//SwingUtilities.invokeLater(() -> {
 			String ts = marsTime.getDateTimeStamp();

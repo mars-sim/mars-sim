@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -25,7 +26,12 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * A panel showing a selected arriving settlement details.
@@ -34,25 +40,42 @@ public class ArrivingSettlementDetailPanel
 extends JPanel
 implements ClockListener, HistoricalEventListener {
 
+	private static final int PERIOD_IN_MILLISOLS = 3;
+
 	// Data members
-	private ArrivingSettlement arrivingSettlement;
+
 	private JLabel nameValueLabel;
 	private JLabel stateValueLabel;
 	private JLabel arrivalDateValueLabel;
 	private JLabel timeArrivalValueLabel;
-	private int solsToArrival = -1;
 	private JLabel templateValueLabel;
 	private JLabel locationValueLabel;
 	private JLabel populationValueLabel;
 
+	private ArrivingSettlement arrivingSettlement;
+	
+	private MainDesktopPane desktop;
+	private MainScene mainScene;
+	
+	private static MarsClock currentTime;
+	private static MasterClock masterClock;
+	
+	private double timeCache = 0;
+	private int solsToArrival = -1;
+	
 	/**
 	 * Constructor.
 	 */
-	public ArrivingSettlementDetailPanel() {
+	public ArrivingSettlementDetailPanel(MainDesktopPane desktop) {
 
 		// Use JPanel constructor.
 		super();
-
+		this.desktop = desktop;
+		this.mainScene = desktop.getMainScene();
+		
+		currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		masterClock = Simulation.instance().getMasterClock();
+		
 		setLayout(new BorderLayout(0, 10));
 		setBorder(new MarsPanelBorder());
 
@@ -217,7 +240,7 @@ implements ClockListener, HistoricalEventListener {
 	private void updateTimeToArrival() {
 		String timeArrival = Msg.getString("ArrivingSettlementDetailPanel.noTime"); //$NON-NLS-1$
 		solsToArrival = -1;
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
 		if (timeDiff > 0D) {
 			solsToArrival = (int) Math.abs(timeDiff / 1000D);
@@ -261,11 +284,32 @@ implements ClockListener, HistoricalEventListener {
 		// Do nothing.
 	}
 
+	
 	@Override
 	public void clockPulse(double time) {
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(MissionWindow.NAME)) {
+				timeCache += time;
+				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					updateArrival();
+					timeCache = 0;
+				}
+			}
+		}
+		else if (desktop.isToolWindowOpen(MissionWindow.NAME)) {
+			timeCache += time;
+			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				updateArrival();
+				timeCache = 0;
+			}
+		}			
+
+	}
+	
+	public void updateArrival() {
 		// Determine if change in time to arrival display value.
 		if ((arrivingSettlement != null) && (solsToArrival >= 0)) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+			//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {

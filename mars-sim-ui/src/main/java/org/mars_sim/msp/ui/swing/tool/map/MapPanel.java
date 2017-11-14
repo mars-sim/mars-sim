@@ -20,8 +20,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +31,9 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 public class MapPanel extends JPanel implements ClockListener {
@@ -71,19 +74,27 @@ public class MapPanel extends JPanel implements ClockListener {
 	private SurfMarsMap surfMap;
 	private TopoMarsMap topoMap;
 
+	private MainDesktopPane desktop;
+	
+	private MainScene mainScene;
+	
 	private Graphics dbg;
 	private Image dbImage = null;
 	//private long refreshRate;
 	private double rho = CannedMarsMap.PIXEL_RHO;
 
-	private ThreadPoolExecutor executor;
-
-	public MapPanel(long refreshRate) {
+	//private ThreadPoolExecutor executor;
+	private transient ExecutorService executor;
+	
+	public MapPanel(MainDesktopPane desktop, long refreshRate) {
 		super();
-
-		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); // newFixedThreadPool(1); //
-
-		Simulation.instance().getMasterClock().addClockListener(this);
+		this.desktop = desktop;
+		this.mainScene = desktop.getMainScene();
+		
+		//executor = ? (ThreadPoolExecutor) Executors.newCachedThreadPool(); // newFixedThreadPool(1); //
+		executor = Executors.newSingleThreadExecutor();
+		
+		masterClock.addClockListener(this);
 
 		//this.refreshRate = refreshRate;
 
@@ -472,14 +483,30 @@ public class MapPanel extends JPanel implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		if (!masterClock.isPaused()) {
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() 
+				&& (desktop.isToolWindowOpen(NavigatorWindow.NAME)
+					|| (desktop.isToolWindowOpen(MissionWindow.NAME) 
+						&& ((MissionWindow)desktop.getToolWindow(MissionWindow.NAME)).isNavPointsMapTabOpen()))
+					) {	
+				// TODO: should also check if navpoints tab is open or not
+				timeCache += time;
+				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					// Repaint map panel
+					updateDisplay();
+					timeCache = 0;
+				}	
+			}
+		}
+		else if (desktop.isToolWindowOpen(NavigatorWindow.NAME)
+				||desktop.isToolWindowOpen(MissionWindow.NAME)
+				//||desktop.isToolWindowOpen(ResupplyWindow.NAME)
+				) {
 			timeCache += time;
 			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				//logger.info("repaint");
-				// Repaint map panel
 				updateDisplay();
 				timeCache = 0;
-			}	
+			}
 		}
 	}
 

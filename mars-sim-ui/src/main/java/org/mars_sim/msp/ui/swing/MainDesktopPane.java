@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -52,7 +53,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -88,7 +89,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
-	private static final double PERIOD_IN_MILLISOLS = 750D / MarsClock.SECONDS_IN_MILLISOL;
+	private static final double PERIOD_IN_MILLISOLS = 10;//750D / MarsClock.SECONDS_IN_MILLISOL;
 
 	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
 	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
@@ -108,8 +109,12 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	private JLabel backgroundLabel;
 
 	private ToolWindowTask toolWindowTask;
-	private ThreadPoolExecutor toolWindowExecutor;
-	private ThreadPoolExecutor unitWindowExecutor;
+	
+    private transient ExecutorService toolWindowExecutor;
+    private transient ExecutorService unitWindowExecutor;
+    
+	//private ThreadPoolExecutor toolWindowExecutor;
+	//private ThreadPoolExecutor unitWindowExecutor;
 
 	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
 
@@ -133,6 +138,8 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	//private final ReentrantLock constructionLock = new ReentrantLock();
     //private int constructionCount = 0;
 
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	
 	/**
 	 * Constructor 1.
 	 * @param mainWindow the main outer window
@@ -698,12 +705,15 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 * @return true true if tool window is open
 	 */
 	public boolean isToolWindowOpen(String toolName) {
+		return !getToolWindow(toolName).isClosed();
+/*		
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
 			return !window.isClosed();
 		} else {
 			return false;
 		}
+*/		
 	}
 
 	/**
@@ -1286,7 +1296,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	/**
 	 * Update the desktop and all of its windows.
 	 */
-	private void update() {
+	private void updateWindows() {
 		//long SLEEP_TIME = 450;
 
 		// Update all unit windows.
@@ -1769,11 +1779,21 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	@Override
 	public void clockPulse(double time) {
-		timeCache = timeCache + time;
-		if (timeCache > PERIOD_IN_MILLISOLS) {
-			//logger.info("time : " + time);//calling update()");
-			update();
-			timeCache = 0;
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && !isEmpty()) {		
+				timeCache = timeCache + time;
+				if (timeCache > PERIOD_IN_MILLISOLS) {
+					updateWindows();
+					timeCache = 0;
+				}
+			}
+		}
+		else if (!isEmpty()) {
+			timeCache = timeCache + time;
+			if (timeCache > PERIOD_IN_MILLISOLS) {
+				updateWindows();
+				timeCache = 0;
+			}	
 		}
 	}
 
@@ -1793,6 +1813,22 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		}
 	}
 
+	public boolean isEmpty() {
+		if (super.getAllFrames().length == 0)
+			return true;
+		else
+			return false;
+/*		
+		int size = super.getAllFrames().length;
+		if (size == 0) {
+			return true;
+		}
+		else {
+			return false;	
+		}
+*/		
+	}
+	
 	public void destroy() {
 		unitWindows = null;
 		toolWindows = null;

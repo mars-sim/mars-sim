@@ -18,6 +18,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * A panel showing a selected transport details.
@@ -39,7 +40,7 @@ implements ListSelectionListener {
 	/**
 	 * Constructor.
 	 */
-	public TransportDetailPanel() {
+	public TransportDetailPanel(MainDesktopPane desktop) {
 
 		// Use JPanel constructor.
 		super();
@@ -49,11 +50,11 @@ implements ListSelectionListener {
 		setPreferredSize(new Dimension(300, 300));
 
 		// Add resupply detail panel.
-		resupplyPanel = new ResupplyDetailPanel();
+		resupplyPanel = new ResupplyDetailPanel(desktop);
 		add(resupplyPanel, RESUPPLY);
 
 		// Add arriving settlement detail panel.
-		arrivingSettlementPanel = new ArrivingSettlementDetailPanel();
+		arrivingSettlementPanel = new ArrivingSettlementDetailPanel(desktop);
 		add(arrivingSettlementPanel, SETTLEMENT);
 
 		// Set resupply panel as initial panel displayed.

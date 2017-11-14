@@ -39,8 +39,6 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
-import com.almasb.fxgl.ecs.GameWorld;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -183,6 +181,8 @@ implements ClockListener, Serializable {
     /** The GameWorld instance for FXGL frameworld */
     //private GameWorld gameWorld;
     
+    private UpTimer ut;
+    
     /**
      * Private constructor for the Singleton Simulation. This prevents instantiation from other classes.
      * */
@@ -324,6 +324,8 @@ implements ClockListener, Serializable {
 		//System.out.println("running Simulation's initializeIntransientData()");
         //ResourceUtil.getInstance().initializeNewSim();
 		//ResourceUtil.printID();
+
+	    ut = masterClock.getUpTimer();
 	}
 
 
@@ -388,6 +390,7 @@ implements ClockListener, Serializable {
 
         startAutosaveTimer(autosaveDefault);
 
+	    ut = masterClock.getUpTimer();
     }
 
 
@@ -803,13 +806,13 @@ implements ClockListener, Serializable {
     public void clockPulse(double time) {
 		//logger.info("Simulation's clockPulse() is in " + Thread.currentThread().getName() + " Thread");
 		// it's in pool-4-thread-1 Thread
-        UpTimer ut = null;
-        if (masterClock != null)
-        	ut = masterClock.getUpTimer();
+        //UpTimer ut = null;
+        //if (masterClock != null)
+        //	ut = masterClock.getUpTimer();
 
         if (ut != null && !masterClock.isPaused()) {
 
-            ut.updateTime();
+        	ut.updateTime();
 
             if (debug) {
                 logger.fine(

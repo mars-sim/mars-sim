@@ -59,7 +59,7 @@ public class FieldSitePanel extends WizardPanel {
         add(titleLabel);
         
         // Create the map panel.
-        mapPane = new MapPanel(200L);
+        mapPane = new MapPanel(wizard.getDesktop(), 200L);
         mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 0);
         mapPane.addMapLayer(new UnitLabelMapLayer(), 1);
         mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
