@@ -26,6 +26,7 @@ import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.application.Platform;
+import javafx.stage.StageStyle;
 
 @SuppressWarnings("restriction")
 public class MarsProjectFXGL extends GameApplication {
@@ -81,6 +82,7 @@ public class MarsProjectFXGL extends GameApplication {
 		settings.setIntroEnabled(false); // turn off intro
 		settings.setMenuEnabled(false); // turn off menus
 		settings.setCloseConfirmation(true);
+		settings.setStageStyle(StageStyle.UNDECORATED);
 	}
 
 	@Override

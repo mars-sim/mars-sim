@@ -72,22 +72,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>jfreechart-fx</artifactId>
 		    <version>1.0.0</version>
 		</dependency>	
-		<!-- <dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout-swing</artifactId>
-			<version>5.0</version>
-		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-javafx : 10 KB-->
 		<dependency>
 		    <groupId>com.miglayout</groupId>
 		    <artifactId>miglayout-javafx</artifactId>
 		    <version>5.0</version>
 		</dependency>
-		<!--<dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout</artifactId>
-			<version>3.7.4</version>
-		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/com.github.insubstantial/trident : 80KB
 			https://github.com/Insubstantial/insubstantial/tree/master/trident-->
 		<dependency>
@@ -95,7 +85,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>trident</artifactId>
 			<version>7.3</version>
 		</dependency>
-
 
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/1.8 : 90KB
 			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
@@ -108,40 +97,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.9</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-util : 115 KB
-		     Note : batik-util 1.8 is required only by batik-transcoder 1.9 -->
-		<!--dependency>
-		    <groupId>org.apache.xmlgraphics</groupId>
-		    <artifactId>batik-util</artifactId>
-		    <version>1.8</version>
-		</dependency-->
-
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-i18n : 13 KB -->
-		<!--dependency>
-		    <groupId>org.apache.xmlgraphics</groupId>
-		    <artifactId>batik-i18n</artifactId>
-		    <version>1.9</version>
-		</dependency-->
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-constants : 8 KB-->
-		<!--dependency>
-		    <groupId>org.apache.xmlgraphics</groupId>
-		    <artifactId>batik-constants</artifactId>
-		    <version>1.9</version>
-		</dependency-->
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-rasterizer : 6 KB
-			needed by batik-transcoder 1.9 or else Exception in thread "AWT-EventQueue-0" java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable -->
-        <!--dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-rasterizer</artifactId>
-            <version>1.9</version>
-        </dependency-->
-        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-codec
-		<dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-codec</artifactId>
-            <version>1.9</version>
-        </dependency>
-        -->
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim 
 			 Needed by afester's svg class -->
 		<dependency>
@@ -156,13 +111,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  <artifactId>batik-svg-dom</artifactId>
 		  <version>1.9</version>
 		</dependency>	
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-dom/1.9 : 167 KB
-		<dependency>
-		  <groupId>org.apache.xmlgraphics</groupId>
-		  <artifactId>batik-dom</artifactId>
-		  <version>1.9</version>
-		</dependency>
-		 -->
+
 		<!-- https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless : 20 KB
 			 Needed by afester's svg class -->
 		<dependency>
@@ -416,19 +365,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             </releases>
 		</repository>
 		<repository>
-			<name>BestSolution e(fx)clipse snapshots</name>
-			<id>efxclipse-snapshots</id>
-			<url>http://maven.bestsolution.at/efxclipse-snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<name>BestSolution e(fx)clipse releases</name>
-			<id>efxclipse-releases</id>
-			<url>http://maven.bestsolution.at/efxclipse-releases/</url>
-		</repository>
-		<repository>
 			<id>oxbow-repository</id>
 			<url>https://github.com/eugener/oxbow/raw/master/maven/repository</url>
 			<releases>
@@ -445,12 +381,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!--repository>
-			<id>jme3-repo</id>
-			<name>JME3 maven repo</name>
-			<url>http://updates.jmonkeyengine.org/maven/</url>
-		</repository-->
-<!--
 		<repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
@@ -462,8 +392,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <snapshots>
 	            <enabled>true</enabled>
 	        </snapshots>
-	    </repository>
--->	    
-            
+	    </repository>        
 	</repositories>
 </project>

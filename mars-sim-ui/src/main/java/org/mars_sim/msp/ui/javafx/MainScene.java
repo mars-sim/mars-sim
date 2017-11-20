@@ -367,8 +367,10 @@ public class MainScene {
 
 		isMainSceneDoneLoading = false;
 
-		if (gameScene != null)
+		if (gameScene != null) {
 			stage = ((Stage) gameScene.getRoot().getScene().getWindow());
+		    //stage.initStyle(StageStyle.DECORATED);
+		}
 		else
 			stage = new Stage();
 		

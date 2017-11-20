@@ -40,6 +40,7 @@ public class Malfunction implements Serializable {
     // Data members
     private int severity;
     private int incidentNum;
+    
     private double probability;
     // Work time tracking
     private double workTime;
@@ -48,6 +49,7 @@ public class Malfunction implements Serializable {
     private double emergencyWorkTimeCompleted;
     private double EVAWorkTime;
     private double EVAWorkTimeCompleted;
+    
     private String name;
 
     private Collection<String> systems;

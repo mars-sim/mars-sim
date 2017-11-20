@@ -59,6 +59,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import jfxtras.scene.control.window.Window;
 import javafx.geometry.Insets;
 //import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -279,8 +280,9 @@ public class MainMenu {
        root.getChildren().add(stackPane);
        root.getChildren().add(closeApp);
        root.getChildren().add(rootPane);
-       
-       gameScene.addUINode(root);
+          
+       gameScene.addUINode(root);   
+    
 /*       
        menuApp.getTitleStackPane().setOnMousePressed(new EventHandler<MouseEvent>() {
            @Override
@@ -307,7 +309,7 @@ public class MainMenu {
        //scene.setCursor(Cursor.HAND);
 
        // Makes the menu option box fades in
-        root.setOnMouseEntered(new EventHandler<MouseEvent>(){
+       root.setOnMouseEntered(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
         	   menuApp.startAnimation();
                FadeTransition fadeTransition
@@ -319,7 +321,7 @@ public class MainMenu {
         });
 
        // Makes the menu option box fades out
-        root.setOnMouseExited(new EventHandler<MouseEvent>(){
+       root.setOnMouseExited(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
         	   menuApp.endAnimation();
                FadeTransition fadeTransition
@@ -329,8 +331,19 @@ public class MainMenu {
                fadeTransition.play();
         	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
            }
-        });
-  
+       });
+/*
+       Scene scene = (Scene) gameScene.getRoot().getScene();
+       if (scene == null)
+    	   System.out.println("scene is " + scene);
+       javafx.stage.Window window = scene.getWindow();
+       Stage stage = (Stage) window;
+       stage.hide();
+       stage.initStyle(StageStyle.UNDECORATED);
+       //stage.show();
+       
+       stage.show();
+*/       
    }
 	
     /*

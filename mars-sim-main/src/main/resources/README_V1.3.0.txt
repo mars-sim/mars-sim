@@ -11,8 +11,10 @@ https://github.com/mars-sim/mars-sim
 
 - 1 GB free RAM dedicated for running mars-sim
 
-- 32 or 64-bit Oracle Java 8 (JRE/JDK 8u77 higher) or OpenJDK with OpenJFX
-
+- 32 or 64-bit Oracle Java 8 (JRE/JDK above 8u77, preferably 8u151) 
+  or OpenJDK with OpenJFX
+  (Note : NOT compatible with Java 9)
+  
 - 135 MB free disk space
 
 ---------------------------------------------------------------------
@@ -57,9 +59,9 @@ Alternatively, one may start mars-sim from the command line.
 This gives users the advantage of seeing mars-sim's internal logging
 statements while running mars-sim.
 
-Note a : replacing [version/build] with the current version/build.
+Note a: replacing [version/build] with the current version/build.
 
-Note b : the argument 'new' is optional. If the argument 'load'
+Note b: the argument 'new' is optional. If the argument 'load'
 is not provided for, it will assume that the user is interested in
 starting a new simulation and 'new' will be appended automatically.
 
@@ -171,9 +173,9 @@ Alternatively, you may type in a command line :
 
 This will load the FileChooser and open up \.mars-sim\saved\
 
-Note 1 : the order of the arguments is NOT important
+Note 1: the order of the arguments is NOT important
 
-Note 2 : by default, it is assumed the user is interested in
+Note 2: by default, it is assumed the user is interested in
 loading the default saved sim file. Do NOT type 'default.sim'
 as an argument ase default.sim is located at \.mars-sim\saved\
 
@@ -183,9 +185,9 @@ as an argument ase default.sim is located at \.mars-sim\saved\
 
 This will load '123.sim', instead of the default saved sim.
 
-Note 3 : the order of the arguments is NOT important
+Note 3: the order of the arguments is NOT important
 
-Note 4 : '123.sim' must be present in the same directory
+Note 4: '123.sim' must be present in the same directory
 where the jar file is at
 
 
@@ -195,9 +197,9 @@ To load the default saved sim without the graphic interface, type :
 
 > java -jar mars-sim-[version/build].jar 3 headless load
 
-Note 1 : the order of the arguments is not important
+Note 1: the order of the arguments is not important
 
-Note 2 : by default, it is assumed the user is interested in
+Note 2: by default, it is assumed the user is interested in
 loading the default saved sim file. Do NOT type 'default.sim'
 as an argument ase default.sim is located at \.mars-sim\saved\
 
@@ -207,9 +209,9 @@ as an argument ase default.sim is located at \.mars-sim\saved\
 
 This will load '123.sim', instead of the default saved sim.
 
-Note 3 : the order of the arguments is NOT important
+Note 3: the order of the arguments is NOT important
 
-Note 4 : '123.sim' must be present in the same directory
+Note 4: '123.sim' must be present in the same directory
 where the jar file is at
 
 
@@ -242,7 +244,7 @@ the application. The credits can also be viewed by opening the file
 
 - This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or (at
+the Free Software Foundation; either version 3 of the License, or (at
 your option) any later version.
 
 - This program is distributed in the hope that it will be useful, but

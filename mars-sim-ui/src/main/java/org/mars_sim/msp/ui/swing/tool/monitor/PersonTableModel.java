@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -95,6 +96,10 @@ public class PersonTableModel extends UnitTableModel {
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
 
+	private final static String DEYDRATED = "Deydrated";
+	private final static String THIRSTY = "Thirsty";
+	private final static String STARVING = "Starving";
+	
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
@@ -405,11 +410,10 @@ public class PersonTableModel extends UnitTableModel {
 
 		if (rowIndex < getUnitNumber()) {
 			Person person = (Person) getUnit(rowIndex);
-
 			boolean isDead = person.getPhysicalCondition().isDead();
-			boolean isStarving = person.getPhysicalCondition().isStarving();
-			boolean isDeydrated = person.getPhysicalCondition().isDeydrated();
-
+			//PhysicalCondition pc = person.getPhysicalCondition();
+			//Mind mind = person.getMind();
+			
 			switch (columnIndex) {
 
 			case TASK: {
@@ -466,15 +470,18 @@ public class PersonTableModel extends UnitTableModel {
 				break;
 
 			case HUNGER: {
-				double hunger = person.getPhysicalCondition().getHunger();
-				double energy = person.getPhysicalCondition().getEnergy();
-				// result = new Float(hunger).intValue();
+				PhysicalCondition pc = person.getPhysicalCondition();
+				double hunger = pc.getHunger();
+				double energy = pc.getEnergy();
+
 				if (isDead)
 					result = "";
-				else if (isStarving)
-					result = "Starving";
-				else if (isDeydrated)
-					result = "Deydrated";
+				else if (pc.isDeydrated())
+					result = DEYDRATED;
+				else if (pc.isThirsty())
+					result = THIRSTY;
+				else if (pc.isStarving())
+					result = STARVING;
 				else
 					result = getHungerStatus(hunger, energy);
 			}
@@ -545,7 +552,7 @@ public class PersonTableModel extends UnitTableModel {
 
 			case JOB: {
 				// If person is dead, get job from death info.
-				if (person.getPhysicalCondition().isDead())
+				if (isDead)
 					result = person.getPhysicalCondition().getDeathDetails().getJob();
 				else {
 					if (person.getMind().getJob() != null)
@@ -558,7 +565,7 @@ public class PersonTableModel extends UnitTableModel {
 
 			case SHIFT: {
 				// If person is dead, disable it.
-				if (person.getPhysicalCondition().isDead())
+				if (isDead)
 					result = ShiftType.OFF; // person.getPhysicalCondition().getDeathDetails().getJob();
 				else {
 					ShiftType shift = person.getTaskSchedule().getShiftType();
