@@ -400,7 +400,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					        
 					        Malfunctionable mal = (Malfunctionable) event.getSource();
 					        
-					        message = message + "(" + mal.getNickName() + ") in " + mal.getLongLocationName();
+					        message = message + " (" + mal.getNickName() + ") in " + mal.getLongLocationName();
 					        
 					        type = 0;
 					    }

@@ -64,8 +64,11 @@ public class TabPanelDashboard extends TabPanel {
 	// Data members
 	private JFXPanel jfxpanel;
 	private Scene scene;
-	private StackPane stack, commitPane;
-	private Label choiceLabel, choiceHeader, headerLabel;
+	private StackPane stack;
+	private StackPane commitPane;
+	private Label choiceLabel;
+	private Label choiceHeader;
+	private Label headerLabel;
 
 	// private ToggleGroup group;
 	private ToggleButton toggleBtn;
@@ -379,17 +382,20 @@ public class TabPanelDashboard extends TabPanel {
 				
 				commitButton.getStylesheets().clear();
 				
+				String cssFile = null;
+				String color = null;
+				
 				if (theme == 0 || theme == 6) {
-					String cssFile = "/fxui/css/snowBlue.css";
-					String color = "-fx-border-style: 2px; " + "-fx-background-color: white;" + "-fx-border-color: white;"
+					cssFile = "/fxui/css/theme/snowBlue.css";
+					color = "-fx-border-style: 2px; " + "-fx-background-color: white;" + "-fx-border-color: white;"
 							+ "-fx-background-radius: 2px;";
-					setCSS(cssFile, color);
 				} else if (theme == 7) {
-					String cssFile = "/fxui/css/nimrodskin.css";
-					String color = "-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+					cssFile = "/fxui/css/theme/nimrodskin.css";
+					color = "-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
 							+ "-fx-background-radius: 2px;";
-					setCSS(cssFile, color);
 				}
+				
+				setCSS(cssFile, color);
 			}
 		});
 	}

@@ -95,11 +95,11 @@ implements Serializable {
     private double totalMaxHarvest = 0;
     
     /** The amount of air moisture in the greenhouse */ 
-    private volatile double moisture;
+    private double moisture;
     /** The amount of O2 generated in the greenhouse */ 
-    private volatile double o2;
+    private double o2;
     /** The amount of CO2 consumed in the greenhouse */ 
-    private volatile double co2;
+    private double co2;
 
 	//private boolean checkLED;
 
@@ -1358,39 +1358,51 @@ implements Serializable {
 		co2 += value;
 	}
 	
+	public double getMoisture() {
+		return moisture;
+	}
+	
 	/**
 	 * Retrieves the air moisture from this farm
-	 * @return the amount of air moisture in kg
+	 * @return the amount of air moisture in kg retrieved
 	 */
-	public synchronized double retrieveMoisture() {
-		double m = moisture;
+	public synchronized double retrieveMoisture(double amount) {
+		//double m = moisture;
 		// Do NOT directly set to zero since a crop may be accessing the method addMoisture() and change the 
 		// value of moisture at the same time.
-		moisture = moisture - m; 
+		moisture = moisture - amount; 
 		// Note : The amount of moisture will be monitored by the CompositionOfAir
-		return m;
+		return amount;
+	}
+	
+	public double getO2() {
+		return o2;
 	}
 	
 	/**
 	 * Retrieves the O2 generated from this farm
-	 * @return the amount of O2 in kg
+	 * @return the amount of O2 in kg retrieved
 	 */
-	public synchronized double retrieveO2() {
-		double gas = o2;
-		o2 = o2 - gas; 
+	public synchronized double retrieveO2(double amount) {
+		//double gas = o2;
+		o2 = o2 - amount; 
 		// Note : The amount of o2 will be monitored by the CompositionOfAir
-		return gas;
+		return amount;
 	}
 
+	public double getCO2() {
+		return co2;
+	}
+	
 	/**
 	 * Retrieves the CO2 consumed from this farm
-	 * @return the amount of CO2 in kg
+	 * @return the amount of CO2 in kg retrieved
 	 */
-	public synchronized double retrieveCO2() {
-		double gas = co2;
-		co2 = co2 - gas; 
+	public synchronized double retrieveCO2(double amount) {
+		//double gas = co2;
+		co2 = co2 - amount; 
 		// Note : The amount of co2 will be monitored by the CompositionOfAir
-		return gas;
+		return amount;
 	}
 	
 	/** 

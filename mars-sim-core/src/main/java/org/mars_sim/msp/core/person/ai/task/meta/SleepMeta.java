@@ -144,7 +144,7 @@ public class SleepMeta implements MetaTask, Serializable {
             if (proceed) {
     	
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 250) / 5D + stress * 5D + (ghrelin-leptin - 300)/10D;
+	            result += (fatigue - 250) / 4D + stress * 5D + (ghrelin-leptin - 300)/10D;
 
             	result += refreshSleepHabit(person);
                          	

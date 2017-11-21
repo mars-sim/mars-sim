@@ -51,7 +51,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
     //private static final int BLUR_SIZE = 7;
 	
 	public static final int WIDTH = 512;
-	public static final int HEIGHT = 600;
+	public static final int HEIGHT = 605;
 	
 	//private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
@@ -111,7 +111,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
     @SuppressWarnings("restriction")
 	public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
         // Use JInternalFrame constructor
-        super(unit.getName(), true, true, false, true);
+        super(unit.getName(), false, true, false, true);
 
         // Initialize data members
         this.desktop = desktop;

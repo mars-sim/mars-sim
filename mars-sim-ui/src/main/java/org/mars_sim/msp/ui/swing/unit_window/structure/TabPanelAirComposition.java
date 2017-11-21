@@ -253,13 +253,6 @@ extends TabPanel {
 			}
 		});
 */	    
-	    percent_btn.setSelected(true);
-	    
-		JPanel vol_p = new JPanel(new FlowLayout());
-		vol_p.setSize(60, 40);
-		vol_p.setBorder(BorderFactory.createTitledBorder("Composition"));
-		vol_p.add(percent_btn);
-		radioPane.add(vol_p);
 
 		//radioPane.add(moles_btn);
 		//radioPane.add(temperature_btn);
@@ -276,15 +269,22 @@ extends TabPanel {
 		mass_p.setBorder(BorderFactory.createTitledBorder("Mass"));
 		mass_p.add(mass_btn);
 		radioPane.add(mass_p);
+    
+		JPanel vol_p = new JPanel(new FlowLayout());
+		vol_p.setSize(60, 40);
+		vol_p.setBorder(BorderFactory.createTitledBorder("Content"));
+		vol_p.add(percent_btn);
+		radioPane.add(vol_p);
 
+	    percent_btn.setSelected(true);
 		
 	    bG = new ButtonGroup();
-	    bG.add(percent_btn);
 	    bG.add(kPa_btn);
 	    bG.add(atm_btn);
 	    bG.add(mb_btn);
 	    bG.add(psi_btn);
-	    bG.add(mass_btn);		
+	    bG.add(mass_btn);
+	    bG.add(percent_btn);
 	   // bG.add(moles_btn);
 	    //bG.add(temperature_btn);
 	    

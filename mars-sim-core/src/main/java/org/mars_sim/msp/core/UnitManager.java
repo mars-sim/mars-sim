@@ -85,7 +85,7 @@ public class UnitManager implements Serializable {
 	/** Flag true if the class has just been deserialized */
 	public transient boolean justReloaded = true;
 	/** Collection of all units. */
-	private static Collection<Unit> units;
+	private Collection<Unit> units;
 	/** List of possible settlement names. */
 	private static List<String> settlementNames;
 	/** List of possible vehicle names. */

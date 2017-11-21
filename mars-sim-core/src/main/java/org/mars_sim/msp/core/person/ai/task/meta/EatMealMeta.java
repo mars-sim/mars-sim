@@ -61,13 +61,13 @@ public class EatMealMeta implements MetaTask, Serializable {
         // Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ persson per sol
         
     	// When thirst is greater than 100, a person may start feeling thirsty
-    	if (thirst > PhysicalCondition.THIRST_THRESHOLD/2) {
-    		 result = thirst/2;
+    	if (thirst > PhysicalCondition.THIRST_THRESHOLD) {
+    		 result = thirst;
     		 pc.setThirsty(true);
     	}
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
     	else if (hunger > 250 || energy < 2525) {// || ghrelin-leptin > 300) {
-    		result = thirst / 2;
+    		result = thirst;
     		result += hunger / 10;
     		result += (2525 - energy) / 50; // +  (ghrelin-leptin - 300);
             if (result <= 0)

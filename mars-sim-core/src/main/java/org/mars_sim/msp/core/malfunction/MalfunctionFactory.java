@@ -40,7 +40,7 @@ implements Serializable {
 
 	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
 
-	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage ";
+	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 
 	// Data members
 	private static int newIncidentNum = 0;

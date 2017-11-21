@@ -36,11 +36,9 @@ public class CompositionOfAir implements Serializable {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
+	private static final String GREENHOUSE = "greenhouse";
+	
 	public static final double C_TO_K = 273.15;
-	
-	public static final int numGases = 5;
-	
-	//private static final double HEIGHT = Building.HEIGHT; 
 	
 	private static final double AIRLOCK_VOLUME_IN_LITER = BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] 12 m^3
 	
@@ -108,6 +106,8 @@ public class CompositionOfAir implements Serializable {
     // alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
     // see https://en.wikipedia.org/wiki/Gas_constant
 
+	public static final int numGases = 5;
+	
     private int msolCache;
     
     private boolean isDone = false;
@@ -373,10 +373,13 @@ public class CompositionOfAir implements Serializable {
 			//h2o = numPeople * h2o;
 			
 			// Extract the air moisture generated, O2 generated and CO2 consumed if it's a greenhouse
-			if (b.getBuildingType().toLowerCase().contains("greenhouse")) {
-				moisture += b.getFarming().retrieveMoisture(); // generated
-				o2 += b.getFarming().retrieveO2(); // generated
-				cO2 -= b.getFarming().retrieveCO2(); // consumed
+			if (b.getBuildingType().toLowerCase().contains(GREENHOUSE)) {
+				double _m = b.getFarming().getMoisture();
+				moisture += b.getFarming().retrieveMoisture(_m); // generated
+				double _o2 = b.getFarming().getO2();
+				o2 += b.getFarming().retrieveO2(_o2); // generated
+				double _cO2 = b.getFarming().getCO2();
+				cO2 += b.getFarming().retrieveCO2(_cO2); // consumed
 			}
 			
 			for (int gas = 0; gas < numGases; gas++) {
@@ -506,10 +509,19 @@ public class CompositionOfAir implements Serializable {
 					double new_moles = 0;
 					
 					new_m = mass [gas][id] + d_mass;
-					new_moles = Math.abs(new_m) / molecularMass;
-					if (new_moles < 0)
-			            throw new IllegalStateException("new # of moles " + new_moles +
-			                    " is not supposed to be negative in " + settlement);
+					if (new_m < 0) {
+			            logger.info("[" + settlement + "] no more " + ar.getName() + " in " );
+			            new_m = 0;
+			            new_moles = 0;
+					}
+					//if (new_moles < 0) {
+			        //    logger.info("new # of moles " + new_moles +
+			        //            " is not supposed to be negative in " + settlement);  
+					//}
+					else {
+						new_moles = new_m / molecularMass;
+					}
+
 					
 					temperature [gas][id] = t;	
 					

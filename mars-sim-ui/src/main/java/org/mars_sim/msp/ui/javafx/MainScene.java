@@ -235,7 +235,7 @@ public class MainScene {
 	private static final String NORTH = "Northern : ";
 	private static final String SOUTH = "Southern : ";
 
-	private static int theme = -1; // 6 is snow blue; 7 is the mud orange with nimrod
+	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
 	public static int chatBoxHeight = 256;
 	public static int LINUX_WIDTH = 270;
 	public static int MACOS_WIDTH = 230;

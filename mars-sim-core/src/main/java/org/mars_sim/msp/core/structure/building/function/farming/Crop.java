@@ -90,6 +90,11 @@ public class Crop implements Serializable {
     /** The string reference variable of the tissue culture */
     public static final String TISSUE_CULTURE = "tissue culture";
 	
+	private static int cropNum;
+	
+	/** The list of crop types from CropConfig. */
+    private static List<CropType> cropTypeList;
+
 	// public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
@@ -149,8 +154,6 @@ public class Crop implements Serializable {
 	
 	private double cumulative_co2_used = 0;
 	
-	private static int cropNum;
-	
 	/**	The cache values of the pastor environment factors influencing the crop */
 	private Double[] environment = new Double[]{ 1.0,  // light
 											1.0,  // fertilizer
@@ -159,10 +162,9 @@ public class Crop implements Serializable {
 											1.0,  // o2
 											1.0}; // co2
 			
-	private String cropName, capitalizedCropName, farmName;
-
-	/** The list of crop types from CropConfig. */
-    private static List<CropType> cropTypeList;
+	private String cropName;
+	private String capitalizedCropName;
+	private String farmName;
 
 	/** Current phase of crop. */
 	private PhaseType phaseType;
@@ -174,12 +176,17 @@ public class Crop implements Serializable {
 	private Settlement settlement;
 	private Building building;
 	
+	private AmountResource cropAR;
+	private AmountResource seedAR;
+	
+	private DecimalFormat fmt = new DecimalFormat("0.00000");
+
+	private Map<Integer, Phase> phases = new HashMap<>();
+
 	private static SurfaceFeatures surface;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static CropConfig cropConfig;
-
-	private AmountResource cropAR, seedAR;  //tissueAR,
 
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
@@ -190,9 +197,6 @@ public class Crop implements Serializable {
 
 	private static Part mushroomBoxAR = ItemResourceUtil.mushroomBoxAR;
 			
-	private Map<Integer, Phase> phases = new HashMap<>();
-
-	DecimalFormat fmt = new DecimalFormat("0.00000");
 
 	/**
 	 * Constructor.

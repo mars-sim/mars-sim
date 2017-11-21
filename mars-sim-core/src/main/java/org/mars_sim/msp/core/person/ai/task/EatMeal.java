@@ -121,9 +121,9 @@ public class EatMeal extends Task implements Serializable {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 		
         // Check if person is not in a settlement or vehicle.
-        LocationSituation ls = person.getLocationSituation();
+        //LocationSituation ls = person.getLocationSituation();
         
-        if (LocationSituation.OUTSIDE == ls) {
+        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
 			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
             		person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
             endTask();
@@ -131,10 +131,12 @@ public class EatMeal extends Task implements Serializable {
         
         condition = person.getPhysicalCondition();
         
-        double thirst = condition.getThirst();
+        //double thirst = condition.getThirst();
         energy = condition.getEnergy();
         startingHunger = condition.getHunger();
         currentHunger = startingHunger;
+        
+        boolean notHungry = startingHunger < 150 && energy > 1500;
         
         waterEachServing = condition.getWaterConsumedPerServing() *1000D;
         
@@ -157,7 +159,7 @@ public class EatMeal extends Task implements Serializable {
         	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
         }
         
-        boolean notHungry = startingHunger < 150 && energy > 1500;
+
         // if a person is thirsty and not hungry
         if (condition.isThirsty() && notHungry) {
         	consumeWater(true);

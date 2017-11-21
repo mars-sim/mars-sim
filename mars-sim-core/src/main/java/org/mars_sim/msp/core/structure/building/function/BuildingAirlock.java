@@ -88,7 +88,7 @@ public class BuildingAirlock extends Airlock {
             	
                 // Pump air into the airlock to make it breathable
                 building.getSettlement().getCompositionOfAir().pumpOrRecaptureAir(building.getInhabitableID(), true, building);
-                  
+
                 if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
                 	//logger.fine(
                 	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 

@@ -99,6 +99,10 @@ public class PersonTableModel extends UnitTableModel {
 	private final static String DEYDRATED = "Deydrated";
 	private final static String THIRSTY = "Thirsty";
 	private final static String STARVING = "Starving";
+	private final static String MALE = "male";
+	private final static String M = "M";
+	private final static String F = "F";
+	private final static String WALK = "walk";
 	
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -410,7 +414,7 @@ public class PersonTableModel extends UnitTableModel {
 
 		if (rowIndex < getUnitNumber()) {
 			Person person = (Person) getUnit(rowIndex);
-			boolean isDead = person.getPhysicalCondition().isDead();
+			//boolean isDead = person.getPhysicalCondition().isDead();
 			//PhysicalCondition pc = person.getPhysicalCondition();
 			//Mind mind = person.getMind();
 			
@@ -425,7 +429,7 @@ public class PersonTableModel extends UnitTableModel {
 					
 					t = mgr.getTaskDescription(false);
 					
-					if (!t.toLowerCase().contains("walk") && t != null && !t.equals(taskCache))
+					if (!t.toLowerCase().contains(WALK) && t != null && !t.equals(taskCache))
 						result = t;
 					else
 						result = t;
@@ -456,10 +460,10 @@ public class PersonTableModel extends UnitTableModel {
 			case GENDER: {
 				String genderStr = person.getGender().getName();
 				String letter;
-				if (genderStr.equals("male"))
-					letter = "M";
+				if (genderStr.equals(MALE))
+					letter = M;
 				else
-					letter = "F";
+					letter = F;
 				result = letter;
 			}
 				break;
@@ -471,10 +475,7 @@ public class PersonTableModel extends UnitTableModel {
 
 			case HUNGER: {
 				PhysicalCondition pc = person.getPhysicalCondition();
-				double hunger = pc.getHunger();
-				double energy = pc.getEnergy();
-
-				if (isDead)
+				if (pc.isDead())
 					result = "";
 				else if (pc.isDeydrated())
 					result = DEYDRATED;
@@ -482,38 +483,39 @@ public class PersonTableModel extends UnitTableModel {
 					result = THIRSTY;
 				else if (pc.isStarving())
 					result = STARVING;
-				else
-					result = getHungerStatus(hunger, energy);
+				else {
+					result = getHungerStatus(pc.getHunger(), pc.getEnergy());
+				}
 			}
 				break;
 
 			case FATIGUE: {
-				double fatigue = person.getPhysicalCondition().getFatigue();
+				//double fatigue = person.getPhysicalCondition().getFatigue();
 				// result = new Float(fatigue).intValue();
-				if (isDead)
+				if (person.getPhysicalCondition().isDead())
 					result = "";
 				else
-					result = getFatigueStatus(fatigue);
+					result = getFatigueStatus(person.getPhysicalCondition().getFatigue());
 			}
 				break;
 
 			case STRESS: {
-				double stress = person.getPhysicalCondition().getStress();
+				//double stress = person.getPhysicalCondition().getStress();
 				// result = new Double(stress).intValue();
-				if (isDead)
+				if (person.getPhysicalCondition().isDead())
 					result = "";
 				else
-					result = getStressStatus(stress);
+					result = getStressStatus(person.getPhysicalCondition().getStress());
 			}
 				break;
 
 			case PERFORMANCE: {
-				double performance = person.getPhysicalCondition().getPerformanceFactor();
+				//double performance = person.getPhysicalCondition().getPerformanceFactor();
 				// result = new Float(performance * 100D).intValue();
-				if (isDead)
+				if (person.getPhysicalCondition().isDead())
 					result = "";
 				else
-					result = getPerformanceStatus(performance * 100D);
+					result = getPerformanceStatus(person.getPhysicalCondition().getPerformanceFactor() * 100D);
 			}
 				break;
 
@@ -524,15 +526,17 @@ public class PersonTableModel extends UnitTableModel {
 				break;
 
 			case LOCATION: {
-				LocationSituation locationSituation = person.getLocationSituation();
-				if (locationSituation == LocationSituation.IN_SETTLEMENT) {
-					if (person.getSettlement() != null)
-						result = person.getSettlement().getName();
-				} else if (locationSituation == LocationSituation.IN_VEHICLE) {
-					if (person.getVehicle() != null)
-						result = person.getVehicle().getName();
-				} else
-					result = locationSituation.getName();
+				//LocationSituation locationSituation = person.getLocationSituation();
+				//if (locationSituation == LocationSituation.IN_SETTLEMENT) {
+				//	if (person.getSettlement() != null)
+				//		result = person.getSettlement().getName();
+				//} else if (locationSituation == LocationSituation.IN_VEHICLE) {
+				//	if (person.getVehicle() != null)
+				//		result = person.getVehicle().getName();
+				//} else
+				//	result = locationSituation.getName();
+				result = person.getLocationTag().getShortLocationName();
+				
 			}
 				break;
 
@@ -552,7 +556,7 @@ public class PersonTableModel extends UnitTableModel {
 
 			case JOB: {
 				// If person is dead, get job from death info.
-				if (isDead)
+				if (person.getPhysicalCondition().isDead())
 					result = person.getPhysicalCondition().getDeathDetails().getJob();
 				else {
 					if (person.getMind().getJob() != null)
@@ -565,7 +569,7 @@ public class PersonTableModel extends UnitTableModel {
 
 			case SHIFT: {
 				// If person is dead, disable it.
-				if (isDead)
+				if (person.getPhysicalCondition().isDead())
 					result = ShiftType.OFF; // person.getPhysicalCondition().getDeathDetails().getJob();
 				else {
 					ShiftType shift = person.getTaskSchedule().getShiftType();
