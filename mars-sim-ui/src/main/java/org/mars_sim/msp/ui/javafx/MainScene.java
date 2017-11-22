@@ -168,7 +168,10 @@ public class MainScene {
 
 	public final static String ORANGE_CSS_JFX = "/fxui/css/tab/jfx_orange.css";
 	public final static String BLUE_CSS_JFX = "/fxui/css/tab/jfx_blue.css";
-	
+
+	public final static String ORANGE_CSS_THEME = "/fxui/css/theme/mrodskin.css";
+	public final static String BLUE_CSS_THEME = "/fxui/css/theme/snowBlue.css";
+
 	public static String OS = Simulation.OS.toLowerCase();
 	// System.getProperty("os.name").toLowerCase();
 	// e.g. 'linux', 'mac os x'

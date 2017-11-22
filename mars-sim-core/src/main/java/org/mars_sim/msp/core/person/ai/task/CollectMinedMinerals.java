@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -371,9 +372,9 @@ implements Serializable {
             if (suit != null) {
                 carryMass += suit.getMass();
                 //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(Rover.oxygenAR, false, false);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, false, false);
                 //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(Rover.waterAR, false, false);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.waterAR, false, false);
             }
             double carryCapacity = person.getInventory().getGeneralCapacity();
             boolean canCarryEquipment = (carryCapacity >= carryMass);

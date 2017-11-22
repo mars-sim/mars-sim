@@ -65,16 +65,13 @@ implements Serializable {
 	private static final double SETTLER_MODIFIER = .02D;
 
 	/** The relationship graph. */
-	private static Graph relationshipGraph;
+	private Graph relationshipGraph;
 	private int count = 0;
 
 	/**
 	 * Constructor
 	 */
 	public RelationshipManager() {
-	// 2015-02-04 Added run()
-	//public void run() {
-	   	//System.out.println("RelationshipManager's run() is on " + Thread.currentThread().getName() + " Thread");
 		// Create new graph for relationships.
 		relationshipGraph = new DefaultGraph();
 	}

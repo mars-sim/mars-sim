@@ -296,7 +296,9 @@ extends TabPanel {
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			lastLabel = new JLabel("Last completed : " + lastCompletedCache + " sols ago", JLabel.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);
-
+			//lastLabel.setToolTipText(getToolTipString());
+	        TooltipManager.setTooltip (lastLabel, getToolTipString(), TooltipWay.down);
+			
 			// Prepare progress bar panel.
 			JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 			mainPanel.add(progressBarPanel, BorderLayout.CENTER);
@@ -319,9 +321,7 @@ extends TabPanel {
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
-			// Add tooltip.
-			//lastLabel.setToolTipText(getToolTipString());
-	        TooltipManager.setTooltip (lastLabel, getToolTipString(), TooltipWay.down);
+
 		}
 
 		/**
@@ -356,11 +356,11 @@ extends TabPanel {
 
 			// Update tool tip.
 			//lastLabel.setToolTipText(getToolTipString());
-	        TooltipManager.setTooltip (lastLabel, getToolTipString(), TooltipWay.down);
+	        //TooltipManager.setTooltip (lastLabel, getToolTipString(), TooltipWay.down);
 
 	        // Update tool tip.
 			//partsLabel.setToolTipText("<html>" + getPartsString(parts, true) + "</html>");
-	        TooltipManager.setTooltip (partsLabel, "<html>" + getPartsString(parts, true) + "</html>", TooltipWay.down);
+	        TooltipManager.setTooltip (partsLabel, getPartsString(parts, false), TooltipWay.down);
 
 		}
 
@@ -377,6 +377,7 @@ extends TabPanel {
 			return result.toString();
 		}
 		*/
+		
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append("The Last Complete Maintenance Was Done ").append(lastCompletedCache).append(" Sols Ago");
@@ -485,7 +486,7 @@ extends TabPanel {
 
 			// Update tool tip.
 			//setToolTipText(getToolTipString());
-			TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.down);
+			//TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.down);
 		}
 
 		/**

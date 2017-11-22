@@ -67,7 +67,7 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
-	private static AmountResource iceAR = ResourceUtil.iceAR;
+	//private static AmountResource iceAR = ResourceUtil.iceAR;
 	
 	/**
 	 * Constructor.
@@ -246,7 +246,7 @@ implements Serializable {
 
         // Unload bag to rover's inventory.
         if (bag != null) {
-            //AmountResource iceResource = AmountResource.findAmountResource("ice");
+            AmountResource iceAR = ResourceUtil.iceAR;
             double collectedAmount = bag.getInventory().getAmountResourceStored(iceAR, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
             		iceAR, false, false);
@@ -295,7 +295,7 @@ implements Serializable {
 
         //AmountResource ice = AmountResource.findAmountResource("ice");
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-        		iceAR, true, false);
+        		ResourceUtil.iceAR, true, false);
 
         double iceCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;
@@ -304,7 +304,7 @@ implements Serializable {
             finishedCollecting = true;
         }
 
-        person.getInventory().storeAmountResource(iceAR, iceCollected, true);
+        person.getInventory().storeAmountResource(ResourceUtil.iceAR, iceCollected, true);
 
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);

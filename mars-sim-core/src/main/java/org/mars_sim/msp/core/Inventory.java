@@ -41,8 +41,7 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 123L;
 
-    private static Logger logger = Logger.getLogger(Inventory.class.getName());
-    
+    //private static Logger logger = Logger.getLogger(Inventory.class.getName());
     //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     /** Comparison to indicate a small but non-zero amount. */
@@ -92,7 +91,6 @@ implements Serializable {
 	// 2015-01-15 Added 2 amount resource supply maps
 	private Map<String, Double> amountSupplyMap =  new HashMap<String, Double>();
 	private Map<String, Integer> amountSupplyRequestMap =  new HashMap<String, Integer>();
-
 	// 2015-01-26 Added 2 item resource demand maps
 	private Map<String, Integer> itemDemandMetRequestMap =  new HashMap<String, Integer>();
 	private Map<String, Integer> itemDemandMap = new HashMap<String, Integer>();
@@ -1849,6 +1847,16 @@ implements Serializable {
     public Unit getOwner() {
     	return owner;
     }
+    
+    public void restoreARs(AmountResource[] ars) {
+    	if (resourceStorage != null)
+    		resourceStorage.restoreARs(ars);
+    }
+    
+    //public AmountResourceStorage getAmountResourceStorage() {
+    //	return resourceStorage;
+    //}
+    
     
     /**
      * Prepare object for garbage collection.

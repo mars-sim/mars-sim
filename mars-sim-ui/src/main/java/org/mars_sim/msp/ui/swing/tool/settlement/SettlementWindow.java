@@ -92,11 +92,13 @@ extends ToolWindow {
 	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
 	public static final int TIME_DELAY = 330;
-
 	public static final int HORIZONTAL = 800;//630;
 	public static final int VERTICAL = 600;//590;
 
-	private int sol, cap, pop;
+	private int sol;
+	private int cap;
+	private int pop;
+	private int themeCache = -1;
 
 	private double widthCache;
 	private double heightCache;
@@ -403,9 +405,9 @@ extends ToolWindow {
 		}
 
 		if (widthCache != width.get() || heightCache != height.get()) {
-			setSize(new Dimension((int)width.get(), (int)height.get()));
 			widthCache = width.get();
 			heightCache = height.get();
+			setSize(new Dimension((int)widthCache, (int)heightCache));
 		}
 	/*
 		String d = marsClock.getDateString();
@@ -550,30 +552,34 @@ extends ToolWindow {
 			
 			if (c == null) {
 				int theme = MainScene.getTheme();
-				// orange theme : F4BA00
-				// blue theme : 3291D2
-				//String color = txtColor.replace("0x", "");
-				if (theme == 0 || theme == 6) {
-					css_file = MainDesktopPane.BLUE_CSS;
-					c = Color.rgb(0,107,184);
+				if (themeCache != theme) {
+					themeCache = theme;
+					// orange theme : F4BA00
+					// blue theme : 3291D2
+					//String color = txtColor.replace("0x", "");
+					if (theme == 0 || theme == 6) {
+						css_file = MainDesktopPane.BLUE_CSS;
+						c = Color.rgb(0,107,184);
+					}
+					else if (theme == 7) {
+						css_file = MainDesktopPane.ORANGE_CSS;	
+						c = Color.rgb(156,77,0);
+					}
+					
+					
+					if (statusBar != null) {
+						statusBar.getStylesheets().clear();
+						statusBar.getStylesheets().add(getClass().getResource(css_file).toExternalForm());
+					}
+					
+					solLabel.setTextFill(c);
+					popLabel.setTextFill(c);
+					capLabel.setTextFill(c);
+					xyLabel.setTextFill(c);
+					timeLabel.setTextFill(c);
+					
 				}
-				else if (theme == 7) {
-					css_file = MainDesktopPane.ORANGE_CSS;	
-					c = Color.rgb(156,77,0);
-				}
-
 			}
-			
-			if (statusBar != null) {
-				statusBar.getStylesheets().clear();
-				statusBar.getStylesheets().add(getClass().getResource(css_file).toExternalForm());
-			}
-			
-			solLabel.setTextFill(c);
-			popLabel.setTextFill(c);
-			capLabel.setTextFill(c);
-			xyLabel.setTextFill(c);
-			timeLabel.setTextFill(c);
 		}
 	}
 

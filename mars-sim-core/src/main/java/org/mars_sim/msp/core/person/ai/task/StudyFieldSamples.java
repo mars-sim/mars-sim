@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -129,13 +130,13 @@ implements ResearchScientificStudy, Serializable {
             if (container != null) {
                 //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 Inventory inv = container.getInventory();
-                double totalRockSampleMass = inv.getAmountResourceStored(Rover.rockSamplesAR, false);
+                double totalRockSampleMass = inv.getAmountResourceStored(ResourceUtil.rockSamplesAR, false);
                 if (totalRockSampleMass >= SAMPLE_MASS) {
                     double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
                     if (fieldSampleMass > totalRockSampleMass) {
                         fieldSampleMass = totalRockSampleMass;
                     }
-                    inv.retrieveAmountResource(Rover.rockSamplesAR, fieldSampleMass);
+                    inv.retrieveAmountResource(ResourceUtil.rockSamplesAR, fieldSampleMass);
                 }
             }
         }

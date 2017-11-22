@@ -142,7 +142,7 @@ class AmountResourceTypeStorage implements Serializable {
         if (storedAmount != null) {
             result = storedAmount.getAmount();
         }
-
+        
         return result;
     }
 
@@ -317,6 +317,36 @@ class AmountResourceTypeStorage implements Serializable {
         }
     }
 
+    public void restoreARs(AmountResource[] ars) {
+    	
+    	if (amountResourceTypeCapacities != null && !amountResourceTypeCapacities.isEmpty()) {
+	    	for (AmountResource r : amountResourceTypeCapacities.keySet()) {
+	    		for (AmountResource ar : ars) {
+	    			if (r.getName().equals(ar.getName())) {
+	    				ResourceAmount ra = amountResourceTypeCapacities.get(r);
+	    				// Replace the old AmountResource reference with the new
+	    				amountResourceTypeCapacities.put(ar, ra);
+	    				System.out.println("amountResourceTypeCapacities: " + ar.getName());
+	    			}
+	    		}
+	    	}
+    	}
+    	
+    	if (amountResourceTypeStored != null && !amountResourceTypeStored.isEmpty()) {
+	    	for (AmountResource r : amountResourceTypeStored.keySet()) {
+	    		for (AmountResource ar : ars) {
+	    			if (r.getName().equals(ar.getName())) {
+	    				ResourceAmount ra = amountResourceTypeStored.get(r);
+	    				// Replace the old AmountResource reference with the new
+	    				amountResourceTypeStored.put(ar, ra);
+	       				System.out.println("amountResourceTypeStored: " + ar.getName());
+	    			}
+	    		}
+	    	}
+    	}
+
+    }
+    
     /**
      * Prepare object for garbage collection.
      */

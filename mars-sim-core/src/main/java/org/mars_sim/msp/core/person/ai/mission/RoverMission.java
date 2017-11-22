@@ -65,14 +65,13 @@ extends VehicleMission {
     public static final int MIN_GOING_MEMBERS = 2;
 
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
-	//public static final double MIN_WATER_RESERVE = 15D;
 
 	// Data members
-	
 	private Settlement startingSettlement;
 	
 	private Map<AmountResource, Double> dessertResources;
 
+	// Static members
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;
@@ -80,7 +79,7 @@ extends VehicleMission {
 
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
-	private static SurfaceFeatures surface;
+	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
 	/**
 	 * Constructor.
@@ -90,7 +89,6 @@ extends VehicleMission {
 	protected RoverMission(String name, MissionMember startingMember) {
 		// Use VehicleMission constructor.
 		super(name, startingMember, MIN_GOING_MEMBERS);
-	    surface = Simulation.instance().getMars().getSurfaceFeatures();
 	}
 
 	/**
@@ -102,8 +100,8 @@ extends VehicleMission {
 	protected RoverMission(String missionName,  MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
 		super(missionName, startingMember, minPeople);
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
 	}
+	
 	/**
 	 * Constructor with min people and rover.
 	 * @param missionName the name of the mission.
@@ -115,7 +113,6 @@ extends VehicleMission {
 			Rover rover) {
 		// Use VehicleMission constructor.
 		super(missionName, startingMember, minPeople, rover);
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
 	}
 
 	/**
@@ -142,20 +139,6 @@ extends VehicleMission {
 	public final Settlement getStartingSettlement() {
 		return startingSettlement;
 	}
-
-//	/**
-//	 * The person performs the current phase of the mission.
-//	 * @param person the person performing the phase.
-//	 * @throws MissionException if problem performing the phase.
-//	 */
-//	protected void performPhase(Person person) {
-//		// if (hasEmergency()) setEmergencyDestination(true);
-//		super.performPhase(person);
-//	}
-//	protected void performPhase(Robot robot) {
-//		// if (hasEmergency()) setEmergencyDestination(true);
-//		super.performPhase(robot);
-//	}
 
 	/**
 	 * Gets the available vehicle at the settlement with the greatest range.

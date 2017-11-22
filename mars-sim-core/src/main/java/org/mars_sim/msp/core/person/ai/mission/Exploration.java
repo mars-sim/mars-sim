@@ -76,8 +76,6 @@ implements Serializable {
 
 	/** Maximum mineral concentration estimation diff from actual. */
 	private final static double MINERAL_ESTIMATION_CEILING = 20D;
-
-
 	
 	// Data members
 	/** Map of exploration sites and their completion. */
@@ -91,6 +89,7 @@ implements Serializable {
 	/** External flag for ending exploration at the current site. */
 	private boolean endExploringSite;
 
+	// Static members
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;

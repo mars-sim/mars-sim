@@ -240,7 +240,7 @@ implements Serializable {
                 usable = false;
             
             StatusType status = vehicle.getStatus();
-			if (!(vehicle.getStatus().equals(StatusType.PARKED) || vehicle.getStatus().equals(StatusType.GARAGED))
+			if (!(vehicle.getStatus() == StatusType.PARKED || vehicle.getStatus() == StatusType.GARAGED)
             		&& !status.equals(StatusType.MAINTENANCE))
                 usable = false;
             

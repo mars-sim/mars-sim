@@ -82,10 +82,18 @@ public class UnitManager implements Serializable {
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
 	// Data members
-	/** Flag true if the class has just been deserialized */
-	public transient boolean justReloaded = true;
+	private int solCache = 0;
+	
 	/** Collection of all units. */
 	private Collection<Unit> units;
+	
+	// Transient members	
+	/** Flag true if the class has just been deserialized */
+	public transient boolean justReloaded = true;
+	/** List of unit manager listeners. */
+	private transient List<UnitManagerListener> listeners;
+	
+	// Static members
 	/** List of possible settlement names. */
 	private static List<String> settlementNames;
 	/** List of possible vehicle names. */
@@ -97,8 +105,6 @@ public class UnitManager implements Serializable {
 	/** List of possible robot names. */
 	private static List<String> robotNameList;
 
-	/** List of unit manager listeners. */
-	private transient List<UnitManagerListener> listeners;
 	/** Map of equipment types and their numbers. */
 	private static Map<String, Integer> equipmentNumberMap;
 	/** Map of vehicle types and their numbers. */
@@ -127,8 +133,6 @@ public class UnitManager implements Serializable {
 
 	private static MasterClock masterClock;
 	private static MarsClock marsClock;
-	
-	private int solCache = 0;
 	
 	/**
 	 * Constructor.
@@ -1816,99 +1820,10 @@ public class UnitManager implements Serializable {
 
 		for (Unit u : units) {
 			u.timePassing(time);
-		
-		//Iterator<Unit> i = units.iterator();
-		//while (i.hasNext()) {
-			//i.next().timePassing(time);
-/*
-			Unit unit = i.next();
-			if (unit instanceof Building) {
-				//Building b = (Building) unit;
-				//final long time0 = System.nanoTime();
-				//settlementExecutor.execute(new SettlementTask(s, time));
-				//b.timePassing(time);
-				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());
-			}
-			//else if (unit instanceof Settlement) {
-			//	Settlement s = (Settlement) unit;
-				//final long time0 = System.nanoTime();
-			//	settlementExecutor.execute(new SettlementTask(s, time));
-			//	s.timePassing(time);
-				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + s.getName());
-			//}
-			//else if (unit instanceof Person) {
-			//	Person p = (Person) unit;
-				//final long time0 = System.nanoTime();
-				//personExecutor.execute(new PersonTask(p, time));
-			//	p.timePassing(time);
-				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());
-			//}
-			//else if (unit instanceof Robot) {
-			//	Robot r = (Robot) unit;
-				//final long time0 = System.nanoTime();
-				//personExecutor.execute(new PersonTask(p, time));
-			//	r.timePassing(time);
-				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());
-			//}
-			else
-				unit.timePassing(time);
-*/
-		}
-/*
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-
-		MarsClock clock = masterClock.getMarsClock();
-		// check for the passing of each day
-		int solElapsed = MarsClock.getSolOfYear(clock);
-		if (solElapsed != solCache) {
-			// reportSample = true;
-			solCache = solElapsed;
-			logger.info("<Benchmarking> Current Tick Per Second (TPS) : "
-					+ Simulation.instance().getMasterClock().getPulsesPerSecond());
-		}
-*/
-	}
-
-/*
-	public class SettlementTask implements Runnable {
-		Settlement s;
-		double time;
-		private SettlementTask(Settlement s, double time) {
-			this.s = s;
-			this.time = time;
-		}
-		@Override
-		public void run() {
-			try {
-				s.timePassing(time);
-			} catch (ConcurrentModificationException e) {
-                logger.severe(e.getMessage());
-			} //Exception e) {}
-		}
-	}
-*/
 	
-/*
-	public class PersonTask implements Runnable {
-		Person p;
-		double time;
-		private PersonTask(Person p, double time) {
-			this.p = p;
-			this.time = time;
 		}
-		@Override
-		public void run() {
-			try {
-				p.timePassing(time);
-			} catch (ConcurrentModificationException e) {} //Exception e) {}
-		}
+
 	}
-*/
 
 	/**
 	 * Get number of settlements
@@ -2082,11 +1997,6 @@ public class UnitManager implements Serializable {
 		}
 		return result;
 	}
-
-
-	//public ReportingAuthorityType[] getSponsors() {
-	//	return SPONSORS;
-	//}
 
 	@SuppressWarnings("restriction")
 	public ObservableList<Settlement> getSettlementOList() {

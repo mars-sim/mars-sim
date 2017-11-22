@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4233) - 2017-11-15
+## v3.1.0-Preview 9 (build 4235) - 2017-11-21
 
 ### KNOWN LIMITATIONS :
 
@@ -63,7 +63,7 @@ https://github.com/mars-sim/mars-sim
 
 ### UI IMPROVEMENT :
 
-1. Add build # on the bottom right of the main menu.
+1. Display build # on the bottom right of the main menu.
 
 2. Add a list of supported resolutions in the main menu. Detect the current 
    screen resolution and set it as the default.
@@ -72,6 +72,9 @@ https://github.com/mars-sim/mars-sim
    main menu and main scene.
 
 4. Add a Dashboard tab and show the basic info of all settlers (experimental).
+
+5. Incorporate certain ui elements from weblaf for improving the looks of 
+   some swing components.
 
 
 ### FIXES :

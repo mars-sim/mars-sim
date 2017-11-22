@@ -76,7 +76,7 @@ implements Serializable {
 
 	private Document vehicleDoc;
 	private List<String> roverNames;
-	private Map<String,VehicleDescription> map = null;
+	private Map<String, VehicleDescription> map;
 
 	/**
 	 * Constructor.

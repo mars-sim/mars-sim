@@ -92,8 +92,8 @@ implements Serializable {
     /** Equipment desired to load but not required. */
     private Map<Class, Integer> optionalEquipment;
 
-	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-    public static AmountResource waterAR = ResourceUtil.waterAR;
+	//public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+    //public static AmountResource waterAR = ResourceUtil.waterAR;
 
     /**
      * Constructor.
@@ -110,8 +110,8 @@ implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
-            requiredResources.put(waterAR, WATER_NEED); 
-            requiredResources.put(oxygenAR, OXYGEN_NEED);
+            requiredResources.put(ResourceUtil.waterAR, WATER_NEED); 
+            requiredResources.put(ResourceUtil.oxygenAR, OXYGEN_NEED);
             optionalResources = new HashMap<Resource, Number>(0);
             requiredEquipment = new HashMap<Class, Integer>(1);
             requiredEquipment.put(EVASuit.class, 1);
@@ -322,8 +322,8 @@ implements Serializable {
                         int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
-                            double water = roverInv.getAmountResourceStored(waterAR, false);
-                            double oxygen = roverInv.getAmountResourceStored(oxygenAR, false);
+                            double water = roverInv.getAmountResourceStored(ResourceUtil.waterAR, false);
+                            double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
                             if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
                                 result.add(rover);
                             }

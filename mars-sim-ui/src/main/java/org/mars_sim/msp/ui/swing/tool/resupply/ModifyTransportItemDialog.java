@@ -28,7 +28,6 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
  */
 public class ModifyTransportItemDialog extends ModalInternalFrame {
 
-
 	// Data members.
 	private Transportable transportItem;
 	private TransportItemEditingPanel editingPanel;

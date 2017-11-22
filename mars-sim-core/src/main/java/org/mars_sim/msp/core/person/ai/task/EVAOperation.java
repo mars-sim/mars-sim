@@ -73,8 +73,8 @@ implements Serializable {
 
 	//private static MarsClock marsClock;
 	
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
+	//private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	//private static AmountResource waterAR = ResourceUtil.waterAR;
 
 	/**
 	 * Constructor.
@@ -425,8 +425,8 @@ implements Serializable {
         try {
             // Check if EVA suit is at 15% of its oxygen capacity.
             //AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-            double oxygenCap = suitInv.getAmountResourceCapacity(oxygenAR, false);
-            double oxygen = suitInv.getAmountResourceStored(oxygenAR, false);
+            double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenAR, false);
+            double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
             if (oxygen <= (oxygenCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
                 return false;
@@ -434,8 +434,8 @@ implements Serializable {
 
             // Check if EVA suit is at 15% of its water capacity.
             //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
-            double waterCap = suitInv.getAmountResourceCapacity(waterAR, false);
-            double water = suitInv.getAmountResourceStored(waterAR, false);
+            double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterAR, false);
+            double water = suitInv.getAmountResourceStored(ResourceUtil.waterAR, false);
             if (water <= (waterCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
                 return false;

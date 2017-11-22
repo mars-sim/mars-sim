@@ -30,8 +30,8 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -67,10 +67,11 @@ implements Serializable {
 	public final static double FIELD_SITE_TIME = 1000D;
 
 	// Data members
-	/** The start time at the field site. */
-	private MarsClock fieldSiteStartTime;
 	/** External flag for ending research at the field site. */
 	private boolean endFieldSite;
+	
+	/** The start time at the field site. */
+	private MarsClock fieldSiteStartTime;
 	/** The field site location. */
 	private Coordinates fieldSite;
 	/** Scientific study to research. */
@@ -78,9 +79,9 @@ implements Serializable {
 	/** The person leading the biology research. */
 	private Person leadResearcher;
 
-	private static AmountResource oxygenAR = Rover.oxygenAR;
-	private static AmountResource waterAR = Rover.waterAR;
-	private static AmountResource foodAR = Rover.foodAR;
+	//private static AmountResource oxygenAR = Rover.oxygenAR;
+	//private static AmountResource waterAR = Rover.waterAR;
+	//private static AmountResource foodAR = Rover.foodAR;
 
 	private static ScienceType biology = ScienceType.BIOLOGY;
 	
@@ -276,7 +277,7 @@ implements Serializable {
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(ResourceUtil.foodAR, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
 
@@ -293,13 +294,13 @@ implements Serializable {
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(ResourceUtil.waterAR, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(ResourceUtil.oxygenAR, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
 
@@ -621,21 +622,21 @@ implements Serializable {
 		// Determine life support supplies needed for trip.
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygenAR))
-			oxygenAmount += (Double) result.get(oxygenAR);
-		result.put(oxygenAR, oxygenAmount);
+		if (result.containsKey(ResourceUtil.oxygenAR))
+			oxygenAmount += (Double) result.get(ResourceUtil.oxygenAR);
+		result.put(ResourceUtil.oxygenAR, oxygenAmount);
 
 		//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(waterAR))
-			waterAmount += (Double) result.get(waterAR);
-		result.put(waterAR, waterAmount);
+		if (result.containsKey(ResourceUtil.waterAR))
+			waterAmount += (Double) result.get(ResourceUtil.waterAR);
+		result.put(ResourceUtil.waterAR, waterAmount);
 
 		//AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(foodAR))
-			foodAmount += (Double) result.get(foodAR);
-		result.put(foodAR, foodAmount);
+		if (result.containsKey(ResourceUtil.foodAR))
+			foodAmount += (Double) result.get(ResourceUtil.foodAR);
+		result.put(ResourceUtil.foodAR, foodAmount);
 
 		/*
 	       // 2015-01-04 Added Soymilk

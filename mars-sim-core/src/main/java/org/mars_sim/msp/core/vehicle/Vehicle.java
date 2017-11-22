@@ -112,8 +112,8 @@ public abstract class Vehicle extends Unit implements Serializable,
     private SalvageInfo salvageInfo; // The vehicle's salvage info.
     private Settlement associatedSettlement;
 
+    // Static members
     private static VehicleConfig config;
-    
     private static MissionManager missionManager;
     
     /**

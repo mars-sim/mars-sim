@@ -37,11 +37,9 @@ implements Serializable, Comparable<Unit> {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Data members
-	// unit identifier
-	private static int unitIdentifer = 0;
 	// Unique identifier
 	private int identifier;
 	/** TODO Unit name needs to be internationalized. */
@@ -55,7 +53,9 @@ implements Serializable, Comparable<Unit> {
 	/** The unit's inventory. */
 	private Inventory inventory;
 	/** The unit containing this unit. */
-	protected Unit containerUnit, containerUnitCache;
+	protected Unit containerUnit;
+	/** The cache of containerUnit. */
+	protected Unit containerUnitCache;
 	/** Unit location coordinates. */
 	private Coordinates location;
 
@@ -67,7 +67,9 @@ implements Serializable, Comparable<Unit> {
 
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
-
+	
+	// static unit identifier
+	private static int unitIdentifer = 0;
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different threads.

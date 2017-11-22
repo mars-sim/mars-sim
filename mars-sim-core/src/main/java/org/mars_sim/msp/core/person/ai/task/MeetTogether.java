@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
@@ -55,8 +53,8 @@ implements Serializable {
 
     private List<Person> list = new ArrayList<Person>();
     
-    private Person candidate = null;  
-    private Person inviter = null;
+    private Person candidate;  
+    private Person inviter;
     
     private Settlement settlement;
     
@@ -214,7 +212,6 @@ implements Serializable {
 		                // Add new communication meeting relationship.
 		                relationshipManager.addRelationship(person, candidate, Relationship.COMMUNICATION_MEETING);
 		            }
-		
 		            // Add 1 point to invitee's opinion of the one who starts the conversation
 		            Relationship relationship = relationshipManager.getRelationship(candidate, person);
 		            double currentOpinion = relationship.getPersonOpinion(candidate);

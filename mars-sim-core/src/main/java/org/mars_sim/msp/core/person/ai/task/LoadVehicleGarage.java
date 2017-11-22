@@ -102,9 +102,9 @@ implements Serializable {
 
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
-	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-    public static AmountResource waterAR = ResourceUtil.waterAR;
-	public static AmountResource foodAR = ResourceUtil.foodAR;
+	//public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+    //public static AmountResource waterAR = ResourceUtil.waterAR;
+	//public static AmountResource foodAR = ResourceUtil.foodAR;
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -1006,11 +1006,11 @@ implements Serializable {
     	//	throw new IllegalArgumentException("personConfig is null");
     	
     	// Only life support resources are required at settlement at this time.
-    	if (resource.equals(oxygenAR)) 
+    	if (resource.equals(ResourceUtil.oxygenAR)) 
     		amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
-    	else if (resource.equals(waterAR)) 
+    	else if (resource.equals(ResourceUtil.waterAR)) 
     		amountPersonPerSol = personConfig.getWaterConsumptionRate();
-    	else if (resource.equals(foodAR)) 
+    	else if (resource.equals(ResourceUtil.foodAR)) 
       	  // Divide by 3 arbitrarily since settlers prefer to have meals rather than preserved food
     		amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; 
     	else {

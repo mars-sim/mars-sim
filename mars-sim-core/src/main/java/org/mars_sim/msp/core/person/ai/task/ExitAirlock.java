@@ -87,8 +87,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
 
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
+	//private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	//private static AmountResource waterAR = ResourceUtil.waterAR;
 
     private static MissionManager missionManager = Simulation.instance().getMissionManager();
     
@@ -758,7 +758,7 @@ implements Serializable {
 	            //        " since no working EVA suit is available.";
 	    		//LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
 	    		// TODO: how to have someone deliver him a working EVASuit
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
 						"[" + person.getLocationTag().getShortLocationName() 
 						+ "] " + person + " can't find a working EVA suit and is awaiting the response for rescue."
 						, null);
@@ -976,6 +976,7 @@ implements Serializable {
             Inventory entityInv = person.getContainerUnit().getInventory();
 
             // Fill oxygen in suit from entity's inventory.
+            AmountResource oxygenAR = ResourceUtil.oxygenAR;
             double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
             double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
 
@@ -996,6 +997,7 @@ implements Serializable {
             }
 
             // Fill water in suit from entity's inventory.
+            AmountResource waterAR = ResourceUtil.waterAR;
             double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
             double availableWater = entityInv.getAmountResourceStored(waterAR, false);
 

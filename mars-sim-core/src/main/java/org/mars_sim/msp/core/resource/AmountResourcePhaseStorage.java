@@ -283,6 +283,7 @@ class AmountResourcePhaseStorage implements Serializable {
         }
     }
 
+    
 	/**
 	 * Internal class for a stored phase.
 	 */

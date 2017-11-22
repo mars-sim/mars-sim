@@ -68,7 +68,7 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
-	private static AmountResource regolithAR = ResourceUtil.regolithAR;
+	//private static AmountResource regolithAR = ResourceUtil.regolithAR;
 
 	/**
 	 * Constructor.
@@ -243,7 +243,7 @@ implements Serializable {
 
         // Unload bag to rover's inventory.
         if (bag != null) {
-            //AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+            AmountResource regolithAR = ResourceUtil.regolithAR;
             double collectedAmount = bag.getInventory().getAmountResourceStored(regolithAR, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
                     regolithAR, false, false);
@@ -294,7 +294,7 @@ implements Serializable {
 
         //AmountResource regolith = AmountResource.findAmountResource("regolith");
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-                regolithAR, true, false);
+        		ResourceUtil.regolithAR, true, false);
 
         double regolithCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;
@@ -303,7 +303,7 @@ implements Serializable {
             finishedCollecting = true;
         }
         
-        person.getInventory().storeAmountResource(regolithAR, regolithCollected, true);
+        person.getInventory().storeAmountResource(ResourceUtil.regolithAR, regolithCollected, true);
         //Storage.storeAnResource(regolithCollected, regolithAR, person.getInventory(), sourceName + "::collectRegolith");
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);

@@ -61,7 +61,7 @@ implements Serializable {
 	// Data members
 	private int sideDirection = NONE;
 
-	private static SurfaceFeatures surface;
+	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 	//private MalfunctionManager malfunctionManager;
 	
 	/**
@@ -79,7 +79,7 @@ implements Serializable {
         super(NAME, person, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//surface = Simulation.instance().getMars().getSurfaceFeatures();
 		//malfunctionManager = vehicle.getMalfunctionManager();
 		
         // Set initial parameters
@@ -97,7 +97,7 @@ implements Serializable {
         super(NAME, robot, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//surface = Simulation.instance().getMars().getSurfaceFeatures();
 		//malfunctionManager = vehicle.getMalfunctionManager();
 		
         // Set initial parameters
@@ -125,7 +125,7 @@ implements Serializable {
     	super(NAME, person, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
 
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//surface = Simulation.instance().getMars().getSurfaceFeatures();
 		//malfunctionManager = vehicle.getMalfunctionManager();
 		
         // Set initial parameters
@@ -144,7 +144,7 @@ implements Serializable {
     	super(NAME, robot, vehicle, destination, startTripTime,
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
 
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//surface = Simulation.instance().getMars().getSurfaceFeatures();
 		//malfunctionManager = vehicle.getMalfunctionManager();
 		
         // Set initial parameters

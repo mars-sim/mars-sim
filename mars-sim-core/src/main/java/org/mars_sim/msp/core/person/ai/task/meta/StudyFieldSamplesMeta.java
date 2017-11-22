@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -81,7 +82,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	            if (container != null) {
 	                Inventory inv = container.getInventory();
 	                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-	                if (inv.getAmountResourceStored(Rover.rockSamplesAR, false) < StudyFieldSamples.SAMPLE_MASS) {
+	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesAR, false) < StudyFieldSamples.SAMPLE_MASS) {
 	                    result = 0D;
 	                    return 0;
 	                }

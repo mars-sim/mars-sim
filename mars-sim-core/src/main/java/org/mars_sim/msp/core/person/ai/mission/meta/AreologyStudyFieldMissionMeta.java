@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -88,7 +89,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            else if (!(settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) >=
+            else if (!(settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) >=
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE)) {
             	return 0;
             }

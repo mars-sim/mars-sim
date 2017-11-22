@@ -100,6 +100,7 @@ implements Serializable {
 	private Map<Part, Integer> emergencyParts;
 	private Vehicle emergencyVehicle;
 
+	// Static members
 	private static AmountResource foodAR = ResourceUtil.foodAR;
 	private static AmountResource oxygenAR =  ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;

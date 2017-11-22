@@ -242,17 +242,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	private CompositionOfAir compositionOfAir;
 
-	private static Simulation sim = Simulation.instance();
-
-	private static UnitManager unitManager = sim.getUnitManager();
-
-	private static MissionManager missionManager = sim.getMissionManager();
-
-	private Weather weather;// = sim.getMars().getWeather();
-
 	private Coordinates location; 
 	
-	private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
@@ -264,13 +255,20 @@ implements Serializable, LifeSupportType, Objective {
 
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	
-	// 2017-04-10 WARNING: cannot use static or result in null
-	public AmountResource foodAR = ResourceUtil.foodAR;
-	public AmountResource waterAR = ResourceUtil.waterAR;
-	public AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
-
 	private DustStorm storm;
+	
+	// 2017-04-10 WARNING: cannot use static or result in null
+	//public AmountResource foodAR = ResourceUtil.foodAR;
+	//public AmountResource waterAR = ResourceUtil.waterAR;
+	//public AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	//public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
+
+	// Static members
+	private static Simulation sim = Simulation.instance();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static MissionManager missionManager = sim.getMissionManager();
+	private static Weather weather;// = sim.getMars().getWeather();
+	private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	
 	//private ShiftType currentShift;
 	
@@ -744,14 +742,14 @@ implements Serializable, LifeSupportType, Objective {
 				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 			//	oxygenAR = LifeSupportType.oxygenAR;
 			//if (oxygenAR == null) System.out.println("o2");
-			if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D)
+			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false) <= 0D)
 				return false;
 
 			//if (AmountResource.waterAR == null)
 				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 			//	waterAR = LifeSupportType.waterAR;
 			//if (waterAR == null) System.out.println("h2o");
-			if (getInventory().getAmountResourceStored(waterAR, false) <= 0D)
+			if (getInventory().getAmountResourceStored(ResourceUtil.waterAR, false) <= 0D)
 				return false;
 
 
@@ -799,7 +797,7 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
+			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
 			//System.out.println("oxygenLeft : " + oxygenLeft);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
@@ -810,7 +808,7 @@ implements Serializable, LifeSupportType, Objective {
 			//getInventory().addAmountDemand(oxygenAR, oxygenTaken);
 
 			double carbonDioxideProvided = oxygenTaken;
-			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
+			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(ResourceUtil.carbonDioxideAR, true, false);
 			if (carbonDioxideProvided > carbonDioxideCapacity)
 				carbonDioxideProvided = carbonDioxideCapacity;
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
@@ -838,7 +836,7 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideWater(double amountRequested) {
 		double waterTaken = amountRequested;
 		try {
-			double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
+			double waterLeft = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
 			//Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//, sourceName + "::provideWater");
@@ -3303,7 +3301,7 @@ implements Serializable, LifeSupportType, Objective {
     public int waterRationLevel() {
         int result = 0;
 
-        double storedWater = getInventory().getAmountResourceStored(waterAR, false);
+        double storedWater = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
         double requiredDrinkingWaterOrbit = water_consumption * getNumCurrentPopulation() *
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 

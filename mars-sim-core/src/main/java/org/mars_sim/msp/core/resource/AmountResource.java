@@ -58,7 +58,7 @@ implements Serializable {
 
 	private PhaseType phase;
 
-	private static AmountResourceConfig amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
+	//private static AmountResourceConfig amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
 
 	public AmountResource() {
 	}

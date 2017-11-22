@@ -61,7 +61,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class ArrivingSettlementEditingPanel
 extends TransportItemEditingPanel {
 
-
 	// Data members
 	private String errorString = new String();
 	private boolean validation_result = true;

@@ -104,9 +104,12 @@ implements Serializable {
 	private Collection<MissionMember> members;
 	/** A collection of the mission's phases. */
 	private Collection<MissionPhase> phases;
+	
+	// transient members
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
 
+	// Static members
 	private static UnitManager unitManager;
 
 	/**
@@ -1028,9 +1031,13 @@ implements Serializable {
 	        result = member.getCoordinates();
 	    }
 		else {
+			String log = null;
+			if (phase != null)
+				log = "No people/robots are available in phase '" + phase + "' of a " + this.toString() + " mission.";
+			else
+				log = "No people/robots are available in a " + this.toString() + " mission.";
 		    //throw new IllegalStateException(phase + " : No people or robots in the mission.");
-		    LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-		    		"No people or robots in phase " + phase + " of mission " + this.toString(), null);
+		    LogConsolidated.log(logger, Level.INFO, 0, sourceName, log , null);
 		}
 
 	    return result;

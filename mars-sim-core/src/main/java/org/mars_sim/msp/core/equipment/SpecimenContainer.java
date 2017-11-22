@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.PhaseType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -36,7 +37,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the capacity of the container.
-		getInventory().addAmountResourceTypeCapacity(Rover.rockSamplesAR, CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.rockSamplesAR, CAPACITY);
 	}
 
 	/**

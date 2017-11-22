@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -50,21 +51,23 @@ extends Mission {
         super(missionName, startingMember, minPeople);
              
         NavPoint startingNavPoint = null;
-        
-        if (startingMember.getSettlement() != null) {
-            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+    	Coordinates c = getCurrentMissionLocation();
+    	
+        if (startingMember.getSettlement() != null && c != null) {
+            startingNavPoint = new NavPoint(c,
                     startingMember.getSettlement(), startingMember
                             .getSettlement().getName());
         }
         else {
-            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                    "starting location");
+        	startingNavPoint = new NavPoint(c, "starting location");
         }
         
-        addNavpoint(startingNavPoint);
-        lastStopNavpoint = startingNavPoint;
-
-        setTravelStatus(AT_NAVPOINT);
+        if (startingNavPoint != null) {
+	        addNavpoint(startingNavPoint);
+	        lastStopNavpoint = startingNavPoint;
+	
+	        setTravelStatus(AT_NAVPOINT);
+        }
     }
     
     /**

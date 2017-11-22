@@ -417,6 +417,15 @@ public class AmountResourceStorage implements Serializable {
         }
     }
 
+    public void restoreARs(AmountResource[] ars) {
+    	if (typeStorage != null)
+    		typeStorage.restoreARs(ars);
+    }
+    
+    //public AmountResourceTypeStorage getAmountResourceTypeStorage() {
+    //	return typeStorage;
+    //}
+    
     /**
      * Prepare object for garbage collection.
      */

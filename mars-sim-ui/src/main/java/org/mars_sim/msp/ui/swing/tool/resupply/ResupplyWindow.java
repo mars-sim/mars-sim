@@ -44,9 +44,6 @@ public class ResupplyWindow
 extends ToolWindow
 implements ListSelectionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** Tool name. */
 	public static final String NAME = "Resupply Tool";
 

@@ -160,14 +160,15 @@ public class CompositionOfAir implements Serializable {
 
 	private double [][] standardMoles;
 
+	private Settlement settlement;
+ 	private BuildingManager buildingManager;
+
 	private static MasterClock masterClock;
 	private static MarsClock clock;
 	//private static SurfaceFeatures surfaceFeatures;
 	private static PersonConfig personConfig;
 
-	private Settlement settlement;
- 	private BuildingManager buildingManager;
-
+	
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.

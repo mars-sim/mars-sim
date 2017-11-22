@@ -17,7 +17,9 @@ import java.io.Serializable;
  */
 public class LargeBag extends Equipment implements Container, Serializable {
 
-    // Static data members
+	private static final long serialVersionUID = 1L;
+	
+	// Static data members
     public static final String TYPE = "Large Bag";
     public static final double CAPACITY = 200D;
     public static final double EMPTY_MASS = .4D;

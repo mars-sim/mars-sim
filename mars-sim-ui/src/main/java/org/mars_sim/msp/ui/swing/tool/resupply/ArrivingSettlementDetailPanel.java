@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -31,7 +30,6 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * A panel showing a selected arriving settlement details.
@@ -43,7 +41,6 @@ implements ClockListener, HistoricalEventListener {
 	private static final int PERIOD_IN_MILLISOLS = 3;
 
 	// Data members
-
 	private JLabel nameValueLabel;
 	private JLabel stateValueLabel;
 	private JLabel arrivalDateValueLabel;

@@ -80,9 +80,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	
 	private static Weather weather ;
 
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
+	//private static AmountResource waterAR = ResourceUtil.waterAR;
+	//private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	//private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
 
 
 	/**
@@ -104,9 +104,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the resource capacities of the EVA suit.
-		getInventory().addAmountResourceTypeCapacity(oxygenAR, OXYGEN_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(waterAR, WATER_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(carbonDioxideAR, CO2_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenAR, OXYGEN_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.waterAR, WATER_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.carbonDioxideAR, CO2_CAPACITY);
 		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();		
 		minimum_air_pressure = personConfig.getMinAirPressure();
@@ -130,12 +130,12 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public boolean lifeSupportCheck() {
 		//boolean result = true;
         try {
-			if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D) {
+			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false) <= 0D) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 						this.getName() + " ran out of oxygen in EVASuit", null);
 				return false;
 			}
-			if (getInventory().getAmountResourceStored(waterAR, false) <= 0D) {
+			if (getInventory().getAmountResourceStored(ResourceUtil.waterAR, false) <= 0D) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 						this.getName() + " ran out of water in EVASuit.", null);
 				return false;
@@ -192,12 +192,12 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on the ISS
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
+			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
-			getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
-			getInventory().addAmountDemandTotalRequest(oxygenAR);
-			getInventory().addAmountDemand(oxygenAR, oxygenTaken);
+			getInventory().retrieveAmountResource(ResourceUtil.oxygenAR, oxygenTaken);
+			getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenAR);
+			getInventory().addAmountDemand(ResourceUtil.oxygenAR, oxygenTaken);
 			
 /*
   			// Assume the EVA Suit has pump system to vent out all CO2 to prevent the built-up
@@ -226,15 +226,15 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken)  {
-		double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
+		double waterLeft = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
 
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
 
-		getInventory().retrieveAmountResource(waterAR, waterTaken);
-		getInventory().addAmountDemandTotalRequest(waterAR);
-		getInventory().addAmountDemand(waterAR, waterTaken);
+		getInventory().retrieveAmountResource(ResourceUtil.waterAR, waterTaken);
+		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterAR);
+		getInventory().addAmountDemand(ResourceUtil.waterAR, waterTaken);
 
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
@@ -293,13 +293,13 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		boolean result = true;
 
 		//AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygen = getInventory().getAmountResourceStored(oxygenAR, false);
+		double oxygen = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
 		if (oxygen != OXYGEN_CAPACITY) {
 			result = false;
 		}
 
 		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double water = getInventory().getAmountResourceStored(waterAR, false);
+		double water = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
 		if (water != WATER_CAPACITY) {
 			result = false;
 		}

@@ -47,27 +47,25 @@ public class LivingAccommodations extends Function implements Serializable {
 
     /** 1/5 of chance of going to a restroom per frame */
     public final static int TOILET_CHANCE = 5;
-	private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
-
-    
+	
+    private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
     private int maxBeds; // max # of beds
     private int sleepers;
 
     private double washWaterUsage; // Water used per person for washing (showers, washing clothes, hands, dishes, etc) per millisol (avg over Sol).
     //private double wasteWaterProduced; // Waste water produced by urination/defecation per person per millisol (avg over Sol).
     private double greyWaterFraction; // percent portion of grey water generated from waste water.
-
-    //private boolean hasAnUndesignatedBed = true;
-
+  
     private Settlement settlement;
     private Inventory inv;
-
     private Building building;
+    
     private Map<Person, Point2D> designatedBeds = new HashMap<>();
 
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 	private static MarsClock marsClock;
+	
     /**
      * Constructor
      * @param building the building this function is for.

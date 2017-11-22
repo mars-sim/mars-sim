@@ -53,6 +53,7 @@ implements Serializable {
 
 	private String phaseDescriptionCache;
 	
+    // Transient members
 	//private transient Person personCache;
 	//private transient Robot robotCache;
 	private transient MarsClock personTimeCache;

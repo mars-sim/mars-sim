@@ -88,6 +88,7 @@ implements Serializable {
 	/** The type of resource to collect. */
 	private AmountResource resourceType;
 	
+	// Static members
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;

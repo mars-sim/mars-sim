@@ -43,9 +43,9 @@ implements Serializable {
     protected List<ParkingLocation> parkingLocations;
     private Collection<Vehicle> vehicles;
 
-	public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-    public static AmountResource waterAR = ResourceUtil.waterAR;
-	public static AmountResource foodAR = ResourceUtil.foodAR;
+	//public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+    //public static AmountResource waterAR = ResourceUtil.waterAR;
+	//public static AmountResource foodAR = ResourceUtil.foodAR;
 
     /**
      * Constructor.

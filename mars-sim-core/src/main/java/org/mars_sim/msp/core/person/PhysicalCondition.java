@@ -55,12 +55,12 @@ public class PhysicalCondition implements Serializable {
 
 	public static final String WELL = "Well";
 	public static final String DEAD = "Dead : ";
-	public static final String ILL = "Ill : ";
+	public static final String ILL = "Sick : ";
 
-	public static final String OXYGEN = "oxygen";
-	public static final String WATER = "water";
-	public static final String FOOD = "food";
-	public static final String CO2 = "carbon dioxide";
+	//public static final String OXYGEN = "oxygen";
+	//public static final String WATER = "water";
+	//public static final String FOOD = "food";
+	//public static final String CO2 = "carbon dioxide";
 
 	public static final int THIRST_THRESHOLD = 100;
 	
@@ -340,28 +340,30 @@ public class PhysicalCondition implements Serializable {
 
 				solCache = solElapsed;
 			}
+			
+			String loc = person.getLocationTag().getShortLocationName();
 
 			// Check life support system
-			try {
+			try {	
 
 				if (consumeOxygen(support, o2_consumption * (time / 1000D)))
 					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-							"[" + person.getSettlement() + "] " + name + " has insufficient oxygen.", null);
+						"[" + loc + "] " + name + " has insufficient oxygen.", null);
 				// if (consumeWater(support, h2o_consumption * (time / 1000D)))
 				// LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has
 				// insufficient water.", null);
 				if (requireAirPressure(support, minimum_air_pressure))
 					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-							"[" + person.getSettlement() + "] " + name + " is under insufficient air pressure.", null);
+						"[" + loc + "] " + name + " is under insufficient air pressure.", null);
 				if (requireTemperature(support, min_temperature, max_temperature))
-					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, "[" + person.getSettlement() + "] "
-							+ name + " cannot survive long at this extreme temperature.", null);
+					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+						"[" + loc + "] " + name + " cannot survive long at this extreme temperature.", null);
 
 				// TODO: how to run to another building/location
 			} catch (Exception e) {
 				e.printStackTrace();
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						"[" + person.getSettlement() + "] " + name + "'s life support system is failing !", null);
+						"[" + loc + "] " + name + "'s life support system is failing !", null);
 			}
 
 			radiation.timePassing(time);
@@ -388,7 +390,8 @@ public class PhysicalCondition implements Serializable {
 						if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
 							isCollapsed = false;
 
-						else if (c.getType() == ComplaintType.PANIC_ATTACK || c.getType() == ComplaintType.DEPRESSION)
+						else if (c.getType() == ComplaintType.PANIC_ATTACK 
+								|| c.getType() == ComplaintType.DEPRESSION)
 							isStressedOut = false;
 
 						else if (c.getType() == ComplaintType.DEHYDRATION)
@@ -1110,19 +1113,6 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Person consumes a given amount of food not taken from local container.
-	 * 
-	 * @param amount
-	 *            the amount of food to consume (in kg).
-	 * 
-	 *            public void consumeFood(double amount) {
-	 *            //System.out.println("PhysicalCondition.java : just called
-	 *            consumeFood(double amount) : food NOT taken from local container.
-	 *            amount is " + amount); // if (checkResourceConsumption(amount,
-	 *            amount, MIN_VALUE, getMedicalManager().getStarvation())) //
-	 *            recalculate(); }
-	 */
-	/**
 	 * Person consumes given amount of oxygen
 	 * 
 	 * @param support
@@ -1135,31 +1125,9 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private boolean consumeOxygen(LifeSupportType support, double amount) {
 		double amountRecieved = support.provideOxygen(amount);
-		// if (support == null) System.out.println("support : "+ support);
-		// boolean check = checkResourceConsumption(amountRecieved, amount / 2D,
-		// MIN_VALUE, getMedicalManager().getSuffocation());
-		// System.out.println("O2 : " + amountRecieved + " : " + check);
-		// return check;
 		return checkResourceConsumption(amountRecieved, amount / 2D, MIN_VALUE, suffocation);
 	}
 
-	/**
-	 * Person consumes given amount of water
-	 * 
-	 * @param support
-	 *            Life support system providing water.
-	 * @param amount
-	 *            amount of water to consume (in kg)
-	 * @return new problem added.
-	 * @throws Exception
-	 *             if error consuming water.
-	 * 
-	 *             private boolean consumeWater(LifeSupportType support, double
-	 *             amount) { double amountReceived = support.provideWater(amount);
-	 * 
-	 *             return checkResourceConsumption(amountReceived, amount / 2D,
-	 *             MIN_VALUE, getMedicalManager().getDehydration()); }
-	 */
 
 	/**
 	 * This method checks the consume values of a resource. If the actual is less
@@ -1265,9 +1233,6 @@ public class PhysicalCondition implements Serializable {
 
 		if (person.getVehicle() != null) {
 			handleBody();
-			//deathDetails.getBodyRetrieved();
-			//examBody(problem);
-			//person.buryBody();
 		}
 	}
 

@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;

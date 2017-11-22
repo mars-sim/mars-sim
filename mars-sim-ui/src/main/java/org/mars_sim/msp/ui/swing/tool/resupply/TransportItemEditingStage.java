@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportEditingStage.java
- * @version 3.08 2015-02-11
+ * @version 3.1.0 2017-11-21
  * @author Manny Kung
  */
 

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,8 +20,11 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 
 public class ResourceUtil implements Serializable {
 
@@ -63,6 +67,8 @@ public class ResourceUtil implements Serializable {
     public static final String TOILET_TISSUE = "toilet tissue";
 
 	// Data members.
+	//private Set<AmountResource> savedARs;
+	
 	//private Set<AmountResource> resources;// = new TreeSet<AmountResource>();
     private static Map<String, AmountResource> amountResourceMap;
     private static Map<Integer, AmountResource> amountResourceIDMap;
@@ -122,17 +128,9 @@ public class ResourceUtil implements Serializable {
     public static AmountResource peanutOilAR;
     public static AmountResource sesameOilAR;
     
-	private static AmountResource[] ARs = new AmountResource[20];
+	private AmountResource[] ARs = new AmountResource[33];
 	
-	private static int[] ARs_int = new int[20];
-
-	/**
-	 * Default Constructor for ResoureUtil
-	 */
-    private ResourceUtil() {
-    	createResourceSet();
-    	createItemResourceUtil();
-    }
+	//private static int[] ARs_int = new int[33];
 
 	/**
 	 * Creates the singleton instance.
@@ -148,6 +146,24 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
+	 * Default Constructor for ResoureUtil
+	 */
+    private ResourceUtil() {
+    	createResourceSet();
+    	createItemResourceUtil();
+    }
+
+	public void createResourceSet() {
+ 		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
+		resources = amountResourceConfig.getAmountResources();
+	}
+	
+	
+    public void createItemResourceUtil() {
+    	new ItemResourceUtil();
+    }
+    
+	/**
 	 * Sets the singleton instance.
 	 * @param instance the singleton instance.
 	 */
@@ -157,23 +173,47 @@ public class ResourceUtil implements Serializable {
 
     public void initializeNewSim() {
         createMaps();
-		createARs();
+		mapARs();
+		// make a copy of ARs references
+		savedARs();
     }
 
     public void initializeSavedSim() {
+    	// Restores the saved ARs references
+    	restoreSavedARs();
+		mapARs();
         createMaps();
-		createARs();
+        restoreInventory();
     }
 
-    public void createItemResourceUtil() {
-    	new ItemResourceUtil();
-    }
-    
-	public void createResourceSet() {
- 		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
-		resources = amountResourceConfig.getAmountResources();
+	public void restoreSavedARs() {
+		for (AmountResource r : resources) {
+			for (AmountResource ar : ARs) {
+				if (r.getName().equals(ar.getName())) {
+					// restore the AmountResource reference
+					//System.out.println("resource : " + r.hashCode() + "   ar : " + ar.hashCode());
+					r = ar;
+					//System.out.println("resource : " + r.hashCode() + "   ar : " + ar.hashCode());
+					break;
+				}
+			}
+			break;
+		}
 	}
 
+	public void restoreInventory() {
+		Collection<Unit> units = Simulation.instance().getUnitManager().getUnits();
+		for (Unit u : units) {
+			//if (!u.getName().contains("Large Bag") && 
+			if (u.getInventory() != null && !u.getInventory().isEmpty(false)) {
+				System.out.println("-------------" + u.getName() + "-------------");
+				u.getInventory().restoreARs(ARs);
+			}
+		}
+	}
+	
+	
+	
     public static void createMaps() {
 		amountResourceMap = new HashMap<String, AmountResource>();
 		sortedResources = new ArrayList<>(resources);
@@ -195,95 +235,106 @@ public class ResourceUtil implements Serializable {
 		}
     }
 
-    public void createARs() {
+    public void mapARs() {
 
     	foodAR = findAmountResource(LifeSupportType.FOOD);			// 1
 		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
 		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
 		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);	// 4
 		
-		argonAR = findAmountResource(ARGON);	// 
-		nitrogenAR = findAmountResource(NITROGEN);	// 
+		argonAR = findAmountResource(ARGON);	// 5
+		nitrogenAR = findAmountResource(NITROGEN);	// 10
 
-		coAR = findAmountResource(CO);	// 
+		coAR = findAmountResource(CO);	// 6
 
-		hydrogenAR = findAmountResource(HYDROGEN);		// 7
-    	methaneAR = findAmountResource(METHANE);			// 8
-        soilAR = findAmountResource(SOIL);				// 11
-        iceAR = findAmountResource(ICE);					// 12
-        compostAR = findAmountResource(COMPOST);			// 13
+		hydrogenAR = findAmountResource(HYDROGEN);		// 8
+    	methaneAR = findAmountResource(METHANE);			// 9
+        soilAR = findAmountResource(SOIL);				// 12
+        iceAR = findAmountResource(ICE);					// 13
+        compostAR = findAmountResource(COMPOST);			// 14
 
         
-        cropWasteAR = findAmountResource(CROP_WASTE);	// 14
-        eWasteAR = findAmountResource(ELECTRONIC_WASTE);	// 15
-        foodWasteAR = findAmountResource(FOOD_WASTE);			// 16
-        solidWasteAR = findAmountResource(SOLID_WASTE);		// 17
-        toxicWasteAR = findAmountResource(TOXIC_WASTE);		// 18
+        cropWasteAR = findAmountResource(CROP_WASTE);	// 15
+        eWasteAR = findAmountResource(ELECTRONIC_WASTE);	// 16
+        foodWasteAR = findAmountResource(FOOD_WASTE);			// 17
+        solidWasteAR = findAmountResource(SOLID_WASTE);		// 18
+        toxicWasteAR = findAmountResource(TOXIC_WASTE);		// 19
 
-        greyWaterAR = findAmountResource(GREY_WATER);			// 19
-        blackWaterAR = findAmountResource(BLACK_WATER);			// 20
+        greyWaterAR = findAmountResource(GREY_WATER);			// 20
+        blackWaterAR = findAmountResource(BLACK_WATER);			// 21
 
         tableSaltAR = findAmountResource(TABLE_SALT); 		// 23
 
-        fertilizerAR = findAmountResource(FERTILIZER);  // 142
+        fertilizerAR = findAmountResource(FERTILIZER);  	// 139
         
-    	regolithAR = findAmountResource(REGOLITH);		// 153
+    	regolithAR = findAmountResource(REGOLITH);			// 156
     	
-        rockSamplesAR = findAmountResource(ROCK_SAMLES);	// 154
-      	sandAR = findAmountResource(SAND);		// 155
+        rockSamplesAR = findAmountResource(ROCK_SAMLES);	// 157
+      	sandAR = findAmountResource(SAND);					// 159
 
-        NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE);	// 156
+        NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE);	// 146
         napkinAR = findAmountResource(NAPKIN);				// 161
-        toiletTissueAR = findAmountResource(TOILET_TISSUE);	// 162
+        toiletTissueAR = findAmountResource(TOILET_TISSUE);	// 164
 
-        soybeanOilAR = findAmountResource(SOYBEAN_OIL);
-        garlicOilAR = findAmountResource(GARLIC_OIL);
-        sesameOilAR = findAmountResource(SESAME_OIL);
-        peanutOilAR = findAmountResource(PEANUT_OIL);
+        soybeanOilAR = findAmountResource(SOYBEAN_OIL);		// 27
+        garlicOilAR = findAmountResource(GARLIC_OIL);		// 41
+        sesameOilAR = findAmountResource(SESAME_OIL);		// 53
+        peanutOilAR = findAmountResource(PEANUT_OIL);		// 46
     }
 
-    public static void printID() {
+    public void savedARs() {
 
         ARs = new AmountResource[] {
         		foodAR,
 				waterAR,
         		oxygenAR,
 				carbonDioxideAR,
-
+				argonAR,
+        		
+        		nitrogenAR,
+        		coAR,
 				hydrogenAR,
 		    	methaneAR,
-                soilAR,
-		        iceAR,
-
+		        iceAR,       
+		       
                 cropWasteAR,
 		        foodWasteAR,
 		        solidWasteAR,
-
+        	    eWasteAR,
+        	    foodWasteAR,
+        	    
+        	    solidWasteAR,
+        	    toxicWasteAR,
+		        compostAR,			
 		        greyWaterAR,
 		        blackWaterAR,
-		        tableSaltAR,
-
-		        fertilizerAR,
-		    	regolithAR,
+		        
+                soilAR,
+        	    regolithAR,
 		        rockSamplesAR,
-
-		        NaClOAR,
+        		sandAR,
+		        
+        	    tableSaltAR,
+        	    NaClOAR,
 		        napkinAR,
-                toiletTissueAR
-        	};
+		        
+                toiletTissueAR,
+		        fertilizerAR,
 
-        for (int i=0; i< 20; i++) {
+        	    soybeanOilAR,
+        	    garlicOilAR,
+        	    peanutOilAR,
+        	    sesameOilAR
+        	};
+/*
+        for (int i=0; i< 33; i++) {
         	//System.out.println(ARs[i].getName());
-        //for (AmountResource ar : ARs) {
+        	//for (AmountResource ar : ARs) {
         	int n = findIDbyAmountResourceName(ARs[i].getName());
         	ARs_int[i] = n;
         	System.out.println(ARs[i] + " : " + ARs_int[i]);
         }
-
-        //for (int i=0; i< 20; i++) {
-        //for (int n : ar_int) {
-        //	System.out.println(ARs[i] + " : " + ARs_int[i]);
-		//}
+*/
 
     }
 
@@ -370,7 +421,8 @@ public class ResourceUtil implements Serializable {
 */
 		if (amountResourceMap == null)
 			createMaps();
-		return amountResourceMap.get(name.toLowerCase());
+		return 
+			amountResourceMap.get(name.toLowerCase());
 
 	}
 
