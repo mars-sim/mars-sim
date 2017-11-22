@@ -85,6 +85,15 @@ public class CompositionOfAir implements Serializable {
 	private static final double H2O_PARTIAL_PRESSURE = SKYLAB_AIR_COMPOSITION_IN_MB[4]/MB_PER_ATM;// EARTH_AIR_COMPOSITION_IN_PERCENT[4]/100; // [in atm] 
 	// https://en.wikipedia.org/wiki/Vapour_pressure_of_water
 	
+	
+	private static final double[] PARTIAL_PRESSURES = new double[] {
+			CO2_PARTIAL_PRESSURE, 
+			ARGON_PARTIAL_PRESSURE,
+			N2_PARTIAL_PRESSURE, 
+			O2_PARTIAL_PRESSURE, 
+			H2O_PARTIAL_PRESSURE
+	};
+	
 	/** The upper safe limit of the partial pressure [in atm] of O2 */
 	//private static final double O2_PRESSURE_UPPER_LIMIT = 1.5;// [in atm] 
 	/** The lower safe limit of the partial pressure [in atm] of O2 */
@@ -100,7 +109,7 @@ public class CompositionOfAir implements Serializable {
 	public static final double CH4_MOLAR_MASS = 16.04276 / 1000;; // [in kg/mol] 
 	public static final double H2_MOLAR_MASS = 2.016 / 1000;; // [in kg/mol] 
 	
-	private static final int MILLISOLS_PER_UPDATE = 20;
+	private static final int MILLISOLS_PER_UPDATE = 5;
 	
     private static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
     // alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
@@ -202,7 +211,7 @@ public class CompositionOfAir implements Serializable {
 		// This estimate gives 400ml of water lost per day
 		// Thus, a person loses about 800ml of water per day, half through the skin
 		// and half through respiration.
-
+	
 		int numIDs = buildingManager.getLargestInhabitableID() + 1;
 		numIDsCache = numIDs;
 
@@ -467,68 +476,65 @@ public class CompositionOfAir implements Serializable {
 		for (Building b: buildings) {
 			int id = b.getInhabitableID();	
 			double t = C_TO_K  + b.getCurrentTemperature();
-			
-			for (int gas = 0; gas < numGases; gas++) {
 
-				double current_moles = numMoles[gas][id];
-				double molecularMass = getMolecularMass(gas);
-				double standard_moles = standardMoles[gas][id];
-
-				//[0] = CO2
-				//[1] = ARGON
-				//[2] = N2
-				//[3] = O2
-				//[4] = H2O
-				
-				double delta = standard_moles - current_moles;
-				double diff =  delta/standard_moles;			
-				
-				//if (b.getBuildingType().equals("Lander Hab"))
-					//System.out.println("gas " + gas 
-					//		+ "'s standard_moles : " + Math.round(standard_moles*100.0)/100.0
-					//		+ "   current_moles : " + Math.round(current_moles*100.0)/100.0
-					//		+ "   delta : " + Math.round(delta*100.0)/100.0
-					//		+ "   diff : " + Math.round(diff*100.0)/100.0);
-				
-				// if this gas has BELOW 98% or ABOVE 102% the standard percentage of air composition
-				if (diff < LOWER_THRESHOLD_GAS_COMPOSITION || diff > UPPER_THRESHOLD_GAS_COMPOSITION) {
-
-					double d_new_moles = delta;
-					double d_mass = d_new_moles * molecularMass; // d_mass can be -ve; 
-					//if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to save the future effort
-					AmountResource ar = getGasAR(gas);
+			if (t > -20 + C_TO_K && t < 40 + C_TO_K) {
+	
+				for (int gas = 0; gas < numGases; gas++) {
+					//double current_moles = numMoles[gas][id];
+					double molecularMass = getMolecularMass(gas);
+					//double standard_moles = standardMoles[gas][id];
+	
+					//[0] = CO2
+					//[1] = ARGON
+					//[2] = N2
+					//[3] = O2
+					//[4] = H2O
 					
-					if (d_mass > 0)
-						Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
-					else { // too much gas, need to recapture it; d_mass is less than 0
-						double recaptured = - d_mass * GAS_CAPTURE_EFFICIENCY;
-						if (recaptured > 0)		
-							Storage.storeAnResource(recaptured, ar , b.getInventory(), sourceName + "::monitorAir"); 
-					}
+					double delta = standardMoles[gas][id] - numMoles[gas][id];
+					//double diff =  delta/standard_moles;			
+	
+					double diff = (PARTIAL_PRESSURES[gas] - partialPressure[gas][id])/PARTIAL_PRESSURES[gas];
+
+					// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air composition
+					if (Math.abs(diff) > UPPER_THRESHOLD_GAS_COMPOSITION ) {
+
+						double d_new_moles = delta;
+						double d_mass = d_new_moles * molecularMass; // d_mass can be -ve; 
+						//if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to save the future effort
+						AmountResource ar = getGasAR(gas);
 						
-					double new_m = 0;
-					double new_moles = 0;
-					
-					new_m = mass [gas][id] + d_mass;
-					if (new_m < 0) {
-			            logger.info("[" + settlement + "] no more " + ar.getName() + " in " );
-			            new_m = 0;
-			            new_moles = 0;
+						if (d_mass > 0)
+							Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
+						else { // too much gas, need to recapture it; d_mass is less than 0
+							double recaptured = - d_mass * GAS_CAPTURE_EFFICIENCY;
+							if (recaptured > 0)		
+								Storage.storeAnResource(recaptured, ar , b.getInventory(), sourceName + "::monitorAir"); 
+						}
+							
+						double new_m = 0;
+						double new_moles = 0;
+						
+						new_m = mass [gas][id] + d_mass;
+						if (new_m < 0) {
+				            logger.info("[" + settlement + "] no more " + ar.getName() + " in " );
+				            new_m = 0;
+				            new_moles = 0;
+						}
+						//if (new_moles < 0) {
+				        //    logger.info("new # of moles " + new_moles +
+				        //            " is not supposed to be negative in " + settlement);  
+						//}
+						else {
+							new_moles = new_m / molecularMass;
+						}
+	
+						
+						temperature [gas][id] = t;	
+						
+						partialPressure [gas][id] = new_moles * R_GAS_CONSTANT * t / fixedVolume [id];
+						mass [gas][id] = new_m ;
+						numMoles [gas][id] = new_moles;
 					}
-					//if (new_moles < 0) {
-			        //    logger.info("new # of moles " + new_moles +
-			        //            " is not supposed to be negative in " + settlement);  
-					//}
-					else {
-						new_moles = new_m / molecularMass;
-					}
-
-					
-					temperature [gas][id] = t;	
-					
-					partialPressure [gas][id] = new_moles * R_GAS_CONSTANT * t / fixedVolume [id];
-					mass [gas][id] = new_m ;
-					numMoles [gas][id] = new_moles;
 				}
 			}
 		}

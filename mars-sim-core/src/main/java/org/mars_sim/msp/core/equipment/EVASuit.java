@@ -80,10 +80,6 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	
 	private static Weather weather ;
 
-	//private static AmountResource waterAR = ResourceUtil.waterAR;
-	//private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	//private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
-
 
 	/**
 	 * Constructor.
@@ -104,9 +100,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the resource capacities of the EVA suit.
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenAR, OXYGEN_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.waterAR, WATER_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.carbonDioxideAR, CO2_CAPACITY);
+		getInventory().addARTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);
+		getInventory().addARTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
+		getInventory().addARTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();		
 		minimum_air_pressure = personConfig.getMinAirPressure();
@@ -130,12 +126,12 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public boolean lifeSupportCheck() {
 		//boolean result = true;
         try {
-			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false) <= 0D) {
+			if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 						this.getName() + " ran out of oxygen in EVASuit", null);
 				return false;
 			}
-			if (getInventory().getAmountResourceStored(ResourceUtil.waterAR, false) <= 0D) {
+			if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 						this.getName() + " ran out of water in EVASuit.", null);
 				return false;

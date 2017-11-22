@@ -500,4 +500,34 @@ extends TabPanel {
 			fireTableDataChanged();
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		powerTable = null;
+		powerGeneratedLabel = null;
+		powerUsedLabel = null;
+		energyStorageCapacityLabel = null;
+		energyStoredLabel = null;
+		electricEfficiencyLabel = null;
+		powerGeneratedTF  = null;
+		powerUsedTF = null;
+		energyStorageCapacityTF = null;
+		energyStoredTF = null;
+		solarCellEfficiencyTF = null;
+		degradRateTF = null;
+		powerScrollPane = null;
+		
+		checkbox = null;
+		formatter = null;
+		formatter2 = null;
+		formatter3 = null;
+		powerTableModel = null;
+		powerGrid = null;		
+		config = null;		
+		manager = null;		
+		powerSources = null;		
+		buildings = null;
+	}
 }

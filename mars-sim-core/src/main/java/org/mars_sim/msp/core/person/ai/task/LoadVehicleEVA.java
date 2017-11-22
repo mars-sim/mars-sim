@@ -92,9 +92,6 @@ implements Serializable {
     /** Equipment desired to load but not required. */
     private Map<Class, Integer> optionalEquipment;
 
-	//public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-    //public static AmountResource waterAR = ResourceUtil.waterAR;
-
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -323,7 +320,7 @@ implements Serializable {
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
                             double water = roverInv.getAmountResourceStored(ResourceUtil.waterAR, false);
-                            double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
+                            double oxygen = roverInv.getARStored(ResourceUtil.oxygenID, false);
                             if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
                                 result.add(rover);
                             }

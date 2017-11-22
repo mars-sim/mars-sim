@@ -85,6 +85,13 @@ public class ResourceUtil implements Serializable {
 	// The drawback is that this won't work if one loads from a saved sim that has an outdated list of Amount Resources
 	private static AmountResourceConfig amountResourceConfig;
 
+	public static int oxygenID;
+	public static int waterID;
+	public static int foodID;
+	public static int co2ID;
+	public static int iceID;
+	public static int regolithID;
+	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -183,7 +190,7 @@ public class ResourceUtil implements Serializable {
     	restoreSavedARs();
 		mapARs();
         createMaps();
-        restoreInventory();
+        //restoreInventory();
     }
 
 	public void restoreSavedARs() {
@@ -206,7 +213,7 @@ public class ResourceUtil implements Serializable {
 		for (Unit u : units) {
 			//if (!u.getName().contains("Large Bag") && 
 			if (u.getInventory() != null && !u.getInventory().isEmpty(false)) {
-				System.out.println("-------------" + u.getName() + "-------------");
+				//System.out.println("-------------" + u.getName() + "-------------");
 				u.getInventory().restoreARs(ARs);
 			}
 		}
@@ -237,6 +244,14 @@ public class ResourceUtil implements Serializable {
 
     public void mapARs() {
 
+    	oxygenID = findAmountResource(LifeSupportType.OXYGEN).getID();		// 3
+    	waterID = findAmountResource(LifeSupportType.WATER).getID();// 2
+    	foodID = findAmountResource(LifeSupportType.FOOD).getID();// 1
+    	co2ID = findAmountResource(LifeSupportType.CO2).getID();	// 4
+        iceID = findAmountResource(ICE).getID();				// 13
+       	regolithID = findAmountResource(REGOLITH).getID();		// 156
+          	
+    	
     	foodAR = findAmountResource(LifeSupportType.FOOD);			// 1
 		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
 		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
@@ -486,6 +501,18 @@ public class ResourceUtil implements Serializable {
 		return resources;
 	}
 
+	/**
+	 * Gets an immutable set of all the amount resources.
+	 * @return set of amount resources.
+	 */
+	public Set<Integer> getARIDs() {
+		//if (set == null)
+		//	set = Collections.unmodifiableSet(resources);
+		//return set;
+	   	//createResourceSet();
+		return amountResourceIDMap.keySet();
+	}
+	
 /* An example method
 	private Set<T> intersection(Collection<T> first, Collection<T> second) {
 		// intersection with an empty collection is empty

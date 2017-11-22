@@ -943,8 +943,8 @@ implements Serializable {
         int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
         // Check if enough oxygen.
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, true, false);
-        double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
+        double neededOxygen = suitInv.getARRemainingCapacity(ResourceUtil.oxygenID, true, false);
+        double availableOxygen = entityInv.getARStored(ResourceUtil.oxygenID, false);
         // Make sure there is enough extra oxygen for everyone else.
         availableOxygen -= (neededOxygen * otherPeopleNum);
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
@@ -976,18 +976,19 @@ implements Serializable {
             Inventory entityInv = person.getContainerUnit().getInventory();
 
             // Fill oxygen in suit from entity's inventory.
-            AmountResource oxygenAR = ResourceUtil.oxygenAR;
-            double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
-            double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
+            //AmountResource oxygenAR = ResourceUtil.oxygenAR;
+            int oxygenID = ResourceUtil.oxygenID;
+            double neededOxygen = suitInv.getARRemainingCapacity(oxygenID, true, false);
+            double availableOxygen = entityInv.getARStored(oxygenID, false);
 
-            entityInv.addAmountDemandTotalRequest(oxygenAR);
+            entityInv.addAmountDemandTotalRequest(oxygenID);
 
             double takenOxygen = neededOxygen;
             if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
             try {
-                entityInv.retrieveAmountResource(oxygenAR, takenOxygen);
-                entityInv.addAmountDemand(oxygenAR, takenOxygen);
-                suitInv.storeAmountResource(oxygenAR, takenOxygen, true);
+                entityInv.retrieveAR(oxygenID, takenOxygen);
+                entityInv.addAmountDemand(oxygenID, takenOxygen);
+                suitInv.storeAR(oxygenID, takenOxygen, true);
             }
             catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
@@ -997,19 +998,20 @@ implements Serializable {
             }
 
             // Fill water in suit from entity's inventory.
-            AmountResource waterAR = ResourceUtil.waterAR;
-            double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
-            double availableWater = entityInv.getAmountResourceStored(waterAR, false);
+            int waterID = ResourceUtil.waterID;
+            //AmountResource waterAR = ResourceUtil.waterAR;
+            double neededWater = suitInv.getARRemainingCapacity(waterID, true, false);
+            double availableWater = entityInv.getARStored(waterID, false);
 
-            entityInv.addAmountDemandTotalRequest(waterAR);
+            entityInv.addAmountDemandTotalRequest(waterID);
 
             double takenWater = neededWater;
             if (takenWater > availableWater) takenWater = availableWater;
             try {
-                entityInv.retrieveAmountResource(waterAR, takenWater);
+                entityInv.retrieveAR(waterID, takenWater);
 
-                entityInv.addAmountDemand(waterAR, takenWater);
-                suitInv.storeAmountResource(waterAR, takenWater, true);
+                entityInv.addAmountDemand(waterID, takenWater);
+                suitInv.storeAR(waterID, takenWater, true);
 
             }
             catch (Exception e) {

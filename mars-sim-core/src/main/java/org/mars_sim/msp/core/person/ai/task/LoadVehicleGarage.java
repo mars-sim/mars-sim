@@ -102,9 +102,7 @@ implements Serializable {
 
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
-	//public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-    //public static AmountResource waterAR = ResourceUtil.waterAR;
-	//public static AmountResource foodAR = ResourceUtil.foodAR;
+
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.

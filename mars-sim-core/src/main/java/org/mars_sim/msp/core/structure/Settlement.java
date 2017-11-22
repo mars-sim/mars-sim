@@ -742,14 +742,14 @@ implements Serializable, LifeSupportType, Objective {
 				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 			//	oxygenAR = LifeSupportType.oxygenAR;
 			//if (oxygenAR == null) System.out.println("o2");
-			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false) <= 0D)
+			if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D)
 				return false;
 
 			//if (AmountResource.waterAR == null)
 				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 			//	waterAR = LifeSupportType.waterAR;
 			//if (waterAR == null) System.out.println("h2o");
-			if (getInventory().getAmountResourceStored(ResourceUtil.waterAR, false) <= 0D)
+			if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D)
 				return false;
 
 
@@ -797,7 +797,7 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
+			double oxygenLeft = getInventory().getARStored(ResourceUtil.oxygenID, false);
 			//System.out.println("oxygenLeft : " + oxygenLeft);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
@@ -836,7 +836,7 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideWater(double amountRequested) {
 		double waterTaken = amountRequested;
 		try {
-			double waterLeft = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+			double waterLeft = getInventory().getARStored(ResourceUtil.waterID, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
 			//Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//, sourceName + "::provideWater");
@@ -3301,7 +3301,7 @@ implements Serializable, LifeSupportType, Objective {
     public int waterRationLevel() {
         int result = 0;
 
-        double storedWater = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+        double storedWater = getInventory().getARStored(ResourceUtil.waterID, false);
         double requiredDrinkingWaterOrbit = water_consumption * getNumCurrentPopulation() *
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
@@ -3565,18 +3565,18 @@ implements Serializable, LifeSupportType, Objective {
     		water_value = 8000;
     	if (water_value < 1)
     		water_value =  1;
-
+/*
         double oxygen_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.oxygenAR));
         oxygen_value = oxygen_value * GoodsManager.OXYGEN_VALUE_MODIFIER;
         if (oxygen_value > 4000)
         	oxygen_value = 4000;
     	if (oxygen_value < 1)
     		oxygen_value = 1;
-    	
+*/
     	// 2016-10-14 Compare the available amount of water and ice reserve
-        double ice_available = getInventory().getAmountResourceStored(ResourceUtil.iceAR, false);
-        double water_available = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
-        double oxygen_available = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+        double ice_available = getInventory().getARStored(ResourceUtil.iceID, false);
+        double water_available = getInventory().getARStored(ResourceUtil.waterID, false);
+        //double oxygen_available = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
         
         int pop = getAllAssociatedPeople().size();//getCurrentPopulationNum();
 

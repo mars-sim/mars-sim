@@ -101,6 +101,8 @@ LocalBoundedObject, InsidePathLocation {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
+    public static final int TISSUE_CAPACITY = 20;
+    
 	public static final double HEIGHT = 2.5; // assume an uniform height of 2.5 meters in all buildings
 	/** The volume of an airlock in cubic meters*/
 	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; //3 * 2 * 2; //in m^3
@@ -441,17 +443,13 @@ LocalBoundedObject, InsidePathLocation {
 		}
 		
 		// Initialize lab space for storing crop tissue cultures
-		if (hasFunction(FunctionType.RESEARCH)) {
-			if (lab == null)
-				lab = (Research) getFunction(FunctionType.RESEARCH);
-			if (lab.hasSpecialty(ScienceType.BOTANY)) {
-				//&& building.getBuildingType().toLowerCase().contains("greenhouse")) {
-				Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
-				for (AmountResource ar : tissues) {
-					getInventory().addAmountResourceTypeCapacity(ar, 10);
-					getInventory().storeAmountResource(ar, .1, false);
-					getInventory().addAmountDemand(ar, .1);
-				}
+		if (hasFunction(FunctionType.RESEARCH) && getResearch().hasSpecialty(ScienceType.BOTANY)) {
+			lab = getResearch();
+			Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
+			for (AmountResource ar : tissues) {
+				getInventory().addAmountResourceTypeCapacity(ar, TISSUE_CAPACITY);
+				getInventory().storeAmountResource(ar, .1, false);
+				getInventory().addAmountDemand(ar, .1);
 			}
 		}
 	}

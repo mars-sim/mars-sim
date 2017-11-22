@@ -27,29 +27,26 @@ public class ItemResourceUtil implements Serializable {
 	public static final String SMALL_HAMMER = "small hammer";
 	public static final String SOCKET_WRENCH = "socket wrench";
 	public static final String PIPE_WRENCH = "pipe wrench";
-
-	public static Part pneumaticDrillAR, backhoeAR, smallHammerAR, socketWrenchAR, pipeWrenchAR, 
-				fireExtinguisherAR, workGlovesAR, mushroomBoxAR;
+	public static final String EXTINGUSHER = "fire extingusher";
+	public static final String WORK_GLOVES = "work gloves";
+	public static final String CONTAINMENT = "mushroom containment kit";
+	
+	private static PartConfig partConfig  = SimulationConfig.instance().getPartConfiguration();
+	
+	public static Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
+	public static Part backhoeAR = (Part) findItemResource(BACKHOE);
+	public static Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
+	public static Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
+	public static Part pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
+	public static Part fireExtinguisherAR = (Part) findItemResource(EXTINGUSHER);
+	public static Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
+	public static Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT);
 
 	private static Set<Part> partSet;
 
 	private static List<Part> sortedParts;
-	
-	private static PartConfig partConfig;
-	
+
 	public ItemResourceUtil() {
-
-		partConfig = SimulationConfig.instance().getPartConfiguration();
-
-		pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
-		backhoeAR = (Part) findItemResource(BACKHOE);
-		smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
-		socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
-		pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
-		fireExtinguisherAR = (Part) findItemResource("fire extingusher");
-		workGlovesAR = (Part) findItemResource("work gloves");
-		mushroomBoxAR = (Part) findItemResource("mushroom containment kit");
-		
 	}
 
 	/**

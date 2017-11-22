@@ -449,6 +449,7 @@ extends TabPanel {
 		settlement.setFoodProductionOverride(override);
 	}
 
+
 	/**
 	 * Inner class for the foodProduction selection list cell renderer.
 	 */
@@ -492,5 +493,23 @@ extends TabPanel {
 
 			return result;
 		}
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		settlement = null;
+		foodProductionListPane = null;
+		foodProductionScrollPane = null;
+		processCache = null;
+
+		buildingComboBox = null;
+		buildingComboBoxCache = null;
+		processSelection = null;
+		processSelectionCache = null;
+		newProcessButton = null;
+		overrideCheckbox = null;
+
 	}
 }

@@ -72,11 +72,6 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	private List<Point2D> sickBayActivitySpots;
 
 	// Static data members
-	//public static AmountResource methaneAR = ResourceUtil.methaneAR;
-	//public static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-    //public static AmountResource waterAR = ResourceUtil.waterAR;
-    //public static AmountResource foodAR = ResourceUtil.foodAR;
-
     //private static VehicleConfig vehicleConfig;
     private static PersonConfig personConfig;
     private static Weather weather;
@@ -117,11 +112,11 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		
 		// Set inventory resource capacities.
 		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.METHANE));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.oxygenAR, vehicleConfig.getCargoCapacity(description, LifeSupportType.OXYGEN));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.waterAR, vehicleConfig.getCargoCapacity(description, LifeSupportType.WATER));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.foodAR, vehicleConfig.getCargoCapacity(description, LifeSupportType.FOOD));
+		inv.addARTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(description, LifeSupportType.OXYGEN));
+		inv.addARTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(description, LifeSupportType.WATER));
+		inv.addARTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(description, LifeSupportType.FOOD));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.rockSamplesAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.ROCK_SAMLES));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.iceAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.ICE));
+		inv.addARTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(description, ResourceUtil.ICE));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.foodWasteAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.FOOD_WASTE));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.solidWasteAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.SOLID_WASTE));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.toxicWasteAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.TOXIC_WASTE));
@@ -234,8 +229,8 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        if (getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false) <= 0D) result = false;
-        if (getInventory().getAmountResourceStored(ResourceUtil.waterAR, false) <= 0D) result = false;
+        if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D) result = false;
+        if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D) result = false;
         
         if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
