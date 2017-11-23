@@ -372,9 +372,9 @@ implements Serializable {
             if (suit != null) {
                 carryMass += suit.getMass();
                 //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.oxygenAR, false, false);
+                carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.oxygenID, false, false);
                 //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.waterAR, false, false);
+                carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.waterID, false, false);
             }
             double carryCapacity = person.getInventory().getGeneralCapacity();
             boolean canCarryEquipment = (carryCapacity >= carryMass);

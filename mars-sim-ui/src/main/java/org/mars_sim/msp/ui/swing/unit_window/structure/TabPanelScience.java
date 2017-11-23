@@ -435,4 +435,19 @@ extends TabPanel {
 			fireTableDataChanged();
 		}
 	}
+	
+	/**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+    	scienceToolButton = null;
+    	totalAchievementLabel = null;
+
+    	achievementTable = null;
+    	studyTable = null;
+
+    	studyTableModel = null;
+    	achievementTableModel = null;
+
+    }
 }

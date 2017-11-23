@@ -62,31 +62,32 @@ extends TabPanel {
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
 	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, DRY
 
-
 	 /** default logger.   */
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
-	// 2014-11-11 Added new panels and labels
-	//private JPanel bottomPanel;
-	private JTextField airDensityTF, pressureTF, solarIrradianceTF, windSpeedTF, windDirTF, opticalDepthTF, zenithAngleTF, solarDeclinationTF;
-	//private JLabel airDensityLabel, airPressureLabel, solarIrradianceLabel, windSpeedLabel, windDirLabel, opticalDepthLabel, zenithAngleLabel, solarDeclinationLabel;
+	private JTextField airDensityTF;
+	private JTextField pressureTF;
+	private JTextField solarIrradianceTF;
+	private JTextField windSpeedTF;
+	private JTextField windDirTF;
+	private JTextField opticalDepthTF;
+	private JTextField zenithAngleTF;
+	private JTextField solarDeclinationTF;
 
 	private JLabel temperatureValueLabel;
-	//private JLabel monitorLabel;
 
 	private double airPressureCache;
 	private double temperatureCache;
 	private double windSpeedCache;
-	private int windDirectionCache;
 	private double airDensityCache;
 	private double opticalDepthCache;
 	private double zenithAngleCache;
 	private double solarDeclinationCache;
 	private double solarIrradianceCache;
 
+	private int windDirectionCache;
+	
 	private String iconCache;
-
-	//private Unit containerCache;
 
 	private JPanel locationCoordsPanel;
 	private JPanel locationLabelPanel;
@@ -96,16 +97,19 @@ extends TabPanel {
 	private JLabel weatherLabel;
 
 	private Coordinates locationCache;
-	private Weather weather;
-	private SurfaceFeatures surfaceFeatures;
-	private MasterClock masterClock;
-	private OrbitInfo orbitInfo;
 
 	private StormTrackingWindow stormWin;
 
-	DecimalFormat fmt = new DecimalFormat("##0");
-	DecimalFormat fmt1 = new DecimalFormat("#0.0");
-	DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	private static Weather weather;
+	private static SurfaceFeatures surfaceFeatures;
+	private static MasterClock masterClock;
+	private static OrbitInfo orbitInfo;
+
+
+	private static DecimalFormat fmt = new DecimalFormat("##0");
+	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
+	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	
     /**
      * Constructor.
      * @param unit the unit to display.
@@ -605,4 +609,39 @@ extends TabPanel {
 	    }
     }
 
+	/**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+    	airDensityTF = null;
+    	pressureTF = null;
+    	solarIrradianceTF = null;
+    	windSpeedTF = null;
+    	windDirTF = null;
+    	opticalDepthTF = null;
+    	zenithAngleTF = null;
+    	solarDeclinationTF = null;
+
+    	temperatureValueLabel = null;
+    	
+    	locationCoordsPanel = null;
+    	locationLabelPanel = null;
+
+    	latitudeLabel = null;
+    	longitudeLabel = null;
+    	weatherLabel = null;
+
+    	locationCache = null;
+    	weather = null;
+    	surfaceFeatures = null;
+    	masterClock = null;
+    	orbitInfo = null;
+
+    	stormWin = null;
+
+    	fmt = null;
+    	fmt1 = null;
+    	fmt2 = null;
+
+    }
 }

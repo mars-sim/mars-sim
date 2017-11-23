@@ -170,4 +170,13 @@ implements MouseListener {
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
+	
+	/**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+    	vehicleListModel = null;
+    	vehicleList = null;
+    	vehicleScrollPanel = null;
+    }
 }

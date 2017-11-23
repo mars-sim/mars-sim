@@ -43,7 +43,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelCredit
 extends TabPanel {
 
-	private JTable creditTable ;
+	private JTable creditTable;
 
 	/**
 	 * Constructor.
@@ -268,5 +268,12 @@ extends TabPanel {
 			thisSettlement = null;
 		}
 		 */
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		creditTable = null;
 	}
 }

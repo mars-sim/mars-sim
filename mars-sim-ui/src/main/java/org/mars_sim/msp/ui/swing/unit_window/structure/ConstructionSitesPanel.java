@@ -316,4 +316,14 @@ public class ConstructionSitesPanel extends JPanel {
             return result.toString();
         }
     }   
+    
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		manager = null;
+	    sitesCache = null;
+	    sitesListPane = null;
+	    sitesScrollPane = null;
+	}
 }

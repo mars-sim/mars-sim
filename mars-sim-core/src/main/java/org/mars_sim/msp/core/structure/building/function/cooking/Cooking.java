@@ -1140,7 +1140,7 @@ implements Serializable {
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
 		boolean cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol, ResourceUtil.NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
-		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*10D, ResourceUtil.waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*10D, ResourceUtil.waterID, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 
 		if (cleaning0)
 			cleanliness = cleanliness + .05;

@@ -156,4 +156,12 @@ public class SalvagePanel extends JPanel {
         
         return result.toString();
     }
+    
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		process = null;
+	    workBarModel = null;
+	}
 }

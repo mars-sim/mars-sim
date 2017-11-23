@@ -418,6 +418,7 @@ public class TabPanelDashboard extends TabPanel {
 		choiceBox.setStyle(color);
 		optionBox.setStyle(color);
 	}
+	
 	/**
      * Prepare object for garbage collection.
      */
@@ -431,6 +432,18 @@ public class TabPanelDashboard extends TabPanel {
 		mainBox = null;
 		timer.stop();
 		timer = null;
-		commitButton = null;
+		commitButton = null;	
+		objectiveTypeCache = null;
+		objectives = null;	
+		commitPane = null;
+		choiceHeader = null;
+		headerLabel = null;
+		headerBox = null;
+		optionBox = null;
+		row0 = null; 
+		row1 = null; 
+		choiceBox = null;
+		buttons = null;
+		settlement = null;
     }
 }

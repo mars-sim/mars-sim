@@ -238,13 +238,13 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 2)
 						result = inv.findNumUnitsOfClass(Rover.class);
 					if (column == 3) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
+						result = (int) inv.getARStored(ResourceUtil.oxygenID, false);
 					}
 					else if (column == 4) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.waterAR, false);
+						result = (int) inv.getARStored(ResourceUtil.waterID, false);
 					}
 					else if (column == 5) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.foodAR, false);
+						result = (int) inv.getARStored(ResourceUtil.foodID, false);
 					}
 					else if (column == 6) {
 						result = (int) determineHighestDessertResources(inv);

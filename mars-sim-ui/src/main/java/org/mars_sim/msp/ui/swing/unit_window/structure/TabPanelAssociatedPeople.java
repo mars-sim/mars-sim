@@ -224,4 +224,14 @@ implements MouseListener, ActionListener {
 		// If the population monitor button was pressed, create tab in monitor tool.
 		desktop.addModel(new PersonTableModel((Settlement) unit, true));
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		populationListModel = null;
+		populationList = null;
+		populationScrollPanel = null;
+		populationNumLabel = null;
+	}
 }

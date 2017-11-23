@@ -334,7 +334,6 @@ implements ActionListener {
 		comboBox = null;
 		buildingDisplayPanel = null;
 		buildingLayout = null;
-		building = null;
-		
+		building = null;		
 	}
 }

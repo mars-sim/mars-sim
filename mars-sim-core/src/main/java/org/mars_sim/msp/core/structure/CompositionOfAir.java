@@ -501,8 +501,8 @@ public class CompositionOfAir implements Serializable {
 						double d_new_moles = delta;
 						double d_mass = d_new_moles * molecularMass; // d_mass can be -ve; 
 						//if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to save the future effort
-						AmountResource ar = getGasAR(gas);
-						
+						int ar = getGasAR(gas);
+					
 						if (d_mass > 0)
 							Storage.retrieveAnResource(d_mass, ar , b.getInventory(), true); 
 						else { // too much gas, need to recapture it; d_mass is less than 0
@@ -516,7 +516,7 @@ public class CompositionOfAir implements Serializable {
 						
 						new_m = mass [gas][id] + d_mass;
 						if (new_m < 0) {
-				            logger.info("[" + settlement + "] no more " + ar.getName() + " in " );
+				            logger.info("[" + settlement + "] no more " + ResourceUtil.findAmountResource(ar).getName() + " in " );
 				            new_m = 0;
 				            new_moles = 0;
 						}
@@ -576,20 +576,18 @@ public class CompositionOfAir implements Serializable {
 	 * @param gas
 	 * @return {@link AmountResource}
 	 */
-	public AmountResource getGasAR(int gas) {
-		AmountResource ar = null;
+	public int getGasAR(int gas) {
 		if (gas == 0)
-			ar = ResourceUtil.carbonDioxideAR;
+			return ResourceUtil.co2ID;
 		else if (gas == 1)
-			ar = ResourceUtil.argonAR;
+			return ResourceUtil.argonID;
 		else if (gas == 2)
-			ar = ResourceUtil.nitrogenAR;
+			return ResourceUtil.nitrogenID;
 		else if (gas == 3)
-			ar = ResourceUtil.oxygenAR;
+			return ResourceUtil.oxygenID;
 		else if (gas == 4)
-			ar = ResourceUtil.waterAR;
-
-		return ar;
+			return ResourceUtil.waterID;
+		return 0;
 	}
 	
 	/**
@@ -796,7 +794,7 @@ public class CompositionOfAir implements Serializable {
 		
 		double d_mass = molecularMass * d_moles;
 		
-		AmountResource ar = getGasAR(gas);
+		int ar = getGasAR(gas);
 
 		//System.out.println(" # moles of [" + gas + "] to pump or recapture : " + d_moles);
 		//System.out.println(" mass of [" + gas + "] to pump or recapture : " + d_mass);

@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 4236) - 2017-11-22
+## v3.1.0-Preview 9 (build 4237) - 2017-11-22
 
 ### KNOWN LIMITATIONS :
 
@@ -57,8 +57,6 @@ https://github.com/mars-sim/mars-sim
 17. Add new background music tracks.
 
 18. Rework input/outpost of various resource processes.
-
-19. Cut down the CPU utilization by 2x.
 
 
 ### UI IMPROVEMENT :

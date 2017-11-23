@@ -619,4 +619,22 @@ extends TabPanel {
 			return result;
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	    settlement = null;
+		manufactureListPane = null;
+		manufactureScrollPane = null;
+		processCache = null;
+		salvageCache = null;
+		buildingComboBox = null;
+		buildingComboBoxCache = null;
+		processSelection = null;
+		processSelectionCache = null;
+		salvageSelectionCache = null;
+		newProcessButton = null;
+		overrideCheckbox = null;
+	}
 }

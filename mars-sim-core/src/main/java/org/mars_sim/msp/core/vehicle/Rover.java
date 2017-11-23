@@ -447,7 +447,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 
     	// Check food capacity as range limit.
     	double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-    	double foodCapacity = getInventory().getAmountResourceCapacity(ResourceUtil.foodAR, false);
+    	double foodCapacity = getInventory().getARCapacity(ResourceUtil.foodID, false);
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
     	double foodRange = distancePerSol * foodSols / Vehicle.getLifeSupportRangeErrorMargin();
     	
@@ -455,14 +455,14 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 
     	// Check water capacity as range limit.
     	double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-    	double waterCapacity = getInventory().getAmountResourceCapacity(ResourceUtil.waterAR, false);
+    	double waterCapacity = getInventory().getARCapacity(ResourceUtil.waterID, false);
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
     	double waterRange = distancePerSol * waterSols / Vehicle.getLifeSupportRangeErrorMargin();
     	if (waterRange < range) range = waterRange;
 
     	// Check oxygen capacity as range limit.
     	double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-    	double oxygenCapacity = getInventory().getAmountResourceCapacity(ResourceUtil.oxygenAR, false);
+    	double oxygenCapacity = getInventory().getARCapacity(ResourceUtil.oxygenID, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
     	double oxygenRange = distancePerSol * oxygenSols / Vehicle.getLifeSupportRangeErrorMargin();
     	if (oxygenRange < range) range = oxygenRange;

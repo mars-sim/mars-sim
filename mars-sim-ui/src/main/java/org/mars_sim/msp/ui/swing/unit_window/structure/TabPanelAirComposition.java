@@ -55,13 +55,19 @@ extends TabPanel {
 	// Data cache
 	private int numBuildingsCache;
 	
-	private double o2Cache, cO2Cache, n2Cache, h2OCache, arCache, averageTemperatureCache;
+	private double o2Cache;
+	private double cO2Cache;
+	private double n2Cache;
+	private double h2OCache;
+	private double arCache;
+	private double averageTemperatureCache;
 
 	private String totalPressureCache;
 	
 	private List<Building> buildingsCache;
 
-	private JLabel o2Label, cO2Label, n2Label, h2OLabel, arLabel, totalPressureLabel, averageTemperatureLabel;
+	private JLabel o2Label;
+	private JLabel cO2Label, n2Label, h2OLabel, arLabel, totalPressureLabel, averageTemperatureLabel;
 
 	private JTable table ;
 
@@ -74,13 +80,13 @@ extends TabPanel {
 	
 	private TableModel tableModel;
 
-	private DecimalFormat fmt3 = new DecimalFormat("0.000");//Msg.getString("decimalFormat3")); //$NON-NLS-1$
-	private DecimalFormat fmt2 = new DecimalFormat("0.00");//Msg.getString("decimalFormat2")); //$NON-NLS-1$
-	private DecimalFormat fmt1 = new DecimalFormat("0.0");//Msg.getString("decimalFormat1")); //$NON-NLS-1$
-
 	private Settlement settlement;
 	private BuildingManager manager;
 	private CompositionOfAir air;
+
+	private static DecimalFormat fmt3 = new DecimalFormat("0.000");//Msg.getString("decimalFormat3")); //$NON-NLS-1$
+	private static DecimalFormat fmt2 = new DecimalFormat("0.00");//Msg.getString("decimalFormat2")); //$NON-NLS-1$
+	private static DecimalFormat fmt1 = new DecimalFormat("0.0");//Msg.getString("decimalFormat1")); //$NON-NLS-1$
 
 
 	/**
@@ -723,5 +729,36 @@ extends TabPanel {
 
 			fireTableDataChanged();
 		}
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		buildingsCache = null;
+		o2Label = null;
+		cO2Label = null;
+		n2Label = null;
+		h2OLabel = null;
+		arLabel = null;
+		totalPressureLabel = null;
+		averageTemperatureLabel = null;
+		table = null;
+		percent_btn = null;
+		mass_btn = null;	
+		kPa_btn = null;
+		atm_btn = null;
+		psi_btn = null;
+		mb_btn = null;		
+		scrollPane = null;		
+		bG = null;	
+		tableModel = null;
+		settlement = null;
+		manager = null;
+		air = null;
+		fmt3 = null;
+		fmt2 = null;
+		fmt1 = null;
+
 	}
 }

@@ -97,4 +97,14 @@ extends TabPanel {
 		if (settlement.getConstructionOverride() != overrideCheckbox.isSelected()) 
 			overrideCheckbox.setSelected(settlement.getConstructionOverride());
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		settlement = null;
+		sitesPanel = null;
+		buildingsPanel = null;
+		overrideCheckbox = null;
+	}
 }

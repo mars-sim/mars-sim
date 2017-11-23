@@ -197,4 +197,12 @@ extends TabPanel {
 			fireTableDataChanged();
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		goodsTable = null;
+		goodsTableModel = null;
+	}
 }

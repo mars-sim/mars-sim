@@ -434,8 +434,8 @@ implements Serializable {
 
             // Check if EVA suit is at 15% of its water capacity.
             //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
-            double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterAR, false);
-            double water = suitInv.getAmountResourceStored(ResourceUtil.waterAR, false);
+            double waterCap = suitInv.getARCapacity(ResourceUtil.waterID, false);
+            double water = suitInv.getARStored(ResourceUtil.waterID, false);
             if (water <= (waterCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
                 return false;

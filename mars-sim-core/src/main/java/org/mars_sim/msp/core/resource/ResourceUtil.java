@@ -85,10 +85,17 @@ public class ResourceUtil implements Serializable {
 	// The drawback is that this won't work if one loads from a saved sim that has an outdated list of Amount Resources
 	private static AmountResourceConfig amountResourceConfig;
 
-	public static int oxygenID;
 	public static int waterID;
 	public static int foodID;
+	
+	public static int oxygenID;
 	public static int co2ID;
+	public static int argonID;
+	public static int nitrogenID;
+	public static int hydrogenID;
+	public static int methaneID;
+	public static int coID;
+	
 	public static int iceID;
 	public static int regolithID;
 	
@@ -244,12 +251,21 @@ public class ResourceUtil implements Serializable {
 
     public void mapARs() {
 
-    	oxygenID = findAmountResource(LifeSupportType.OXYGEN).getID();		// 3
-    	waterID = findAmountResource(LifeSupportType.WATER).getID();// 2
-    	foodID = findAmountResource(LifeSupportType.FOOD).getID();// 1
-    	co2ID = findAmountResource(LifeSupportType.CO2).getID();	// 4
-        iceID = findAmountResource(ICE).getID();				// 13
-       	regolithID = findAmountResource(REGOLITH).getID();		// 156
+    	foodID = findAmountResource(LifeSupportType.FOOD).getID();		// 1
+    	waterID = findAmountResource(LifeSupportType.WATER).getID();	// 2
+    	
+    	oxygenID = findAmountResource(LifeSupportType.OXYGEN).getID();	// 3
+    	co2ID = findAmountResource(LifeSupportType.CO2).getID();		// 4
+    	argonID = findAmountResource(ARGON).getID();					// 5
+		coID = findAmountResource(CO).getID();							// 6
+		
+		hydrogenID = findAmountResource(HYDROGEN).getID();				// 8
+    	methaneID = findAmountResource(METHANE).getID();				// 9
+		nitrogenID = findAmountResource(NITROGEN).getID();				// 10
+		
+    	iceID = findAmountResource(ICE).getID();				// 13
+       	
+        regolithID = findAmountResource(REGOLITH).getID();		// 156
           	
     	
     	foodAR = findAmountResource(LifeSupportType.FOOD);			// 1

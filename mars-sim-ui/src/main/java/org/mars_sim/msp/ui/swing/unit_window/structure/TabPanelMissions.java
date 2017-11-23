@@ -226,4 +226,18 @@ extends TabPanel {
 	private void setMissionCreationOverride(boolean override) {
 		settlement.setMissionCreationOverride(override);
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		settlement = null;
+		missionsCache = null;
+		missionListModel = null;
+		missionList = null;
+		missionButton = null;
+		monitorButton = null;
+		overrideCheckbox = null;
+		missionManager = null;
+	}
 }

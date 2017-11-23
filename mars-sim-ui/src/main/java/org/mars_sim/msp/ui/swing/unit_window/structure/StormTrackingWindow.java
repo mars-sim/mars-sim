@@ -122,4 +122,11 @@ implements InternalFrameListener, ActionListener {
 	}
 
 
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		infoPane = null;
+		tabPanelWeather = null;
+	}
 }

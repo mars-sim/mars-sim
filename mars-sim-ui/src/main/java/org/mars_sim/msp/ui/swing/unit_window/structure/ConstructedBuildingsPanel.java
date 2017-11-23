@@ -144,4 +144,12 @@ extends JPanel {
 			fireTableDataChanged();
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		constructedTable = null;
+		constructedTableModel = null;
+	}
 }

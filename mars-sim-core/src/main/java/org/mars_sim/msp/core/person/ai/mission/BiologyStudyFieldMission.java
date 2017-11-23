@@ -294,13 +294,13 @@ implements Serializable {
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(ResourceUtil.waterAR, false);
+		double waterCapacity = vInv.getARCapacity(ResourceUtil.waterID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(ResourceUtil.oxygenAR, false);
+		double oxygenCapacity = vInv.getARCapacity(ResourceUtil.oxygenID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
 

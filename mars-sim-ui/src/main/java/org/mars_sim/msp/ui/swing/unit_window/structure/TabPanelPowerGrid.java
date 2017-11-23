@@ -74,7 +74,12 @@ extends TabPanel {
 
 	private JLabel electricEfficiencyLabel;
 
-	private JTextField powerGeneratedTF, powerUsedTF, energyStorageCapacityTF, energyStoredTF, solarCellEfficiencyTF, degradRateTF ;
+	private JTextField powerGeneratedTF;
+	private JTextField powerUsedTF;
+	private JTextField energyStorageCapacityTF;
+	private JTextField energyStoredTF;
+	private JTextField solarCellEfficiencyTF;
+	private JTextField degradRateTF;
 
 	private JScrollPane powerScrollPane;
 	
@@ -92,10 +97,6 @@ extends TabPanel {
 	/** The total solar cell efficiency cache. */
 	private double solarCellEfficiencyCache;
 
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
-	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
-	private DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
-
 	/** Table model for power info. */
 	private PowerTableModel powerTableModel;
 	/** The settlement's power grid. */
@@ -108,6 +109,10 @@ extends TabPanel {
 	private List<PowerSource> powerSources;
 	
 	private List<Building> buildings;
+
+	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
+	private static DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
+	private static DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 
 	/**
 	 * Constructor.

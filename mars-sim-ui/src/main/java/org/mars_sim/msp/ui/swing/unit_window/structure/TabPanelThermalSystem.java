@@ -53,7 +53,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelThermalSystem
 extends TabPanel {
 
-
 	// default logger.
 	//private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 	
@@ -571,5 +570,32 @@ extends TabPanel {
 
 			fireTableDataChanged();
 		}
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		heatGenLabel = null;	
+		powerGenLabel = null;	
+		eff_solar_heat_Label = null;	
+		eff_electric_heat_Label = null;
+		heatTable = null;
+		heatScrollPane = null;	
+		checkbox = null;
+		heatGenTF = null;
+		powerGenTF = null;
+		electricEffTF = null;
+		solarEffTF = null;
+		cellDegradTF = null;
+		formatter = null;
+		formatter2 = null;
+		heatTableModel = null;
+		thermalSystem = null;
+		settlement = null;
+		config = null;		
+		manager = null;
+		heatSources = null;
+		buildings = null;
 	}
 }

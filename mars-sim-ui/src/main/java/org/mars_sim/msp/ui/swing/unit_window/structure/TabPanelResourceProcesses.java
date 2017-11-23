@@ -297,4 +297,17 @@ extends TabPanel {
 			return process;
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		buildings = null;
+		processesScrollPane = null;
+		processListPanel = null;
+		overrideCheckbox = null;
+		settlement = null;
+		mgr = null;
+	}
+	
 }

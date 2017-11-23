@@ -214,4 +214,13 @@ public class ManufacturePanel extends JPanel {
     	}
 		else return Integer.toString((int) item.getAmount());
     }
+    
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	    process = null;
+		workBarModel = null;
+		timeBarModel = null;
+	}
 }

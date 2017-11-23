@@ -46,7 +46,6 @@ public class TabPanelPopulation
 extends TabPanel
 implements MouseListener, ActionListener {
 
-
 	private JLabel populationNumLabel;
 	private JLabel populationCapLabel;
 	private PopulationListModel populationListModel;
@@ -241,4 +240,16 @@ implements MouseListener, ActionListener {
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		populationNumLabel = null;
+		populationCapLabel = null;
+		populationListModel = null;
+		populationList = null;
+		populationScrollPanel = null;
+	}
+	
 }

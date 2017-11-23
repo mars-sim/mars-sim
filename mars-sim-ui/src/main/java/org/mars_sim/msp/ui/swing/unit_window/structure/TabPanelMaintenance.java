@@ -317,11 +317,12 @@ extends TabPanel {
 			progressBarModel.setValue(percentDone);
 
 			// Prepare parts label.
-			partsLabel = new JLabel(getPartsString(manager.getMaintenanceParts(), false), JLabel.CENTER);
+			Map<Part, Integer> parts = manager.getMaintenanceParts();
+			partsLabel = new JLabel(getPartsString(parts, false), JLabel.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
-
+	        TooltipManager.setTooltip (partsLabel, getPartsString(parts, false), TooltipWay.down);
 		}
 
 		/**
@@ -360,7 +361,7 @@ extends TabPanel {
 
 	        // Update tool tip.
 			//partsLabel.setToolTipText("<html>" + getPartsString(parts, true) + "</html>");
-	        TooltipManager.setTooltip (partsLabel, getPartsString(parts, false), TooltipWay.down);
+	        //TooltipManager.setTooltip (partsLabel, getPartsString(parts, false), TooltipWay.down);
 
 		}
 
@@ -504,4 +505,18 @@ extends TabPanel {
 			return result.toString();
 		}
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		settlement = null;
+		buildingsList = null;
+		maintenanceScrollPane = null;
+		maintenanceListPanel = null;
+		malfunctionsList = null;
+		malfunctionsScrollPane = null;
+		malfunctionsListPanel = null;
+	}
+	
 }
