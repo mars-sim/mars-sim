@@ -1,5 +1,5 @@
 /* 
-    Document   : main.css
+    Document   : autofill.css
     Created on : Sep 18, 2011, 10:01:08 AM
     Author     : WEBNEP
     Description:
@@ -52,10 +52,10 @@ root {
 
 .button-clear {
 	-fx-background-color: white;
-    -fx-background-image: url("../icons/chatbox/clear.png");
+    -fx-background-image: url("../../../icons/chatbox/clear.png");
 }
 .button-clear:hover {
 	-fx-background-color: white;
-    -fx-background-image: url("../icons/chatbox/clear-over.png");
+    -fx-background-image: url("../../../icons/chatbox/clear-over.png");
 }
 

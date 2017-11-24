@@ -75,6 +75,7 @@ public class MarsProjectFXGL extends GameApplication {
 	protected void initSettings(GameSettings settings) {
 		settings.setWidth(1024);
 		settings.setHeight(768);
+		//settings.setStageStyle(StageStyle.UNDECORATED);
 		settings.setTitle("Mars Simulation Project");
 		settings.setVersion("3.1.0");
 		settings.setProfilingEnabled(false); // turn off fps
@@ -82,7 +83,6 @@ public class MarsProjectFXGL extends GameApplication {
 		settings.setIntroEnabled(false); // turn off intro
 		settings.setMenuEnabled(false); // turn off menus
 		settings.setCloseConfirmation(true);
-		settings.setStageStyle(StageStyle.UNDECORATED);
 	}
 
 	@Override
@@ -210,9 +210,13 @@ public class MarsProjectFXGL extends GameApplication {
 	
 	   	if (!headless) {
 		   //logger.info("start() : in GUI mode, loading the Main Menu");
-
+	   		
 	   		mainMenu = new MainMenu();//this);
 
+	        //Input input = FXGL.getInput();
+	        //input.mockKeyPress(KeyCode.ESCAPE);
+	        //input.mockKeyRelease(KeyCode.ESCAPE);
+	        
 	   		if (newSim) {
 		   		// CASE D1 and D2//
 	   	    	logger.info("Starting a new sim in GUI mode in " + Simulation.OS);

@@ -47,8 +47,8 @@ import javafx.scene.control.*;
 @SuppressWarnings("restriction")
 public class ChatBox extends BorderPane {
 
-	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
-	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
+	public final static String STARFIELD = "/images/starfield.png";
+	public final static String AUTOFILL = "/fxui/css/autofill/autofill.css";
 	
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
@@ -79,9 +79,11 @@ public class ChatBox extends BorderPane {
 
     protected int historyPointer = 0;
 
+    private int themeCache = -1;
+    
     protected boolean hasPerson = false, reset = false;
 
-    protected String image = MainScene.class.getResource("/images/starfield.png").toExternalForm();
+    protected String image = MainScene.class.getResource(STARFIELD).toExternalForm();
 
     protected Label titleLabel;
 
@@ -109,14 +111,6 @@ public class ChatBox extends BorderPane {
      */
     public ChatBox(MainScene mainScene) {
     	this.mainScene = mainScene;
-    	//this.setHeight(height);
-    	//super.setHeight(height);
-
-    	//this.setStyle("-fx-background-color: white;"
-    	//        		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
-    	//				+ "-fx-text-fill: white;"
-        //  			+ "-fx-background-radius: 5px;"
-    	//        		);
 
 		this.setStyle("-fx-background-color: grey;"//#7ebcea;" //#426ab7;"//
 				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
@@ -148,7 +142,7 @@ public class ChatBox extends BorderPane {
   		// 2016-01-01 Replaced textField with autoFillTextBox
         autoFillTextBox = new AutoFillTextBox<String>(autoCompleteData);
         autoFillTextBox.setPadding(new Insets(2, 0, 0, 0));
-        autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
+        autoFillTextBox.getStylesheets().addAll(AUTOFILL);
         autoFillTextBox.setStyle(
         //		"-fx-background-color: white;"
         //		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
@@ -178,9 +172,6 @@ public class ChatBox extends BorderPane {
           	String text = autoFillTextBox.getTextbox().getText();
             if (text != "" && text != null && !text.trim().isEmpty()) {
             	hitEnter();
-                //if (reset)
-             	//	mainScene.fireMarsNetButton();
-                //reset = false;
             }
             else {
             	 autoFillTextBox.getTextbox().clear();
@@ -194,11 +185,6 @@ public class ChatBox extends BorderPane {
 
         titleLabel = new Label("  " + Msg.getString("ChatBox.title")); //$NON-NLS-1$
 
-        //VBox vbox = new VBox();
-        //vbox.getChildren().addAll(titleLabel,textArea);
-
-        //setTop(titleLabel);
-        //setCenter(vbox);
         setCenter(textArea);
         setBottom(hbox);
 
@@ -225,43 +211,45 @@ public class ChatBox extends BorderPane {
     /*
      * Display the initial system greeting and update the css style
      */
-    // 2016-06-17 Added update()
     public void update() {
 
     	int theme = MainScene.getTheme();
-        if (theme == 7) {
-        	broadcastButton.getStylesheets().clear();
-        	//broadcastButton.setStyle("-fx-text-fill: #E5AB00;");
-    		broadcastButton.getStyleClass().clear();
-    		broadcastButton.getStyleClass().add("button-broadcast");
-    		broadcastButton.getStylesheets().add(getClass().getResource(ORANGE_CSS).toExternalForm());
-
-        	titleLabel.getStylesheets().clear();
-            titleLabel.setStyle("-fx-text-fill: #E5AB00;"
-            		+ " -fx-font: bold 12pt 'Corbel';"
-            		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
-            		);
-        	textArea.getStylesheets().clear();
-            textArea.getStylesheets().add(getClass().getResource(ORANGE_CSS).toExternalForm());
-        }
-        else {
-        	broadcastButton.getStylesheets().clear();
-        	//broadcastButton.setStyle("-fx-text-fill: #3291D2;");
-    		broadcastButton.getStyleClass().clear();
-    		broadcastButton.getStyleClass().add("button-broadcast");
-    		broadcastButton.getStylesheets().add(getClass().getResource(BLUE_CSS).toExternalForm());
-        	titleLabel.getStylesheets().clear();
-        	titleLabel.setStyle("-fx-text-fill: #3291D2;"
-        			+ " -fx-font: bold 12pt 'Corbel';"
-        			//+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
-        			);
-        	textArea.getStylesheets().clear();
-            textArea.getStylesheets().add(getClass().getResource(BLUE_CSS).toExternalForm());
-        }
-
-		textArea.setStyle("-fx-text-fill: black;");
-        //textArea.setStyle("-fx-background-color: black;");
-  		textArea.positionCaret(textArea.getText().length());
+    	if (themeCache != theme) {
+    		themeCache = theme;
+	        if (theme == 7) {
+	        	broadcastButton.getStylesheets().clear();
+	        	//broadcastButton.setStyle("-fx-text-fill: #E5AB00;");
+	    		broadcastButton.getStyleClass().clear();
+	    		broadcastButton.getStyleClass().add("button-broadcast");
+	    		broadcastButton.getStylesheets().add(getClass().getResource(MainScene.ORANGE_CSS_THEME).toExternalForm());
+	
+	        	titleLabel.getStylesheets().clear();
+	            titleLabel.setStyle("-fx-text-fill: #E5AB00;"
+	            		+ " -fx-font: bold 12pt 'Corbel';"
+	            		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
+	            		);
+	        	textArea.getStylesheets().clear();
+	            textArea.getStylesheets().add(getClass().getResource(MainScene.ORANGE_CSS_THEME).toExternalForm());
+	        }
+	        else if (theme == 0 || theme == 6) {
+	        	broadcastButton.getStylesheets().clear();
+	        	//broadcastButton.setStyle("-fx-text-fill: #3291D2;");
+	    		broadcastButton.getStyleClass().clear();
+	    		broadcastButton.getStyleClass().add("button-broadcast");
+	    		broadcastButton.getStylesheets().add(getClass().getResource(MainScene.BLUE_CSS_THEME).toExternalForm());
+	        	titleLabel.getStylesheets().clear();
+	        	titleLabel.setStyle("-fx-text-fill: #3291D2;"
+	        			+ " -fx-font: bold 12pt 'Corbel';"
+	        			//+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
+	        			);
+	        	textArea.getStylesheets().clear();
+	            textArea.getStylesheets().add(getClass().getResource(MainScene.BLUE_CSS_THEME).toExternalForm());
+	        }
+	
+			textArea.setStyle("-fx-text-fill: black;");
+	        //textArea.setStyle("-fx-background-color: black;");
+	  		textArea.positionCaret(textArea.getText().length());
+    	}
     }
 
     public void closeChatBox(boolean disconnected) {

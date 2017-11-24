@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.javafx;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.alee.laf.WebLookAndFeel;
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.scene.GameScene;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -106,7 +108,6 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -169,7 +170,7 @@ public class MainScene {
 	public final static String ORANGE_CSS_JFX = "/fxui/css/tab/jfx_orange.css";
 	public final static String BLUE_CSS_JFX = "/fxui/css/tab/jfx_blue.css";
 
-	public final static String ORANGE_CSS_THEME = "/fxui/css/theme/mrodskin.css";
+	public final static String ORANGE_CSS_THEME = "/fxui/css/theme/nimrodskin.css";
 	public final static String BLUE_CSS_THEME = "/fxui/css/theme/snowBlue.css";
 
 	public static String OS = Simulation.OS.toLowerCase();
@@ -263,7 +264,7 @@ public class MainScene {
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
-	//private boolean isFXGL = false;
+	public static boolean isFXGL = false;
 	
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
@@ -372,6 +373,7 @@ public class MainScene {
 
 		if (gameScene != null) {
 			stage = ((Stage) gameScene.getRoot().getScene().getWindow());
+			isFXGL = true;
 		    //stage.initStyle(StageStyle.DECORATED);
 		}
 		else
@@ -385,9 +387,15 @@ public class MainScene {
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
-			// if (!isShowingDialog)
-			dialogOnExit();
-			e.consume();
+			if (!isFXGL) {
+		        Input input = FXGL.getInput();
+				input.mockKeyPress(KeyCode.ESCAPE);
+		        input.mockKeyRelease(KeyCode.ESCAPE);
+			}
+			else {
+				dialogOnExit();
+				e.consume();
+			}
 		});
 
 		stage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
@@ -400,9 +408,10 @@ public class MainScene {
 		});
 		
 		// Detect if a user hits ESC
-		esc = new ESCHandler();
-		setEscapeEventHandler(true, stage);
-
+		if (!isFXGL) {
+			esc = new ESCHandler();
+			setEscapeEventHandler(true, stage);
+		}
 	}
 
 	/*
@@ -703,9 +712,15 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					// if (!isShowingDialog)
-					dialogOnExit();
-					e.consume();
+					if (!isFXGL) {
+				        Input input = FXGL.getInput();
+						input.mockKeyPress(KeyCode.ESCAPE);
+				        input.mockKeyRelease(KeyCode.ESCAPE);
+					}
+					else {
+						dialogOnExit();
+						e.consume();
+					}
 				});
 		Nodes.addInputMap(rootStackPane, ctrlX);
 
@@ -3536,7 +3551,7 @@ public class MainScene {
 			loadingStage = new Stage();
 			//loadingStage.centerOnScreen();
 			// loadingCircleStage.setOpacity(1);
-			setEscapeEventHandler(true, loadingStage);
+			if (!isFXGL) setEscapeEventHandler(true, loadingStage);
 			//loadingStage.initOwner(stage);
 			loadingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
 																// specified.

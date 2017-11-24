@@ -27,6 +27,9 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.input.Input;
+
 import de.codecentric.centerdevice.MenuToolkit;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -330,11 +333,11 @@ public class MainSceneMenu extends MenuBar  {
         exitItem.setOnAction(new EventHandler<ActionEvent>() {
         	   @Override
         	   public void handle(ActionEvent e) {
-        		   //mainScene.exitSimulation();
-        		   //mainScene.getStage().close();
-        		   //if (!mainScene.isShowingDialog)
-        			   mainScene.dialogOnExit();
-        		   e.consume();
+        		   Input input = FXGL.getInput();
+        		   input.mockKeyPress(KeyCode.ESCAPE);
+        		   input.mockKeyRelease(KeyCode.ESCAPE);
+        		   //mainScene.dialogOnExit();
+        		   //e.consume();
         	   }
         	});
 

@@ -10,6 +10,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.scene.paint.Color;
+import javafx.stage.StageStyle;
 
 public class Main extends Application {
 
@@ -20,8 +22,15 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Borders");
+        //primaryStage.initStyle(StageStyle.UTILITY); // .UNDECORATED);//
+        
         Group root = new Group();
-        Scene scene = new Scene(root, 600, 330, Color.WHITE);
+        
+        Scene scene = new Scene(root, 600, 330, Color.WHITE); //TRANSPARENT);//
+        
+        scene.setFill(Color.TRANSPARENT);
+        scene.getStylesheets().add(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
+
         
         GridPane gridpane = new GridPane();
         gridpane.setPadding(new Insets(5));

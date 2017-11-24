@@ -1,0 +1,20 @@
+.root {
+  -fx-border-insets: 23;
+  -fx-background-color: transparent;   
+  -fx-background-insets: 23;
+  -fx-background-radius: 6;
+  -fx-border-radius: 6;
+  -fx-border-color: gray;
+  -fx-border-style: solid;
+  -fx-border-width: 1;
+/*  -fx-opacity: 0.0; */
+  -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
+}
+
+/*
+.root {
+	-fx-background-color: transparent;
+    -fx-background-radius: 10; 
+    -fx-opacity: 0.5;   
+}
+*/

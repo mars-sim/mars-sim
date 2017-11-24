@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 //import javafx.scene.image.Image;
 //import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -30,6 +31,9 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.StarfieldFX;
+
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.input.Input;
 
 @SuppressWarnings("restriction")
 public class MenuApp {
@@ -72,11 +76,15 @@ public class MenuApp {
                 new Pair<String, Runnable>("Benchmark", () -> {}),
                 new Pair<String, Runnable>("Settings", () -> mainMenu.runSettings()),
                 new Pair<String, Runnable>("Credits", () -> {}),
-                new Pair<String, Runnable>("Exit", () -> //{
+                new Pair<String, Runnable>("Exit", () -> {
+    		        Input input = FXGL.getInput();
+    				input.mockKeyPress(KeyCode.ESCAPE);
+    		        input.mockKeyRelease(KeyCode.ESCAPE);
                 	//if (!mainMenu.isShowingDialog()) 
-                		mainMenu.dialogOnExit(mainMenu.getPane())
-                	//}
-                )   //Platform::exit)
+                	//	mainMenu.dialogOnExit(mainMenu.getPane())
+    		        //Platform::exit)
+                	}
+                )   
         );
     }    
     

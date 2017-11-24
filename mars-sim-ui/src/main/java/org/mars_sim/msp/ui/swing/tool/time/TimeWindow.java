@@ -653,7 +653,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Note : when a wizard or a dialog box is opened/close,
 		// need to call below to remove/add the ability to use ESC to
 		// unpause/pause
-		mainScene.setEscapeEventHandler(value, mainScene.getStage());
+		if (!MainScene.isFXGL) 
+			mainScene.setEscapeEventHandler(value, mainScene.getStage());
 	}
 
 	/**

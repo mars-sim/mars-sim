@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.scene.input.KeyCode;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.layout.AnchorPane;
@@ -59,7 +60,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import jfxtras.scene.control.window.Window;
+import javafx.stage.Window;
 import javafx.geometry.Insets;
 //import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -75,6 +76,8 @@ import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.scene.GameScene;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -216,19 +219,19 @@ public class MainMenu {
        
     	stackPane = new StackPane(anchorPane);
     	stackPane.setPrefSize(WIDTH, HEIGHT);
-    	stackPane.setLayoutX(10);
-    	stackPane.setLayoutY(10);
+    	//stackPane.setLayoutX(10);
+    	//stackPane.setLayoutY(10);
        
-    	double sceneWidth = stackPane.getPrefWidth() + 30;
-    	double sceneHeight = stackPane.getPrefHeight() + 30;
+    	double sceneWidth = stackPane.getPrefWidth();// + 30;
+    	double sceneHeight = stackPane.getPrefHeight();// + 30;
 
     	// Create application area
     	@SuppressWarnings("restriction")
     	Rectangle applicationArea = RectangleBuilder.create()
-                .width(sceneWidth - 10)
-                .height(sceneHeight - 10)
-                .arcWidth(20)
-                .arcHeight(20)
+                .width(sceneWidth)// - 10)
+                .height(sceneHeight)// - 10)
+                //.arcWidth(20)
+                //.arcHeight(20)
                 .fill(Color.rgb(0, 0, 0, 1))
                 .x(0)
                 .y(0)
@@ -247,19 +250,23 @@ public class MainMenu {
                .build();
        
     	Text closeXmark = new Text(9, 16.5, "X");
-    	closeXmark.setStroke( Color.WHITE);
+    	closeXmark.setStroke(Color.WHITE);
     	closeXmark.setFill(Color.WHITE);
     	closeXmark.setStrokeWidth(2);
     	
     	// Create close button
     	final Group closeApp = new Group();
         //closeApp.translateXProperty().bind(gameScene.getWidth()-40);//.widthProperty().subtract(40));
-    	closeApp.setTranslateX(WIDTH-40);
+    	closeApp.setTranslateX(WIDTH-30);//40);
     	closeApp.setTranslateY(5);
     	closeApp.getChildren().addAll(closeRect, closeXmark);
     	closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
 	       	@Override
 	       	public void handle(MouseEvent event) {
+		        Input input = FXGL.getInput();
+				input.mockKeyPress(KeyCode.ESCAPE);
+		        input.mockKeyRelease(KeyCode.ESCAPE);
+/*		        
 	       		dialogOnExit(rootPane);
 	
 	       		if (!isExit) {
@@ -269,6 +276,7 @@ public class MainMenu {
 	       			Platform.exit();
 	           		System.exit(0);
 	       		}
+*/	       		
 	       	}
        });
 
@@ -281,6 +289,8 @@ public class MainMenu {
        root.getChildren().add(closeApp);
        root.getChildren().add(rootPane);
           
+       //gameScene.getRoot().getStylesheets().setAll(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
+
        gameScene.addUINode(root);   
     
 /*       
@@ -332,18 +342,19 @@ public class MainMenu {
         	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
            }
        });
+ 
+       
 /*
-       Scene scene = (Scene) gameScene.getRoot().getScene();
+       //Scene scene = (Scene) gameScene.getRoot().getScene();
+       Scene scene = gameScene.getRoot().getScene();
        if (scene == null)
     	   System.out.println("scene is " + scene);
-       javafx.stage.Window window = scene.getWindow();
+       Window window = scene.getWindow();
        Stage stage = (Stage) window;
        stage.hide();
        stage.initStyle(StageStyle.UNDECORATED);
-       //stage.show();
-       
        stage.show();
-*/       
+*/ 
    }
 	
     /*
@@ -406,6 +417,10 @@ public class MainMenu {
     	closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
        	@Override
        	public void handle(MouseEvent event) {
+	        Input input = FXGL.getInput();
+			input.mockKeyPress(KeyCode.ESCAPE);
+	        input.mockKeyRelease(KeyCode.ESCAPE);
+/*	        
        		dialogOnExit(rootPane);
 
        		if (!isExit) {
@@ -415,7 +430,8 @@ public class MainMenu {
        			Platform.exit();
            		System.exit(0);
        		}
-       	}
+*/       		
+       	}      	
        });
        
 
@@ -431,7 +447,9 @@ public class MainMenu {
        root.getChildren().add(rootPane);
        
        Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
+       scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
 
+       
        closeApp.translateXProperty().bind(scene.widthProperty().subtract(40));
  
        menuApp.getTitleStackPane().setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -514,6 +532,10 @@ public class MainMenu {
         });
      
        stage.setOnCloseRequest(e -> {
+	        Input input = FXGL.getInput();
+			input.mockKeyPress(KeyCode.ESCAPE);
+	        input.mockKeyRelease(KeyCode.ESCAPE);
+/*	        
     		dialogOnExit(rootPane);
 
     		if (!isExit) {
@@ -523,6 +545,7 @@ public class MainMenu {
     			Platform.exit();
         		System.exit(0);
     		}
+*/    		
         });
 
 
@@ -944,7 +967,7 @@ public class MainMenu {
 	public void dialogOnExit(StackPane pane) {
 		
 		if (exitDialog == null && (settingDialog == null || (settingDialog != null && !settingDialog.isVisible()))) {
-
+     
 			Label l = new Label("Do you really want to exit ?");//mainScene.createBlendLabel(Msg.getString("MainScene.exit.header"));
 			l.setPadding(new Insets(10, 10, 10, 10));
 			l.setFont(Font.font(null, FontWeight.BOLD, 14));

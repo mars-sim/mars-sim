@@ -53,14 +53,16 @@ extends Mission {
         NavPoint startingNavPoint = null;
     	Coordinates c = getCurrentMissionLocation();
     	
-        if (startingMember.getSettlement() != null && c != null) {
-            startingNavPoint = new NavPoint(c,
-                    startingMember.getSettlement(), startingMember
-                            .getSettlement().getName());
-        }
-        else {
-        	startingNavPoint = new NavPoint(c, "starting location");
-        }
+    	if (c != null) {
+	        if (startingMember.getSettlement() != null) {
+	            startingNavPoint = new NavPoint(c,
+	                    startingMember.getSettlement(), startingMember
+	                            .getSettlement().getName());
+	        }
+	        else {
+	        	startingNavPoint = new NavPoint(c, "starting location");
+	        }
+    	}
         
         if (startingNavPoint != null) {
 	        addNavpoint(startingNavPoint);
