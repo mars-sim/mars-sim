@@ -1343,18 +1343,18 @@ implements Serializable {
 	}
 
 	/**
-	 * Adds O2 to this farm
-	 * @param value the amount of O2 in kg
+	 * Adds O2 generated to this farm
+	 * @param value the amount of O2 generated in kg
 	 */
-	public synchronized void addO2(double value) {
+	public synchronized void addO2Generated(double value) {
 		o2 += value;
 	}
 
 	/**
-	 * Adds CO2 to this farm
-	 * @param value the amount of CO2 in kg
+	 * Adds CO2 consumed to this farm
+	 * @param value the amount of CO2 consumed in kg
 	 */
-	public synchronized void addCO2(double value) {
+	public synchronized void addCO2Consumed(double value) {
 		co2 += value;
 	}
 	
@@ -1471,7 +1471,7 @@ implements Serializable {
 			if (size == 0)
 				return 0;
 			else
-				return Math.round(sum/size*10.0)/10.0;
+				return Math.round(sum/size*1000.0)/1000.0;
 		}
 		return 0;
 	}
@@ -1493,7 +1493,7 @@ implements Serializable {
 		if (size == 0)
 			return 0;
 		else
-			return Math.round(sum/size*10.0)/10.0;
+			return Math.round(sum/size*1000.0)/1000.0;
 	}
 	
 	/** 
@@ -1511,7 +1511,7 @@ implements Serializable {
 			if (size == 0)
 				return 0;
 			else
-				return Math.round(sum/size*10.0)/10.0;
+				return sum/size;//Math.round(sum/size*1000.0)/1000.0;
 		}
 		return 0;
 	}
@@ -1520,7 +1520,7 @@ implements Serializable {
 	 * Computes the average O2 generated on all crop 
 	 * @return average O2 generated in kg/m^2/sol
 	 */
-	public double computeO2Generated() {
+	public double computeTotalO2Generated() {
 		double sum = 0;
 		int size = 0; 
 		for (CropType ct : cropTypeList) {
@@ -1533,7 +1533,7 @@ implements Serializable {
 		if (size == 0)
 			return 0;
 		else
-			return Math.round(sum/size*10.0)/10.0;
+			return Math.round(sum/size*1000.0)/1000.0;
 	}
 	
 	/** 
@@ -1551,7 +1551,7 @@ implements Serializable {
 			if (size == 0)
 				return 0;
 			else
-				return Math.round(sum/size*10.0)/10.0;
+				return sum/size;//Math.round(sum/size*1000.0)/1000.0;
 		}
 		return 0;
 	}
@@ -1560,7 +1560,7 @@ implements Serializable {
 	 * Computes the average O2 generated on all crop 
 	 * @return average O2 generated in kg/m^2/sol
 	 */
-	public double computeCO2Consumed() {
+	public double computeTotalCO2Consumed() {
 		double sum = 0;
 		int size = 0; 
 		for (CropType ct : cropTypeList) {
@@ -1573,7 +1573,7 @@ implements Serializable {
 		if (size == 0)
 			return 0;
 		else
-			return Math.round(sum/size*10.0)/10.0;
+			return Math.round(sum/size*1000.0)/1000.0;
 	}
 	
     @Override

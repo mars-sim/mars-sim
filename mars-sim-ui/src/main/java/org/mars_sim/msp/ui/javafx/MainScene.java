@@ -11,8 +11,12 @@ import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.alee.laf.WebLookAndFeel;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.input.ActionType;
 import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.InputMapping;
+import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.scene.GameScene;
+import com.almasb.fxgl.ui.InGameWindow;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -152,7 +156,6 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
-import static javafx.scene.input.KeyCode.*;
 import static org.fxmisc.wellbehaved.event.EventPattern.*;
 import static org.fxmisc.wellbehaved.event.InputMap.*;
 
@@ -387,7 +390,7 @@ public class MainScene {
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
-			if (!isFXGL) {
+			if (isFXGL) {
 		        Input input = FXGL.getInput();
 				input.mockKeyPress(KeyCode.ESCAPE);
 		        input.mockKeyRelease(KeyCode.ESCAPE);
@@ -564,7 +567,7 @@ public class MainScene {
 	 */
 	// 2016-11-14 Setup key events using wellbehavedfx
 	public void setupKeyEvents() {
-		InputMap<KeyEvent> f1 = consume(keyPressed(F1), e -> {
+		InputMap<KeyEvent> f1 = consume(keyPressed(KeyCode.F1), e -> {
 			jfxTabPane.getSelectionModel().select(MainScene.HELP_TAB);
 			/*
 			 * if (desktop.isToolWindowOpen(GuideWindow.NAME)) SwingUtilities.invokeLater(()
@@ -575,7 +578,7 @@ public class MainScene {
 		});
 		Nodes.addInputMap(rootStackPane, f1);
 
-		InputMap<KeyEvent> f2 = consume(keyPressed(F2), e -> {
+		InputMap<KeyEvent> f2 = consume(keyPressed(KeyCode.F2), e -> {
 			if (desktop.isToolWindowOpen(SearchWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(SearchWindow.NAME));
 			else {
@@ -585,7 +588,7 @@ public class MainScene {
 		});
 		Nodes.addInputMap(rootStackPane, f2);
 
-		InputMap<KeyEvent> f3 = consume(keyPressed(F3), e -> {
+		InputMap<KeyEvent> f3 = consume(keyPressed(KeyCode.F3), e -> {
 			if (desktop.isToolWindowOpen(TimeWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(TimeWindow.NAME));
 			else {
@@ -595,7 +598,7 @@ public class MainScene {
 		});
 		Nodes.addInputMap(rootStackPane, f3);
 
-		InputMap<KeyEvent> f4 = consume(keyPressed(F4), e -> {
+		InputMap<KeyEvent> f4 = consume(keyPressed(KeyCode.F4), e -> {
 			if (desktop.isToolWindowOpen(MonitorWindow.NAME)) {
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(MonitorWindow.NAME));
 				// rootAnchorPane.getChildren().remove(monPane);
@@ -610,7 +613,7 @@ public class MainScene {
 		});
 		Nodes.addInputMap(rootStackPane, f4);
 
-		InputMap<KeyEvent> f5 = consume(keyPressed(F5), e -> {
+		InputMap<KeyEvent> f5 = consume(keyPressed(KeyCode.F5), e -> {
 			if (desktop.isToolWindowOpen(MissionWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(MissionWindow.NAME));
 			else {
@@ -620,7 +623,7 @@ public class MainScene {
 		});
 		Nodes.addInputMap(rootStackPane, f5);
 
-		InputMap<KeyEvent> f6 = consume(keyPressed(F6), e -> {
+		InputMap<KeyEvent> f6 = consume(keyPressed(KeyCode.F6), e -> {
 			if (desktop.isToolWindowOpen(ScienceWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(ScienceWindow.NAME));
 			else {
@@ -630,7 +633,7 @@ public class MainScene {
 		});
 		Nodes.addInputMap(rootStackPane, f6);
 
-		InputMap<KeyEvent> f7 = consume(keyPressed(F7), e -> {
+		InputMap<KeyEvent> f7 = consume(keyPressed(KeyCode.F7), e -> {
 			if (desktop.isToolWindowOpen(ResupplyWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(ResupplyWindow.NAME));
 			else {
@@ -712,7 +715,7 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					if (!isFXGL) {
+					if (isFXGL) {
 				        Input input = FXGL.getInput();
 						input.mockKeyPress(KeyCode.ESCAPE);
 				        input.mockKeyRelease(KeyCode.ESCAPE);
@@ -3482,8 +3485,26 @@ public class MainScene {
 
 		isMainSceneDoneLoading = true;
 
+		if (isFXGL) {
+			Input input = FXGL.getInput();
+			input.addInputMapping(new InputMapping("Open", KeyCode.O));	       
+		}
 	}
 
+
+    @OnUserAction(name = "Open", type = ActionType.ON_ACTION_BEGIN)
+    public void openWindow() {
+	      // 1. create in-game window
+        InGameWindow window = new InGameWindow("FXGL Window");
+
+        // 2. set properties
+        window.setPrefSize(300, 200);
+        window.setPosition(400, 300);
+        window.setBackgroundColor(Color.BLACK);
+        
+        gameScene.addUINode(window);
+    }
+    
 	public void popAQuote() {
 		quote.popAQuote(stage);
 	}

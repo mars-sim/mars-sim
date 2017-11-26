@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * QNotification.java
- * @version 3.1.0 2016-06-17
+ * @version 3.1.0 2017-11-24
  * @author Manny Kung
  */
 
@@ -27,42 +27,29 @@ package org.mars_sim.msp.ui.javafx.quotation;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
-//import jfxtras.scene.layout.HBox;
 
 
-/**
- * Created by
- * User: hansolo
- * Date: 01.07.13
- * Time: 07:10
- */
+@SuppressWarnings("restriction")
 public class QNotification {
     public static Image QUOTE_ICON;
 
@@ -127,19 +114,6 @@ public class QNotification {
 
             QUOTE_ICON  = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_quote_64.png"));//quote_24.png"));
 
-        }
-
-        private void initGraphics() {
-            //scene = new Scene(new Region());
-            //scene.setFill(null);
-            //scene.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
-            //stage = new Stage();
-        	//stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-            //stage.initStyle(StageStyle.TRANSPARENT);
-            //stage.initModality(Modality.NONE);//APPLICATION_MODAL);//.WINDOW_MODAL);
-            //stage.setScene(scene);
-            //stage.centerOnScreen();
-            //stage.hide();
         }
 
 
@@ -330,14 +304,21 @@ public class QNotification {
             Label message = new Label("", icon);
             message.getStyleClass().add("message");
 
-            String cssFile = "/fxui/css/nimrodskin.css";
+            String cssFile = null;
+            int theme = MainScene.getTheme();
+            
+            if (theme == 0 || theme == 6)
+            	cssFile = MainScene.BLUE_CSS_THEME;
+            else
+            	cssFile = MainScene.ORANGE_CSS_THEME;
+            
             ta = new TextArea();
             ta.setId("quotation");
             ta.appendText(NOTIFICATION.MESSAGE);
             ta.setMinSize(width, height);
             ta.setEditable(false);
             ta.setWrapText(true);
-    		ta.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+    		ta.getStylesheets().add(this.getClass().getResource(cssFile).toExternalForm());
             ta.positionCaret(0);
 
     		/*
@@ -556,21 +537,11 @@ public class QNotification {
                			;//System.out.println("Your system has a 1-monitor setup. Window is positioned at monitor");
             		return 1;
             	}
-
-
     		}
-
-
     	}
-
-
     }
 
-
-
-
 	public void destroy() {
-
 		QUOTE_ICON = null;
 		IMAGE = null;
 

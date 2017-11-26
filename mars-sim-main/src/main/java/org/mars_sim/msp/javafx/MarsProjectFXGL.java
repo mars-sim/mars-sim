@@ -26,7 +26,6 @@ import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.application.Platform;
-import javafx.stage.StageStyle;
 
 @SuppressWarnings("restriction")
 public class MarsProjectFXGL extends GameApplication {
@@ -213,10 +212,6 @@ public class MarsProjectFXGL extends GameApplication {
 	   		
 	   		mainMenu = new MainMenu();//this);
 
-	        //Input input = FXGL.getInput();
-	        //input.mockKeyPress(KeyCode.ESCAPE);
-	        //input.mockKeyRelease(KeyCode.ESCAPE);
-	        
 	   		if (newSim) {
 		   		// CASE D1 and D2//
 	   	    	logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
@@ -508,7 +503,6 @@ public class MarsProjectFXGL extends GameApplication {
      * @throws Exception if error loading the default saved simulation.
      */
     private void handleLoadDefaultSimulation() {
-		//logger.info("MarsProjectFX's handleLoadDefaultSimulation() is on "+Thread.currentThread().getName());
 		logger.info("Loading the default saved sim in headless mode in " + Simulation.OS);
 
     	try {
@@ -525,7 +519,7 @@ public class MarsProjectFXGL extends GameApplication {
     }
     
     protected void onUpdate(double tpf) {
-    	sim.onUpdate(tpf); //System.out.print(Math.round(tpf *100.0)/100.0 + " ");
+    	sim.onUpdate(tpf);
     }
     
 	public static void main(String[] args) {

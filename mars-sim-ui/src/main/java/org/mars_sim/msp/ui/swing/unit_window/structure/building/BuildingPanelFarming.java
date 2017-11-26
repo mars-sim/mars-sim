@@ -210,7 +210,7 @@ implements MouseListener {
 		o2Label.setToolTipText(Msg.getString("BuildingPanelFarming.o2.tooltip"));
 		springPanel.add(o2Label);
 		
-		o2Cache = farm.computeO2Generated();
+		o2Cache = farm.computeTotalO2Generated();
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		o2TF = new JTextField(Msg.getString("BuildingPanelFarming.o2", o2Cache + ""));
 		o2TF.setEditable(false);
@@ -223,7 +223,7 @@ implements MouseListener {
 		co2Label.setToolTipText(Msg.getString("BuildingPanelFarming.co2.tooltip"));
 		springPanel.add(co2Label);
 		
-		co2Cache = farm.computeCO2Consumed();
+		co2Cache = farm.computeTotalCO2Consumed();
 		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		co2TF = new JTextField(Msg.getString("BuildingPanelFarming.co2", co2Cache + ""));
 		co2TF.setEditable(false);
@@ -601,14 +601,14 @@ implements MouseListener {
 		}
 
 		// Update the average O2 generated
-		double new_o2 = farm.computeO2Generated();
+		double new_o2 = farm.computeTotalO2Generated();
 		if (o2Cache != new_o2) {
 			o2Cache = new_o2;
 			o2TF.setText(Msg.getString("BuildingPanelFarming.o2", o2Cache));
 		}
 
 		// Update the average CO2 consumed
-		double new_co2 = farm.computeCO2Consumed();
+		double new_co2 = farm.computeTotalCO2Consumed();
 		if (co2Cache != new_co2) {
 			co2Cache = new_co2;
 			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", co2Cache));
