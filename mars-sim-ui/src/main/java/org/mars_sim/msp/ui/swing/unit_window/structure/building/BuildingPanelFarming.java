@@ -262,15 +262,18 @@ implements MouseListener {
         });
         opsPanel.add(opsButton);
 */
+		JPanel southPanel = new JPanel(new BorderLayout());
+		add(southPanel, BorderLayout.SOUTH);
+		
 		// Create scroll panel for crop table
-		JScrollPane scrollPanel = new JScrollPane();
+		JScrollPane tableScrollPanel = new JScrollPane();
 		if (farm.getBuilding().getBuildingType().equalsIgnoreCase("Large Greenhouse"))
-			scrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
+			tableScrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
 		else
 			// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
-			scrollPanel.setPreferredSize(new Dimension(200, 110)); // 110 is the best fit for 5 crops
+			tableScrollPanel.setPreferredSize(new Dimension(200, 110)); // 110 is the best fit for 5 crops
 
-		add(scrollPanel, BorderLayout.SOUTH);
+		southPanel.add(tableScrollPanel, BorderLayout.NORTH);
 
 		// Prepare crop table model
 		cropTableModel = new CropTableModel(farm);
@@ -302,7 +305,7 @@ implements MouseListener {
                 try {
                 	//if (colIndex == 1)
                 		result.append(buildCropToolTip(rowIndex, null)).append("</html>");
-                } catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
+                	} catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
                 }
     			return result.toString();
 
@@ -318,10 +321,12 @@ implements MouseListener {
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
 
 		TableStyle.setTableStyle(cropTable);
-		scrollPanel.setViewportView(cropTable);
+		tableScrollPanel.setViewportView(cropTable);
 
 		JPanel queuePanel = new JPanel(new BorderLayout());
-	    add(queuePanel, BorderLayout.SOUTH);
+	    //add(queuePanel, BorderLayout.SOUTH);
+	    southPanel.add(queuePanel, BorderLayout.CENTER);
+	    
 	    JPanel selectPanel = new JPanel(new FlowLayout());
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
 
@@ -405,7 +410,7 @@ implements MouseListener {
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
 	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
-
+	    
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(150, 150));
@@ -678,18 +683,11 @@ implements MouseListener {
         public void update() {
 
         	List<CropType> c = farm.getCropListInQueue();
-
-        		//System.out.println("listModel.update() : Size is different. Proceed...");
         		// if the list contains duplicate items, it somehow pass this test
-
         		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
 	                List<CropType> oldList = list;
-	            	//System.out.println("listModel.update() : oldList.size() is " + oldList.size());
 	                List<CropType> tempList = new ArrayList<CropType>(c);
 	                //Collections.sort(tempList);
-
-	             	//System.out.println("ListModel : index is " + index);
-	            	//System.out.println("listModel.update() : tempList.size() is " + tempList.size());
 
 	                list = tempList;
 	                fireContentsChanged(this, 0, getSize());
@@ -700,9 +698,6 @@ implements MouseListener {
         }
 	}
 
-    //public void setCropInQueue(String cropInQueue) {
-    //	this.cropInQueue = cropInQueue;
-    //}
 	/**
 	 * Internal class used as model for the crop table.
 	 */

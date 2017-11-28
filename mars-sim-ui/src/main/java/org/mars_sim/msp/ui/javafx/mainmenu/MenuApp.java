@@ -77,14 +77,17 @@ public class MenuApp {
                 new Pair<String, Runnable>("Settings", () -> mainMenu.runSettings()),
                 new Pair<String, Runnable>("Credits", () -> {}),
                 new Pair<String, Runnable>("Exit", () -> {
-    		        Input input = FXGL.getInput();
-    				input.mockKeyPress(KeyCode.ESCAPE);
-    		        input.mockKeyRelease(KeyCode.ESCAPE);
-                	//if (!mainMenu.isShowingDialog()) 
-                	//	mainMenu.dialogOnExit(mainMenu.getPane())
-    		        //Platform::exit)
+                	//Platform::exit
+                	if (isFXGL) {
+	    		        Input input = FXGL.getInput();
+	    				input.mockKeyPress(KeyCode.ESCAPE);
+	    		        input.mockKeyRelease(KeyCode.ESCAPE);
                 	}
-                )   
+                	else {
+                		mainMenu.dialogOnExit(mainMenu.getPane());
+                	}
+                }
+                )
         );
     }    
     

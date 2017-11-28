@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
@@ -69,6 +70,9 @@ implements Serializable {
 	/** amount of crop tissue culture needed for each square meter of growing area */
     public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
+	public static final double CO2_RATE = 400;
+	public static final double O2_RATE = .75;
+	
 	private static final int NUM_INSPECTIONS = 2;
 	private static final int NUM_CLEANING = 2;
 
@@ -99,7 +103,9 @@ implements Serializable {
     /** The amount of O2 generated in the greenhouse */ 
     private double o2;
     /** The amount of CO2 consumed in the greenhouse */ 
-    private double co2;
+    private double cO2;
+    
+    private double cO2Cache;
 
 	//private boolean checkLED;
 
@@ -122,6 +128,8 @@ implements Serializable {
     private Map<String, List<Double>> cropDailyCO2Consumed;
 
     private static MarsClock marsClock;
+    private static SurfaceFeatures surface;
+    
     private Inventory inv;
     private Settlement settlement;
     private Building building;
@@ -152,7 +160,9 @@ implements Serializable {
 		setupInspection();
 		setupCleaning();
 		
+        surface = Simulation.instance().getMars().getSurfaceFeatures();
         marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
         powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
@@ -846,12 +856,21 @@ implements Serializable {
         return result;
     }
 
+    public double TotalPercentGrowth() {
+    	int sum = 0;
+    	for (Crop crop : crops) {
+    		sum += crop.getPercentGrowth();
+    	}
+    	return sum;
+    }
+    
     /**
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
 	public void timePassing(double time) {
+
 	    // check for the passing of each day
 	    int solElapsed = marsClock.getMissionSol();
 	    if (solElapsed != solCache) {
@@ -1343,19 +1362,19 @@ implements Serializable {
 	}
 
 	/**
-	 * Adds O2 generated to this farm
-	 * @param value the amount of O2 generated in kg
+	 * Adds O2 to this farm
+	 * @param value the amount of O2 cached in kg
 	 */
-	public synchronized void addO2Generated(double value) {
+	public synchronized void addO2Cache(double value) {
 		o2 += value;
 	}
 
 	/**
-	 * Adds CO2 consumed to this farm
-	 * @param value the amount of CO2 consumed in kg
+	 * Adds CO2 to this farm
+	 * @param value the amount of CO2 cached in kg
 	 */
-	public synchronized void addCO2Consumed(double value) {
-		co2 += value;
+	public synchronized void addCO2Cache(double value) {
+		cO2 += value;
 	}
 	
 	public double getMoisture() {
@@ -1391,7 +1410,7 @@ implements Serializable {
 	}
 
 	public double getCO2() {
-		return co2;
+		return cO2;
 	}
 	
 	/**
@@ -1400,7 +1419,7 @@ implements Serializable {
 	 */
 	public synchronized double retrieveCO2(double amount) {
 		//double gas = co2;
-		co2 = co2 - amount; 
+		cO2 = cO2 - amount; 
 		// Note : The amount of co2 will be monitored by the CompositionOfAir
 		return amount;
 	}

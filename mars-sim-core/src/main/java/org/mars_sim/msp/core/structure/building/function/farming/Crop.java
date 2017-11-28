@@ -241,7 +241,7 @@ public class Crop implements Serializable {
 		cropNum = cropTypeList.size();
 	
 		cropName = cropType.getName();
-		String tissue = cropName + " " + TISSUE_CULTURE;
+		//String tissue = cropName + " " + TISSUE_CULTURE;
 		dailyPARRequired = cropType.getDailyPAR();
 		cropName = cropType.getName();
 		capitalizedCropName = Conversion.capitalize(cropType.getName());
@@ -622,8 +622,7 @@ public class Crop implements Serializable {
 			else { 	
 				
 				if (actualHarvest > 0.0001) {
-					// continue the harvesting process
-					// 2014-10-07 modified parameter list to include crop name
+					// Continue the harvesting process
 					double modifiedHarvest = actualHarvest * workTime / w;
 					// Store the crop harvest
 					if (modifiedHarvest > 0) {
@@ -636,7 +635,7 @@ public class Crop implements Serializable {
 						if (hasSeed)
 							Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv, sourceName + "addWork");
 						else
-							//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
+							// In case of white mustard, the inedible biomass is used as the seed mass
 							// thus no crop waste
 							generateCropWaste(modifiedHarvest);
 					}
@@ -880,15 +879,18 @@ public class Crop implements Serializable {
 				double harvestModifier = computeHarvest(maxPeriodHarvest, time);
 				// Modify harvest amount.
 				actualHarvest += maxPeriodHarvest * harvestModifier;// * 10D; // assuming the standard area of 10 sq m
-
+				//System.out.println("maxPeriodHarvest: " + Math.round(maxPeriodHarvest*10_000.0)/10_000.0
+				//		+ "    actualHarvest: " + Math.round(actualHarvest*10_000.0)/10_000.0
+				//		+ "    maxHarvest: " + Math.round(maxHarvest*10.0)/10.0
+				//		+ "    growingTime: " + Math.round(growingTime*10.0)/10.0
+				//		+ "    fractionalGrowingTimeCompleted: " + Math.round(fractionalGrowingTimeCompleted*1000.0)/1000.0	
+				//		);
 				if (actualHarvest < 0) {
 					phaseType = PhaseType.FINISHED;
 					actualHarvest = 0;
 					return;
 				}
-
-			}
-			
+			}		
 		}
 
 		else if (phaseType == PhaseType.FINISHED) {
@@ -1050,7 +1052,7 @@ public class Crop implements Serializable {
 	public void computeWaterFertilizer(double needFactor, double time) {
 
 		// Calculate water usage
-		double waterRequired = needFactor * growingArea * time / 1000D * averageWaterNeeded;
+		double waterRequired = fractionalGrowingTimeCompleted * needFactor * (averageWaterNeeded * time / 1000) * growingArea;
 		// Determine the amount of grey water available.
 		double greyWaterAvailable = Math.min(GREY_WATER_FILTERING_RATE* time, inv.getAmountResourceStored(greyWaterAR, false));
 		double waterUsed = 0;
@@ -1111,7 +1113,7 @@ public class Crop implements Serializable {
 		//	Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::computeWaterFertilizer");
 		
 		// Assume an universal rate of water vapor evaporation rate of 10%
-		farm.addMoisture(totalWaterUsed*.1);
+		farm.addMoisture(totalWaterUsed);
 		// Record the amount of water taken up by the crop
 		cumulative_water_usage += totalWaterUsed;// *.9;
 		
@@ -1128,7 +1130,7 @@ public class Crop implements Serializable {
 	 * @param maxPeriodHarvest
 	 * @param time
 	 */
-	public void computeGases(double uPAR, double needFactor, double maxPeriodHarvest, double time) {
+	public void computeGases(double uPAR, double needFactor, double time) {
 		
 		// Calculate O2 and CO2 usage
 		double o2Modifier = 0, co2Modifier = 0;
@@ -1138,9 +1140,11 @@ public class Crop implements Serializable {
 			// during the night
 			if (uPAR == 0)
 				fudge_factor = .25;
+			else if (uPAR == 40)
+				fudge_factor = 0.125;
 			else
-				fudge_factor = 5 / uPAR;
-			double o2Required = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageOxygenNeeded * fudge_factor;
+				fudge_factor = .25 - .125 * uPAR/40; 
+			double o2Required = fractionalGrowingTimeCompleted * fudge_factor * needFactor * (averageOxygenNeeded  * time / 1000) * growingArea;
 			double o2Available = inv.getAmountResourceStored(oxygenAR, false);
 			double o2Used = o2Required;
 
@@ -1148,7 +1152,7 @@ public class Crop implements Serializable {
 				o2Used = o2Available;
 			if (o2Used > 0) {
 				//Storage.retrieveAnResource(o2Used, oxygenAR, inv, true);
-				farm.addO2Generated(-o2Used);
+				farm.addO2Cache(-o2Used);
 				cumulative_o2 -= o2Used;	
 			}
 
@@ -1162,17 +1166,20 @@ public class Crop implements Serializable {
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
 			if (cO2Gen > 0) {
 				//Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "::computeGases");
-				farm.addCO2Consumed(-cO2Gen);
-				cumulative_co2 -= cO2Gen;
+				farm.addCO2Cache(cO2Gen);
+				cumulative_co2 = cO2Gen;
 			}
+			
+			//if (o2Required != 0) System.out.print("o2Required: " + Math.round(o2Required*100_000.0)/100_000.0);
+			//if (cO2Gen != 0) System.out.println("   cO2Gen: " + Math.round(cO2Gen*100_000.0)/100_000.0);
 		}
 
 		else {
 			// during the day
-			fudge_factor = uPAR / 5D;
+			fudge_factor = 0.1250 + (uPAR-40) / 100D;
 			// TODO: gives a better modeling of how the amount of light available will trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
-			double cO2Req = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageCarbonDioxideNeeded * fudge_factor;
+			double cO2Req = fractionalGrowingTimeCompleted * fudge_factor * needFactor * (averageCarbonDioxideNeeded * time / 1000) * growingArea;
 			double cO2Available = inv.getAmountResourceStored(carbonDioxideAR, false);
 			double cO2Used = cO2Req;
 
@@ -1182,8 +1189,8 @@ public class Crop implements Serializable {
 				cO2Used = cO2Available;
 			if (cO2Used > 0) {
 				//Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideAR, inv, true);
-				farm.addCO2Consumed(cO2Used);
-				cumulative_co2 += cO2Used;
+				farm.addCO2Cache(-cO2Used);
+				cumulative_co2 -= cO2Used;
 			}
 			// TODO: research how much high amount of CO2 may facilitate the crop growth and reverse past bad health
 
@@ -1199,10 +1206,12 @@ public class Crop implements Serializable {
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
 			if (o2Gen > 0) {
 				//Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::computeGases");
-				farm.addO2Generated(o2Gen);
+				farm.addO2Cache(o2Gen);
 				cumulative_o2 += o2Gen;
 			}
 
+			//if (cO2Used != 0) System.out.print("cO2Used: " + Math.round(cO2Used*100_000.0)/100_000.0);
+			//if (o2Gen != 0) System.out.println("   o2Gen: " + Math.round(o2Gen*100_000.0)/100_000.0);
 		}
 		
 	}
@@ -1269,7 +1278,7 @@ public class Crop implements Serializable {
 		computeWaterFertilizer(growthFactor, time);
 		
 		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE) 
-		computeGases(uPAR, growthFactor, maxPeriodHarvest, time);
+		computeGases(uPAR, growthFactor, time);
 		// Note that mushrooms are fungi and consume O2 and release CO2
 
 		
@@ -1340,6 +1349,10 @@ public class Crop implements Serializable {
 	
 	public double getHealthCondition() {
 		return healthCondition;
+	}
+	
+	public double getPercentGrowth() {
+		return fractionalGrowingTimeCompleted;
 	}
 	
 	/**

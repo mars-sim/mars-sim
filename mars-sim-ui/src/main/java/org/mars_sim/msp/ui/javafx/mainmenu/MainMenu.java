@@ -185,7 +185,7 @@ public class MainMenu {
 */
 		
 		Screen screen = Screen.getPrimary(); 
-		Rectangle2D bounds = screen.getBounds();//.getVisualBounds();
+		Rectangle2D bounds = screen.getVisualBounds(); // getBounds();//
 		
 		native_width = (int) bounds.getWidth();
 		native_height = (int) bounds.getHeight();
@@ -415,23 +415,18 @@ public class MainMenu {
     	closeApp.setTranslateY(5);
     	closeApp.getChildren().addAll(closeRect, closeXmark);
     	closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
-       	@Override
-       	public void handle(MouseEvent event) {
-	        Input input = FXGL.getInput();
-			input.mockKeyPress(KeyCode.ESCAPE);
-	        input.mockKeyRelease(KeyCode.ESCAPE);
-/*	        
-       		dialogOnExit(rootPane);
-
-       		if (!isExit) {
-       			event.consume();
-       		}
-       		else {
-       			Platform.exit();
-           		System.exit(0);
-       		}
-*/       		
-       	}      	
+	       	@Override
+	       	public void handle(MouseEvent event) {	        
+	       		dialogOnExit(rootPane);
+	
+	       		if (!isExit) {
+	       			event.consume();
+	       		}
+	       		else {
+	       			Platform.exit();
+	           		System.exit(0);
+	       		}      		
+	       	}      	
        });
        
 
