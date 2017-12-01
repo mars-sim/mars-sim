@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
@@ -23,6 +22,8 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.StatusType;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the CompileScientificStudyResults task.
@@ -39,6 +40,8 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
     /** default logger. */
     private static Logger logger = Logger.getLogger(CompileScientificStudyResultsMeta.class.getName());
 
+    private static ScientificStudyManager studyManager;
+    
     @Override
     public String getName() {
         return NAME;
@@ -53,57 +56,67 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        
+        if (person.isInVehicle()) {	
+	        // Check if person is in a moving rover.
+	        if (inMovingRover(person)) {
+	            return 0;
+	        } 	       
+	        else
+	        // the penalty for performing experiment inside a vehicle
+	        	result = -50D;
+        }
+        
+        if (person.isInside()) {
 	        // Add probability for researcher's primary study (if any).
-	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+	        if (studyManager == null)
+	        	studyManager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-	        if ((primaryStudy != null) && ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())) {
-	            if (!primaryStudy.isPrimaryPaperCompleted()) {
-	                try {
-	                    double primaryResult = 50D;
+	        if ((primaryStudy != null) 
+        		&& ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())
+            	&& !primaryStudy.isPrimaryPaperCompleted()) {
+                try {
+                    double primaryResult = 50D;
 
-	                    // If researcher's current job isn't related to study science, divide by two.
-	                    Job job = person.getMind().getJob();
-	                    if (job != null) {
-	                        ScienceType jobScience = ScienceType.getJobScience(job);
-	                        if (!primaryStudy.getScience().equals(jobScience)) primaryResult /= 2D;
-	                    }
+                    // If researcher's current job isn't related to study science, divide by two.
+                    Job job = person.getMind().getJob();
+                    if (job != null) {
+                        //ScienceType jobScience = ScienceType.getJobScience(job);
+                        if (!primaryStudy.getScience().equals(ScienceType.getJobScience(job))) 
+                        	primaryResult /= 2D;
+                    }
 
-	                    result += primaryResult;
-	                }
-	                catch (Exception e) {
-	                    logger.severe("getProbability(): " + e.getMessage());
-	                }
-	            }
+                    result += primaryResult;
+                }
+                catch (Exception e) {
+                    logger.severe("getProbability(): " + e.getMessage());
+                }
 	        }
 
 	        // Add probability for each study researcher is collaborating on.
 	        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy collabStudy = i.next();
-	            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())) {
-	                if (!collabStudy.isCollaborativePaperCompleted(person)) {
-	                    try {
-	                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
+	            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())
+	            		&& !collabStudy.isCollaborativePaperCompleted(person)) {
+                    try {
+                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
 
-	                        double collabResult = 25D;
+                        double collabResult = 25D;
 
-	                        // If researcher's current job isn't related to study science, divide by two.
-	                        Job job = person.getMind().getJob();
-	                        if (job != null) {
-	                            ScienceType jobScience = ScienceType.getJobScience(job);
-	                            if (!collabScience.equals(jobScience)) collabResult /= 2D;
-	                        }
+                        // If researcher's current job isn't related to study science, divide by two.
+                        Job job = person.getMind().getJob();
+                        if (job != null) {
+                            ScienceType jobScience = ScienceType.getJobScience(job);
+                            if (!collabScience.equals(jobScience)) collabResult /= 2D;
+                        }
 
-	                        result += collabResult;
-	                    }
-	                    catch (Exception e) {
-	                        logger.severe("getProbability(): " + e.getMessage());
-	                    }
-	                }
-	            }
+                        result += collabResult;
+                    }
+                    catch (Exception e) {
+                        logger.severe("getProbability(): " + e.getMessage());
+                    }
+                }
 	        }
 
 	        // Crowding modifier
@@ -140,6 +153,32 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
         return result;
     }
 
+    /**
+     * Checks if the person is in a moving vehicle.
+     * @param person the person.
+     * @return true if person is in a moving vehicle.
+     */
+    public static boolean inMovingRover(Person person) {
+
+        boolean result = false;
+
+        if (person.isInVehicle()) {
+            Vehicle vehicle = person.getVehicle();
+            if (vehicle.getStatus() == StatusType.MOVING) {
+                result = true;
+            }
+            else if (vehicle.getStatus() == StatusType.TOWED) {
+                Vehicle towingVehicle = vehicle.getTowingVehicle();
+                if (towingVehicle.getStatus() == StatusType.MOVING ||
+                        towingVehicle.getStatus() == StatusType.TOWED) {
+                    result = false;
+                }
+            }
+        }
+
+        return result;
+    }
+    
 	@Override
 	public Task constructInstance(Robot robot) {
 		// TODO Auto-generated method stub

@@ -50,7 +50,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+        if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
 	            result = -30D;
@@ -61,8 +61,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	        	result = -20D;
         }
         
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
 	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);

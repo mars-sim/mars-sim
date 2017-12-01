@@ -52,7 +52,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
             // Check all vehicle missions occurring at the settlement.
             try {

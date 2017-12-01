@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -55,54 +54,58 @@ public class MaintenanceMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        try {
-            // Total probabilities for all malfunctionable entities in person's local.
-            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-            while (i.hasNext()) {
-                Malfunctionable entity = i.next();
-                boolean isVehicle = (entity instanceof Vehicle);
-                boolean uninhabitableBuilding = false;
-                if (entity instanceof Building) {
-                    uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
-                }
-                MalfunctionManager manager = entity.getMalfunctionManager();
-                boolean hasMalfunction = manager.hasMalfunction();
-                boolean hasParts = Maintenance.hasMaintenanceParts(person, entity);
-                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-                boolean minTime = (effectiveTime >= 1000D);
-                if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
-                    double entityProb = effectiveTime / 1000D;
-                    if (entityProb > 100D) {
-                        entityProb = 100D;
-                    }
-                    result += entityProb;
-                  }
-            }
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE,"getProbability()",e);
-        }
+        if (person.isInSettlement()) {
 
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(Maintenance.class);
+	        try {
+	            // Total probabilities for all malfunctionable entities in person's local.
+	            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+	            while (i.hasNext()) {
+	                Malfunctionable entity = i.next();
+	                boolean isVehicle = (entity instanceof Vehicle);
+	                boolean uninhabitableBuilding = false;
+	                if (entity instanceof Building) {
+	                    uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
+	                }
+	                MalfunctionManager manager = entity.getMalfunctionManager();
+	                boolean hasMalfunction = manager.hasMalfunction();
+	                boolean hasParts = Maintenance.hasMaintenanceParts(person, entity);
+	                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+	                boolean minTime = (effectiveTime >= 1000D);
+	                if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
+	                    double entityProb = effectiveTime / 1000D;
+	                    if (entityProb > 100D) {
+	                        entityProb = 100D;
+	                    }
+	                    result += entityProb;
+	                  }
+	            }
+	        }
+	        catch (Exception e) {
+	            logger.log(Level.SEVERE,"getProbability()",e);
+	        }
+	
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	
+	        // Job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null) {
+	            result *= job.getStartTaskProbabilityModifier(Maintenance.class);
+	        }
+	
+	        // Modify if tinkering is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
+	            result *= 2D;
+	        }
+	
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0D) {
+	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	        }
+	        
+	        if (result < 0) result = 0;
+	        
         }
-
-        // Modify if tinkering is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-            result *= 2D;
-        }
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0D) {
-            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-        }
-        
-        if (result < 0) result = 0;
         
         return result;
     }

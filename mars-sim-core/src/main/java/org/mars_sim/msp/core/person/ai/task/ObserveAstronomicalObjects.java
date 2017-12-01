@@ -64,6 +64,8 @@ implements ResearchScientificStudy, Serializable {
     private Person researchAssistant;
     /** True if person is active observer. */
     private boolean isActiveObserver = false;
+    
+    private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
     /**
      * Constructor.
@@ -110,7 +112,7 @@ implements ResearchScientificStudy, Serializable {
     public static AstronomicalObservation determineObservatory(Person observer) {
         AstronomicalObservation result = null;
 
-        if (LocationSituation.IN_SETTLEMENT == observer.getLocationSituation()) {
+        if (observer.isInSettlement()) {
 
             BuildingManager manager = observer.getSettlement().getBuildingManager();
             List<Building> observatoryBuildings = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATIONS);
@@ -123,8 +125,7 @@ implements ResearchScientificStudy, Serializable {
                         observer, observatoryBuildings);
                 Building building = RandomUtil.getWeightedRandomObject(observatoryBuildingProbs);
                 if (building != null) {
-                    result = (AstronomicalObservation) building.getFunction(
-                            FunctionType.ASTRONOMICAL_OBSERVATIONS);
+                    result = building.getAstronomicalObservation();
                 }
             }
         }
@@ -141,7 +142,7 @@ implements ResearchScientificStudy, Serializable {
     public static double getObservatoryCrowdingModifier(Person observer,
             AstronomicalObservation observatory) {
         double result = 1D;
-        if (observer.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (observer.isInSettlement()) {
             Building observatoryBuilding = observatory.getBuilding();
             if (observatoryBuilding != null) {
                 result *= Task.getCrowdingProbabilityModifier(observer, observatoryBuilding);
@@ -162,7 +163,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            AstronomicalObservation observatory = (AstronomicalObservation) building.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+            AstronomicalObservation observatory = building.getAstronomicalObservation();
             if (observatory.getObserverNum() < observatory.getObservatoryCapacity()) {
                 result.add(building);
             }
@@ -275,7 +276,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Check sunlight and end the task if sunrise
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         double sunlight = surface.getSolarIrradiance(person.getCoordinates());
         if (sunlight > 0) {
             endTask();
@@ -368,10 +369,10 @@ implements ResearchScientificStudy, Serializable {
         }
 
         Malfunctionable entity = null;
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             entity = observatory.getBuilding();
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             entity = person.getVehicle();
         }
 

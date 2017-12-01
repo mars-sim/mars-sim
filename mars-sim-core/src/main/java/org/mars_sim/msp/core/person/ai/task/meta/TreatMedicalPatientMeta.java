@@ -54,12 +54,8 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-        
-        if (LocationSituation.OUTSIDE == person.getLocationSituation())
-        	return 0;
-        
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+      
+        if (person.isInside()) {
 	        // Get the local medical aids to use.
 	        if (hasNeedyMedicalAids(person)) {
 	            result = 300D;

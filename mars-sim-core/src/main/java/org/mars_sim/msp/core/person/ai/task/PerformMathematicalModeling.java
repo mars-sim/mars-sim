@@ -89,6 +89,7 @@ implements ResearchScientificStudy, Serializable {
             if (lab != null) {
                 addPersonToLab();
             }
+            
             else {
             	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
             		"[" + person.getLocationTag().getShortLocationName() + "] " 
@@ -97,7 +98,12 @@ implements ResearchScientificStudy, Serializable {
             	person.getMind().getTaskManager().clearTask();
             	//person.getMind().getTaskManager().getNewTask();
             }
+            
+            // Initialize phase
+            addPhase(MODELING);
+            setPhase(MODELING);       
         }
+        
         else {
         	//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + " can't find a research collaboration.", null);
         	endTask();
@@ -110,9 +116,6 @@ implements ResearchScientificStudy, Serializable {
         //    endTask();
         //}
 
-        // Initialize phase
-        addPhase(MODELING);
-        setPhase(MODELING);
     }
 
     @Override

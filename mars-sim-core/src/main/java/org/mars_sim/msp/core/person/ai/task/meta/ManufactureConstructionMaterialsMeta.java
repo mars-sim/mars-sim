@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -52,7 +51,8 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
+    	
             try {
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = ManufactureConstructionMaterials.getAvailableManufacturingBuilding(person);
@@ -78,6 +78,7 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
                     // modifier.
                     SkillManager skillManager = person.getMind().getSkillManager();
                     int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+                    
                     if (ManufactureConstructionMaterials.hasProcessRequiringWork(manufacturingBuilding, skill)) {
                         result += 10D;
                     }
@@ -89,6 +90,7 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
                         return 0;
                     }
                 }
+                
             } catch (Exception e) {
                 logger.log(Level.SEVERE,
                         "ManufactureConstructionMaterials.getProbability()", e);

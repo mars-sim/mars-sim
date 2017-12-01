@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -57,19 +56,10 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-    	LocationSituation ls = person.getLocationSituation();
-    	
-        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
-        	return 0;
-       
-    	Settlement settlement = person.getSettlement();
-    	
-    	if (settlement == null) {
-    		return 0;
-    	}
-    	
-    	else {
+    	if (person.isInSettlement()) {
  
+        	Settlement settlement = person.getSettlement();
+            
 	    	//2016-10-04 Checked for radiation events
 	    	boolean[] exposed = settlement.getExposed();
 	

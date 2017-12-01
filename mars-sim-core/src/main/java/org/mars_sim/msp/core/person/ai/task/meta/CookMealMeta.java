@@ -13,7 +13,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -21,7 +20,6 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /**
@@ -58,12 +56,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        LocationSituation ls = person.getLocationSituation();
-        if (ls == LocationSituation.OUTSIDE || ls == LocationSituation.IN_VEHICLE)
-        	return 0;
-        
-        if (ls == LocationSituation.IN_SETTLEMENT && CookMeal.isMealTime(person.getCoordinates())) {
-
+        if (person.isInside() && CookMeal.isMealTime(person.getCoordinates())) {
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
 

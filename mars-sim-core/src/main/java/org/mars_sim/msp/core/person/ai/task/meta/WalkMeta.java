@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -41,18 +40,16 @@ public class WalkMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        LocationSituation ls = person.getLocationSituation();
-        		
+     		
         // If person is outside, give high probability to walk to emergency airlock location.
-        if (LocationSituation.OUTSIDE == ls) {
+        if (person.isOutside()) {
             result = 500D;
         }
-        else if (LocationSituation.IN_SETTLEMENT == ls) {
+        else if (person.isInSettlement()) {
             // If person is inside a settlement building, may walk to a random location within settlement.
             result = .5D;
         }
-        else if (LocationSituation.IN_VEHICLE == ls) {
+        else if (person.isInVehicle()) {
             // If person is inside a rover, may walk to random location within rover.
             result = .5D;
         }
@@ -70,13 +67,13 @@ public class WalkMeta implements MetaTask, Serializable {
 	@Override
 	public double getProbability(Robot robot) {
 
-        double result = 0D;
+        //double result = 0D;
 
         // If robot is outside, give high probability to walk to emergency airlock location.
         //if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
         //    result = 2000D;
         //}
 
-        return result;
+        return 0;
 	}
 }

@@ -51,7 +51,7 @@ public class SalvageGoodMeta implements MetaTask, Serializable {
 
         // If settlement has manufacturing override, no new
         // salvage processes can be created.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT && !person.getSettlement().getManufactureOverride()) {
+        if (person.isInSettlement() && !person.getSettlement().getManufactureOverride()) {
 
 	        // No salvaging goods until after the first month of the simulation.
 	        MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();

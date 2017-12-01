@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -57,8 +56,7 @@ public class TradeMeta implements MetaMission {
         double missionProbability = 0D;
 
         // Check if person is in a settlement.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+        if (person.isInSettlement()) {
             // Check if mission is possible for person based on their circumstance.
             Settlement settlement = person.getSettlement();
 

@@ -65,8 +65,7 @@ public class RelaxMeta implements MetaTask, Serializable {
         double result = 5D;
 
         // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-    		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
             // Stress modifier
             result += person.getStress() * 5D;

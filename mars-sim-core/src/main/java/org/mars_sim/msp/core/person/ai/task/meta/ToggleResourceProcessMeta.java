@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -51,28 +50,24 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-    	LocationSituation ls = person.getLocationSituation();
-    	
-        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
-        	return 0;
-       
-    	Settlement settlement = person.getAssociatedSettlement();
-        
-         // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
-         // and if he has to do a EVA to repair a broken vehicle.
-
-         	//2016-10-04 Checked for radiation events
-     	boolean[] exposed = settlement.getExposed();
-
-
- 		if (exposed[2])
- 			// SEP can give lethal dose of radiation, out won't go outside
-             return 0;
- 
-            // Check if an airlock is available
-        if (LocationSituation.IN_SETTLEMENT == ls
-        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
-    		return 0;
+        if (person.isInSettlement()) {
+        	
+	    	Settlement settlement = person.getSettlement();
+	        
+	         // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
+	         // and if he has to do a EVA to repair a broken vehicle.
+	
+	         	//2016-10-04 Checked for radiation events
+	     	boolean[] exposed = settlement.getExposed();
+	
+	
+	 		if (exposed[2])
+	 			// SEP can give lethal dose of radiation, out won't go outside
+	             return 0;
+	 
+	            // Check if an airlock is available
+	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
 
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -110,14 +105,8 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
                 }
             }
 
-            if (isEVA) {
-
-                // Crowded settlement modifier
-                if (LocationSituation.IN_SETTLEMENT == ls) {
-                    if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
-                        result *= 2D;
-                    }
-                }
+            if (isEVA && settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
+                 result *= 2D;
             }
 
             // Effort-driven task modifier.
@@ -147,7 +136,7 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 			}
 
 	        if (result < 0) result = 0;
-        //}
+        }
 
         return result;
     }

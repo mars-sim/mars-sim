@@ -13,15 +13,13 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
-import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
-import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Meta task for the ListenToMusic task.
@@ -41,6 +39,8 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName());
 
+    private static MarsClock marsClock;
+    
     @Override
     public String getName() {
         return NAME;
@@ -67,8 +67,12 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
 */
 
         // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+        if (person.isInSettlement()) {
+        	
+           if (person.isInVehicle()) {
+        	   result *= RandomUtil.getRandomDouble(2); // more likely to listen to music than not if on a vehicle
+            }
+            
         	// Stress modifier
             double stress = person.getPhysicalCondition().getStress();
             result += stress * 3D; // 0 to 100%
@@ -95,34 +99,23 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
                 logger.log(Level.SEVERE, e.getMessage());
             }
             
-        }
-        
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            if (marsClock == null)
+            	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+            // Modify probability if during person's work shift.
+            int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+            boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+            if (isShiftHour) {
+                result*= WORK_SHIFT_MODIFIER;
+            }
 
-        	// Stress modifier
-            double stress = person.getPhysicalCondition().getStress();
-            result += stress * 3; // 0 to 100%
+            // 2015-06-07 Added Preference modifier
+            if (result > 0D) {
+                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
+            }
             
-            if (result > 0)
-            	result *= RandomUtil.getRandomDouble(2); // more likely to listen to music than not if on a vehicle
-
+            if (result < 0) result = 0;
+            
         }
-
-
-        // Modify probability if during person's work shift.
-        int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
-        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-        if (isShiftHour) {
-            result*= WORK_SHIFT_MODIFIER;
-        }
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0D) {
-            result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-        }
-        
-        if (result < 0) result = 0;
-
 
         return result;
     }

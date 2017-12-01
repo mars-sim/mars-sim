@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
@@ -57,7 +56,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (LocationSituation.OUTSIDE == person.getLocationSituation())
+        if (person.isOutside())
         	return 0;
         
         if (person.getPhysicalCondition().getProblems().size() == 0)
@@ -149,10 +148,10 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
         List<MedicalAid> result = new ArrayList<MedicalAid>();
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             result = getAvailableMedicalAidsAtSettlement(person);
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = getAvailableMedicalAidsInVehicle(person);
         }
 
@@ -224,11 +223,11 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
         int result = -1;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
             result = getBestLocalMedicalSkillAtSettlement(person, person.getSettlement());
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
 
             result = getBestLocalMedicalSkillInVehicle(person, person.getVehicle());
         }

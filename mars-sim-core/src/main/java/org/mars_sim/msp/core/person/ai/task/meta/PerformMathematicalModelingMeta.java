@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
@@ -40,6 +39,9 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformMathematicalModelingMeta.class.getName());
 
+    private static ScientificStudyManager studyManager;
+    
+    
     @Override
     public String getName() {
         return NAME;
@@ -55,21 +57,20 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
-	        // Check if person is in a moving rover.
-	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-		        // the bonus for being inside a vehicle
-	            result = 10D;
-	        }
+        // Check if person is in a moving rover.
+        if (person.isInVehicle() && PerformLaboratoryExperiment.inMovingRover(person)) {
+	        // the bonus for being inside a vehicle since there's little things to do
+            result = 20D;
         }
         
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
 	        ScienceType mathematics = ScienceType.MATHEMATICS;
 
 	        // Add probability for researcher's primary study (if any).
-	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+	        if (studyManager == null)
+	        	studyManager = Simulation.instance().getScientificStudyManager();
+	        //ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
@@ -120,8 +121,8 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	                                // If researcher's current job isn't related to study science, divide by two.
 	                                Job job = person.getMind().getJob();
 	                                if (job != null) {
-	                                    ScienceType jobScience = ScienceType.getJobScience(job);
-	                                    if (collabScience != jobScience) {
+	                                    //ScienceType jobScience = ScienceType.getJobScience(job);
+	                                    if (collabScience != ScienceType.getJobScience(job)) {
 	                                        collabResult /= 2D;
 	                                    }
 	                                }

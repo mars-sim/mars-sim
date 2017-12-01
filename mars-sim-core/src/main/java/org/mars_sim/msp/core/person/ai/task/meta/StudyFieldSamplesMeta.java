@@ -17,19 +17,16 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
-import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * Meta task for the StudyFieldSamples task.
@@ -61,8 +58,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        LocationSituation ls = person.getLocationSituation();
-        if (ls == LocationSituation.IN_VEHICLE) {
+        if (person.isInVehicle()) {
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
 	            result = -50D;
@@ -73,8 +69,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        	result = -20D;
         }
         
-        if (ls == LocationSituation.IN_SETTLEMENT
-            	|| ls == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 	
 	        // Check that there are available field samples to study.
 	        try {

@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -49,63 +48,61 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+        if (person.isInSettlement() && !person.getSettlement().getFoodProductionOverride()) {
 	        // If settlement has foodProduction override, no new foodProduction processes can be created.
-	        if (!person.getSettlement().getFoodProductionOverride()) {
+        	
+            // See if there is an available foodProduction building.
+            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
+            
+            if (foodProductionBuilding != null) {
+            	result += 1D;
 
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, foodProductionBuilding);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, foodProductionBuilding);
 
-	            // See if there is an available foodProduction building.
-	            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
-	            if (foodProductionBuilding != null) {
-	            	result += 1D;
+                // FoodProduction good value modifier.
+                result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
 
-	                // Crowding modifier.
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, foodProductionBuilding);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, foodProductionBuilding);
+                // Capping the probability at 100 as food production process values can be very large numbers.
+                if (result > 100D) {
+                    result = 100D;
+                }
 
-	                // FoodProduction good value modifier.
-	                result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
+                // If foodProduction building has process requiring work, add
+                // modifier.
+                SkillManager skillManager = person.getMind().getSkillManager();
+                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+                skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+                skill = (int) Math.round(skill / 7D);
+                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
+                    result += 10D;
+                }
 
-	                // Capping the probability at 100 as food production process values can be very large numbers.
-	                if (result > 100D) {
-                        result = 100D;
-                    }
+    	        // Effort-driven task modifier.
+    	        result *= person.getPerformanceRating();
 
-	                // If foodProduction building has process requiring work, add
-	                // modifier.
-	                SkillManager skillManager = person.getMind().getSkillManager();
-	                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
-	                skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
-	                skill = (int) Math.round(skill / 7D);
-	                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
-	                    result += 10D;
-	                }
+    	        // Job modifier.
+    	        Job job = person.getMind().getJob();
+    	        if (job != null) {
+    	            result *= job.getStartTaskProbabilityModifier(ProduceFood.class)
+                    		* person.getSettlement().getGoodsManager().getCropFarmFactor();
+    	        }
 
-	    	        // Effort-driven task modifier.
-	    	        result *= person.getPerformanceRating();
+                // Modify if cooking is the person's favorite activity.
+                if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
+                    result *= 1.5D;
+                }
 
-	    	        // Job modifier.
-	    	        Job job = person.getMind().getJob();
-	    	        if (job != null) {
-	    	            result *= job.getStartTaskProbabilityModifier(ProduceFood.class)
-	                    		* person.getSettlement().getGoodsManager().getCropFarmFactor();
-	    	        }
-
-	                // Modify if cooking is the person's favorite activity.
-	                if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
-	                    result *= 1.5D;
-	                }
-
-	    	        // 2015-06-07 Added Preference modifier
-	                // 2015-06-07 Added Preference modifier
-	                if (result > 0D) {
-	                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	                }
-	                
-	    	        if (result < 0) result = 0;
-	            }
-	        }
+    	        // 2015-06-07 Added Preference modifier
+                // 2015-06-07 Added Preference modifier
+                if (result > 0D) {
+                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                }
+                
+    	        if (result < 0) result = 0;
+            }
+	        
 	        // Cancel any foodProduction processes that's beyond the skill of any people
 	        // associated with the settlement.
 	        if (result > 0)
@@ -128,11 +125,11 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
         if (robot.getBotMind().getRobotJob() instanceof Chefbot || robot.getBotMind().getRobotJob() instanceof Makerbot){
 
-			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (robot.isInSettlement()) {
 
 		        // If settlement has foodProduction override, no new
 		        // foodProduction processes can be created.
-		        if (! robot.getSettlement().getFoodProductionOverride()) {
+		        if (!robot.getSettlement().getFoodProductionOverride()) {
 
 		            // See if there is an available foodProduction building.
 		            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);

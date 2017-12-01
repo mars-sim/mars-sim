@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A meta mission for the BuildingSalvageMission mission.
@@ -33,7 +34,9 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
-
+    
+    private static MarsClock marsClock;
+    
     @Override
     public String getName() {
         return NAME;
@@ -49,6 +52,9 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
         double result = 0D;
 
+        if (marsClock == null)
+        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        
         // No construction until after the first ten sols of the simulation.
         //MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
         //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -57,11 +63,12 @@ public class BuildingSalvageMissionMeta implements MetaMission {
         //if (totalTimeSols < 10D)
         //    return 0;
         //int today = Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart();
-        if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() < BuildingSalvageMission.FIRST_AVAILABLE_SOL)
+        
+        if (marsClock.getMissionSol() < BuildingSalvageMission.FIRST_AVAILABLE_SOL)
         	return 0;
 
         // Check if person is in a settlement.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
             // Check if settlement has construction override flag set.
@@ -90,8 +97,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
                 return 0;
 
             // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < BuildingSalvageMission.MIN_PEOPLE) {
+            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < BuildingSalvageMission.MIN_PEOPLE) {
             	return 0;
             }
 

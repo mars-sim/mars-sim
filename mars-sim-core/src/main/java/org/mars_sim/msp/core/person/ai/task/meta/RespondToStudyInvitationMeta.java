@@ -12,7 +12,6 @@ import java.util.List;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
@@ -49,7 +48,7 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+        if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
 	            result = 0D;
@@ -60,8 +59,7 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
 	        	result = -20D;
         }
         
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
             // Check if person has been invited to collaborate on any scientific studies.
 	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();

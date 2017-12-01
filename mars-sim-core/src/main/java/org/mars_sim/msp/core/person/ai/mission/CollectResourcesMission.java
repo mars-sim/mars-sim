@@ -58,11 +58,11 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
 
 	/** Mission phase. */
-	final public static MissionPhase COLLECT_RESOURCES = new MissionPhase(Msg.getString(
+	public final static MissionPhase COLLECT_RESOURCES = new MissionPhase(Msg.getString(
             "Mission.phase.collectResources")); //$NON-NLS-1$
 
 	/** Estimated collection time multiplier for EVA. */
-	final public static double EVA_COLLECTION_OVERHEAD = 20D;
+	public final static double EVA_COLLECTION_OVERHEAD = 20D;
 
 	// Data members
 

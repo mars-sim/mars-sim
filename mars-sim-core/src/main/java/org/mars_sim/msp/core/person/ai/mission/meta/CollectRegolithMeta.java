@@ -50,22 +50,10 @@ public class CollectRegolithMeta implements MetaMission {
     public double getProbability(Person person) {
 
     	double result = 0;
-/*
-    	if (marsClock == null)
-    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
     	
-    	sol = marsClock.getMissionSol();
-    	
-        if (sol < MIN_STARTING_SOL)
-        	return 0;
-*/
+        if (person.isInSettlement()) {
 
-    	Settlement settlement = person.getSettlement();
-    	
-    	if (settlement == null) {
-    		return 0;
-    	}
-    	else {
+            Settlement settlement = person.getSettlement();
 
 	        // a settlement with <= 4 population can always do DigLocalRegolith task
 	        // should avoid the risk of mission.

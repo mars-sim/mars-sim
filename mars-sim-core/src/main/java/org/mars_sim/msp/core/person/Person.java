@@ -640,6 +640,72 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
+	 * Is the person outside
+	 * @return true if the person is outside
+	 */
+	public boolean isOutside() {
+		if (isBuried)
+			return true;
+		else {
+			if (getContainerUnit() == null)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
+	 * Is the person inside a vehicle
+	 * @return true if the person is inside a vehicle
+	 */
+	public boolean isInVehicle() {
+		if (isBuried)
+			return false;
+		else {
+			if (getContainerUnit() instanceof Vehicle)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
+	 * Is the person inside a settlement
+	 * @return true if the person is inside a settlement
+	 */
+	public boolean isInSettlement() {
+		if (isBuried)
+			return false;
+		else {
+			if (getContainerUnit() instanceof Settlement)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
+	 * Is the person inside a settlement or a vehicle
+	 * @return true if the person is inside a settlement or a vehicle
+	 */
+	public boolean isInside() {
+		if (isBuried)
+			return false;
+		else {
+			Unit container = getContainerUnit();
+			if (container instanceof Settlement)
+				return true;
+			else if (container instanceof Vehicle)
+				return true;
+			else if (container == null)
+				return false;
+			else
+				return false;
+		}
+
+	}
+	
+	/**
 	 * @return {@link LocationSituation} the person's location
 	 */
 	public LocationSituation getLocationSituation() {

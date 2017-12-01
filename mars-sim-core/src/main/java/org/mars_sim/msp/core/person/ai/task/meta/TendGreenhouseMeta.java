@@ -7,12 +7,9 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -20,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
  * Meta task for the Tend Greenhouse task.
@@ -35,7 +31,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(TendGreenhouseMeta.class.getName());
+    //private static Logger logger = Logger.getLogger(TendGreenhouseMeta.class.getName());
 
     @Override
     public String getName() {
@@ -52,7 +48,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             try {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
@@ -109,37 +105,35 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Gardenbot)
+        if (robot.getBotMind().getRobotJob() instanceof Gardenbot && robot.isInSettlement()) {
 
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            try {
+                // See if there is an available greenhouse.
+                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
+                if (farmingBuilding != null) {
+                    result += 10D;
+                    // 2016-10-28 Added getCropsNeedingTendingCache()
+                    int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
+                    //System.out.println("needyCropsNum is "+needyCropsNum);
+                    result += needyCropsNum * 100D;
 
-	            try {
-	                // See if there is an available greenhouse.
-	                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
-	                if (farmingBuilding != null) {
-	                    result += 10D;
-	                    // 2016-10-28 Added getCropsNeedingTendingCache()
-	                    int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
-	                    //System.out.println("needyCropsNum is "+needyCropsNum);
-	                    result += needyCropsNum * 100D;
+                    // Crowding modifier.
+                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
+                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
 
-	                    // Crowding modifier.
-	                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
-	                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
+    	            // Effort-driven task modifier.
+    	            result *= robot.getPerformanceRating();
+    	            //System.out.println("probability is " + result);
 
-	    	            // Effort-driven task modifier.
-	    	            result *= robot.getPerformanceRating();
-	    	            //System.out.println("probability is " + result);
-
-	                }
-	            }
-	            catch (Exception e) {
-	                e.printStackTrace();
-	                //logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
-	            }
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                //logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
+            }
 
 
-	        }
+        }
 
         return result;
 	}

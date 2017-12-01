@@ -51,10 +51,10 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-        	Settlement settlement = person.getAssociatedSettlement();
-      	  
+        if (person.isInSettlement()) {
+        	
+	    	Settlement settlement = person.getSettlement();
+	  
             // Check all vehicle missions occurring at the settlement.
             try {
                 int numVehicles = 0;

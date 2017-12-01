@@ -14,7 +14,6 @@ import java.util.Set;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
@@ -55,10 +54,10 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         double result = 0;
         // TODO: Probability affected by the person's stress and fatigue.
 
-        Settlement settlement = person.getSettlement();
+        if (person.isInSettlement()) {
+       
+        	Settlement settlement = person.getSettlement();
         
-        if (settlement != null) {
-
             Set<Person> pool = new HashSet<Person>();
 
             // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
@@ -116,7 +115,8 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         	}
         }
 
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
+        	
         	Settlement s = person.getAssociatedSettlement();
         	Set<Person> pool = new HashSet<Person>();
         	

@@ -12,7 +12,6 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
@@ -34,6 +33,8 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.peerReviewStudyPaper"); //$NON-NLS-1$
 
+    private static ScientificStudyManager studyManager;
+    
     @Override
     public String getName() {
         return NAME;
@@ -49,12 +50,11 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
-        LocationSituation ls = person.getLocationSituation();
-        if (ls == LocationSituation.IN_SETTLEMENT
-            	|| ls == LocationSituation.IN_VEHICLE) {
-
+        if (person.isInside()) {
 	        // Get all studies in the peer review phase.
-	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+	        if (studyManager == null)
+	        	studyManager = Simulation.instance().getScientificStudyManager();
+	        //ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
 	        Iterator<ScientificStudy> i = studyManager.getOngoingStudies().iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy study = i.next();
@@ -68,8 +68,8 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 	                    // add chance to review.
 	                    Job job = person.getMind().getJob();
 	                    if (job != null) {
-	                        ScienceType jobScience = ScienceType.getJobScience(job);
-	                        if (study.getScience().equals(jobScience)) {
+	                        //ScienceType jobScience = ScienceType.getJobScience(job);
+	                        if (study.getScience().equals(ScienceType.getJobScience(job))) {
 	                            result += 50D * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();;
 	                        }
 	                    }

@@ -54,7 +54,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
             // Check if a mission-capable rover is available.

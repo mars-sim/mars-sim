@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Inventory;
 
 import org.mars_sim.msp.core.Msg;
@@ -19,7 +17,6 @@ import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 
@@ -44,8 +41,9 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             "Task.description.digLocalIce"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());
+    //private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());
 
+    private static SurfaceFeatures surface;
 
     @Override
     public String getName() {
@@ -61,30 +59,27 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-    	LocationSituation ls = person.getLocationSituation();
-    	
-        if (LocationSituation.OUTSIDE == ls || LocationSituation.IN_VEHICLE == ls) 
-        	return 0;
-       
-    	Settlement settlement = person.getAssociatedSettlement();
-     
-            // Check if an airlock is available
-        if (LocationSituation.IN_SETTLEMENT == ls
-        		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
-    		return 0;
-
-        //2016-10-04 Checked for radiation events
-    	boolean[] exposed = settlement.getExposed();
-
-
-		if (exposed[2]) {
-			// SEP can give lethal dose of radiation
-            return 0;
-		}
-		
+   
+        if (person.isInSettlement()) {
+        	
+	    	Settlement settlement = person.getSettlement();
+	     
+	    	// Check if an airlock is available
+	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
+	
+	        //2016-10-04 Checked for radiation events
+	    	boolean[] exposed = settlement.getExposed();
+	
+	
+			if (exposed[2]) {
+				// SEP can give lethal dose of radiation
+	            return 0;
+			}
+			
             // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+			if (surface == null)
+				surface = Simulation.instance().getMars().getSurfaceFeatures();
             if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
                 if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                     return 0;
@@ -145,7 +140,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             if (result < 0D) {
                 result = 0D;
             }
-        //}
+        }
 
         return result;
     }

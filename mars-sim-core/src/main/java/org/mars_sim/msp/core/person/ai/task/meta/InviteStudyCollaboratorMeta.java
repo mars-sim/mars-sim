@@ -11,7 +11,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
@@ -50,60 +49,57 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
 	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
-	        if (study != null) {
 
-	            // Check if study is in invitation phase.
-	            if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+            // Check if study is in invitation phase.
+            if (study != null && study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
 
-	                // Check that there isn't a full set of open invitations already sent out.
-	                int collabNum = study.getCollaborativeResearchers().size();
-	                int openInvites = study.getNumOpenResearchInvitations();
-	                if ((openInvites + collabNum) < ScientificStudy.MAX_NUM_COLLABORATORS) {
+                // Check that there isn't a full set of open invitations already sent out.
+                int collabNum = study.getCollaborativeResearchers().size();
+                int openInvites = study.getNumOpenResearchInvitations();
+                if ((openInvites + collabNum) < ScientificStudy.MAX_NUM_COLLABORATORS) {
 
-	                    // Check that there's scientists available for invitation.
-	                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
+                    // Check that there's scientists available for invitation.
+                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
 
-	                        result = 25D;
+                        result = 25D;
 
-	                        // Crowding modifier
-	                        Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
-	                        if (adminBuilding != null) {
-	                            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
-	                            result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
-	                        }
+                        // Crowding modifier
+                        Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
+                        if (adminBuilding != null) {
+                            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
+                            result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
+                        }
 
-	                        // Increase probability if person's current job is related to study's science.
-	                        Job job = person.getMind().getJob();
-	                        ScienceType science = study.getScience();
-	                        if (science == ScienceType.getJobScience(job)) {
-	                            result *= 2D;
-	                        }
+                        // Increase probability if person's current job is related to study's science.
+                        Job job = person.getMind().getJob();
+                        ScienceType science = study.getScience();
+                        if (science == ScienceType.getJobScience(job)) {
+                            result *= 2D;
+                        }
 
-	                        // Job modifier.
-	                        if (job != null) {
-	                            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class)
-	                            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	                        }
+                        // Job modifier.
+                        if (job != null) {
+                            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class)
+                            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
+                        }
 
 
-	                        // Modify if research is the person's favorite activity.
-	                        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	                            result *= 2D;
-	                        }
+                        // Modify if research is the person's favorite activity.
+                        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
+                            result *= 2D;
+                        }
 
-	                        // 2015-06-07 Added Preference modifier
-	                        if (result > 0)
-	                        	result += person.getPreference().getPreferenceScore(this);
-	                        if (result < 0) result = 0;
+                        // 2015-06-07 Added Preference modifier
+                        if (result > 0)
+                        	result += person.getPreference().getPreferenceScore(this);
+                        if (result < 0) result = 0;
 
-		                }
-		            }
-		        }
+	                }
+	            }
 	        }
         }
 

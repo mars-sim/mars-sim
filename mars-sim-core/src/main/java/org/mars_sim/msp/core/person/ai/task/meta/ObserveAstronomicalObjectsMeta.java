@@ -58,7 +58,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
 
         // Get local observatory if available.
         AstronomicalObservation observatory = ObserveAstronomicalObjects.determineObservatory(person);
-        if (observatory != null) {
+        if (null != observatory && person.isInSettlement()) {
 
             // Check if it is completely dark outside.
             if (surface == null)

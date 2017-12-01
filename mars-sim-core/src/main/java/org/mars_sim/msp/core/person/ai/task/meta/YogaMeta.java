@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -41,32 +40,28 @@ public class YogaMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-    	if (person.getLocationSituation() == LocationSituation.OUTSIDE)
-    		return 0;
-    	
         double result = 0D;
 
-        if (!person.getPreference().isTaskDue(this)) {
-	        // No yoga outside.
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
 	
-	            // Stress modifier
-	        	PhysicalCondition condition = person.getPhysicalCondition();
-	        	// doing yoga is less popular than doing regular workout
-	            result = condition.getStress() * 1.5D + (condition.getFatigue() / 20D);
-	            if (result < 0D) {
-	                result = 0D;
-	            }
-	            
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-	
-		        // 2015-06-07 Added Preference modifier
-	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-		        if (result < 0) result = 0;
-	
-	        }
+            // Stress modifier
+        	PhysicalCondition condition = person.getPhysicalCondition();
+        	// doing yoga is less popular than doing regular workout
+            result = condition.getStress() * 1.5D + (condition.getFatigue() / 20D);
+            if (result < 0D) {
+                result = 0D;
+            }
+            
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+	        // 2015-06-07 Added Preference modifier
+         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	        if (result < 0) result = 0;
+
+
         }
+        
         return result;
     }
 

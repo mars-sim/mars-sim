@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
@@ -40,6 +39,8 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformLaboratoryExperimentMeta.class.getName());
 
+    private static ScientificStudyManager studyManager;
+    
     @Override
     public String getName() {
         return NAME;
@@ -54,24 +55,25 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        
+        if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
 	            return 0;
 	        }
 	        else
 	        // the penalty for performing experiment inside a vehicle
-	        	result = -20D;
+	        	result = -50D;
         }
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-
+        if (person.isInside()) {
 	        // Create list of experimental sciences.
 	        List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();
 
 	        // Add probability for researcher's primary study (if any).
-	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+	        if (studyManager == null)
+	        	studyManager = Simulation.instance().getScientificStudyManager();
+	        //ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {

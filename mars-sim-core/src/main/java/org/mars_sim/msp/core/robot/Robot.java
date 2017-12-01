@@ -282,6 +282,72 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
     	return s.toString();
     }
 
+	/**
+	 * Is the robot outside
+	 * @return true if the robot is outside
+	 */
+	public boolean isOutside() {
+		if (isInoperable)
+			return true;
+		else {
+			if (getContainerUnit() == null)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
+	 * Is the robot inside a vehicle
+	 * @return true if the robot is inside a vehicle
+	 */
+	public boolean isInVehicle() {
+		if (isInoperable)
+			return false;
+		else {
+			if (getContainerUnit() instanceof Vehicle)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
+	 * Is the robot inside a settlement
+	 * @return true if the robot is inside a settlement
+	 */
+	public boolean isInSettlement() {
+		if (isInoperable)
+			return false;
+		else {
+			if (getContainerUnit() instanceof Settlement)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
+	 * Is the robot inside a settlement or a vehicle
+	 * @return true if the robot is inside a settlement or a vehicle
+	 */
+	public boolean isInside() {
+		if (isInoperable)
+			return false;
+		else {
+			Unit container = getContainerUnit();
+			if (container instanceof Settlement)
+				return true;
+			else if (container instanceof Vehicle)
+				return true;
+			else if (container == null)
+				return false;
+			else
+				return false;
+		}
+
+	}
+	
     /**
      * @return {@link LocationSituation} the robot's location
      */
@@ -291,12 +357,12 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
             return LocationSituation.DECOMMISSIONED;
         else {
             Unit container = getContainerUnit();
-            if (container == null)
-                return LocationSituation.OUTSIDE;
-            else if (container instanceof Settlement)
+            if (container instanceof Settlement)
                 return LocationSituation.IN_SETTLEMENT;
             else if (container instanceof Vehicle)
                 return LocationSituation.IN_VEHICLE;
+            else if (container == null)
+                return LocationSituation.OUTSIDE;
         }
         return LocationSituation.UNKNOWN;
     }

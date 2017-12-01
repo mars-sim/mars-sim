@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -61,10 +60,10 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
-
-        // Crowded settlement modifier
-        //if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-    	Settlement settlement = person.getAssociatedSettlement();
+  
+        if (person.isInSettlement()) {
+        	
+        	Settlement settlement = person.getSettlement();
     	
         	//2016-10-04 Checked for radiation events
         	boolean[] exposed = settlement.getExposed();
@@ -74,8 +73,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
     		}
 
             // Check if an airlock is available
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            		&& EVAOperation.getWalkableAvailableAirlock(person) == null)
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null)
 	    		return 0;
 
             // Check if it is night time.
@@ -146,7 +144,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
     		}
 
             if (result < 0) result = 0;
-        //}
+        }
 
         return result;
     }

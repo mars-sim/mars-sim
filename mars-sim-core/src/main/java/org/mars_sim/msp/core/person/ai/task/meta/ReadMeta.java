@@ -11,7 +11,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Read;
@@ -44,13 +43,10 @@ public class ReadMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        LocationSituation ls = person.getLocationSituation();
-        if (ls == LocationSituation.IN_SETTLEMENT
-        	|| ls == LocationSituation.IN_VEHICLE) {
-
+        if (person.isInside()) {
         	result += 3D;
 
-        	if (ls == LocationSituation.IN_VEHICLE)
+        	if (person.isInVehicle())
         		result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
 
 	        // Effort-driven task modifier.

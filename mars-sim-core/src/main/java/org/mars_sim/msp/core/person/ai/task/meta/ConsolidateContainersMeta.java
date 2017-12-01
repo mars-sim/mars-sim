@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -44,9 +43,8 @@ public class ConsolidateContainersMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation() ||
-                LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
-
+        if (person.isInside()) {
+        	
             // Check if there are local containers that need resource consolidation.
             if (ConsolidateContainers.needResourceConsolidation(person)) {
                 result = 10D;
@@ -81,18 +79,16 @@ public class ConsolidateContainersMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
-	        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation() ||
-	                LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot && robot.isInside()) {
 
-	            // Check if there are local containers that need resource consolidation.
-	            if (ConsolidateContainers.needResourceConsolidation(robot)) {
-	                result = 10D;
-	            }
+            // Check if there are local containers that need resource consolidation.
+            if (ConsolidateContainers.needResourceConsolidation(robot)) {
+                result = 10D;
+            }
 
-	            // Effort-driven task modifier.
-	            result *= robot.getPerformanceRating();
-	        }
+            // Effort-driven task modifier.
+            result *= robot.getPerformanceRating();
+        }
 
         return result;
 	}

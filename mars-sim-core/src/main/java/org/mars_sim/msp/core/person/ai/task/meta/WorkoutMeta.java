@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -43,13 +42,9 @@ public class WorkoutMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-    	if (person.getLocationSituation() == LocationSituation.OUTSIDE)
-    		return 0;
-    			
         double result = 0D;
                
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();

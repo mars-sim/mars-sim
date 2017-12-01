@@ -48,60 +48,57 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+        if (person.isInSettlement() && !person.getSettlement().getManufactureOverride()) {
             // the person has to be inside the settlement to check for manufacture override
-            if (!person.getSettlement().getManufactureOverride())  {
 
-                // See if there is an available manufacturing building.
-                Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(person);
-                if (manufacturingBuilding != null) {
-                    result = 1D;
+            // See if there is an available manufacturing building.
+            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(person);
+            if (manufacturingBuilding != null) {
+                result = 1D;
 
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
 
-                    // Manufacturing good value modifier.
-                    result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
+                // Manufacturing good value modifier.
+                result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
 
-                    // Capping the probability at 100 as manufacturing process values can be very large numbers.
-                    if (result > 100D) {
-                        result = 100D;
-                    }
-
-                    // If manufacturing building has process requiring work, add
-                    // modifier.
-                    SkillManager skillManager = person.getMind().getSkillManager();
-                    int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-                    if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
-                        result += 10D;
-                    }
-
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
-
-                    // Job modifier.
-                    Job job = person.getMind().getJob();
-                    if (job != null) {
-                        result *= job.getStartTaskProbabilityModifier(ManufactureGood.class)
-                        		* person.getSettlement().getGoodsManager().getManufacturingFactor();
-                    }
-
-                    // Modify if tinkering is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                        result *= 1.5D;
-                    }
-
-                    // 2015-06-07 Added Preference modifier
-                    if (result > 0D) {
-                        result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-                    }
-                    
-                    if (result < 0) result = 0;
-
-
+                // Capping the probability at 100 as manufacturing process values can be very large numbers.
+                if (result > 100D) {
+                    result = 100D;
                 }
+
+                // If manufacturing building has process requiring work, add
+                // modifier.
+                SkillManager skillManager = person.getMind().getSkillManager();
+                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+                if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
+                    result += 10D;
+                }
+
+                // Effort-driven task modifier.
+                result *= person.getPerformanceRating();
+
+                // Job modifier.
+                Job job = person.getMind().getJob();
+                if (job != null) {
+                    result *= job.getStartTaskProbabilityModifier(ManufactureGood.class)
+                    		* person.getSettlement().getGoodsManager().getManufacturingFactor();
+                }
+
+                // Modify if tinkering is the person's favorite activity.
+                if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
+                    result *= 1.5D;
+                }
+
+                // 2015-06-07 Added Preference modifier
+                if (result > 0D) {
+                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                }
+                
+                if (result < 0) result = 0;
+
+
             }
             
             // Cancel any manufacturing processes that's beyond the skill of any people

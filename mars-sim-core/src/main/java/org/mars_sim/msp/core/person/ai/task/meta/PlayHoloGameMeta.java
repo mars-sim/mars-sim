@@ -13,14 +13,12 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -68,10 +66,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        LocationSituation ls = person.getLocationSituation();
-        if (ls == LocationSituation.IN_SETTLEMENT
-        		|| ls == LocationSituation.IN_VEHICLE) {
-
+        if (person.isInside()) {
 
             // Stress modifier
         	double stress = person.getPhysicalCondition().getStress(); //0.0 to 100.0
@@ -80,49 +75,55 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
                 result += (stress - 20D) * 2;
             }
 
-            try {
-            	
-            	Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
-           		
-            	if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-                    result *= RandomUtil.getRandomDouble(3);
-            	}
-            	else {
-	            	// 2016-01-10 Added checking if a person has a designated bed
-	                Building quarters = person.getQuarters();    
-	                if (quarters == null) {
-	                	quarters = Sleep.getBestAvailableQuarters(person, true);
-	
-		            	if (quarters == null) {
-		            		result *= RandomUtil.getRandomDouble(2);
-		            	}
-		            	else
-		            		result *= RandomUtil.getRandomDouble(1.2);
-		            }
-           		}
-	
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
+            if (person.isInVehicle()) {
+            	result *= RandomUtil.getRandomDouble(1.5);
             }
-        }
-        else if (ls == LocationSituation.IN_VEHICLE) {
-        	result *= RandomUtil.getRandomDouble(1.5);
-        }
-        
-        // Modify probability if during person's work shift.
-        int millisols = (int) marsClock.getMillisol();
-        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-        if (isShiftHour) {
-            result*= WORK_SHIFT_MODIFIER;
-        }
+            
+            else {
+            	
+            	try {
+                    	
+	            	Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
+	           		
+	            	if (recBuilding != null) {
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+	                    result *= RandomUtil.getRandomDouble(3);
+	            	}
+	            	else {
+		            	// 2016-01-10 Added checking if a person has a designated bed
+		                Building quarters = person.getQuarters();    
+		                if (quarters == null) {
+		                	quarters = Sleep.getBestAvailableQuarters(person, true);
+		
+			            	if (quarters == null) {
+			            		result *= RandomUtil.getRandomDouble(2);
+			            	}
+			            	else
+			            		result *= RandomUtil.getRandomDouble(1.2);
+			            }
+	           		}
+            	
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, e.getMessage());
+                }
+            	
+            }
+            
+            // Modify probability if during person's work shift.
+            int millisols = (int) marsClock.getMillisol();
+            boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+            if (isShiftHour) {
+                result*= WORK_SHIFT_MODIFIER;
+            }
 
-        // 2015-06-07 Added Preference modifier
-        if (result > 0)
-        	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
 
-        if (result < 0) result = 0;
+            if (result < 0) result = 0;
+
+        }
 
 
         return result;

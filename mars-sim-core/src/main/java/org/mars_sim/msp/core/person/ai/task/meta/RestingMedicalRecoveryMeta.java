@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.RestingMedicalRecovery;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -49,7 +48,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
-        if (LocationSituation.OUTSIDE == person.getLocationSituation())
+        if (person.isOutside())
         	return 0;
 
         // Check if person has a health problem that requires bed rest for recovery.
@@ -93,10 +92,10 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
 
         boolean result = false;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             result = hasUsefulMedicalAidsAtSettlement(person);
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = hasUsefulMedicalAidsInVehicle(person);
         }
 

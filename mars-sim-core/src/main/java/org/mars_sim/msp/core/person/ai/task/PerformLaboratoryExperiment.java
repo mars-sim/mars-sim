@@ -72,6 +72,8 @@ implements ResearchScientificStudy, Serializable {
     /** The research assistant. */
     private Person researchAssistant;
 
+    private static ScientificStudyManager studyManager;
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -145,7 +147,7 @@ implements ResearchScientificStudy, Serializable {
      */
     public static double getLabCrowdingModifier(Person researcher, Lab lab) {
         double result = 1D;
-        if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (researcher.isInSettlement()) {
             Building labBuilding = ((Research) lab).getBuilding();
             if (labBuilding != null) {
                 result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);
@@ -168,8 +170,10 @@ implements ResearchScientificStudy, Serializable {
         List<ScienceType> experimentalSciences = getExperimentalSciences();
 
         // Add primary study if appropriate science and in research phase.
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
+        //ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+        if (studyManager == null)
+        	studyManager = Simulation.instance().getScientificStudyManager();
+        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {
@@ -188,7 +192,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Add all collaborative studies with appropriate sciences and in research phase.
-        Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
+        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
@@ -243,11 +247,10 @@ implements ResearchScientificStudy, Serializable {
     public static Lab getLocalLab(Person person, ScienceType science) {
         Lab result = null;
 
-        LocationSituation location = person.getLocationSituation();
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             result = getSettlementLab(person, science);
         }
-        else if (location == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = getVehicleLab(person.getVehicle(), science);
         }
 
@@ -358,8 +361,7 @@ implements ResearchScientificStudy, Serializable {
     private void addPersonToLab() {
 
         try {
-            LocationSituation location = person.getLocationSituation();
-            if (location == LocationSituation.IN_SETTLEMENT) {
+            if (person.isInSettlement()) {
                 Building labBuilding = ((Research) lab).getBuilding();
 
                 // Walk to lab building.
@@ -368,7 +370,7 @@ implements ResearchScientificStudy, Serializable {
                 lab.addResearcher();
                 malfunctions = labBuilding.getMalfunctionManager();
             }
-            else if (location == LocationSituation.IN_VEHICLE) {
+            else if (person.isInVehicle()) {
 
                 // Walk to lab internal location in rover.
                 walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -569,7 +571,7 @@ implements ResearchScientificStudy, Serializable {
 
         boolean result = false;
 
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInVehicle()) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle.getStatus() == StatusType.MOVING) {
                 result = true;

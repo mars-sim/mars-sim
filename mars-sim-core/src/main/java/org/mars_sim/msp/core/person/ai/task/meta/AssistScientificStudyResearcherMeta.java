@@ -11,15 +11,15 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.vehicle.StatusType;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the AssistScientificStudyResearcher task.
@@ -48,19 +48,17 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 
         double result = 0D;
         
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+        if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
-	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-	            result = 0D;
+	        if (inMovingRover(person)) {
 	            return 0;
 	        } 	       
 	        else
 	        // the penalty for performing experiment inside a vehicle
-	        	result = -20D;
+	        	result = -50D;
         }
         
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 	        // Find potential researchers.
 	        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
 	        if (potentialResearchers.size() > 0) {
@@ -99,6 +97,32 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
         return result;
     }
 
+    /**
+     * Checks if the person is in a moving vehicle.
+     * @param person the person.
+     * @return true if person is in a moving vehicle.
+     */
+    public static boolean inMovingRover(Person person) {
+
+        boolean result = false;
+
+        if (person.isInVehicle()) {
+            Vehicle vehicle = person.getVehicle();
+            if (vehicle.getStatus() == StatusType.MOVING) {
+                result = true;
+            }
+            else if (vehicle.getStatus() == StatusType.TOWED) {
+                Vehicle towingVehicle = vehicle.getTowingVehicle();
+                if (towingVehicle.getStatus() == StatusType.MOVING ||
+                        towingVehicle.getStatus() == StatusType.TOWED) {
+                    result = false;
+                }
+            }
+        }
+
+        return result;
+    }
+    
 	@Override
 	public Task constructInstance(Robot robot) {
 		// TODO Auto-generated method stub

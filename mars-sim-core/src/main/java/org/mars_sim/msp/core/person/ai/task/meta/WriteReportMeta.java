@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
@@ -49,8 +48,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
     	// check if he has this meta task done
     	if (!person.getPreference().isTaskDue(this)) {
     		
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-	        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            if (person.isInside()) {
 	        
 	            // Probability affected by the person's stress and fatigue.
 	            PhysicalCondition condition = person.getPhysicalCondition();

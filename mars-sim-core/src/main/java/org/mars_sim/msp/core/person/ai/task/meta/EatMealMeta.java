@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -45,8 +44,7 @@ public class EatMealMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0;
         
-        LocationSituation ls = person.getLocationSituation();
-        if (ls == LocationSituation.OUTSIDE)
+        if (person.isOutside())
         	return 0;
 
         PhysicalCondition pc = person.getPhysicalCondition();
@@ -77,7 +75,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         else
         	return 0;
 
-        if (ls == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
             // Check if a cooked meal is available in a kitchen building at the settlement.
             Cooking kitchen = EatMeal.getKitchenWithMeal(person);
@@ -109,7 +107,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         	
         }
         
-        else if (ls == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             //if (!EatMeal.isPreservedFoodAvailable(person)) {
                 // If no preserved food, person can't eat a meal.
             //    return 0;

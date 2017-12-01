@@ -11,7 +11,6 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
@@ -63,11 +61,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        LocationSituation ls = person.getLocationSituation();
-        if (ls == LocationSituation.OUTSIDE || ls == LocationSituation.IN_VEHICLE)
-        	return 0;
-        
-        if (ls == LocationSituation.IN_SETTLEMENT && CookMeal.isMealTime(person.getCoordinates())) {
+        if (person.isInside() && CookMeal.isMealTime(person.getCoordinates())) {
             // Desserts should be prepared during meal times.
         	
             // See if there is an available kitchen.
@@ -124,32 +118,29 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
        double result = 0D;
 
-       if (CookMeal.isMealTime(robot)) {
-           if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
+       if (CookMeal.isMealTime(robot) && robot.getBotMind().getRobotJob() instanceof Chefbot) {
+           // See if there is an available kitchen.
+           Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);
 
-               // See if there is an available kitchen.
-               Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);
+           if (kitchenBuilding != null) {
 
-               if (kitchenBuilding != null) {
+               PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
 
-                   PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
+               // Check if there are enough ingredients to prepare a dessert.
+               int numGoodRecipes = kitchen.getAListOfDesserts().size();
 
-                   // Check if there are enough ingredients to prepare a dessert.
-                   int numGoodRecipes = kitchen.getAListOfDesserts().size();
+               // Check if enough desserts have been prepared at kitchen for this meal time.
+               boolean enoughMeals = kitchen.getMakeNoMoreDessert();
 
-                   // Check if enough desserts have been prepared at kitchen for this meal time.
-                   boolean enoughMeals = kitchen.getMakeNoMoreDessert();
+               if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                   if ((numGoodRecipes > 0) && !enoughMeals) {
+                   result = 50D;
 
-                       result = 50D;
+                   // Crowding modifier.
+                   result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
 
-                       // Crowding modifier.
-                       result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-
-                       // Effort-driven task modifier.
-                       result *= robot.getPerformanceRating();
-                   }
+                   // Effort-driven task modifier.
+                   result *= robot.getPerformanceRating();
                }
            }
        }

@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
@@ -43,49 +42,44 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
     	
-    	//if (person.getSettlement() == null || person.getBuildingLocation() == null)
-    	//	return 0;
-    	
-        LocationSituation ls = person.getLocationSituation();
-        
-        if (ls != LocationSituation.IN_SETTLEMENT && ls != LocationSituation.IN_VEHICLE)
-        	return 0;
-
         double result = 0D;
 
-        RoleType roleType = person.getRole().getType();
+        if (person.isInSettlement()) {
 
-        if (roleType.equals(RoleType.PRESIDENT)
-                	|| roleType.equals(RoleType.MAYOR)
-            		|| roleType.equals(RoleType.COMMANDER))
-        	result += 50D;
-
-        else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES))
-        	result += 30D;
- 
-
-        // TODO: Probability affected by the person's stress and fatigue.
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-    	int now = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
-        boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
-        
-        if (isOnShiftNow)
-        	result = result*1.5D;
-        
-        if (result > 0)
-        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-        if (result < 0) 
-        	result = 0;
+	        RoleType roleType = person.getRole().getType();
+	
+	        if (roleType.equals(RoleType.PRESIDENT)
+	                	|| roleType.equals(RoleType.MAYOR)
+	            		|| roleType.equals(RoleType.COMMANDER))
+	        	result += 50D;
+	
+	        else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
+	            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
+	            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+	            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
+	            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
+	            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
+	            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES))
+	        	result += 30D;
+	 
+	
+	        // TODO: Probability affected by the person's stress and fatigue.
+	
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	
+	    	int now = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+	        boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
+	        
+	        if (isOnShiftNow)
+	        	result = result*1.5D;
+	        
+	        if (result > 0)
+	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	
+	        if (result < 0) 
+	        	result = 0;
+        }
         
         return result;
     }

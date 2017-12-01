@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -72,7 +71,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
             }
         }
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
             try {
                 // Check all building construction missions occurring at the settlement.
@@ -123,39 +122,6 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 	}
 
 	public double getProbability(Robot robot) {
-		 double result = 0D;
-/*
-
-        if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
-
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-                // Check if it is night time.
-                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-                if (( surface.getSolarIrradiance(robot.getCoordinates()) != 0D)
-                    && !(surface.inDarkPolarRegion(robot.getCoordinates()))) {
-
-    	            // Check if an airlock is available
-    	            if (EVAOperation.getWalkableAvailableAirlock(robot) != null) {
-
-		                // Check all building construction missions occurring at the settlement.
-		                try {
-		                    List<BuildingConstructionMission> missions = ConstructBuilding.
-		                            getAllMissionsNeedingAssistance(robot.getSettlement());
-		                    result = 100D * missions.size();
-		                }
-		                catch (Exception e) {
-		                    logger.log(Level.SEVERE, "Error finding building construction missions.", e);
-		                }
-		            }
-                }
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-*/
-        return result;
+        return 0;
     }
 }

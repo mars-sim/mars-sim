@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ReturnLightUtilityVehicle;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -42,17 +41,14 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInVehicle() && person.getVehicle() instanceof LightUtilityVehicle) {
+            result = 500D;
 
-            if (person.getVehicle() instanceof LightUtilityVehicle) {
-                result = 500D;
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
-    	        // 2015-06-07 Added Preference modifier
-    	        if (result > 0)
-	            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-    	        if (result < 0) result = 0;
-            }
+	        if (result < 0) result = 0;
         }
 
         return result;
@@ -67,11 +63,8 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
         double result = 0D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-
-            if (robot.getVehicle() instanceof LightUtilityVehicle) {
-                result = 500D;
-            }
+        if (robot.isInVehicle() && robot.getVehicle() instanceof LightUtilityVehicle) {
+        	result = 500D;
         }
 
         return result;

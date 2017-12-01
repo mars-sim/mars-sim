@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -72,7 +71,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
                 return 0;
         }
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
             // Check all building salvage missions occurring at the settlement.
             try {

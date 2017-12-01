@@ -10,13 +10,11 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -49,52 +47,48 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (!person.getPreference().isTaskDue(this)) {
+        if (!person.getPreference().isTaskDue(this) && person.isInside()) {
+        		
+            // Get an available office space.
+            Building building = ConnectWithEarth.getAvailableBuilding(person);
+
+            if (building != null) {
+            	result = 10D;
+            	// A comm facility has terminal equipment that provides communication access with Earth
+            	// It is necessary
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+
+
+            }
+            else {
+            //if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {            	
+                if (result > 0)
+                	result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
+            }   	
+            
+            // Effort-driven task modifier.
+            //result *= person.getPerformanceRating();
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
-            
-            LocationSituation ls = person.getLocationSituation();
-            if (ls == LocationSituation.IN_SETTLEMENT
-                	|| ls == LocationSituation.IN_VEHICLE) {
-            		
-	            // Get an available office space.
-	            Building building = ConnectWithEarth.getAvailableBuilding(person);
+              
+        	if (condition.getFatigue() > 1200D)
+        		result = result - 20D;
 
-	            if (building != null) {
-	            	result = 10D;
-	            	// A comm facility has terminal equipment that provides communication access with Earth
-	            	// It is necessary
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-
-
-	            }
-	            else {
-	            //if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {            	
-	                if (result > 0)
-	                	result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
-	            }   	
-	            
-	            // Effort-driven task modifier.
-	            //result *= person.getPerformanceRating();
-
-            	if (condition.getFatigue() > 1200D)
-            		result = result - 20D;
-
-            	if (condition.getStress() > 75D)
-            		result = result - 10D;
-            	
-	            // 2015-06-07 Added Preference modifier
-	            if (result > 0D) {
-	                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-	            }
-	         
-		        if (result < 0) result = 0;
-
+        	if (condition.getStress() > 75D)
+        		result = result - 10D;
+        	
+            // 2015-06-07 Added Preference modifier
+            if (result > 0D) {
+                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
             }
+         
+	        if (result < 0) result = 0;
+
         }
-        //System.out.println("result : " + result);
+            
+
         return result;
     }
 

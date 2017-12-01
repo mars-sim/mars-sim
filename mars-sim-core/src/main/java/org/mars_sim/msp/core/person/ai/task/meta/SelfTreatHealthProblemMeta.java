@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SelfTreatHealthProblem;
@@ -53,28 +52,30 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-
-        // Check if person has health problems that can be self-treated.
-        boolean hasSelfTreatableProblems = (getSelfTreatableHealthProblems(person).size() > 0);
-
-        // Check if person has available medical aids.
-        boolean hasAvailableMedicalAids = hasAvailableMedicalAids(person);
-
-
-        if (hasSelfTreatableProblems && hasAvailableMedicalAids) {
-            result = 300D;
-
-            // 2015-06-07 Added Preference modifier
-            //result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
-        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        if (person.isInside()) {
+	        // Check if person has health problems that can be self-treated.
+	        boolean hasSelfTreatableProblems = (getSelfTreatableHealthProblems(person).size() > 0);
+	
+	        // Check if person has available medical aids.
+	        boolean hasAvailableMedicalAids = hasAvailableMedicalAids(person);
+	
+	
+	        if (hasSelfTreatableProblems && hasAvailableMedicalAids) {
+	            result = 300D;
+	
+	            // 2015-06-07 Added Preference modifier
+	            //result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
+	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	
+	        }
+	
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	
+	        if (result < 0) result = 0;
 
         }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        if (result < 0) result = 0;
-
+        
         return result;
     }
 
@@ -115,10 +116,10 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
 
         boolean result = false;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             result = hasAvailableMedicalAidsAtSettlement(person);
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = hasAvailableMedicalAidInVehicle(person);
         }
 

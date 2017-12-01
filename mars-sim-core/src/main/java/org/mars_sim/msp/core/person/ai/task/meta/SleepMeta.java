@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 
 import org.mars_sim.msp.core.person.CircadianClock;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -78,15 +77,10 @@ public class SleepMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-    	//if (person.getVehicle() == null && (person.getSettlement() == null || person.getBuildingLocation() == null))
-    	//	return 0;
-    	
         double result = 0;
 
-        LocationSituation ls = person.getLocationSituation();
-        
-        if (ls == LocationSituation.IN_SETTLEMENT || ls == LocationSituation.IN_VEHICLE) {
-
+        if (person.isInside()) {
+        	
            	boolean proceed = false;
 
         	// each millisol generates 1 fatigue point
@@ -334,7 +328,7 @@ public class SleepMeta implements MetaTask, Serializable {
         double result = 1D;
 
         // No sleeping outside.
-        if (robot.getLocationSituation() == LocationSituation.OUTSIDE)
+        if (robot.isOutside())
             result = 0;
 
 
@@ -355,7 +349,7 @@ public class SleepMeta implements MetaTask, Serializable {
         //}
 
         // Crowding modifier.
-        else if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        else if (robot.isInSettlement()) {
         	result += 2D;
 
 

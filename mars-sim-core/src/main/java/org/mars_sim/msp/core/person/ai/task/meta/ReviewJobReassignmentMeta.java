@@ -13,7 +13,6 @@ import java.util.List;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
@@ -57,8 +56,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
         double result = 0D;
         //System.out.println("ReviewJobReassignmentMeta : getProbability()");
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
         	//if (roleType == null)
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?

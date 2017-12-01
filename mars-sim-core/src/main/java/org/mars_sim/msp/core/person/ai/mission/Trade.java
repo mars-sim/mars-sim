@@ -328,20 +328,7 @@ implements Serializable {
             performTradeEmbarkingPhase(member);
         }
     }
-//    protected void performPhase(Robot robot) {
-//        super.performPhase(robot);
-//        if (TRADE_DISEMBARKING.equals(getPhase())) {
-//            performTradeDisembarkingPhase(robot);
-//        } else if (TRADE_NEGOTIATING.equals(getPhase())) {
-//            performTradeNegotiatingPhase(robot);
-//        } else if (UNLOAD_GOODS.equals(getPhase())) {
-//            performUnloadGoodsPhase(robot);
-//        } else if (LOAD_GOODS.equals(getPhase())) {
-//            performLoadGoodsPhase(robot);
-//        } else if (TRADE_EMBARKING.equals(getPhase())) {
-//            performTradeEmbarkingPhase(robot);
-//        }
-//    }
+
     /**
      * Performs the trade disembarking phase.
      * @param member the mission member performing the mission.
@@ -403,47 +390,7 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
-//    private void performTradeDisembarkingPhase(Robot robot) {
-//
-//        // If rover is not parked at settlement, park it.
-//        if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-//
-//            tradingSettlement.getSettlementInventory().storeUnit(getVehicle());
-//            getVehicle().determinedSettlementParkedLocationAndFacing();
-//
-//            // Add vehicle to a garage if available.
-//            BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(), tradingSettlement);
-//        }
-//
-//        // Have robot exit rover if necessary.
-//        if (robot.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
-//
-//            // Get random inhabitable building at trading settlement.
-//            Building destinationBuilding = tradingSettlement.getBuildingManager().
-//                    getRandomAirlockBuilding();
-//            if (destinationBuilding != null) {
-//                Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-//                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-//                        destinationLoc.getY(), destinationBuilding);
-//
-//                if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-//                    assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-//                }
-//                else {
-//                    logger.severe("Unable to walk to building " + destinationBuilding);
-//                }
-//            }
-//            else {
-//                logger.severe("No inhabitable buildings at " + tradingSettlement);
-//                endMission("No inhabitable buildings at " + tradingSettlement);
-//            }
-//        }
-//
-//        // End the phase when everyone is out of the rover.
-//        if (isNoOneInRover()) {
-//            setPhaseEnded(true);
-//        }
-//    }
+
     /**
      * Perform the trade negotiating phase.
      * @param member the mission member performing the phase.
@@ -501,51 +448,7 @@ implements Serializable {
             TRADE_PROFIT_CACHE.remove(getStartingSettlement());
         }
     }
-//    private void performTradeNegotiatingPhase(Robot robot) {
-//        if (doNegotiation) {
-//            if (robot == getMissionRobotTrader()) {
-//                if (negotiationTask != null) {
-//                    if (negotiationTask.isDone()) {
-//                        buyLoad = negotiationTask.getBuyLoad();
-//                        profit = estimateTradeProfit(buyLoad);
-//                        fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
-//                        setPhaseEnded(true);
-//                    }
-//                }
-//                else {
-//                    if (startNegotiationTime == null) {
-//                        startNegotiationTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-//                    }
-//                    Robot settlementTrader = getSettlementRobotTrader();
-//                    if (settlementTrader != null) {
-//                        negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(),
-//                                sellLoad, robot, settlementTrader);
-//                        assignTask(robot, negotiationTask);
-//                    }
-//                    else {
-//                        MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-//                        double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
-//                        if (timeDiff > 1000D) {
-//                            buyLoad = new HashMap<Good, Integer>(0);
-//                            profit = 0D;
-//                            fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
-//                            setPhaseEnded(true);
-//                        }
-//                    }
-//                }
-//            }
-//        } else {
-//            setPhaseEnded(true);
-//        }
-//
-//        if (getPhaseEnded()) {
-//            outbound = false;
-//            equipmentNeededCache = null;
-//            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-//                    getStartingSettlement().getName()));
-//            TRADE_PROFIT_CACHE.remove(getStartingSettlement());
-//        }
-//    }
+
     /**
      * Perform the unload goods phase.
      * @param member the mission member performing the phase.
@@ -735,7 +638,7 @@ implements Serializable {
             // Remove from garage if in garage.
             Building garageBuilding = BuildingManager.getBuilding(getVehicle());
             if (garageBuilding != null) {
-                VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+                VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();//(VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
                 garage.removeVehicle(getVehicle());
             }
 

@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Teach;
@@ -45,8 +44,7 @@ public class TeachMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInside()) {
 
 	        // Find potential students.
 	        Collection<Person> potentialStudents = Teach.getBestStudents(person);

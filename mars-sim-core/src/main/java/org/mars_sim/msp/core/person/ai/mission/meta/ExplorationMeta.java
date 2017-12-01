@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -49,8 +48,9 @@ public class ExplorationMeta implements MetaMission {
     public double getProbability(Person person) {
 
         double result = 0D;
+        
+        if (person.isInSettlement()) {
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
             // Check if a mission-capable rover is available.

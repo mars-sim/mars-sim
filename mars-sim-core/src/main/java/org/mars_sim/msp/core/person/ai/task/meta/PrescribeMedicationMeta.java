@@ -61,7 +61,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (LocationSituation.OUTSIDE == person.getLocationSituation())
+        if (person.isOutside())
         	return 0;	
         
         Person patient = determinePatients(person);
@@ -131,7 +131,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (LocationSituation.OUTSIDE == robot.getLocationSituation())
+        if (robot.isOutside())
         	return 0;
         
         // Only medicbot or a doctor is allowed to perform this task.

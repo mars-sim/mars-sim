@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.mars.ExploredLocation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -51,8 +50,9 @@ public class MiningMeta implements MetaMission {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+        if (person.isInSettlement()) {
+        	
+        	Settlement settlement = person.getSettlement();
 
             // Check if a mission-capable rover is available.
             //boolean reservableRover =

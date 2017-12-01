@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.FavoriteType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
@@ -57,7 +56,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
         	try {
             // Get all vehicles requiring maintenance.
@@ -85,28 +84,28 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 	        // Determine if settlement has available space in garage.
 	        boolean garageSpace = false;
 	        boolean needyVehicleInGarage = false;
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            Settlement settlement = person.getSettlement();
-	            Iterator<Building> j = settlement.getBuildingManager().getBuildings(
-	                    FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
-	            while (j.hasNext() && !garageSpace) {
-	                try {
-	                    Building building = j.next();
-	                    VehicleMaintenance garage = building.getGroundVehicleMaintenance();
-	                    if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-	                        garageSpace = true;
-	                    }
-	
-	                    Iterator<Vehicle> i = garage.getVehicles().iterator();
-	                    while (i.hasNext()) {
-	                        if (i.next().isReservedForMaintenance()) {
-	                            needyVehicleInGarage = true;
-	                        }
-	                    }
-	                }
-	                catch (Exception e) {}
-	            }
-	        }
+       
+            Settlement settlement = person.getSettlement();
+            Iterator<Building> j = settlement.getBuildingManager().getBuildings(
+                    FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
+            while (j.hasNext() && !garageSpace) {
+                try {
+                    Building building = j.next();
+                    VehicleMaintenance garage = building.getGroundVehicleMaintenance();
+                    if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
+                        garageSpace = true;
+                    }
+
+                    Iterator<Vehicle> i = garage.getVehicles().iterator();
+                    while (i.hasNext()) {
+                        if (i.next().isReservedForMaintenance()) {
+                            needyVehicleInGarage = true;
+                        }
+                    }
+                }
+                catch (Exception e) {}
+            }
+	        
 	        if (!garageSpace && !needyVehicleInGarage) {
 	            result = 0D;
 	        }
