@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.medical.Complaint;
@@ -82,7 +83,7 @@ public class PhysicalCondition implements Serializable {
 	/** Performance modifier for hunger. */
 	private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
 	/** Performance modifier for fatigue. */
-	private static final double FATIGUE_PERFORMANCE_MODIFIER = .0001D;
+	private static final double FATIGUE_PERFORMANCE_MODIFIER = .0005D;
 	/** Performance modifier for stress. */
 	private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
 	/** Performance modifier for energy. */
@@ -697,7 +698,7 @@ public class PhysicalCondition implements Serializable {
 				taskMgr = person.getMind().getTaskManager();
 
 			// TODO : how to tell a person to walk back to the settlement ?
-			if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+			if (person.isInside()) {
 				// Stop any on-going tasks
 				taskMgr.clearTask();
 				// go eat a meal
@@ -739,7 +740,7 @@ public class PhysicalCondition implements Serializable {
 			if (taskMgr == null)
 				taskMgr = person.getMind().getTaskManager();
 
-			if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+			if (person.isInside()) {
 				// Stop any on-going tasks
 				taskMgr.clearTask();
 				// go drink water by eating a meal
@@ -822,6 +823,10 @@ public class PhysicalCondition implements Serializable {
 								"[" + person.getLocationTag().getShortLocationName() + "] " + name
 										+ " suffers from a panic attack.",
 								null);
+						
+						// the person should be carried to the sickbay at this point
+		            	person.getMind().getTaskManager().clearTask();
+		            	person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 
 					} else
 						logger.log(Level.SEVERE,
@@ -838,6 +843,11 @@ public class PhysicalCondition implements Serializable {
 								"[" + person.getLocationTag().getShortLocationName() + "] " + name
 										+ " has an episode of depression.",
 								null);
+						
+						// the person should be carried to the sickbay at this point
+		            	person.getMind().getTaskManager().clearTask();
+		            	person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+		            	
 					} else
 						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
 				}
@@ -880,6 +890,10 @@ public class PhysicalCondition implements Serializable {
 							"[" + person.getLocationTag().getShortLocationName() + "] " + name
 									+ " collapses because of high fatigue exhaustion.",
 							null);
+					
+					// the person should be carried to the sickbay at this point
+	            	person.getMind().getTaskManager().clearTask();
+	            	person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 
 				} else
 					logger.log(Level.SEVERE,
@@ -911,9 +925,14 @@ public class PhysicalCondition implements Serializable {
 				addMedicalComplaint(radiationPoisoning);
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-				// LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-				// "[" + person.getLocationTag().getShortLocationName() + "] " + name + "
-				// collapses because of radiation poisoning.", null);
+				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
+						"[" + person.getLocationTag().getShortLocationName() + "] " + name 
+						+ " collapses because of radiation poisoning.", null);
+				
+				// the person should be carried to the sickbay at this point
+            	person.getMind().getTaskManager().clearTask();
+            	person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+            	
 			} else
 				logger.log(Level.SEVERE, "Could not find 'Radiation Sickness' medical complaint in 'conf/medical.xml'");
 /*

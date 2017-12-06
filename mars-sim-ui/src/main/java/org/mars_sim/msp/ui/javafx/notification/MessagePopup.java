@@ -8,8 +8,6 @@
 package org.mars_sim.msp.ui.javafx.notification;
 
 
-import org.mars_sim.msp.ui.javafx.notification.PNotification;
-
 import javafx.stage.Stage;
 
 import javafx.geometry.Pos;
@@ -22,8 +20,6 @@ import javafx.util.Duration;
  */
 @SuppressWarnings("restriction")
 public class MessagePopup  {
-
-
 
 	private static final int SIZE_ICON = 64;
 	private static final int BASE_HEIGHT = 60;

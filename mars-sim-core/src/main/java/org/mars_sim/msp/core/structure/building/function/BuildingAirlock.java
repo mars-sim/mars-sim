@@ -14,9 +14,9 @@ import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -31,7 +31,7 @@ public class BuildingAirlock extends Airlock {
 
     private static Logger logger = Logger.getLogger(BuildingAirlock.class.getName());
 	
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	public static final double HEIGHT = 2; // assume an uniform height of 2 meters in all airlocks
 	
@@ -42,6 +42,8 @@ public class BuildingAirlock extends Airlock {
 	private Settlement settlement;
     private Building building; // The building this airlock is for.
     private Inventory inv;
+    private CompositionOfAir air;
+    private Heating heating;
     
     private Point2D airlockInsidePos;
     private Point2D airlockInteriorPos;
@@ -62,6 +64,10 @@ public class BuildingAirlock extends Airlock {
         settlement = building.getBuildingManager().getSettlement();
 
         inv = building.getSettlementInventory();
+        
+        //air = building.getSettlement().getCompositionOfAir();
+        
+        //heating = building.getThermalGeneration().getHeating();
         
         //if (building == null) {
         //    throw new IllegalArgumentException("building is null.");
@@ -87,9 +93,11 @@ public class BuildingAirlock extends Airlock {
             	// open the inner door to release the person into the settlement
             	
                 // Pump air into the airlock to make it breathable
-                building.getSettlement().getCompositionOfAir().pumpOrRecaptureAir(building.getInhabitableID(), true, building);
+            	if (air == null)
+            		air = building.getSettlement().getCompositionOfAir();
+                air.pumpOrRecaptureAir(building.getInhabitableID(), true, building);
 
-                if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+                if (person.isOutside()) {
                 	//logger.fine(
                 	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
                 	//		+ " has got inside the airlock at " + building + " in " 
@@ -111,12 +119,16 @@ public class BuildingAirlock extends Airlock {
             	// get exposed to the outside air and release the person
             	
                 // Upon depressurization, there is heat loss to the Martian air in Heating class
-                building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
+            	if (heating == null)
+            		heating = building.getThermalGeneration().getHeating();
+                heating.flagHeatLostViaAirlockOuterDoor(true);
                 
                 // Recapture air from the airlock before depressurizing it
-                building.getSettlement().getCompositionOfAir().pumpOrRecaptureAir(building.getInhabitableID(), false, building);
+            	if (air == null)
+            		air = building.getSettlement().getCompositionOfAir();
+                air.pumpOrRecaptureAir(building.getInhabitableID(), false, building);
                 
-                if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
+                if (person.isInSettlement()) {
                    	//logger.fine(
                 	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
                 	//		+ " has got inside the airlock at " + building + " in " 
@@ -126,7 +138,7 @@ public class BuildingAirlock extends Airlock {
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
 
                     // Recapture air from the airlock and store for us
-                    building.getSettlement().getCompositionOfAir().pumpOrRecaptureAir(building.getInhabitableID(), true, building);
+                    air.pumpOrRecaptureAir(building.getInhabitableID(), true, building);
 
                 }
                 else {
@@ -246,6 +258,17 @@ public class BuildingAirlock extends Airlock {
         	exitAirlock(robot);
 
         }
-
 	}
+	
+	public void destroy() {
+		settlement = null;
+	    building = null;
+	    inv = null;
+	    air = null;
+	    heating = null; 
+	    airlockInsidePos = null;
+	    airlockInteriorPos = null;
+	    airlockExteriorPos = null;
+	}
+	
 }

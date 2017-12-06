@@ -38,7 +38,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
+//import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -52,6 +52,7 @@ import javafx.scene.text.TextAlignment;
  * Date: 01.07.13
  * Time: 07:10
  */
+@SuppressWarnings("restriction")
 public class PNotification {
     public static Image INFO_ICON;//    = new Image(this.getClass().getResourceAsStream("info.png"));
     public static Image WARNING_ICON;// = new Image(this.getClass().getResourceAsStream("warning.png"));
@@ -125,7 +126,7 @@ public class PNotification {
         private void initGraphics() {
             scene = new Scene(new Region());
             scene.setFill(null);
-            scene.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
+            scene.getStylesheets().add(this.getClass().getResource("/fxui/css/notification/notifier.css").toExternalForm());
             stage = new Stage();
         	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
             stage.initStyle(StageStyle.TRANSPARENT);

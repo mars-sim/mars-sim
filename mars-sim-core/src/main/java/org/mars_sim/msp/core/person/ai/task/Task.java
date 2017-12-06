@@ -1051,7 +1051,7 @@ implements Serializable, Comparable<Task> {
 
 		if (person != null) {
 		       // If person is in a settlement, walk to random building.
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        if (person.isInSettlement()) {
 
 	            //Building currentBuilding = BuildingManager.getBuilding(person);
 	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
@@ -1065,7 +1065,7 @@ implements Serializable, Comparable<Task> {
 	            }
 	        }
 	        // If person is in a vehicle, walk to random location within vehicle.
-	        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	        else if (person.isInVehicle()) {
 
 	            // Walk to a random location within rover if possible.
 	            if (person.getVehicle() instanceof Rover) {
@@ -1075,7 +1075,7 @@ implements Serializable, Comparable<Task> {
 		}
 		else if (robot != null) {
 		       // If robot is in a settlement, walk to random building.
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        if (robot.isInSettlement()) {
 
 	            //Building currentBuilding = BuildingManager.getBuilding(robot);
 	            //TODO: determine why the below results in java.lang.NullPointerException
@@ -1094,7 +1094,7 @@ implements Serializable, Comparable<Task> {
 	            }
 	        }
 	        // If robot is in a vehicle, walk to random location within vehicle.
-	        else if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	        else if (robot.isInVehicle()) {
 
 	            // Walk to a random location within rover if possible.
 	            if (robot.getVehicle() instanceof Rover) {

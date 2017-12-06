@@ -223,6 +223,7 @@ LocalBoundedObject, InsidePathLocation {
 
 	//private DecimalFormat fmt = new DecimalFormat("###.####");
 
+	private static Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
 	
 	
 	/** Constructor 1.
@@ -446,7 +447,7 @@ LocalBoundedObject, InsidePathLocation {
 		// Initialize lab space for storing crop tissue cultures
 		if (hasFunction(FunctionType.RESEARCH) && getResearch().hasSpecialty(ScienceType.BOTANY)) {
 			lab = getResearch();
-			Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
+			//Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
 			for (AmountResource ar : tissues) {
 				getInventory().addAmountResourceTypeCapacity(ar, TISSUE_CAPACITY);
 				getInventory().storeAmountResource(ar, .1, false);

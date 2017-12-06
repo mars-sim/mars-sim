@@ -1808,7 +1808,7 @@ implements Serializable, LifeSupportType, Objective {
 				double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), xLocation,
 						yLocation);
 				if (distance < leastDistance) {
-					EVA eva = nextBuilding.getEVA();//(EVA) nextBuilding.getFunction(BuildingFunction.EVA);
+					EVA eva = nextBuilding.getEVA();
 					if (eva != null) {
 						result = eva.getAirlock();
 						leastDistance = distance;

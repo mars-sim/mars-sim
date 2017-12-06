@@ -67,12 +67,21 @@ extends TabPanel {
 	private List<Building> buildingsCache;
 
 	private JLabel o2Label;
-	private JLabel cO2Label, n2Label, h2OLabel, arLabel, totalPressureLabel, averageTemperatureLabel;
+	private JLabel cO2Label;
+	private JLabel n2Label;
+	private JLabel h2OLabel;
+	private JLabel arLabel;
+	private JLabel totalPressureLabel;
+	private JLabel averageTemperatureLabel;
 
 	private JTable table ;
 
-	private JRadioButton percent_btn, mass_btn;//, moles_btn, temperature_btn;
-	private JRadioButton kPa_btn, atm_btn, psi_btn, mb_btn;
+	private JRadioButton percent_btn;
+	private JRadioButton mass_btn;//, moles_btn, temperature_btn;
+	private JRadioButton kPa_btn;
+	private JRadioButton atm_btn;
+	private JRadioButton psi_btn;
+	private JRadioButton mb_btn;
 	
 	private JScrollPane scrollPane;
 	
@@ -367,22 +376,22 @@ extends TabPanel {
 		else if (kPa_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%2.2f", v * CompositionOfAir.KPA_PER_ATM);
+			return String.format("%1.2f", v * CompositionOfAir.KPA_PER_ATM);
 		}
 		else if (atm_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%1.3f", v);
+			return String.format("%1.4f", v);
 		}
 		else if (mb_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%3.1f", v * CompositionOfAir.MB_PER_ATM);
+			return String.format("%1.2f", v * CompositionOfAir.MB_PER_ATM);
 		}
 		else if (psi_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
 			// convert from atm to kPascal
-			return String.format("%2.1f", v * CompositionOfAir.PSI_PER_ATM);
+			return String.format("%1.3f", v * CompositionOfAir.PSI_PER_ATM);
 		}
 		//else if (moles_btn.isSelected()) {
 		//	v = air.getTotalMoles()[row];
@@ -390,7 +399,7 @@ extends TabPanel {
 		//}
 		else if (mass_btn.isSelected()) {
 			v = air.getTotalMass()[row];
-			return String.format("%1.2f", v); 
+			return String.format("%1.3f", v); 
 		}
 		//else if (temperature_btn.isSelected()) {
 			/*
@@ -487,7 +496,7 @@ extends TabPanel {
 			}
 			else if (atm_btn.isSelected()) {
 				totalPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.atm",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM*100.0)/100.0);
+						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM*10000.0)/10000.0);
 			}
 			else if (mb_btn.isSelected()) {
 				// convert from atm to mb
@@ -497,7 +506,7 @@ extends TabPanel {
 			else if (psi_btn.isSelected()) {
 				// convert from atm to kPascal
 				totalPressure =  Msg.getString("TabPanelAirComposition.label.totalPressure.psi",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.PSI_PER_ATM*100.0)/100.0);
+						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.PSI_PER_ATM*1000.0)/1000.0);
 			}
 			
 			if (!totalPressureCache.equals(totalPressure)) {
@@ -600,17 +609,17 @@ extends TabPanel {
 				else if (percent_btn.isSelected())
 					return String.format("%1.3f", amt); 
 				else if (kPa_btn.isSelected())
-					return String.format("%2.2f", amt); 
+					return String.format("%1.2f", amt); 
 				else if (atm_btn.isSelected())
-					return String.format("%1.3f", amt); 
+					return String.format("%1.4f", amt); 
 				else if (mb_btn.isSelected())
-					return String.format("%3.1f", amt); 
+					return String.format("%1.2f", amt); 
 				else if (psi_btn.isSelected())
-					return String.format("%2.1f", amt); 
+					return String.format("%1.3f", amt); 
 				//else if (moles_btn.isSelected())
 				//	return String.format("%1.1e", amt).replaceAll("e+0", "e"); 
 				else if (mass_btn.isSelected())
-					return String.format("%1.2f", amt);//.replaceAll("e+0", "e"); 
+					return String.format("%1.3f", amt);//.replaceAll("e+0", "e"); 
 				//else if (temperature_btn.isSelected())
 				//	return String.format("%3.1f", amt); 
 				else if (column == 2 || column == 6)

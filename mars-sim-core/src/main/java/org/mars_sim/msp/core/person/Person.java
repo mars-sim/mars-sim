@@ -693,12 +693,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			return false;
 		else {
 			Unit container = getContainerUnit();
-			if (container instanceof Settlement)
+			if (container == null)
+				return false;
+			else if (container instanceof Settlement)
 				return true;
 			else if (container instanceof Vehicle)
 				return true;
-			else if (container == null)
-				return false;
 			else
 				return false;
 		}
@@ -869,8 +869,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setShiftType(ShiftType.OFF);
 
 		if (quarters != null) {
-			LivingAccommodations accommodations = (LivingAccommodations) quarters
-					.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+			LivingAccommodations accommodations = quarters.getLivingAccommodations();
 			accommodations.getBedMap().remove(this);
 			quarters = null;
 		}

@@ -115,7 +115,7 @@ public class Sleep extends Task implements Serializable {
         timeFactor = 3D; // TODO: should vary this factor by person
 
         // If person is in a settlement, try to find a living accommodations building.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
         	Settlement s1 = person.getSettlement();
         	Settlement s0 = person.getAssociatedSettlement();
@@ -252,7 +252,7 @@ public class Sleep extends Task implements Serializable {
 			}
         }
 
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             // If person is in rover, walk to passenger activity spot.
             if (person.getVehicle() instanceof Rover) {
                 walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);

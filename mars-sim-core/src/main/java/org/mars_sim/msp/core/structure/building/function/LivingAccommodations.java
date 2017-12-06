@@ -43,11 +43,11 @@ public class LivingAccommodations extends Function implements Serializable {
     public final static double TOILET_WASTE_PERSON_SOL = .02D;
     public final static double WASH_AND_WASTE_WATER_RATIO = .85D;
 
-    private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMODATIONS;
-
     /** 1/5 of chance of going to a restroom per frame */
     public final static int TOILET_CHANCE = 5;
-	
+
+    private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMODATIONS;
+
     private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
     private int maxBeds; // max # of beds
     private int sleepers;
@@ -384,5 +384,18 @@ public class LivingAccommodations extends Function implements Serializable {
 	public double getPoweredDownHeatRequired() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	public void destroy() {
+
+	    settlement = null;
+	    inv = null;
+	    building = null;
+	    
+	    designatedBeds = null;
+
+	    simulationConfig = null;
+	    buildingConfig = null;
+		marsClock = null;
 	}
 }

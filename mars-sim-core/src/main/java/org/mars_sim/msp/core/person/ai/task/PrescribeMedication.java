@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -85,11 +84,10 @@ implements Serializable {
             // Determine medication to prescribe.
             //medication = determineMedication(patient);
 
-            LocationSituation ls = person.getLocationSituation();
-            if (LocationSituation.OUTSIDE == ls)
+            if (person.isOutside())
             	endTask();
             // If in settlement, move doctor to building patient is in.
-            else if (LocationSituation.IN_SETTLEMENT == ls && patient.getBuildingLocation() != null) {
+            else if (person.isInSettlement() && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
             	patient.getMind().getTaskManager().clearTask();
             	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
@@ -121,7 +119,7 @@ implements Serializable {
             //medication = determineMedication(patient);
 
             // If in settlement, move doctor to building patient is in.
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT && patient.getBuildingLocation() != null) {
+            if (robot.isInSettlement() && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
             	patient.getMind().getTaskManager().clearTask();
             	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
@@ -220,11 +218,10 @@ implements Serializable {
         // Get possible patient list.
         // Note: Doctor can also prescribe medication for himself.
         Collection<Person> patientList = null;
-        LocationSituation loc = doctor.getLocationSituation();
-        if (loc == LocationSituation.IN_SETTLEMENT) {
+        if (doctor.isInSettlement()) {
             patientList = doctor.getSettlement().getInhabitants();
         }
-        else if (loc == LocationSituation.IN_VEHICLE) {
+        else if (doctor.isInVehicle()) {
             Vehicle vehicle = doctor.getVehicle();
             if (vehicle instanceof Crewable) {
                 Crewable crewVehicle = (Crewable) vehicle;
@@ -264,8 +261,7 @@ implements Serializable {
         // Get possible patient list.
         // Note: Doctor can also prescribe medication for himself.
         Collection<Person> patientList = null;
-        LocationSituation loc = doctor.getLocationSituation();
-        if (loc == LocationSituation.IN_SETTLEMENT) {
+        if (doctor.isInSettlement()) {
             patientList = doctor.getSettlement().getInhabitants();
         }
 /*        

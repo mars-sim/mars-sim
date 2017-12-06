@@ -138,7 +138,7 @@ public class SleepMeta implements MetaTask, Serializable {
             if (proceed) {
     	
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 250) / 4D + stress * 5D + (ghrelin-leptin - 300)/10D;
+	            result += (fatigue - 50) / 2D + stress * 5D + (ghrelin-leptin - 300)/10D;
 
             	result += refreshSleepHabit(person);
                          	
@@ -213,7 +213,7 @@ public class SleepMeta implements MetaTask, Serializable {
 			            }
 			            else {
 		              		// There are no undesignated beds left in any quarters
-		                	logger.fine("SleepMeta : " + person + " cannot find any empty, undesignated beds in any "
+		                	logger.info("SleepMeta : " + person + " cannot find any empty, undesignated beds in any "
 		                			+ "quarters. Will use an unoccupied bed randomly.");
 		                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
 		                	quarters = Sleep.getBestAvailableQuarters(person, false);
@@ -222,7 +222,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	    		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
 		                	}
 		                    else {
-		                    	logger.fine("Sleep : " + person + " couldn't find an empty bed. Falling asleep at "
+		                    	logger.info("Sleep : " + person + " couldn't find an empty bed. Falling asleep at "
 		                    			+ "right where he/she is.");
 		                    	// TODO: should allow him/her to sleep in gym or anywhere.
 	    	                	// he should be "less" inclined to fall asleep this way
