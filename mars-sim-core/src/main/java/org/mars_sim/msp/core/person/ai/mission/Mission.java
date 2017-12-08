@@ -273,12 +273,12 @@ implements Serializable {
             	ShiftType shift = null;
             	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
             	if (person.getSettlement() != null) {
-            		shift = person.getSettlement().getAEmptyWorkShift(-1);
+            		shift = person.getSettlement().getAnEmptyWorkShift(-1);
             		person.setShiftType(shift);
             	}
             	else if (person.getVehicle() != null)
             		if (person.getVehicle().getSettlement() != null){
-            		shift = person.getVehicle().getSettlement().getAEmptyWorkShift(-1);
+            		shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
             		person.setShiftType(shift);
             	}
 

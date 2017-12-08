@@ -1050,7 +1050,18 @@ public class ChatBox extends BorderPane {
 	       		else
 	       			responseText.append("I'm not on a vehicle.");
 	    	}
-
+    		
+	    	else if (num == 16 || text.contains("sleep hour") || text.contains("bed time")) {
+	    		questionText = YOU_PROMPT + "What is your preferred/usual bed time ?";
+	    		
+	    		int[] twos = ((Person)cache).getCircadianClock().getPreferredSleepHours();
+	    		int small = Math.min(twos[0], twos[1]);
+	    		int large = Math.max(twos[0], twos[1]);
+	    		
+	    		responseText.append("My preferred sleep hours are at either " + small + " or " + large + " millisols.");	       		
+	       		
+	    	}
+    		
 	    	else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")
 	    			|| text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h")
 	       			|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")

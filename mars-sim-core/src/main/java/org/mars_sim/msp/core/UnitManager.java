@@ -1183,7 +1183,7 @@ public class UnitManager implements Serializable {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
-			shiftType = settlement.getAEmptyWorkShift(pop); // keep pop as a param just to speed up processing
+			shiftType = settlement.getAnEmptyWorkShift(pop); // keep pop as a param just to speed up processing
 			p.setShiftType(shiftType);
 		}
 

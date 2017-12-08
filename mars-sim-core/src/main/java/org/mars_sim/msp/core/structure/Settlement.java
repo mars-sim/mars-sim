@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.Weather;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -1332,8 +1331,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		for (Person p : people) {
 
-			if (p.getMind().getMission() == null
-					&& p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (p.getMind().getMission() == null && p.isInSettlement()) {
 
 				// 2015-12-05 Check if person is an astronomer.
 	            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
@@ -1364,8 +1362,10 @@ implements Serializable, LifeSupportType, Objective {
 		            		else
 		            			newShift = ShiftType.Z;
 	            		}
+	            		
 	            		else if (x_ok)
 	            			newShift = ShiftType.X;
+	            		
 	            		else if (z_ok)
 	            			newShift = ShiftType.Z;
 
@@ -1379,11 +1379,14 @@ implements Serializable, LifeSupportType, Objective {
 	            else {
 
 					if (oldShift == ShiftType.ON_CALL) {
-
 						// TODO: check a person's sleep habit map and request changing his work shift
 						// to avoid taking a work shift that overlaps his sleep hour
-						ShiftType newShift = getAEmptyWorkShift(pop);
-						if (newShift != oldShift) { // sanity check
+						ShiftType newShift = getAnEmptyWorkShift(pop);
+						
+						int tendency = p.getTaskSchedule().getShiftChoice(newShift);
+						// TODO: should find the person with the highest tendency to take this shift
+						
+						if (newShift != oldShift && tendency > 50) { // sanity check
 							//System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift + ",  new shift : " + newShift);
 							p.setShiftType(newShift);
 						}
@@ -1398,7 +1401,8 @@ implements Serializable, LifeSupportType, Objective {
 
 						if (!oldShift_ok) {
 							// if a person's shift is saturated, he will need to change shift
-							ShiftType newShift = getAEmptyWorkShift(pop);
+							ShiftType newShift = getAnEmptyWorkShift(pop);
+							
 							if (newShift != oldShift) { // sanity check
 								//System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift + ",  new shift : " + newShift);
 								p.setShiftType(newShift);
@@ -1410,8 +1414,10 @@ implements Serializable, LifeSupportType, Objective {
 			// Just for sanity check for those on a vehicle mission
 			// Note: shouldn't be needed this way but currently, when currently when starting a trade mission,
 			// the code fails to change a person's work shift to On-call.
-			else if (p.getMind().getMission() != null || p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+			else if (p.getMind().getMission() != null || p.isInVehicle()) {
+				
 				ShiftType oldShift = p.getTaskSchedule().getShiftType();
+				
 				if (oldShift != ShiftType.ON_CALL) {
 					//System.out.println(p + " old shift : " + oldShift + " new shift : " + ShiftType.ON_CALL);
 					p.setShiftType(ShiftType.ON_CALL);
@@ -2982,7 +2988,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return The ShifType
 	 */
 	// 2015-11-01 Edited getAEmptyWorkShift
-	public ShiftType getAEmptyWorkShift(int pop) {
+	public ShiftType getAnEmptyWorkShift(int pop) {
 		if (pop == -1)
 			pop = getNumCurrentPopulation();
 

@@ -913,10 +913,28 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				int solElapsed = marsClock.getMissionSol();
 
 				if (solCache != solElapsed) {
-					// Update a person's age
+					// Check if a person's age should be updated
 					age = updateAge();
 					solCache = solElapsed;
 				}
+
+				if (solElapsed % 3 == 0) {
+					// Adjust the shiftChoice once every 3 sols based on sleep hour
+					int bestSleepTime[] = getPreferredSleepHours();
+					taskSchedule.adjustShiftChoice(bestSleepTime);
+				}
+				
+				
+				if (solElapsed % 4 == 0) {
+					// Increment the shiftChoice once every 4 sols
+					taskSchedule.incrementShiftChoice();
+				}
+
+				if (solElapsed % 7 == 0) {
+					// Normalize the shiftChoice once every week
+					taskSchedule.normalizeShiftChoice();
+				}
+				
 			}
 		}
 
@@ -1403,12 +1421,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return condition.getStress();
 	}
 
-	public int[] getBestKeySleepCycle() {
-		return circadian.getBestKeySleepCycle();
+	public int[] getPreferredSleepHours() {
+		return circadian.getPreferredSleepHours();
 	}
 
-	public void updateValueSleepCycle(int millisols, boolean updateType) {
-		circadian.updateValueSleepCycle(millisols, updateType);
+	public void updateSleepCycle(int millisols, boolean updateType) {
+		circadian.updateSleepCycle(millisols, updateType);
 	}
 
 	// 2015-12-12 Added setEmotionalStates()

@@ -123,7 +123,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
 	            if (circadian.getNumSleep() <= maxNumSleep) {
 	            	// 2015-12-05 checks the current time against the sleep habit heat map
-	    	    	int bestSleepTime[] = person.getBestKeySleepCycle();
+	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
 	    	    	// is now falling two of the best sleep time ?
 	    	    	for (int time : bestSleepTime) {
 	    		    	int diff = time - now;
@@ -277,7 +277,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
            		if (spaceOut < now && habit < MAX_SUPPRESSION) {
 	           		// Discourage the person from forming the sleep habit at this time
-		  	  		person.updateValueSleepCycle(now, false);
+		  	  		person.updateSleepCycle(now, false);
 		        	// shouldn't be zero since it's possible a person did not have enough sleep at other time and now fall asleep
 			    	result = result / 10D;
 

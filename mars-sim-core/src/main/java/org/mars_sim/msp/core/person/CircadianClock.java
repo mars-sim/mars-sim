@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -64,8 +63,6 @@ public class CircadianClock implements Serializable {
  	private double leptin_level = 400; 
  	/** The leptin threshold of each person is tuned by genetics. */
  	private double leptin_threshold = 400;
-
-
  	
 	// Ghrelin, the appetite/sleep increaser, is released primarily in the stomach and is thought to signal hunger to 
  	// the brain. 
@@ -80,7 +77,7 @@ public class CircadianClock implements Serializable {
 
 	private Person person;
 
-	private PhysicalCondition condition;
+	//private PhysicalCondition condition;
     
     /** Sleep habit map keeps track of the sleep cycle */
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); 
@@ -99,7 +96,7 @@ public class CircadianClock implements Serializable {
 	public void init() {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        condition = person.getPhysicalCondition();
+        //condition = person.getPhysicalCondition();
         
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -167,8 +164,7 @@ public class CircadianClock implements Serializable {
      * Gets the key of the Sleep Cycle Map with the highest weight
      * @return int[] the two best times in integer
      */
-    // 2015-12-05 Added getBestKeySleepCycle()
-    public int[] getBestKeySleepCycle() {
+    public int[] getPreferredSleepHours() {
     	int largest[] = {0,0};
     	//Iterator<Integer> i = sleepCycleMap.keySet().iterator();
     	//while (i.hasNext()) {
@@ -191,8 +187,7 @@ public class CircadianClock implements Serializable {
      * @param millisols the time
      * @param type increase/encouraged if true; reduce/discouraged if false
      */
-    // 2015-12-05 Added updateValueSleepCycle()
-    public void updateValueSleepCycle(int millisols, boolean type) {
+    public void updateSleepCycle(int millisols, boolean type) {
     	// set HEAT_MAP_RESOLUTION of discrete sleep periods
     	millisols = (millisols / SLEEP_MAP_RESOLUTION )* SLEEP_MAP_RESOLUTION;
     	int currentValue = 0;
@@ -508,7 +503,7 @@ public class CircadianClock implements Serializable {
     	person = null;
     	//personConfig = null;
     	marsClock = null;
-    	condition = null;
+    	//condition = null;
         sleepCycleMap = null; 
 
     }

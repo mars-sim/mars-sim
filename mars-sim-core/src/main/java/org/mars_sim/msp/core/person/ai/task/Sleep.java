@@ -382,7 +382,7 @@ public class Sleep extends Task implements Serializable {
 	        circadian.getRested(time);
 	        
 	    	circadian.setNumSleep(circadian.getNumSleep()+1);
-	    	circadian.updateValueSleepCycle((int) marsClock.getMillisol(), true);
+	    	circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
 	        
 	        // Check if alarm went off
 	        double newTime = marsClock.getMillisol();
@@ -452,7 +452,7 @@ public class Sleep extends Task implements Serializable {
 
         Building result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             //BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> quartersBuildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMODATIONS);
             quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
@@ -500,7 +500,7 @@ public class Sleep extends Task implements Serializable {
 
         Building result = null;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (robot.isInSettlement()) {
             BuildingManager manager = robot.getSettlement().getBuildingManager();
             List<Building> buildings = manager.getBuildings(FunctionType.ROBOTIC_STATION);
             buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
@@ -558,7 +558,7 @@ public class Sleep extends Task implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            RoboticStation station = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
+            RoboticStation station = building.getRoboticStation();//(RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
             if (station.getSleepers() < station.getSlots()) {
                 result.add(building);
             }
