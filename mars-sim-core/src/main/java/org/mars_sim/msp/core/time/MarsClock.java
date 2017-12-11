@@ -116,10 +116,16 @@ public class MarsClock implements Serializable {
 			"Venusol", "Jovisol" };
 
 	// Data members
-	private int orbit;
+	/** The Martian year. */
+	private int orbit; 
+	/** The Martian month. */
 	private int month;
-	private int sol; // the sol of a month
-	private double millisol;
+	/** The Martian day. */
+	private int sol;
+	/** The rounded millisol of the day. */
+	private int msols; 
+	/** The millisol of the day. */	
+	private double millisol; 
 
 	private OrbitInfo orbitInfo;
 
@@ -378,6 +384,7 @@ public class MarsClock implements Serializable {
 	public void addTime(double addedMillisols) {
 
 		millisol += addedMillisols;
+		msols = (int) millisol;
 
 		if (addedMillisols > 0D) {
 			while (millisol >= 1000D) {
@@ -562,7 +569,7 @@ public class MarsClock implements Serializable {
 	 */
 	public static String getMillisolString(MarsClock time) {
 		StringBuilder b = new StringBuilder();
-		int millisol = (int) time.getMillisol();
+		int millisol = time.getMsols();
 
 		// String result = "" + tb;
 		b.append(millisol);
@@ -658,6 +665,15 @@ public class MarsClock implements Serializable {
 		return millisol;
 	}
 
+	/**
+	 * Returns the rounded millisol
+	 *
+	 * @return the millisol as an int
+	 */
+	public int getMsols() {
+		return msols;
+	}
+	
 	/**
 	 * Returns the week of the month (1-4)
 	 *

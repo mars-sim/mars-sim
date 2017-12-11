@@ -175,7 +175,7 @@ public class RadiationExposure implements Serializable {
 
 	private int solCache = 1, counter30 = 1, counter360 = 1;
 
-	private int millisolsCache;
+	private int msolsCache;
 	
 	private boolean repeated;
 	
@@ -326,8 +326,8 @@ public class RadiationExposure implements Serializable {
         	// check on the effect of the exposure once a day at between 100 & 110 millisols
             // Note: at fastest simulation speed, it can skip as much as ~5 millisols
         
-		int msol = (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
-		if (msol % 20 == 0) { 	
+		int msol = marsClock.getMsols();//(int)(marsClock.getMillisol() * masterClock.getTimeRatio());
+		if (msol % 17 == 0) { 	
         	checkExposureLimit();
         	// reset the boolean
         	//isExposureChecked = true;
@@ -444,15 +444,15 @@ public class RadiationExposure implements Serializable {
      */
     public boolean isRadiationDetected(double time) {
 
-        int millisols = (int) marsClock.getMillisol();
+        int msols = marsClock.getMsols();
         
-        if (millisolsCache == millisols)
+        if (msolsCache == msols)
         	repeated = true;
         
-        millisolsCache = millisols;
+        msolsCache = msols;
         
 		// Check every RADIATION_CHECK_FREQ (in millisols)
-	    if (!repeated && millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
+	    if (!repeated && msols % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
 	    	// Use repeated to avoid calculating the exposure over and over when the time ratio is low
 	    	// and millisols iterates very slowly and gives the same value.
 	    	repeated = true;

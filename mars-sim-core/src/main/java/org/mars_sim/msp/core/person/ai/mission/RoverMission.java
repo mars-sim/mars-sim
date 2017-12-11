@@ -439,7 +439,7 @@ extends VehicleMission {
 */
 	        // Retrieve the person if he/she is dead
 			for (Person p : rover.getCrew()) {
-	            if (p.isDead()) {
+	            if (p.isDeclaredDead()) {
 					v.getInventory().retrieveUnit(p);
                 	p.setBuriedSettlement(disembarkSettlement);
 	            	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);

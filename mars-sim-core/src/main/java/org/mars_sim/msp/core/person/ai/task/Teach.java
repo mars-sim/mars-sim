@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
@@ -77,7 +76,7 @@ implements Serializable {
 
             boolean walkToBuilding = false;
             // If in settlement, move teacher to building student is in.
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            if (person.isInSettlement()) {
 
                 Building studentBuilding = BuildingManager.getBuilding(student);
 
@@ -97,7 +96,7 @@ implements Serializable {
 
             if (!walkToBuilding) {
 
-                if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                if (person.isInVehicle()) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
                         walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -194,7 +193,7 @@ implements Serializable {
 
         // If teacher is in a settlement, best students are in least crowded buildings.
         Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
-        if (teacher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (teacher.isInSettlement()) {
             // Find the least crowded buildings that teachable students are in.
             int crowding = Integer.MAX_VALUE;
             Iterator<Person> i = students.iterator();
@@ -202,7 +201,7 @@ implements Serializable {
                 Person student = i.next();
                 Building building = BuildingManager.getBuilding(student);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = building.getLifeSupport();
                     int buildingCrowding = lifeSupport.getOccupantNumber()
                             - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) {
@@ -220,7 +219,7 @@ implements Serializable {
                 Person student = j.next();
                 Building building = BuildingManager.getBuilding(student);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = building.getLifeSupport();
                     int buildingCrowding = lifeSupport.getOccupantNumber()
                             - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) {
@@ -246,8 +245,7 @@ implements Serializable {
         Iterator<Person> k = leastCrowded.iterator();
         while (k.hasNext()) {
             Person student = k.next();
-            double opinion = relationshipManager.getOpinionOfPerson(teacher,
-                    student);
+            double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
             if (opinion > favorite) {
                 favorite = opinion;
             }
@@ -257,8 +255,7 @@ implements Serializable {
         k = leastCrowded.iterator();
         while (k.hasNext()) {
             Person student = k.next();
-            double opinion = relationshipManager.getOpinionOfPerson(teacher,
-                    student);
+            double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
             if (opinion == favorite) {
                 favoriteStudents.add(student);
             }
@@ -310,7 +307,7 @@ implements Serializable {
     private static Collection<Person> getLocalPeople(Person person) {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             Iterator<Person> i = person.getSettlement().getInhabitants()
                     .iterator();
             while (i.hasNext()) {
@@ -320,7 +317,7 @@ implements Serializable {
                 }
             }
         } 
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             Crewable rover = (Crewable) person.getVehicle();
             Iterator<Person> i = rover.getCrew().iterator();
             while (i.hasNext()) {

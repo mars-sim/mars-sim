@@ -480,7 +480,7 @@ implements Serializable {
         if (this instanceof Crewable) {
             Crewable crewable = (Crewable) this;
             for (Person p : crewable.getCrew()) {
-            	if (p.isDead()) {
+            	if (p.isDeclaredDead()) {
             		logger.info("Retrieving the dead body of " + p + " from " + vehicle.getName()
             			+ " parked in the vicinity of " + settlement);
             		PhysicalCondition pc = p.getPhysicalCondition();

@@ -111,7 +111,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
             }
             
             // Modify probability if during person's work shift.
-            int millisols = (int) marsClock.getMillisol();
+            int millisols = marsClock.getMsols();
             boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
             if (isShiftHour) {
                 result*= WORK_SHIFT_MODIFIER;

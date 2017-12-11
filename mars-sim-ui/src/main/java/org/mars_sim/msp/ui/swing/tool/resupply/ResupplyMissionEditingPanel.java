@@ -1118,7 +1118,7 @@ extends TransportItemEditingPanel {
 					//marsCurrentTime = null;
 					validation_result = false;
 					enableButton(false);
-					System.out.println("Invalid entry for Sols ");
+					System.out.println("ResupplyMissionEditingPanel : Invalid entry for Sols ");
 				}
 			//}
 		//}

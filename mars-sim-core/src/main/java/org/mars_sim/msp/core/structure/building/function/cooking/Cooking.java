@@ -840,7 +840,7 @@ implements Serializable {
 	    if (has_oil)
 	    	mealQuality = mealQuality + .2;
 
-	    mealQuality = Math.round((mealQuality + culinarySkillPerf + cleanliness)*10D)/15D;;
+	    mealQuality = Math.round((mealQuality + culinarySkillPerf + cleanliness)*10D)/15D;
 
 	    // consume salt
 	    retrieveAnIngredientFromMap(hotMeal.getSalt(), ResourceUtil.tableSaltAR, true);
@@ -1029,7 +1029,7 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-	    int millisols =  (int) marsClock.getMillisol();
+	    int millisols = marsClock.getMsols();
 	    if (millisols % RECHECKING_FREQ == 0) {
 	    	// reset
 	    	no_oil_last_time = false;

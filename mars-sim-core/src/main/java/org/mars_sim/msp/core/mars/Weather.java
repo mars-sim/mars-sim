@@ -61,7 +61,7 @@ implements Serializable {
 
 	private int quotientCache;
 
-	private int millisols;
+	private int msols;
 
 	private int checkStorm = 0;
 
@@ -342,7 +342,7 @@ implements Serializable {
         }
 
 
-		if (millisols % MILLISOLS_PER_UPDATE == 1) {
+		if (msols % MILLISOLS_PER_UPDATE == 1) {
 			//System.out.println("marsClock : "+ marsClock);
 			//System.out.println("millisols : "+ millisols);
 			double newP = calculateAirPressure(location, 0);
@@ -420,7 +420,7 @@ implements Serializable {
             temperatureCacheMap = new ConcurrentHashMap<Coordinates, Double>();
         }
 
-		if (millisols % MILLISOLS_PER_UPDATE == 0) {
+		if (msols % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
 			temperatureCacheMap.put(location, newT);
 			//System.out.println("Weather.java: temperatureCache is " + temperatureCache);
@@ -692,9 +692,9 @@ implements Serializable {
 			marsClock = masterClock.getMarsClock();
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
-	    millisols =  (int) marsClock.getMillisol();
+	    msols = marsClock.getMsols();
 
-	    int quotient = millisols / RECORDING_FREQUENCY;
+	    int quotient = msols / RECORDING_FREQUENCY;
 
 	    if (quotientCache != quotient) {
 

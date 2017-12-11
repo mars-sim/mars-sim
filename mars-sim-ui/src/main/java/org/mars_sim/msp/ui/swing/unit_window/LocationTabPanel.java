@@ -809,7 +809,7 @@ implements ActionListener {
     public String updatePerson(Person p) {
     	String loc = null;
 
-		if (p.isDead()) {
+		if (p.isDeclaredDead()) {
 
 			if (p.isBuried())
 				loc = BURIED + AT + p.getBuriedSettlement().getName();

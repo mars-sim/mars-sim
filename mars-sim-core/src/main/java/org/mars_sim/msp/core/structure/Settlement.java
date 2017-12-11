@@ -924,7 +924,7 @@ implements Serializable, LifeSupportType, Objective {
 	    if (marsClock == null)
 	    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	    
-	    int millisols =  (int) marsClock.getMillisol();
+	    int millisols = marsClock.getMsols();
 	    
 	    int num = getNumShift();
 	    
@@ -1021,7 +1021,7 @@ implements Serializable, LifeSupportType, Objective {
 		performEndOfDayTasks(); // NOTE: also update solCache in makeDailyReport()
 
 		// Sample a data point every SAMPLE_FREQ (in millisols)
-	    int millisols =  (int) marsClock.getMillisol();
+	    int millisols = marsClock.getMsols();
 
 	    int remainder = millisols % SAMPLING_FREQ ;
 	    if (remainder == 0)
@@ -1331,7 +1331,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		for (Person p : people) {
 
-			if (p.getMind().getMission() == null && p.isInSettlement()) {
+			if (p.getMind().getMission() == null && p.isInSettlement() && !p.isDeclaredDead()) {
 
 				// 2015-12-05 Check if person is an astronomer.
 	            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
@@ -2988,8 +2988,9 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return The ShifType
 	 */
 	// 2015-11-01 Edited getAEmptyWorkShift
-	public ShiftType getAnEmptyWorkShift(int pop) {
-		if (pop == -1)
+	public ShiftType getAnEmptyWorkShift(int population) {
+		int pop = 0;
+		if (population == -1)
 			pop = getNumCurrentPopulation();
 
 		int rand = -1;
@@ -3475,7 +3476,7 @@ implements Serializable, LifeSupportType, Objective {
     public int getCropsNeedingTending() {
         int result = 0;
 
-        int m = (int) marsClock.getMillisol();
+        int m = marsClock.getMsols();
         if (millisolCache + 5 >= m) {
         	result = cropsNeedingTendingCache;
     	}

@@ -90,7 +90,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	pc = person.getPhysicalCondition();
         	circadian = person.getCircadianClock();
 
-        	int now = (int) marsClock.getMillisol();
+        	int now = marsClock.getMsols();
             boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
             
             double fatigue = pc.getFatigue();
@@ -263,7 +263,7 @@ public class SleepMeta implements MetaTask, Serializable {
     public double refreshSleepHabit(Person person) {
         double result = 0;
 
-    	int now = (int) marsClock.getMillisol();
+    	int now = marsClock.getMsols();
   	  	boolean isOnShiftNow = ts.isShiftHour(now);
         boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
 

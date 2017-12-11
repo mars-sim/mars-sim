@@ -326,7 +326,7 @@ public class CompositionOfAir implements Serializable {
 		// For each time interval
 		calculateGasExchange(time, newList, num);
 			
-		int msol = (int) Math.round(clock.getMillisol());
+		int msol = clock.getMsols();
 		
 		if (msolCache != msol) {
 			//msolCache = msol;

@@ -466,8 +466,8 @@ public class PhysicalCondition implements Serializable {
 			// System.out.println("PhysicalCondition : hunger : "+
 			// Math.round(hunger*10.0)/10.0);
 
-			int msol = (int) (marsClock.getMillisol() * masterClock.getTimeRatio());
-			if (msol % 10 == 0) {
+			int msol = marsClock.getMsols();//(int) (marsClock.getMillisol() * masterClock.getTimeRatio());
+			if (msol % 7 == 0) {
 
 				checkStarvation(hunger);
 				checkDehydration(thirst);
@@ -1239,7 +1239,7 @@ public class PhysicalCondition implements Serializable {
 		setStress(0D);
 
 		if (causedByUser) {
-			person.setDead();
+			person.setDeclaredDead();
 
 			problem.setState(HealthProblem.DEAD);
 			this.serious = problem;

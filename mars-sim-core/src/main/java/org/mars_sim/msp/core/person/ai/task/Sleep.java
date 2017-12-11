@@ -271,7 +271,7 @@ public class Sleep extends Task implements Serializable {
         super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 10D);
 
         // If robot is in a settlement, try to find a living accommodations building.
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (robot.isInSettlement()) {
 
         	// TODO: if power is below a certain threshold, go to robotic station for recharge, else stay at the same place
 
@@ -280,7 +280,7 @@ public class Sleep extends Task implements Serializable {
             Building currentBuilding = BuildingManager.getBuilding(robot);
             if (currentBuilding != null) {
                 if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
-                    RoboticStation currentStation = (RoboticStation) currentBuilding.getFunction(FunctionType.ROBOTIC_STATION);
+                    RoboticStation currentStation = currentBuilding.getRoboticStation();
                     if (currentStation.getSleepers() < currentStation.getSlots()) {
                         atStation = true;
                         station = currentStation;
@@ -299,7 +299,7 @@ public class Sleep extends Task implements Serializable {
                 Building building = getAvailableRoboticStationBuilding(robot);
                 if (building != null) {
                     //System.out.println("building.toString() is " + building.toString() );
-                    station = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
+                    station = building.getRoboticStation();
                     if (station != null) {
                     	// TODO: see https://github.com/mars-sim/mars-sim/issues/22
                     	 // Question: why would the method below cause RepairBot to walk outside the settlement to a vehicle ?

@@ -189,34 +189,34 @@ public class CircadianClock implements Serializable {
      */
     public void updateSleepCycle(int millisols, boolean type) {
     	// set HEAT_MAP_RESOLUTION of discrete sleep periods
-    	millisols = (millisols / SLEEP_MAP_RESOLUTION )* SLEEP_MAP_RESOLUTION;
+    	int msols = (millisols / SLEEP_MAP_RESOLUTION )* SLEEP_MAP_RESOLUTION;
     	int currentValue = 0;
 
-		int d = millisols-SLEEP_MAP_RESOLUTION;
-		int d2 = millisols - 2*SLEEP_MAP_RESOLUTION;
+		int d = msols-SLEEP_MAP_RESOLUTION;
+		int d2 = msols - 2*SLEEP_MAP_RESOLUTION;
 
 		if (d <= 0)
-			d = 1000 + millisols - SLEEP_MAP_RESOLUTION;
+			d = 1000 + msols - SLEEP_MAP_RESOLUTION;
 
 		if (d2 <= 0)
-			d2 = 1000 + millisols - 2*SLEEP_MAP_RESOLUTION;
+			d2 = 1000 + msols - 2*SLEEP_MAP_RESOLUTION;
 
 
-		int a = millisols + SLEEP_MAP_RESOLUTION;
-		int a2 = millisols + 2*SLEEP_MAP_RESOLUTION;
+		int a = msols + SLEEP_MAP_RESOLUTION;
+		int a2 = msols + 2*SLEEP_MAP_RESOLUTION;
 
 		if (a > 1000)
-			a = millisols + SLEEP_MAP_RESOLUTION - 1000;
+			a = msols + SLEEP_MAP_RESOLUTION - 1000;
 
 		if (a2 > 1000)
-			a2 = millisols + 2*SLEEP_MAP_RESOLUTION - 1000;
+			a2 = msols + 2*SLEEP_MAP_RESOLUTION - 1000;
 
-    	if (sleepCycleMap.containsKey(millisols)) {
-    		currentValue = sleepCycleMap.get(millisols);
+    	if (sleepCycleMap.containsKey(msols)) {
+    		currentValue = sleepCycleMap.get(msols);
 
     		if (type) {
         		// Increase the central weight value by 30%
-    			sleepCycleMap.put(millisols, (int) (currentValue *.7 + SLEEP_MAX_FACTOR * .3));
+    			sleepCycleMap.put(msols, (int) (currentValue *.7 + SLEEP_MAX_FACTOR * .3));
 
     			int c2 = (int) (currentValue *.95 + SLEEP_MAX_FACTOR * .075);
     			int c = (int) (currentValue *.85 + SLEEP_MAX_FACTOR * .15);
@@ -230,7 +230,7 @@ public class CircadianClock implements Serializable {
     		else {
 
         		// Reduce the central weight value by 10%
-    			sleepCycleMap.put(millisols, (int) (currentValue/1.1));
+    			sleepCycleMap.put(msols, (int) (currentValue/1.1));
 
     			int b = (int) (currentValue/1.05);
     			int b2 = (int) (currentValue/1.025);
@@ -244,7 +244,7 @@ public class CircadianClock implements Serializable {
     	}
     	else {
     		// For the first time, create the central weight value with 10% of MAX_WEIGHT
-			sleepCycleMap.put(millisols, (int) (SLEEP_MAX_FACTOR * .1));
+			sleepCycleMap.put(msols, (int) (SLEEP_MAX_FACTOR * .1));
 
 			int e = (int) (SLEEP_MAX_FACTOR * .05);
 			int e2 = (int) (SLEEP_MAX_FACTOR * .025);

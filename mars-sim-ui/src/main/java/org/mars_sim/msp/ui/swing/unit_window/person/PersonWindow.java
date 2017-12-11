@@ -41,7 +41,7 @@ extends UnitWindow {
 		addTabPanel(new TabPanelCareer(person, desktop));
 
 		// Add death tab panel if person is dead.
-		if (person.isDead()) {
+		if (person.isDeclaredDead()) {
 			deadCache = true;
 			addTabPanel(new TabPanelDeath(person, desktop));
 		}
@@ -83,7 +83,7 @@ extends UnitWindow {
 		super.update();
 		//Person person = (Person) unit;
 		if (!deadCache) {
-			if (person.isDead()) {
+			if (person.isDeclaredDead()) {
 				deadCache = true;
 				addTabPanel(new TabPanelDeath(person, desktop));
 			}

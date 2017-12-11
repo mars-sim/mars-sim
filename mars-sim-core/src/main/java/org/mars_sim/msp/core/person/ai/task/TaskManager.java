@@ -598,7 +598,7 @@ implements Serializable {
 
 		    if (timeCache == null)
 		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
-		    int millisols =  (int) timeCache.getMillisol();
+		    int millisols = timeCache.getMsols();
 
 		    if (ts == null)
 		    	ts = person.getTaskSchedule();

@@ -71,8 +71,8 @@ implements Serializable {
 
         marsClock = masterClock.getMarsClock();
 		// If during person's work shift, only relax for short period.
-		int millisols = (int) marsClock.getMillisol();
-        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+		int msols = marsClock.getMsols();
+        boolean isShiftHour = person.getTaskSchedule().isShiftHour(msols);
 		if (isShiftHour) {
 		    setDuration(10D);
 		}

@@ -1110,8 +1110,7 @@ implements Serializable {
 			// Note 1 : the goal is to reduce dt to no more than ~1.6 millisols or else the temperature would
 			// fluctuate too much and the heat gain/loss would not be fine grained enough.
 
-			double msol = marsClock.getMillisol();
-			int _msol =  (int) (Math.round(msol));
+			int msol =  marsClock.getMsols();
 
 			double limit = MSOL_LIMIT/time_ratio_2;
 			double new_deltaTime = update * deltaTime;
@@ -1126,7 +1125,7 @@ implements Serializable {
 			double dt = new_deltaTime/numCycles;
 			
 			if (isGreenhouse)
-				emissivity = emissivityMap.get(_msol);
+				emissivity = emissivityMap.get(msol);
 			else
 				emissivity = EMISSIVITY_INSULATED;
 

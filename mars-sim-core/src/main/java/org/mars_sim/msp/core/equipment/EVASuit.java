@@ -312,7 +312,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		Unit container = getContainerUnit();
 		if (container instanceof Person) {
 			Person person = (Person) container;
-			if (!person.isDead()) {
+			if (!person.isDeclaredDead()) {
 				malfunctionManager.activeTimePassing(time);
 			}
 		}

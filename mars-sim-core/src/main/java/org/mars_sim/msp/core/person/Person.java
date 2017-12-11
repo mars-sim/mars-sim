@@ -69,6 +69,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The base carrying capacity (kg) of a person. */
 	private final static double BASE_CAPACITY = 60D;
 
+	private final static String EARTH = "Earth";
+	private final static String MARS = "Mars";
+	
 	private final static String HEIGHT = "Height";
 	private final static String WEIGHT = "Weight";
 	
@@ -85,8 +88,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private boolean waterRation;
 	/** True if a person is born on Mars. */	
 	private boolean bornOnMars;
-	/** True if person is declared dead and buried. */
-	private boolean isBuried, declaredDead;	
+	/** True if person is buried. */
+	private boolean isBuried;
+	/** True if person is declared dead. */	
+	private boolean declaredDead;	
 	/** The age of a person */
 	private int age;
 	/** The cache for sol. */
@@ -862,7 +867,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Declares the person dead, removes the designated quarter and work shift
 	 */
-	void setDead() {
+	void setDeclaredDead() {
 
 		declaredDead = true;
 
@@ -939,7 +944,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 
 		else if (!declaredDead) {
-			setDead();
+			setDeclaredDead();
 			mind.setInactive();
 		}
 		
@@ -1457,12 +1462,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setCountry(String c) {
 		this.country = c;
 		if (c != null)
-			birthplace = "Earth";
+			birthplace = EARTH;
 		else
-			birthplace = "Mars";
+			birthplace = MARS;
 	}
 
-	public boolean isDead() {
+	public boolean isDeclaredDead() {
 		return declaredDead;
 	}
 

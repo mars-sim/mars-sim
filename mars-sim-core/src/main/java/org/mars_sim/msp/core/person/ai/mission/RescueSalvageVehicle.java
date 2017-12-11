@@ -449,7 +449,7 @@ implements Serializable {
                 for (Person p : crewVehicle.getCrew()) {
                     towedVehicle.getInventory().retrieveUnit(p);
                     
-                    if (p.isDead()) {
+                    if (p.isDeclaredDead()) {
                     	p.setBuriedSettlement(disembarkSettlement);
                     	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
                     }
@@ -473,7 +473,7 @@ implements Serializable {
 			for (Person p : rover.getCrew()) {
 				rover.getInventory().retrieveUnit(p);
 
-                if (p.isDead()) {
+                if (p.isDeclaredDead()) {
                 	p.setBuriedSettlement(disembarkSettlement);
                 	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
                 }

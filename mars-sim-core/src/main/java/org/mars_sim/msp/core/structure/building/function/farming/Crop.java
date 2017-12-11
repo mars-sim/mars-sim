@@ -867,7 +867,7 @@ public class Crop implements Serializable {
 					cumulativeDailyPAR = 0;
 				}
 				
-			    int currentMillisols = (int) marsClock.getMillisol();
+			    int currentMillisols = marsClock.getMsols();
 				if (currentMillisols % 250 == 0) {
 					// Compute health condition 4 times a day
 					computeHealth();
@@ -917,7 +917,7 @@ public class Crop implements Serializable {
 	public double computeLight(double time) {
 		double lightModifier = 0;
 		
-	    double currentMillisols = marsClock.getMillisol();
+	    int msols = marsClock.getMsols();
 	    // Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
 		// 2015-04-09 Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
@@ -929,7 +929,7 @@ public class Crop implements Serializable {
 	    // Gauge if there is enough sunlight
 	    double progress = cumulativeDailyPAR / dailyPARRequired; //[max is 1]
 	    
-	    double clock = currentMillisols / 1000D; //[max is 1]
+	    double clock = msols / 1000D; //[max is 1]
 	/*		logger.info("uPAR : "+ fmt.format(uPAR)
 				+ "\tPAR_interval : " + fmt.format(PAR_interval)
 				+ "\tprogress : "+ fmt.format(progress)
@@ -939,9 +939,9 @@ public class Crop implements Serializable {
 	    // TODO: what if the time zone of a settlement causes sunlight to shine at near the tail end of the currentMillisols time ?
 	    // 2015-04-09 Compared cumulativeDailyPAR / dailyPARRequired  vs. current time / 1000D
 		// 2016-10-12 Reduce the frequent toggling on and off of lamp and to check on the time of day to anticipate the need of sunlight.
-	    if (0.5 * progress < clock && currentMillisols <= 333
-			|| 0.7 * progress < clock && currentMillisols > 333 && currentMillisols <= 666
-			|| progress < clock && currentMillisols > 666
+	    if (0.5 * progress < clock && msols <= 333
+			|| 0.7 * progress < clock && msols > 333 && msols <= 666
+			|| progress < clock && msols > 666
 			) {
 	    	// TODO: also compare also how much more sunlight will still be available
 	    	if (uPAR > 40) { // if sunlight is available

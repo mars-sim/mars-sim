@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
@@ -63,7 +62,7 @@ implements Serializable {
 				RandomUtil.getRandomDouble(40D));
 
 		// If during person's work shift, only relax for short period.
-		int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+		int millisols = Simulation.instance().getMasterClock().getMarsClock().getMsols();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 		if (isShiftHour) {
 		    setDuration(5D);
@@ -71,7 +70,7 @@ implements Serializable {
 
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {
 
 			try {
 
@@ -106,7 +105,7 @@ implements Serializable {
 		}
 
 		if (!walkSite) {
-		    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		    if (person.isInVehicle()) {
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
                     walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -200,7 +199,7 @@ implements Serializable {
 
 		Building result = null;
 
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
