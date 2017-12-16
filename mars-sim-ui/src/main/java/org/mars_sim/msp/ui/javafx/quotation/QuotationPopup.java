@@ -63,7 +63,7 @@ public class QuotationPopup {
 
     @SuppressWarnings("restriction")
 	public void popAQuote(Stage stage) {
-    	mainScene.openWindow();
+    	//mainScene.openWindow();
      	//notifier = Notification.Notifier.INSTANCE;
         //Notification.Notifier notifier = NotifierBuilder.create().build();
                 //.popupLocation(Pos.TOP_RIGHT)

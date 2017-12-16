@@ -46,6 +46,7 @@ public class Crop implements Serializable {
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
     private static String sourceName = logger.getName();
     
+    public static final int CHECK_HEALTH_FREQUENCY = 220;
 	/** The limiting factor that determines how fast and how much PAR can be absorbed in one frame. */
 	public static final double PHYSIOLOGICAL_LIMIT = 0.9; // 1 is max. if set to 1, a lot of lights will toggle on and off undesirably.
 	/** The average percentage of tissues that can be extracted from a crop upon harvest. */
@@ -99,14 +100,16 @@ public class Crop implements Serializable {
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
 	// Data members
+    /** The cache for msols */     
+ 	private int msolCache;
+	/** The current sol of month. */
+	private int currentSol = 1;
 	/**	True if this crop is generated at the start of the sim . */
 	private boolean isStartup;
 	/**	True if this crop has seeds. e.g. the mustard seed must be extracted from the white mustard plant */
 	private boolean hasSeed = false;
 	/**	True if this crop is a seeded plant. e.g. the sesame plant */
 	private boolean isSeedPlant = false;
-	/** The current sol of month. */
-	private int currentSol = 1;
 	/** The ratio between inedible and edible biomass */
 	private double ratio;
 	/** The maximum possible food harvest for this crop [in kg]. */
@@ -867,9 +870,11 @@ public class Crop implements Serializable {
 					cumulativeDailyPAR = 0;
 				}
 				
-			    int currentMillisols = marsClock.getMsols();
-				if (currentMillisols % 250 == 0) {
-					// Compute health condition 4 times a day
+			    int msol = marsClock.getMsols();
+			    
+				if (msolCache != msol && msol % CHECK_HEALTH_FREQUENCY == 0) {
+					msolCache = msol;
+					
 					computeHealth();
 				}
 

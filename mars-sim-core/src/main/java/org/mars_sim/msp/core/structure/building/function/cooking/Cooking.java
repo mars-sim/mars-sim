@@ -100,7 +100,18 @@ implements Serializable {
 
     private boolean cookNoMore = false, no_oil_last_time = false;
 
-    private int cookCapacity, mealCounterPerSol = 0, solCache = 1, numCookableMeal, oil_count = 0;
+    /** The cache for msols */     
+ 	private int msolCache;
+ 	
+    private int cookCapacity;
+    
+    private int mealCounterPerSol = 0;
+    
+    private int solCache = 1;
+    
+    private int numCookableMeal;
+    
+    private int oil_count = 0;
     // 2015-01-12 Dynamically adjusted the rate of generating meals
     //public double mealsReplenishmentRate;
     private double cleaningAgentPerSol, waterUsagePerMeal, cleanliness, cookingWorkTime, dryMassPerServing, bestQualityCache = 0;
@@ -1029,8 +1040,9 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-	    int millisols = marsClock.getMsols();
-	    if (millisols % RECHECKING_FREQ == 0) {
+	    int msol = marsClock.getMsols();
+	    if (msolCache != msol && msol % RECHECKING_FREQ == 0) {
+	    	msolCache = msol;
 	    	// reset
 	    	no_oil_last_time = false;
 	    }

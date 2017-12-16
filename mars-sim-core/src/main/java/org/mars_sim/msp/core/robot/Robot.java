@@ -81,10 +81,8 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	private static final double MAINTENANCE_TIME = 100D;
 
     // Data members
-    private String name;
-	private String country;
-	private String sponsor;
-
+    /** The cache for msols */     
+ 	private int msolCache;
     /** The height of the robot (in cm). */
     private int height;
     /** Settlement X location (meters) from settlement center. */
@@ -95,6 +93,11 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
     private boolean isInoperable;
 
 	private boolean isSalvaged;
+	
+	private String name;
+	private String country;
+	private String sponsor;
+
     /** The robot's achievement in scientific fields. */
     //private Map<ScienceType, Double> scientificAchievement;
     //private Person owner;
@@ -517,22 +520,28 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 		}
 		malfunctionManager.timePassing(time);
 */
-        // If robot is dead, then skip
-        if (!health.isInoperable()) {
-
-        	//support = getLifeSupportType();
-            // Pass the time in the physical condition first as this may
-            // result in death.
-            if (health.timePassing(time, config)) {
-
-                // Mental changes with time passing.
-                botMind.timePassing(time);
-            }
-            else {
-                // robot has died as a result of physical condition
-                setInoperable();
-            }
-        }
+	    int msol = marsClock.getMsols();
+	    
+	    if (msolCache != msol) {
+	    	msolCache = msol;
+	    	
+	        // If robot is dead, then skip
+	        if (!health.isInoperable()) {
+	
+	        	//support = getLifeSupportType();
+	            // Pass the time in the physical condition first as this may
+	            // result in death.
+	            if (health.timePassing(time, config)) {
+	
+	                // Mental changes with time passing.
+	                botMind.timePassing(time);
+	            }
+	            else {
+	                // robot has died as a result of physical condition
+	                setInoperable();
+	            }
+	        }
+	    }
     }
 
 

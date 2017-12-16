@@ -343,7 +343,7 @@ implements Serializable, Comparable<Unit> {
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {
-		if (this instanceof Robot)
+		if (this instanceof Person || this instanceof Robot) 
 			updatePersonRobotState(newContainer);
 		else if (this instanceof Equipment)
 			updateEquipmentState(newContainer);

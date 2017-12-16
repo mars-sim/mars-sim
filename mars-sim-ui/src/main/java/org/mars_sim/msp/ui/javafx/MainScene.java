@@ -729,18 +729,18 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					if (OS.contains("linux")) {
+					//if (OS.contains("linux")) {
 						// if (theme == 6)
-						setTheme(0);
+					//	setTheme(0);
 						// else if (theme == 0)
 						// setTheme(6);
-					} else {
+					//} else {
 						if (theme == 0 || theme == 6) {
 							setTheme(7);
 						} else if (theme == 7) {
 							setTheme(0);
 						}
-					}
+					//}
 				});
 		Nodes.addInputMap(rootStackPane, ctrlT);
 
@@ -794,12 +794,12 @@ public class MainScene {
 	}
 
 	public Text createTextHeader(String s) {
-		DropShadow ds = new DropShadow();
-		ds.setOffsetY(1.0f);
-		ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
+		//DropShadow ds = new DropShadow();
+		//ds.setOffsetY(1.0f);
+		//ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
 
 		Text t = new Text();
-		t.setEffect(ds);
+		//t.setEffect(ds);
 		t.setCache(true);
 		t.setX(10.0f);
 		t.setY(270.0f);
@@ -813,9 +813,9 @@ public class MainScene {
 		Label header_label = new Label(s);
 		// header_label.setEffect(blend);
 		header_label.setStyle("-fx-text-fill: black;" + "-fx-font-size: 13px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: normal;");
-		header_label.setPadding(new Insets(3, 0, 1, 10));
+				//+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+				+ "-fx-font-weight: bold;");
+		header_label.setPadding(new Insets(3, 0, 1, 2));
 		return header_label;
 	}
 
@@ -1133,7 +1133,7 @@ public class MainScene {
 		speedPane.getStyleClass().add("jfx-popup-container");
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
-		speedPane.setPrefWidth(200);// earthTimeButton.getPrefWidth());
+		speedPane.setPrefWidth(250);// earthTimeButton.getPrefWidth());
 		simSpeedPopup = new JFXPopup(speedPane);
 
 		Text header_label = createTextHeader("SPEED PANEL");
@@ -1438,8 +1438,8 @@ public class MainScene {
 			}
 		});
 		// Background sound track
-		Label trackLabel = createBlendLabel("Background Music");
-		trackLabel.setPadding(new Insets(0, 0, 0, 0));
+		Label trackLabel = createBlendLabel("Music");
+		//trackLabel.setPadding(new Insets(0, 0, 0, 0));
 
 		musicMuteBox = new JFXCheckBox("mute");
 		musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
@@ -1518,7 +1518,7 @@ public class MainScene {
 
 		// Sound effect
 		Label effectLabel = createBlendLabel("Sound Effect");
-		effectLabel.setPadding(new Insets(0, 0, 0, 1));
+		//effectLabel.setPadding(new Insets(0, 0, 0, 1));
 
 		soundEffectMuteBox = new JFXCheckBox("mute");
 		soundEffectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
@@ -2471,17 +2471,17 @@ public class MainScene {
 			}
 
 			SwingUtilities.invokeLater(() -> {
-				if (OS.contains("linux")) {
+				//if (OS.contains("linux")) {
 					// Note: NIMROD theme lib doesn't work on linux
-					setLookAndFeel(ThemeType.Nimbus);
-				} 
+				//	setLookAndFeel(ThemeType.Nimbus);
+				//} 
 				
-				else {
+				//else {
 					//if (theme == 0 || theme == 6)
 						setLookAndFeel(defaultThemeType);
 					//else
 					//	setLookAndFeel(ThemeType.Nimrod);
-				}
+				//}
 				
 			});
 			

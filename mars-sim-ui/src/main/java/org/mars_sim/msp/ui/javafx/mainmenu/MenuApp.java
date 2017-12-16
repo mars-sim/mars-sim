@@ -156,7 +156,7 @@ public class MenuApp {
         build.setTranslateY(HEIGHT-7);
 
         MenuTitle year = new MenuTitle("All Rights Reserved, 2017", 14, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
-        year.setTranslateX(WIDTH - 160);
+        year.setTranslateX(WIDTH - 180);
         year.setTranslateY(HEIGHT-7);
      
         MenuTitle site = new MenuTitle("https://mars-sim.github.io/", 16, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/

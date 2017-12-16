@@ -107,7 +107,7 @@ extends TabPanel {
 
 
 	private static DecimalFormat fmt = new DecimalFormat("##0");
-	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
+	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 	
     /**
@@ -231,7 +231,7 @@ extends TabPanel {
         temperatureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         temperaturePanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
 
-        JPanel rightPanel = new JPanel(new BorderLayout(30, 30));//new FlowLayout());//new GridLayout(3, 1));//new BorderLayout(0, 0));
+        JPanel rightPanel = new JPanel(new BorderLayout(10, 10));//new FlowLayout());//new GridLayout(3, 1));//new BorderLayout(0, 0));
         centerContentPanel.add(rightPanel, BorderLayout.CENTER);
 
         // Create spring layout dataPanel
@@ -640,7 +640,7 @@ extends TabPanel {
     	stormWin = null;
 
     	fmt = null;
-    	fmt1 = null;
+    	//fmt1 = null;
     	fmt2 = null;
 
     }

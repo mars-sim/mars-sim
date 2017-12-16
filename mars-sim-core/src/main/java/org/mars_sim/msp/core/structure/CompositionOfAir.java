@@ -109,15 +109,15 @@ public class CompositionOfAir implements Serializable {
 	public static final double CH4_MOLAR_MASS = 16.04276 / 1000;; // [in kg/mol] 
 	public static final double H2_MOLAR_MASS = 2.016 / 1000;; // [in kg/mol] 
 	
-	private static final int MILLISOLS_PER_UPDATE = 1;
+	private static final int MILLISOLS_PER_UPDATE = 2;
 	
     private static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
     // alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
     // see https://en.wikipedia.org/wiki/Gas_constant
 
 	public static final int numGases = 5;
-	
-    private int msolCache;
+    /** The cache for msols */     
+ 	private int msolCache;
     
     private boolean isDone = false;
     
@@ -328,14 +328,9 @@ public class CompositionOfAir implements Serializable {
 			
 		int msol = clock.getMsols();
 		
-		if (msolCache != msol) {
-			//msolCache = msol;
-			//isDone = true;
-		//}
-		// Note : sometimes getMillisol() skips, does Math.round() help ?
-		//if (isDone && msol % MILLISOLS_PER_UPDATE == 0) {
-		//	isDone = false;
-			//System.out.println("at " + checkTime + " remainder is " + checkTime % MILLISOLS_PER_UPDATE);
+		if (msolCache != msol && msol % MILLISOLS_PER_UPDATE == 0) {
+			msolCache = msol;
+
 			monitorAir(newList, num);
 		}
 		

@@ -129,9 +129,24 @@ implements Serializable {
 
     private boolean makeNoMoreDessert = false;
 
-	private int dessertCounterPerSol = 0, solCache = 1, cookCapacity; // used in timePassing
+    /** The cache for msols */     
+ 	private int msolCache;
+ 	
+	private int solCache = 1;
+	
+	private int cookCapacity; // used in timePassing
 
-	private double preparingWorkTime, bestQualityCache = 0, cleanliness = 0, cleaningAgentPerSol, waterUsagePerMeal;
+	private int dessertCounterPerSol = 0;
+	
+	private double preparingWorkTime;
+	
+	private double bestQualityCache = 0;
+	
+	private double cleanliness = 0;
+	
+	private double cleaningAgentPerSol;
+	
+	private double waterUsagePerMeal;
 
     private String producerName;
 
@@ -143,7 +158,7 @@ implements Serializable {
 
     private List<PreparedDessert> servingsOfDessert;
 
-	private MarsClock currentTime;// = Simulation.instance().getMasterClock().getMarsClock();
+	private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
 
     /**
      * Constructor.
@@ -157,7 +172,7 @@ implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
-        currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
 
@@ -641,7 +656,7 @@ implements Serializable {
 		    	producerName = robot.getName();
 
 	        // Create a serving of dessert and add it into the list
-		    servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing, (MarsClock)currentTime.clone(), producerName, this));
+		    servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing, (MarsClock) marsClock.clone(), producerName, this));
 
 		    //consumeWater();
 
@@ -689,89 +704,95 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-        if (hasFreshDessert()) {
-            double rate = settlement.getDessertsReplenishmentRate();
-
-            // Handle expired prepared desserts.
-            Iterator<PreparedDessert> i = servingsOfDessert.iterator();
-            while (i.hasNext()) {
-
-                PreparedDessert dessert = i.next();
-                //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-
-                if (MarsClock.getTimeDiff(dessert.getExpirationTime(), currentTime) < 0D) {
-                    try {
-                        servingsOfDessert.remove(dessert);
-
-                        // Check if prepared dessert has gone bad and has to be thrown out.
-                        double quality = dessert.getQuality() / 2D + 1D;
-                        double num = RandomUtil.getRandomDouble(8 * quality);
-                        StringBuilder log = new StringBuilder();
-        				
-                        if (num < 1) {
-                            // Throw out bad dessert as food waste.
-                            if (getDryMass(dessert.getName()) > 0)
-                            		Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv, "::timePassing");
-                            
-            				log.append("[").append(settlement.getName()).append("] ")
-                            		.append(getDryMass(dessert.getName()))
-                            		.append(" kg ")
-                            		.append(dessert.getName().toLowerCase())
-                            		.append(DISCARDED)
-                            		.append(getBuilding().getNickName())
-                            		.append(".");
-            				
-                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
-                            
-                        }
-                        else  {
-                            // Refrigerate prepared dessert.
-                            refrigerateFood(dessert);
-                            
-            				log.append("[").append(settlement.getName()).append("] ")
-                            		.append(REFRIGERATE)
-                            		.append(getDryMass(dessert.getName()))
-                            		.append(" kg ")
-                            		.append(dessert.getName().toLowerCase())
-                            		.append(" at ")
-                            		.append(getBuilding().getNickName())
-                            		.append(".");
-            				
-                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
-             
-                            //logger.finest("The dessert has lost its freshness at " +
-                            //        getBuilding().getBuildingManager().getSettlement().getName());
-                        }
-
-                        // Adjust the rate to go down for each dessert that wasn't eaten.
-                        if (rate > 0 ) {
-                            rate -= DOWN;
-                        }
-                        settlement.setDessertsReplenishmentRate(rate);
-                    }
-                    catch (Exception e) {
-                    	e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        // Check if not meal time, clean up.
-        Coordinates location = getBuilding().getBuildingManager().getSettlement().getCoordinates();
-        if (!CookMeal.isMealTime(location)) {
-            finishUp();
-        }
-
-        checkEndOfDay();
+	    int msol = marsClock.getMsols();
+	    
+	    if (msolCache != msol) {
+	    	msolCache = msol;
+	    	
+	        if (hasFreshDessert()) {
+	            double rate = settlement.getDessertsReplenishmentRate();
+	
+	            // Handle expired prepared desserts.
+	            Iterator<PreparedDessert> i = servingsOfDessert.iterator();
+	            while (i.hasNext()) {
+	
+	                PreparedDessert dessert = i.next();
+	                //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	
+	                if (MarsClock.getTimeDiff(dessert.getExpirationTime(), marsClock) < 0D) {
+	                    try {
+	                        servingsOfDessert.remove(dessert);
+	
+	                        // Check if prepared dessert has gone bad and has to be thrown out.
+	                        double quality = dessert.getQuality() / 2D + 1D;
+	                        double num = RandomUtil.getRandomDouble(8 * quality);
+	                        StringBuilder log = new StringBuilder();
+	        				
+	                        if (num < 1) {
+	                            // Throw out bad dessert as food waste.
+	                            if (getDryMass(dessert.getName()) > 0)
+	                            		Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv, "::timePassing");
+	                            
+	            				log.append("[").append(settlement.getName()).append("] ")
+	                            		.append(getDryMass(dessert.getName()))
+	                            		.append(" kg ")
+	                            		.append(dessert.getName().toLowerCase())
+	                            		.append(DISCARDED)
+	                            		.append(getBuilding().getNickName())
+	                            		.append(".");
+	            				
+	                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+	                            
+	                        }
+	                        else  {
+	                            // Refrigerate prepared dessert.
+	                            refrigerateFood(dessert);
+	                            
+	            				log.append("[").append(settlement.getName()).append("] ")
+	                            		.append(REFRIGERATE)
+	                            		.append(getDryMass(dessert.getName()))
+	                            		.append(" kg ")
+	                            		.append(dessert.getName().toLowerCase())
+	                            		.append(" at ")
+	                            		.append(getBuilding().getNickName())
+	                            		.append(".");
+	            				
+	                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+	             
+	                            //logger.finest("The dessert has lost its freshness at " +
+	                            //        getBuilding().getBuildingManager().getSettlement().getName());
+	                        }
+	
+	                        // Adjust the rate to go down for each dessert that wasn't eaten.
+	                        if (rate > 0 ) {
+	                            rate -= DOWN;
+	                        }
+	                        settlement.setDessertsReplenishmentRate(rate);
+	                    }
+	                    catch (Exception e) {
+	                    	e.printStackTrace();
+	                    }
+	                }
+	            }
+	        }
+	
+	        // Check if not meal time, clean up.
+	        Coordinates location = getBuilding().getBuildingManager().getSettlement().getCoordinates();
+	        if (!CookMeal.isMealTime(location)) {
+	            finishUp();
+	        }
+	
+	        checkEndOfDay();
+	    }
     }
 
     // 2015-01-12 Added checkEndOfDay()
   	public synchronized void checkEndOfDay() {
 		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		if (currentTime == null)
-			currentTime = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
 		// Added 2015-01-04 : Sanity check for the passing of each day
-		int newSol = currentTime.getSolOfMonth();
+		int newSol = marsClock.getSolOfMonth();
 	    double rate = settlement.getDessertsReplenishmentRate();
 
 		if (newSol != solCache) {
@@ -869,7 +890,7 @@ implements Serializable {
 
         person = null;
         robot = null;
-    	currentTime = null;
+    	marsClock = null;
         building = null;
         inv = null;
         settlement = null;

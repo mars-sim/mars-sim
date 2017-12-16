@@ -20,8 +20,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -56,7 +54,7 @@ implements Serializable {
 	private static final double TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE = .55 ;
 	private static final double EMISSIVITY_DAY = 0.8 ;
 	private static final double EMISSIVITY_NIGHT = 1.0 ;
-	private static final double EMISSIVITY_INSULATED = 0.05 ;
+	//private static final double EMISSIVITY_INSULATED = 0.05 ;
 	private static final double STEFAN_BOLTZMANN_CONSTANT = 0.0000000567 ; // in W / (m^2 K^4)
 
 	private static final double LARGE_INSULATION_CANOPY = 0.2; // [in kW]
@@ -70,7 +68,7 @@ implements Serializable {
 
     private static final double HEAT_DISSIPATED_PER_PERSON = .1; //[in kW]
     
-    private static final double MSOL_LIMIT = 1.5;
+    //private static final double MSOL_LIMIT = 1.5;
     
      //private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
     //private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
@@ -128,8 +126,10 @@ implements Serializable {
     
     //private static final int HEAT_CAP = 200;  
  	private static final int PER_UPDATE = 2 ; // must be a multiple of 2
-     
-	private int counts;
+    /** The cache for msols */     
+ 	private int msolCache;
+    /** The counter for heating cycle */ 	
+	//private int counts;
     /** the heat gain from equipment in kW */
     private double heatGainEqiupment;
 	/** specific heat capacity of air at 300K [kJ/kg*K] */	 
@@ -171,13 +171,13 @@ implements Serializable {
 	/** The current temperature of this building. */
 	private double currentTemperature;
 	/** The previously recorded temperature of this building. */
-	private double[] temperatureCache = new double[] {0, 0, 0, 0};
+	private double[] temperatureCache = new double[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	
 	private double timeSlice; 
 	
 	private double t_initial;
 	
-	private double emissivity;
+	//private double emissivity;
 	
 	private double conversion_factor;
 	
@@ -205,7 +205,7 @@ implements Serializable {
 	private Farming farm;
 
 	/** THe emissivity of the greenhouse canopy per millisol */
-	private static Map<Integer, Double> emissivityMap;
+	//private static Map<Integer, Double> emissivityMap;
 	
 	private List<Building> adjacentBuildings;
 	
@@ -311,15 +311,20 @@ implements Serializable {
 		
 		currentTemperature = t_initial;
 	
-		temperatureCache[0] = t_initial;
-		temperatureCache[1] = t_initial;
-		temperatureCache[2] = t_initial;
-		temperatureCache[3] = t_initial;
+		for (int i=0; i<temperatureCache.length; i++) {
+			temperatureCache[i] = t_initial;
+		}
+		
+		//temperatureCache[0] = t_initial;
+		//temperatureCache[1] = t_initial;
+		//temperatureCache[2] = t_initial;
+		//temperatureCache[3] = t_initial;
+		
 		//for (double tc : temperatureCache) {
 		//	tc = t_initial;
 		//}
-		
-		emissivityMap = new ConcurrentHashMap<>();
+/*		
+		emissivityMap = new HashMap<>();
 
 		for (int i = 0; i <= 1000; i++) {
 			// assuming the value of emissivity fluctuates as a cosine waveform between 0.8 (day) and 1.0ss (night)
@@ -327,6 +332,7 @@ implements Serializable {
 			//System.out.println( i + " : " + emissivity);
 			emissivityMap.put(i, emissivity);
 		}
+*/		
 	}
 
 	/**
@@ -680,8 +686,13 @@ implements Serializable {
 		
 		// (2d) CALCULATE HEAT LOSS DUE TO HEAT RADIATED BACK TO OUTSIDE
 		double solarHeatLoss =  0;
-
+		
 		if (isGreenhouse) {
+			double emissivity = EMISSIVITY_DAY + EMISSIVITY_NIGHT * (1 - I);
+			if (emissivity > 1)
+				emissivity = 1;
+			else if (emissivity < .2)
+				emissivity = .2;
 			solarHeatLoss = emissivity * STEFAN_BOLTZMANN_CONSTANT
 					* ( Math.pow(t_in_K, 4) - Math.pow(t_out_K, 4) ) * hullArea /1000D;
 		}
@@ -1083,20 +1094,28 @@ implements Serializable {
 	 * @param deltaTime amount of time passing (in millisols)
 	 */
 	public void timePassing(double deltaTime) {
-		counts++;
+		//counts++;
 	
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 	
+		int msol =  marsClock.getMsols();
+
+		if (msolCache != msol) {
+			msolCache = msol;
+			cycleThermalControl(deltaTime);
+		}
+		
+/*		
 		double time_ratio = masterClock.getTimeRatio();
 		double time_ratio_1 = Math.sqrt(time_ratio/2); // sqrt(128) = 11.3137 
 		double time_ratio_2 = Math.sqrt(Math.sqrt(time_ratio_1/2)); // sqrt(sqrt(11.3137/4)) = 1.2968
 		double update = Math.round(PER_UPDATE * time_ratio_2);
 		if (update < 1)
 			update = 1;
-/*		
+	
 		LogConsolidated.log(logger, Level.INFO, 100, sourceName, 
 		//		" msol : "
 		//		+ _msol
@@ -1104,13 +1123,16 @@ implements Serializable {
 				 " c : " + counts
 				, null);
 */		
-		if (counts % (int)update == 0) {
+
+		
+/*		
+		if (msolCache != msol && counts % (int)update == 0) {
+			msolCache = msol;
 			counts = 0;
 
 			// Note 1 : the goal is to reduce dt to no more than ~1.6 millisols or else the temperature would
 			// fluctuate too much and the heat gain/loss would not be fine grained enough.
 
-			int msol =  marsClock.getMsols();
 
 			double limit = MSOL_LIMIT/time_ratio_2;
 			double new_deltaTime = update * deltaTime;
@@ -1124,10 +1146,10 @@ implements Serializable {
 			// Computes the dt (the final delta time). 
 			double dt = new_deltaTime/numCycles;
 			
-			if (isGreenhouse)
-				emissivity = emissivityMap.get(msol);
-			else
-				emissivity = EMISSIVITY_INSULATED;
+			//if (isGreenhouse)
+			//	emissivity = emissivityMap.get(msol);
+			//else
+			//	emissivity = EMISSIVITY_INSULATED;
 
 			int countDown = numCycles;
 			
@@ -1143,9 +1165,12 @@ implements Serializable {
 				//	+ "   dt : " + Math.round(dt*1000.0)/1000.0 + " "
 				//	, null);
 			}
+			
 		}
 
 		//adjustHeatMode();
+
+*/
 
 	}
 
@@ -1194,6 +1219,13 @@ implements Serializable {
 			new_t = t_out;
 		
 		// Stabilize the temperature by delaying the change
+		double t = 0;
+		int size = temperatureCache.length;
+		for (int i=0; i<size; i++) {
+			t += temperatureCache[i];
+		}
+		
+/*		
 		currentTemperature = (temperatureCache[0] 
 							+ temperatureCache[1]
 							+ temperatureCache[2]
@@ -1201,10 +1233,18 @@ implements Serializable {
 							+ old_t 
 							+ new_t)
 							/6D;
+*/	
+		currentTemperature = (t + old_t + new_t) / (size + 2);
 		
-		temperatureCache[3] = temperatureCache[2];
-		temperatureCache[2] = temperatureCache[1];		
-		temperatureCache[1] = temperatureCache[0];
+		for (int i=size-1; i<0; i--) {
+			temperatureCache[i] = temperatureCache[i-1];
+		}
+		
+		
+		//temperatureCache[3] = temperatureCache[2];
+		//temperatureCache[2] = temperatureCache[1];		
+		//temperatureCache[1] = temperatureCache[0];
+		
 		temperatureCache[0] = old_t;
 		
 		//for (int i = 0; i < 4; i++) {
@@ -1298,7 +1338,7 @@ implements Serializable {
 		building = null;
 		weather = null;
 		location = null;
-		emissivityMap = null;
+		//emissivityMap = null;
 		masterClock = null;
 		marsClock = null;
 		surfaceFeatures = null;

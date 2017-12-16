@@ -470,7 +470,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
     public void update() {
     	if (mainScene != null) {
 	    	int theme = MainScene.getTheme();
-	    	if (theme != themeCache) {
+	    	if (themeCache != theme) {
 	        	themeCache = theme;
 	        	// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
 	        	// pale grey : Color(214,217,223) = D6D9DF
@@ -482,7 +482,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 	    	}
     	}
     	
-    	else {
+    	else if (factory != null) {
     		factory.update(new Color(0xC1BF9D));
     	}
     	

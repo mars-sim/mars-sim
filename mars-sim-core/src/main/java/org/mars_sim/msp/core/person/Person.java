@@ -96,6 +96,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int age;
 	/** The cache for sol. */
 	private int solCache = 1;
+    /** The cache for msols */     
+ 	private int msolCache;
 	//private int[] emotional_states;
 	/** The height of the person (in cm). */
 	private double height;
@@ -892,68 +894,75 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *            amount of time passing (in millisols).
 	 */
 	public void timePassing(double time) {
-
-		// If Person is dead, then skip
-		if (!condition.isDead()) {// health.getDeathDetails() == null) {
-
-			support = getLifeSupportType();
-			
-			circadian.timePassing(time, support);
-			// Pass the time in the physical condition first as this may result in death.
-			condition.timePassing(time, support);
-
-			if (!condition.isDead()) {
-
-				// 2015-06-29 Added calling preference
-				preference.timePassing(time);
-
-				try {
-					// Mental changes with time passing.
-					mind.timePassing(time);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-
-				// check for the passing of each day
-				int solElapsed = marsClock.getMissionSol();
-
-				if (solCache != solElapsed) {
-					// Check if a person's age should be updated
-					age = updateAge();
-					solCache = solElapsed;
-				}
-
-				if (solElapsed % 3 == 0) {
-					// Adjust the shiftChoice once every 3 sols based on sleep hour
-					int bestSleepTime[] = getPreferredSleepHours();
-					taskSchedule.adjustShiftChoice(bestSleepTime);
-				}
-				
-				
-				if (solElapsed % 4 == 0) {
-					// Increment the shiftChoice once every 4 sols
-					taskSchedule.incrementShiftChoice();
-				}
-
-				if (solElapsed % 7 == 0) {
-					// Normalize the shiftChoice once every week
-					taskSchedule.normalizeShiftChoice();
-				}
-				
-			}
-		}
-
-		else if (!declaredDead) {
-			setDeclaredDead();
-			mind.setInactive();
-		}
 		
-		else if (!isBuried 
-				&& condition.getDeathDetails() != null 
-				&& condition.getDeathDetails().getBodyRetrieved()) {
-					buryBody();
+	    int msol = marsClock.getMsols();
+	    
+	    if (msolCache != msol) {
+	    	msolCache = msol;
+	    	    
+			// If Person is dead, then skip
+			if (!condition.isDead()) {// health.getDeathDetails() == null) {
 
-		}
+				support = getLifeSupportType();
+				
+				circadian.timePassing(time, support);
+				// Pass the time in the physical condition first as this may result in death.
+				condition.timePassing(time, support);
+
+				if (!condition.isDead()) {
+
+					// 2015-06-29 Added calling preference
+					preference.timePassing(time);
+
+					try {
+						// Mental changes with time passing.
+						mind.timePassing(time);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+
+					// check for the passing of each day
+					int solElapsed = marsClock.getMissionSol();
+
+
+					if (solCache != solElapsed) {
+						// Check if a person's age should be updated
+						age = updateAge();
+						solCache = solElapsed;
+						
+						if (solElapsed % 3 == 0) {
+							// Adjust the shiftChoice once every 3 sols based on sleep hour
+							int bestSleepTime[] = getPreferredSleepHours();
+							taskSchedule.adjustShiftChoice(bestSleepTime);
+						}
+						
+						
+						if (solElapsed % 4 == 0) {
+							// Increment the shiftChoice once every 4 sols
+							taskSchedule.incrementShiftChoice();
+						}
+
+						if (solElapsed % 7 == 0) {
+							// Normalize the shiftChoice once every week
+							taskSchedule.normalizeShiftChoice();
+						}				
+					}
+				}
+			}
+
+			else if (!declaredDead) {
+				setDeclaredDead();
+				mind.setInactive();
+			}
+			
+			else if (!isBuried 
+					&& condition.getDeathDetails() != null 
+					&& condition.getDeathDetails().getBodyRetrieved()) {
+						buryBody();
+
+			}
+	    }
+
 
 		// final long time1 = System.nanoTime();
 		// logger.info((time1-time0)/1.0e3 + " ms to process " + name);
@@ -994,21 +1003,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	MedicalAid getAccessibleAid() {
 		MedicalAid found = null;
 
-		LocationSituation location = getLocationSituation();
-		if (location == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = getSettlement();
+		Settlement settlement = getSettlement();
+		if (settlement != null) {
 			List<Building> infirmaries = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
 			if (infirmaries.size() > 0) {
 				int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
 				Building foundBuilding = infirmaries.get(rand);
-				found = (MedicalAid) foundBuilding.getFunction(FunctionType.MEDICAL_CARE);
+				found = (MedicalAid) foundBuilding.getMedical();//.getFunction(FunctionType.MEDICAL_CARE);
 			}
 		}
-		if (location == LocationSituation.IN_VEHICLE) {
-			Vehicle vehicle = getVehicle();
-			if (vehicle instanceof Medical) {
+		
+		Vehicle vehicle = getVehicle();
+		if (vehicle != null && vehicle instanceof Medical) {
 				found = ((Medical) vehicle).getSickBay();
-			}
 		}
 
 		return found;
