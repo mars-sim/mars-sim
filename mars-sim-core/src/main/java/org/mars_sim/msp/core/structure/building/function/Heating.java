@@ -141,7 +141,7 @@ implements Serializable {
 
     private double width;
     
-	private double length;
+	//private double length;
 	/** The floor area of the building. */	
 	private double floorArea;
 	/** The area spanning the underbody and the side wall. */
@@ -234,7 +234,7 @@ implements Serializable {
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
-		length = building.getLength();
+		double length = building.getLength();
 		width = building.getWidth() ;
 
 		floorArea = length * width ;
@@ -1101,7 +1101,7 @@ implements Serializable {
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 	
-		int msol =  marsClock.getMsols();
+		int msol =  marsClock.getMsol0();
 
 		if (msolCache != msol) {
 			msolCache = msol;

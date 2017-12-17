@@ -870,7 +870,7 @@ public class Crop implements Serializable {
 					cumulativeDailyPAR = 0;
 				}
 				
-			    int msol = marsClock.getMsols();
+			    int msol = marsClock.getMsol0();
 			    
 				if (msolCache != msol && msol % CHECK_HEALTH_FREQUENCY == 0) {
 					msolCache = msol;
@@ -922,7 +922,7 @@ public class Crop implements Serializable {
 	public double computeLight(double time) {
 		double lightModifier = 0;
 		
-	    int msols = marsClock.getMsols();
+	    int msols = marsClock.getMsol0();
 	    // Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
 		// 2015-04-09 Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());

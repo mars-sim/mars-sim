@@ -96,8 +96,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int age;
 	/** The cache for sol. */
 	private int solCache = 1;
-    /** The cache for msols */     
- 	private int msolCache;
+    /** The cache for msol1 */     
+ 	private double msolCache;
 	//private int[] emotional_states;
 	/** The height of the person (in cm). */
 	private double height;
@@ -895,10 +895,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void timePassing(double time) {
 		
-	    int msol = marsClock.getMsols();
+	    double msol1 = marsClock.getMsol1();
 	    
-	    if (msolCache != msol) {
-	    	msolCache = msol;
+	    if (msolCache != msol1) {
+	    	msolCache = msol1;
 	    	    
 			// If Person is dead, then skip
 			if (!condition.isDead()) {// health.getDeathDetails() == null) {
@@ -923,7 +923,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 					// check for the passing of each day
 					int solElapsed = marsClock.getMissionSol();
-
 
 					if (solCache != solElapsed) {
 						// Check if a person's age should be updated

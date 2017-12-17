@@ -16,7 +16,7 @@
 
 package org.mars_sim.msp.ui.javafx.demo;
 
-import eu.hansolo.tilesfx.Country;
+//import eu.hansolo.tilesfx.Country;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.Tile.MapProvider;
 import eu.hansolo.tilesfx.Tile.SkinType;
@@ -28,6 +28,7 @@ import eu.hansolo.tilesfx.chart.ChartData;
 import eu.hansolo.tilesfx.chart.RadarChart.Mode;
 import eu.hansolo.tilesfx.skins.BarChartItem;
 import eu.hansolo.tilesfx.skins.LeaderBoardItem;
+import eu.hansolo.tilesfx.tools.Country;
 import eu.hansolo.tilesfx.tools.FlowGridPane;
 import eu.hansolo.tilesfx.tools.Helper;
 import eu.hansolo.tilesfx.tools.Location;
@@ -232,10 +233,10 @@ public class TilesFxDemo extends Application {
 
 		// sparkLineTile.valueProperty().bind(value);
 
-		areaChartTile = TileBuilder.create().skinType(SkinType.AREA_CHART).prefSize(TILE_WIDTH, TILE_HEIGHT)
+		areaChartTile = TileBuilder.create().skinType(SkinType.SMOOTH_AREA_CHART).prefSize(TILE_WIDTH, TILE_HEIGHT)
 				.title("AreaChart Tile").series(series1).build();
 
-		lineChartTile = TileBuilder.create().skinType(SkinType.LINE_CHART).prefSize(TILE_WIDTH, TILE_HEIGHT)
+		lineChartTile = TileBuilder.create().skinType(SkinType.SMOOTHED_CHART).prefSize(TILE_WIDTH, TILE_HEIGHT)
 				.title("LineChart Tile").series(series2, series3).build();
 
 		highLowTile = TileBuilder.create().skinType(SkinType.HIGH_LOW).prefSize(TILE_WIDTH, TILE_HEIGHT)
@@ -296,10 +297,10 @@ public class TilesFxDemo extends Application {
 
 		mapTile = TileBuilder.create().skinType(SkinType.MAP).prefSize(TILE_WIDTH, TILE_HEIGHT).title("Map")
 				.text("Some text").description("Description")
-				.currentLocation(new Location(51.91178, 7.63379, "Home", TileColor.MAGENTA))
-				.pointsOfInterest(new Location(51.914405, 7.635732, "POI 1", TileColor.RED),
-						new Location(51.912529, 7.631752, "POI 2", TileColor.BLUE),
-						new Location(51.923993, 7.628906, "POI 3", TileColor.YELLOW_ORANGE))
+				.currentLocation(new Location(51.91178, 7.63379, "Home"))
+				.pointsOfInterest(new Location(51.914405, 7.635732, "POI 1"),
+						new Location(51.912529, 7.631752, "POI 2"),
+						new Location(51.923993, 7.628906, "POI 3"))
 				.mapProvider(MapProvider.TOPO).build();
 
 		radialChartTile = TileBuilder.create().skinType(SkinType.RADIAL_CHART).prefSize(TILE_WIDTH, TILE_HEIGHT)

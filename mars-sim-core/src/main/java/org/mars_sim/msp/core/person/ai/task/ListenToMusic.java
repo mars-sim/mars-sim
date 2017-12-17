@@ -62,7 +62,7 @@ implements Serializable {
 				RandomUtil.getRandomDouble(40D));
 
 		// If during person's work shift, only relax for short period.
-		int millisols = Simulation.instance().getMasterClock().getMarsClock().getMsols();
+		int millisols = Simulation.instance().getMasterClock().getMarsClock().getMsol0();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 		if (isShiftHour) {
 		    setDuration(5D);

@@ -1983,7 +1983,7 @@ public class BuildingManager implements Serializable {
     public List<Building> getFarmsNeedingWork() {
         List<Building> result = null;
 
-        int m = marsClock.getMsols();
+        int m = marsClock.getMsol0();
         if (millisolCache + 5 >= m) {
         	result = farmsNeedingWorkCache;
     	}

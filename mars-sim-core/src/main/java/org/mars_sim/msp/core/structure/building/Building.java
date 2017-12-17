@@ -1294,7 +1294,7 @@ LocalBoundedObject, InsidePathLocation {
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 		
-	    int msol = marsClock.getMsols();
+	    int msol = marsClock.getMsol0();
 	    
 	    if (msolCache != msol) {
 	    	msolCache = msol;
@@ -1356,7 +1356,7 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
         if (isImpactImminent) {
-        	int now = marsClock.getMsols();
+        	int now = marsClock.getMsol0();
             // Note: at the fastest sim speed, up to ~5 millisols may be skipped.
         	// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
         	int delta = (int)Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));

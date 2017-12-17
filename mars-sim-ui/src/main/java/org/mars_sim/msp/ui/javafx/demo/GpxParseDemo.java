@@ -33,6 +33,7 @@ import java.util.List;
  *
  * Needs TilesFX libary (1.3.5 and above)
  */
+@SuppressWarnings("restriction")
 public class GpxParseDemo extends Application {
     private Tile tile;
 
@@ -56,12 +57,12 @@ public class GpxParseDemo extends Application {
                           .skinType(SkinType.MAP)
                           .title("Choose B&W, Bright, or Dark")
                           .text("Lago Retico")
-                          .currentLocation(new Location(46.57608333, 8.89241667, "Lago Retico", "Map", TileColor.BLUE))
+                          .currentLocation(new Location(46.57608333, 8.89241667, "Lago Retico", "Map"))
                           .track(trackPoints)
                           .trackColor(TileColor.MAGENTA)
-                          .pointsOfInterest(new Location(46.57608333, 8.89241667, "POI 1", TileColor.MAGENTA),
+                          .pointsOfInterest(new Location(46.57608333, 8.89241667, "POI 1"),
                                             //new Location(51.912529, 7.631752, "POI 2", TileColor.YELLOW_ORANGE),
-                                            new Location(46.57661111, 8.89344444, "POI 3", TileColor.RED))
+                                            new Location(46.57661111, 8.89344444, "POI 3"))
                           .build();
     }
 

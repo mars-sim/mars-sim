@@ -74,7 +74,7 @@ implements Serializable {
 			marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
 		
 		// If during person's work shift, only relax for short period.
-		int millisols = marsClock.getMsols();
+		int millisols = marsClock.getMsol0();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 		if (isShiftHour) {
 		    setDuration(5D);

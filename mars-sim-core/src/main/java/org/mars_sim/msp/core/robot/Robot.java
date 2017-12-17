@@ -520,7 +520,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 		}
 		malfunctionManager.timePassing(time);
 */
-	    int msol = marsClock.getMsols();
+	    int msol = marsClock.getMsol0();
 	    
 	    if (msolCache != msol) {
 	    	msolCache = msol;

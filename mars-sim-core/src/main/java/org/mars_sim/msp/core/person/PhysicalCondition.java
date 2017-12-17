@@ -63,7 +63,7 @@ public class PhysicalCondition implements Serializable {
 	//public static final String FOOD = "food";
 	//public static final String CO2 = "carbon dioxide";
 
-	public static final int THIRST_THRESHOLD = 100;
+	public static final int THIRST_THRESHOLD = 150;
 	
 	/** Life support minimum value. */
 	private static int MIN_VALUE = 0;
@@ -111,8 +111,6 @@ public class PhysicalCondition implements Serializable {
 	private static double dessert_consumption;
 	private static double highFatigueCollapseChance;
 	private static double stressBreakdownChance;
-
-	private static EatMealMeta eatMealMeta = new EatMealMeta();
 
 	/**
 	 * The amount of water this person would consume each time (assuming drinking
@@ -186,6 +184,8 @@ public class PhysicalCondition implements Serializable {
 
 	private HealthProblem starved;
 	private HealthProblem dehydrated;
+
+	private static EatMealMeta eatMealMeta = new EatMealMeta();
 
 	private static MedicalManager medicalManager;
 
@@ -296,6 +296,26 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
+	 * Initialize values and instances at the beginning of sol 1
+	 */
+	public void initialize() {
+		
+		// Modify personalMaxEnergy at the start of the sim
+		int d1 = 2 * (35 - person.updateAge()); // Assume that after age 35, metabolism slows down
+		double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
+		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
+		
+		personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
+		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+	
+		freezing = getMedicalManager().getFreezing();
+		heatStroke = getMedicalManager().getHeatStroke();
+		decompression = getMedicalManager().getDecompression();
+		suffocation = getMedicalManager().getSuffocation();
+	
+	}
+	
+	/**
 	 * The Physical condition should be updated to reflect a passing of time. This
 	 * method has to check the recover or degradation of any current illness. The
 	 * progression of this time period may result in the illness turning fatal. It
@@ -325,17 +345,7 @@ public class PhysicalCondition implements Serializable {
 
 				if (solCache == 0) {
 
-					// Modify personalMaxEnergy at the start of the sim
-					int d1 = 2 * (35 - person.updateAge()); // Assume that after age 35, metabolism slows down
-					double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
-					double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
-					personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
-					appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-
-					freezing = getMedicalManager().getFreezing();
-					heatStroke = getMedicalManager().getHeatStroke();
-					decompression = getMedicalManager().getDecompression();
-					suffocation = getMedicalManager().getSuffocation();
+					initialize();
 
 				}
 
@@ -466,7 +476,7 @@ public class PhysicalCondition implements Serializable {
 			// System.out.println("PhysicalCondition : hunger : "+
 			// Math.round(hunger*10.0)/10.0);
 
-			int msol = marsClock.getMsols();//(int) (marsClock.getMillisol() * masterClock.getTimeRatio());
+			int msol = marsClock.getMsol0();//(int) (marsClock.getMillisol() * masterClock.getTimeRatio());
 			if (msol % 7 == 0) {
 
 				checkStarvation(hunger);
@@ -652,8 +662,8 @@ public class PhysicalCondition implements Serializable {
 			thirst = t;
 		if (t > THIRST_THRESHOLD && !isThirsty)
 			isThirsty = true;
-		// else if (isThirsty)
-		// isThirsty = false;
+		else if (isThirsty)
+			isThirsty = false;
 		// person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
 	}
 

@@ -14,18 +14,15 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.ai.PersonalityType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The BotMind class represents a robot's mind. It keeps track of missions and
@@ -43,6 +40,8 @@ implements Serializable {
     // Data members
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
+    /** The cache for msol0. */     
+ 	private int msolCache;
     /** The robot owning this mind. */
     private Robot robot = null;
     /** The robot's task manager. */
@@ -58,7 +57,8 @@ implements Serializable {
 
     private static MissionManager missionManager;
 
-    private Simulation sim = Simulation.instance();
+    private static Simulation sim;
+    private static MarsClock marsClock;
 
     /**
      * Constructor 1.
@@ -73,10 +73,13 @@ implements Serializable {
         robotJob = null;
         jobLock = false;
 
+        sim = Simulation.instance();
+        marsClock = Simulation.instance().getMasterClock().getMarsClock();
+  
         // Define the boundary in Sense-Act-Plan (Robot control methodology
-        // Sense - gather information using the sensors
-        // Plan - create a world model using all the information, and plan the next move
-        // Act
+        // 1. Sense - gather information using the sensors
+        // 2. Plan - create a world model using all the information, and plan the next move
+        // 3. Act
         // SPA is used in iterations: After the acting phase, the sensing phase, and the entire cycle, is repeated.
         // https://en.wikipedia.org/wiki/Sense_Plan_Act
         
@@ -105,19 +108,22 @@ implements Serializable {
 	           // 2015-10-31 Added recordMission()
 	    	missionManager.recordMission(robot);
 
-        if (botTaskManager != null)
-    		// Take action as necessary.
-	        takeAction(time);
-        
+	    int msol0 = marsClock.getMsol0();
+	    
+	    if (msolCache != msol0) {
+	    	msolCache = msol0;
 
-        // I don't think robots should be changing jobs on their own. - Scott
-        // Check if this robot needs to get a new job or change jobs.
-//	        if (!jobLock) {
-//	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
-//	        }
+	        // I don't think robots should be changing jobs on their own. - Scott
+	        // Check if this robot needs to get a new job or change jobs.
+//		        if (!jobLock) {
+//		        	setRobotJob(JobManager.getNewRobotJob(robot), false);
+//		        }
 
-        // Take action as necessary.
-        //takeAction(time);
+	        if (botTaskManager != null)
+	    		// Take action as necessary.
+		        takeAction(time);
+	    }
+
 
     }
 
@@ -139,7 +145,7 @@ implements Serializable {
         boolean overrideMission = false;
 
         if (robot != null) {
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            if (robot.isInSettlement()) {
                 overrideMission = robot.getSettlement().getMissionCreationOverride();
             }
 

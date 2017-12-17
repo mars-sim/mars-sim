@@ -29,7 +29,7 @@ public class EatMealMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.eatMealMeta"); //$NON-NLS-1$
-
+    
     @Override
     public String getName() {
         return NAME;

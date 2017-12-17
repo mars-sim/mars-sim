@@ -924,7 +924,7 @@ implements Serializable, LifeSupportType, Objective {
 	    if (marsClock == null)
 	    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	    
-	    int millisols = marsClock.getMsols();
+	    int millisols = marsClock.getMsol0();
 	    
 	    int num = getNumShift();
 	    
@@ -1021,7 +1021,7 @@ implements Serializable, LifeSupportType, Objective {
 		performEndOfDayTasks(); // NOTE: also update solCache in makeDailyReport()
 
 		// Sample a data point every SAMPLE_FREQ (in millisols)
-	    int millisols = marsClock.getMsols();
+	    int millisols = marsClock.getMsol0();
 
 	    int remainder = millisols % SAMPLING_FREQ ;
 	    if (remainder == 0)
@@ -3476,7 +3476,7 @@ implements Serializable, LifeSupportType, Objective {
     public int getCropsNeedingTending() {
         int result = 0;
 
-        int m = marsClock.getMsols();
+        int m = marsClock.getMsol0();
         if (millisolCache + 5 >= m) {
         	result = cropsNeedingTendingCache;
     	}

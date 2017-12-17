@@ -146,7 +146,7 @@ implements Serializable {
 	
 	private double cleaningAgentPerSol;
 	
-	private double waterUsagePerMeal;
+	//private double waterUsagePerMeal;
 
     private String producerName;
 
@@ -184,7 +184,7 @@ implements Serializable {
     	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
         // 2016-05-31 Added loading the two parameters from meals.xml
         cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
-        waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
+        //waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
 
         preparingWorkTime = 0D;
         servingsOfDessert = new CopyOnWriteArrayList<>();
@@ -704,7 +704,7 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-	    int msol = marsClock.getMsols();
+	    int msol = marsClock.getMsol0();
 	    
 	    if (msolCache != msol) {
 	    	msolCache = msol;

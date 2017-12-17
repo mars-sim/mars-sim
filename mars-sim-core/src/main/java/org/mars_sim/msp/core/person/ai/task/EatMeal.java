@@ -555,11 +555,13 @@ public class EatMeal extends Task implements Serializable {
         condition.setStress(newStress);
 
         double dryMass = nameOfDessert.getDryMass();
+        // Consume water
+        consumeWater(dryMass);
+        
         // Add caloric energy from dessert.
         double caloricEnergyFoodAmount = dryMass * dessertProportion;
         condition.addEnergy(caloricEnergyFoodAmount);
         
-        consumeWater(dryMass);
     }
 
     /**
@@ -577,9 +579,9 @@ public class EatMeal extends Task implements Serializable {
         }
 
 	    if (waterFinal > 0)  {
-		   	double new_thirst = (currentThirst - waterFinal)/8;
-	    	
-	    	condition.setThirst(new_thirst);
+		   	double new_thirst = (currentThirst - waterFinal)/8;   	
+	    	condition.setThirst(new_thirst);  	
+	    	//condition.setThirsty(false);
     	}
     }
     
@@ -698,8 +700,8 @@ public class EatMeal extends Task implements Serializable {
                 
 
                 double dryMass = PreparingDessert.getDryMass(PreparingDessert.convertAR2String(unpreparedDessertAR));
+                // Consume water
                 consumeWater(dryMass);
-                
                 
             }
             //else {

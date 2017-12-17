@@ -16,10 +16,8 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitManager;
-import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
@@ -29,11 +27,9 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The Mind class represents a person's mind. It keeps track of missions and
@@ -50,6 +46,8 @@ implements Serializable {
 
     // Data members
 	private int solCache = 1;
+    /** The cache for msol0. */     
+ 	private int msolCache;
     /** The person owning this mind. */
     private Person person = null;
     /** The person's task manager. */
@@ -69,9 +67,8 @@ implements Serializable {
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
 
-    private static Simulation sim = Simulation.instance();
-    //private static MasterClock masterClock;// = sim.getMasterClock();
-    //private static MarsClock marsClock;// = masterClock.getMarsClock();
+    private static Simulation sim;
+    private static MarsClock marsClock;
 
     /**
      * Constructor 1.
@@ -88,26 +85,18 @@ implements Serializable {
         jobLock = false;
 
         sim = Simulation.instance();
-        //masterClock = sim.getMasterClock();
-        //if (masterClock != null) { // to avoid NullPointerException during maven test
-	    //    marsClock = masterClock.getMarsClock();
-        //}
-
+        marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        
         // Set the Big Five personality trait.
         trait = new PersonalityTraitManager(person);
-
         // Set the MBTI personality type.
         mbti = new PersonalityType(person);
-
         // Construct a task manager
         taskManager = new TaskManager(this);
 
         missionManager = sim.getMissionManager();
-
         // Construct a skill manager.
         skillManager = new SkillManager(person);
-
-        //masterClock = sim.getMasterClock();
     }
 
     /**
@@ -126,40 +115,39 @@ implements Serializable {
         	// 2015-10-31 Added recordMission()
         	missionManager.recordMission(person);
 
-    	// Note : for now a Mayor/Manager cannot switch job
-    	if (job instanceof Manager)
-    		jobLock = true;
+	    int msol0 = marsClock.getMsol0();
+	    
+	    if (msolCache != msol0) {
+	    	msolCache = msol0;
 
-     	else {
-    		if (jobLock) {
-    	        //if (masterClock == null)
-    	        //	masterClock = sim.getMasterClock();
-
-    			//if (marsClock == null)
-    			//	marsClock = masterClock.getMarsClock();// needed for loading a saved sim
-
-    		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
-    	        // check for the passing of each day
-    	        int solElapsed = sim.getMasterClock().getMarsClock().getMissionSol();
-    	        if (solElapsed != solCache) {
-    	        	solCache = solElapsed;
-    	        	jobLock = false;
-    	        }
-        	}
-    		else
-    			checkJob();
-    	}
-
-
-        // Update stress based on personality.
-        mbti.updateStress(time);
-
-        // Update relationships.
-        sim.getRelationshipManager().timePassing(person, time);
-
-        // Take action as necessary.
-        if (taskManager != null)
-        	takeAction(time);
+	    	// Note : for now a Mayor/Manager cannot switch job
+	    	if (job instanceof Manager)
+	    		jobLock = true;
+	
+	     	else {
+	    		if (jobLock) {
+	    		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
+	    	        // check for the passing of each day
+	    	        int solElapsed = marsClock.getMissionSol();
+	    	        if (solElapsed != solCache) {
+	    	        	solCache = solElapsed;
+	    	        	jobLock = false;
+	    	        }
+	        	}
+	    		else 
+	    			checkJob();
+	    	}
+	
+	        // Update stress based on personality.
+	        mbti.updateStress(time);
+	
+	        // Update relationships.
+	        sim.getRelationshipManager().timePassing(person, time);
+	
+	        // Take action as necessary.
+	        if (taskManager != null)
+	        	takeAction(time);
+	    }
 
     }
 
@@ -214,7 +202,7 @@ implements Serializable {
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             overrideMission = person.getSettlement().getMissionCreationOverride();
         }
 
