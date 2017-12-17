@@ -61,33 +61,31 @@ public class MenuApp {
     	this.mainMenu = mainMenu;
     	this.isFXGL = isFXGL;
     	
-    	root.setMaxSize(WIDTH-10, HEIGHT-20);
+    	//root.setMaxSize(WIDTH + 20, HEIGHT + 20);
+    	//root.setMaxSize(WIDTH-10, HEIGHT-20);
     }
     
     public void setupMenuData() {
     	
     	menuData = Arrays.asList(
-                new Pair<String, Runnable>("New Sim", () -> {
-               		mainMenu.runNew(isFXGL);
-                }),
-                new Pair<String, Runnable>("Load Sim", () -> mainMenu.runLoad(isFXGL)),
-                //new Pair<String, Runnable>("Multiplayer", () -> {}),
-                new Pair<String, Runnable>("Tutorial", () -> {}),
-                new Pair<String, Runnable>("Benchmark", () -> {}),
-                new Pair<String, Runnable>("Settings", () -> mainMenu.runSettings()),
-                new Pair<String, Runnable>("Credits", () -> {}),
-                new Pair<String, Runnable>("Exit", () -> {
-                	//Platform::exit
-                	if (isFXGL) {
-	    		        Input input = FXGL.getInput();
-	    				input.mockKeyPress(KeyCode.ESCAPE);
-	    		        input.mockKeyRelease(KeyCode.ESCAPE);
-                	}
-                	else {
-                		mainMenu.dialogOnExit(mainMenu.getPane());
-                	}
-                }
-                )
+            new Pair<String, Runnable>("New Sim", () -> mainMenu.runNew(isFXGL)),
+            new Pair<String, Runnable>("Load Sim", () -> mainMenu.runLoad(isFXGL)),
+            //new Pair<String, Runnable>("Multiplayer", () -> {}),
+            new Pair<String, Runnable>("Tutorial", () -> {}),
+            new Pair<String, Runnable>("Benchmark", () -> {}),
+            new Pair<String, Runnable>("Settings", () -> mainMenu.runSettings()),
+            new Pair<String, Runnable>("Credits", () -> {}),
+            new Pair<String, Runnable>("Exit", () -> {
+            	//Platform::exit
+            	if (isFXGL) {
+    		        Input input = FXGL.getInput();
+    				input.mockKeyPress(KeyCode.ESCAPE);
+    		        input.mockKeyRelease(KeyCode.ESCAPE);
+            	}
+            	else {
+            		mainMenu.dialogOnExit(mainMenu.getPane());
+            	}
+            })
         );
     }    
     
@@ -95,18 +93,14 @@ public class MenuApp {
     
     public AnchorPane createContent() {
         //addBackground();
-    	//addRect();    	
-
+    	//addRect();
     	addStarfield();
-        addGlobe();
-        
+        addGlobe();     
         addLine(X_OFFSET, Y_OFFSET);
         addMenu(X_OFFSET + 10, Y_OFFSET - 25);
         //startAnimation();
         //addFooter();
-        
         addTitle();
-
         
         return root;
     }
@@ -119,17 +113,15 @@ public class MenuApp {
 */
     private void addStarfield() {
         StarfieldFX sf = new StarfieldFX();
-        Parent starfield = sf.createStars(WIDTH-2, HEIGHT-2);
-
+        Parent starfield = sf.createStars(WIDTH-5, HEIGHT-5);
         root.getChildren().add(starfield);
     }
 
     private void addGlobe() {
     	spinningGlobe = new SpinningGlobe(mainMenu);
         Parent globe = spinningGlobe.createDraggingGlobe();   
-        globe.setTranslateX(WIDTH/3D - SpinningGlobe.WIDTH/2D + 40);
-        globe.setTranslateY(0);
- 
+        //globe.setTranslateX(20);//WIDTH/3D - SpinningGlobe.WIDTH/2D);// + 40);
+        //globe.setTranslateY(50);
         root.getChildren().add(globe);	
     }
     
@@ -162,7 +154,6 @@ public class MenuApp {
         MenuTitle site = new MenuTitle("https://mars-sim.github.io/", 16, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
         site.setTranslateX(420);
         site.setTranslateY(HEIGHT-7);
-     
         
         titleStackPane = new StackPane(title, version, year, site, build, optionMenu);
         root.getChildren().addAll(titleStackPane);
@@ -248,7 +239,7 @@ public class MenuApp {
     	optionMenu.getChildren().remove(line);
         line = null;
 	    menuBox.getChildren().removeAll(menuData);
-        //menuData.forEach(data -> {
+	    //menuBox.forEach(data -> {
         //    menuBox.getChildren().remove(menuData);
         //});
         menuData = null;
@@ -278,4 +269,16 @@ public class MenuApp {
     	return menuData;
     }
     
+    
+	public void destroy() {
+		root = null;
+	    titleStackPane = null;
+	    menuBox = null;
+	    optionMenu = null;
+	    line = null;    
+	    mainMenu = null;
+	    spinningGlobe = null;     
+	    menuData = null;
+		
+	}
 }

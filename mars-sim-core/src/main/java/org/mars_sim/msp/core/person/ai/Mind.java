@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 3.07 2015-03-31
+ * @version 3.1.0 2017-12-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai;
@@ -85,17 +85,18 @@ implements Serializable {
         jobLock = false;
 
         sim = Simulation.instance();
-        marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        if (sim.getMasterClock() != null) // for passing maven test
+        	marsClock = sim.getMasterClock().getMarsClock();
         
-        // Set the Big Five personality trait.
+        // Construct the Big Five personality trait.
         trait = new PersonalityTraitManager(person);
-        // Set the MBTI personality type.
+        // Construct the MBTI personality type.
         mbti = new PersonalityType(person);
-        // Construct a task manager
+        // Construct the task manager
         taskManager = new TaskManager(this);
-
+        // Load the mission manager
         missionManager = sim.getMissionManager();
-        // Construct a skill manager.
+        // Construct the skill manager.
         skillManager = new SkillManager(person);
     }
 

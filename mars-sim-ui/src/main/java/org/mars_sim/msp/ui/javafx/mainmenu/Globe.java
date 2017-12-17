@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
-
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.beans.binding.Bindings;
@@ -16,7 +15,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.StackPane;
 //import javafx.scene.AmbientLight;
 import javafx.scene.Node;
-import javafx.scene.Scene;
+//import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 //import javafx.stage.Stage;
@@ -34,7 +33,7 @@ import org.mars_sim.msp.ui.javafx.mainmenu.Xform;
 
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.util.Duration;
+//import javafx.util.Duration;
 //import javafx.scene.Node;
 
 
@@ -91,19 +90,19 @@ public class Globe {
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
     //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
-    private final Group root = new Group();
-    private final Group axisGroup = new Group();
+    private Group root = new Group();
+    private  Group axisGroup = new Group();
 
     private StackPane stackPane;
     
-    private final PerspectiveCamera camera = new PerspectiveCamera(true);
+    private PerspectiveCamera camera = new PerspectiveCamera(true);
     private final double cameraDistance = 1450;//1450;//450;
 
-    private final Xform world = new Xform();
-    private final Xform cameraXform = new Xform();
-    private final Xform cameraXform2 = new Xform();
-    private final Xform cameraXform3 = new Xform();
-    private final Xform sphereGroup = new Xform();
+    private Xform world = new Xform();
+    private Xform cameraXform = new Xform();
+    private Xform cameraXform2 = new Xform();
+    private Xform cameraXform3 = new Xform();
+    private Xform sphereGroup = new Xform();
 
     private Timeline timeline;
 
@@ -134,7 +133,6 @@ public class Globe {
 	}
 
     private void buildCamera() {
-	    //root.getChildren().add(cameraXform);
 	    stackPane.getChildren().add(cameraXform);
 	    
         cameraXform.getChildren().add(cameraXform2);
@@ -168,13 +166,13 @@ public class Globe {
         //    material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
         //}
         //else
-        	material.setSpecularColor(Color.LIGHTGOLDENRODYELLOW);//LIGHTGRAY);//		.DARKGOLDENROD);//ORANGE);//.LIGHTGRAY);//WHITE);
+        	material.setSpecularColor(Color.LIGHTGRAY);//LIGHTGOLDENRODYELLOW);//		.DARKGOLDENROD);//ORANGE);//.LIGHTGRAY);//WHITE);
 
 
         //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
         Xform marsXform = new Xform();
-        Sphere mars = new Sphere(320.0);
+        Sphere mars = new Sphere(300.0);
         mars.setMaterial(material);
         marsXform.getChildren().add(mars);
         sphereGroup.getChildren().add(marsXform);
@@ -278,11 +276,11 @@ public class Globe {
     }
 
     protected void handleKeyboard(Node scene) {//, final Node root) {
-        final boolean moveCamera = true;
+        //final boolean moveCamera = true;
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                Duration currentTime;
+                //Duration currentTime;
                 switch (event.getCode()) {
                     case Z:
                         if (event.isShiftDown()) {
@@ -372,8 +370,27 @@ public class Globe {
                             cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  // -
                         }
                         break;
+				default:
+					break;
                 }
             }
         });
     }
+    
+ 	public void destroy() {
+ 		sImage = null;
+ 		dImage = null;
+ 		nImage = null;
+ 		root = null;
+ 	    axisGroup = null;
+ 	    stackPane = null;
+ 	    camera  = null;
+ 	    world = null;
+ 	    cameraXform2 = null;
+ 	    cameraXform = null;
+ 	    cameraXform3 = null;
+ 	    sphereGroup = null;
+ 	    timeline = null;
+ 	}
+ 	
 }

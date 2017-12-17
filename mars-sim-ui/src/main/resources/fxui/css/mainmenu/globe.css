@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * globe.css
+ * @version 3.1.0 2017-12-17
+ * @author Manny Kung
+ */
+ 
 .root {
   /*-fx-border-insets: 23;*/
   -fx-background-color: brown;   
@@ -8,7 +15,7 @@
   -fx-border-style: solid;
   -fx-border-width: 3;
 /*  -fx-opacity: 0.0; */
-  -fx-effect: dropshadow(three-pass-box, peru, 6, 0, 7.5, 7.5);
+  -fx-effect: dropshadow(three-pass-box, saddlebrown, 6, 0, 7.5, 7.5);
 }
 
 /*

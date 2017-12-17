@@ -24,9 +24,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.FadeTransition;
-//import javafx.scene.control.Separator;
-//import javafx.scene.control.Toggle;
-//import javafx.scene.control.ToggleGroup;
+
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -39,6 +37,10 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+//import javafx.scene.control.Separator;
+//import javafx.scene.control.Toggle;
+//import javafx.scene.control.ToggleGroup;
 //import javafx.geometry.HPos;
 //mport javafx.scene.control.Button;
 //import javafx.scene.control.TextField;
@@ -49,6 +51,9 @@ import javafx.scene.Scene;
 //import javafx.scene.control.Alert;
 //import javafx.scene.control.Alert.AlertType;
 //import javafx.scene.control.ButtonType;
+//import javafx.stage.Window;
+//import javafx.geometry.Point2D;
+//import javafx.stage.Modality;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -60,13 +65,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import javafx.stage.Window;
 import javafx.geometry.Insets;
-//import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
-//import javafx.stage.Modality;
 import javafx.stage.Screen;
 
 import org.mars_sim.msp.core.Simulation;
@@ -82,7 +84,6 @@ import com.almasb.fxgl.scene.GameScene;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
-//import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
 
 import eu.hansolo.tilesfx.Tile;
@@ -150,9 +151,8 @@ public class MainMenu {
 	
 	private MainScene mainScene;
 	//private ScreensSwitcher screen;
-
-	private transient ThreadPoolExecutor executor;
 	private MultiplayerMode multiplayerMode;
+	
 	private MainMenuController mainMenuController;
 
 	private MenuApp menuApp;
@@ -162,6 +162,8 @@ public class MainMenu {
 	private JFXDialog exitDialog;
 
 	private List<Resolution> resList;
+	
+	private transient ThreadPoolExecutor executor;
 	
     public MainMenu() {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
@@ -216,8 +218,9 @@ public class MainMenu {
     	menuApp = new MenuApp(mainMenu, true);
     	
     	anchorPane = menuApp.createContent();
-       
+    	
     	stackPane = new StackPane(anchorPane);
+
     	stackPane.setPrefSize(WIDTH, HEIGHT);
     	//stackPane.setLayoutX(10);
     	//stackPane.setLayoutY(10);
@@ -266,17 +269,6 @@ public class MainMenu {
 		        Input input = FXGL.getInput();
 				input.mockKeyPress(KeyCode.ESCAPE);
 		        input.mockKeyRelease(KeyCode.ESCAPE);
-/*		        
-	       		dialogOnExit(rootPane);
-	
-	       		if (!isExit) {
-	       			event.consume();
-	       		}
-	       		else {
-	       			Platform.exit();
-	           		System.exit(0);
-	       		}
-*/	       		
 	       	}
        });
 
@@ -288,35 +280,20 @@ public class MainMenu {
        root.getChildren().add(stackPane);
        root.getChildren().add(closeApp);
        root.getChildren().add(rootPane);
-          
-       //gameScene.getRoot().getStylesheets().setAll(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
-
-       gameScene.addUINode(root);   
     
-/*       
-       menuApp.getTitleStackPane().setOnMousePressed(new EventHandler<MouseEvent>() {
-           @Override
-           public void handle(MouseEvent event) {
-               x = event.getSceneX();
-               y = event.getSceneY();
-           }
-       });
-       menuApp.getTitleStackPane().setOnMouseDragged(new EventHandler<MouseEvent>() {
-           @Override
-           public void handle(MouseEvent event) {
-        	   gameScene.getRoot().setTranslateX(event.getScreenX() - x);
-        	   gameScene.getRoot().setTranslateX(event.getScreenY() - y);
-           }
-       });
-*/
+       gameScene.addUINode(root);   
+
+       //Scene scene = gameScene.getContentRoot().getScene(); // scene is null
+       // Create an yellowish atmosphere around the globe
+       //scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
+       // Add CSS styles
+       //scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
+       
        
        // Add keyboard control
        menuApp.getSpinningGlobe().getGlobe().handleKeyboard(gameScene.getContentRoot());
        // Add mouse control
        menuApp.getSpinningGlobe().getGlobe().handleMouse(gameScene.getContentRoot());
-
-       //gameScene.getRoot().getScene().getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
-       //scene.setCursor(Cursor.HAND);
 
        // Makes the menu option box fades in
        root.setOnMouseEntered(new EventHandler<MouseEvent>(){
@@ -342,19 +319,7 @@ public class MainMenu {
         	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
            }
        });
- 
-       
-/*
-       //Scene scene = (Scene) gameScene.getRoot().getScene();
-       Scene scene = gameScene.getRoot().getScene();
-       if (scene == null)
-    	   System.out.println("scene is " + scene);
-       Window window = scene.getWindow();
-       Stage stage = (Stage) window;
-       stage.hide();
-       stage.initStyle(StageStyle.UNDECORATED);
-       stage.show();
-*/ 
+
    }
 	
     /*
@@ -374,23 +339,21 @@ public class MainMenu {
 
     	menuApp = new MenuApp(mainMenu, false);
     	anchorPane = menuApp.createContent();
-       
+
     	stackPane = new StackPane(anchorPane);
     	stackPane.setPrefSize(WIDTH, HEIGHT);
-    	stackPane.setLayoutX(10);
-    	stackPane.setLayoutY(10);
-       
-    	double sceneWidth = stackPane.getPrefWidth() + 30;
-    	double sceneHeight = stackPane.getPrefHeight() + 30;
+ 
+    	double sceneWidth = stackPane.getPrefWidth();// + 30;
+    	double sceneHeight = stackPane.getPrefHeight();// + 30;
 
     	// Create application area
     	@SuppressWarnings("restriction")
     	Rectangle applicationArea = RectangleBuilder.create()
-                .width(sceneWidth - 10)
-                .height(sceneHeight - 10)
-                .arcWidth(20)
-                .arcHeight(20)
-                .fill(Color.rgb(0, 0, 0, .80))
+                .width(sceneWidth)// - 10)
+                .height(sceneHeight)// - 10)
+                .arcWidth(10)
+                .arcHeight(10)
+                .fill(Color.rgb(0, 0, 0, 1))//.80))
                 .x(0)
                 .y(0)
                 .strokeWidth(2)
@@ -431,21 +394,50 @@ public class MainMenu {
        
 
        rootPane = new StackPane();
-       rootPane.setPrefSize(stackPane.getPrefWidth()-300, stackPane.getPrefHeight());//stackPane.getPrefWidth()-50, stackPane.getPrefHeight()-50);
-       //rootPane.setLayoutX((sceneWidth-stackPane.getPrefWidth()));
-       //rootPane.setLayoutY((sceneHeight-stackPane.getPrefHeight()));
+       rootPane.setPrefSize(stackPane.getPrefWidth()-300, stackPane.getPrefHeight());
        
        Group root = new Group();
        root.getChildren().add(applicationArea);
        root.getChildren().add(stackPane);
        root.getChildren().add(closeApp);
        root.getChildren().add(rootPane);
+     
+       Scene scene = new Scene(root, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);//Color.rgb(0, 0, 0, 0));
+       // Create a sliver of sun-lit bright orange atmosphere around the Mars globe when being dragged around
+       scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/mainmenu/globe.css").toExternalForm());
+       // Add CSS styles
+       scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
        
-       Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
-       scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
+       scene.setFill(Color.BLACK); // if using Group, a black border will remain
+       //scene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
+       scene.setCursor(Cursor.HAND);
 
+       // Makes the menu option box fades in
+       scene.setOnMouseEntered(new EventHandler<MouseEvent>(){
+           public void handle(MouseEvent mouseEvent){
+        	   menuApp.startAnimation();
+               FadeTransition fadeTransition
+                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+               fadeTransition.setFromValue(0.0);
+               fadeTransition.setToValue(1.0);
+               fadeTransition.play();
+           }
+       });
+
+       // Makes the menu option box fades out
+       scene.setOnMouseExited(new EventHandler<MouseEvent>(){
+           public void handle(MouseEvent mouseEvent){
+        	   menuApp.endAnimation();
+               FadeTransition fadeTransition
+                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+               fadeTransition.setFromValue(1.0);
+               fadeTransition.setToValue(0.0);
+               fadeTransition.play();
+        	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
+           }
+        });
        
-       closeApp.translateXProperty().bind(scene.widthProperty().subtract(40));
+       closeApp.translateXProperty().bind(scene.widthProperty().subtract(30));
  
        menuApp.getTitleStackPane().setOnMousePressed(new EventHandler<MouseEvent>() {
            @Override
@@ -454,6 +446,7 @@ public class MainMenu {
                y = event.getSceneY();
            }
        });
+       
        menuApp.getTitleStackPane().setOnMouseDragged(new EventHandler<MouseEvent>() {
            @Override
            public void handle(MouseEvent event) {
@@ -495,42 +488,8 @@ public class MainMenu {
        menuApp.getSpinningGlobe().getGlobe().handleKeyboard(scene.getRoot());
        // Add mouse control
        menuApp.getSpinningGlobe().getGlobe().handleMouse(scene.getRoot());
-
-       scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
-       //scene.setFill(Color.BLACK); // if using Group, a black border will remain
-       //scene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
-       scene.setCursor(Cursor.HAND);
-
-       // Makes the menu option box fades in
-       scene.setOnMouseEntered(new EventHandler<MouseEvent>(){
-           public void handle(MouseEvent mouseEvent){
-        	   menuApp.startAnimation();
-               FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-               fadeTransition.setFromValue(0.0);
-               fadeTransition.setToValue(1.0);
-               fadeTransition.play();
-           }
-       });
-
-       // Makes the menu option box fades out
-       scene.setOnMouseExited(new EventHandler<MouseEvent>(){
-           public void handle(MouseEvent mouseEvent){
-        	   menuApp.endAnimation();
-               FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-               fadeTransition.setFromValue(1.0);
-               fadeTransition.setToValue(0.0);
-               fadeTransition.play();
-        	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
-           }
-        });
      
-       stage.setOnCloseRequest(e -> {
-	        Input input = FXGL.getInput();
-			input.mockKeyPress(KeyCode.ESCAPE);
-	        input.mockKeyRelease(KeyCode.ESCAPE);
-/*	        
+       stage.setOnCloseRequest(e -> {    
     		dialogOnExit(rootPane);
 
     		if (!isExit) {
@@ -540,7 +499,7 @@ public class MainMenu {
     			Platform.exit();
         		System.exit(0);
     		}
-*/    		
+    		
         });
 
 
@@ -556,6 +515,7 @@ public class MainMenu {
 
 
    }
+	
 	
 	/** 
 	 * Removes unsupported resolutions 

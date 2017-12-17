@@ -101,6 +101,7 @@ public class TaskSchedule implements Serializable {
 		shiftChoice.put(ShiftType.A, 51);
 		shiftChoice.put(ShiftType.B, 51);
 		shiftChoice.put(ShiftType.ON_CALL, 51);
+		shiftChoice.put(ShiftType.OFF, 51);
 		
 		if (Simulation.instance().getMasterClock() != null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();

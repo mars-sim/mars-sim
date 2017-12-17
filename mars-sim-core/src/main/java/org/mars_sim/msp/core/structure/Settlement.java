@@ -1309,7 +1309,6 @@ implements Serializable, LifeSupportType, Objective {
 	/*
 	 * Reassigns the work shift for all
 	 */
-	// 2015-11-04 Added reassignWorkShift()
 	// TODO: should call this method at, say, 800 millisols, not right at 1000 millisols
 	public void reassignWorkShift() {
 
@@ -1331,7 +1330,8 @@ implements Serializable, LifeSupportType, Objective {
 
 		for (Person p : people) {
 
-			if (p.getMind().getMission() == null && p.isInSettlement() && !p.isDeclaredDead()) {
+			if (p.getMind().getMission() == null && p.isInSettlement() 
+					&& !p.isBuried() && !p.isDeclaredDead() && !p.getPhysicalCondition().isDead() ) {
 
 				// 2015-12-05 Check if person is an astronomer.
 	            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);

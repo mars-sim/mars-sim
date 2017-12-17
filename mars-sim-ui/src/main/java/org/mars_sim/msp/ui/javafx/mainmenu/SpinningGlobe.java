@@ -8,79 +8,23 @@
 package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import java.util.logging.Logger;
-//import java.util.concurrent.ThreadPoolExecutor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.slf4j.bridge.SLF4JBridgeHandler;
-//import javafx.geometry.Point3D;
-//import javafx.scene.shape.Shape;
-//import javafx.scene.paint.RadialGradient;
-//import javafx.scene.paint.Stop;
-//import javafx.scene.paint.CycleMethod;
-//import javafx.scene.paint.RadialGradient;
-//import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
-//import javafx.scene.effect.GaussianBlur;
-//import javafx.scene.transform.Scale;
-//import javafx.animation.FadeTransition;
-//import javafx.scene.input.MouseEvent;
-//import javafx.scene.effect.DropShadow;
-//import javafx.scene.effect.InnerShadow;
-//import javafx.scene.shape.Rectangle;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
-//import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-//import javafx.concurrent.Task;
-//import javafx.event.EventHandler;
-//import javafx.scene.AmbientLight;
-//import javafx.scene.CacheHint;
-//import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.Parent;
-//import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-//import javafx.scene.control.Alert;
-//import javafx.scene.control.Alert.AlertType;
-//import javafx.scene.control.ButtonType;
-//import javafx.scene.image.Image;
-//import javafx.scene.layout.AnchorPane;
-//import javafx.scene.layout.BorderPane;
-//import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
-//import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-//import javafx.stage.StageStyle;
 import javafx.util.Duration;
-//import javafx.geometry.Insets;
-//import javafx.geometry.Pos;
-//import javafx.scene.Group;
-//import javafx.scene.Scene;
-//import javafx.scene.control.Label;
-//import javafx.scene.control.ProgressBar;
-//import javafx.scene.control.ProgressIndicator;
+
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-//import javafx.scene.layout.VBox;
-//import javafx.stage.Stage;
-//import javafx.scene.effect.ColorAdjust;
-//import javafx.scene.control.Slider;
-//import javafx.scene.control.TableView;
-//import javafx.scene.control.ProgressIndicator;
-//import javafx.stage.Modality;
 
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
@@ -96,47 +40,19 @@ public class SpinningGlobe extends Application {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SpinningGlobe.class.getName());
 
-	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-
-
-    // -------------------------- STATIC METHODS --------------------------
-    //static {
-    //    SLF4JBridgeHandler.removeHandlersForRootLogger();
-   //     SLF4JBridgeHandler.install();
-    //    logger = LoggerFactory.getLogger(MainMenu.class);
-    //}
-
     public static final int WIDTH = 768;
     public static final int HEIGHT = 768;
 
-    //private static final double MIN_SCALE = .5;
-    //private static final double MAX_SCALE = 4;
-    //private static final double DEFAULT_SCALE = 2;
-
-    //private double anchorX, anchorY;
-   // private double rate, total_scale = DEFAULT_SCALE;
-
-    @SuppressWarnings("restriction")
-	private final DoubleProperty sunDistance = new SimpleDoubleProperty(50);
-    private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
-
     private RotateTransition rt;
-    private Sphere marsSphere;
-    private Circle glowSphere;
-    private PhongMaterial material;
-    private PointLight sun;
-
-    private Group globeComponents;
     private SubScene subScene;
-	public MainMenuController mainMenuController;
-	public MainMenu mainMenu;
-
-	public Globe globe;
+    private MainMenuController mainMenuController;
+    private Globe globe;
+	
 	/*
 	 * Constructor for SpinningGlobe
 	 */
     public SpinningGlobe(MainMenu mainMenu) {
-    	this.mainMenu = mainMenu;
+    	//this.mainMenu = mainMenu;
     	this.mainMenuController = mainMenu.getMainMenuController();
  	}
 
@@ -226,12 +142,12 @@ public class SpinningGlobe extends Application {
         Parent globe = null;
         Scene scene = null;
 
-        if (OS.contains("window")) {
-        	globe = createFixedGlobe();
-        }
-        else {
+        //if (OS.contains("window")) {
+        //	globe = createFixedGlobe();
+        //}
+        //else {
             globe = createDraggingGlobe();
-        }
+        //}
 
     	StackPane root = new StackPane();
         root.setPrefHeight(WIDTH);
@@ -244,16 +160,14 @@ public class SpinningGlobe extends Application {
         scene = new Scene(root, 640, 640, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.BLACK);
 
-        if (OS.contains("window")) {
+        //if (OS.contains("window")) {
 
-        }
-        else {
+        //}
+        //else {
             // Add mouse and keyboard control
             getGlobe().handleMouse(root);
             getGlobe().handleKeyboard(root);
-        }
-
-
+        //}
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -262,13 +176,10 @@ public class SpinningGlobe extends Application {
 
 
  	public void destroy() {
-
  		rt = null;
- 		marsSphere = null;
- 		glowSphere = null;
- 		material = null;
- 		sun = null;
- 		mainMenu = null;
+ 	    subScene = null;
+ 	    mainMenuController = null;
+ 	    globe = null;
  		mainMenuController = null;
  	}
 }
