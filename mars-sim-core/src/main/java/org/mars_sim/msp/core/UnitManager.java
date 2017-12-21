@@ -1162,11 +1162,10 @@ public class UnitManager implements Serializable {
 	 * @param settlement
 	 * @param pop population
 	 */
-	// 2015-07-02 Added setupShift()
 	public void setupShift(Settlement settlement, int pop) {
 
 		int numShift = 0;
-		ShiftType shiftType = ShiftType.OFF;
+		//ShiftType shiftType = ShiftType.OFF;
 
 		if (pop == 1) {
 			numShift = 1;
@@ -1183,8 +1182,8 @@ public class UnitManager implements Serializable {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
-			shiftType = settlement.getAnEmptyWorkShift(pop); // keep pop as a param just to speed up processing
-			p.setShiftType(shiftType);
+			//shiftType = settlement.getAnEmptyWorkShift(pop); // keep pop as a param just to speed up processing
+			p.setShiftType(settlement.getAnEmptyWorkShift(pop));
 		}
 
 	}

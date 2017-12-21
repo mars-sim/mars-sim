@@ -1330,100 +1330,102 @@ implements Serializable, LifeSupportType, Objective {
 
 		for (Person p : people) {
 
-			if (p.getMind().getMission() == null && p.isInSettlement() 
-					&& !p.isBuried() && !p.isDeclaredDead() && !p.getPhysicalCondition().isDead() ) {
-
-				// 2015-12-05 Check if person is an astronomer.
-	            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
-
-				ShiftType oldShift = p.getTaskSchedule().getShiftType();
+			if (!p.isBuried() || !p.isDeclaredDead() || !p.getPhysicalCondition().isDead()) {
 				
-	            if (isAstronomer) {
-	            	// TODO: find the darkest time of the day
-	            	// and set work shift to cover time period
-
-	            	// For now, we may assume it will usually be X or Z, but Y
-	            	// since Y is usually where midday is at unless a person is at polar region.
-
-	            	if (oldShift == ShiftType.Y) {
-
-	            		boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
-	            		boolean z_ok = isWorkShiftSaturated(ShiftType.Z, false);
-
-		            	// TODO: Instead of throwing a dice,
-	            		// take the shift that has less sunlight
-	            		int rand;
-	                	ShiftType newShift = null;
-
-	            		if (x_ok && z_ok) {
-	            			rand = RandomUtil.getRandomInt(1);
-		            		if (rand == 0)
+				if (p.getMind().getMission() == null && p.isInSettlement()) {
+	
+					// 2015-12-05 Check if person is an astronomer.
+		            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
+	
+					ShiftType oldShift = p.getTaskSchedule().getShiftType();
+					
+		            if (isAstronomer) {
+		            	// TODO: find the darkest time of the day
+		            	// and set work shift to cover time period
+	
+		            	// For now, we may assume it will usually be X or Z, but Y
+		            	// since Y is usually where midday is at unless a person is at polar region.
+	
+		            	if (oldShift == ShiftType.Y) {
+	
+		            		boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
+		            		boolean z_ok = isWorkShiftSaturated(ShiftType.Z, false);
+	
+			            	// TODO: Instead of throwing a dice,
+		            		// take the shift that has less sunlight
+		            		int rand;
+		                	ShiftType newShift = null;
+	
+		            		if (x_ok && z_ok) {
+		            			rand = RandomUtil.getRandomInt(1);
+			            		if (rand == 0)
+			            			newShift = ShiftType.X;
+			            		else
+			            			newShift = ShiftType.Z;
+		            		}
+		            		
+		            		else if (x_ok)
 		            			newShift = ShiftType.X;
-		            		else
+		            		
+		            		else if (z_ok)
 		            			newShift = ShiftType.Z;
-	            		}
-	            		
-	            		else if (x_ok)
-	            			newShift = ShiftType.X;
-	            		
-	            		else if (z_ok)
-	            			newShift = ShiftType.Z;
-
-	            		p.setShiftType(newShift);
-						//System.out.println(p + " old shift : " + oldShift + " new shift : " + newShift);
-
-	            	}
-
-	            } // end of if (isAstronomer)
-
-	            else {
-
-					if (oldShift == ShiftType.ON_CALL) {
-						// TODO: check a person's sleep habit map and request changing his work shift
-						// to avoid taking a work shift that overlaps his sleep hour
+	
+		            		p.setShiftType(newShift);
+							//System.out.println(p + " old shift : " + oldShift + " new shift : " + newShift);
+	
+		            	}
+	
+		            } // end of if (isAstronomer)
+	
+		            else {
+						// if a person's shift is saturated, he will need to change shift
 						ShiftType newShift = getAnEmptyWorkShift(pop);
-						
+										
 						int tendency = p.getTaskSchedule().getShiftChoice(newShift);
 						// TODO: should find the person with the highest tendency to take this shift
-						
-						if (newShift != oldShift && tendency > 50) { // sanity check
-							//System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift + ",  new shift : " + newShift);
-							p.setShiftType(newShift);
-						}
-					}
-
-					else {
-						// Note: if a person's shift is NOT saturated, he doesn't need to change shift
-						boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
-
-						// TODO: check a person's sleep habit map and request changing his work shift
-						// to avoid taking a work shift that overlaps his sleep hour
-
-						if (!oldShift_ok) {
-							// if a person's shift is saturated, he will need to change shift
-							ShiftType newShift = getAnEmptyWorkShift(pop);
-							
-							if (newShift != oldShift) { // sanity check
+	
+						if (oldShift == ShiftType.ON_CALL) {
+							// TODO: check a person's sleep habit map and request changing his work shift
+							// to avoid taking a work shift that overlaps his sleep hour
+			
+							if (newShift != oldShift && tendency > 50) { // sanity check
 								//System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift + ",  new shift : " + newShift);
 								p.setShiftType(newShift);
 							}
 						}
-					}
-	            } // end of if (isAstronomer)
-			}
-			// Just for sanity check for those on a vehicle mission
-			// Note: shouldn't be needed this way but currently, when currently when starting a trade mission,
-			// the code fails to change a person's work shift to On-call.
-			else if (p.getMind().getMission() != null || p.isInVehicle()) {
-				
-				ShiftType oldShift = p.getTaskSchedule().getShiftType();
-				
-				if (oldShift != ShiftType.ON_CALL) {
-					//System.out.println(p + " old shift : " + oldShift + " new shift : " + ShiftType.ON_CALL);
-					p.setShiftType(ShiftType.ON_CALL);
+	
+						else {
+							// Note: if a person's shift is NOT saturated, he doesn't need to change shift
+							boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
+	
+							// TODO: check a person's sleep habit map and request changing his work shift
+							// to avoid taking a work shift that overlaps his sleep hour
+	
+							if (!oldShift_ok) {
+						
+								if (newShift != oldShift && tendency > 50) { // sanity check
+									//System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift + ",  new shift : " + newShift);
+									p.setShiftType(newShift);
+								}
+							}
+						}
+		            } // end of if (isAstronomer)
 				}
-			}
-		}
+				// Just for sanity check for those on a vehicle mission
+				// Note: shouldn't be needed this way but currently, when currently when starting a trade mission,
+				// the code fails to change a person's work shift to On-call.
+				else if (p.getMind().getMission() != null && p.isInVehicle()) {
+					
+					ShiftType oldShift = p.getTaskSchedule().getShiftType();
+					
+					if (oldShift != ShiftType.ON_CALL) {
+						//System.out.println(p + " old shift : " + oldShift + " new shift : " + ShiftType.ON_CALL);
+						p.setShiftType(ShiftType.ON_CALL);
+					}
+				}
+				
+			} // end of dead loop
+		} // end of for loop
 	}
 
 	/**
@@ -2992,146 +2994,210 @@ implements Serializable, LifeSupportType, Objective {
 		int pop = 0;
 		if (population == -1)
 			pop = getNumCurrentPopulation();
+		else
+			pop = population;
 
 		int rand = -1;
 		ShiftType shiftType = ShiftType.OFF;
 		int quotient = pop / numShift;
 		int remainder = pop % numShift;
+		
+		int limX = 0;
+		int limY = 0;
+		int limZ = 0;
 
+		if (pop >= 12) {
+			limX = quotient -1;
+			if (remainder == 0) 
+				limZ = limX - 1;
+			else
+				limZ = limX;
+		}
+		else {
+			limX = 2;	
+			limZ = 2;		
+		}
+	
+		limY = pop - limX - limZ;
+		
 		switch (numShift) {
 
-		case 1: // (numShift == 1)
-			shiftType = ShiftType.ON_CALL;
+			case 1: // for numShift = 1
+				shiftType = ShiftType.ON_CALL;
 			break;
-		case 2: // else if (numShift == 2) {
-			switch (remainder) {
-			case 0: // if (remainder == 0) {
-				if (numA < quotient && numB < quotient) {
-					rand = RandomUtil.getRandomInt(1);
-					if (rand == 0) {
-						shiftType = ShiftType.A;
-					} else if (rand == 1) {
-						shiftType = ShiftType.B;
-					}
+			
+			case 2: // for umShift = 2
+				switch (remainder) {
+					case 0: // if (remainder == 0) {
+						if (numA < quotient && numB < quotient) {
+							rand = RandomUtil.getRandomInt(1);
+							if (rand == 0) {
+								shiftType = ShiftType.A;
+							} else if (rand == 1) {
+								shiftType = ShiftType.B;
+							}
+							break;
+						}
+						if (quotient == 1) {
+							if (numA < 1) { // allow only 1 person with "A shift"
+								shiftType = ShiftType.A;
+							} else {
+								shiftType = ShiftType.B;
+							}
+							break;
+						}
+						else if (quotient == 2) {
+							if (numA < 2) { // allow 2 persons with "A shift"
+								shiftType = ShiftType.A;
+							} else {
+								shiftType = ShiftType.B;
+							}
+							break;
+						}
 					break;
-				}
-				if (quotient == 1) {
-					if (numA < 1) { // allow only 1 person with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
+					
+					case 1: // else { //if (remainder == 1) {
+						if (numA < quotient && numB < quotient) {
+							rand = RandomUtil.getRandomInt(1);
+							if (rand == 0) {
+								shiftType = ShiftType.A;
+							} else if (rand == 1) {
+								shiftType = ShiftType.B;
+							}
+							break;
+						}
+						if (quotient == 1) {
+							if (numA < 2) { // allow 1 person with "A shift"
+								shiftType = ShiftType.A;
+							} else {
+								shiftType = ShiftType.B;
+							}
+							break;
+						}
+						else if (quotient == 2) {
+							if (numA < 3) { // allow 2 persons with "A shift"
+								shiftType = ShiftType.A;
+							} else {
+								shiftType = ShiftType.B;
+							}
+							break;
+						}
 					break;
-				}
-				else if (quotient == 2) {
-					if (numA < 2) { // allow 2 persons with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-			case 1: // else { //if (remainder == 1) {
-				if (numA < quotient && numB < quotient) {
-					rand = RandomUtil.getRandomInt(1);
-					if (rand == 0) {
-						shiftType = ShiftType.A;
-					} else if (rand == 1) {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-				if (quotient == 1) {
-					if (numA < 2) { // allow 1 person with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-				else if (quotient == 2) {
-					if (numA < 3) { // allow 2 persons with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-				break;
-			} // end of switch (remainder)
+					
+				} // end of switch (remainder)
 			break;
-		case 3: // else if (numShift == 3) {
-			switch (remainder) {
-			case 0: // if (remainder == 0) {
-				if (numX < quotient && numY < quotient && numZ < quotient) {
-					rand = RandomUtil.getRandomInt(2);
-					if (rand == 0) {
+				
+			case 3: //for numShift = 3
+				
+				if (numX < limX && numZ < limZ) {
+					rand = RandomUtil.getRandomInt(3);
+					if (rand == 0)
 						shiftType = ShiftType.X;
-					} else if (rand == 1) {
+					else if (rand == 1) 
+						shiftType = ShiftType.Z;
+					else
 						shiftType = ShiftType.Y;
-					} else if (rand == 2) {
+				}
+				else if (numX < limX) {
+					rand = RandomUtil.getRandomInt(2);
+					if (rand == 0)
+						shiftType = ShiftType.X;
+					else {
+						if (numY <= limY)
+							shiftType = ShiftType.Y;
+						else
+							shiftType = ShiftType.X;
+					}
+						
+				}
+				else if (numZ < limZ) {
+					rand = RandomUtil.getRandomInt(2);
+					if (rand == 0)
+						shiftType = ShiftType.Z;
+					else {
+						if (numY <= limY)
+							shiftType = ShiftType.Y;
+						else
+							shiftType = ShiftType.Z;
+					}
+				}
+				else
+					shiftType = ShiftType.Y;
+				
+	/*
+				switch (remainder) {
+				case 0: // if (remainder == 0) {
+					if (numX < limX && numZ < limZ) {
+						rand = RandomUtil.getRandomInt(3);
+						if (rand == 0) {
+							shiftType = ShiftType.X;
+						} else if (rand == 1) {
+							shiftType = ShiftType.Z;
+						} else {
+							shiftType = ShiftType.Y;
+						}
+						break;
+					}
+					if (numX <= limX) {
+						shiftType = ShiftType.X;
+					} else if (numZ <= limZ) {
+						shiftType = ShiftType.Z;
+					} else {
+						shiftType = ShiftType.Y;
+					}
+					break;
+				case 1: // else if (remainder == 1) {
+					if (numX < limX && numZ < limZ) {
+						rand = RandomUtil.getRandomInt(3);
+						if (rand == 0) {
+							shiftType = ShiftType.X;
+						} else if (rand == 1) {
+							shiftType = ShiftType.Z;
+						} else {
+							shiftType = ShiftType.Y;
+						}
+						break;
+					}
+					if (numX <= limX) { 
+						shiftType = ShiftType.X;
+					}
+					else if (numZ <= limZ) { 
 						shiftType = ShiftType.Z;
 					}
-					break;
-				}
-				if (numX < quotient + 1) { // allow up to q persons with "X shift"
-					shiftType = ShiftType.X;
-				} else if (numY < quotient + 1) { // allow up to q persons with  "Y shift"
-					shiftType = ShiftType.Y;
-				} else {
-					shiftType = ShiftType.Z;
-				}
-				break;
-			case 1: // else if (remainder == 1) {
-				if (numX < quotient && numY < quotient && numZ < quotient) {
-					rand = RandomUtil.getRandomInt(2);
-					if (rand == 0) {
-						shiftType = ShiftType.X;
-					} else if (rand == 1) {
+					else {
 						shiftType = ShiftType.Y;
-					} else if (rand == 2) {
-						shiftType = ShiftType.Z;
 					}
 					break;
-				}
-				if (numX < quotient + 1) { // allow up to q persons with "X shift"
-					shiftType = ShiftType.X;
-				}
-				else if (numY < quotient + 2) { // allow up to q + 1 persons  with "Y shift"
-					shiftType = ShiftType.Y;
-				}
-				else {
-					shiftType = ShiftType.Z;
-				}
-				break;
-			case 2: // else {//if (remainder == 2) {
-				if (numX < quotient && numY < quotient && numZ < quotient) {
-					rand = RandomUtil.getRandomInt(2);
-					if (rand == 0) {
+				case 2: // else {//if (remainder == 2) {
+					if (numX < limX && numZ < limZ) {
+						rand = RandomUtil.getRandomInt(3);
+						if (rand == 0) {
+							shiftType = ShiftType.X;
+						} else if (rand == 1) {
+							shiftType = ShiftType.Z;
+						} else {
+							shiftType = ShiftType.Y;
+						}
+						break;
+					}
+					if (numX <= limX) { 
 						shiftType = ShiftType.X;
-					} else if (rand == 1) {
-						shiftType = ShiftType.Y;
-					} else if (rand == 2) {
+					}
+					else if (numZ <= limZ) { 
 						shiftType = ShiftType.Z;
 					}
+					else {
+						shiftType = ShiftType.Y;
+					}
 					break;
-				}
-				if (numX < quotient + 2) { // allow up to q+1 persons with "X										// shift"
-					shiftType = ShiftType.X;
-				}
-				else if (numY < quotient + 2) { // allow up to q+1 persons with "Y shift"
-					shiftType = ShiftType.Y;
-				}
-				else {
-					shiftType = ShiftType.Z;
-				}
+				} // end of switch for case 3
+	*/			
 				break;
-			} // end of switch for case 3
-			break;
-		} // end of switch
+			} // end of switch
 
 		return shiftType;
 	}
+	
 
 	/**
 	 * Sets the number of shift of a settlement

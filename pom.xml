@@ -24,7 +24,8 @@
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
- 
+	
+ <!--
 	<profiles>
 		<profile>
 			<id>lwjgl-natives-linux</id>
@@ -54,7 +55,8 @@
 			</properties>
 		</profile>
 	</profiles>
-
+-->
+  
 	<!-- ************************************************************************************************* -->
 	<!-- * Developers Section                                                                            * -->
 	<!-- ************************************************************************************************* -->
@@ -292,8 +294,9 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.5.3</version>
 				</plugin>
+<!-- 				
 				<plugin>
-				<!-- https://github.com/versioneye/versioneye_maven_plugin -->
+				https://github.com/versioneye/versioneye_maven_plugin
 					<groupId>com.versioneye</groupId>
 					<artifactId>versioneye-maven-plugin</artifactId>
 					<version>3.11.4</version>
@@ -303,6 +306,8 @@
 						<team>Owners</team>
 					</configuration>
 				</plugin>
+				 -->
+				 
 			</plugins>
 		</pluginManagement>
 	</build>

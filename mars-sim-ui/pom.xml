@@ -257,7 +257,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		me.tatarka.retrolambda 3.6.1 : -->
 		<!-- dependency>
 		    <groupId>de.jensd</groupId>
-		    <artifactId>fontawesomefx</artifactId>
+		    <artifactId>fontawesomefx</ artifactId>
 		    <version>8.0.13</version>
 		</dependency-->
 		<dependency>

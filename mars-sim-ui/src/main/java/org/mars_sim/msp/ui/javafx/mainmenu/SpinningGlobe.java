@@ -46,6 +46,7 @@ public class SpinningGlobe extends Application {
     private RotateTransition rt;
     private SubScene subScene;
     private MainMenuController mainMenuController;
+
     private Globe globe;
 	
 	/*

@@ -462,11 +462,11 @@ public class ChainOfCommand implements Serializable {
 	 * Finds out the number of people already fill this roleType
 	 */
     public int getNumFilled(RoleType key) {
-    	//int value = 0;
-    	//if (roleType.containsKey(key))
-    	//	value = roleType.get(key);
-    	//return value;
-    	return roleType.getOrDefault(key, 0);
+    	int value = 0;
+    	if (roleType.containsKey(key))
+    		value = roleType.get(key);
+    	return value;
+    	//return roleType.getOrDefault(key, 0);
     }
 
 /*

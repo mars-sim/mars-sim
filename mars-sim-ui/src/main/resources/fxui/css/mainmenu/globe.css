@@ -1,10 +1,11 @@
+
 /**
  * Mars Simulation Project
  * globe.css
  * @version 3.1.0 2017-12-17
  * @author Manny Kung
  */
- 
+
 .root {
   /*-fx-border-insets: 23;*/
   -fx-background-color: brown;   
