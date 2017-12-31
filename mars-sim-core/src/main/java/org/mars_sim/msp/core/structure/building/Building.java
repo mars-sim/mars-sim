@@ -214,6 +214,7 @@ LocalBoundedObject, InsidePathLocation {
 	private Dining dine;
 	private GroundVehicleMaintenance maint;
 	private AstronomicalObservation astro;
+	private Exercise gym;
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -650,6 +651,13 @@ LocalBoundedObject, InsidePathLocation {
 		if (astro == null)
 			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
 		return astro;
+	}
+	
+	public Exercise getExercise() {
+		if (gym == null)
+			gym = (Exercise) getFunction(FunctionType.EXERCISE);
+		return gym;
+		
 	}
 	
     /**

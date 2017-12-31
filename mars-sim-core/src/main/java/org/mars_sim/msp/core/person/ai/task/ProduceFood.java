@@ -131,11 +131,11 @@ implements Serializable {
 		setPhase(PRODUCE_FOOD);
 	}
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.FOOD_PRODUCTION;
     }
 
-    protected FunctionType getRelatedBuildingRoboticFunction() {
+    protected FunctionType getRoboticFunction() {
         return FunctionType.FOOD_PRODUCTION;
     }
 

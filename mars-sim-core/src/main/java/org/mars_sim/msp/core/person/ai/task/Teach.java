@@ -81,7 +81,7 @@ implements Serializable {
                 Building studentBuilding = BuildingManager.getBuilding(student);
 
                 if (studentBuilding != null) {
-                    FunctionType teachingBuildingFunction = teachingTask.getRelatedBuildingFunction();
+                    FunctionType teachingBuildingFunction = teachingTask.getLivingFunction();
                     if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
                         // Walk to relevant activity spot in student's building.
                         walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);

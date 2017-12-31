@@ -592,66 +592,66 @@ implements Serializable {
 	 * Calculates and caches the probabilities.
 	 */
 	private void calculateProbability() {
-		if (person != null) {
 
-		    List<MetaTask> mtList = null;
+	    List<MetaTask> mtList = null;
 
-		    if (timeCache == null)
-		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
-		    int millisols = timeCache.getMsol0();
+	    if (timeCache == null)
+	    	timeCache = marsClock;
+	    	//timeCache = Simulation.instance().getMasterClock().getMarsClock();
+	    
+	    int millisols = timeCache.getMsol0();
 
-		    if (ts == null)
-		    	ts = person.getTaskSchedule();
-		    
-		    ShiftType st = ts.getShiftType();
-		    		    
-		    boolean isOnCall = (st == ShiftType.ON_CALL);
-		    boolean isOff = (st == ShiftType.OFF);
-		    boolean isShiftHour = true;
+	    if (ts == null)
+	    	ts = person.getTaskSchedule();
+	    
+	    ShiftType st = ts.getShiftType();
+	    		    
+	    //boolean isOnCall = (st == ShiftType.ON_CALL);
+	    //boolean isOff = (st == ShiftType.OFF);
+	    //boolean isShiftHour = true;
 
-		    if (isOnCall) {
-		    	mtList = MetaTaskUtil.getAllMetaTasks();//getAnyHourTasks();
-		    }
-		    else if (isOff) {
-		    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
+	    if (st == ShiftType.ON_CALL) {
+	    	mtList = MetaTaskUtil.getAllMetaTasks();//getAnyHourTasks();
+	    }
+	    else if (st == ShiftType.OFF) {
+	    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
+	    }
+	    else {
+	    	// is the person off the shift ?
+	    	//isShiftHour = ts.isShiftHour(millisols);
+
+		    if (ts.isShiftHour(millisols)) {
+		    	mtList = MetaTaskUtil.getWorkHourMetaTasks();
 		    }
 		    else {
-		    	// is the person off the shift ?
-		    	isShiftHour = ts.isShiftHour(millisols);
-
-			    if (isShiftHour) {
-			    	mtList = MetaTaskUtil.getWorkHourMetaTasks();
-			    }
-			    else {
-			    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
-			    }
+		    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
 		    }
+	    }
 
-		    if (mtListCache != mtList && mtList != null) {
-		    	// TODO: is there a better way to compare them this way ?
-		    	mtListCache = mtList;
-		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-		    }
-		    
+	    if (mtListCache != mtList && mtList != null) {
+	    	// TODO: is there a better way to compare them this way ?
+	    	mtListCache = mtList;
+	    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
+	    }
+	    
 
-			// Clear total probabilities.
-			totalProbCache = 0D;
-			// Determine probabilities.
-			for (MetaTask mt : mtListCache) {
-				double probability = mt.getProbability(person);
+		// Clear total probabilities.
+		totalProbCache = 0D;
+		// Determine probabilities.
+		for (MetaTask mt : mtListCache) {
+			double probability = mt.getProbability(person);
 
-				if ((probability >= 0D) && (!Double.isNaN(probability)) 
-						&& (!Double.isInfinite(probability))) {
-					taskProbCache.put(mt, probability);
-					totalProbCache += probability;
-				}
-				else {
-					taskProbCache.put(mt, 0D);
+			if ((probability >= 0D) && (!Double.isNaN(probability)) 
+					&& (!Double.isInfinite(probability))) {
+				taskProbCache.put(mt, probability);
+				totalProbCache += probability;
+			}
+			else {
+				taskProbCache.put(mt, 0D);
 
-					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-							"Task probability is invalid when calculating for " + mind.getPerson().getName() 
-								+ " on " + mt.getName() + " : Probability is " + probability + ".", null);
-				}
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+						"Task probability is invalid when calculating for " + mind.getPerson().getName() 
+							+ " on " + mt.getName() + " : Probability is " + probability + ".", null);
 			}
 		}
 
@@ -675,12 +675,15 @@ implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		if (currentTask != null) {
+		if (currentTask != null)
 			currentTask.destroy();
-		}
 		mind = null;
 		person = null;
 		timeCache = null;
+		lastTask = null;
+		health = null;	
+		circadian = null;
+		ts = null;
 		marsClock = null;
 		if (taskProbCache != null) {
 			taskProbCache.clear();

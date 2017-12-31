@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.CircadianClock;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -78,11 +77,8 @@ public class Sleep extends Task implements Serializable {
 
     /** The living accommodations if any. */
     private LivingAccommodations accommodations;
-
     private RoboticStation station;
-    
     private CircadianClock circadian;
-    
     private PhysicalCondition pc;
 
     private static Simulation sim = Simulation.instance();
@@ -133,7 +129,7 @@ public class Sleep extends Task implements Serializable {
                 	if (q1 != null) {
                 		// Case 1 : (the BEST case for a guest) the settlement does have one or more empty, unmarked (EU) bed(s)
 		            	accommodations = q1.getLivingAccommodations();
-		        		walkToActivitySpotInBuilding(q1, FunctionType.LIVING_ACCOMODATIONS, false);
+		        		walkToActivitySpotInBuilding(q1, getLivingFunction(), false);
 		                //Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 1: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q1);
 
@@ -143,7 +139,7 @@ public class Sleep extends Task implements Serializable {
 		            	// Question : will the owner of this bed be coming back soon from duty ?
                 		// TODO : will split into Case 2a and Case 2b.
                 		accommodations = q2.getLivingAccommodations();
-		        		walkToActivitySpotInBuilding(q2, FunctionType.LIVING_ACCOMODATIONS, false);
+		        		walkToActivitySpotInBuilding(q2, getLivingFunction(), false);
 		                //Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 2: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q2);
 
@@ -279,7 +275,7 @@ public class Sleep extends Task implements Serializable {
             boolean atStation = false;
             Building currentBuilding = BuildingManager.getBuilding(robot);
             if (currentBuilding != null) {
-                if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
+                if (currentBuilding.hasFunction(getRoboticFunction())) {
                     RoboticStation currentStation = currentBuilding.getRoboticStation();
                     if (currentStation.getSleepers() < currentStation.getSlots()) {
                         atStation = true;
@@ -326,11 +322,11 @@ public class Sleep extends Task implements Serializable {
     }
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.LIVING_ACCOMODATIONS;
     }
 
-    protected FunctionType getRelatedBuildingRoboticFunction() {
+    protected FunctionType getRoboticFunction() {
         return FunctionType.ROBOTIC_STATION;
     }
 
@@ -370,6 +366,9 @@ public class Sleep extends Task implements Serializable {
 			marsClock = masterClock.getMarsClock();// needed for loading a saved sim
 
 		if (person != null) {
+			
+			pc.recoverFromSoreness(.05);
+			
 	        // Reduce person's fatigue
 	        double newFatigue = pc.getFatigue() - (timeFactor * time);
 	        if (newFatigue < 0D) {
@@ -397,6 +396,7 @@ public class Sleep extends Task implements Serializable {
 	        }
 
 		}
+		
 		else if (robot != null) {
 			// Check if alarm went off.
 	        double newTime = marsClock.getMillisol();

@@ -48,12 +48,13 @@ public class WorkoutMeta implements MetaTask, Serializable {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
-            
+
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
             double kJ = condition.getEnergy();
+            double[] muscle = condition.getMusculoskeletal();
 
-            result = fatigue/50D + stress/25D;
+            result = fatigue/50D + stress/15D - (muscle[2] - muscle[0])/5D;
 
             if (kJ < 200)
             	return 0;

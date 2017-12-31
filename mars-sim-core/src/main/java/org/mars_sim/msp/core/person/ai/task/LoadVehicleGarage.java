@@ -276,12 +276,12 @@ implements Serializable {
     }
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.GROUND_VEHICLE_MAINTENANCE;
     }
 
     @Override
-    protected FunctionType getRelatedBuildingRoboticFunction() {
+    protected FunctionType getRoboticFunction() {
         return FunctionType.GROUND_VEHICLE_MAINTENANCE;
     }
 

@@ -120,7 +120,7 @@ implements ResearchScientificStudy, Serializable {
     }
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.RESEARCH;
     }
 

@@ -165,12 +165,12 @@ implements Serializable {
     }
 
   	@Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.PREPARING_DESSERT;
     }
 
   	@Override
-    protected FunctionType getRelatedBuildingRoboticFunction() {
+    protected FunctionType getRoboticFunction() {
         return FunctionType.PREPARING_DESSERT;
     }
 

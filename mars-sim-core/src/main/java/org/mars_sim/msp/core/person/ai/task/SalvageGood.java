@@ -100,7 +100,7 @@ implements Serializable {
 	}
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.MANUFACTURE;
     }
 

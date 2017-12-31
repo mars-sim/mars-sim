@@ -788,11 +788,11 @@ implements Serializable, Comparable<Task> {
      * Override as necessary.
      * @return building function or null if none.
      */
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return null;
     }
 
-    protected FunctionType getRelatedBuildingRoboticFunction() {
+    protected FunctionType getRoboticFunction() {
         return null;
     }
 
@@ -805,9 +805,9 @@ implements Serializable, Comparable<Task> {
     	FunctionType functionType = null;
 
 		if (person != null)
-	        functionType = getRelatedBuildingFunction();
+	        functionType = getLivingFunction();
 		else if (robot != null)
-			functionType = getRelatedBuildingRoboticFunction();
+			functionType = getRoboticFunction();
 
         if ((functionType != null) && (building.hasFunction(functionType))) {
             walkToActivitySpotInBuilding(building, functionType, allowFail);

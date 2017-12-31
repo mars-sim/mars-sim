@@ -13,8 +13,6 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.CircadianClock;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -48,8 +46,7 @@ implements Serializable {
     /** The exercise building the person is using. */
     private Exercise gym;
 
-	private CircadianClock circadian;
-	
+
     /**
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
@@ -57,23 +54,20 @@ implements Serializable {
     public Workout(Person person) {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, true,
-                10D + RandomUtil.getRandomDouble(30D));
-
-        circadian = person.getCircadianClock();
-        
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                10D + RandomUtil.getRandomDouble(10D));
+      
+        if (person.isInside()) {
 
             // If person is in a settlement, try to find a gym.
             Building gymBuilding = getAvailableGym(person);
             if (gymBuilding != null) {
                 // Walk to gym building.
                 walkToActivitySpotInBuilding(gymBuilding, false);
-
-                gym = (Exercise) gymBuilding.getFunction(FunctionType.EXERCISE);
+                gym = gymBuilding.getExercise();
             } 
-            else {
-                endTask();
-            }
+            //else {
+            //    endTask();
+            //}
         } 
         else {
             endTask();
@@ -85,7 +79,7 @@ implements Serializable {
     }
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.EXERCISE;
     }
 
@@ -108,9 +102,8 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double exercisingPhase(double time) {
-
-        circadian.exercise(time);
- 
+    	person.getCircadianClock().exercise(time);
+        person.getPhysicalCondition().workOut();
         return 0D;
     }
 
@@ -138,7 +131,7 @@ implements Serializable {
         Building result = null;
 
         // If person is in a settlement, try to find a building with a gym.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             BuildingManager buildingManager = person.getSettlement()
                     .getBuildingManager();
             List<Building> gyms = buildingManager.getBuildings(FunctionType.EXERCISE);

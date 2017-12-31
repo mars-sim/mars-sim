@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 
 /**
  * A utility task for getting the list of meta tasks.
@@ -381,6 +380,7 @@ public class MetaTaskUtil {
     		MetaTask t = i.next();
     		if (t.getClass().getSimpleName().equals(name)) {
     			metaTask = t;
+    			break;
     		}
     	}
     	return metaTask;
@@ -395,5 +395,13 @@ public class MetaTaskUtil {
 
         // Return copy of meta task list.
         return new ArrayList<MetaTask>(robotMetaTasks);
+    }
+    
+    public void destroy() {
+    	allMetaTasks = null;
+        workHourMetaTasks = null;
+        nonWorkHourMetaTasks = null;
+        anyHourMetaTasks = null;
+        robotMetaTasks = null;
     }
 }

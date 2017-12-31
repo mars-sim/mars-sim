@@ -207,7 +207,7 @@ public class EatMeal extends Task implements Serializable {
     }
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.DINING;
     }
 

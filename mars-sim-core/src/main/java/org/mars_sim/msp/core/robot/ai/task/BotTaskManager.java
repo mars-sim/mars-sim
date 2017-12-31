@@ -15,12 +15,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ShiftType;
-//import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
@@ -55,10 +49,13 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(BotTaskManager.class.getName());
 
 	// Data members
-	private String taskNameCache = "", taskDescriptionCache = "", taskPhaseCache = "";
-	private String oldJob = "";
+	private String taskNameCache = "";
+	private String taskDescriptionCache = "";
+	private String taskPhaseCache = "";
+	//private String oldJob = "";
 	/** The current task the robot is doing. */
-	private Task currentTask, lastTask;
+	private Task currentTask; 
+	private Task lastTask;
 	/** The mind of the robot. */
 	private BotMind botMind;
 
@@ -67,8 +64,8 @@ implements Serializable {
 	private static MarsClock marsClock;
 	private transient double totalProbCache;
 	private transient Map<MetaTask, Double> taskProbCache;
-	private transient List<MetaTask> mtListCache;
-	private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
+	//private transient List<MetaTask> mtListCache;
+	//private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
 	
 	private Robot robot = null;
 
@@ -89,8 +86,8 @@ implements Serializable {
 		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
 	
-		if (Simulation.instance().getMasterClock() != null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // marsClock won't pass maven test
+		if (Simulation.instance().getMasterClock() != null) // use this check to pass maven test
+			marsClock = Simulation.instance().getMasterClock().getMarsClock(); 
 	}
 	
 	/**

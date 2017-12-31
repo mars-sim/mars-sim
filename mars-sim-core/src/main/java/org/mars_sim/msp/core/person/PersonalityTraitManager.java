@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Hashtable;
 
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.ai.Mind;
 
 /**
  * The PersonalityTraitManager class manages a person's big five personalities.
@@ -28,7 +27,7 @@ implements Serializable {
 	/** List of the person's big five personalities keyed by unique name. */
 	private Hashtable<PersonalityTraitType, Integer> personalityTraits;
 
-	private Mind mind;
+	//private Mind mind;
 	
 	/**
 	 * Constructor.
@@ -36,7 +35,7 @@ implements Serializable {
 	 */
 	public PersonalityTraitManager(Person person) {
 
-		this.mind = person.getMind();
+		//this.mind = person.getMind();
 		
 		personalityTraits = new Hashtable<PersonalityTraitType, Integer>();
 
@@ -65,13 +64,14 @@ implements Serializable {
 	 * Adds a random modifier to an personality trait.
 	 * @param type the name of the personality trait
 	 * @param modifier the random ceiling of the modifier
-	 */
+
 	private void addPersonalityTraitModifier(PersonalityTraitType type, int modifier) {
 		int random = RandomUtil.getRandomInt(Math.abs(modifier));
 		if (modifier < 0) random *= -1;
 		setPersonalityTrait(type, getPersonalityTrait(type) + random);
 	}
-
+	 */
+	
 	/**
 	 * Returns the number of big five personalities.
 	 * @return the number of big five personalities

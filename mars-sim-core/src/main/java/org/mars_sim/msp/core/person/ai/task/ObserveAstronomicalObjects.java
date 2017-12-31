@@ -100,7 +100,7 @@ implements ResearchScientificStudy, Serializable {
     }
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.ASTRONOMICAL_OBSERVATIONS;
     }
 

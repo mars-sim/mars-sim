@@ -19,10 +19,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -54,6 +52,8 @@ implements ResearchScientificStudy, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.performMathematicalModeling"); //$NON-NLS-1$
 
+    private static final String NO_LAB_SLOT = " can't find a lab slot.";
+    
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = .2D;
 
@@ -71,7 +71,9 @@ implements ResearchScientificStudy, Serializable {
     /** The research assistant. */
     private Person researchAssistant;
 
-    private static ScientificStudyManager manager;// = Simulation.instance().getScientificStudyManager();
+    private static ScientificStudyManager manager;
+    
+    private static ScienceType mathematics;
     
     /**
      * Constructor.
@@ -93,7 +95,7 @@ implements ResearchScientificStudy, Serializable {
             else {
             	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
             		"[" + person.getLocationTag().getShortLocationName() + "] " 
-            			+ person + " can't find a lab slot.", null);
+            			+ person + NO_LAB_SLOT, null);
             	endTask();
             	person.getMind().getTaskManager().clearTask();
             	//person.getMind().getTaskManager().getNewTask();
@@ -119,7 +121,7 @@ implements ResearchScientificStudy, Serializable {
     }
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.RESEARCH;
     }
 
@@ -132,7 +134,7 @@ implements ResearchScientificStudy, Serializable {
     public static double getLabCrowdingModifier(Person researcher, Lab lab)
     {
         double result = 1D;
-        if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (researcher.isInSettlement()) {
             Building labBuilding = ((Research) lab).getBuilding();
             if (labBuilding != null) {
                 result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);
@@ -149,7 +151,7 @@ implements ResearchScientificStudy, Serializable {
     private ScientificStudy determineStudy() {
         ScientificStudy result = null;
 
-        ScienceType mathematics = ScienceType.MATHEMATICS;
+        mathematics = ScienceType.MATHEMATICS;
 
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
@@ -196,11 +198,10 @@ implements ResearchScientificStudy, Serializable {
     public static Lab getLocalLab(Person person) {
         Lab result = null;
 
-        LocationSituation location = person.getLocationSituation();
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             result = getSettlementLab(person);
         }
-        else if (location == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = getVehicleLab(person.getVehicle());
         }
 
@@ -215,8 +216,8 @@ implements ResearchScientificStudy, Serializable {
     private static Lab getSettlementLab(Person person) {
         Lab result = null;
 
-        BuildingManager manager = person.getSettlement().getBuildingManager();
-        List<Building> labBuildings = manager.getBuildings(FunctionType.RESEARCH);
+        //BuildingManager manager = person.getSettlement().getBuildingManager();
+        List<Building> labBuildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.RESEARCH);
         labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
         labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
@@ -262,11 +263,11 @@ implements ResearchScientificStudy, Serializable {
             List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
 
-        ScienceType mathematicsScience = ScienceType.MATHEMATICS;
+        //ScienceType mathematics = ScienceType.MATHEMATICS;
 
         for (Building building : buildingList) {
             Research lab = building.getResearch();
-            if (lab.hasSpecialty(mathematicsScience)) {
+            if (lab.hasSpecialty(mathematics)) {
                 result.add(building);
             }
         }
@@ -284,14 +285,14 @@ implements ResearchScientificStudy, Serializable {
 
         Lab result = null;
 
-        ScienceType mathematicsScience = ScienceType.MATHEMATICS;
+        //ScienceType mathematics = ScienceType.MATHEMATICS;
 
         if (vehicle instanceof Rover) {
             Rover rover = (Rover) vehicle;
             if (rover.hasLab()) {
                 Lab lab = rover.getLab();
                 boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-                boolean specialty = lab.hasSpecialty(mathematicsScience);
+                boolean specialty = lab.hasSpecialty(mathematics);
                 boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
                 if (availableSpace && specialty && !malfunction) {
                     result = lab;
@@ -308,8 +309,8 @@ implements ResearchScientificStudy, Serializable {
     private void addPersonToLab() {
 
         try {
-            LocationSituation location = person.getLocationSituation();
-            if (location == LocationSituation.IN_SETTLEMENT) {
+            
+            if (person.isInSettlement()) {
                 Building labBuilding = ((Research) lab).getBuilding();
 
                 // Walk to lab building.
@@ -318,7 +319,8 @@ implements ResearchScientificStudy, Serializable {
                 lab.addResearcher();
                 malfunctions = labBuilding.getMalfunctionManager();
             }
-            else if (location == LocationSituation.IN_VEHICLE) {
+            
+            else if (person.isInVehicle()) {
 
                 // Walk to lab internal location in rover.
                 walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -353,8 +355,8 @@ implements ResearchScientificStudy, Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(SkillType.MATHEMATICS);
+        //SkillManager manager = person.getMind().getSkillManager();
+        return person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
     }
 
     /**
@@ -381,8 +383,8 @@ implements ResearchScientificStudy, Serializable {
 
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
-            SkillManager manager = researchAssistant.getMind().getSkillManager();
-            int assistantSkill = manager.getEffectiveSkillLevel(SkillType.MATHEMATICS);
+            //SkillManager manager = researchAssistant.getMind().getSkillManager();
+            int assistantSkill = researchAssistant.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
             if (mathematicsSkill > 0) {
                 modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
             }
@@ -469,7 +471,7 @@ implements ResearchScientificStudy, Serializable {
 
         boolean result = false;
 
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        if (person.isInVehicle()) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle.getStatus() == StatusType.MOVING) {
                 result = true;
@@ -532,5 +534,7 @@ implements ResearchScientificStudy, Serializable {
         lab = null;
         malfunctions = null;
         researchAssistant = null;
+        manager = null;
+	    mathematics = null;
     }
 }

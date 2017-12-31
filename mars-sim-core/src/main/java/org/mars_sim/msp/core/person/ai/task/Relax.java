@@ -154,11 +154,11 @@ implements Serializable {
 	}
 
     @Override
-    protected FunctionType getRelatedBuildingFunction() {
+    protected FunctionType getLivingFunction() {
         return FunctionType.RECREATION;
     }
 
-    protected FunctionType getRelatedBuildingRoboticFunction() {
+    protected FunctionType getRoboticFunction() {
         return FunctionType.ROBOTIC_STATION;
     }
 

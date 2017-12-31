@@ -137,10 +137,12 @@ public class PhysicalCondition implements Serializable {
 	private int strength;
 	private int resilience;
 	private int emotStability;
-
+	
+	/** Person's Musculoskeletal system from 0 to 100 (muscle pain tolerance, muscle health, muscle soreness). */
+	private double[] musculoskeletal = new double[]{0, 0, 0};
 	/** Person's thirst level. [in millisols]. */
 	private double thirst;
-	/** Person's fatigue level . (0 to infinity) */
+	/** Person's fatigue level from 0 to infinity. */
 	private double fatigue;
 	/** Person's hunger level [in millisols]. */
 	private double hunger;
@@ -184,6 +186,8 @@ public class PhysicalCondition implements Serializable {
 
 	private HealthProblem starved;
 	private HealthProblem dehydrated;
+	
+	private NaturalAttributeManager naturalAttributeManager;
 
 	private static EatMealMeta eatMealMeta = new EatMealMeta();
 
@@ -254,8 +258,23 @@ public class PhysicalCondition implements Serializable {
 
 		medicationList = new ArrayList<Medication>();
 
+		if (naturalAttributeManager == null)
+			naturalAttributeManager = person.getNaturalAttributeManager();
+		// Computes the adjustment from a person's natural attributes
+        double es =  (naturalAttributeManager.getAttribute(NaturalAttribute.ENDURANCE)
+        			+ naturalAttributeManager.getAttribute(NaturalAttribute.STRENGTH) 
+        			+ naturalAttributeManager.getAttribute(NaturalAttribute.AGILITY))/300D;
+        
+        
+        // TODO: may incorporate real world parameters such as areal density in g cm−2, T-socre and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
+		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) // pain tolerance
+				+ (int)((naturalAttributeManager.getAttribute(NaturalAttribute.ENDURANCE)
+						+ naturalAttributeManager.getAttribute(NaturalAttribute.STRENGTH) 
+						+ naturalAttributeManager.getAttribute(NaturalAttribute.AGILITY))/300D);
+		musculoskeletal[1] = 50; // muscle health index; 50 being the average 
+		musculoskeletal[2] = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
+		
 		performance = 1.0D;
-
 		thirst = RandomUtil.getRandomRegressionInteger(100);
 		fatigue = 0; // RandomUtil.getRandomRegressionInteger(1000) * .5;
 		stress = RandomUtil.getRandomRegressionInteger(100);
@@ -315,6 +334,15 @@ public class PhysicalCondition implements Serializable {
 	
 	}
 	
+	public void recoverFromSoreness(double value) {
+		// reduce the muscle soreness by 1 point at the end of the day
+		double soreness = musculoskeletal[2];
+		soreness = soreness - value;
+		if (soreness < 0)
+			soreness = 0;
+		musculoskeletal[2] = soreness;
+	}
+	
 	/**
 	 * The Physical condition should be updated to reflect a passing of time. This
 	 * method has to check the recover or degradation of any current illness. The
@@ -343,12 +371,12 @@ public class PhysicalCondition implements Serializable {
 
 			if (solCache != solElapsed) {
 
-				if (solCache == 0) {
-
+				if (solCache == 0)
 					initialize();
 
-				}
-
+				// reduce the muscle soreness
+				recoverFromSoreness(1);
+				
 				solCache = solElapsed;
 			}
 			
@@ -1602,6 +1630,19 @@ public class PhysicalCondition implements Serializable {
 		return isRadiationPoisoned;
 	}
 
+	public double[] getMusculoskeletal() {
+		return musculoskeletal;
+	}
+	
+	public void setMuscularSystem(double[] value) {
+		musculoskeletal = value;
+	}
+
+	public void workOut() {
+		musculoskeletal[0] = musculoskeletal[0] + .01; // pain tolerance
+		musculoskeletal[2] = musculoskeletal[0] + .1; // muscle soreness
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
