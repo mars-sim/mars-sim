@@ -7,13 +7,15 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
-import javax.swing.*;
-
 //import com.jgoodies.forms.layout.CellConstraints;
 //import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
-import java.awt.*;
-import java.awt.font.TextLayout;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 public class JStatusBar extends JPanel {
 

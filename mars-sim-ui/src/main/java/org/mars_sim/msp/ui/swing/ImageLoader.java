@@ -7,11 +7,12 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.net.URL;
 import java.util.HashMap;
+
+import javax.swing.ImageIcon;
 
 /**
  * This is a static class that acts as a helper to load Images for use in the UI.

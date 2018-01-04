@@ -1,10 +1,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
-import junit.framework.TestCase;
-
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonBuilderImpl;
 import org.mars_sim.msp.core.person.GenderType;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -13,6 +10,8 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+
+import junit.framework.TestCase;
 
 /**
  * A unit test suite for the WalkInterior task class.

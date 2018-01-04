@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.util.logging.Logger;
-
 public enum PhaseType {
 
 	/** default logger. */

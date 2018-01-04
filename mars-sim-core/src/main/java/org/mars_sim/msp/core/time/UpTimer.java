@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation;
-
 
 /**
  * The UpTimer class keeps track of how long an instance of the simulation

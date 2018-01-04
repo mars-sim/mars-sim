@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.SimulationConfig;
-
 /**
  * The AmountResource class represents a type of resource that is a material
  * measured in mass kg.

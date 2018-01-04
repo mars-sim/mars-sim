@@ -16,7 +16,6 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.Background;

@@ -11,7 +11,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A specialized container for holding rock samples.

@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.time;
 
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.Date;
 
 /*
  * The SystemDateTime class provides date and time formatting for constructing autosave filename

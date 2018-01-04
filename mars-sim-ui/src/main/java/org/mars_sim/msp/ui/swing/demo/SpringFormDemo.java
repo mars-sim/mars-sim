@@ -35,12 +35,13 @@ package org.mars_sim.msp.ui.swing.demo;
  * A 1.4 application that uses SpringLayout to create a forms-type layout.
  * Other files required: SpringUtilities.java.
  */
-
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-
-import java.awt.*;
 
 public class SpringFormDemo {
     /**

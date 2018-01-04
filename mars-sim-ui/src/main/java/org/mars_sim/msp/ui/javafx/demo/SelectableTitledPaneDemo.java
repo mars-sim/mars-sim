@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javafx.collections.FXCollections;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ComboBoxBuilder;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class SelectableTitledPaneDemo extends Application {
 	

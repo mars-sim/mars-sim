@@ -1,8 +1,6 @@
 package org.mars_sim.msp.ui.lua;
 
 
-import java.net.URL;
-
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 

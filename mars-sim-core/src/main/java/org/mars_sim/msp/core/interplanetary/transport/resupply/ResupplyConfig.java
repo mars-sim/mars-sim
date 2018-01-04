@@ -6,19 +6,21 @@
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
-
-
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * Provides configuration information about settlement resupply missions. Uses a

@@ -1,7 +1,6 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
 import org.mars_sim.msp.ui.javafx.Flyout;
-import org.mars_sim.msp.ui.javafx.Flyout.Side;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;

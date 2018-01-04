@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.List;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;

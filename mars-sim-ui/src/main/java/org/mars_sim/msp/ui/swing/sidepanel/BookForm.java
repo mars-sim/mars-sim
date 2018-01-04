@@ -22,8 +22,6 @@
 
 package org.mars_sim.msp.ui.swing.sidepanel;
 
-import java.awt.Dimension;
-
 /**
  *
  * @author root

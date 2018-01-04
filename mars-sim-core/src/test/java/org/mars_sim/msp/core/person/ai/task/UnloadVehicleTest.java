@@ -7,16 +7,13 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import junit.framework.TestCase;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonBuilderImpl;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.structure.MockSettlement;
@@ -27,6 +24,8 @@ import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import junit.framework.TestCase;
 
 public class UnloadVehicleTest
 extends TestCase {
