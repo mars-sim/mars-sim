@@ -7,34 +7,17 @@
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.medical.Complaint;
-import org.mars_sim.msp.core.person.medical.DeathInfo;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
-import org.mars_sim.msp.core.person.medical.MedicalEvent;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
-import org.mars_sim.msp.core.person.medical.Medication;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotConfig;
-import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**

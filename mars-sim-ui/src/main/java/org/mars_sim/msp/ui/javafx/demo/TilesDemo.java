@@ -16,11 +16,14 @@
 
 package org.mars_sim.msp.ui.javafx.demo;
 
+import java.time.LocalTime;
+import java.util.Locale;
+import java.util.Random;
+
 //import eu.hansolo.tilesfx.Country;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.Tile.MapProvider;
 import eu.hansolo.tilesfx.Tile.SkinType;
-import eu.hansolo.tilesfx.Tile.TileColor;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.TimeSection;
 import eu.hansolo.tilesfx.TimeSectionBuilder;
@@ -52,10 +55,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-
-import java.time.LocalTime;
-import java.util.Locale;
-import java.util.Random;
 
 
 /**

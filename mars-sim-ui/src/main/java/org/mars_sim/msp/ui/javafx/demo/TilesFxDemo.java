@@ -16,11 +16,14 @@
 
 package org.mars_sim.msp.ui.javafx.demo;
 
+import java.time.LocalTime;
+import java.util.Locale;
+import java.util.Random;
+
 //import eu.hansolo.tilesfx.Country;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.Tile.MapProvider;
 import eu.hansolo.tilesfx.Tile.SkinType;
-import eu.hansolo.tilesfx.Tile.TileColor;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.TimeSection;
 import eu.hansolo.tilesfx.TimeSectionBuilder;
@@ -41,6 +44,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
@@ -50,11 +54,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 import javafx.stage.Stage;
-import javafx.scene.PerspectiveCamera;
-
-import java.time.LocalTime;
-import java.util.Locale;
-import java.util.Random;
 
 /**
  * User: hansolo Date: 19.12.16 Time: 12:54

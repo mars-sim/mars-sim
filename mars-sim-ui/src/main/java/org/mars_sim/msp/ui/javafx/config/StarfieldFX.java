@@ -8,14 +8,13 @@
 package org.mars_sim.msp.ui.javafx.config;
 
 import java.util.Random;
+
 import org.mars_sim.msp.core.RandomUtil;
-import javafx.scene.layout.Region;
-import javafx.animation.AnimationTimer;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;

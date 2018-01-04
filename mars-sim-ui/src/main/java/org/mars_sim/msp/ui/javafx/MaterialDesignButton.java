@@ -1,11 +1,15 @@
 package org.mars_sim.msp.ui.javafx;
 
 import com.sun.javafx.scene.control.skin.ButtonSkin;
-import javafx.animation.*;
-import javafx.fxml.FXML;
+
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.SequentialTransition;
+import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.control.Skin;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;

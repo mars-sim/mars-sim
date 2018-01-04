@@ -4,23 +4,13 @@
 
 package org.mars_sim.msp.ui.javafx.demo;
 
-import javafx.application.Application;
 import static javafx.application.Application.launch;
 
-//import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
-//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
 
 /** Constructs a scene with a pannable Map background. */
 public class PannableView {

@@ -2,27 +2,15 @@ package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.steelseries.extras.Led;
-import org.mars_sim.msp.ui.steelseries.gauges.DigitialRadial;
-import org.mars_sim.msp.ui.steelseries.gauges.Radial;
-import org.mars_sim.msp.ui.steelseries.tools.BackgroundColor;
-import org.mars_sim.msp.ui.steelseries.tools.ColorDef;
-import org.mars_sim.msp.ui.steelseries.tools.KnobStyle;
-import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
-import org.mars_sim.msp.ui.steelseries.tools.LedColor;
-import org.mars_sim.msp.ui.steelseries.tools.Orientation;
-import org.mars_sim.msp.ui.steelseries.tools.TickmarkType;
 
 
 public class TestLED {

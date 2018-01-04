@@ -8,36 +8,25 @@
  */
 package org.mars_sim.msp;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.javafx.MarsProjectFX;
-import org.mars_sim.msp.javafx.MarsProjectFX.SimulationTask;
-import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
-import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
-import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.SplashWindow;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
-
+import java.io.File;
 //import com.jme3.app.SimpleApplication;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.*;
-
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.io.Console;
-import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
+import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 /**
  * MarsProject is the main class for the application. It creates both the simulation and

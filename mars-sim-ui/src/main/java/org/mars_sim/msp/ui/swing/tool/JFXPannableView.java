@@ -1,30 +1,22 @@
 package org.mars_sim.msp.ui.swing.tool;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.scene.layout.BorderPane;
-
 import java.awt.Dimension;
-import java.beans.PropertyVetoException;
 
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import org.controlsfx.control.InfoOverlay;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 //import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 

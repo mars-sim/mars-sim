@@ -6,11 +6,10 @@
  */
 package org.mars_sim.msp.javafx;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
-
 import java.awt.Toolkit;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 
 /**

@@ -5,7 +5,6 @@
  */
 package org.mars_sim.msp.ui.javafx.demo;
 
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
