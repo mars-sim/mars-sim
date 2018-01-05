@@ -811,14 +811,18 @@ implements ActionListener {
 
 		if (p.isDeclaredDead()) {
 
-			if (p.isBuried())
+			if (p.isBuried()) {
 				loc = BURIED + AT + p.getBuriedSettlement().getName();
-			else {
+			}
+			else if (p.getContainerUnit() != null) {
 				loc = DEAD + IN + p.getContainerUnit().getName();
+			}
+			else if (p.getVehicle() != null) {
+				loc = DEAD + IN + p.getVehicle().getName();
 			}
 		}
 
-		else if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		else if (p.isInSettlement()) {
 			
 			if (p.getBuildingLocation() != null)
     			// case A1
@@ -833,7 +837,7 @@ implements ActionListener {
 			}
 		}
 
-		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		else if (p.isInVehicle()) {
 			
 			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
 			if (vehicle.getSettlement() != null) {
@@ -872,7 +876,7 @@ implements ActionListener {
 			}
 		}
 
-		else if (p.getLocationSituation() == LocationSituation.BURIED)
+		else if (p.isBuried())
 			// not possible
 			loc = BURIED + AT + p.getBuriedSettlement().getName();
 
@@ -904,7 +908,7 @@ implements ActionListener {
 		else if (r.getSystemCondition().isInoperable())
 			loc = " is Inoperable";
 
-		else if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		else if (r.isInSettlement()) {
 			// case A
 			Building b = r.getBuildingLocation();
 			if (b != null)
@@ -919,7 +923,7 @@ implements ActionListener {
 			}
 		}
 
-		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		else if (r.isInVehicle()) {
 			
  			if (v.getSettlement() != null)
 				// case C
@@ -972,7 +976,7 @@ implements ActionListener {
 			}
 		}
 
-		else if (r.getLocationSituation() == LocationSituation.OUTSIDE) {
+		else if (r.isOutside()) {
 
 			if (r.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
 				loc = WITHIN_THE_VINCINITY_OF + topContainerCache;
@@ -987,7 +991,7 @@ implements ActionListener {
 		else if (r.getLocationSituation() == LocationSituation.DECOMMISSIONED)
 			loc = DECOMMISSIONED;// " decommmissed";// + r.getBuriedSettlement().getName();
 
-		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		else if (r.isInVehicle()) {
  			if (r.getSettlement() != null)
 				// case C
        			loc = IN + containerCache + INSIDE + v.getName();//.getGarage(v.getSettlement()).getNickName();// " inside a garage";

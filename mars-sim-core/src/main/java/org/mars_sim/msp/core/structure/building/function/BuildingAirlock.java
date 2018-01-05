@@ -157,62 +157,12 @@ public class BuildingAirlock extends Airlock {
     }
 
     protected void exitAirlock(Robot robot) {
-/*    	
-        //Inventory inv = building.getSettlementInventory();
 
-        if (inAirlock(robot)) {
-        	
-        	// NOTE : robot is currently NOT allowed to leave the settlement
-        	//return;
-        	
-            if (PRESSURIZED.equals(getState())) {
-                if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
-                  	//logger.fine(
-                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, robot 
-                			+ " has got inside the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been pressurized and is ready to open the inner door to release the robot. ", null);        	 
-                  	inv.storeUnit(robot);
-                	BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, building);
-               }
-                else {
-                	//if (LocationSituation.BURIED != robot.getLocationSituation()) {
-                    throw new IllegalStateException(robot + " is entering " + getEntityName() +
-                            " from an airlock but is not outside.");
-                }
-            }
-            else if (DEPRESSURIZED.equals(getState())) {
-                if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
-                   	//logger.fine(
-                   	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, robot 
-                			+ " has got inside the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been depressurized and is ready to open the outer door to release the robot. ", null);
-                	inv.retrieveUnit(robot);
-                 	BuildingManager.removePersonOrRobotFromBuilding(robot, building);
-
-                }
-                else {
-                	//if (LocationSituation.BURIED != robot.getLocationSituation()) {
-                    throw new IllegalStateException(robot + " is exiting " + getEntityName() +
-                            " from an airlock but is not inside.");
-                }
-            }
-            else {
-                logger.severe("Building airlock in incorrect state for exiting: " + getState());
-            }
-        }
-        else {
-            throw new IllegalStateException(robot.getName() + " not in airlock of " + getEntityName());
-        }
-*/        
     }
     
     
     @Override
     public String getEntityName() {
-        //Settlement settlement = building.getBuildingManager().getSettlement();
-        //return settlement.getName() + ": " + building.getNickName();
         return building.getNickName() + " in " + settlement.getName();
 
     }

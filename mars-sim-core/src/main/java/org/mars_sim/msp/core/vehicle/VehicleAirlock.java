@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
@@ -88,11 +87,11 @@ extends Airlock {
 
 		if (inAirlock(person)) {
 			if (PRESSURIZED.equals(getState())) {
-				if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+				if (person.isOutside()) {
 					// Exit person to inside vehicle.
 					vehicle.getInventory().storeUnit(person);
 				}
-				else if (LocationSituation.BURIED != person.getLocationSituation()) {
+				else if (person.isInSettlement()) {//if (LocationSituation.BURIED != person.getLocationSituation()) {
 					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 							Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName())
 							, null);
@@ -100,11 +99,11 @@ extends Airlock {
 				}
 			}
 			else if (DEPRESSURIZED.equals(getState())) {
-				if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
+				if (person.isInVehicle()) {
 					// Exit person outside vehicle.
 					vehicle.getInventory().retrieveUnit(person);
 				}
-				else if (LocationSituation.BURIED != person.getLocationSituation()) {
+				else if (person.isOutside()) {//if (LocationSituation.BURIED != person.getLocationSituation()) {
 					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 							Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName())
 							, null);
@@ -123,20 +122,20 @@ extends Airlock {
 
 		if (inAirlock(robot)) {
 			if (PRESSURIZED.equals(getState())) {
-				if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+				if (robot.isOutside()) {
 					// Exit robot to inside vehicle.
 					vehicle.getInventory().storeUnit(robot);
 				}
-				else if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
+				else if (robot.isInSettlement()) {
 					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",robot.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}
 			else if (DEPRESSURIZED.equals(getState())) {
-				if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+				if (robot.isInVehicle()) {
 					// Exit robot outside vehicle.
 					vehicle.getInventory().retrieveUnit(robot);
 				}
-				else if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+				else if (robot.isOutside()) {
 					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",robot.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}
@@ -203,6 +202,12 @@ extends Airlock {
         	exitAirlock(robot);
 
         }
-
+	}
+	
+	public void destroy() {
+	    vehicle = null; 
+	    airlockInsidePos = null;
+	    airlockInteriorPos = null;
+	    airlockExteriorPos = null;
 	}
 }

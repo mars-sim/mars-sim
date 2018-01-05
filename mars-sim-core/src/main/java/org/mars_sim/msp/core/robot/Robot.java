@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -36,8 +35,11 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -122,13 +124,17 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 
     private RobotConfig config ;
 
-    private LifeSupportType support ;
-
     /** The settlement the robot is currently associated with. */
     private Settlement associatedSettlement;
 
     private Building currentBuilding;
     
+	private Relax relax;
+	
+	private Sleep sleep;
+	
+	private Walk walk;
+	
     private static MarsClock marsClock;
     private static EarthClock earthClock;
     private static MasterClock masterClock;
@@ -468,7 +474,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
      */
     @Override
     public Vehicle getVehicle() {
-        if (LocationSituation.IN_VEHICLE == getLocationSituation())
+        if (isInVehicle())
             return (Vehicle) getContainerUnit();
         else
             return null;
@@ -655,15 +661,15 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
     public Collection<Robot> getLocalRobotGroup() {
         Collection<Robot> localRobotGroup = new ConcurrentLinkedQueue<Robot>();
 
-        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (isInSettlement()) {
             Building building = BuildingManager.getBuilding(this);
             if (building != null) {
                 if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-                    RoboticStation roboticStation = (RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
+                    RoboticStation roboticStation = building.getRoboticStation();//.getFunction(FunctionType.ROBOTIC_STATION);
                     localRobotGroup = new ConcurrentLinkedQueue<Robot>(roboticStation.getRobotOccupants());
                 }
             }
-        } else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        } else if (isInVehicle()) {
             Crewable robotCrewableVehicle = (Crewable) getVehicle();
             localRobotGroup = new ConcurrentLinkedQueue<Robot>(robotCrewableVehicle.getRobotCrew());
         }
@@ -924,9 +930,36 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 		return getLocationTag().getLongLocationName();
 	}
 
+	public Relax getRelax() {
+		return relax;
+	}
+	 
+	public void setRelax(Relax relax) {
+		this.relax = relax;
+	}
+	
+	public Sleep getSleep() {
+		return sleep;
+	}
+	 
+	public void setSleep(Sleep sleep) {
+		this.sleep = sleep;
+	}
+	
+	public Walk getWalk() {
+		return walk;
+	}
+	
+	public void setWalk(Walk walk) {
+		this.walk = walk;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();
+        relax = null;
+		sleep = null;
+		walk = null;
 		//vehicle = null;
     	if (salvageInfo != null) salvageInfo.destroy();
 		salvageInfo = null;

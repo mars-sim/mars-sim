@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -40,8 +39,8 @@ public class RelaxMeta implements MetaTask, Serializable {
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
 
     private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock;// = sim.getMasterClock();
-	private static MarsClock marsClock;// = masterClock.getMarsClock();
+	private static MasterClock masterClock;
+	private static MarsClock marsClock;
 
 	public RelaxMeta() {
         masterClock = sim.getMasterClock();
@@ -57,7 +56,19 @@ public class RelaxMeta implements MetaTask, Serializable {
 
     @Override
     public Task constructInstance(Person person) {
-        return new Relax(person);
+    	return new Relax(person);
+/*    	Relax relax = person.getRelax();
+    	if (relax == null) {
+    		relax = new Relax(person);
+    		person.setRelax(relax);
+    	}
+    	else {
+    		relax.taskCompute();
+    		relax.compute();
+    	}
+    	
+    	return relax;
+*/	
     }
 
     @Override
@@ -106,12 +117,22 @@ public class RelaxMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new Relax(robot);
+    	return new Relax(robot);
+/*		Relax relax = robot.getRelax();
+    	if (relax == null) {
+    		relax = new Relax(robot);
+    		robot.setRelax(relax);
+    	}
+    	//else {
+    	//	relax.botCompute();
+    	//}	
+    	return relax;
+*/    	
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-        double result = 0D;
+        //double result = 0D;
 
         // TODO: in what case should a bot "relax" or slow down its pace?
         // result += robot.getPhysicalCondition().getStress();
@@ -133,6 +154,13 @@ public class RelaxMeta implements MetaTask, Serializable {
             }
         }
 */
-        return result;
+        return 0;
 	}
+	
+    public void destroy() {
+    	sim = null;
+    	masterClock = null;
+    	marsClock = null;
+
+    }
 }

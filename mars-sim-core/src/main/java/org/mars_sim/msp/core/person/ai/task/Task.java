@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.1.0 2017-01-19
+ * @version 3.1.0 2018-01-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -55,7 +54,6 @@ implements Serializable, Comparable<Task> {
 
 	private static final double JOB_STRESS_MODIFIER = .5D; 
 	// if that task is an a.i. task within a person's job, then the stress effect is 1/2
-	
 	private static final double SKILL_STRESS_MODIFIER = .1D;
 
 	// Data members
@@ -96,16 +94,18 @@ implements Serializable, Comparable<Task> {
 	protected Task subTask;
 	/** Phase of task completion. */
 	private TaskPhase phase;
-	
+	/** The person's physical condition. */	
 	private PhysicalCondition condition;
-	
 	/** FunctionType of the task. */	
-	private FunctionType functionType = FunctionType.UNKNOWN;
+	//private FunctionType functionType;
+	
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
-
+	
 	/** An instance of the event manager */
 	private static HistoricalEventManager eventManager;
+	/** An instance of the relationship manager */
+	private static RelationshipManager relationshipManager;
 
 	/**
 	 * Constructs a Task object.
@@ -122,22 +122,14 @@ implements Serializable, Comparable<Task> {
 		double stressModifier, boolean hasDuration, double duration) {
 
 		this.name = name;
-
+		effortDriven = effort;
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
 		this.hasDuration = hasDuration;
 		this.duration = duration;
 
-		done = false;
-
-		timeCompleted = 0D;
-		description = name;
-		subTask = null;
-		phase = null;
-		effortDriven = effort;
-		phases = new ArrayList<TaskPhase>();
-
 		eventManager = Simulation.instance().getEventManager();
+		relationshipManager = Simulation.instance().getRelationshipManager();
 		
         Person person = null;
         Robot robot = null;
@@ -151,8 +143,22 @@ implements Serializable, Comparable<Task> {
         	robot = (Robot) unit;
         	this.robot = robot;
         }
+        
+        taskCompute();
 	}
 
+	public void taskCompute() {
+		done = false;
+
+		timeCompleted = 0D;
+		description = name;
+		subTask = null;
+		phase = null;
+		phases = new ArrayList<TaskPhase>();
+		//functionType = FunctionType.UNKNOWN;
+
+	}
+	
     /**
      * Ends the task and performs any final actions.
      */
@@ -164,7 +170,7 @@ implements Serializable, Comparable<Task> {
         }
 
         done = true;
-
+/*
 		if (person != null) { 
 			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
 	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 
@@ -173,7 +179,7 @@ implements Serializable, Comparable<Task> {
 			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
 			robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 		}
-
+*/
 
         // Create ending task historical event if needed.
         if (createEvents) {
@@ -290,9 +296,10 @@ implements Serializable, Comparable<Task> {
             }
         }
     }
-
+    
+/*
     public FunctionType getFunction() {
-        if ((subTask != null) && !subTask.done) {
+        if (subTask != null && !subTask.done) {// && subTask.getFunction() != FunctionType.UNKNOWN) {
             return subTask.getFunction();
         }
         else {
@@ -301,7 +308,7 @@ implements Serializable, Comparable<Task> {
     }
     
     public FunctionType getFunction(boolean allowSubtask) {
-        if (allowSubtask && (subTask != null) && !subTask.done) {
+        if (allowSubtask && subTask != null && !subTask.done) { // && subTask.getFunction() != FunctionType.UNKNOWN) {
             return subTask.getFunction();
         }
         else {
@@ -320,6 +327,7 @@ implements Serializable, Comparable<Task> {
             }
         }
     }
+*/    
     
     /** Returns a boolean whether this task should generate events
      *  @return boolean flag.
@@ -721,7 +729,7 @@ implements Serializable, Comparable<Task> {
     protected static double getRelationshipModifier(Person person, Building building) {
         double result = 1D;
 
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+        //RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 
         if ((person == null) || (building == null)) {
             throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
@@ -792,6 +800,11 @@ implements Serializable, Comparable<Task> {
         return null;
     }
 
+    /**
+     * Gets the related building function for this task.
+     * Override as necessary.
+     * @return building function or null if none.
+     */
     protected FunctionType getRoboticFunction() {
         return null;
     }
@@ -1105,7 +1118,7 @@ implements Serializable, Comparable<Task> {
     }
 
     protected void walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
-    	if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    	if (robot.isInSettlement()) {
     		Building currentBuilding = BuildingManager.getBuilding(robot);
 
        		//if (currentBuilding == null)

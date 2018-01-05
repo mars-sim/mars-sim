@@ -54,7 +54,6 @@ public class SleepMeta implements MetaTask, Serializable {
 	private CircadianClock circadian;// = person.getCircadianClock();
 	
 	public SleepMeta() {
-		
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
         masterClock = sim.getMasterClock();
@@ -71,7 +70,19 @@ public class SleepMeta implements MetaTask, Serializable {
 
     @Override
     public Task constructInstance(Person person) {
-        return new Sleep(person);
+    	return new Sleep(person);
+/*        Sleep sleep = person.getSleep();
+    	if (sleep == null) {
+    		sleep = new Sleep(person);
+    		person.setSleep(sleep);
+    	}
+    	else {
+    		sleep.taskCompute();
+    		sleep.compute();
+    	}
+    	
+    	return sleep;
+*/    	
     }
 
     @Override
@@ -91,7 +102,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	circadian = person.getCircadianClock();
 
         	int now = marsClock.getMsol0();
-            boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
+           // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
             
             double fatigue = pc.getFatigue();
         	double stress = pc.getStress();
@@ -116,7 +127,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
 	        	int maxNumSleep = 0;
 
-	        	if (isOnCall)
+	        	if (ts.getShiftType() == ShiftType.ON_CALL)
 	            	maxNumSleep = 7;
 	            else
 	            	maxNumSleep = 3;
@@ -178,8 +189,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	            	quarters = Sleep.getBestAvailableQuarters(person, false);
 
 	                if (quarters != null) {
-	                	result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
-		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+                		result = modifyProbability(result, person, quarters);
 	                }
 	                else {
 	                   	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
@@ -194,9 +204,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	                if (quarters != null) {
 		            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
 	                	// he should be "more" inclined to fall asleep this way
-	                	result *= 1.2D;
-		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
-		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+	                	result = 1.2D * modifyProbability(result, person, quarters);
 	                }
 	                else {
 		            	// if this person has never been assigned a quarter and a bed so far
@@ -208,8 +216,7 @@ public class SleepMeta implements MetaTask, Serializable {
 		            		logger.fine("SleepMeta : " + person + " will be designated a bed in " 
 		            				+ quarters.getNickName());
 		                    // set it as his quarters
-			                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
-			                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+	                		result = modifyProbability(result, person, quarters);
 			            }
 			            else {
 		              		// There are no undesignated beds left in any quarters
@@ -218,8 +225,7 @@ public class SleepMeta implements MetaTask, Serializable {
 		                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
 		                	quarters = Sleep.getBestAvailableQuarters(person, false);
 		                	if (quarters != null) {
-	      		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
-	    		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+		                		result = modifyProbability(result, person, quarters);
 		                	}
 		                    else {
 		                    	logger.info("Sleep : " + person + " couldn't find an empty bed. Falling asleep at "
@@ -254,6 +260,10 @@ public class SleepMeta implements MetaTask, Serializable {
         
         return result;
     }
+    
+    public double modifyProbability(double value, Person person, Building quarters) {
+    	return value * TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters) * TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+    }
 
     /***
      * Refreshes a person's sleep habit based on his/her latest work shift 
@@ -264,13 +274,13 @@ public class SleepMeta implements MetaTask, Serializable {
         double result = 0;
 
     	int now = marsClock.getMsol0();
-  	  	boolean isOnShiftNow = ts.isShiftHour(now);
-        boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
+  	  	//boolean isOnShiftNow = ts.isShiftHour(now);
+        //boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
 
         // if a person is NOT on-call
-        if (!isOnCall) {
+        if (ts.getShiftType() != ShiftType.ON_CALL) {
 	        // if a person is on shift right now
-           	if (isOnShiftNow){
+           	if (ts.isShiftHour(now)){
 
            		int habit = circadian.getSuppressHabit();
            		int spaceOut = circadian.getSpaceOut();
@@ -319,7 +329,19 @@ public class SleepMeta implements MetaTask, Serializable {
     
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new Sleep(robot);
+		return new Sleep(robot);
+ /*       Sleep sleep = robot.getSleep();
+    	if (sleep == null) {
+    		sleep = new Sleep(robot);
+    		robot.setSleep(sleep);
+    	}
+    	else {
+    	    sleep.taskCompute();
+    		sleep.botCompute();
+    	}
+    	
+    	return sleep; 
+*/    	  	
 	}
 
 	@Override
@@ -329,9 +351,11 @@ public class SleepMeta implements MetaTask, Serializable {
 
         // No sleeping outside.
         if (robot.isOutside())
-            result = 0;
+            return 0;
 
-
+        else if (robot.isInVehicle())
+            return result;
+        
         // TODO: in what case should a bot "relax" or slow down its pace?
         // result += robot.getPhysicalCondition().getStress();
 
@@ -351,11 +375,8 @@ public class SleepMeta implements MetaTask, Serializable {
         // Crowding modifier.
         else if (robot.isInSettlement()) {
         	result += 2D;
-
-
         	// TODO: stay at the work location
         	// TODO: go to that building to recharge if battery is low
-
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
             	result += 2D;
@@ -368,4 +389,14 @@ public class SleepMeta implements MetaTask, Serializable {
 
         return result;
 	}
+	
+    public void destroy() {
+    	sim = null;
+    	masterClock = null;
+    	marsClock = null;
+    	ts = null;
+    	pc = null;
+    	circadian = null;
+
+    }
 }

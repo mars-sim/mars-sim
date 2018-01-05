@@ -182,8 +182,8 @@ implements Serializable {
      * @param assignedBy the authority that assigns the job
      */
     public void getInitialJob(String assignedBy) {
-    	Job newJob = JobManager.getNewJob(person);
-    	setJob(newJob, true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
+    	//Job newJob = JobManager.getNewJob(person);
+    	setJob(JobManager.getNewJob(person), true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
     }
 
     /**
@@ -193,7 +193,6 @@ implements Serializable {
      */
     public void takeAction(double time) {
 
-    	
         if ((mission != null) && mission.isDone()) {
             mission = null;
         }

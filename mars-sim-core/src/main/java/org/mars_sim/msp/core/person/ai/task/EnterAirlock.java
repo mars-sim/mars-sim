@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -71,8 +70,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D interiorAirlockPos = null;
 
-	private AmountResource oxygenAR = ResourceUtil.oxygenAR;//.findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
+	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static AmountResource waterAR = ResourceUtil.waterAR;
 
     /**
      * Constructor.
@@ -155,7 +154,7 @@ implements Serializable {
              logger.finer(person + " waiting to enter airlock from outside.");
 
              // If person is already inside, change to exit airlock phase.
-             if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+             if (!person.isOutside()) {
                  setPhase(EXITING_AIRLOCK);
                  return remainingTime;
              }
@@ -200,7 +199,7 @@ implements Serializable {
             logger.finer(robot + " waiting to enter airlock from outside.");
 
             // If robot is already inside, change to exit airlock phase.
-            if (LocationSituation.OUTSIDE != robot.getLocationSituation()) {
+            if (!robot.isOutside()) {
                 setPhase(EXITING_AIRLOCK);
                 return remainingTime;
             }
@@ -272,7 +271,7 @@ implements Serializable {
                 logger.finer(person + " is entering airlock, but is already in airlock.");
                 setPhase(WAITING_INSIDE_AIRLOCK);
             }
-            else if (person.getLocationSituation() != LocationSituation.OUTSIDE) {
+            else if (!person.isOutside()) {
                 logger.finer(person + " is entering airlock, but is already inside.");
                 endTask();
             }
@@ -317,13 +316,10 @@ implements Serializable {
                     }
                 }
             }
-            else {
-                if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
-
-                    // Walk to inside airlock position.
-                    addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(),
+            else if (person.isOutside()) {
+            	// Walk to inside airlock position.
+            	addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(),
                             insideAirlockPos.getX(), insideAirlockPos.getY(), true));
-                }
             }
 
         }
@@ -338,7 +334,7 @@ implements Serializable {
                 logger.finer(robot + " is entering airlock, but is already in airlock.");
                 setPhase(WAITING_INSIDE_AIRLOCK);
             }
-            else if (robot.getLocationSituation() != LocationSituation.OUTSIDE) {
+            else if (!robot.isOutside()) {
                 logger.finer(robot + " is entering airlock, but is already inside.");
                 endTask();
             }
@@ -383,13 +379,10 @@ implements Serializable {
                     }
                 }
             }
-            else {
-                if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
-
-                    // Walk to inside airlock position.
-                    addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(),
+            else if (robot.isOutside()) {
+            	// Walk to inside airlock position.
+            	addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(),
                             insideAirlockPos.getX(), insideAirlockPos.getY(), true));
-                }
             }
 
         }
@@ -408,7 +401,6 @@ implements Serializable {
     private double waitingInsideAirlockPhase(double time) {
 
         double remainingTime = time;
-
 
         if (person != null) {
             logger.finer(person + " waiting inside airlock.");
@@ -735,7 +727,7 @@ implements Serializable {
 
         boolean result = true;
 
-        if (!person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
+        if (person.isInside()) {
             logger.fine(person.getName() + " cannot enter airlock to " + airlock.getEntityName() +
                     " due to not being outside.");
             result = false;
@@ -748,7 +740,7 @@ implements Serializable {
 
         boolean result = true;
 
-        if (!robot.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
+        if (robot.isInside()) {
             logger.fine(robot.getName() + " cannot enter airlock to " + airlock.getEntityName() +
                     " due to not being outside.");
             result = false;

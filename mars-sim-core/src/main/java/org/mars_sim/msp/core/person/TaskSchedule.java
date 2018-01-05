@@ -132,7 +132,7 @@ public class TaskSchedule implements Serializable {
 	 * @param taskName
 	 * @param description
 	 */
-	public void recordTask(String taskName, String description, String phase, FunctionType functionType) {
+	public void recordTask(String taskName, String description, String phase) {//, FunctionType functionType) {
 		this.taskName = taskName;
 		this.doAction = description;
 		this.phase = phase;
@@ -166,9 +166,9 @@ public class TaskSchedule implements Serializable {
 		int id0 = getID(taskNames, taskName);
 		int id1 = getID(taskDescriptions, description);
 		int id2 = getID(taskPhases, phase);
-		int id3 = getID(functions, functionType.toString());
+		//int id3 = getID(functions, functionType.toString());
 
-		todayActivities.add(new OneActivity(startTime, id0, id1, id2, id3));
+		todayActivities.add(new OneActivity(startTime, id0, id1, id2));//, id3));
 
 	}
 
@@ -302,7 +302,7 @@ public class TaskSchedule implements Serializable {
 	    		if (size != 0) {
 	    			OneActivity lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
 	    			// Carry over and save the last yestersol task as the first task on today's schedule
-	    			todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase(), lastTask.getFunction()));
+	    			todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));//, lastTask.getFunction()));
 	    		}
     		}
     	}
@@ -530,14 +530,14 @@ public class TaskSchedule implements Serializable {
 		private int description;
 		private int phase;
 		private int startTime;
-		private int function;
+		//private int function;
 
-		public OneActivity(int startTime, int taskName, int description, int phase, int function) {
+		public OneActivity(int startTime, int taskName, int description, int phase) {//, int function) {
 			this.taskName = taskName;
 			this.description = description;
 			this.startTime = startTime;
 			this.phase = phase;
-			this.function = function;
+			//this.function = function;
 		}
 
 		/**
@@ -573,9 +573,9 @@ public class TaskSchedule implements Serializable {
 			return phase;
 		}
 		
-		public int getFunction() {
-			return function;
-		}
+		//public int getFunction() {
+		//	return function;
+		//}
 	}
 
 

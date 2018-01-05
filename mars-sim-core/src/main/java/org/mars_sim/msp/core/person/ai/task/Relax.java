@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
@@ -64,12 +63,17 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public Relax(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(3), true, 10D +
-				RandomUtil.getRandomDouble(10D));
-
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D);
+		
+        marsClock = masterClock.getMarsClock();
+        
         timeFactor = 1D; // TODO: should vary this factor by person
 
-        marsClock = masterClock.getMarsClock();
+		compute();
+	}
+	
+	public void compute() {
+		
 		// If during person's work shift, only relax for short period.
 		int msols = marsClock.getMsol0();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(msols);
@@ -79,7 +83,7 @@ implements Serializable {
 		
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {
 			try {
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
@@ -95,7 +99,7 @@ implements Serializable {
 		}
 
 		if (!walkSite) {
-		    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		    if (person.isInVehicle()) {
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
                     walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -113,8 +117,8 @@ implements Serializable {
 	}
 
 	public Relax(Robot robot) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D +
-				RandomUtil.getRandomDouble(10D));
+		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D);// + RandomUtil.getRandomDouble(10D));
+		
 /*
 		// If robot is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
@@ -210,7 +214,7 @@ implements Serializable {
 
 		Building result = null;
 
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);

@@ -367,7 +367,7 @@ public class PersonTableModel extends UnitTableModel {
 				
 		//}
 		//else {
-		// WARNING : the use of SwingUtilities below seems to create stackoverflow from time to time in eclipse
+		// WARNING : the use of SwingUtilities below seems to create StackOverflow from time to time in eclipse
 			SwingUtilities.invokeLater(
 				new PersonTableUpdater(event, this)
 			);
@@ -739,7 +739,7 @@ public class PersonTableModel extends UnitTableModel {
 			m.put(UnitEventType.SHIFT_EVENT, SHIFT);
 			m.put(UnitEventType.TASK_EVENT, TASK);
 			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
-			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
+			//m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
 			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
 			m.put(UnitEventType.MISSION_EVENT, MISSION);
 			m.put(UnitEventType.ILLNESS_EVENT, HEALTH);

@@ -21,10 +21,8 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -64,13 +62,15 @@ implements Serializable {
 	/** Flag for ending EVA operation externally. */
 	private boolean endEVA;
 	private boolean hasSiteDuration;
+	
 	private double siteDuration;
 	private double timeOnSite;
-	private LocalBoundedObject interiorObject;
-	private Point2D returnInsideLoc;
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
+	private LocalBoundedObject interiorObject;
+	private Point2D returnInsideLoc;
+	
 	//private static MarsClock marsClock;
 	
 	//private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
@@ -88,15 +88,13 @@ implements Serializable {
         this.hasSiteDuration = hasSiteDuration;
         this.siteDuration = siteDuration;
         timeOnSite = 0D;
-
-        LocationSituation ls = person.getLocationSituation();
-        
+  
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
 		//marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // Check if person is in a settlement or a rover.
-        if (LocationSituation.IN_SETTLEMENT == ls) {
+        if (person.isInSettlement()) {
             interiorObject = BuildingManager.getBuilding(person);
             if (interiorObject == null) {
                 //throw new IllegalStateException(person.getName() + " is in " + person.getSettlement() + " but not in building : interiorObject is null.");
@@ -115,7 +113,7 @@ implements Serializable {
             }
         }
         
-        else if (LocationSituation.IN_VEHICLE == ls) {
+        else if (person.isInVehicle()) {
             if (person.getVehicle() instanceof Rover) {
                 interiorObject = (Rover) person.getVehicle();
                 if (interiorObject == null) {
@@ -264,7 +262,7 @@ implements Serializable {
     	if (person != null) {
 
             // If not outside, create walk outside subtask.
-            if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+            if (person.isOutside()) {
                 setPhase(getOutsideSitePhase());
             }
             else {
@@ -324,7 +322,7 @@ implements Serializable {
     	    }
 
     	    // If not inside, create walk inside subtask.
-    	    if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+    	    if (person.isOutside()) {
     	        if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
     	            Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
     	            addSubTask(walkingTask);
@@ -351,7 +349,7 @@ implements Serializable {
     	    }
 
     	    // If not inside, create walk inside subtask.
-    	    if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+    	    if (robot.isOutside()) {
     	        if (Walk.canWalkAllSteps(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
     	            Task walkingTask = new Walk(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
     	            addSubTask(walkingTask);
@@ -554,12 +552,12 @@ implements Serializable {
             double yLocation) {
         Airlock result = null;
 
-        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
+        if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
             //logger.info(person.getName() + " is walking to an airlock. getClosestWalkableAvailableAirlock()");
         }
-        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
+        else if (person.isInVehicle()) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle instanceof Airlockable) {
                 result = ((Airlockable) vehicle).getAirlock();
@@ -573,11 +571,11 @@ implements Serializable {
             double yLocation) {
         Airlock result = null;
 
-        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
+        if (robot.isInSettlement()) {
             Settlement settlement = robot.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
         }
-        else if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+        else if (robot.isInVehicle()) {
             Vehicle vehicle = robot.getVehicle();
             if (vehicle instanceof Airlockable) {
                 result = ((Airlockable) vehicle).getAirlock();

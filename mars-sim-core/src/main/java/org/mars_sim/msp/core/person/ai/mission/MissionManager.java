@@ -188,13 +188,13 @@ implements Serializable {
 
 				String desc = newMission.getDescription();
 				String name = newMission.getName();
-				FunctionType type = FunctionType.UNKNOWN;//newMission.getFunction();
+				//FunctionType type = FunctionType.UNKNOWN;//newMission.getFunction();
 				
 				if (p != null) {
-					p.getTaskSchedule().recordTask(name, desc, phaseDescription, type);
+					p.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
 				}
 				else if (r != null) {
-					r.getTaskSchedule().recordTask(name, desc, phaseDescription, type);
+					r.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
 				}
 
 				phaseDescriptionCache = phaseDescription;

@@ -267,10 +267,7 @@ public class PhysicalCondition implements Serializable {
         
         
         // TODO: may incorporate real world parameters such as areal density in g cm−2, T-socre and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
-		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) // pain tolerance
-				+ (int)((naturalAttributeManager.getAttribute(NaturalAttribute.ENDURANCE)
-						+ naturalAttributeManager.getAttribute(NaturalAttribute.STRENGTH) 
-						+ naturalAttributeManager.getAttribute(NaturalAttribute.AGILITY))/300D);
+		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) + (int)es; // pain tolerance
 		musculoskeletal[1] = 50; // muscle health index; 50 being the average 
 		musculoskeletal[2] = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
 		

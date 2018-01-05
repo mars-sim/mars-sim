@@ -72,7 +72,6 @@ public class Sleep extends Task implements Serializable {
     // Data members
     /** The previous time (millisols). */
     private double previousTime;
-
     private double timeFactor;
 
     /** The living accommodations if any. */
@@ -95,7 +94,7 @@ public class Sleep extends Task implements Serializable {
 	// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
 	public Sleep(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true,
-                (250D + RandomUtil.getRandomDouble(80D)));
+                (250D + RandomUtil.getRandomDouble(10D)));
 
         if (masterClock == null)
         	masterClock = sim.getMasterClock();
@@ -105,13 +104,22 @@ public class Sleep extends Task implements Serializable {
 
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
-		
-        //boolean walkSite = false;
 
         timeFactor = 3D; // TODO: should vary this factor by person
 
+		compute();
+	}
+	
+	public void compute() {
+		
+        //boolean walkSite = false;
+        // If person is in rover, walk to passenger activity spot.
+        if (person.isInVehicle() && person.getVehicle() instanceof Rover) {
+        	walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+        }
+        
         // If person is in a settlement, try to find a living accommodations building.
-        if (person.isInSettlement()) {
+        else if (person.isInSettlement()) {
 
         	Settlement s1 = person.getSettlement();
         	Settlement s0 = person.getAssociatedSettlement();
@@ -248,14 +256,6 @@ public class Sleep extends Task implements Serializable {
 			}
         }
 
-        else if (person.isInVehicle()) {
-            // If person is in rover, walk to passenger activity spot.
-            if (person.getVehicle() instanceof Rover) {
-                walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-            }
-        }
-
-
         previousTime = marsClock.getMillisol();
 
         // Initialize phase
@@ -266,19 +266,30 @@ public class Sleep extends Task implements Serializable {
     public Sleep(Robot robot) {
         super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 10D);
 
+        if (masterClock == null)
+        	masterClock = sim.getMasterClock();
+
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
+
+        botCompute();
+	}
+	
+	public void botCompute() {
+			
         // If robot is in a settlement, try to find a living accommodations building.
         if (robot.isInSettlement()) {
 
         	// TODO: if power is below a certain threshold, go to robotic station for recharge, else stay at the same place
 
             // If currently in a building with a robotic station, go to a station activity spot.
-            boolean atStation = false;
+            //boolean atStation = false;
             Building currentBuilding = BuildingManager.getBuilding(robot);
             if (currentBuilding != null) {
                 if (currentBuilding.hasFunction(getRoboticFunction())) {
                     RoboticStation currentStation = currentBuilding.getRoboticStation();
                     if (currentStation.getSleepers() < currentStation.getSlots()) {
-                        atStation = true;
+                        //atStation = true;
                         station = currentStation;
                         station.addSleeper();
 
@@ -308,12 +319,6 @@ public class Sleep extends Task implements Serializable {
             }
         }
 
-        if (masterClock == null)
-        	masterClock = sim.getMasterClock();
-
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
-
         previousTime = marsClock.getMillisol();
 
         // Initialize phase
@@ -326,6 +331,7 @@ public class Sleep extends Task implements Serializable {
         return FunctionType.LIVING_ACCOMODATIONS;
     }
 
+    @Override
     protected FunctionType getRoboticFunction() {
         return FunctionType.ROBOTIC_STATION;
     }
@@ -558,7 +564,7 @@ public class Sleep extends Task implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            RoboticStation station = building.getRoboticStation();//(RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
+            RoboticStation station = building.getRoboticStation();
             if (station.getSleepers() < station.getSlots()) {
                 result.add(building);
             }
@@ -574,8 +580,8 @@ public class Sleep extends Task implements Serializable {
     private double getAlarmTime() {
     	double timeDiff = 0;
 		double modifiedAlarmTime = 0;
+		
 		if (person != null) {
-
 			ShiftType shiftType = person.getTaskSchedule().getShiftType();
 			// Set to 50 millisols prior to the beginning of the duty shift hour
 			if (shiftType == ShiftType.A)
@@ -621,5 +627,10 @@ public class Sleep extends Task implements Serializable {
         super.destroy();
         station = null;
         accommodations = null;
+        circadian = null;
+        pc = null;
+        sim = null;
+    	masterClock = null;
+    	marsClock = null;
     }
 }

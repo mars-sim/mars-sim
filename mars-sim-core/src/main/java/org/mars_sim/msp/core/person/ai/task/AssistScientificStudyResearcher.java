@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -72,7 +71,7 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
         
-        setFunction(FunctionType.RESEARCH);
+       // setFunction(FunctionType.RESEARCH);
         
         // Determine researcher
         researcher = determineResearcher();
@@ -84,7 +83,7 @@ implements Serializable {
                         researcher.getName())); //$NON-NLS-1$
                 
                 // If in settlement, move assistant to building researcher is in.
-                if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (person.isInSettlement()) {
 
                     Building researcherBuilding = BuildingManager.getBuilding(researcher);
                     if (researcherBuilding != null) {
@@ -93,7 +92,7 @@ implements Serializable {
                         walkToActivitySpotInBuilding(researcherBuilding, false);
                     }
                 }
-                else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {            
+                else if (person.isInVehicle()) {            
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
                         walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -152,7 +151,7 @@ implements Serializable {
         
         // If assistant is in a settlement, best researchers are in least crowded buildings.
         Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
-        if (assistant.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (assistant.isInSettlement()) {
 
             // Find the least crowded buildings that researchers are in.
             int crowding = Integer.MAX_VALUE;
@@ -161,7 +160,7 @@ implements Serializable {
                 Person researcher = i.next();
                 Building building = BuildingManager.getBuilding(researcher);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = building.getLifeSupport();
                     int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) buildingCrowding = -1;
                     if (buildingCrowding < crowding) crowding = buildingCrowding;
@@ -174,7 +173,7 @@ implements Serializable {
                 Person researcher = j.next();
                 Building building = BuildingManager.getBuilding(researcher);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+                    LifeSupport lifeSupport = building.getLifeSupport();
                     int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) buildingCrowding = -1;
                     if (buildingCrowding == crowding) leastCrowded.add(researcher);
@@ -244,14 +243,14 @@ implements Serializable {
     private static Collection<Person> getLocalPeople(Person person) {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
         
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
             while (i.hasNext()) {
                 Person inhabitant = i.next();
                 if (person != inhabitant) people.add(inhabitant);
             }
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             Crewable rover = (Crewable) person.getVehicle();
             Iterator<Person> i = rover.getCrew().iterator();
             while (i.hasNext()) {

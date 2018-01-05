@@ -15,10 +15,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -28,7 +24,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.SystemCondition;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -49,13 +44,13 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(BotTaskManager.class.getName());
 
 	// Data members
-	private String taskNameCache = "";
+	//private String taskNameCache = "";
 	private String taskDescriptionCache = "";
 	private String taskPhaseCache = "";
 	//private String oldJob = "";
 	/** The current task the robot is doing. */
 	private Task currentTask; 
-	private Task lastTask;
+	//private Task lastTask;
 	/** The mind of the robot. */
 	private BotMind botMind;
 
@@ -150,7 +145,7 @@ implements Serializable {
 		else
 			return "";
 	}
-	
+/*	
 	public FunctionType getFunction(boolean subTask) {
 		if (currentTask != null) {
 			return currentTask.getFunction(subTask);
@@ -159,7 +154,7 @@ implements Serializable {
 			return FunctionType.UNKNOWN;
 		}
 	}
-	
+*/
 	/**
 	 * Returns the current task phase if there is one.
 	 * Returns null if current task has no phase.
@@ -202,7 +197,7 @@ implements Serializable {
 		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
-		FunctionType functionType = getFunction(true);
+		//FunctionType functionType = getFunction(true);
 		
 		if (!taskName.toLowerCase().contains("walk")) {//equals("WalkRoverInterior")
 				//&& !taskName.equals("WalkSettlementInterior")
@@ -221,7 +216,7 @@ implements Serializable {
 					
 				}
 				
-				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, functionType);
+				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);//, functionType);
 				taskDescriptionCache = taskDescription;
 			}
 		}
@@ -240,9 +235,9 @@ implements Serializable {
 			currentTask.addSubTask(newTask);
 
 		} else {
-			lastTask = currentTask;
+			//lastTask = currentTask;
 			currentTask = newTask;
-			taskNameCache = currentTask.getTaskName();
+			//taskNameCache = currentTask.getTaskName();
 			taskDescriptionCache = currentTask.getDescription();
 
 			if (currentTask.getPhase() != null)
@@ -313,7 +308,8 @@ implements Serializable {
 		return remainingTime;
 
 	}
-
+	
+/*
 	private boolean doingEmergencyRepair() {
 
 	    // Check if person is already repairing an emergency.
@@ -338,7 +334,8 @@ implements Serializable {
 
 		return hasAirlockTask;
 	}
-
+*/
+	
 	/**
 	 * Checks if the person or robot is walking through a given building.
 	 * @param building the building.

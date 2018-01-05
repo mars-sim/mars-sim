@@ -11,7 +11,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -92,5 +91,34 @@ public interface MissionMember {
      */
     public void setVehicle(Vehicle vehicle);
 
+    /**
+     * Get the location tag 
+     * @return the member's location tag instance
+     */
 	public LocationTag getLocationTag();
+
+    /**
+     * Is the member in a settlement
+     * @return true if the member in a settlement
+     */
+	public boolean isInSettlement();
+	
+    /**
+     * Is the member in a vehicle 
+     * @return true if the member in a vehicle
+     */
+	public boolean isInVehicle();
+
+    /**
+     * Is the member inside 
+     * @return true if the member is inside
+     */
+	public boolean isInside();
+
+    /**
+     * Is the member outside 
+     * @return true if the member is outside
+     */
+	public boolean isOutside();
+	
 }

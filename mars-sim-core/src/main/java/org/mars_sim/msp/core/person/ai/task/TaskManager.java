@@ -17,9 +17,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.CircadianClock;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -28,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -192,16 +189,16 @@ implements Serializable {
 		else
 			return "";
 	}
-	
+/*	
 	public FunctionType getFunction(boolean subTask) {
-		if (currentTask != null) {
+		if (currentTask != null && currentTask.getFunction(subTask) != null) {
 			return currentTask.getFunction(subTask);
 		} 
 		else {
 			return FunctionType.UNKNOWN;
 		}
 	}
-	
+*/	
 
 	/**
 	 * Returns the current task phase if there is one.
@@ -255,7 +252,7 @@ implements Serializable {
 	public void recordTask() {
 		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//getTaskClassName();//currentTask.getTaskName(); //
-		FunctionType functionType = getFunction(true);
+		//FunctionType functionType = getFunction(true);
 		
 		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior, WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
@@ -280,7 +277,7 @@ implements Serializable {
 		    	ts = person.getTaskSchedule();
 		    
 		    // TODO: decide if it needs to record the same task description as the last
-			ts.recordTask(taskName, taskDescription, taskPhaseName, functionType);
+			ts.recordTask(taskName, taskDescription, taskPhaseName);//, functionType);
 			taskDescriptionCache = taskDescription;
 
 		}
@@ -341,12 +338,8 @@ implements Serializable {
 	 */
 	public double performTask(double time, double efficiency) {
 		double remainingTime = 0D;
-		
-		LocationStateType ls = person.getLocationStateType();
-		
-		if (LocationStateType.OUTSIDE_ON_MARS != ls) {
-			//	||  (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
-			//		&& person.getVehicle().getLocationStateType() != LocationStateType.OUTSIDE_ON_MARS))
+			
+		if (person.isInside()) {
 			checkForEmergency();
 		}
 		
@@ -375,8 +368,7 @@ implements Serializable {
 		    }
 
 		    if (energyTime > 0D) {
-				if (LocationStateType.SETTLEMENT_VICINITY == ls
-						|| LocationStateType.OUTSIDE_ON_MARS == ls) {
+				if (person.isOutside()) {
 					
 					if (circadian == null)
 						circadian = person.getCircadianClock();
@@ -484,9 +476,7 @@ implements Serializable {
 
             if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
 
-              	LocationSituation ls = person.getLocationSituation();
-            	
-            	if (ls == LocationSituation.OUTSIDE)
+            	if (person.isOutside())
             		return;
 
 				//int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();

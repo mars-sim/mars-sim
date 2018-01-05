@@ -29,6 +29,9 @@ import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
@@ -167,6 +170,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Vehicle vehicle;
 
 	private Vehicle associatedVehicle;
+	
+	private Relax relax;
+	
+	private Sleep sleep;
+	
+	private Walk walk;
 	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -1214,15 +1223,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public Collection<Person> getLocalGroup() {
 		Collection<Person> localGroup = new ConcurrentLinkedQueue<Person>();
 
-		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+					LifeSupport lifeSupport = building.getLifeSupport();
 					localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
 				}
 			}
-		} else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		} else if (isInVehicle()) {
 			Crewable crewableVehicle = (Crewable) getVehicle();
 			localGroup = new ConcurrentLinkedQueue<Person>(crewableVehicle.getCrew());
 		}
@@ -1391,7 +1400,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (currentBuilding != null) {
 			return currentBuilding;
 		}
-		else if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		else if (isInSettlement()) {
 			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(), getYLocation());
 		}
 
@@ -1525,11 +1534,37 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return waterRation;
 	}
 	
+	public Relax getRelax() {
+		return relax;
+	}
+	 
+	public void setRelax(Relax relax) {
+		this.relax = relax;
+	}
+
+	public Sleep getSleep() {
+		return sleep;
+	}
+	 
+	public void setSleep(Sleep sleep) {
+		this.sleep = sleep;
+	}
+	
+	public Walk getWalk() {
+		return walk;
+	}
+	
+	public void setWalk(Walk walk) {
+		this.walk = walk;
+	}
+	
 	
 	@Override
 	public void destroy() {
 		super.destroy();
-		
+		relax = null;
+		sleep = null;
+		walk = null;
 		circadian = null;
 		vehicle = null;
 		associatedVehicle = null;
