@@ -42,10 +42,7 @@ import java.util.logging.Logger;
  */
 public class NavigationTabPanel extends TabPanel implements ActionListener {
 
-    private static String CLASS_NAME =
-	"org.mars_sim.msp.ui.standard.unit_window.vehicle.NavigationTabPanel";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
 
     private DecimalFormat formatter = new DecimalFormat("0.0");
     private JButton driverButton;
@@ -490,4 +487,30 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // If driver button is pressed, open window for driver.
         if (source == driverButton) desktop.openUnitWindow((Unit) driverCache, false);
     }
+    
+	public void destroy() {
+		formatter = null; 
+	    driverButton = null; 
+	    statusLabel = null; 
+	    beaconLabel = null; 
+	    speedLabel = null; 
+	    elevationLabel = null; 
+	    centerMapButton = null; 
+	    destinationButton = null; 
+	    destinationTextLabel = null; 
+	    destinationLabelPanel = null; 
+	    destinationLatitudeLabel = null; 
+	    destinationLongitudeLabel = null; 
+	    distanceLabel = null; 
+	    etaLabel = null; 
+	    directionDisplay = null; 
+	    terrainDisplay = null; 
+	    driverCache = null; 
+	    statusCache = null; 
+	    destinationLocationCache = null; 
+	    destinationSettlementCache = null; 
+		missionManager = null; 
+	}
+	
+    
 }

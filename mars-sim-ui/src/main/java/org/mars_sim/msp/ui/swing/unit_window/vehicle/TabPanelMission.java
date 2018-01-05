@@ -50,9 +50,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelMission
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private JTextArea missionTextArea;
 	private JTextArea missionPhaseTextArea;
 	private DefaultListModel<MissionMember> memberListModel;
@@ -65,7 +62,7 @@ extends TabPanel {
 	private String missionPhaseCache = null;
 	private Collection<MissionMember> memberCache;
 
-	private MissionManager missionManager;
+	private static MissionManager missionManager;
 	
 	/**
 	 * Constructor.
@@ -245,5 +242,16 @@ extends TabPanel {
 		// Update mission and monitor buttons.
 		missionButton.setEnabled(mission != null);
 		monitorButton.setEnabled(mission != null);
+	}
+	
+	public void destroy() {
+		missionTextArea = null; 
+		missionPhaseTextArea = null; 
+		memberListModel = null; 
+		memberList = null; 
+		missionButton = null; 
+		monitorButton = null; 
+		memberCache = null; 
+		missionManager = null; 
 	}
 }

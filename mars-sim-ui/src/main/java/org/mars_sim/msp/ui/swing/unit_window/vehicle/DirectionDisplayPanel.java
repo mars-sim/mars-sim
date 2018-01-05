@@ -126,4 +126,8 @@ public class DirectionDisplayPanel extends JPanel {
 			g.drawLine(centerX, centerY, centerX + newX, centerY + newY);
 		}
 	}
+	
+	public void destroy() {
+	    vehicle = null; 
+	}
 }

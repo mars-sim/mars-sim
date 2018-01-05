@@ -43,9 +43,6 @@ public class TabPanelBots
 extends TabPanel
 implements MouseListener, ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	private JLabel crewNumLabel;
 	private JLabel crewCapLabel;
 	private DefaultListModel<Robot> crewListModel;
@@ -188,4 +185,12 @@ implements MouseListener, ActionListener {
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
+	
+	public void destroy() {
+		crewNumLabel = null; 
+		crewCapLabel = null; 
+		crewListModel = null; 
+		crewList = null; 
+		crewCache = null; 
+	}
 }

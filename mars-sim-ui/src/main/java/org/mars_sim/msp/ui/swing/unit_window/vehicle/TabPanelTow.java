@@ -27,9 +27,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelTow
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	private JPanel towingLabelPanel;
 	private JLabel towingTextLabel;
@@ -202,5 +199,14 @@ extends TabPanel {
 			addTowedButton();
 		}
 		else addTowedTextLabel();
+	}
+	
+	public void destroy() {
+		towingLabelPanel = null; 
+		towingTextLabel = null; 
+		towingButton = null; 
+		towedLabelPanel = null; 
+		towedTextLabel = null; 
+		towedButton = null; 
 	}
 }

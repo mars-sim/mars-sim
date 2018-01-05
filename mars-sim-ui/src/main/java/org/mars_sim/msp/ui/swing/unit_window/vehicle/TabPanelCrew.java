@@ -189,4 +189,12 @@ implements MouseListener, ActionListener {
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
+	
+	public void destroy() {
+		crewNumLabel = null; 
+		crewCapLabel = null; 
+		crewListModel = null; 
+		crewList = null; 
+		crewCache = null; 
+	}
 }

@@ -99,4 +99,8 @@ public class TerrainDisplayPanel extends JPanel {
         g.drawLine(centerX + 10, arrowCenterY, centerX + 5, arrowCenterY + 5);
         g.drawLine(centerX + 10, arrowCenterY, centerX + 5, arrowCenterY - 5);
     }
+    
+	public void destroy() {
+		vehicle = null; 
+	}
 }

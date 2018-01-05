@@ -26,9 +26,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  */
 public class LaboratoryTabPanel extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
 	/** The number of researchers label. */
 	private JLabel researchersLabel;
@@ -108,5 +105,9 @@ public class LaboratoryTabPanel extends TabPanel {
 			researchersCache = lab.getResearcherNum();
 			researchersLabel.setText("Number of Researchers: " + researchersCache);
 		}
+	}
+	
+	public void destroy() {
+	    researchersLabel = null; 
 	}
 }

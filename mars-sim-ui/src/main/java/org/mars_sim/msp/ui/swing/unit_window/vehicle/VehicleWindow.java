@@ -22,9 +22,6 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  */
 public class VehicleWindow extends UnitWindow {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	// Data members
     private boolean salvaged;
 
@@ -84,4 +81,8 @@ public class VehicleWindow extends UnitWindow {
             salvaged = true;
         }
     }
+    
+	public void destroy() {
+		vehicle = null; 
+	}
 }
