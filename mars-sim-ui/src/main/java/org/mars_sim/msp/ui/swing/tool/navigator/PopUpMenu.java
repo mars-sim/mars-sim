@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.navigator;
 
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -18,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -28,8 +26,6 @@ import javax.swing.plaf.UIResource;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -38,7 +34,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.UnitInfoPanel;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 
 // TODO: is extending to JInternalFrame better?

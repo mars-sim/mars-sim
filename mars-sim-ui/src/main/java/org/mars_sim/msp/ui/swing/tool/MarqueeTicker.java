@@ -7,18 +7,12 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
-import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,16 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -46,13 +37,9 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
-import com.jidesoft.swing.JideTitledBorder;
 import com.jidesoft.swing.MarqueePane;
-import com.jidesoft.swing.PartialEtchedBorder;
-import com.jidesoft.swing.PartialSide;
 import com.jidesoft.swing.StyleRange;
 import com.jidesoft.swing.StyledLabel;
-import com.jidesoft.swing.StyledLabelBuilder;
 
 public class MarqueeTicker extends JPanel {
 

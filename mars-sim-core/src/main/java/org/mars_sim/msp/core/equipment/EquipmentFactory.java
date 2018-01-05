@@ -7,13 +7,12 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.robot.Robot;
-
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * A factory for equipment units.

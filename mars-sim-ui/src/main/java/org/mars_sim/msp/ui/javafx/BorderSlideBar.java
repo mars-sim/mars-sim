@@ -17,7 +17,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import javafx.scene.control.ToggleButton;
 
 /**
  * Animates a node on and off screen to the top, right, bottom or left side.

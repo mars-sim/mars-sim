@@ -34,9 +34,7 @@ import java.awt.geom.GeneralPath;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;

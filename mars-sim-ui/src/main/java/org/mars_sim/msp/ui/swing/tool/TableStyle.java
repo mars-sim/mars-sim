@@ -8,7 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
-import javax.swing.BorderFactory;
+
 import javax.swing.JTable;
 
 import org.mars_sim.msp.ui.javafx.MainScene;

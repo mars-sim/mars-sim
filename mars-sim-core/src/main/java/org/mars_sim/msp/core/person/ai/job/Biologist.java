@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;

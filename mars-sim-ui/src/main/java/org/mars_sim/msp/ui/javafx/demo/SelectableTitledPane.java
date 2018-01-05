@@ -1,14 +1,13 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
-import javafx.scene.control.*;
-import javafx.scene.control.TitledPane;
-import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javafx.beans.property.BooleanProperty;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ContentDisplay;
 import com.sun.javafx.scene.control.skin.TitledPaneSkin;
 //import javafx.scene.control.skin.TitledPaneSkin;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.TitledPane;
 
 @SuppressWarnings("restriction")
 public class SelectableTitledPane extends TitledPane {

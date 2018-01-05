@@ -33,7 +33,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.LinearGradientPaint;
 import java.awt.RadialGradientPaint;
 import java.awt.Rectangle;
@@ -52,6 +51,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.Border;

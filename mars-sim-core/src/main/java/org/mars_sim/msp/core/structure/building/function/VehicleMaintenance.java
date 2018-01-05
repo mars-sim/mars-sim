@@ -17,8 +17,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.vehicle.Crewable;

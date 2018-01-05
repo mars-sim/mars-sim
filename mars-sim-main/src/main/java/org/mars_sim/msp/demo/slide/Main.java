@@ -1,8 +1,6 @@
 package org.mars_sim.msp.demo.slide;
 
-import javafx.scene.text.TextAlignment;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;

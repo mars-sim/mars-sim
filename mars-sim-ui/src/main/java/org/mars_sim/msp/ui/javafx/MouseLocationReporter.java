@@ -1,13 +1,12 @@
 package org.mars_sim.msp.ui.javafx;
 
 import javafx.application.Application;
-import static javafx.application.Application.launch;
-import javafx.event.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.stage.*;
+import javafx.stage.Stage;
 
 public class MouseLocationReporter extends Application {
   private static final String OUTSIDE_TEXT = "Outside Label";

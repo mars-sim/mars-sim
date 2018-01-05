@@ -1,21 +1,31 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
-import java.awt.Color;
-
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-
 import javafx.animation.FadeTransition;
-import javafx.beans.value.*;
-import javafx.event.*;
-import javafx.geometry.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.effect.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.SepiaTone;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.HBoxBuilder;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 /** Displays the Gettysburg Address */

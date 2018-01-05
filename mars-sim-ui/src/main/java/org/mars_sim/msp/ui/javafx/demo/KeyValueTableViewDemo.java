@@ -1,15 +1,6 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
-import java.util.ArrayList;
 
-//import de.jonato.jfxc.controls.table.KeyValueTableView;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.collections.FXCollections;
-import javafx.util.Pair;
 /**
 public class KeyValueTableViewDemo extends Application {
 

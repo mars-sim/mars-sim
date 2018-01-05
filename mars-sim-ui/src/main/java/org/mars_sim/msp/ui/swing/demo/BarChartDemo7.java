@@ -46,7 +46,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GradientPaint;
 
-import org.apache.batik.bridge.TextUtilities;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

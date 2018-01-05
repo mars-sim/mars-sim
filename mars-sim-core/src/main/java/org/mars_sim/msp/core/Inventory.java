@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.resource.AmountResource;

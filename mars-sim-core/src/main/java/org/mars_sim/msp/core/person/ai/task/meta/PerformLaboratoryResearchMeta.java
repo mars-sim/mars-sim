@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;

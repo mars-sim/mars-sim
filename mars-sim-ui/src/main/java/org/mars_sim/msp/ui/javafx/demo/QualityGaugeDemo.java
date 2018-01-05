@@ -16,16 +16,14 @@
 
 package org.mars_sim.msp.ui.javafx.demo;
 
+import org.mars_sim.msp.ui.javafx.QualityGauge;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.stage.Stage;
-import javafx.scene.layout.StackPane;
 import javafx.scene.Scene;
-
-import java.util.Random;
-
-import org.mars_sim.msp.ui.javafx.QualityGauge;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 
 /**

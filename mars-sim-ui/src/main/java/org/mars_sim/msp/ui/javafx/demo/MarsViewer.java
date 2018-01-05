@@ -5,7 +5,6 @@ import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;

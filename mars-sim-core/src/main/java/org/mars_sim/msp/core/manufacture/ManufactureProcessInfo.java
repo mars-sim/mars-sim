@@ -12,8 +12,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
-
 /**
  * Information about a type of manufacturing process.
  */

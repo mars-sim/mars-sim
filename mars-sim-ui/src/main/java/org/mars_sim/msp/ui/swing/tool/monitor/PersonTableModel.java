@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
-import javafx.application.Platform;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -27,12 +26,10 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;

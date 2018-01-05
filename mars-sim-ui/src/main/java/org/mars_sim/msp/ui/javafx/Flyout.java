@@ -15,8 +15,6 @@
  */
 package org.mars_sim.msp.ui.javafx;
 
-import javafx.scene.control.ToggleButton;
-
 import com.jfoenix.controls.JFXButton;
 
 import javafx.animation.Animation;
@@ -28,10 +26,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;

@@ -1,6 +1,7 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
 import java.util.Calendar;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -8,8 +9,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Light.Distant;
-import javafx.scene.effect.Lighting;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;

@@ -24,16 +24,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.ui.javafx.config.SettlementTableModel;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
-
-import javafx.application.Platform;
-import javafx.scene.paint.Color;
 
 public class SettlementTable extends JTable {
 

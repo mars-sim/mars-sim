@@ -16,6 +16,9 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import eu.hansolo.medusa.Fonts;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
@@ -27,7 +30,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.property.StringPropertyBase;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -37,7 +39,6 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -53,9 +54,6 @@ import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 //import jfxtras.scene.layout.VBox;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
