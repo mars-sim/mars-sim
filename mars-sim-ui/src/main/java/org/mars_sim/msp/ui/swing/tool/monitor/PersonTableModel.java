@@ -365,9 +365,9 @@ public class PersonTableModel extends UnitTableModel {
 		//}
 		//else {
 		// WARNING : the use of SwingUtilities below seems to create StackOverflow from time to time in eclipse
-			SwingUtilities.invokeLater(
-				new PersonTableUpdater(event, this)
-			);
+			//SwingUtilities.invokeLater(
+				new PersonTableUpdater(event, this);
+			//);
 		//}
 		
 		/*

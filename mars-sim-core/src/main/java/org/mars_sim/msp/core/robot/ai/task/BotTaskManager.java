@@ -276,6 +276,7 @@ implements Serializable {
 	 */
 	public double performTask(double time, double efficiency) {
 		double remainingTime = 0D;
+		
 		if (currentTask != null) {
 			// For effort driven task, reduce the effective time based on efficiency.
 			if (efficiency < .1D) {
@@ -288,11 +289,8 @@ implements Serializable {
 
 			checkForEmergency();
 			remainingTime = currentTask.performTask(time);
-		}
 
-		// Expend energy based on activity.
-		if (currentTask != null) {
-
+			// Expend energy based on activity.
 		    double energyTime = time - remainingTime;
 
 		    // Double energy expenditure if performing effort-driven task.

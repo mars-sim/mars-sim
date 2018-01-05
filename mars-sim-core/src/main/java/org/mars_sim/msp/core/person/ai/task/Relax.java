@@ -118,14 +118,13 @@ implements Serializable {
 
 	public Relax(Robot robot) {
 		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D);// + RandomUtil.getRandomDouble(10D));
-		
-/*
+/*		
 		// If robot is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
 
-		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (robot.isInSettlement()) {
 			try {
-				Building recBuilding = getAvailableRecreationBuilding(robot);
+				Building recBuilding = Sleep.getAvailableRoboticStationBuilding(robot);
 				if (recBuilding != null) {
 					// Walk to recreation building.
 				    walkToActivitySpotInBuilding(recBuilding, true);
@@ -139,7 +138,7 @@ implements Serializable {
 		}
 		
 		if (!walkSite) {
-		    if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		    if (robot.isInVehicle()) {
                 // If robot is in rover, walk to passenger activity spot.
                 if (robot.getVehicle() instanceof Rover) {
                     walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);

@@ -339,10 +339,6 @@ implements Serializable {
 	public double performTask(double time, double efficiency) {
 		double remainingTime = 0D;
 			
-		if (person.isInside()) {
-			checkForEmergency();
-		}
-		
 		if (currentTask != null) {
 			// For effort driven task, reduce the effective time based on efficiency.
 			if (efficiency < .1D) {
@@ -352,14 +348,14 @@ implements Serializable {
 			if (currentTask.isEffortDriven()) {
 				time *= efficiency;
 			}
-
+			
+			//if (person.isInside()) {
+			//	checkForEmergency();
+			//}
 			
 			remainingTime = currentTask.performTask(time);
-		}
 
-		// Expend energy based on activity.
-		if (currentTask != null) {
-
+			// Expend energy based on activity.
 		    double energyTime = time - remainingTime;
 
 		    // Double energy expenditure if performing effort-driven task.
@@ -476,8 +472,8 @@ implements Serializable {
 
             if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
 
-            	if (person.isOutside())
-            		return;
+            	//if (person.isOutside())
+            	//	return;
 
 				//int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
 				//if (numOutside == 0) {		
@@ -494,7 +490,7 @@ implements Serializable {
             }
 		}
 		
-		else { // requires no EVA
+		else { // requires no EVA for the repair
 			
     		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
     				person + " cancelled '" + currentTask +

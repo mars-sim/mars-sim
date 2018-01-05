@@ -144,39 +144,37 @@ implements Serializable {
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
 
-        if (robot != null) {
-            if (robot.isInSettlement()) {
-                overrideMission = robot.getSettlement().getMissionCreationOverride();
-            }
+        if (robot.isInSettlement()) {
+            overrideMission = robot.getSettlement().getMissionCreationOverride();
+        }
 
-            boolean hasActiveTask = botTaskManager.hasActiveTask();
-            // Perform a task if the robot has one, or determine a new task/mission.
-            if (hasActiveTask) {
-                double remainingTime = botTaskManager.performTask(time, robot
-                        .getPerformanceRating());
-                if (remainingTime > 0D) {
-                    takeAction(remainingTime);
+        boolean hasActiveTask = botTaskManager.hasActiveTask();
+        // Perform a task if the robot has one, or determine a new task/mission.
+        if (hasActiveTask) {
+            double remainingTime = botTaskManager.performTask(time, robot
+                    .getPerformanceRating());
+            if (remainingTime > 0D) {
+                takeAction(remainingTime);
+            }
+        }
+        else {
+
+        	if (activeMission) {
+        		mission.performMission(robot);
+        	}
+
+            if (!botTaskManager.hasActiveTask()) {
+                try {
+                    getNewAction(true, (!activeMission && !overrideMission));
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, robot + " could not get new action", e);
+                    e.printStackTrace(System.err);
                 }
             }
-            else {
 
-            	if (activeMission) {
-            		mission.performMission(robot);
-            	}
-
-                if (!botTaskManager.hasActiveTask()) {
-                    try {
-                        getNewAction(true, (!activeMission && !overrideMission));
-                    } catch (Exception e) {
-                        logger.log(Level.WARNING, robot + " could not get new action", e);
-                        e.printStackTrace(System.err);
-                    }
-                }
-
-                //if (botTaskManager.hasActiveTask() || hasActiveMission()) {
-                //   takeAction(time);
-                //}
-            }
+            //if (botTaskManager.hasActiveTask() || hasActiveMission()) {
+            //   takeAction(time);
+            //}
         }
     }
 

@@ -124,6 +124,7 @@ public class RelaxMeta implements MetaTask, Serializable {
     		robot.setRelax(relax);
     	}
     	//else {
+    	//  relax.taskCompute();
     	//	relax.botCompute();
     	//}	
     	return relax;
