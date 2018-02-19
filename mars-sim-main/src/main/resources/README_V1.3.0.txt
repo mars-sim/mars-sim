@@ -127,6 +127,7 @@ simulation.xml :
     load 123.sim    load the sim with filename '123.sim'
                     (Note : '123.sim' must be located at the same 
                      		folder as the jarfile)
+	noaudio         disable background music and sound effect\n";                     		
 
 ---------------------------------------------------------------------
 

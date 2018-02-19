@@ -216,12 +216,19 @@ public class MarsProjectFX extends Application  {
 		+ "    5               256MB Min, 2048MB Max\n"
 		+ "    load            go to directory /.mars-sim/saved/ and wait for user to choose a saved sim\n"
 		+ "    load 123.sim    load the saved sim with filename '123.sim'\n"
-		+ "                    (Note : '123.sim' must be located at the same directory as the jarfile.)\n";
+		+ "                    (Note : '123.sim' must be located at the same directory as the jarfile.)\n"
+		+ "    noaudio         disable background music and sound effect\n";
 
+	
     /** true if displaying graphic user interface. */
-    private boolean headless = false, newSim = false, loadSim = false, savedSim = false;
+    private boolean headless = false;
+    private boolean newSim = false;
+    private boolean loadSim = false;
+    private boolean savedSim = false;
+    private boolean noaudio = false;
     /** true if help documents should be generated from config xml files. */
-    private boolean generateHTML = false, helpPage = false;
+    private boolean generateHTML = false;
+    private boolean helpPage = false;
 
     //private boolean isDone;
 
@@ -307,6 +314,7 @@ public class MarsProjectFX extends Application  {
             loadSim = argList.contains("-load");
     		generateHTML = argList.contains("-html");
     		helpPage = argList.contains("-help");
+    		noaudio = argList.contains("-noaudio");
     		//savedSim = argList.contains(".sim");
 
     		if (generateHTML || helpPage || argList.contains("-headless"))
@@ -364,6 +372,7 @@ public class MarsProjectFX extends Application  {
 	   		}
 
 		} else {
+				
 			// Using -headless (GUI-less mode)
 			if (newSim) {
 		   		// CASE A //
@@ -441,8 +450,8 @@ public class MarsProjectFX extends Application  {
 	   	if (!headless) {
 		   //logger.info("start() : in GUI mode, loading the Main Menu");
 
-	   		mainMenu = new MainMenu();//this);
-
+	   		mainMenu = new MainMenu();
+	   		
 	   		if (newSim) {
 		   		// CASE D1 and D2//
 	   	    	logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
@@ -489,6 +498,12 @@ public class MarsProjectFX extends Application  {
 		            }
 	        	}
 	   		}
+	   		
+			if (noaudio) {
+				logger.info("noaudio argument detected. Turn off sound.");
+				mainMenu.setSoundDisabled();
+			}
+
 		}
 
 		else {

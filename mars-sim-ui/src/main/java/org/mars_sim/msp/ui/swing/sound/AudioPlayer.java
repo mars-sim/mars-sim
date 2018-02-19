@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 //import javafx.application.Platform;
@@ -50,12 +51,13 @@ public class AudioPlayer {
 	private int play_times = 0;
 
 	private boolean hasMasterGain = true;
+	private boolean isSoundDisabled = false;
 	
-	private boolean lastMusicState = true;
-	private boolean lastSoundState = true;
+	//private boolean lastMusicState = true;
+	//private boolean lastSoundState = true;
 
 	private MainDesktopPane desktop;
-	private MainScene mainScene;
+	//private MainScene mainScene;
 	
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
@@ -73,68 +75,77 @@ public class AudioPlayer {
 	public AudioPlayer(MainDesktopPane desktop) {
 		//logger.info("constructor is on " + Thread.currentThread().getName());
 		this.desktop = desktop;
-		mainScene = desktop.getMainScene();
+		//mainScene = desktop.getMainScene();
 
 		masterClock = Simulation.instance().getMasterClock();
 		
-		allMusicTracks = new HashMap<>();
-		allSoundClips = new HashMap<>();
+		if (MainMenu.isSoundDisabled()) {
+			isSoundDisabled = true;
+			currentMusicVol = 0;
+			currentSoundVol = 0;
+		}
 		
-		soundTracks = new ArrayList<>();
-		soundTracks.add(SoundConstants.ST_AREOLOGIE);
-		soundTracks.add(SoundConstants.ST_PUZZLE);
-		soundTracks.add(SoundConstants.ST_MISTY);
-		soundTracks.add(SoundConstants.ST_MENU);
+		else {
 			
-		soundTracks.add(SoundConstants.ST_ONE_WORLD);
-		soundTracks.add(SoundConstants.ST_BEDTIME);
-		soundTracks.add(SoundConstants.ST_BOG_CREATURES);
-		soundTracks.add(SoundConstants.ST_LOST_JUNGLE);
-		
-		// not for playing at the start of the sim due to its loudness
-		// Set LOUD_TRACKS to 5
-		soundTracks.add(SoundConstants.ST_MOONLIGHT);
-		soundTracks.add(SoundConstants.ST_CITY);
-		soundTracks.add(SoundConstants.ST_CLIPPITY);
-		soundTracks.add(SoundConstants.ST_MONKEY);
-		soundTracks.add(SoundConstants.ST_SURREAL);
-		soundTracks.add(SoundConstants.ST_FANTASCAPE);
-
-		num_tracks = soundTracks.size();
-		
-		for (String p : soundTracks) {
-			try {
-				allMusicTracks.put(p, new OGGSoundClip(p));
-			} catch (IOException e) {
-				e.printStackTrace();
+			allMusicTracks = new HashMap<>();
+			allSoundClips = new HashMap<>();
+			
+			soundTracks = new ArrayList<>();
+			soundTracks.add(SoundConstants.ST_AREOLOGIE);
+			soundTracks.add(SoundConstants.ST_PUZZLE);
+			soundTracks.add(SoundConstants.ST_MISTY);
+			soundTracks.add(SoundConstants.ST_MENU);
+				
+			soundTracks.add(SoundConstants.ST_ONE_WORLD);
+			soundTracks.add(SoundConstants.ST_BEDTIME);
+			soundTracks.add(SoundConstants.ST_BOG_CREATURES);
+			soundTracks.add(SoundConstants.ST_LOST_JUNGLE);
+			
+			// not for playing at the start of the sim due to its loudness
+			// Set LOUD_TRACKS to 5
+			soundTracks.add(SoundConstants.ST_MOONLIGHT);
+			soundTracks.add(SoundConstants.ST_CITY);
+			soundTracks.add(SoundConstants.ST_CLIPPITY);
+			soundTracks.add(SoundConstants.ST_MONKEY);
+			soundTracks.add(SoundConstants.ST_SURREAL);
+			soundTracks.add(SoundConstants.ST_FANTASCAPE);
+	
+			num_tracks = soundTracks.size();
+			
+			for (String p : soundTracks) {
+				try {
+					allMusicTracks.put(p, new OGGSoundClip(p));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		}
-
-		soundEffects = new ArrayList<>();
-		soundEffects.add(SoundConstants.SND_EQUIPMENT);
-		soundEffects.add(SoundConstants.SND_PERSON_DEAD);
-		soundEffects.add(SoundConstants.SND_PERSON_FEMALE1);
-		soundEffects.add(SoundConstants.SND_PERSON_FEMALE2);
-		soundEffects.add(SoundConstants.SND_PERSON_MALE1);
-		soundEffects.add(SoundConstants.SND_PERSON_MALE2);
-
-		soundEffects.add(SoundConstants.SND_ROVER_MAINTENANCE);
-		soundEffects.add(SoundConstants.SND_ROVER_MALFUNCTION);
-		soundEffects.add(SoundConstants.SND_ROVER_MOVING);
-		soundEffects.add(SoundConstants.SND_ROVER_PARKED);
-		soundEffects.add(SoundConstants.SND_SETTLEMENT);
-		
-		for (String s : soundEffects) {
-			try {
-				allSoundClips.put(s, new OGGSoundClip(s));
-			} catch (IOException e) {
-				e.printStackTrace();
+	
+			soundEffects = new ArrayList<>();
+			soundEffects.add(SoundConstants.SND_EQUIPMENT);
+			soundEffects.add(SoundConstants.SND_PERSON_DEAD);
+			soundEffects.add(SoundConstants.SND_PERSON_FEMALE1);
+			soundEffects.add(SoundConstants.SND_PERSON_FEMALE2);
+			soundEffects.add(SoundConstants.SND_PERSON_MALE1);
+			soundEffects.add(SoundConstants.SND_PERSON_MALE2);
+	
+			soundEffects.add(SoundConstants.SND_ROVER_MAINTENANCE);
+			soundEffects.add(SoundConstants.SND_ROVER_MALFUNCTION);
+			soundEffects.add(SoundConstants.SND_ROVER_MOVING);
+			soundEffects.add(SoundConstants.SND_ROVER_PARKED);
+			soundEffects.add(SoundConstants.SND_SETTLEMENT);
+			
+			for (String s : soundEffects) {
+				try {
+					allSoundClips.put(s, new OGGSoundClip(s));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		}
-		
-		currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
-		currentMusicTrack = null;
+			
+			currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
+			currentMusicTrack = null;
 
+		}
 		//if (UIConfig.INSTANCE.useUIDefault()) {
 		//}
 	}
@@ -237,7 +248,7 @@ public class AudioPlayer {
 		float v = currentMusicTrack.getVol() + .05f;
 		if (v > 1f)
 			v = 1f;
-		if (hasMasterGain && currentMusicTrack != null)
+		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null)
 			currentMusicTrack.determineGain(v);	
 	}
 
@@ -246,7 +257,7 @@ public class AudioPlayer {
 		float v = currentMusicTrack.getVol() - .05f;
 		if (v < 0f)
 			v = 0;
-		if (hasMasterGain && currentMusicTrack != null)
+		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null)
 			currentMusicTrack.determineGain(v);
 
 	}
@@ -256,7 +267,7 @@ public class AudioPlayer {
 		float v = currentSoundClip.getVol() + .05f;
 		if (v > 1f)
 			v = 1f;
-		if (hasMasterGain && currentSoundClip != null)
+		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null)
 			currentSoundClip.determineGain(v);
 
 	}
@@ -266,14 +277,14 @@ public class AudioPlayer {
 		float v = currentSoundClip.getVol() - .05f;
 		if (v < 0f)
 			v = 0;
-		if (hasMasterGain && currentSoundClip != null)
+		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null)
 			currentSoundClip.determineGain(v);
 
 	}
 	
 
 	public void restoreLastMusicVolume() {
-		if (hasMasterGain && currentMusicTrack != null) {
+		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {
 			//currentMusicTrack.resume();
 			currentMusicTrack.determineGain(lastMusicVol);
 		}
@@ -281,7 +292,7 @@ public class AudioPlayer {
 
 
 	public void restoreLastSoundVolume() {
-		if (hasMasterGain && currentSoundClip != null)
+		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null)
 			currentSoundClip.determineGain(lastSoundVol);
 	}
 
@@ -298,7 +309,7 @@ public class AudioPlayer {
 		lastMusicVol = currentMusicVol;
 		currentMusicVol = volume;
 		
-		if (hasMasterGain && currentMusicTrack != null) {// && !currentMusicTrack.isMute()){ 
+		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {// && !currentMusicTrack.isMute()){ 
 			currentMusicTrack.determineGain(volume);
 		}
 	}
@@ -316,7 +327,7 @@ public class AudioPlayer {
 		lastSoundVol = currentSoundVol;
 		currentSoundVol = volume;
 
-		if (hasMasterGain && currentSoundClip != null) {// && !currentSoundClip.isMute()) {
+		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {// && !currentSoundClip.isMute()) {
 			currentSoundClip.determineGain(volume);
 		}
 	}
@@ -487,6 +498,11 @@ public class AudioPlayer {
 				pickANewTrack();
 			}
 		}
+	}
+	
+	
+	public boolean isSoundDisabled() {
+		return isSoundDisabled;
 	}
 	
 	public void destroy() {

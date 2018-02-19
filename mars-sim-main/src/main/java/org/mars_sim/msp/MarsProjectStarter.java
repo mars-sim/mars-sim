@@ -133,6 +133,8 @@ public class MarsProjectStarter {
 
 	        }
 
+	        if (argList.contains("noaudio")) 
+	        	command.append(" -noaudio");
         }
 
         String commandStr = command.toString();

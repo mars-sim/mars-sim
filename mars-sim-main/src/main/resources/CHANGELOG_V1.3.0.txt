@@ -5,7 +5,7 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 42__) - 2017-11-__
+## v3.1.0-Preview 9 (build 4256) - 2018-02-18
 
 ### KNOWN LIMITATIONS :
 
@@ -58,6 +58,8 @@ https://github.com/mars-sim/mars-sim
 
 18. Rework input/outpost of various resource processes.
 
+19. Add noaudio argument if user desires running the simulation with no sound.
+ 
 
 ### UI IMPROVEMENT :
 

@@ -131,6 +131,7 @@ public class MainMenu {
 	public float music_v = 50f;
 	public float sound_effect_v = 50f;
 
+	private static boolean isSoundDisabled = false;
 	public boolean isFXGL = false;
     //private Point2D anchorPt;
     //private Point2D previousLocation;
@@ -597,6 +598,9 @@ public class MainMenu {
 	   // creates a mainScene instance
 	   mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
 
+	   if (isSoundDisabled)
+		   mainMenu.setSoundDisabled();
+	   
        try {
     	   // Loads Scenario Config Editor
     	   Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
@@ -703,6 +707,9 @@ public class MainMenu {
 			Platform.runLater(() -> {
 				mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
 				
+				if (isSoundDisabled)
+					mainMenu.setSoundDisabled();
+				   
 				mainScene.createLoadingIndicator();
 				mainScene.showWaitStage(MainScene.LOADING);
 			});
@@ -1263,7 +1270,16 @@ public class MainMenu {
 	//	mainscene_width = w;
 	//	mainscene_height = h;
 	//}
+
 	
+    public static boolean isSoundDisabled() {
+    	return isSoundDisabled;
+    }
+    
+    public void setSoundDisabled() {
+    	isSoundDisabled = true;
+    }
+    
 	public void destroy() {
 		anchorPane = null;
 		primaryStage = null;

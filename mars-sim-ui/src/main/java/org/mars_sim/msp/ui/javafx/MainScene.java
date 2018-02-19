@@ -137,6 +137,7 @@ import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
 import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
+import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
@@ -248,7 +249,9 @@ public class MainScene {
 	public static int MACOS_WIDTH = 230;
 	public static int WIN_WIDTH = 230;
 
+	public static boolean isFXGL = false;
 	public static boolean menuBarVisible = false;
+	
 	static boolean isShowingDialog = false;
 
 	private int screen_width = DEFAULT_WIDTH;
@@ -267,7 +270,6 @@ public class MainScene {
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
-	public static boolean isFXGL = false;
 	
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
@@ -284,18 +286,31 @@ public class MainScene {
 	
 	private GameScene gameScene;
 	private Parent root;
-	private StackPane rootStackPane, mainStackPane, dashboardStackPane, // monPane,
-			mapStackPane, minimapStackPane, speedPane, soundPane, calendarPane, // farmPane,
-			settlementBox, chatBoxPane, pausePane, savePane, sPane;
+	private StackPane rootStackPane;
+	private StackPane mainStackPane;
+	private StackPane dashboardStackPane; // monPane,
+	private StackPane mapStackPane;
+	private StackPane minimapStackPane;
+	private StackPane speedPane;
+	private StackPane soundPane;
+	private StackPane calendarPane; // farmPane,
+	private StackPane settlementBox;
+	private StackPane chatBoxPane;
+	private StackPane pausePane;
+	private StackPane savePane;
+	private StackPane sPane;
 
-	private AnchorPane anchorPane, mapAnchorPane;
-	private SwingNode desktopNode, mapNode, minimapNode;// , guideNode;// monNode, missionNode, resupplyNode, sciNode,
+	private AnchorPane anchorPane;
+	private AnchorPane mapAnchorPane;
+	private SwingNode desktopNode;
+	private SwingNode mapNode;
+	private SwingNode minimapNode;// , guideNode;// monNode, missionNode, resupplyNode, sciNode,
 														// guideNode ;
 	private Stage stage, loadingStage, savingStage;
 	private Scene scene, savingScene;
 
 	private File fileLocn = null;
-	private Thread newSimThread;
+	//private Thread newSimThread;
 
 	private JFXDatePicker datePickerFX;
 	private JFXTimePicker timePickerFX;
@@ -313,27 +328,51 @@ public class MainScene {
 
 	private Button marsTimeButton;
 
-	private Text LSText, monthText, yearText, northText, southText;
+	private Text LSText;
+	private Text monthText;
+	private Text yearText;
+	private Text northText;
+	private Text southText;
 
-	private IconNode soundIcon, marsNetIcon, speedIcon;// , farmIcon;
+	private IconNode soundIcon;
+	private IconNode marsNetIcon;
+	private IconNode speedIcon;// , farmIcon;
 
 	private Blend blend;
-	private VBox mapLabelBox, speedVBox, soundVBox;
+	private VBox mapLabelBox;
+	private VBox speedVBox;
+	private VBox soundVBox;
 	private Tab mainTab, dashboardTab;
 
 	private Spinner<Integer> spinner;
 	private JFXComboBox<Settlement> sBox;
-	private JFXToggleButton cacheToggle, minimapToggle, mapToggle;
+	private JFXToggleButton cacheToggle;
+	private JFXToggleButton minimapToggle;
+	private JFXToggleButton mapToggle;
 	private JFXSlider zoomSlider;
 
 	private static JFXSlider musicSlider;
 	private static JFXSlider soundEffectSlider; 
 	
-	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;
-	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;
+	private JFXButton soundBtn;
+	private JFXButton marsNetBtn;
+	private JFXButton rotateCWBtn;
+	private JFXButton rotateCCWBtn;
+	private JFXButton recenterBtn;
+	private JFXButton speedBtn;
+	
+	private JFXPopup soundPopup; 
+	private JFXPopup marsNetBox;
+	private JFXPopup marsCalendarPopup;
+	private JFXPopup simSpeedPopup;
+	
 	private JFXTabPane jfxTabPane;
+	
 	private JFXDialog exitDialog;
-	private CheckBox musicMuteBox, soundEffectMuteBox;
+	
+	private static CheckBox musicMuteBox;
+	private static CheckBox soundEffectMuteBox;
+	
 	private ESCHandler esc = null;
 	private Timeline timeline;
 
@@ -1442,8 +1481,8 @@ public class MainScene {
 		//trackLabel.setPadding(new Insets(0, 0, 0, 0));
 
 		musicMuteBox = new JFXCheckBox("mute");
-		musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
+		//musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+		//		+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
 		musicMuteBox.setAlignment(Pos.CENTER);
 		
@@ -1521,8 +1560,8 @@ public class MainScene {
 		//effectLabel.setPadding(new Insets(0, 0, 0, 1));
 
 		soundEffectMuteBox = new JFXCheckBox("mute");
-		soundEffectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-				+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
+		//soundEffectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+		//		+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
 		soundEffectMuteBox.setAlignment(Pos.CENTER);
 		
@@ -1597,6 +1636,8 @@ public class MainScene {
 		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, soundEffectSlider);
 		soundPane.getChildren().addAll(soundVBox);
 
+		if (MainMenu.isSoundDisabled())
+			disableSound();
 	}
 
 	/*
@@ -2884,7 +2925,7 @@ public class MainScene {
 		// int msol = (int)(masterClock.getTimeRatio());
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
-		if (!soundPlayer.isMusicMute())
+		if (!soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled())
 		//if (musicSlider.getValue() > 0)
 			soundPlayer.playRandomMusicTrack();
 		// }
@@ -3851,11 +3892,14 @@ public class MainScene {
 
 	public static void disableSound() {
 		soundPlayer.enableMasterGain(false);
-		if (musicSlider != null)
+		if (musicSlider != null) {
 			musicSlider.setDisable(true);// .setValue(0);
-		if (soundEffectSlider != null)
+		}
+		if (soundEffectSlider != null) {
 			soundEffectSlider.setDisable(true);// .setValue(0);
-
+		}
+		soundEffectMuteBox.setDisable(true);
+		musicMuteBox.setDisable(true);
 	}
 
 	public void setScreenSize(int w, int h) {
@@ -3911,7 +3955,7 @@ public class MainScene {
 		sPane = null;
 
 		anchorPane = null;
-		newSimThread = null;
+		//newSimThread = null;
 		stage = null;
 		loadingStage = null;
 		savingStage = null;

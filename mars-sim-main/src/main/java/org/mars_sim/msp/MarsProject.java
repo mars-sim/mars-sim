@@ -38,6 +38,7 @@ public class MarsProject {
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProject.class.getName());
 
+    
     static String[] args;
 
     /** true if displaying graphic user interface. */
