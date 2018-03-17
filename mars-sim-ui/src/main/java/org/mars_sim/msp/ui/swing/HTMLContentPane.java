@@ -20,12 +20,11 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.Msg;
 
 /**
- * The HTMLContentPane class provides an HTML pane for displaying
- * the help files in the Guide window.
+ * The HTMLContentPane class provides an HTML pane for displaying the help files
+ * in the Guide window.
  */
 
-public class HTMLContentPane
-extends JEditorPane {
+public class HTMLContentPane extends JEditorPane {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -38,13 +37,11 @@ extends JEditorPane {
 	private int historyIndex;
 
 	public HTMLContentPane() {
-	   	//logger.info("HTMLContentPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+
 		setEditable(false);
 	}
 
 	public void goToURL(URL url) {
-
-	   	//logger.info("HTMLContentPane's starting goToURL()");
 
 		displayPage(url);
 		if (historyIndex < history.size() - 1) {
@@ -53,13 +50,11 @@ extends JEditorPane {
 			while (historyIndex < history.size() - 1) {
 				history.remove(historyIndex + 1);
 			}
-		}
-		else {
+		} else {
 			history.add(url);
 			historyIndex = history.size() - 1;
 		}
 
-	   	//logger.info("HTMLContentPane's goToURL() done");
 	}
 
 	public URL forward() {
@@ -94,22 +89,16 @@ extends JEditorPane {
 
 	private void displayPage(URL pageURL) {
 
-	   	//logger.info("HTMLContentPane's starting displayPage()");
-
-	    SwingUtilities.invokeLater(() -> {
+		SwingUtilities.invokeLater(() -> {
 
 			try {
 				setPage(pageURL);
 			} catch (IOException ioException) {
-				logger.log(
-					Level.SEVERE,
-					Msg.getString("HTMLContentPane.log.badUrl", pageURL.toString()), //$NON-NLS-1$
-					ioException
-				);
+				logger.log(Level.SEVERE, Msg.getString("HTMLContentPane.log.badUrl", pageURL.toString()), //$NON-NLS-1$
+						ioException);
 			}
 
 		});
 
-	   	//logger.info("HTMLContentPane's displayPage() done");
 	}
 }

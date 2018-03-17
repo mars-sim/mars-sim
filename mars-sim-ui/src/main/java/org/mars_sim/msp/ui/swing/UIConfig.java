@@ -51,577 +51,575 @@ public class UIConfig {
 	public static final String UNIT = "unit";
 
 	/** Config filename. */
-	private static final String DIRECTORY =
-		System.getProperty("user.home") +
-		File.separator + ".mars-sim" +
-		File.separator + "saved"
-	;
+	private static final String DIRECTORY = System.getProperty("user.home") + File.separator + ".mars-sim"
+			+ File.separator + "saved";
 
 	private static final String FILE_NAME = "ui_settings.xml";
 
-    private static final String FILE_NAME_DTD = "ui_settings.dtd";
+	private static final String FILE_NAME_DTD = "ui_settings.dtd";
 
-    // UI config elements and attributes.
-    private static final String UI = "ui";
-    private static final String USE_DEFAULT = "use-default";
-    private static final String SHOW_UNIT_BAR = "show-unit-bar";
-    private static final String SHOW_TOOL_BAR = "show-tool-bar";
-    private static final String MAIN_WINDOW = "main-window";
-    private static final String LOCATION_X = "location-x";
-    private static final String LOCATION_Y = "location-y";
-    private static final String WIDTH = "width";
-    private static final String HEIGHT = "height";
-    private static final String VOLUME = "volume";
-    private static final String SOUND = "sound";
-    private static final String MUTE = "mute";
-    private static final String INTERNAL_WINDOWS = "internal-windows";
-    private static final String WINDOW = "window";
-    private static final String TYPE = "type";
-    private static final String NAME = "name";
-    private static final String DISPLAY = "display";
-    private static final String Z_ORDER = "z-order";
+	// UI config elements and attributes.
+	private static final String UI = "ui";
+	private static final String USE_DEFAULT = "use-default";
+	private static final String SHOW_UNIT_BAR = "show-unit-bar";
+	private static final String SHOW_TOOL_BAR = "show-tool-bar";
+	private static final String MAIN_WINDOW = "main-window";
+	private static final String LOCATION_X = "location-x";
+	private static final String LOCATION_Y = "location-y";
+	private static final String WIDTH = "width";
+	private static final String HEIGHT = "height";
+	private static final String VOLUME = "volume";
+	private static final String SOUND = "sound";
+	private static final String MUTE = "mute";
+	private static final String INTERNAL_WINDOWS = "internal-windows";
+	private static final String WINDOW = "window";
+	private static final String TYPE = "type";
+	private static final String NAME = "name";
+	private static final String DISPLAY = "display";
+	private static final String Z_ORDER = "z-order";
 
-    private Document configDoc;
+	private Document configDoc;
 
-    private MainDesktopPane desktop;
+	private MainDesktopPane desktop;
 
-    /**
-     * Private singleton constructor.
-     */
-    private UIConfig() {
-        //logger.info("constructor is on " + Thread.currentThread().getName());
-    	// on JavaFX Application Thread
-    }
+	/**
+	 * Private singleton constructor.
+	 */
+	private UIConfig() {
 
-    /**
-     * Loads and parses the XML save file.
-     */
-    public void parseFile() {
-    	FileInputStream stream = null;
+	}
 
-        try {
-        	/* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
-             * because this will work properly. */
-            stream = new FileInputStream(new File(DIRECTORY, FILE_NAME));
-            /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
-            InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-            SAXBuilder saxBuilder = new SAXBuilder(true);
-            configDoc = saxBuilder.build(reader);
-        } catch (Exception e) {
-            if(!(e instanceof FileNotFoundException))
-                logger.log(Level.SEVERE, "parseFile()", e);
-        } finally {
-        	IOUtils.closeQuietly(stream);
-        }
-    }
+	/**
+	 * Loads and parses the XML save file.
+	 */
+	public void parseFile() {
+		FileInputStream stream = null;
 
-    /**
-     * Creates an XML document for the UI configuration and saves it to a file.
-     * @param mainWindow the main window.
-     */
-    public void saveFile(MainWindow mainWindow) {
-        desktop = mainWindow.getDesktop();
-        FileOutputStream stream = null;
+		try {
+			/*
+			 * [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+			 * users home dir, because this will work properly.
+			 */
+			stream = new FileInputStream(new File(DIRECTORY, FILE_NAME));
+			/*
+			 * bug 2909888: read the inputstream with a specific encoding instead of the
+			 * system default.
+			 */
+			InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+			SAXBuilder saxBuilder = new SAXBuilder(true);
+			configDoc = saxBuilder.build(reader);
+		} catch (Exception e) {
+			if (!(e instanceof FileNotFoundException))
+				logger.log(Level.SEVERE, "parseFile()", e);
+		} finally {
+			IOUtils.closeQuietly(stream);
+		}
+	}
 
-        try {
-            Document outputDoc = new Document();
-            DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
-            Element uiElement = new Element(UI);
-            outputDoc.setDocType(dtd);
-            outputDoc.addContent(uiElement);
-            outputDoc.setRootElement(uiElement);
+	/**
+	 * Creates an XML document for the UI configuration and saves it to a file.
+	 * 
+	 * @param mainWindow
+	 *            the main window.
+	 */
+	public void saveFile(MainWindow mainWindow) {
+		desktop = mainWindow.getDesktop();
+		FileOutputStream stream = null;
 
-            uiElement.setAttribute(USE_DEFAULT, "false"); //FIXME lechimp 10/9/13: why is this always set to false upon save?
-            uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
-            uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
+		try {
+			Document outputDoc = new Document();
+			DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
+			Element uiElement = new Element(UI);
+			outputDoc.setDocType(dtd);
+			outputDoc.addContent(uiElement);
+			outputDoc.setRootElement(uiElement);
 
-            Element mainWindowElement = new Element(MAIN_WINDOW);
-            uiElement.addContent(mainWindowElement);
+			uiElement.setAttribute(USE_DEFAULT, "false"); // FIXME lechimp 10/9/13: why is this always set to false upon
+															// save?
+			uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
+			uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
-            mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainWindow.getFrame().getX()));
-            mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
-            mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getFrame().getWidth()));
-            mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getFrame().getHeight()));
+			Element mainWindowElement = new Element(MAIN_WINDOW);
+			uiElement.addContent(mainWindowElement);
 
-            Element volumeElement = new Element(VOLUME);
-            uiElement.addContent(volumeElement);
+			mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainWindow.getFrame().getX()));
+			mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
+			mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getFrame().getWidth()));
+			mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getFrame().getHeight()));
 
-            AudioPlayer player = desktop.getSoundPlayer();
-            volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
-            volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
+			Element volumeElement = new Element(VOLUME);
+			uiElement.addContent(volumeElement);
 
-            Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
-            uiElement.addContent(internalWindowsElement);
+			AudioPlayer player = desktop.getSoundPlayer();
+			volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
+			volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
+			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
+			volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
 
-            // Add all internal windows.
-            JInternalFrame[] windows = desktop.getAllFrames();
-            for (JInternalFrame window1 : windows) {
-                if (window1.isVisible() || window1.isIcon()) {
-                    Element windowElement = new Element(WINDOW);
-                    internalWindowsElement.addContent(windowElement);
+			Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
+			uiElement.addContent(internalWindowsElement);
 
-                    windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-                    windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
-                    windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
-                    windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
-                    windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
-                    windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+			// Add all internal windows.
+			JInternalFrame[] windows = desktop.getAllFrames();
+			for (JInternalFrame window1 : windows) {
+				if (window1.isVisible() || window1.isIcon()) {
+					Element windowElement = new Element(WINDOW);
+					internalWindowsElement.addContent(windowElement);
 
-                    if (window1 instanceof ToolWindow) {
-                        windowElement.setAttribute(TYPE, TOOL);
-                        windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
-                    } else if (window1 instanceof UnitWindow) {
-                        windowElement.setAttribute(TYPE, UNIT);
-                        windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
-                    } else {
-                        windowElement.setAttribute(TYPE, "other");
-                        windowElement.setAttribute(NAME, "other");
-                    }
-                }
-            }
+					windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+					windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+					windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+					windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+					windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+					windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
-            // Save to file.
-            /* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
-             * because this will work properly. Also we will have to copy the ui_settings.dtd to this folder
-             * because in a webstart environment, the user has no initial data in his dirs. */
-            File configFile = new File(DIRECTORY, FILE_NAME);
+					if (window1 instanceof ToolWindow) {
+						windowElement.setAttribute(TYPE, TOOL);
+						windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+					} else if (window1 instanceof UnitWindow) {
+						windowElement.setAttribute(TYPE, UNIT);
+						windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+					} else {
+						windowElement.setAttribute(TYPE, "other");
+						windowElement.setAttribute(NAME, "other");
+					}
+				}
+			}
 
-            // Create save directory if it doesn't exist.
-            if (!configFile.getParentFile().exists()) {
-            	configFile.getParentFile().mkdirs();
-            }
+			// Save to file.
+			/*
+			 * [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+			 * users home dir, because this will work properly. Also we will have to copy
+			 * the ui_settings.dtd to this folder because in a webstart environment, the
+			 * user has no initial data in his dirs.
+			 */
+			File configFile = new File(DIRECTORY, FILE_NAME);
 
-            // Copy /dtd/ui_settings.dtd resource to save directory.
-            // Always do this as we don't know when the local saved dtd file is out of date.
-            InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
-            IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
+			// Create save directory if it doesn't exist.
+			if (!configFile.getParentFile().exists()) {
+				configFile.getParentFile().mkdirs();
+			}
 
-            XMLOutputter fmt = new XMLOutputter();
-            fmt.setFormat(Format.getPrettyFormat());
-            stream = new FileOutputStream(configFile);
-            /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
-            OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
-            fmt.output(outputDoc, writer);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-    }
+			// Copy /dtd/ui_settings.dtd resource to save directory.
+			// Always do this as we don't know when the local saved dtd file is out of date.
+			InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
+			IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
 
-    /**
-     * Creates an XML document for the UI configuration and saves it to a file.
-     * @param mainScene the Main Scene.
-     */
-    public void saveFile(MainScene mainScene) {
-        desktop = mainScene.getDesktop();
-        FileOutputStream stream = null;
+			XMLOutputter fmt = new XMLOutputter();
+			fmt.setFormat(Format.getPrettyFormat());
+			stream = new FileOutputStream(configFile);
+			/*
+			 * bug 2909888: read the inputstream with a specific encoding instead of the
+			 * system default.
+			 */
+			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+			fmt.output(outputDoc, writer);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		} finally {
+			IOUtils.closeQuietly(stream);
+		}
+	}
 
-        try {
-            Document outputDoc = new Document();
-            DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
-            Element uiElement = new Element(UI);
-            outputDoc.setDocType(dtd);
-            outputDoc.addContent(uiElement);
-            outputDoc.setRootElement(uiElement);
+	/**
+	 * Creates an XML document for the UI configuration and saves it to a file.
+	 * 
+	 * @param mainScene
+	 *            the Main Scene.
+	 */
+	public void saveFile(MainScene mainScene) {
+		desktop = mainScene.getDesktop();
+		FileOutputStream stream = null;
 
-            uiElement.setAttribute(USE_DEFAULT, "false"); //FIXME lechimp 10/9/13: why is this always set to false upon save?
+		try {
+			Document outputDoc = new Document();
+			DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
+			Element uiElement = new Element(UI);
+			outputDoc.setDocType(dtd);
+			outputDoc.addContent(uiElement);
+			outputDoc.setRootElement(uiElement);
 
+			uiElement.setAttribute(USE_DEFAULT, "false"); // FIXME lechimp 10/9/13: why is this always set to false upon
+															// save?
 
-            //uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainScene.getToolToolBar().isVisible()));
-            //uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainScene.getUnitToolBar().isVisible()));
+			Element mainWindowElement = new Element(MAIN_WINDOW);
+			uiElement.addContent(mainWindowElement);
 
+			Element volumeElement = new Element(VOLUME);
+			uiElement.addContent(volumeElement);
 
-            Element mainWindowElement = new Element(MAIN_WINDOW);
-            uiElement.addContent(mainWindowElement);
+			AudioPlayer player = desktop.getSoundPlayer();
+			volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
+			volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
+			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
+			volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
 
-            //mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainScene.getFrame().getX()));
-           // mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainScene.getFrame().getY()));
-            //mainWindowElement.setAttribute(WIDTH, Integer.toString(mainScene.getFrame().getWidth()));
-            //mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainScene.getFrame().getHeight()));
+			Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
+			uiElement.addContent(internalWindowsElement);
 
-            Element volumeElement = new Element(VOLUME);
-            uiElement.addContent(volumeElement);
+			// Add all internal windows.
+			JInternalFrame[] windows = desktop.getAllFrames();
+			for (JInternalFrame window1 : windows) {
+				Element windowElement = new Element(WINDOW);
+				internalWindowsElement.addContent(windowElement);
 
-            AudioPlayer player = desktop.getSoundPlayer();
-            volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
-            volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
-            
-            Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
-            uiElement.addContent(internalWindowsElement);
+				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+				windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+				windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+				windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+				windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
-            // Add all internal windows.
-            JInternalFrame[] windows = desktop.getAllFrames();
-            for (JInternalFrame window1 : windows) {
-                Element windowElement = new Element(WINDOW);
-                internalWindowsElement.addContent(windowElement);
+				if (window1 instanceof ToolWindow) {
+					windowElement.setAttribute(TYPE, TOOL);
+					windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+				} else if (window1 instanceof UnitWindow) {
+					windowElement.setAttribute(TYPE, UNIT);
+					windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+				} else {
+					windowElement.setAttribute(TYPE, "other");
+					windowElement.setAttribute(NAME, "other");
+				}
+			}
 
-                windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-                windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
-                windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
-                windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
-                windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
-                windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+			// Save to file.
+			/*
+			 * [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+			 * users home dir, because this will work properly. Also we will have to copy
+			 * the ui_settings.dtd to this folder because in a webstart environment, the
+			 * user has no initial data in his dirs.
+			 */
+			File configFile = new File(DIRECTORY, FILE_NAME);
 
-                if (window1 instanceof ToolWindow) {
-                    windowElement.setAttribute(TYPE, TOOL);
-                    windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
-                } else if (window1 instanceof UnitWindow) {
-                    windowElement.setAttribute(TYPE, UNIT);
-                    windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
-                } else {
-                    windowElement.setAttribute(TYPE, "other");
-                    windowElement.setAttribute(NAME, "other");
-                }
-            }
+			// Create save directory if it doesn't exist.
+			if (!configFile.getParentFile().exists()) {
+				configFile.getParentFile().mkdirs();
+			}
 
-            // Save to file.
-            /* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
-             * because this will work properly. Also we will have to copy the ui_settings.dtd to this folder
-             * because in a webstart environment, the user has no initial data in his dirs. */
-            File configFile = new File(DIRECTORY, FILE_NAME);
+			// Copy /dtd/ui_settings.dtd resource to save directory.
+			// Always do this as we don't know when the local saved dtd file is out of date.
+			InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
+			IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
 
-            // Create save directory if it doesn't exist.
-            if (!configFile.getParentFile().exists()) {
-            	configFile.getParentFile().mkdirs();
-            }
+			XMLOutputter fmt = new XMLOutputter();
+			fmt.setFormat(Format.getPrettyFormat());
+			stream = new FileOutputStream(configFile);
+			/*
+			 * bug 2909888: read the inputstream with a specific encoding instead of the
+			 * system default.
+			 */
+			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+			fmt.output(outputDoc, writer);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		} finally {
+			IOUtils.closeQuietly(stream);
+		}
+	}
 
-            // Copy /dtd/ui_settings.dtd resource to save directory.
-            // Always do this as we don't know when the local saved dtd file is out of date.
-            InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
-            IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
+	/**
+	 * Checks if UI should use default configuration.
+	 *
+	 * @return true if default.
+	 */
+	public boolean useUIDefault() {
+		try {
+			Element root = configDoc.getRootElement();
+			return Boolean.parseBoolean(root.getAttributeValue(USE_DEFAULT));
+		} catch (Exception e) {
+			return true;
+		}
+	}
 
-            XMLOutputter fmt = new XMLOutputter();
-            fmt.setFormat(Format.getPrettyFormat());
-            stream = new FileOutputStream(configFile);
-            /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
-            OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
-            fmt.output(outputDoc, writer);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-    }
+	/**
+	 * Checks if UI should show the Tool bar.
+	 *
+	 * @return true if default.
+	 */
+	public boolean showToolBar() {
+		try {
+			Element root = configDoc.getRootElement();
+			return Boolean.parseBoolean(root.getAttributeValue(SHOW_TOOL_BAR));
+		} catch (Exception e) {
+			return true;
+		}
+	}
 
-    /**
-     * Checks if UI should use default configuration.
-     *
-     * @return true if default.
-     */
-    public boolean useUIDefault() {
-        try {
-            Element root = configDoc.getRootElement();
-            return Boolean.parseBoolean(root.getAttributeValue(USE_DEFAULT));
-        }
-        catch (Exception e) {
-            return true;
-        }
-    }
+	/**
+	 * Checks if UI should show the Unit bar.
+	 *
+	 * @return true if default.
+	 */
+	public boolean showUnitBar() {
+		try {
+			Element root = configDoc.getRootElement();
+			return Boolean.parseBoolean(root.getAttributeValue(SHOW_UNIT_BAR));
+		} catch (Exception e) {
+			return true;
+		}
+	}
 
+	/**
+	 * Gets the screen location of the main window origin.
+	 *
+	 * @return location.
+	 */
+	public Point getMainWindowLocation() {
+		try {
+			Element root = configDoc.getRootElement();
+			Element mainWindow = root.getChild(MAIN_WINDOW);
+			int x = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_X));
+			int y = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_Y));
+			return new Point(x, y);
+		} catch (Exception e) {
+			return new Point(0, 0);
+		}
+	}
 
+	/**
+	 * Gets the size of the main window.
+	 *
+	 * @return size.
+	 */
+	public Dimension getMainWindowDimension() {
+		try {
+			Element root = configDoc.getRootElement();
+			Element mainWindow = root.getChild(MAIN_WINDOW);
+			int width = Integer.parseInt(mainWindow.getAttributeValue(WIDTH));
+			int height = Integer.parseInt(mainWindow.getAttributeValue(HEIGHT));
+			return new Dimension(width, height);
+		} catch (Exception e) {
+			return new Dimension(300, 300);
+		}
+	}
 
-    /**
-     * Checks if UI should show the Tool bar.
-     *
-     * @return true if default.
-     */
-    public boolean showToolBar(){
-        try {
-            Element root = configDoc.getRootElement();
-            return Boolean.parseBoolean(root.getAttributeValue(SHOW_TOOL_BAR));
-        }
-        catch (Exception e) {
-            return true;
-        }
-    }
+	/**
+	 * Gets the sound volume level.
+	 *
+	 * @return volume (0 (silent) to 1 (loud)).
+	 */
+	public float getVolume() {
+		try {
+			Element root = configDoc.getRootElement();
+			Element volume = root.getChild(VOLUME);
+			return Float.parseFloat(volume.getAttributeValue(SOUND));
+		} catch (Exception e) {
+			return 50F;
+		}
+	}
 
-    /**
-     * Checks if UI should show the Unit bar.
-     *
-     * @return true if default.
-     */
-    public boolean showUnitBar(){
-        try {
-            Element root = configDoc.getRootElement();
-            return Boolean.parseBoolean(root.getAttributeValue(SHOW_UNIT_BAR));
-        }
-        catch (Exception e) {
-            return true;
-        }
-    }
+	/**
+	 * Checks if sound volume is set to mute.
+	 *
+	 * @return true if mute.
+	 */
+	public boolean isMute() {
+		try {
+			Element root = configDoc.getRootElement();
+			Element volume = root.getChild(VOLUME);
+			return Boolean.parseBoolean(volume.getAttributeValue(MUTE));
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
+	/**
+	 * Checks if an internal window is displayed.
+	 *
+	 * @param windowName
+	 *            the window name.
+	 * @return true if displayed.
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean isInternalWindowDisplayed(String windowName) {
+		try {
+			Element root = configDoc.getRootElement();
+			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+			List<Object> internalWindowNodes = internalWindows.getChildren();
+			boolean result = false;
+			for (Object element : internalWindowNodes) {
+				if (element instanceof Element) {
+					Element internalWindow = (Element) element;
+					String name = internalWindow.getAttributeValue(NAME);
+					if (name.equals(windowName)) {
+						result = Boolean.parseBoolean(internalWindow.getAttributeValue(DISPLAY));
+						break;
+					}
+				}
+			}
+			return result;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
-    /**
-     * Gets the screen location of the main window origin.
-     *
-     * @return location.
-     */
-    public Point getMainWindowLocation() {
-        try {
-            Element root = configDoc.getRootElement();
-            Element mainWindow = root.getChild(MAIN_WINDOW);
-            int x = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_X));
-            int y = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_Y));
-            return new Point(x, y);
-        }
-        catch (Exception e) {
-            return new Point(0, 0);
-        }
-    }
+	/**
+	 * Gets the origin location of an internal window on the desktop.
+	 *
+	 * @param windowName
+	 *            the window name.
+	 * @return location.
+	 */
+	@SuppressWarnings("unchecked")
+	public Point getInternalWindowLocation(String windowName) {
+		try {
+			Element root = configDoc.getRootElement();
+			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+			List<Object> internalWindowNodes = internalWindows.getChildren();
+			Point result = new Point(0, 0);
+			for (Object element : internalWindowNodes) {
+				if (element instanceof Element) {
+					Element internalWindow = (Element) element;
+					String name = internalWindow.getAttributeValue(NAME);
+					if (name.equals(windowName)) {
+						int locationX = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_X));
+						int locationY = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_Y));
+						result.setLocation(locationX, locationY);
+					}
+				}
+			}
+			return result;
+		} catch (Exception e) {
+			return new Point(0, 0);
+		}
+	}
 
-    /**
-     * Gets the size of the main window.
-     *
-     * @return size.
-     */
-    public Dimension getMainWindowDimension() {
-        try {
-            Element root = configDoc.getRootElement();
-            Element mainWindow = root.getChild(MAIN_WINDOW);
-            int width = Integer.parseInt(mainWindow.getAttributeValue(WIDTH));
-            int height = Integer.parseInt(mainWindow.getAttributeValue(HEIGHT));
-            return new Dimension(width, height);
-        }
-        catch (Exception e) {
-            return new Dimension(300, 300);
-        }
-    }
+	/**
+	 * Gets the z order of an internal window on the desktop.
+	 *
+	 * @param windowName
+	 *            the window name.
+	 * @return z order (lower number represents higher up)
+	 */
+	@SuppressWarnings("unchecked")
+	public int getInternalWindowZOrder(String windowName) {
+		try {
+			Element root = configDoc.getRootElement();
+			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+			List<Object> internalWindowNodes = internalWindows.getChildren();
+			int result = -1;
+			for (Object element : internalWindowNodes) {
+				if (element instanceof Element) {
+					Element internalWindow = (Element) element;
+					String name = internalWindow.getAttributeValue(NAME);
+					if (name.equals(windowName))
+						result = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
+				}
+			}
+			return result;
+		} catch (Exception e) {
+			return -1;
+		}
+	}
 
-    /**
-     * Gets the sound volume level.
-     *
-     * @return volume (0 (silent) to 1 (loud)).
-     */
-    public float getVolume() {
-        try {
-            Element root = configDoc.getRootElement();
-            Element volume = root.getChild(VOLUME);
-            return Float.parseFloat(volume.getAttributeValue(SOUND));
-        }
-        catch (Exception e) {
-            return 50F;
-        }
-    }
+	/**
+	 * Gets the size of an internal window.
+	 *
+	 * @param windowName
+	 *            the window name.
+	 * @return size.
+	 */
+	@SuppressWarnings("unchecked")
+	public Dimension getInternalWindowDimension(String windowName) {
+		try {
+			Element root = configDoc.getRootElement();
+			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+			List<Object> internalWindowNodes = internalWindows.getChildren();
+			Dimension result = new Dimension(0, 0);
+			for (Object element : internalWindowNodes) {
+				if (element instanceof Element) {
+					Element internalWindow = (Element) element;
+					String name = internalWindow.getAttributeValue(NAME);
+					if (name.equals(windowName)) {
+						int width = Integer.parseInt(internalWindow.getAttributeValue(WIDTH));
+						int height = Integer.parseInt(internalWindow.getAttributeValue(HEIGHT));
+						result = new Dimension(width, height);
+					}
+				}
+			}
+			return result;
+		} catch (Exception e) {
+			return new Dimension(0, 0);
+		}
+	}
 
-    /**
-     * Checks if sound volume is set to mute.
-     *
-     * @return true if mute.
-     */
-    public boolean isMute() {
-        try {
-            Element root = configDoc.getRootElement();
-            Element volume = root.getChild(VOLUME);
-            return Boolean.parseBoolean(volume.getAttributeValue(MUTE));
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
+	/**
+	 * Gets the internal window type.
+	 *
+	 * @param windowName
+	 *            the window name.
+	 * @return "unit" or "tool".
+	 */
+	@SuppressWarnings("unchecked")
+	public String getInternalWindowType(String windowName) {
+		try {
+			Element root = configDoc.getRootElement();
+			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+			List<Object> internalWindowNodes = internalWindows.getChildren();
+			String result = "";
+			for (Object element : internalWindowNodes) {
+				if (element instanceof Element) {
+					Element internalWindow = (Element) element;
+					String name = internalWindow.getAttributeValue(NAME);
+					if (name.equals(windowName))
+						result = internalWindow.getAttributeValue(TYPE);
+				}
+			}
+			return result;
+		} catch (Exception e) {
+			return "";
+		}
+	}
 
-    /**
-     * Checks if an internal window is displayed.
-     *
-     * @param windowName the window name.
-     * @return true if displayed.
-     */
-    @SuppressWarnings("unchecked")
-    public boolean isInternalWindowDisplayed(String windowName) {
-        try {
-            Element root = configDoc.getRootElement();
-            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-            List<Object> internalWindowNodes = internalWindows.getChildren();
-            boolean result = false;
-            for (Object element : internalWindowNodes) {
-                if (element instanceof Element) {
-                    Element internalWindow = (Element) element;
-                    String name = internalWindow.getAttributeValue(NAME);
-                    if (name.equals(windowName)){
-                        result = Boolean.parseBoolean(internalWindow.getAttributeValue(DISPLAY));
-                        break;
-                    }
-                }
-            }
-            return result;
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
+	/**
+	 * Checks if internal window is configured.
+	 *
+	 * @param windowName
+	 *            the window name.
+	 * @return true if configured.
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean isInternalWindowConfigured(String windowName) {
+		try {
+			Element root = configDoc.getRootElement();
+			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+			List<Object> internalWindowNodes = internalWindows.getChildren();
+			boolean result = false;
+			for (Object element : internalWindowNodes) {
+				if (element instanceof Element) {
+					Element internalWindow = (Element) element;
+					String name = internalWindow.getAttributeValue(NAME);
+					if (name.equals(windowName))
+						result = true;
+				}
+			}
+			return result;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
-    /**
-     * Gets the origin location of an internal window on the desktop.
-     *
-     * @param windowName the window name.
-     * @return location.
-     */
-    @SuppressWarnings("unchecked")
-    public Point getInternalWindowLocation(String windowName) {
-        try {
-            Element root = configDoc.getRootElement();
-            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-            List<Object> internalWindowNodes = internalWindows.getChildren();
-            Point result = new Point(0, 0);
-            for (Object element : internalWindowNodes) {
-                if (element instanceof Element) {
-                    Element internalWindow = (Element) element;
-                    String name = internalWindow.getAttributeValue(NAME);
-                    if (name.equals(windowName)) {
-                        int locationX = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_X));
-                        int locationY = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_Y));
-                        result.setLocation(locationX, locationY);
-                    }
-                }
-            }
-            return result;
-        }
-        catch (Exception e) {
-            return new Point(0, 0);
-        }
-    }
-
-    /**
-     * Gets the z order of an internal window on the desktop.
-     *
-     * @param windowName the window name.
-     * @return z order (lower number represents higher up)
-     */
-    @SuppressWarnings("unchecked")
-    public int getInternalWindowZOrder(String windowName) {
-        try {
-            Element root = configDoc.getRootElement();
-            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-            List<Object> internalWindowNodes = internalWindows.getChildren();
-            int result = -1;
-            for (Object element : internalWindowNodes) {
-                if (element instanceof Element) {
-                    Element internalWindow = (Element) element;
-                    String name = internalWindow.getAttributeValue(NAME);
-                    if (name.equals(windowName))
-                        result = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
-                }
-            }
-            return result;
-        }
-        catch (Exception e) {
-            return -1;
-        }
-    }
-
-    /**
-     * Gets the size of an internal window.
-     *
-     * @param windowName the window name.
-     * @return size.
-     */
-    @SuppressWarnings("unchecked")
-    public Dimension getInternalWindowDimension(String windowName) {
-        try {
-            Element root = configDoc.getRootElement();
-            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-            List<Object> internalWindowNodes = internalWindows.getChildren();
-            Dimension result = new Dimension(0, 0);
-            for (Object element : internalWindowNodes) {
-                if (element instanceof Element) {
-                    Element internalWindow = (Element) element;
-                    String name = internalWindow.getAttributeValue(NAME);
-                    if (name.equals(windowName)) {
-                        int width = Integer.parseInt(internalWindow.getAttributeValue(WIDTH));
-                        int height = Integer.parseInt(internalWindow.getAttributeValue(HEIGHT));
-                        result = new Dimension(width, height);
-                    }
-                }
-            }
-            return result;
-        }
-        catch (Exception e) {
-            return new Dimension(0, 0);
-        }
-    }
-
-    /**
-     * Gets the internal window type.
-     *
-     * @param windowName the window name.
-     * @return "unit" or "tool".
-     */
-    @SuppressWarnings("unchecked")
-    public String getInternalWindowType(String windowName) {
-        try {
-            Element root = configDoc.getRootElement();
-            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-            List<Object> internalWindowNodes = internalWindows.getChildren();
-            String result = "";
-            for (Object element : internalWindowNodes) {
-                if (element instanceof Element) {
-                    Element internalWindow = (Element) element;
-                    String name = internalWindow.getAttributeValue(NAME);
-                    if (name.equals(windowName))
-                        result = internalWindow.getAttributeValue(TYPE);
-                }
-            }
-            return result;
-        }
-        catch (Exception e) {
-            return "";
-        }
-    }
-
-    /**
-     * Checks if internal window is configured.
-     *
-     * @param windowName the window name.
-     * @return true if configured.
-     */
-    @SuppressWarnings("unchecked")
-    public boolean isInternalWindowConfigured(String windowName) {
-        try {
-            Element root = configDoc.getRootElement();
-            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-            List<Object> internalWindowNodes = internalWindows.getChildren();
-            boolean result = false;
-            for (Object element : internalWindowNodes) {
-                if (element instanceof Element) {
-                    Element internalWindow = (Element) element;
-                    String name = internalWindow.getAttributeValue(NAME);
-                    if (name.equals(windowName))
-                        result = true;
-                }
-            }
-            return result;
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Gets all of the internal window names.
-     *
-     * @return list of window names.
-     */
-    @SuppressWarnings("unchecked")
-    public List<String> getInternalWindowNames() {
-        List<String> result = new ArrayList<String>();
-        try {
-            Element root = configDoc.getRootElement();
-            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-            List<Object> internalWindowNodes = internalWindows.getChildren();
-            for (Object element : internalWindowNodes) {
-                if (element instanceof Element) {
-                    Element internalWindow = (Element) element;
-                    result.add(internalWindow.getAttributeValue(NAME));
-                }
-            }
-            return result;
-        }
-        catch (Exception e) {
-            return result;
-        }
-    }
+	/**
+	 * Gets all of the internal window names.
+	 *
+	 * @return list of window names.
+	 */
+	@SuppressWarnings("unchecked")
+	public List<String> getInternalWindowNames() {
+		List<String> result = new ArrayList<String>();
+		try {
+			Element root = configDoc.getRootElement();
+			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+			List<Object> internalWindowNodes = internalWindows.getChildren();
+			for (Object element : internalWindowNodes) {
+				if (element instanceof Element) {
+					Element internalWindow = (Element) element;
+					result.add(internalWindow.getAttributeValue(NAME));
+				}
+			}
+			return result;
+		} catch (Exception e) {
+			return result;
+		}
+	}
 }

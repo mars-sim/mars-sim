@@ -13,8 +13,7 @@ import javax.swing.border.EtchedBorder;
 /**
  * The MarsPanelBorder is a common compound border used for panels.
  */
-public class MarsPanelBorder
-extends CompoundBorder {
+public class MarsPanelBorder extends CompoundBorder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -23,7 +22,7 @@ extends CompoundBorder {
 	 * Constructor
 	 */
 	public MarsPanelBorder() {
-		// Use CompoundBorder constructor
+
 		super(new EtchedBorder(), MainDesktopPane.newEmptyBorder());
 	}
 }

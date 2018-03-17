@@ -28,16 +28,17 @@ import javax.swing.border.BevelBorder;
  * The UnitToolBar class is a UI toolbar for holding unit buttons. There should
  * only be one instance and it is contained in the MainWindow instance.
  */
-//public class UnitToolBar extends TransparentToolBar implements ActionListener {
+// public class UnitToolBar extends TransparentToolBar implements ActionListener
+// {
 public class UnitToolBar extends JToolBar implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private List<UnitButton> unitButtons; // List of unit buttons
-	
+
 	private MainWindow parentMainWindow; // Main window that contains this toolbar.
 	private MainScene mainScene;
-	
+
 	/**
 	 * Constructs a UnitToolBar object
 	 * 
@@ -50,12 +51,12 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		super();
 
 		setOpaque(false);
-	    setBackground(new Color(0,0,0,128));
-	    
+		setBackground(new Color(0, 0, 0, 128));
+
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
 		this.parentMainWindow = parentMainWindow;
-		
+
 		// Set name
 		setName("Unit Toolbar");
 
@@ -66,7 +67,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		setPreferredSize(new Dimension(0, 57));
 
 		// Set border around toolbar
-		setBorder(new BevelBorder(BevelBorder.RAISED));	
+		setBorder(new BevelBorder(BevelBorder.RAISED));
 
 	}
 
@@ -82,12 +83,12 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		super();
 
 		setOpaque(false);
-	    setBackground(new Color(0,0,0,128));
-	    
+		setBackground(new Color(0, 0, 0, 128));
+
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
 		this.mainScene = mainScene;
-		
+
 		// Set name
 		setName("Unit Toolbar");
 
@@ -98,10 +99,10 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		setPreferredSize(new Dimension(0, 57));
 
 		// Set border around toolbar
-		setBorder(new BevelBorder(BevelBorder.RAISED));	
+		setBorder(new BevelBorder(BevelBorder.RAISED));
 
 	}
-	
+
 	/**
 	 * Create a new unit button in the toolbar.
 	 * 
@@ -112,9 +113,8 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 
 		// Check if unit button already exists
 		boolean alreadyExists = false;
-		//Iterator<UnitButton> i = unitButtons.iterator();
-		//while (i.hasNext()) {
-		for (UnitButton unitButton : unitButtons) {//= i.next();
+
+		for (UnitButton unitButton : unitButtons) {
 			if (unitButton.getUnit() == unit)
 				alreadyExists = true;
 		}
@@ -132,16 +132,17 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	/**
 	 * Disposes a unit button in toolbar.
 	 * 
-	 * @param unit the unit whose button is to be removed.
+	 * @param unit
+	 *            the unit whose button is to be removed.
 	 */
 	public void disposeUnitButton(Unit unit) {
 		Iterator<UnitButton> i = unitButtons.iterator();
 		while (i.hasNext()) {
 			UnitButton unitButton = i.next();
-			
-			unitButton.setBorderPainted( false );
-			unitButton.setContentAreaFilled( false );
-			
+
+			unitButton.setBorderPainted(false);
+			unitButton.setContentAreaFilled(false);
+
 			if (unitButton.getUnit() == unit) {
 				remove(unitButton);
 				validate();
@@ -158,7 +159,6 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		parentMainWindow.getDesktop().openUnitWindow(unit, false);
 	}
 
-
 	/**
 	 * Gets all the units in the toolbar.
 	 * 
@@ -170,7 +170,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 			result[x] = unitButtons.get(x).getUnit();
 		return result;
 	}
-	
+
 	@Override
 	protected void addImpl(Component comp, Object constraints, int index) {
 		super.addImpl(comp, constraints, index);
@@ -178,12 +178,12 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 			((JButton) comp).setContentAreaFilled(false);
 		}
 	}
-	
-    @Override
-    protected JButton createActionComponent(Action a) {
-        JButton jb = super.createActionComponent(a);
-        jb.setOpaque(false);
-        return jb;
-    }
-    
+
+	@Override
+	protected JButton createActionComponent(Action a) {
+		JButton jb = super.createActionComponent(a);
+		jb.setOpaque(false);
+		return jb;
+	}
+
 }

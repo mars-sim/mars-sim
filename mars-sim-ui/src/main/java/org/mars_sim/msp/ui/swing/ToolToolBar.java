@@ -75,13 +75,6 @@ implements ActionListener {
 	private void prepareToolButtons() {
 
 		// Add utilise buttons
-		//ToolButton newButton = new ToolButton(Msg.getString("mainMenu.new"), Msg.getString("img.new")); //$NON-NLS-1$ //$NON-NLS-2$
-		//newButton.addActionListener(new ActionListener() {
-		//	public void actionPerformed(ActionEvent e) {
-		//		parentMainWindow.newSimulationProcess();
-		//	};
-		//});
-		//add(newButton);
 
 		ToolButton openButton = new ToolButton(Msg.getString("mainMenu.open"), Msg.getString("img.open")); //$NON-NLS-1$ //$NON-NLS-2$
 		openButton.addActionListener(new ActionListener() {

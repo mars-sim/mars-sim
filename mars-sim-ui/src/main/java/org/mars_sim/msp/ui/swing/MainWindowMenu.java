@@ -41,9 +41,7 @@ import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 /**
  * The MainWindowMenu class is the menu for the main window.
  */
-public class MainWindowMenu
-extends JMenuBar
-implements ActionListener, MenuListener {
+public class MainWindowMenu extends JMenuBar implements ActionListener, MenuListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -52,7 +50,7 @@ implements ActionListener, MenuListener {
 	/** The main window frame. */
 	private MainWindow mainWindow;
 	/** New menu item. */
-	//private JMenuItem newItem;
+	// private JMenuItem newItem;
 	/** Load menu item. */
 	private JMenuItem loadItem;
 	/** Load Autosave menu item. */
@@ -80,17 +78,16 @@ implements ActionListener, MenuListener {
 	/** Resupply tool menu item. */
 	private JCheckBoxMenuItem resupplyToolItem;
 	/** Mars Viewer menu item. */
-	//private JCheckBoxMenuItem marsViewerItem;
+	// private JCheckBoxMenuItem marsViewerItem;
 
 	/** Unit Bar menu item. */
 	private JCheckBoxMenuItem showUnitBarItem;
 	/** Tool Bar menu item. */
 	private JCheckBoxMenuItem showToolBarItem;
 
-
 	// 2014-12-04 Added notificationMenu
 	private NotificationMenu notificationMenu;
-	//private MainDesktopPane desktop;
+	// private MainDesktopPane desktop;
 
 	/** Music mute menu item. */
 	private JCheckBoxMenuItem musicMuteItem;
@@ -117,7 +114,9 @@ implements ActionListener, MenuListener {
 
 	/**
 	 * Constructor.
-	 * @param mainWindow the main window pane
+	 * 
+	 * @param mainWindow
+	 *            the main window pane
 	 */
 	public MainWindowMenu(MainWindow mainWindow, MainDesktopPane desktop) {
 
@@ -126,26 +125,16 @@ implements ActionListener, MenuListener {
 
 		// Initialize data members
 		this.mainWindow = mainWindow;
-		//this.desktop = desktop;
+		// this.desktop = desktop;
 
 		// Create file menu
 		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		add(fileMenu);
 
-		// Create new menu item
-		//ImageIcon newicon = new ImageIcon(getClass().getResource(Msg.getString("img.new"))); //$NON-NLS-1$
-		//newItem = new JMenuItem(Msg.getString("mainMenu.new"), newicon); //$NON-NLS-1$
-		//newItem.addActionListener(this);
-		//newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
-		//newItem.setToolTipText(Msg.getString("mainMenu.tooltip.new")); //$NON-NLS-1$
-		//fileMenu.add(newItem);
-
-		//fileMenu.add(new JSeparator());
-
 		// Create load menu item
 		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
-		loadItem = new JMenuItem(Msg.getString("mainMenu.open"),loadicon); //$NON-NLS-1$
+		loadItem = new JMenuItem(Msg.getString("mainMenu.open"), loadicon); //$NON-NLS-1$
 		loadItem.addActionListener(this);
 		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
 		loadItem.setToolTipText(Msg.getString("mainMenu.tooltip.open")); //$NON-NLS-1$
@@ -155,7 +144,7 @@ implements ActionListener, MenuListener {
 		// 2015-01-25 Added autosave
 
 		ImageIcon loadAutosaveicon = new ImageIcon(getClass().getResource(Msg.getString("img.openAutosave"))); //$NON-NLS-1$
-		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"),loadAutosaveicon); //$NON-NLS-1$
+		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"), loadAutosaveicon); //$NON-NLS-1$
 		loadAutosaveItem.addActionListener(this);
 		loadAutosaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false));
 		loadAutosaveItem.setToolTipText(Msg.getString("mainMenu.tooltip.openAutosave")); //$NON-NLS-1$
@@ -175,7 +164,8 @@ implements ActionListener, MenuListener {
 		ImageIcon saveasicon = new ImageIcon(getClass().getResource(Msg.getString("img.saveAs"))); //$NON-NLS-1$
 		saveAsItem = new JMenuItem(Msg.getString("mainMenu.saveAs"), saveasicon); //$NON-NLS-1$
 		saveAsItem.addActionListener(this);
-		saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
+		saveAsItem.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
 		saveAsItem.setToolTipText(Msg.getString("mainMenu.tooltip.saveAs")); //$NON-NLS-1$
 		fileMenu.add(saveAsItem);
 
@@ -223,7 +213,6 @@ implements ActionListener, MenuListener {
 		monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
 		toolsMenu.add(monitorToolItem);
 
-
 		// Create mission tool menu item
 		ImageIcon missionicon = new ImageIcon(getClass().getResource(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME, missionicon);
@@ -252,14 +241,6 @@ implements ActionListener, MenuListener {
 		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
 		toolsMenu.add(resupplyToolItem);
 
-		// 2015-06-12 Create mars viewer menu item
-		//ImageIcon viewericon = new ImageIcon(getClass().getResource(Msg.getString("img.find"))); //$NON-NLS-1$
-		//marsViewerItem = new JCheckBoxMenuItem(MarsViewer.NAME, viewericon);
-		//marsViewerItem.addActionListener(this);
-		//marsViewerItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
-		//toolsMenu.add(marsViewerItem);
-
-
 		// Create settings menu
 		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
 		settingsMenu.setMnemonic(KeyEvent.VK_S);
@@ -274,7 +255,6 @@ implements ActionListener, MenuListener {
 		showUnitBarItem.setState(false);
 		settingsMenu.add(showUnitBarItem);
 
-
 		// Create Show Tool Bar menu item
 		showToolBarItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.toolbar")); //$NON-NLS-1$
 		showToolBarItem.addActionListener(this);
@@ -283,15 +263,15 @@ implements ActionListener, MenuListener {
 		settingsMenu.add(showToolBarItem);
 
 		settingsMenu.add(new JSeparator());
-		//settingsMenu.addSeparator();
+		// settingsMenu.addSeparator();
 
 		// Create Volume slider menu item
-		//MainDesktopPane desktop = mainWindow.getDesktop();
+		// MainDesktopPane desktop = mainWindow.getDesktop();
 		final AudioPlayer soundPlayer = desktop.getSoundPlayer();
 		float volume = soundPlayer.getMusicVolume();
 		int intVolume = Math.round(volume * 10F);
 
-		musicVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); //$NON-NLS-1$
+		musicVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
 		musicVolumeItem.setMajorTickSpacing(1);
 		musicVolumeItem.setPaintTicks(true);
 		musicVolumeItem.setPaintLabels(true);
@@ -301,13 +281,13 @@ implements ActionListener, MenuListener {
 		musicVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeslider")); //$NON-NLS-1$
 		musicVolumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				float newVolume = (float) musicVolumeItem.getValue()/10F;
-				soundPlayer.setMusicVolume(newVolume);			
+				float newVolume = (float) musicVolumeItem.getValue() / 10F;
+				soundPlayer.setMusicVolume(newVolume);
 			}
-			});
+		});
 		settingsMenu.add(musicVolumeItem);
 
-		effectVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); //$NON-NLS-1$
+		effectVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
 		effectVolumeItem.setMajorTickSpacing(1);
 		effectVolumeItem.setPaintTicks(true);
 		effectVolumeItem.setPaintLabels(true);
@@ -317,12 +297,12 @@ implements ActionListener, MenuListener {
 		effectVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeslider")); //$NON-NLS-1$
 		effectVolumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				float newVolume = (float) effectVolumeItem.getValue()/10F;
-				soundPlayer.setSoundVolume(newVolume);			
+				float newVolume = (float) effectVolumeItem.getValue() / 10F;
+				soundPlayer.setSoundVolume(newVolume);
 			}
-			});
+		});
 		settingsMenu.add(effectVolumeItem);
-		
+
 		// Create Volume Up menu item
 		effectVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.volumeUp")); //$NON-NLS-1$
 		effectVolumeUpItem.addActionListener(this);
@@ -349,7 +329,7 @@ implements ActionListener, MenuListener {
 		effectMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
 		effectMuteItem.setToolTipText(Msg.getString("mainMenu.tooltip.mute.effect")); //$NON-NLS-1$
 		settingsMenu.add(effectMuteItem);
-		
+
 		// 2014-12-05 Added notificationMenu
 		notificationMenu = new NotificationMenu(this);
 
@@ -383,9 +363,9 @@ implements ActionListener, MenuListener {
 		helpMenu.add(guideItem);
 	}
 
-
 	/**
 	 * Gets the Notification Menu.
+	 * 
 	 * @return notificationMenu
 	 */
 	// 2014-12-05 Added getNotificationMenu()
@@ -393,9 +373,9 @@ implements ActionListener, MenuListener {
 		return notificationMenu;
 	}
 
-
 	/**
 	 * Gets the Main Window.
+	 * 
 	 * @return mainWindow
 	 */
 	// 2014-12-05 Added getMainWindow()
@@ -403,69 +383,79 @@ implements ActionListener, MenuListener {
 		return mainWindow;
 	}
 
-
 	/** ActionListener method overriding. */
 	@Override
 	public final void actionPerformed(ActionEvent event) {
 		JMenuItem selectedItem = (JMenuItem) event.getSource();
 		MainDesktopPane desktop = mainWindow.getDesktop();
 
-		if (selectedItem == exitItem) mainWindow.exitSimulation();
-		//else if (selectedItem == newItem) mainWindow.newSimulationProcess();
-		else if (selectedItem == saveItem) mainWindow.saveSimulation(true, false);
-		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false, false);
-		else if (selectedItem == loadItem) mainWindow.loadSimulation(false);
-		else if (selectedItem == loadAutosaveItem) mainWindow.loadSimulation(true);
+		if (selectedItem == exitItem)
+			mainWindow.exitSimulation();
+		// else if (selectedItem == newItem) mainWindow.newSimulationProcess();
+		else if (selectedItem == saveItem)
+			mainWindow.saveSimulation(true, false);
+		else if (selectedItem == saveAsItem)
+			mainWindow.saveSimulation(false, false);
+		else if (selectedItem == loadItem)
+			mainWindow.loadSimulation(false);
+		else if (selectedItem == loadAutosaveItem)
+			mainWindow.loadSimulation(true);
 
 		else if (selectedItem == marsNavigatorItem) {
-			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
-			else desktop.closeToolWindow(NavigatorWindow.NAME);
+			if (marsNavigatorItem.isSelected())
+				desktop.openToolWindow(NavigatorWindow.NAME);
+			else
+				desktop.closeToolWindow(NavigatorWindow.NAME);
 		}
 
 		else if (selectedItem == searchToolItem) {
-			if (searchToolItem.isSelected()) desktop.openToolWindow(SearchWindow.NAME);
-			else desktop.closeToolWindow(SearchWindow.NAME);
+			if (searchToolItem.isSelected())
+				desktop.openToolWindow(SearchWindow.NAME);
+			else
+				desktop.closeToolWindow(SearchWindow.NAME);
 		}
 
 		else if (selectedItem == timeToolItem) {
-			if (timeToolItem.isSelected()) desktop.openToolWindow(TimeWindow.NAME);
-			else desktop.closeToolWindow(TimeWindow.NAME);
+			if (timeToolItem.isSelected())
+				desktop.openToolWindow(TimeWindow.NAME);
+			else
+				desktop.closeToolWindow(TimeWindow.NAME);
 		}
 
 		else if (selectedItem == monitorToolItem) {
-			if (monitorToolItem.isSelected()) desktop.openToolWindow(MonitorWindow.NAME);
-			else desktop.closeToolWindow(MonitorWindow.NAME);
+			if (monitorToolItem.isSelected())
+				desktop.openToolWindow(MonitorWindow.NAME);
+			else
+				desktop.closeToolWindow(MonitorWindow.NAME);
 		}
 
 		else if (selectedItem == missionToolItem) {
-			if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
-			else desktop.closeToolWindow(MissionWindow.NAME);
+			if (missionToolItem.isSelected())
+				desktop.openToolWindow(MissionWindow.NAME);
+			else
+				desktop.closeToolWindow(MissionWindow.NAME);
 		}
 
 		else if (selectedItem == settlementToolItem) {
-			if (settlementToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
-			else desktop.closeToolWindow(SettlementWindow.NAME);
+			if (settlementToolItem.isSelected())
+				desktop.openToolWindow(SettlementWindow.NAME);
+			else
+				desktop.closeToolWindow(SettlementWindow.NAME);
 		}
-		// 	2014-12-19 Added buildingEditorWindow
-		//if (selectedItem == buildingEditorToolItem) {
-		//	if (buildingEditorToolItem.isSelected()) desktop.openToolWindow(BuildingEditorWindow.NAME);
-		//	else desktop.closeToolWindow(BuildingEditorWindow.NAME);
-		//}
 
 		else if (selectedItem == scienceToolItem) {
-			if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
-			else desktop.closeToolWindow(ScienceWindow.NAME);
+			if (scienceToolItem.isSelected())
+				desktop.openToolWindow(ScienceWindow.NAME);
+			else
+				desktop.closeToolWindow(ScienceWindow.NAME);
 		}
 
 		else if (selectedItem == resupplyToolItem) {
-			if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
-			else desktop.closeToolWindow(ResupplyWindow.NAME);
+			if (resupplyToolItem.isSelected())
+				desktop.openToolWindow(ResupplyWindow.NAME);
+			else
+				desktop.closeToolWindow(ResupplyWindow.NAME);
 		}
-
-		//if (selectedItem == marsViewerItem) {
-		//	if (marsViewerItem.isSelected()) desktop.openToolWindow(MarsViewer.NAME);
-		//	else desktop.closeToolWindow(MarsViewer.NAME);
-		//}
 
 		else if (selectedItem == showUnitBarItem) {
 			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());
@@ -477,26 +467,24 @@ implements ActionListener, MenuListener {
 
 		else if (selectedItem == musicVolumeUpItem) {
 			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
-			desktop.getSoundPlayer().setMusicVolume(oldvolume+0.05F);
+			desktop.getSoundPlayer().setMusicVolume(oldvolume + 0.05F);
 		}
 
 		else if (selectedItem == musicVolumeDownItem) {
 			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
-			desktop.getSoundPlayer().setMusicVolume(oldvolume-0.05F);
+			desktop.getSoundPlayer().setMusicVolume(oldvolume - 0.05F);
 		}
-
 
 		else if (selectedItem == effectVolumeUpItem) {
 			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
-			desktop.getSoundPlayer().setSoundVolume(oldvolume+0.05F);
+			desktop.getSoundPlayer().setSoundVolume(oldvolume + 0.05F);
 		}
 
 		else if (selectedItem == effectVolumeDownItem) {
 			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
-			desktop.getSoundPlayer().setSoundVolume(oldvolume-0.05F);
+			desktop.getSoundPlayer().setSoundVolume(oldvolume - 0.05F);
 		}
 
-		
 		else if (selectedItem == musicMuteItem) {
 			if (musicMuteItem.isSelected())
 				desktop.getSoundPlayer().mute(false, true);
@@ -510,25 +498,25 @@ implements ActionListener, MenuListener {
 			else
 				desktop.getSoundPlayer().unmute(true, false);
 		}
-		
+
 		else if (selectedItem == aboutMspItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
-			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 			ourGuide.setURL(Msg.getString("doc.about")); //$NON-NLS-1$
 		}
 
 		else if (selectedItem == guideItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
-			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 		}
 
 		else if (selectedItem == tutorialItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
-			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
 	}
@@ -545,7 +533,6 @@ implements ActionListener, MenuListener {
 		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
-		//marsViewerItem.setSelected(desktop.isToolWindowOpen(MarsViewer.NAME));
 
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
@@ -558,9 +545,9 @@ implements ActionListener, MenuListener {
 		effectMuteItem.setSelected(desktop.getSoundPlayer().isSoundMute());
 	}
 
+	public void menuCanceled(MenuEvent event) {
+	}
 
-
-
-	public void menuCanceled(MenuEvent event) {}
-	public void menuDeselected(MenuEvent event) {}
+	public void menuDeselected(MenuEvent event) {
+	}
 }

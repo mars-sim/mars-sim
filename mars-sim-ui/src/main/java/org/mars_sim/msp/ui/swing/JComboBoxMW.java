@@ -20,9 +20,9 @@ import javax.swing.JTextField;
 /**
  * A Combobox that is mousewheel-enabled.
  */
-public class JComboBoxMW<T>
-extends JComboBox<T>
-implements MouseWheelListener {
+public class JComboBoxMW<T> extends JComboBox<T> implements MouseWheelListener {
+
+	private static final long serialVersionUID = -3527247980947082803L;
 
 	private boolean layingOut = false;
 
@@ -34,14 +34,15 @@ implements MouseWheelListener {
 	public JComboBoxMW() {
 		super();
 		this.addMouseWheelListener(this);
-		((JTextField)this.getEditor().getEditorComponent())
-			.setBorder(BorderFactory.createCompoundBorder(
-				this.getBorder(),BorderFactory.createEmptyBorder(0,1,0,1)));
+		((JTextField) this.getEditor().getEditorComponent()).setBorder(
+				BorderFactory.createCompoundBorder(this.getBorder(), BorderFactory.createEmptyBorder(0, 1, 0, 1)));
 	}
 
 	/**
 	 * constructor.
-	 * @param items {@link Vector}<T> the initial items.
+	 * 
+	 * @param items
+	 *            {@link Vector}<T> the initial items.
 	 */
 	public JComboBoxMW(Vector<T> items) {
 		super(items);
@@ -50,7 +51,9 @@ implements MouseWheelListener {
 
 	/**
 	 * Constructor.
-	 * @param model {@link ComboBoxModel}<T>
+	 * 
+	 * @param model
+	 *            {@link ComboBoxModel}<T>
 	 */
 	public JComboBoxMW(ComboBoxModel<T> model) {
 		super(model);
@@ -59,7 +62,9 @@ implements MouseWheelListener {
 
 	/**
 	 * Constructor.
-	 * @param items T[]
+	 * 
+	 * @param items
+	 *            T[]
 	 */
 	public JComboBoxMW(T[] items) {
 		super(items);
@@ -72,19 +77,18 @@ implements MouseWheelListener {
 		if (getItemCount() > 0) {
 			boolean up = e.getWheelRotation() < 0;
 			this.setSelectedIndex(
-				(this.getSelectedIndex() + (up ? -1 : 1) + this.getItemCount()) % this.getItemCount()
-			);
+					(this.getSelectedIndex() + (up ? -1 : 1) + this.getItemCount()) % this.getItemCount());
 		}
 	}
 
-    public void doLayout(){
-        try{
-            layingOut = true;
-            super.doLayout();
-        }finally{
-            layingOut = false;
-        }
-    }
+	public void doLayout() {
+		try {
+			layingOut = true;
+			super.doLayout();
+		} finally {
+			layingOut = false;
+		}
+	}
 
 	public boolean isWide() {
 		return wide;
@@ -94,13 +98,12 @@ implements MouseWheelListener {
 		this.wide = wide;
 	}
 
-    public Dimension getSize(){
-        Dimension dim = super.getSize();
-        if(!layingOut && isWide())
-            //dim.width = Math.max(dim.width, getPreferredSize().width);
-        	dim.width = Math.min(dim.width, Toolkit.getDefaultToolkit().getScreenSize().width);
-        return dim;
-    }
+	public Dimension getSize() {
+		Dimension dim = super.getSize();
+		if (!layingOut && isWide())
 
+			dim.width = Math.min(dim.width, Toolkit.getDefaultToolkit().getScreenSize().width);
+		return dim;
+	}
 
 }

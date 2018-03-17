@@ -26,16 +26,13 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 
 /**
- * The SplashWindow class is a splash screen shown when the project
- * is loading.
+ * The SplashWindow class is a splash screen shown when the project is loading.
  */
-public class SplashWindow
-extends JComponent {
+public class SplashWindow extends JComponent {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private Window window;
 	private JFrame window;
 
 	// Constant data member
@@ -43,7 +40,7 @@ extends JComponent {
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
 
 	private static String IMAGE_NAME = "splash.png";
-	
+
 	private Image splashImage;
 	private int width;
 	private int height;
@@ -55,25 +52,23 @@ extends JComponent {
 	/** stores the displayed length of {@link #VERSION_STRING} in pixels. */
 	int versionStringWidth = positionMetrics.stringWidth(VERSION_STRING);
 
-
 	public SplashWindow() {
 		window = new JFrame() {
 			/** default serial id. */
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paint(Graphics g) {
 
 				// Draw splash image and superimposed text
-			    Graphics2D g2d = (Graphics2D) g;
-			    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
-			            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				g2d.drawImage(splashImage, 0, 0, this);
 				g2d.setColor(Color.WHITE);
 				g2d.setFont(new Font("SansSerif", Font.PLAIN, 36));
 				g2d.drawString(MSP_STRING, 30, 60);
 				g2d.setFont(versionStringFont);
-				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - 
-				        versionStringWidth - 16, 24);
+				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 16, 24);
 			}
 		};
 
@@ -86,21 +81,18 @@ extends JComponent {
 		// Center the splash window on the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension windowSize = new Dimension(width, height);
-		window.setLocation(
-			((screenSize.width - windowSize.width) / 2),
-			((screenSize.height - windowSize.height) / 2)
-		);
+		window.setLocation(((screenSize.width - windowSize.width) / 2), ((screenSize.height - windowSize.height) / 2));
 
 		window.setBackground(Color.black);
 
 		window.setUndecorated(true);
-		
+
 		// Set icon image for window.
 		setIconImage();
-		
+
 		// Set cursor style.
 		window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		
+
 		// Display the splash window.
 		window.setVisible(true);
 	}
@@ -118,11 +110,11 @@ extends JComponent {
 	}
 
 	private void setIconImage() {
-	    
-	    String fullImageName = "/images/LanderHab.png";
-        URL resource = ImageLoader.class.getResource(fullImageName);
-        Toolkit kit = Toolkit.getDefaultToolkit();
-        Image img = kit.createImage(resource);
-        window.setIconImage(img);
+
+		String fullImageName = "/images/LanderHab.png";
+		URL resource = ImageLoader.class.getResource(fullImageName);
+		Toolkit kit = Toolkit.getDefaultToolkit();
+		Image img = kit.createImage(resource);
+		window.setIconImage(img);
 	}
 }

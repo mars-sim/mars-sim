@@ -25,12 +25,8 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 /**
  * Each DesktopPane class is a swing desktop for housing a tool window
  */
-public class DesktopPane
-extends JDesktopPane
-//implements
-//ComponentListener
-//UnitListener,
-//UnitManagerListener
+public class DesktopPane extends JDesktopPane
+
 {
 
 	/** default serial id. */
@@ -52,10 +48,12 @@ extends JDesktopPane
 
 	/**
 	 * Constructor 1 for setting up javaFX desktop
-	 * @param mainScene the main scene
+	 * 
+	 * @param mainScene
+	 *            the main scene
 	 */
 	public DesktopPane(MainScene mainScene) {
-	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+
 		this.mainScene = mainScene;
 
 		initialize();
@@ -69,7 +67,7 @@ extends JDesktopPane
 		setDesktopManager(new MainDesktopManager());
 
 		// Set component listener
-		//addComponentListener(this);
+		// addComponentListener(this);
 
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
@@ -94,111 +92,67 @@ extends JDesktopPane
 		initialize();
 	}
 
-	/** Returns the MainScene instance
-	 *  @return MainScene instance
+	/**
+	 * Returns the MainScene instance
+	 * 
+	 * @return MainScene instance
 	 */
 	public MainScene getMainScene() {
 		return mainScene;
 	}
 
-
 	/**
-	 * Create background tile when MainDesktopPane is first
-	 * displayed. Recenter logoLabel on MainWindow and set
-	 * backgroundLabel to the size of MainDesktopPane.
-	 * @param e the component event
-
-	@Override
-	public void componentResized(ComponentEvent e) {
-
-		// If displayed for the first time, create background image tile.
-		// The size of the background tile cannot be determined during construction
-		// since it requires the MainDesktopPane be displayed first.
-		if (firstDisplay) {
-			ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
-			Dimension screen_size =
-				Toolkit.getDefaultToolkit().getScreenSize();
-			Image backgroundImage =
-				createImage((int) screen_size.getWidth(),
-						(int) screen_size.getHeight());
-			Graphics backgroundGraphics = backgroundImage.getGraphics();
-
-			for (int x = 0; x < backgroundImage.getWidth(this);
-			x += baseImageIcon.getIconWidth()) {
-				for (int y = 0; y < backgroundImage.getHeight(this);
-				y += baseImageIcon.getIconHeight()) {
-					backgroundGraphics.drawImage(
-							baseImageIcon.getImage(), x, y, this);
-				}
-			}
-
-			backgroundImageIcon.setImage(backgroundImage);
-
-			backgroundLabel.setSize(getSize());
-
-			firstDisplay = false;
-		}
-
-		// Set the backgroundLabel size to the size of the desktop
-		backgroundLabel.setSize(getSize());
-	}
-*/
+	 * Create background tile when MainDesktopPane is first displayed. Recenter
+	 * logoLabel on MainWindow and set backgroundLabel to the size of
+	 * MainDesktopPane.
+	 * 
+	 * @param e
+	 *            the component event
+	 * 
+	 * @Override public void componentResized(ComponentEvent e) {
+	 * 
+	 *           // If displayed for the first time, create background image tile.
+	 *           // The size of the background tile cannot be determined during
+	 *           construction // since it requires the MainDesktopPane be displayed
+	 *           first. if (firstDisplay) { ImageIcon baseImageIcon =
+	 *           ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
+	 *           Dimension screen_size =
+	 *           Toolkit.getDefaultToolkit().getScreenSize(); Image backgroundImage
+	 *           = createImage((int) screen_size.getWidth(), (int)
+	 *           screen_size.getHeight()); Graphics backgroundGraphics =
+	 *           backgroundImage.getGraphics();
+	 * 
+	 *           for (int x = 0; x < backgroundImage.getWidth(this); x +=
+	 *           baseImageIcon.getIconWidth()) { for (int y = 0; y <
+	 *           backgroundImage.getHeight(this); y +=
+	 *           baseImageIcon.getIconHeight()) { backgroundGraphics.drawImage(
+	 *           baseImageIcon.getImage(), x, y, this); } }
+	 * 
+	 *           backgroundImageIcon.setImage(backgroundImage);
+	 * 
+	 *           backgroundLabel.setSize(getSize());
+	 * 
+	 *           firstDisplay = false; }
+	 * 
+	 *           // Set the backgroundLabel size to the size of the desktop
+	 *           backgroundLabel.setSize(getSize()); }
+	 */
 
 	/**
 	 * sets up this class with two listeners
 	 */
 	// 2014-12-19 Added prepareListeners()
 	public void prepareListeners() {
-	   	//logger.info("MainDesktopPane's prepareListeners() is on " + Thread.currentThread().getName() + " Thread");
 
-		// Add addUnitManagerListener()
-		//UnitManager unitManager = Simulation.instance().getUnitManager();
-		//unitManager.addUnitManagerListener(this);
-/*
-		// Add addUnitListener()
-		Collection<Settlement> settlements = unitManager.getSettlements();
-		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-		Settlement settlement = settlementList.get(0);
-		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
-		building = buildings.get(0);
-		//building.addUnitListener(this); // not working
-		Iterator<Settlement> i = settlementList.iterator();
-		while (i.hasNext()) {
-			i.next().addUnitListener(this);
-		}
-*/
-	   	//logger.info("MainDesktopPane's prepareListeners() is done");
 	}
 
-/*
-	// Additional Component Listener methods implemented but not used.
-	@Override
-	public void componentMoved(ComponentEvent e) {
-		logger.info("DesktopPane : componentMoved()");
-		updateToolWindow();
-	}
-
-	@Override
-	public void componentShown(ComponentEvent e) {
-		logger.info("DesktopPane : componentShown()");
-		JInternalFrame[] frames = this.getAllFrames();
-		for (JInternalFrame f : frames) {
-			//((ToolWindow)f).update();
-			f.updateUI();
-			SwingUtilities.updateComponentTreeUI(f);
-		}
-	}
-
-	@Override
-	public void componentHidden(ComponentEvent e) {}
-*/
 	public void updateToolWindow() {
 		logger.info("DesktopPane : updateToolWindow()");
 		JInternalFrame[] frames = this.getAllFrames();
 		for (JInternalFrame f : frames) {
-			//f.updateUI();
-			//SwingUtilities.updateComponentTreeUI(f);
-			((ToolWindow)f).update();
+			// f.updateUI();
+			// SwingUtilities.updateComponentTreeUI(f);
+			((ToolWindow) f).update();
 		}
 	}
 
@@ -210,77 +164,25 @@ extends JDesktopPane
 	}
 
 	public void centerJIF(Component comp) {
-	    Dimension desktopSize = getSize();
-	    Dimension jInternalFrameSize = comp.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    comp.setLocation(width, height);
-	    comp.setVisible(true);
+		Dimension desktopSize = getSize();
+		Dimension jInternalFrameSize = comp.getSize();
+		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+		int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+		comp.setLocation(width, height);
+		comp.setVisible(true);
 	}
 
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
-/*
-			Settlement settlement = (Settlement) unit;
-			UnitManagerEventType eventType = event.getEventType();
 
-			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
-				//System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
-				settlement.addUnitListener(this);
-			}
-			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
-				//System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
-				settlement.removeUnitListener(this);
-			}
-*/
 			updateToolWindow();
 		}
 	}
 
-/*
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
-		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
-		Object target = event.getTarget();
-		if (eventType == UnitEventType.START_TRANSPORT_WIZARD_EVENT) {
-
-			building = (Building) target; // overwrite the dummy building object made by the constructor
-			BuildingManager mgr = building.getBuildingManager();
-			//settlement = mgr.getSettlement();
-
-			if (!isTransportingBuilding) {
-				isTransportingBuilding = true;
-				mainScene.openTransportWizard(mgr);
-				Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
-			}
-			else {
-				//mgr.getResupply();
-			}
-
-		} else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
-			isTransportingBuilding = false;
-		}
-
-		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
-			BuildingConstructionMission mission = (BuildingConstructionMission) target;
-
-			if (!isConstructingSite) {
-				isConstructingSite = true;
-				mainScene.openConstructionWizard(mission);
-
-			}
-		}
-
-		else if (eventType == UnitEventType.END_CONSTRUCTION_WIZARD_EVENT) {
-			isConstructingSite = false;
-		}
-
-	}
-*/
 	public void destroy() {
-		backgroundImageIcon  = null;
+		backgroundImageIcon = null;
 		backgroundLabel = null;
 		building = null;
 		mainScene = null;

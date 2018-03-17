@@ -64,14 +64,7 @@ import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-//import org.jfree.text.TextUtilities;
-//import org.jfree.ui.ApplicationFrame;
-//import org.jfree.ui.Layer;
-//import org.jfree.ui.RectangleAnchor;
-//import org.jfree.ui.RefineryUtilities;
-//import org.jfree.ui.TextAnchor;
-//import org.jfree.util.Log;
-//import org.jfree.util.PrintStreamLogTarget;
+
 
 /**
 * A simple demonstration application showing how to create a bar chart with a custom item
@@ -87,7 +80,9 @@ public class BarChartDemo7 extends ApplicationFrame {
         * Generates an item label.
         * 
         * @param dataset  the dataset.
-        * @param series  the series index.
+        * @param series  th						//System.out.println("doubleLong is "+ doubleLong);
+						//System.out.println("doubleLongNext is "+ doubleLongNext);
+e series index.
         * @param category  the category index.
         * 
         * @return the label.
