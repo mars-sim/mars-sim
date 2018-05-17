@@ -80,8 +80,8 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 
 
 ## OS Setup
-* Requires Java 8u77 or above, preferably 8u151, not 8u152 as 8u152 incorporate security updates that corrupt the use of https in mars-sim's inline browser.  
-* Does NOT work with Java 9.
+* Requires Java 8 (u77 or above, preferably 8u171 but not 8u172 as 8u172 incorporate crypto security updates that are incompatible with the use of https in mars-sim's inline browser)
+* Does NOT work with Java 9 or above
 * For Windows OS, one should manually set up the following : 
   - Edit the `JAVA_HOME` and `PATH` in the System's "Environment Variables" in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_151` or `C:\Program Files\Java\jdk1.8.0_151`
@@ -89,8 +89,7 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
   - Remove the path `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It interferes with the correct version of the Java that should be used. 
 * - Check if the correct version of Java is enable in "Java Control Panel" in Control Panel. The best approach is enabling only one Java build (such as 8u151) at a time and disable all other versions/builds.
 * Note 1 : To test the version of Java that your os is using, type "java -version" in a terminal/command prompt.
-* Note 2 : The introduction of modularity in Java 9 JRE/JDK creates breaking changes to many existing java applications, including mars-sim. Please be sure to disable JDK 9 in "Java Control Panel" and  
-preferably remove all Java 9 related executables inside the folder `C:\ProgramData\Oracle\Java\javapath`
+* Note 2 : The introduction of modularity in Java 9 JRE/JDK creates breaking changes to many existing java applications, including mars-sim. Please be sure to disable JDK 9 in "Java Control Panel" and preferably remove all Java 9 related executables inside the folder `C:\ProgramData\Oracle\Java\javapath`
 
 
 ## Development Prerequisites

@@ -283,7 +283,11 @@ public class MarsProjectFX extends Application  {
 
         //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
 
-        String major, minor, update, build = null, dateStamp = null;
+        String major = null;
+        String minor = null;
+        String update = null; 
+        String build = null;
+        String dateStamp = null;
 
         // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
 
@@ -302,13 +306,34 @@ public class MarsProjectFX extends Application  {
         	dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
         }
 
+        double majorNum = Double.parseDouble(major);
+        double minorNum = Double.parseDouble(minor);
+        double buildNum = Double.parseDouble(build);
+        
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!"8".equals(minor) || Double.parseDouble(build) < 77.0) {
+    	if (minorNum < 8) {
     		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
-    		exitWithError("Note: mars-sim requires at least Java 8.0.77. Terminated.");
+    		exitWithError("Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
+    	}
+    	
+    	else if ("8".equals(minor) && buildNum < 77.0) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
+    		exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
     	}
 
+    	else if (majorNum > 8) {
+    		// TODO: will need to refine how to flag the machine with Java 9, 10 and 11 installed.
+    		
+    		// see https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
+    		// In Java 9, the format of the new version-string is: $MAJOR.$MINOR.$SECURITY.$PATCH
+    		// Under the old scheme, the Java 9u5 security release would have the version string 1.9.0_5-b20.
+    		// Under the new scheme, the short version of the same release is 9.0.1, and the long version is 9.0.1+20.
+    		
+    		exitWithError("Note: mars-sim is currently not compatible with Java 9, 10, or 11. It requires Java 8 (8u77 or above). Terminated.");
+    	}
+    	
     	else {
+	
     		argList = Arrays.asList(args);
             newSim = argList.contains("-new");
             loadSim = argList.contains("-load");
