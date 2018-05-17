@@ -35,7 +35,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.Node;
+//import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 //import javafx.scene.control.Separator;
@@ -58,7 +58,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.RectangleBuilder;
+//import javafx.scene.shape.RectangleBuilder;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -93,7 +93,7 @@ import eu.hansolo.tilesfx.Tile.SkinType;
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
  */
-@SuppressWarnings({ "restriction", "deprecation"})
+@SuppressWarnings({ "restriction"})
 public class MainMenu {
 
 	// ------------------------------ FIELDS ------------------------------
@@ -230,29 +230,45 @@ public class MainMenu {
     	double sceneHeight = stackPane.getPrefHeight();// + 30;
 
     	// Create application area
-    	@SuppressWarnings("restriction")
-    	Rectangle applicationArea = RectangleBuilder.create()
-                .width(sceneWidth)// - 10)
-                .height(sceneHeight)// - 10)
-                //.arcWidth(20)
-                //.arcHeight(20)
-                .fill(Color.rgb(0, 0, 0, 1))
-                .x(0)
-                .y(0)
-                .strokeWidth(2)
-                .stroke(Color.rgb(255, 255, 255, .70))
-                .build();
-       
+//    	@SuppressWarnings("restriction")
+//    	Rectangle applicationArea = RectangleBuilder.create()
+//                .width(sceneWidth)// - 10)
+//                .height(sceneHeight)// - 10)
+//                //.arcWidth(20)
+//                //.arcHeight(20)
+//                .fill(Color.rgb(0, 0, 0, 1))
+//                .x(0)
+//                .y(0)
+//                .strokeWidth(2)
+//                .stroke(Color.rgb(255, 255, 255, .70))
+//                .build();
+
+    	Rectangle applicationArea = new Rectangle();
+    	applicationArea.setWidth(sceneWidth);
+    	applicationArea.setHeight(sceneHeight);
+    	applicationArea.setFill(Color.rgb(0, 0, 0, 1));
+    	applicationArea.setX(0);
+    	applicationArea.setY(0);
+    	applicationArea.setStrokeWidth(2);
+    	applicationArea.setStroke(Color.rgb(255, 255, 255, .70));
 	
-    	Node closeRect = RectangleBuilder.create()
-               .width(25)
-               .height(25)
-               .arcWidth(15)
-               .arcHeight(15)
-               .fill(Color.rgb(0, 0, 0, 1))
-               .stroke(Color.WHITE)
-               .build();
+//    	Node closeRect = RectangleBuilder.create()
+//               .width(25)
+//               .height(25)
+//               .arcWidth(15)
+//               .arcHeight(15)
+//               .fill(Color.rgb(0, 0, 0, 1))
+//               .stroke(Color.WHITE)
+//               .build();
        
+    	Rectangle closeRect = new Rectangle();
+    	closeRect.setWidth(25);
+    	closeRect.setHeight(25);
+    	closeRect.setFill(Color.rgb(0, 0, 0, 1));
+    	closeRect.setArcWidth(15);
+    	closeRect.setArcHeight(15);
+    	closeRect.setStroke(Color.WHITE);
+    	
     	Text closeXmark = new Text(9, 16.5, "X");
     	closeXmark.setStroke(Color.WHITE);
     	closeXmark.setFill(Color.WHITE);
@@ -348,30 +364,40 @@ public class MainMenu {
     	double sceneHeight = stackPane.getPrefHeight();// + 30;
 
     	// Create application area
-    	@SuppressWarnings("restriction")
-    	Rectangle applicationArea = RectangleBuilder.create()
-                .width(sceneWidth)// - 10)
-                .height(sceneHeight)// - 10)
-                .arcWidth(10)
-                .arcHeight(10)
-                .fill(Color.rgb(0, 0, 0, 1))//.80))
-                .x(0)
-                .y(0)
-                .strokeWidth(2)
-                .stroke(Color.rgb(255, 255, 255, .70))
-                .build();
+//    	@SuppressWarnings("restriction")
+//    	Rectangle applicationArea = RectangleBuilder.create()
+//                .width(sceneWidth)// - 10)
+//                .height(sceneHeight)// - 10)
+//                .arcWidth(10)
+//                .arcHeight(10)
+//                .fill(Color.rgb(0, 0, 0, 1))//.80))
+//                .x(0)
+//                .y(0)
+//                .strokeWidth(2)
+//                .stroke(Color.rgb(255, 255, 255, .70))
+//                .build();
        
+    	Rectangle applicationArea = new Rectangle();
+    	applicationArea.setWidth(sceneWidth);
+    	applicationArea.setHeight(sceneHeight);
+    	applicationArea.setFill(Color.rgb(0, 0, 0, 1));
+    	applicationArea.setArcWidth(10);
+    	applicationArea.setArcHeight(10);
+    	applicationArea.setX(0);
+    	applicationArea.setY(0);
+    	applicationArea.setStrokeWidth(2);
+    	applicationArea.setStroke(Color.rgb(255, 255, 255, .70));
+	
     	// Create close button
     	final Group closeApp = new Group();
-    	Node closeRect = RectangleBuilder.create()
-               .width(25)
-               .height(25)
-               .arcWidth(15)
-               .arcHeight(15)
-               .fill(Color.rgb(0, 0, 0, .80))
-               .stroke(Color.WHITE)
-               .build();
-       
+
+    	Rectangle closeRect = new Rectangle();
+    	closeRect.setWidth(25);
+    	closeRect.setHeight(25);
+    	closeRect.setFill(Color.rgb(0, 0, 0, .8));
+    	closeRect.setArcWidth(15);
+    	closeRect.setArcHeight(15);
+    	
     	Text closeXmark = new Text(9, 16.5, "X");
     	closeXmark.setStroke( Color.WHITE);
     	closeXmark.setFill(Color.WHITE);
