@@ -15,7 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.RectangleBuilder;
+//import javafx.scene.shape.RectangleBuilder;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -79,19 +79,30 @@ public class ScenarioEditor extends Application{
         Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
 
        // application area
-       @SuppressWarnings("restriction")
-       Rectangle applicationArea = RectangleBuilder.create()
-                .width(sceneWidth - 10)
-                .height(sceneHeight - 10)
-                .arcWidth(20)
-                .arcHeight(20)
-                .fill(Color.rgb(0, 0, 0, .80))
-                .x(0)
-                .y(0)
-                .strokeWidth(2)
-                .stroke(Color.rgb(255, 255, 255, .70))
-                .build();
+//       @SuppressWarnings("restriction")
+//       Rectangle applicationArea = RectangleBuilder.create()
+//                .width(sceneWidth - 10)
+//                .height(sceneHeight - 10)
+//                .arcWidth(20)
+//                .arcHeight(20)
+//                .fill(Color.rgb(0, 0, 0, .80))
+//                .x(0)
+//                .y(0)
+//                .strokeWidth(2)
+//                .stroke(Color.rgb(255, 255, 255, .70))
+//                .build();
        
+	   Rectangle applicationArea = new Rectangle();
+	   applicationArea.setWidth(sceneWidth - 10);
+	   applicationArea.setHeight(sceneHeight - 10);
+	   applicationArea.setArcWidth(20);
+	   applicationArea.setArcHeight(20);
+	   applicationArea.setFill(Color.rgb(0, 0, 0, .8));
+	   applicationArea.setX(0);
+	   applicationArea.setY(0);
+	   applicationArea.setStrokeWidth(2);
+	   applicationArea.setStroke(Color.rgb(255, 255, 255, .70));
+	   	
        root.getChildren().add(applicationArea);
        anchorpane.setLayoutX(10);
        anchorpane.setLayoutY(10);
@@ -124,14 +135,23 @@ public class ScenarioEditor extends Application{
         
         // close button
         final Group closeApp = new Group();
-        Node closeRect = RectangleBuilder.create()
-                .width(25)
-                .height(25)
-                .arcWidth(15)
-                .arcHeight(15)
-                .fill(Color.rgb(0, 0, 0, .80))
-                .stroke(Color.WHITE)
-                .build();
+        
+//        Node closeRect = RectangleBuilder.create()
+//                .width(25)
+//                .height(25)
+//                .arcWidth(15)
+//                .arcHeight(15)
+//                .fill(Color.rgb(0, 0, 0, .80))
+//                .stroke(Color.WHITE)
+//                .build();
+      
+ 	    Rectangle closeRect = new Rectangle();
+ 	    closeRect.setWidth(25);
+ 	    closeRect.setHeight(25);
+ 	    closeRect.setArcWidth(15);
+ 	    closeRect.setArcHeight(15);
+ 	    closeRect.setFill(Color.rgb(0, 0, 0, .8));
+ 	    closeRect.setStroke(Color.WHITE);
         
         Text closeXmark = new Text(8.5, 16.5, "X");
         closeXmark.setStroke( Color.WHITE);

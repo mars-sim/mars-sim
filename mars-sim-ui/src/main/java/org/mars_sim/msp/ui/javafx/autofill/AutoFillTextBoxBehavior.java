@@ -6,15 +6,16 @@
  */
 package org.mars_sim.msp.ui.javafx.autofill;
 
-import com.sun.javafx.scene.control.behavior.BehaviorBase;
-import com.sun.javafx.scene.control.behavior.KeyBinding;
+//import com.sun.javafx.scene.control.behavior.BehaviorBase;
+//import com.sun.javafx.scene.control.behavior.KeyBinding;
+
 import java.util.List;
 
 /**
  *
  * @author Narayan G. Maharjan
  * @see <a href="http://www.blog.ngopal.com.np"> Blog </a>
- */
+ 
 @SuppressWarnings("restriction")
 public class AutoFillTextBoxBehavior<T> extends BehaviorBase<AutoFillTextBox<T>> {
 
@@ -22,3 +23,4 @@ public class AutoFillTextBoxBehavior<T> extends BehaviorBase<AutoFillTextBox<T>>
         super(textBox, keys);
     }
 }
+*/

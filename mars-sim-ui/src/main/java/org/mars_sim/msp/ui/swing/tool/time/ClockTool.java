@@ -37,7 +37,7 @@ import javafx.scene.image.Image;
  * User: hansolo
  * Date: 12.09.14
  * Time: 00:37
- */
+
 public class ClockTool { //extends Applcation {
     private EarthMinimalClock earthEarthMinimalClock;
 
@@ -81,3 +81,4 @@ public class ClockTool { //extends Applcation {
         //launch(args);
     }
 }
+ */

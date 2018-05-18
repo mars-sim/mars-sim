@@ -308,20 +308,13 @@ public class MarsProjectFX extends Application  {
 
         double majorNum = Double.parseDouble(major);
         double minorNum = Double.parseDouble(minor);
-        double buildNum = Double.parseDouble(build);
         
-    	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (minorNum < 8) {
-    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
-    		exitWithError("Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
-    	}
-    	
-    	else if ("8".equals(minor) && buildNum < 77.0) {
-    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
-    		exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
-    	}
-
-    	else if (majorNum > 8) {
+//        System.out.println(major);
+//        System.out.println(minor);
+//        System.out.println(update);
+//        System.out.println(build);
+        
+    	if (majorNum > 8) {
     		// TODO: will need to refine how to flag the machine with Java 9, 10 and 11 installed.
     		
     		// see https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
@@ -329,7 +322,18 @@ public class MarsProjectFX extends Application  {
     		// Under the old scheme, the Java 9u5 security release would have the version string 1.9.0_5-b20.
     		// Under the new scheme, the short version of the same release is 9.0.1, and the long version is 9.0.1+20.
     		
-    		exitWithError("Note: mars-sim is currently not compatible with Java 9, 10, or 11. It requires Java 8 (8u77 or above). Terminated.");
+    		exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It requires Java 8 (8u77 or above). Terminated.");
+    	}
+    	
+    	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
+    	else if (minorNum < 8) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
+    		exitWithError("Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
+    	}
+    	
+    	else if ("8".equals(minor) && Double.parseDouble(build) < 77.0) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
+    		exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
     	}
     	
     	else {

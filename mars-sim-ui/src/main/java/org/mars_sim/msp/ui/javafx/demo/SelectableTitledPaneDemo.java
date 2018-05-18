@@ -7,10 +7,11 @@ import java.util.List;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ComboBoxBuilder;
+//import javafx.scene.control.ComboBoxBuilder;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -19,21 +20,23 @@ public class SelectableTitledPaneDemo extends Application {
 	String[] strs = new String[]{"A", "B", "C", "D"};
 	
 	
-	  @SuppressWarnings("restriction")
+	@SuppressWarnings("restriction")
 	@Override 
-	  public void start(Stage stage) {
+	public void start(Stage stage) {
 	        
 		  List<String> list = new ArrayList<>(Arrays.asList(strs));
-		  
-		  
-		  ComboBox<?> combo = ComboBoxBuilder.create().
-		            prefWidth(150).
-		            //items(list).
-		            items(FXCollections.observableArrayList(list)).//"aa", "bb", "bb")); 		  
-		            //promptText(resourceBundle.getString("search.prompt.owner")).
-		            promptText("Choice").
-		            build();
+		  	  
+//		  ComboBox<?> combo = ComboBoxBuilder.create().
+//		            prefWidth(150).
+//		            //items(list).
+//		            items(FXCollections.observableArrayList(list)).//"aa", "bb", "bb")); 		  
+//		            //promptText(resourceBundle.getString("search.prompt.owner")).
+//		            promptText("Choice").
+//		            build();
 		 
+		  ComboBox<?> combo = new ComboBox((ObservableList<?>) FXCollections.observableArrayList(list));
+		  combo.setPrefWidth(150);
+		  combo.setPromptText("Choice");
 
 		  //combo.setItems((ObservableList<?>) FXCollections.observableArrayList(list));//"aa", "bb", "bb"));
 		  

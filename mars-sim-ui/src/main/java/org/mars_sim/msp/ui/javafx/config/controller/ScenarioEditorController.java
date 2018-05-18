@@ -32,7 +32,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TooltipBuilder;
+//import javafx.scene.control.TooltipBuilder;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -51,14 +52,16 @@ public class ScenarioEditorController implements Initializable {
         //@FXML TableView<Scenario> chap4RecipeTableView;
         Map<String, List<Scenario>> map = new HashMap<>();
         
+        
+        String facebookURL = "mars-sim.sourceforge.net \n https://www.facebook.com/groups/125541663548/";
+        
         @Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
             
             loadScenarios();
-            carlfxHyperlink.setTooltip(TooltipBuilder.create()
-                                                     .text("mars-sim.sourceforge.net \n https://www.facebook.com/groups/125541663548/")
-                                                     .build()
-                    );
+            Tooltip tt = new Tooltip();
+            tt.setText(facebookURL);
+            carlfxHyperlink.setTooltip(tt);
                 carlfxHyperlink.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent evt) {
                         

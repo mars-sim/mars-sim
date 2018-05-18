@@ -22,8 +22,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.time;
 
-
-import com.sun.javafx.css.converters.PaintConverter;
+//import com.sun.javafx.css.converters.PaintConverter;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -54,7 +53,7 @@ import org.mars_sim.msp.ui.javafx.Fonts;
  * User: hansolo
  * Date: 11.09.14
  * Time: 23:58
- */
+
 public class EarthMinimalClock extends Region {
     private static final double               PREFERRED_WIDTH    = 320;
     private static final double               PREFERRED_HEIGHT   = 320;
@@ -528,3 +527,4 @@ public class EarthMinimalClock extends Region {
         }
     }
 }
+ */

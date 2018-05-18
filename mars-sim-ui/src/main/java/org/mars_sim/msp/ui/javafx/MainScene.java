@@ -111,6 +111,7 @@ import java.awt.BorderLayout;
 //import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -135,8 +136,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
-import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
-import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
+//import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
+//import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -1144,6 +1147,14 @@ public class MainScene {
 	 */
 	public void createSpeedPanel() {
 		spinner = new Spinner<Integer>();
+		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+
+        //Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL
+        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_VERTICAL
+        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_HORIZONTAL
+        //Spinner.STYLE_CLASS_SPLIT_ARROWS_VERTICAL
+        //Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL
+        
 		speedBtn = new JFXButton();
 		// speedBtn.setStyle(value);
 		// speedBtn.getStyleClass().add("menu-button");//"button-raised");
@@ -1238,23 +1249,36 @@ public class MainScene {
 
 		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 
+//		List<Integer> items = null;
+//		if (default_ratio == 16)
+//			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
+//		else if (default_ratio == 32)
+//			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);// ,1024);
+//		else if (default_ratio == 64)
+//			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);// , 2048);
+//		else if (default_ratio == 128)
+//			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);// ,4096,8192);
+//		else // if (default_ratio == 256)
+//			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
+
 		List<Integer> items = null;
 		if (default_ratio == 16)
-			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
 		else if (default_ratio == 32)
-			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);// ,1024);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);// ,1024);
 		else if (default_ratio == 64)
-			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);// , 2048);
+			items =Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);// , 2048);
 		else if (default_ratio == 128)
-			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);// ,4096,8192);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);// ,4096,8192);
 		else // if (default_ratio == 256)
-			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
-
-		spinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<>(items));
-		spinner.setMaxSize(95, 15);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
+		
+		spinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
+		//spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
+		spinner.setMaxSize(85, 15);
 		spinner.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 11px;"
 				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight:bold;");
+				+ "-fx-font-weight:bold; -fx-text-alignment: center;");
 		// spinner.setAlignment(Pos.CENTER);
 		spinner.getValueFactory().setValue(default_ratio);
 		spinner.valueProperty().addListener((o, old_val, new_val) -> {

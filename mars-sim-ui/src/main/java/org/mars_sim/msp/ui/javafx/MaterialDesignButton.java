@@ -1,6 +1,6 @@
 package org.mars_sim.msp.ui.javafx;
 
-import com.sun.javafx.scene.control.skin.ButtonSkin;
+//import com.sun.javafx.scene.control.skin.ButtonSkin;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -33,13 +33,13 @@ public class MaterialDesignButton extends Button {
         createRippleEffect();
     }
 
-    @Override
-    protected Skin<?> createDefaultSkin() {
-        final ButtonSkin buttonSkin = new ButtonSkin(this);
-        // Adding circleRipple as fist node of button nodes to be on the bottom
-        this.getChildren().add(0, circleRipple);
-        return buttonSkin;
-    }
+//    @Override
+//    protected Skin<?> createDefaultSkin() {
+//        final ButtonSkin buttonSkin = new ButtonSkin(this);
+//        // Adding circleRipple as fist node of button nodes to be on the bottom
+//        this.getChildren().add(0, circleRipple);
+//        return buttonSkin;
+//    }
 
     private void createRippleEffect() {
         circleRipple = new Circle(0.1, rippleColor);

@@ -20,7 +20,7 @@ import javafx.scene.effect.SepiaTone;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.HBoxBuilder;
+//import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -129,8 +129,10 @@ public class Story {
 
     final Region spring = new Region();
     HBox.setHgrow(spring, Priority.ALWAYS);
-    final Node alignedSignature = HBoxBuilder.create().children(spring, signature).build();
-
+    
+    //final Node alignedSignature = HBoxBuilder.create().children(spring, signature).build();
+    final HBox alignedSignature = new HBox(spring, signature);
+    
     Label date = new Label(DATE);
     date.setAlignment(Pos.BOTTOM_RIGHT);
 

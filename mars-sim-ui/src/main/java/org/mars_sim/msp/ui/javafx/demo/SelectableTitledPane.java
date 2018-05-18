@@ -1,6 +1,6 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
-import com.sun.javafx.scene.control.skin.TitledPaneSkin;
+//import com.sun.javafx.scene.control.skin.TitledPaneSkin;
 //import javafx.scene.control.skin.TitledPaneSkin;
 
 import javafx.beans.property.BooleanProperty;
@@ -22,7 +22,7 @@ public class SelectableTitledPane extends TitledPane {
 	    setExpanded(false);
 	    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 	    setGraphic(checkBox);
-	    setSkin(new TitledPaneSkin(this));
+	    //setSkin(new TitledPaneSkin(this));
 	    lookup(".arrow").
 	            setVisible(false);
 	    lookup(".title").

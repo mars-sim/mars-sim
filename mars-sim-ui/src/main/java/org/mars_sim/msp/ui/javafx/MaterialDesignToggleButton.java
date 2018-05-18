@@ -1,6 +1,6 @@
 package org.mars_sim.msp.ui.javafx;
 
-import com.sun.javafx.scene.control.skin.ToggleButtonSkin;
+//import com.sun.javafx.scene.control.skin.ToggleButtonSkin;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -34,13 +34,13 @@ public class MaterialDesignToggleButton extends ToggleButton {
         createRippleEffect();
     }
 
-    @Override
-    protected Skin<?> createDefaultSkin() {
-        final ToggleButtonSkin buttonSkin = new ToggleButtonSkin(this);
-        // Adding circleRipple as fist node of button nodes to be on the bottom
-        this.getChildren().add(0, circleRipple);
-        return buttonSkin;
-    }
+//    @Override
+//    protected Skin<?> createDefaultSkin() {
+//        final ToggleButtonSkin buttonSkin = new ToggleButtonSkin(this);
+//        // Adding circleRipple as fist node of button nodes to be on the bottom
+//        this.getChildren().add(0, circleRipple);
+//        return buttonSkin;
+//    }
 
     private void createRippleEffect() {
         circleRipple = new Circle(0.1, rippleColor);
