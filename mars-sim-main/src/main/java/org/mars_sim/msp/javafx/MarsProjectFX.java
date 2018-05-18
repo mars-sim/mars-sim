@@ -283,6 +283,8 @@ public class MarsProjectFX extends Application  {
 
         //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
 
+    	boolean good2Go = true;
+    	
         String major = null;
         String minor = null;
         String update = null; 
@@ -321,23 +323,33 @@ public class MarsProjectFX extends Application  {
     		// In Java 9, the format of the new version-string is: $MAJOR.$MINOR.$SECURITY.$PATCH
     		// Under the old scheme, the Java 9u5 security release would have the version string 1.9.0_5-b20.
     		// Under the new scheme, the short version of the same release is 9.0.1, and the long version is 9.0.1+20.
+
+    		//exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It requires Java 8 (8u77 or above). Terminated.");
     		
-    		exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It requires Java 8 (8u77 or above). Terminated.");
+    		good2Go = true;
+            logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
     	}
     	
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
     	else if (minorNum < 8) {
     		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
+    		
+    		good2Go = false;
     		exitWithError("Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
     	}
     	
     	else if ("8".equals(minor) && Double.parseDouble(build) < 77.0) {
     		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
+    		good2Go = false;
     		exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
     	}
     	
     	else {
+    		good2Go = true;
+    	}
 	
+    	if (good2Go) {
+    		
     		argList = Arrays.asList(args);
             newSim = argList.contains("-new");
             loadSim = argList.contains("-load");

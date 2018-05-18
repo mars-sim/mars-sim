@@ -1,12 +1,12 @@
 package org.mars_sim.msp.ui.lua;
 
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.JsePlatform;
+//import org.luaj.vm2.Globals;
+//import org.luaj.vm2.LuaValue;
+//import org.luaj.vm2.lib.jse.JsePlatform;
 
 /**
  * Sample source file for a maven project that depends on luaj.
- */
+
 public class App
 {
     public static void main( String[] args )
@@ -25,3 +25,4 @@ public class App
 		chunk.call();
     }
 }
+ */

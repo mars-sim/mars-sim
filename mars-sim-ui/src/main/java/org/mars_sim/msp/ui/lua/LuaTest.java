@@ -1,9 +1,10 @@
 package org.mars_sim.msp.ui.lua;
 
 
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.JsePlatform;
+//import org.luaj.vm2.LuaValue;
+//import org.luaj.vm2.lib.jse.JsePlatform;
 
+/**
 public class LuaTest {
 
 	public LuaTest() {}
@@ -30,3 +31,4 @@ public class LuaTest {
         System.out.println("The result from executing the script is :\n\n" + retvals.tojstring(1));
     }
 }
+*/

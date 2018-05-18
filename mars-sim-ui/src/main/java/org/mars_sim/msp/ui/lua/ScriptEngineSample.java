@@ -14,8 +14,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.OneArgFunction;
+//import org.luaj.vm2.LuaValue;
+//import org.luaj.vm2.lib.OneArgFunction;
+
 
 /** Sample code that uses the JSE-223 pluggable scripting language interface
  * to instantiate and use luaj.
@@ -33,7 +34,7 @@ import org.luaj.vm2.lib.OneArgFunction;
  * </li></ul>
  *
  * <p> These flag values can be set on the command line or via code.
- */
+
 public class ScriptEngineSample {
 
     public static void main(String [] args) {
@@ -203,3 +204,4 @@ public class ScriptEngineSample {
     }
 
 }
+*/
