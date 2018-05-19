@@ -38,16 +38,20 @@ implements Serializable, Comparable<Unit> {
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
     //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-
+	// static unit identifier
+	private static int unitIdentifer = 0;
+	
 	// Data members
 	// Unique identifier
 	private int identifier;
+	/** The mass of the unit without inventory. */
+	private double baseMass;
+	
 	/** TODO Unit name needs to be internationalized. */
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
 	private String description;
-	/** The mass of the unit without inventory. */
-	private double baseMass;
+
 	/** The unit's location tag. */
 	private LocationTag tag;
 	/** The unit's inventory. */
@@ -68,8 +72,7 @@ implements Serializable, Comparable<Unit> {
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 	
-	// static unit identifier
-	private static int unitIdentifer = 0;
+
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different threads.
@@ -347,8 +350,8 @@ implements Serializable, Comparable<Unit> {
 			updatePersonRobotState(newContainer);
 		else if (this instanceof Equipment)
 			updateEquipmentState(newContainer);
-		else if (this instanceof Person)
-			updatePersonRobotState(newContainer);
+//		else if (this instanceof Person)
+//			updatePersonRobotState(newContainer);
 		else if (this instanceof Vehicle)
 			updateVehicleState(newContainer);
 		else if (this instanceof Building)

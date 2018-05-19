@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
+//import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
@@ -285,8 +285,8 @@ public class TaskSchedule implements Serializable {
      * @param time amount of time passing (in millisols).
      */
 	// 2015-06-29 Added timePassing()
-    public void timePassing(double time) {
-    }
+//    public void timePassing(double time) {
+//    }
 
     /*
      *  Records the first task of the sol on today's schedule as the last task from yestersol

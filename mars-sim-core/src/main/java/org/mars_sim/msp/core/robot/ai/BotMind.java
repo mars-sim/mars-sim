@@ -40,8 +40,8 @@ implements Serializable {
     // Data members
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
-    /** The cache for msol0. */     
- 	private int msolCache;
+    /** The cache for msol. */     
+ 	private double msolCache = -1D;
     /** The robot owning this mind. */
     private Robot robot = null;
     /** The robot's task manager. */
@@ -58,7 +58,8 @@ implements Serializable {
     private static MissionManager missionManager;
 
     private static Simulation sim;
-    private static MarsClock marsClock;
+    
+    private MarsClock marsClock;
 
     /**
      * Constructor 1.
@@ -108,10 +109,10 @@ implements Serializable {
 	           // 2015-10-31 Added recordMission()
 	    	missionManager.recordMission(robot);
 
-	    int msol0 = marsClock.getMsol0();
+	    double msol1 = marsClock.getMsol1();
 	    
-	    if (msolCache != msol0) {
-	    	msolCache = msol0;
+	    if (msolCache != msol1) {
+	    	msolCache = msol1;
 
 	        // I don't think robots should be changing jobs on their own. - Scott
 	        // Check if this robot needs to get a new job or change jobs.
@@ -123,7 +124,6 @@ implements Serializable {
 	    		// Take action as necessary.
 		        takeAction(time);
 	    }
-
 
     }
 

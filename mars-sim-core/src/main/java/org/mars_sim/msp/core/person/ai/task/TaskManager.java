@@ -46,25 +46,23 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+	
 	// Data members
-	private String taskNameCache = "", taskDescriptionCache = "Relaxing", taskPhaseNameCache = "Relaxing";
+    /** The cache for msolInt */     
+ 	private double msolCache = -1.0;
+ 	
+ 	private transient double totalProbCache;
 	
-	//private String oldJob = "";
-
-	// Cache variables.
-	private static MarsClock marsClock;
+	private String taskNameCache = "";
 	
-	private transient MarsClock timeCache;
+	private String taskDescriptionCache = "Relaxing";
 	
-	private transient double totalProbCache;
-	
-	private transient Map<MetaTask, Double> taskProbCache;
-	
-	private transient List<MetaTask> mtListCache;
-	//private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
+	private String taskPhaseNameCache = "Relaxing";
 
 	/** The current task the person/robot is doing. */
-	private Task currentTask, lastTask;
+	private transient Task currentTask;
+	/** The last task the person/robot was doing. */	
+	private Task lastTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 
@@ -76,7 +74,14 @@ implements Serializable {
 
 	private TaskSchedule ts;
 	
-	//private ShiftType stCache;
+	private MarsClock marsClock;
+	
+	private transient MarsClock timeCache;
+	
+	private transient Map<MetaTask, Double> taskProbCache;
+	
+	private transient List<MetaTask> mtListCache;
+	
 
 	/**
 	 * Constructor.
@@ -454,53 +459,53 @@ implements Serializable {
 	 * Checks if any emergencies are happening in the person's local.
 	 * Adds an emergency task if necessary.
 	 */
-	private void checkForEmergency() {
-
-		// Check for emergency malfunction.
-		if (!RepairEmergencyMalfunction.hasEmergencyMalfunction(person))
-			return;
-
-	    // Check if person is already repairing an emergency.
-	    if (doingEmergencyRepair())
-	    	return;
-
-		// Check if person is performing an airlock task.
-		if(doingAirlockTask())
-			return;
-
-		if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
-
-            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
-
-            	//if (person.isOutside())
-            	//	return;
-
-				//int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
-				//if (numOutside == 0) {		
-				//}
-            	
-        		// if he is not outside, he may take on this repair task
-        		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-        				person + " cancelled '" + currentTask +
-                        "' and rushed to the scene to participate in an EVA emergency repair.", null);
-                clearTask();
-                
-                addTask(new RepairEmergencyMalfunctionEVA(person));
-
-            }
-		}
-		
-		else { // requires no EVA for the repair
-			
-    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-    				person + " cancelled '" + currentTask +
-                    "' and rushed to the scene to participate in an non-EVA emergency repair.", null);
-            clearTask();
-            
-            addTask(new RepairEmergencyMalfunction(person));
-		}
-
-	}
+//	private void checkForEmergency() {
+//
+//		// Check for emergency malfunction.
+//		if (!RepairEmergencyMalfunction.hasEmergencyMalfunction(person))
+//			return;
+//
+//	    // Check if person is already repairing an emergency.
+//	    if (doingEmergencyRepair())
+//	    	return;
+//
+//		// Check if person is performing an airlock task.
+//		if(doingAirlockTask())
+//			return;
+//
+//		if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
+//
+//            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
+//
+//            	//if (person.isOutside())
+//            	//	return;
+//
+//				//int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
+//				//if (numOutside == 0) {		
+//				//}
+//            	
+//        		// if he is not outside, he may take on this repair task
+//        		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+//        				person + " cancelled '" + currentTask +
+//                        "' and rushed to the scene to participate in an EVA emergency repair.", null);
+//                clearTask();
+//                
+//                addTask(new RepairEmergencyMalfunctionEVA(person));
+//
+//            }
+//		}
+//		
+//		else { // requires no EVA for the repair
+//			
+//    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+//    				person + " cancelled '" + currentTask +
+//                    "' and rushed to the scene to participate in an non-EVA emergency repair.", null);
+//            clearTask();
+//            
+//            addTask(new RepairEmergencyMalfunction(person));
+//		}
+//
+//	}
 
 	/**
 	 * Gets a new task for the person based on tasks available.
@@ -581,70 +586,82 @@ implements Serializable {
 
 	    List<MetaTask> mtList = null;
 
-	    if (timeCache == null)
-	    	timeCache = marsClock;
-	    	//timeCache = Simulation.instance().getMasterClock().getMarsClock();
-	    
-	    int millisols = timeCache.getMsol0();
-
-	    if (ts == null)
-	    	ts = person.getTaskSchedule();
-	    
-	    ShiftType st = ts.getShiftType();
-	    		    
-	    //boolean isOnCall = (st == ShiftType.ON_CALL);
-	    //boolean isOff = (st == ShiftType.OFF);
-	    //boolean isShiftHour = true;
-
-	    if (st == ShiftType.ON_CALL) {
-	    	mtList = MetaTaskUtil.getAllMetaTasks();//getAnyHourTasks();
+//    	if (marsClock == null) {
+//    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//    	}
+    	
+	    if (timeCache == null) {
+	    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
+	    	marsClock = timeCache;
 	    }
-	    else if (st == ShiftType.OFF) {
-	    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
-	    }
-	    else {
-	    	// is the person off the shift ?
-	    	//isShiftHour = ts.isShiftHour(millisols);
-
-		    if (ts.isShiftHour(millisols)) {
-		    	mtList = MetaTaskUtil.getWorkHourMetaTasks();
+	    
+	    int msol = marsClock.getMsol0();
+	    
+//	    double msol1 = marsClock.getMsol1();
+//	    
+//	    if (msolCache != msol1) {
+//	    	msolCache = msol1;
+	
+		    if (ts == null)
+		    	ts = person.getTaskSchedule();
+		    
+		    ShiftType st = ts.getShiftType();
+		    		    
+		    //boolean isOnCall = (st == ShiftType.ON_CALL);
+		    //boolean isOff = (st == ShiftType.OFF);
+		    //boolean isShiftHour = true;
+	
+		    if (st == ShiftType.ON_CALL) {
+		    	mtList = MetaTaskUtil.getAllMetaTasks();//getAnyHourTasks();
 		    }
-		    else {
+		    else if (st == ShiftType.OFF) {
 		    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
 		    }
-	    }
-
-	    if (mtListCache != mtList && mtList != null) {
-	    	// TODO: is there a better way to compare them this way ?
-	    	mtListCache = mtList;
-	    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-	    }
-	    
-
-		// Clear total probabilities.
-		totalProbCache = 0D;
-		// Determine probabilities.
-		for (MetaTask mt : mtListCache) {
-			double probability = mt.getProbability(person);
-
-			if ((probability >= 0D) && (!Double.isNaN(probability)) 
-					&& (!Double.isInfinite(probability))) {
-				taskProbCache.put(mt, probability);
-				totalProbCache += probability;
+		    else {
+		    	// is the person off the shift ?
+		    	//isShiftHour = ts.isShiftHour(millisols);
+	
+			    if (ts.isShiftHour(msol)) {
+			    	mtList = MetaTaskUtil.getWorkHourMetaTasks();
+			    }
+			    else {
+			    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
+			    }
+		    }
+	
+		    if (mtListCache != mtList && mtList != null) {
+		    	// TODO: is there a better way to compare them this way ?
+		    	mtListCache = mtList;
+		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
+		    }
+		    
+	
+			// Clear total probabilities.
+			totalProbCache = 0D;
+			// Determine probabilities.
+			for (MetaTask mt : mtListCache) {
+				double probability = mt.getProbability(person);
+	
+				if ((probability >= 0D) && (!Double.isNaN(probability)) 
+						&& (!Double.isInfinite(probability))) {
+					taskProbCache.put(mt, probability);
+					totalProbCache += probability;
+				}
+				else {
+					taskProbCache.put(mt, 0D);
+	
+					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+							"Task probability is invalid when calculating for " + mind.getPerson().getName() 
+								+ " on " + mt.getName() + " : Probability is " + probability + ".", null);
+				}
 			}
-			else {
-				taskProbCache.put(mt, 0D);
-
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-						"Task probability is invalid when calculating for " + mind.getPerson().getName() 
-							+ " on " + mt.getName() + " : Probability is " + probability + ".", null);
-			}
-		}
-
-		// Set the time cache to the current time.
-		//if (marsClock != null)
-		//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		timeCache = (MarsClock) marsClock.clone();
+	
+			// Set the time cache to the current time.
+			//if (marsClock != null)
+			//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			timeCache = (MarsClock) marsClock.clone();
+			
+//	    }
 	}
 
 	/**

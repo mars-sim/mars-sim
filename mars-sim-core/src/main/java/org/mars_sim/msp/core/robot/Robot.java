@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -69,7 +70,8 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 
     /* default logger. */
 	private static transient Logger logger = Logger.getLogger(Robot.class.getName());
-
+//	private static String sourceName = logger.getName();
+	
 	// Static members
     /** The base carrying capacity (kg) of a robot. */
     private final static double BASE_CAPACITY = 60D;
@@ -83,8 +85,8 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	private static final double MAINTENANCE_TIME = 100D;
 
     // Data members
-    /** The cache for msols */     
- 	private int msolCache;
+    /** The cache for msol */     
+ 	private double msolCache = -1D;
     /** The height of the robot (in cm). */
     private int height;
     /** Settlement X location (meters) from settlement center. */
@@ -100,9 +102,6 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	private String country;
 	private String sponsor;
 
-    /** The robot's achievement in scientific fields. */
-    //private Map<ScienceType, Double> scientificAchievement;
-    //private Person owner;
     /** Manager for robot's natural attributes. */
     private RoboticAttributeManager attributes;
     /** robot's mind. */
@@ -135,9 +134,9 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	
 	private Walk walk;
 	
-    private static MarsClock marsClock;
-    private static EarthClock earthClock;
-    private static MasterClock masterClock;
+    private MarsClock marsClock;
+    private EarthClock earthClock;
+    private MasterClock masterClock;
 
 
 	//private Vehicle vehicle;
@@ -526,10 +525,15 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 		}
 		malfunctionManager.timePassing(time);
 */
-	    int msol = marsClock.getMsol0();
+    	if (marsClock == null) {
+    		masterClock = Simulation.instance().getMasterClock();
+    		marsClock = masterClock.getMarsClock();
+    	}
+    	
+	    double msol1 = marsClock.getMsol1();
 	    
-	    if (msolCache != msol) {
-	    	msolCache = msol;
+	    if (msolCache != msol1) {
+	    	msolCache = msol1;
 	    	
 	        // If robot is dead, then skip
 	        if (!health.isInoperable()) {

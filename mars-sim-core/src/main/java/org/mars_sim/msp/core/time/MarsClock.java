@@ -123,7 +123,7 @@ public class MarsClock implements Serializable {
 	/** The Martian day. */
 	private int sol;
 	/** The rounded millisol of the day. */
-	private int msol; 
+	private int msolInt; 
 	/** The millisol of the day. */	
 	private double millisol; 
 	/** The millisol of the day in 1 decimal place. */	
@@ -387,7 +387,7 @@ public class MarsClock implements Serializable {
 
 		millisol += addedMillisols;
 		msol1 = Math.round(millisol*10.0)/10.0;
-		msol = (int) millisol;
+		msolInt = (int) millisol;
 
 		if (addedMillisols > 0D) {
 			while (millisol >= 1000D) {
@@ -672,7 +672,7 @@ public class MarsClock implements Serializable {
 	 * @return the millisol as an int
 	 */
 	public int getMsol0() {
-		return msol;
+		return msolInt;
 	}
 	
 	/**

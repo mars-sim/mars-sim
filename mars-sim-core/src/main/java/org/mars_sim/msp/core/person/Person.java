@@ -100,7 +100,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The cache for sol. */
 	private int solCache = 1;
     /** The cache for msol1 */     
- 	private double msolCache;
+ 	private double msolCache = -1D;
 	//private int[] emotional_states;
 	/** The height of the person (in cm). */
 	private double height;
@@ -185,10 +185,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Map<Integer, Gene> maternal_chromosome;
 
 	
-	private static Simulation sim = Simulation.instance();
-	private static MarsClock marsClock;
-	private static EarthClock earthClock;
-	private static MasterClock masterClock;
+	//private Simulation sim = Simulation.instance();
+	private MarsClock marsClock;
+	private EarthClock earthClock;
+	private MasterClock masterClock;
 
 	//private PersonConfig config; 
 
@@ -266,8 +266,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void initialize() {
 
-		sim = Simulation.instance();
-		masterClock = sim.getMasterClock();
+		//sim = Simulation.instance();
+		masterClock = Simulation.instance().getMasterClock();
 		if (masterClock != null) { // avoid NullPointerException during maven test
 			marsClock = masterClock.getMarsClock();
 			earthClock = masterClock.getEarthClock();
@@ -904,6 +904,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void timePassing(double time) {
 		
+    	if (marsClock == null) {
+    		masterClock = Simulation.instance().getMasterClock();
+    		marsClock = masterClock.getMarsClock();
+    	}
+    	
 	    double msol1 = marsClock.getMsol1();
 	    
 	    if (msolCache != msol1) {

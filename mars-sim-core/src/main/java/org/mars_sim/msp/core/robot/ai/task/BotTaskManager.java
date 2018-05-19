@@ -44,25 +44,26 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(BotTaskManager.class.getName());
 
 	// Data members
-	//private String taskNameCache = "";
+    /** The cache for msolInt */     
+ 	private int msolCache = -1;
+	// Cache variables.
+	private transient double totalProbCache;
+	
 	private String taskDescriptionCache = "";
+	
 	private String taskPhaseCache = "";
-	//private String oldJob = "";
 	/** The current task the robot is doing. */
 	private Task currentTask; 
-	//private Task lastTask;
 	/** The mind of the robot. */
 	private BotMind botMind;
 
-	// Cache variables.
-	private transient MarsClock timeCache;
-	private static MarsClock marsClock;
-	private transient double totalProbCache;
-	private transient Map<MetaTask, Double> taskProbCache;
-	//private transient List<MetaTask> mtListCache;
-	//private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
-	
 	private Robot robot = null;
+	
+	private transient MarsClock timeCache;
+	
+	private MarsClock marsClock;
+	
+	private transient Map<MetaTask, Double> taskProbCache;
 
 	/**
 	 * Constructor.
@@ -491,33 +492,48 @@ implements Serializable {
 	 */
 	private void calculateProbability() {
 
-		List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
-
-		if (taskProbCache == null)
-			taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
-
-		// Clear total probabilities.
-		totalProbCache = 0D;
-		// Determine probabilities.
-		for (MetaTask mt : mtList) {
-			double probability = mt.getProbability(robot);
-
-			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				taskProbCache.put(mt, probability);
-				totalProbCache += probability;
+//    	if (marsClock == null) {
+//    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//    	}
+    	
+	    if (timeCache == null) {
+	    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
+	    	marsClock = timeCache;
+	    }
+	    
+	    
+//	    int msol = timeCache.getMsolInt();
+//	    if (msolCache != msol) {
+//	    	msolCache = msol;
+		    	
+			List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
+	
+			if (taskProbCache == null)
+				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
+	
+			// Clear total probabilities.
+			totalProbCache = 0D;
+			// Determine probabilities.
+			for (MetaTask mt : mtList) {
+				double probability = mt.getProbability(robot);
+	
+				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+					taskProbCache.put(mt, probability);
+					totalProbCache += probability;
+				}
+				else {
+					taskProbCache.put(mt, 0D);
+	
+					logger.severe(botMind.getRobot().getName() + " bad task probability: " +  mt.getName() +
+								" probability: " + probability);
+				}
 			}
-			else {
-				taskProbCache.put(mt, 0D);
-
-				logger.severe(botMind.getRobot().getName() + " bad task probability: " +  mt.getName() +
-							" probability: " + probability);
-			}
-		}
-
-		// Set the time cache to the current time.
-		//if (marsClock != null)
-		//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		timeCache = (MarsClock) marsClock.clone();
+	
+			// Set the time cache to the current time.
+			//if (marsClock != null)
+			//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			timeCache = (MarsClock) marsClock.clone();
+//	    }
 	}
 
 	/**

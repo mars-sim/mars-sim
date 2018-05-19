@@ -45,9 +45,12 @@ implements Serializable {
     private static Logger logger = Logger.getLogger(Mind.class.getName());
 
     // Data members
+    /** Is the job locked so another can't be chosen? */
+    private boolean jobLock;
+    /** The cache for sol. */    
 	private int solCache = 1;
     /** The cache for msol0. */     
- 	private int msolCache;
+ 	private double msolCache = -1D;
     /** The person owning this mind. */
     private Person person = null;
     /** The person's task manager. */
@@ -64,11 +67,10 @@ implements Serializable {
     private SkillManager skillManager;
 
     private MissionManager missionManager;
-    /** Is the job locked so another can't be chosen? */
-    private boolean jobLock;
 
     private static Simulation sim;
-    private static MarsClock marsClock;
+    
+    private MarsClock marsClock;
 
     /**
      * Constructor 1.
@@ -116,10 +118,10 @@ implements Serializable {
         	// 2015-10-31 Added recordMission()
         	missionManager.recordMission(person);
 
-	    int msol0 = marsClock.getMsol0();
+	    double msol1 = marsClock.getMsol1();
 	    
-	    if (msolCache != msol0) {
-	    	msolCache = msol0;
+	    if (msolCache != msol1) {
+	    	msolCache = msol1;
 
 	    	// Note : for now a Mayor/Manager cannot switch job
 	    	if (job instanceof Manager)
