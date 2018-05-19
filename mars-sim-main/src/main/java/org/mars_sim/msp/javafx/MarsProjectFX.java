@@ -287,9 +287,9 @@ public class MarsProjectFX extends Application  {
     	
         String major = null;
         String minor = null;
-        String update = null; 
+        //String update = null; 
         String build = null;
-        String dateStamp = null;
+        //String dateStamp = null;
 
         // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
 
@@ -301,11 +301,11 @@ public class MarsProjectFX extends Application  {
         // e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
         major = javaVersionElements[0];
         minor   = javaVersionElements[1];
-        update  = javaVersionElements[2];
+        //update  = javaVersionElements[2];
 
         if (javaVersionElements.length > 3) {
         	build = javaVersionElements[3];
-        	dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
+        	//dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
         }
 
         double majorNum = Double.parseDouble(major);
