@@ -44,8 +44,8 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(BotTaskManager.class.getName());
 
 	// Data members
-    /** The cache for msolInt */     
- 	private int msolCache = -1;
+    /** The cache for msol */     
+ 	private double msolCache = -1D;
 	// Cache variables.
 	private transient double totalProbCache;
 	
@@ -502,9 +502,10 @@ implements Serializable {
 	    }
 	    
 	    
-//	    int msol = timeCache.getMsolInt();
-//	    if (msolCache != msol) {
-//	    	msolCache = msol;
+	    double msol1 = marsClock.getMsol1();
+	    
+	    if (msolCache != msol1) {
+	    	msolCache = msol1;
 		    	
 			List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
 	
@@ -533,7 +534,7 @@ implements Serializable {
 			//if (marsClock != null)
 			//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			timeCache = (MarsClock) marsClock.clone();
-//	    }
+	    }
 	}
 
 	/**

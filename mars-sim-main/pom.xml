@@ -206,11 +206,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<artifactId>mars-sim-mapdata</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-	    <dependency>
+	    <!-- dependency>
 	    	<groupId>net.sf.mars-sim</groupId>
 	    	<artifactId>mars-sim-network</artifactId>
 	    	<version>${project.version}</version>
-	    </dependency>
+	    </dependency-->
 	</dependencies>
 
 	<repositories>

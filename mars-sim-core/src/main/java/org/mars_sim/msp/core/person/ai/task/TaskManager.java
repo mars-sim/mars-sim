@@ -595,12 +595,12 @@ implements Serializable {
 	    	marsClock = timeCache;
 	    }
 	    
-	    int msol = marsClock.getMsol0();
+	    //int msol = marsClock.getMsol0();
 	    
-//	    double msol1 = marsClock.getMsol1();
-//	    
-//	    if (msolCache != msol1) {
-//	    	msolCache = msol1;
+	    double msol1 = marsClock.getMsol1();
+	    
+	    if (msolCache != msol1) {
+	    	msolCache = msol1;
 	
 		    if (ts == null)
 		    	ts = person.getTaskSchedule();
@@ -621,7 +621,7 @@ implements Serializable {
 		    	// is the person off the shift ?
 		    	//isShiftHour = ts.isShiftHour(millisols);
 	
-			    if (ts.isShiftHour(msol)) {
+			    if (ts.isShiftHour((int)msol1)) {
 			    	mtList = MetaTaskUtil.getWorkHourMetaTasks();
 			    }
 			    else {
@@ -661,7 +661,7 @@ implements Serializable {
 			//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			timeCache = (MarsClock) marsClock.clone();
 			
-//	    }
+	    }
 	}
 
 	/**

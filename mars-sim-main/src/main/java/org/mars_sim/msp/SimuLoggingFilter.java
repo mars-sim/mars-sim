@@ -14,14 +14,17 @@ import java.util.logging.LogRecord;
 
 public class SimuLoggingFilter implements Filter{
 
+    public final static String PREFIX = "org.mars_sim";
  
     public boolean isLoggable(LogRecord record) {
-	if(record.getLoggerName() == null ||
-	   record.getLoggerName().startsWith("org.mars_sim")) {
-	    return true;
-	}
+		if (record.getLoggerName() == null 
+				||
+		   record.getLoggerName().startsWith(PREFIX)) {
+			return true;
+		}
 	
 	return false;
+	
     }
 
 }

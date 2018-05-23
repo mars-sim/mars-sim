@@ -18,11 +18,11 @@
     	<artifactId>mars-sim-mapdata</artifactId>
     	<version>${project.version}</version>
     </dependency>
-        <dependency>
+    <!-- dependency>
     	<groupId>net.sf.mars-sim</groupId>
     	<artifactId>mars-sim-network</artifactId>
     	<version>${project.version}</version>
-    </dependency>
+    </dependency-->
 	<dependency>
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>

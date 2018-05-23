@@ -16,7 +16,8 @@
 	</properties>	
 	<packaging>jar</packaging>
 	<dependencies>
-		<dependency>
+<!-- 
+	<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
@@ -27,5 +28,6 @@
 	    <artifactId>threeten-extra</artifactId>
 	    <version>1.2</version>
 	</dependency>
+ -->
   </dependencies>
 </project>

@@ -25,6 +25,7 @@ import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
+
 import javafx.application.Platform;
 
 @SuppressWarnings("restriction")

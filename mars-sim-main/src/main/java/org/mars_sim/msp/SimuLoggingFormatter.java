@@ -19,8 +19,15 @@ import org.mars_sim.msp.core.tool.Conversion;
 public class SimuLoggingFormatter extends Formatter {
 
     public final static String LINEFEED = System.getProperty("line.separator");
-
-    private DateFormat df = DateFormat.getDateTimeInstance();
+    public final static String O_PAREN = " (";
+    public final static String C_PAREN = ") ";
+    public final static String BRAC_X1 = "[x1] ";
+    public final static String C_BRAC = "] ";
+    public final static String O_BRAC = "[x";
+    public final static String PERIOD = ".";
+    public final static String COLON = " : ";
+    
+    public final static DateFormat df = DateFormat.getDateTimeInstance();
     private Date date = new Date();
     
     private StringBuffer sb = new StringBuffer();
@@ -32,34 +39,34 @@ public class SimuLoggingFormatter extends Formatter {
 		sb.delete(0,sb.length());
 		date.setTime(record.getMillis());
 
-		String dateTimeStamp = df.format(date);//.replaceAll("AM", "").replaceAll("PM", "");
-		sb.append(dateTimeStamp);
+		//String dateTimeStamp = df.format(date);//.replaceAll("AM", "").replaceAll("PM", "");
+		sb.append(df.format(date));
 
 		// Get the level name and add it to the buffer
-		sb.append(" (");
+		sb.append(O_PAREN);
 		sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
-		sb.append(") ");
+		sb.append(C_PAREN);
 		
 		String path = null;
 		String source = null;
 		
 		if (msg != null) {
 			
-			if (msg.contains("[x1] ")) {
-				msg = msg.substring(msg.indexOf("] ") + 2, msg.length());
+			if (msg.contains(BRAC_X1)) {
+				msg = msg.substring(msg.indexOf(C_BRAC) + 2, msg.length());
 				sb.append(msg);
 			}
 			
-			else if (msg.contains("[x") && msg.contains("] ")) {
+			else if (msg.contains(O_BRAC) && msg.contains(C_BRAC)) {
 				sb.append(msg);
 			}
 			
 			else {
-				msg = msg.substring(msg.indexOf("] ") + 1, msg.length());
+				msg = msg.substring(msg.indexOf(C_BRAC) + 1, msg.length());
 				path = record.getSourceClassName();
-				source = path.substring(path.lastIndexOf(".") + 1, path.length());		
+				source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());		
 				sb.append(source);
-				sb.append(" : ");
+				sb.append(COLON);
 				sb.append(msg);
 			}
 			
@@ -72,7 +79,7 @@ public class SimuLoggingFormatter extends Formatter {
     }
     
     public void destroy() {
-    	df = null;
+    	//df = null;
         date = null;
         sb = null;
     }

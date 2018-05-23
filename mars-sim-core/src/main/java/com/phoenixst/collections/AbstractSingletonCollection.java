@@ -15,7 +15,9 @@
 
 package com.phoenixst.collections;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.collections.iterators.EmptyIterator;
 
