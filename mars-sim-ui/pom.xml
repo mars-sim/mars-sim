@@ -39,12 +39,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency -->
 		<!-- 	https://mvnrepository.com/artifact/de.codecentric.centerdevice/javafxsvg/1.2.1 : 5KB 
 				https://github.com/codecentric/javafxsvg
- 		     Requiring batik-transcoder and xmlgraphics-commons -->
+ 		     Requiring batik-transcoder and xmlgraphics-commons
 		<dependency>
 			<groupId>de.codecentric.centerdevice</groupId>
 			<artifactId>javafxsvg</artifactId>
 			<version>1.3.0</version>
-		</dependency>
+		</dependency -->
 		<!--dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreesvg</artifactId>
@@ -90,12 +90,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
 			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
 			if using 1.8 or 1.9, import org.apache.batik.anim.dom.SAXSVGDocumentFactory
-			if using 1.7, import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+			if using 1.7, import org.apache.batik.dom.svg.SAXSVGDocumentFactory;-->
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.9.1</version>
-		</dependency-->
+		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim 
 			 Needed by afester's svg class
@@ -188,7 +188,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>nimrodlf</artifactId>
 			<version>1.2c</version>
 		</dependency>
-		<!-- https://github.com/Sciss/weblaf -->
+		
+		<!-- https://github.com/Sciss/weblaf -->	
         <dependency>
             <groupId>de.sciss</groupId>
             <artifactId>weblaf-ui</artifactId>
@@ -204,7 +205,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.40.14</version>
+			<version>9.0.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->
@@ -213,10 +214,27 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>jide-oss</artifactId>
 			<version>3.6.18</version>
 		</dependency>
- 		<dependency>
+ 		<!-- dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</artifactId>
 		    <version>8.9</version>
+		</dependency-->
+		<dependency>
+		  <groupId>de.jensd</groupId>
+		  <artifactId>fontawesomefx-commons</artifactId>
+		  <version>9.1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx-fontawesome -->
+		<dependency>
+		    <groupId>de.jensd</groupId>
+		    <artifactId>fontawesomefx-fontawesome</artifactId>
+		    <version>4.7.0-9.1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx-materialdesignfont -->
+		<dependency>
+		    <groupId>de.jensd</groupId>
+		    <artifactId>fontawesomefx-materialdesignfont</artifactId>
+		    <version>2.0.26-9.1.2</version>
 		</dependency>
 
         <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse : 311 KB 
@@ -262,7 +280,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>8.0.4</version>
+			<version>9.0.4</version>
 		</dependency>
 <!-- The following artifacts are Needed by jfoenix
 		fontawesomefx 8.0.10 : 84 KB

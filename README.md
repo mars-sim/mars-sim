@@ -60,26 +60,17 @@ As the settlers learn how to survive the hardship and build up their settlements
 For a more detail description of this project, see our project website at at https://mars-sim.github.io/
 
 
-## Feedback/Comments
-We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel free to provide your comments at our facebook community at https://www.facebook.com/groups/125541663548/. See also old/archived discussions at https://sourceforge.net/p/mars-sim/discussion/
-
-
-## Issues/Tickets
-* Current : https://github.com/mars-sim/mars-sim/issues
-* Past/Archived : https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed
-
-
 ## Wiki
 * Check out new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 
 
 ## Supported Platforms
 * Windows
-* MacOS (known bugs in displaying certain fonts in a website in Help Browser)
+* MacOS (known bugs in displaying certain fonts of some websites in Help Browser)
 * Linux (cannot input text in text fields)
 
 
-## OS Setup
+## Java VM Setup
 * Requires Java 8 (u77 or above, preferably 8u171 but not 8u172 as 8u172 incorporate crypto security updates that are incompatible with the use of https in mars-sim's inline browser)
 * Does NOT work with Java 9 or above
 * For Windows OS, one should manually set up the following : 
@@ -92,9 +83,43 @@ We welcome anyone to contribute to mars-sim in terms of ideas and concepts. Feel
 * Note 2 : The introduction of modularity in Java 9 JRE/JDK creates breaking changes to many existing java applications, including mars-sim. Please be sure to disable JDK 9 in "Java Control Panel" and preferably remove all Java 9 related executables inside the folder `C:\ProgramData\Oracle\Java\javapath`
 
 
+## Feedback/Comments
+We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. Feel free to provide your comments at our [facebook community]( https://www.facebook.com/groups/125541663548/). See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
+
+
+## Issues/Tickets
+* Current : https://github.com/mars-sim/mars-sim/issues
+* Past/Archived : https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed
+
+If you encounter a bug, file a ticket in GitHub issue tab with the following info identified:
+
+(1). Specifications :
+ a. mars-sim build version - e.g. preview 8, Build 4255, etc.
+ b. Operating System (OS) - e.g. Windows 7, Ubuntu 15.04, etc.
+ c. Java version - e.g. JRE 8u151, OpenJDK 1.8.0_131 and OpenJFX etc.
+
+(2). Affected Area - 
+ a. What area(s) are we dealing with? e.g. Construction, Mission, Resupply, Settlement Map, Mini-map, Saving/Loading Sim, System Exceptions in Command Prompt/Terminal,
+
+(3). Behaviors -
+ a. Expected
+ b. Actual/Observed
+
+(4). Reproduction -
+ a. Steps to reproduce the problem
+
+(5). Screenshots at the time of crash that help illustrating the issue
+ a. Person Window showing various activity tabs,
+ b. Settlement/Vehicle Window
+ c. Monitor Tool's showing People/Vehicle/Mission tabs, etc.
+ d. Settlement Map
+
+> Note : providing the info above from the start will help expedite our handling of the issue.
+
+
 ## Development Prerequisites
-If you would like to contribute to the project, see our [developer wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment). 
-We will help you and answer your questions in our new [Gitter chatroom](https://gitter.im/mokun/mars-sim). 
+If you would like to contribute to coding, see our [developer wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment). 
+Also, we will answer your questions in our new [Gitter chatroom](https://gitter.im/mokun/mars-sim). 
 
 
 ## Official Codebase

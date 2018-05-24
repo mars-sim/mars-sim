@@ -16,20 +16,20 @@
  */
 
 package org.mars_sim.msp.ui.javafx;
-
-import com.alee.managers.style.ChildStyleId;
-import com.alee.managers.style.StyleId;
-
-/**
- * @author Mikle Garin
- */
-
-public class ExampleStyles
-{
-    public static final StyleId shaded = StyleId.of ( "shaded" );
-    public static final StyleId shadedLarge = StyleId.of ( "shaded-large" );
-    public static final ChildStyleId title = ChildStyleId.of ( "title" );
-    public static final ChildStyleId line = ChildStyleId.of ( "line" );
-    public static final ChildStyleId scroll = ChildStyleId.of ( "scroll" );
-    public static final ChildStyleId text = ChildStyleId.of ( "text" );
-}
+//
+//import com.alee.managers.style.ChildStyleId;
+//import com.alee.managers.style.StyleId;
+//
+///**
+// * @author Mikle Garin
+// */
+//
+//public class ExampleStyles
+//{
+//    public static final StyleId shaded = StyleId.of ( "shaded" );
+//    public static final StyleId shadedLarge = StyleId.of ( "shaded-large" );
+//    public static final ChildStyleId title = ChildStyleId.of ( "title" );
+//    public static final ChildStyleId line = ChildStyleId.of ( "line" );
+//    public static final ChildStyleId scroll = ChildStyleId.of ( "scroll" );
+//    public static final ChildStyleId text = ChildStyleId.of ( "text" );
+//}

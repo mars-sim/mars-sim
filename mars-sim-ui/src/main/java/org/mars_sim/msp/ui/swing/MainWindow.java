@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project
+/ * Mars Simulation Project
  * MainWindow.java
  * @version 3.1.0 2017-10-05
  * @author Scott Davis
@@ -48,7 +48,7 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
-import com.alee.laf.WebLookAndFeel;
+//import com.alee.laf.WebLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
 /**
@@ -690,7 +690,7 @@ public class MainWindow extends JComponent {
 		boolean changed = false;
 
 		// use the weblaf skin
-		WebLookAndFeel.install();
+		//WebLookAndFeel.install();
 
 		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 

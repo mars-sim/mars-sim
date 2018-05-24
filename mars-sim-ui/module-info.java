@@ -22,7 +22,8 @@ module mars-sim-ui {
     
     
     requires junit;
-    requires javafxsvg;
+//    requires javafxsvg;
+    requires batik-transcoder;
     requires jfreechart;
     requires trident;  
     requires jorbis;
@@ -32,7 +33,10 @@ module mars-sim-ui {
     requires controlsfx;
 
     requires jide-oss;
-    requires fontawesomefx;
+//    requires fontawesomefx;
+    requires fontawesomefx-commons;
+    requires fontawesomefx-fontawesome;
+    requires fontawesomefx-materialdesignfon;
     requires tilesfx;
     requires Medusa;
     requires LibFX;

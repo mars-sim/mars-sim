@@ -1,6 +1,6 @@
 package org.mars_sim.msp.ui.javafx.demo;
 
-import com.sun.javafx.application.PlatformImpl;
+//import com.sun.javafx.application.PlatformImpl;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -86,7 +86,8 @@ public class SwingFXWebView extends JPanel {
      */
     @SuppressWarnings("restriction")
 	private void createScene() {
-        PlatformImpl.startup(new Runnable() {
+//        Platform.startup(new Runnable() {
+        Platform.runLater(new Runnable() {
             @Override
             public void run() {
 
@@ -108,8 +109,8 @@ public class SwingFXWebView extends JPanel {
                 children.add(browser);
 
                 jfxPanel.setScene(scene);
-            }
-        });
+        }
+    });
     }
 }
 

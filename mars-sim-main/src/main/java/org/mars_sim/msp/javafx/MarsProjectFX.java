@@ -287,7 +287,7 @@ public class MarsProjectFX extends Application  {
     	
         String major = null;
         String minor = null;
-        //String update = null; 
+        String update = null; 
         String build = null;
         //String dateStamp = null;
 
@@ -317,13 +317,16 @@ public class MarsProjectFX extends Application  {
 //        System.out.println(build);
         
     	if (majorNum > 8) {
-    		// TODO: will need to refine how to flag the machine with Java 9, 10 and 11 installed.
-    		
     		// see https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
     		// In Java 9, the format of the new version-string is: $MAJOR.$MINOR.$SECURITY.$PATCH
     		// Under the old scheme, the Java 9u5 security release would have the version string 1.9.0_5-b20.
     		// Under the new scheme, the short version of the same release is 9.0.1, and the long version is 9.0.1+20.
 
+    		// e.g.
+    		// In Java 8, majorNum has always been "1". minorNum is "8".
+    		// In Java 9.0.4, majorNum becomes "9". minorNum is "0". update is "4".
+    		// In Java 10.0.1, majorNum is "10".minorNum is "0". update is "1".
+    		
     		//exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It requires Java 8 (8u77 or above). Terminated.");
     		
     		good2Go = true;

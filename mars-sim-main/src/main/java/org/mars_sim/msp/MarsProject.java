@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
-import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
+//import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
@@ -78,7 +78,7 @@ public class MarsProject {
 	    		System.setProperty("sun.java2d.ddforcevram", "true"); // question: is this compatible with opengl in linux and macos ?
 
 	        	// Enable capability of loading of svg image using regular method
-	    		SvgImageLoaderFactory.install();
+	    		//SvgImageLoaderFactory.install();
 
 	            // Create a splash window
 	            //SplashWindow splashWindow = new SplashWindow();

@@ -1,4 +1,6 @@
 module mars-sim-main {
+
+    requires java.awt;
     requires java.io;
     requires java.net;
     requires java.util;
@@ -9,7 +11,8 @@ module mars-sim-main {
     requires javafx.application.Platform;
     
     requires junit;
-    
+
+    requires mars-sim-core;
     requires mars-sim-ui;
     requires mars-sim-mapdata;
     

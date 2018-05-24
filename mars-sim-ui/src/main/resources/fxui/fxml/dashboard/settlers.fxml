@@ -18,7 +18,7 @@
 <?import javafx.geometry.Insets?>
 <?import org.controlsfx.control.Rating?>
 
-<AnchorPane id="AnchorPane" fx:id="settlersPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0"
+<AnchorPane id="AnchorPane" fx:id="settlersPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0"
 	fx:controller="org.mars_sim.msp.ui.javafx.dashboard.SettlersController" >
 	<children>
 		<Label text="Settlers" layoutX="19.0" layoutY="17.0" prefHeight="25.0" prefWidth="200.0" style="-fx-font-size: 20; -fx-font-weight: bold; 
