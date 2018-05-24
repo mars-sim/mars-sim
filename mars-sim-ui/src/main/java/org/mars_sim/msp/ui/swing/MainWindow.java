@@ -48,7 +48,8 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
-//import com.alee.laf.WebLookAndFeel;
+import com.alee.managers.UIManagers;
+import com.alee.laf.WebLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
 /**
@@ -690,8 +691,9 @@ public class MainWindow extends JComponent {
 		boolean changed = false;
 
 		// use the weblaf skin
-		//WebLookAndFeel.install();
-
+		WebLookAndFeel.install();
+		UIManagers.initialize();
+		
 		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 
 		if (nativeLookAndFeel) {
