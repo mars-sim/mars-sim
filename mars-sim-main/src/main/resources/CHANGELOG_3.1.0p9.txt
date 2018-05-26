@@ -1,11 +1,11 @@
 ** Mars Simulation Project **
-Copyright (C) 2017 Scott Davis
+Copyright (C) 2018 Scott Davis
 https://mars-sim.github.io
 https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 9 (build 42__) - 2018-__-__
+## v3.1.0-Preview 9 (build 4271) - 2018-05-25
 
 ### KNOWN LIMITATIONS :
 
@@ -32,8 +32,7 @@ https://github.com/mars-sim/mars-sim
 
 7. Account for variation of outside air temperature in polar region.  
 
-8. Refine range of latitude/longitude input in sim config editor and 
-   in Mars minimap.
+8. Refine range of latitude/longitude input in sim config editor and minimap.
 
 9. Refine grid battery charging/discharging cycle.
 

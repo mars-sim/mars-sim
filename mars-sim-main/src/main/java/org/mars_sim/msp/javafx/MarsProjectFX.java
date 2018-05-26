@@ -287,13 +287,13 @@ public class MarsProjectFX extends Application  {
     	
         String major = null;
         String minor = null;
-        String update = null; 
+        //String update = null; 
         String build = null;
         //String dateStamp = null;
 
         // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
 
-        String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+        //String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 
         //String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
         String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");

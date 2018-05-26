@@ -16,13 +16,14 @@
 	</properties>	
 	<packaging>jar</packaging>
 	<dependencies>
-<!-- 
+
 	<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
+	</dependency>
+<!-- 		
 	<dependency>
 	    <groupId>org.threeten</groupId>
 	    <artifactId>threeten-extra</artifactId>

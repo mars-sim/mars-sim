@@ -217,6 +217,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
 			<version>9.0.0</version>
+			<!-- version>8.40.14</version-->
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->
@@ -225,11 +226,15 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>jide-oss</artifactId>
 			<version>3.6.18</version>
 		</dependency>
- 		<!-- dependency>
+		
+		<!-- For Java 8, use fontawesomefx
+ 		<dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</artifactId>
 		    <version>8.9</version>
 		</dependency-->
+		
+		<!-- For Java 9, use fontawesomefx-commons, fontawesomefx-fontawesome, fontawesomefx-materialdesignfont -->
 		<dependency>
 		  <groupId>de.jensd</groupId>
 		  <artifactId>fontawesomefx-commons</artifactId>
@@ -249,7 +254,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 
         <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse : 311 KB 
-	   	dependency>
+	   	<dependency>
 			<groupId>org.luaj</groupId>
 			<artifactId>luaj-jse</artifactId>
 			<version>3.0.1</version>
@@ -291,6 +296,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
+			<!-- version>8.0.4</version-->
 			<version>9.0.4</version>
 		</dependency>
 <!-- The following artifacts are Needed by jfoenix

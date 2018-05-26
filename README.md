@@ -70,21 +70,25 @@ For a more detail description of this project, see our project website at at htt
 * Linux (cannot input text in text fields)
 
 
-## Java VM Setup
-* Requires Java 8 (u77 or above, preferably 8u171 but not 8u172 as 8u172 incorporate crypto security updates that are incompatible with the use of https in mars-sim's inline browser)
-* Does NOT work with Java 9 or above
+## Getting Started
+
+### Prerequisites
+* Require Java 8 JRE/JDK (u77 or above) for mars-sim v3.1.0p1 to p8 and v3.1.0p9_java8   
+* Require Java 9/10 JRE/JDK for mars-sim v3.1.0p9_java9
 * For Windows OS, one should manually set up the following : 
   - Edit the `JAVA_HOME` and `PATH` in the System's "Environment Variables" in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_151` or `C:\Program Files\Java\jdk1.8.0_151`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
   - Remove the path `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It interferes with the correct version of the Java that should be used. 
-* - Check if the correct version of Java is enable in "Java Control Panel" in Control Panel. The best approach is enabling only one Java build (such as 8u151) at a time and disable all other versions/builds.
-* Note 1 : To test the version of Java that your os is using, type "java -version" in a terminal/command prompt.
-* Note 2 : The introduction of modularity in Java 9 JRE/JDK creates breaking changes to many existing java applications, including mars-sim. Please be sure to disable JDK 9 in "Java Control Panel" and preferably remove all Java 9 related executables inside the folder `C:\ProgramData\Oracle\Java\javapath`
+  - Check if the correct version of Java is being enable in "Java Control Panel" in Windows's Control Panel. 
+
+> Note 1 The best approach is enabling only one Java build (such as Java 10.0.1) at a time and disable all other versions/builds.
+> Note 2 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+> Note 3 : Remove all Java 9 related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
 
 
 ## Feedback/Comments
-We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. Feel free to provide your comments at our [facebook community]( https://www.facebook.com/groups/125541663548/). See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
+Feel free to provide your comments at our [facebook community]( https://www.facebook.com/groups/125541663548/). See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
 
 
 ## Issues/Tickets
@@ -114,12 +118,12 @@ If you encounter a bug, file a ticket in GitHub issue tab with the following inf
  c. Monitor Tool's showing People/Vehicle/Mission tabs, etc.
  d. Settlement Map
 
-> Note : providing the info above from the start will help expedite our handling of the issue.
+> Note 1 : By providing the info above from the start, you help expedite the handling of the issue you submit.
 
+> Note 2 : if you double-click the jar file to start mars-sim and nothing shows up, it's possible that an instance of a JVM be created but it fails to load MainScene. In Windows OS, you may hit Ctrl+ESC to bring up the Task Manager and scroll down to see any "orphaned" instances of `Java(TM) Platform SE binary` running in the background. Be sure you clear them off the memory by right-clicking on it and choosing `End Task`. 
 
-## Development Prerequisites
-If you would like to contribute to coding, see our [developer wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment). 
-Also, we will answer your questions in our new [Gitter chatroom](https://gitter.im/mokun/mars-sim). 
+## How to contribute 
+We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. If you would like to contribute to coding, see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) for developers. Also, we will answer your questions in our [Gitter chatroom](https://gitter.im/mokun/mars-sim). 
 
 
 ## Official Codebase

@@ -20,7 +20,6 @@ module mars-sim-ui {
     requires javafx.embed.swing.JFXPanel;
     requires netscape.javascript.JSObject;
     
-    
     requires junit;
 //    requires javafxsvg;
     requires batik-transcoder;
@@ -33,7 +32,9 @@ module mars-sim-ui {
     requires controlsfx;
 
     requires jide-oss;
+// For Java 8, use the following one maven artifact    
 //    requires fontawesomefx;
+// For Java 9, use the following 3 maven artifacts    
     requires fontawesomefx-commons;
     requires fontawesomefx-fontawesome;
     requires fontawesomefx-materialdesignfon;

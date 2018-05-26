@@ -1,5 +1,5 @@
 ** Mars Simulation Project **
-Copyright (C) 2017 Scott Davis
+Copyright (C) 2018 Scott Davis
 https://mars-sim.github.io
 https://github.com/mars-sim/mars-sim
 
@@ -7,38 +7,42 @@ https://github.com/mars-sim/mars-sim
 
 ** Minimum Requirements **
 
-- Dual Core Pentium/Celeron 1.5GHz or above
+- Dual Core Pentium/Celeron 1.5GHz or higher
 
 - 1 GB free RAM dedicated for running mars-sim
 
-- 32 or 64-bit Oracle Java 8 (JRE/JDK above 8u77, preferably 8u151) 
-  or OpenJDK with OpenJFX
-  (Note : NOT compatible with Java 9)
-  
 - 135 MB free disk space
+
+- Java 8 JRE/JDK (u77 above) for v3.1.0p1 to p8 and v3.1.0p9_java8   
+
+- Java 9/10 JRE/JDK for v3.1.0p9_java9
 
 ---------------------------------------------------------------------
 
 ** Installation **
 
-- The latest Oracle Java VM can be freely downloaded from 
-http://www.oracle.com/technetwork/java/javase/downloads/index.html
+- Install the latest Java JRE or JDK on your machine. 
+  (See README.md from https://github.com/mars-sim/mars-sim) 
+
+- Download the mars-sim package available in three forms, namely,
+  Batch, Debian or Jar version.
 
 ---------------------------------------------------------------------
 
 ** Starting a new sim **
 
-A. Batch Mode 
+A. Batch Version
 
-- If you install mars-sim in windows OS with the provided installer, 
-a shortcut (with the icon showing a mars-sim lander hab) will be 
-given on your desktop. Click on the shortcut to automatically run 
-"mars-sim.bat".
+- Double click on "mars-sim.bat" or type "mars-sim.bat" to begin.
 
+B. Debian Version
 
-B. Manual Mode
+- If you have installed the debian version of mars-sim, type 
+"./mars-sim" to begin.
 
-1. With Graphics 
+C. Jar Version
+
+1. Graphics Mode
 
 - Double-click on 'mars-sim-[version/build].jar' to begin
 a new simulation in GUI mode as the jar file is executable
@@ -73,7 +77,7 @@ following attribute value in simulation.xml :
 
 	<autosave-interval value="15.0" />
 
-2. Headless (without graphics)
+2. Headless Mode (without graphics)
 
 - mars-sim is designed with a high level of autonomy. It's capable
 of running the entire simulation on its own. Therefore, one may 
@@ -127,7 +131,7 @@ simulation.xml :
     load 123.sim    load the sim with filename '123.sim'
                     (Note : '123.sim' must be located at the same 
                      		folder as the jarfile)
-	noaudio         disable background music and sound effect\n";                     		
+    noaudio         disable background music and sound effect\n";                     		
 
 ---------------------------------------------------------------------
 
@@ -155,13 +159,13 @@ numeral argument after the jar file as shown below :
 
 ---------------------------------------------------------------------
 
-** Load Saved Simulation **
+** Loading Saved Simulation **
 
 A. Graphic Mode
 
 If you want to load a previously saved simulation in graphic mode,
 
-- Double-click the jar file to start
+- Start the mars-sim
 
 - Choose 'Load Sim' in the Main Menu
 

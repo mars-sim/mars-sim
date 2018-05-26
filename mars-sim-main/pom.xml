@@ -23,11 +23,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-from-building-a-zip-file  -->
 					
 			<plugin>
+			<!-- https://maven-repository.com/artifact/org.codehaus.mojo/webstart-maven-plugin/1.0-beta-7: 151KB -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
 				<version>1.0-beta-7</version>
 
 				<dependencies>
+				<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/webstart-pack200-impl : 7 KB  -->
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>webstart-pack200-impl</artifactId>
@@ -70,9 +72,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			</plugin>
 			
 			<plugin>
+			<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.7 MB -->
         		<groupId>org.apache.maven.plugins</groupId>
         		<artifactId>maven-jar-plugin</artifactId>
-        		<version>3.0.2</version>
+        		<version>3.1.0</version>
         		<configuration>
           			<archive>
            				<manifest>
@@ -83,7 +86,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         		</configuration>
       		</plugin>
             <plugin>
-            <!-- https://maven.apache.org/plugins/maven-assembly-plugin/ -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin/3.1.0
+                 https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.0</version>
@@ -111,7 +115,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <!-- see https://github.com/tcurdt/jdeb -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
-				<version>1.5</version>
+				<version>1.6</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
