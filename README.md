@@ -95,28 +95,38 @@ Feel free to provide your comments at our [facebook community]( https://www.face
 * Current : https://github.com/mars-sim/mars-sim/issues
 * Past/Archived : https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed
 
-If you encounter a bug, file a ticket in GitHub issue tab with the following info identified:
+Help us by filling in the info below when submitting an issue
 
-(1). Specifications :
- a. mars-sim build version - e.g. preview 8, Build 4255, etc.
- b. Operating System (OS) - e.g. Windows 7, Ubuntu 15.04, etc.
- c. Java version - e.g. JRE 8u151, OpenJDK 1.8.0_131 and OpenJFX etc.
+**Describe the bug**
+ - A clear and concise description of what the bug is.
 
-(2). Affected Area - 
- a. What area(s) are we dealing with? e.g. Construction, Mission, Resupply, Settlement Map, Mini-map, Saving/Loading Sim, System Exceptions in Command Prompt/Terminal,
+**Affected Area**
+ - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply, Settlement Map, Mini-map, Saving/Loading Sim, System Exceptions in Command Prompt/Terminal, etc..]
 
-(3). Behaviors -
- a. Expected
- b. Actual/Observed
+**Expected behaviors**
+ - A clear and concise description of what you expected to happen.
 
-(4). Reproduction -
- a. Steps to reproduce the problem
+**Actual/Observed Behaviors**
+ - A clear and concise description of what you have actually seen.
 
-(5). Screenshots at the time of crash that help illustrating the issue
- a. Person Window showing various activity tabs,
- b. Settlement/Vehicle Window
- c. Monitor Tool's showing People/Vehicle/Mission tabs, etc.
- d. Settlement Map
+**Reproduction (optional)**
+ - Steps to reproduce the problem
+
+**Screenshots**
+ - If applicable, add screenshots to help explain your problem.
+e.g. Include the followings :
+ a. Person Window showing various activity tabs 
+ b. Settlement/Vehicle Window 
+ c. Monitor Tool's showing People/Vehicle/Mission tabs  
+ d. Settlement Map, etc.
+
+**Specifications  (please complete the following information):**
+ - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
+ - Java version : [e.g. Oracle Java 8u171, openjdk 1.8.0.171-8.b10 and openjfx 8 etc.]
+ - mars-sim build version : [e.g. r4255, v3.1.0-p9_Java9, etc.]
+
+**Additional context**
+ - Add any other context about the problem here.
 
 > Note 1 : By providing the info above from the start, you help expedite the handling of the issue you submit.
 
@@ -131,6 +141,8 @@ We welcome anyone to contribute to mars-sim in terms of ideas, concepts and codi
 
 
 ## Download 
+Check out the binaries in the [release](https://github.com/mars-sim/mars-sim/releases) tab or click on SourceForge's repo button below.
+
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 * Check out the most recent build at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
 
