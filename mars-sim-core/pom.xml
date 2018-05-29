@@ -9,9 +9,6 @@
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-core</artifactId>
 	<name>mars-sim-core</name>
-	<properties>
-		<junit.version>4.12</junit.version>
-	</properties>
   <dependencies>
     <dependency>
     	<groupId>net.sf.mars-sim</groupId>
@@ -112,12 +109,14 @@
 		<version>2.0-M5</version>
 	</dependency>
 
-	<!-- https://mvnrepository.com/artifact/nz.sodium/sodium : 112KB -->
+	<!-- https://mvnrepository.com/artifact/nz.sodium/sodium : 112KB 
+		 Recent fix on https://github.com/SodiumFRP/sodium
+	     Integrated into mars-sim-core
 	<dependency>
 	    <groupId>nz.sodium</groupId>
 	    <artifactId>sodium</artifactId>
 	    <version>1.1.0</version>
-	</dependency>	
+	</dependency>	-->
 	
   </dependencies>
 	

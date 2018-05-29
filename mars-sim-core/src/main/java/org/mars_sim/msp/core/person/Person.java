@@ -86,7 +86,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private final static double AVERAGE_LOW_WEIGHT = 57.2;
 	final static double AVERAGE_WEIGHT = 62.85 ; //(AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
 	
+	// static unit identifier
+	private static int unitCount = 0;
+	
 	// Data members
+	/** Unique person id. */
+	private int pid;
 	/** True if a person is rationing water */
 	private boolean waterRation;
 	/** True if a person is born on Mars. */	
@@ -184,14 +189,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's maternal chromosome. */
 	private Map<Integer, Gene> maternal_chromosome;
 
-	
 	//private Simulation sim = Simulation.instance();
 	private MarsClock marsClock;
+	
 	private EarthClock earthClock;
+	
 	private MasterClock masterClock;
 
 	//private PersonConfig config; 
 
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different threads.
+	 * @return
+	 */
+	private static synchronized int getNextCount() {
+		return unitCount++;
+	}
+	
 	/**
 	 * Constructor 1 : used by PersonBuilderImpl
 	 * Creates a Person object at a given settlement.
@@ -207,6 +221,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
 
+		this.pid = getNextCount();
+		
 		// Initialize data members
 		this.name = name;
 		this.xLoc = 0D;
@@ -1563,6 +1579,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.walk = walk;
 	}
 	
+	/**
+	 * Get the unique person id for this unit
+	 * @return pid
+	 */
+	public int getPid() {
+		return pid;
+	}
 	
 	@Override
 	public void destroy() {

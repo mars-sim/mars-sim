@@ -11,66 +11,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-main</artifactId>
 	<name>mars-sim-main</name>
-	<properties>
-		<junit.version>4.12</junit.version>
-	</properties>	
  	<packaging>jar</packaging>
 	<build>
 		<plugins>
-		<!--  for compiling with Java 8
-			see http://www.mojohaus.org/webstart/webstart-maven-plugin/upgrade.html
-			see http://stackoverflow.com/questions/31209479/maven-webstart-and-java-8-headaches
-			see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-from-building-a-zip-file  -->
-					
-			<plugin>
-			<!-- https://maven-repository.com/artifact/org.codehaus.mojo/webstart-maven-plugin/1.0-beta-7: 151KB -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>webstart-maven-plugin</artifactId>
-				<version>1.0-beta-7</version>
-
-				<dependencies>
-				<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/webstart-pack200-impl : 7 KB  -->
-                    <dependency>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>webstart-pack200-impl</artifactId>
-                        <version>1.0-beta-6</version>
-					</dependency>
-<!--  
-                    <dependency>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>keytool-api-1.7</artifactId>
-                        <version>1.4</version>
-                    </dependency>
-
--->
-				</dependencies>
-				<configuration>
-
-<!--  TODO: how to enable using pack200 instead of just zip or gzip for better compression ?
-
-				<pack200>
-					<enabled>false</enabled>
-				</pack200>
--->
-
-					<sign>
-						<keystore>../../../mars-sim.store</keystore>
-						<keypass>marssim</keypass>
-						<storepass>marssim</storepass>
-						<alias>mars-sim</alias>
-					</sign>
-					<jnlp>
-						<outputFile>mars-sim.jnlp</outputFile>
-						<mainClass>org.mars_sim.msp.javafx.MarsProjectFX</mainClass>
-
-<!--					<resources>
-							<property name="jnlp.packEnabled" value="true"/>
-						</resources>
--->
-					</jnlp>
-				</configuration>
-			</plugin>
-			
 			<plugin>
 			<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.7 MB -->
         		<groupId>org.apache.maven.plugins</groupId>

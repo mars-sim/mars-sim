@@ -56,7 +56,8 @@ public class MarsProjectFXGL extends GameApplication {
 		+ "    5               256MB Min, 2048MB Max\n"
 		+ "    load            go to directory /.mars-sim/saved/ and wait for user to choose a saved sim\n"
 		+ "    load 123.sim    load the saved sim with filename '123.sim'\n"
-		+ "                    (Note : '123.sim' must be located at the same directory as the jarfile.)\n";
+		+ "                    (Note : '123.sim' must be located at the same directory as the jarfile.)\n"
+		+ "    noaudio         disable background music and sound effect\n";
 
 	/** true if displaying graphic user interface. */
     private boolean headless = false, newSim = false, loadSim = false, savedSim = false;
@@ -149,27 +150,76 @@ public class MarsProjectFXGL extends GameApplication {
 
 		LogConsolidated.log(logger, Level.INFO, 0, logger.getName(), Simulation.title, null);
 
-		String major, minor, update, build = null, dateStamp = null;
+    	boolean good2Go = true;
+    	
+        String major = null;
+        String minor = null;
+        //String update = null; 
+        String build = null;
+        //String dateStamp = null;
 
-		String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+        // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
 
-		String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");
+        //String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 
-		// e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
-		major = javaVersionElements[0];
-		minor = javaVersionElements[1];
-		update = javaVersionElements[2];
+        //String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
+        String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");
 
-		if (javaVersionElements.length > 3) {
-			build = javaVersionElements[3];
-			dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
-		}
+        // e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
+        major = javaVersionElements[0];
+        minor   = javaVersionElements[1];
+        //update  = javaVersionElements[2];
 
-		if (!"8".equals(minor) || Double.parseDouble(build) < 77.0) {
-			exitWithError("Note: mars-sim requires at least Java 8.0.77. Terminated.");
-		}
+        if (javaVersionElements.length > 3) {
+        	build = javaVersionElements[3];
+        	//dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
+        }
 
-		else {
+        double majorNum = Double.parseDouble(major);
+        double minorNum = Double.parseDouble(minor);
+        
+//        System.out.println(major);
+//        System.out.println(minor);
+//        System.out.println(update);
+//        System.out.println(build);
+        
+    	if (majorNum > 8) {
+    		// see https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
+    		// In Java 9, the format of the new version-string is: $MAJOR.$MINOR.$SECURITY.$PATCH
+    		// Under the old scheme, the Java 9u5 security release would have the version string 1.9.0_5-b20.
+    		// Under the new scheme, the short version of the same release is 9.0.1, and the long version is 9.0.1+20.
+
+    		// e.g.
+    		// In Java 8, majorNum has always been "1". minorNum is "8".
+    		// In Java 9.0.4, majorNum becomes "9". minorNum is "0". update is "4".
+    		// In Java 10.0.1, majorNum is "10".minorNum is "0". update is "1".
+    		
+    		//exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It requires Java 8 (8u77 or above). Terminated.");
+    		
+    		good2Go = true;
+            logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
+    	}
+    	
+    	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
+    	else if (minorNum < 8) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
+    		
+    		good2Go = false;
+    		exitWithError("Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
+    	}
+    	
+    	else if ("8".equals(minor) && Double.parseDouble(build) < 77.0) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
+    		good2Go = false;
+    		exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
+    	}
+    	
+    	else {
+    		good2Go = true;
+    	}
+	
+    	if (good2Go) {
+    		
 			argList = Arrays.asList(args);
 			newSim = argList.contains("-new");
 			loadSim = argList.contains("-load");
