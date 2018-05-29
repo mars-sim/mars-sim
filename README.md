@@ -2,6 +2,7 @@
 [![Gitter](https://badges.gitter.im/mokun/mars-sim.svg)](https://gitter.im/mokun/mars-sim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dee6a80651fe420b85adf22c4ca79574)](https://www.codacy.com/app/mokun/mars-sim?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mars-sim/mars-sim&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/mars-sim/mars-sim.svg?branch=master)](https://travis-ci.org/mars-sim/mars-sim)
+[![codecov](https://codecov.io/gh/mars-sim/mars-sim/branch/master/graph/badge.svg)](https://codecov.io/gh/mars-sim/mars-sim)
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 
@@ -83,7 +84,9 @@ For a more detail description of this project, see our project website at at htt
   - Check if the correct version of Java is being enable in "Java Control Panel" in Windows's Control Panel. 
 
 > Note 1 The best approach is enabling only one Java build (such as Java 10.0.1) at a time and disable all other versions/builds.
+
 > Note 2 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+
 > Note 3 : Remove all Java 9 related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
 
 
@@ -141,10 +144,10 @@ We welcome anyone to contribute to mars-sim in terms of ideas, concepts and codi
 
 
 ## Download 
-Check out the binaries in the [release](https://github.com/mars-sim/mars-sim/releases) tab or click on SourceForge's repo button below.
+Check out the most recent build in the [GitHub's release tab](https://github.com/mars-sim/mars-sim/releases) or in [SourceForge repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
 
+Alternatively, you may use SourceForge's button below to automatically sense the correct platform. 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
-* Check out the most recent build at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/
 
 
 ## License

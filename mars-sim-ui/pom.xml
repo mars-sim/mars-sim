@@ -119,6 +119,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency-->	
 
 		<!-- https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless : 20 KB
+			 https://github.com/FXMisc/Flowless
 			 Needed by afester's svg class
 		<dependency>
 		    <groupId>org.fxmisc.flowless</groupId>
