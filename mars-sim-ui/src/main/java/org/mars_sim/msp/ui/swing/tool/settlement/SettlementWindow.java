@@ -7,26 +7,14 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 
-import static javafx.geometry.Orientation.VERTICAL;
-
-import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
-//import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JDesktopPane;
-import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.controlsfx.control.StatusBar;
 import org.mars_sim.msp.core.Msg;
@@ -34,37 +22,22 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
-import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
-import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
-import javafx.scene.control.Label;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swing.JFXPanel;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Tooltip;
-import javafx.scene.effect.Reflection;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.util.Duration;
 import javafx.scene.paint.Color;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.util.Duration;
 
 
 /**
