@@ -1,4 +1,5 @@
-/* Mars Simulation Project
+/**
+ * Mars Simulation Project
  * ChatBox.java
  * @version 3.1.0 2016-10-06
  * @author Manny Kung
@@ -36,13 +37,14 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 
 @SuppressWarnings("restriction")
 public class ChatBox extends BorderPane {

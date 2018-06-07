@@ -40,8 +40,8 @@ import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.tool.monitor.RobotTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.managers.tooltip.TooltipWay;
-//import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.language.data.TooltipWay;
+//import com.alee.managers.tooltip.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 
 

@@ -13,7 +13,9 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
+
+//import org.mars_sim.msp.core.tool.Conversion;
 
 
 public class SimuLoggingFormatter extends Formatter {

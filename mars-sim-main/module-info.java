@@ -4,8 +4,12 @@ module mars-sim-main {
     requires java.io;
     requires java.net;
     requires java.util;
+//    requires java.util.HashMap;
+//    requires java.util.logging.Level;
+//    requires java.util.logging.Logger;
     requires javax.swing;
     requires java.text;
+    
     requires javafx.stage.Stage;
     requires javafx.application.Application;
     requires javafx.application.Platform;
