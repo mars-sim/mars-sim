@@ -25,9 +25,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
-import org.mars_sim.msp.ui.javafx.demo.DragDrop;
-import org.mars_sim.msp.ui.javafx.demo.PannableView;
-import org.mars_sim.msp.ui.javafx.demo.Story;
 
 import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
