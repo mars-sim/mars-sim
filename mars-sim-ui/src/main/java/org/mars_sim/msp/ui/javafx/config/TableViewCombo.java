@@ -174,14 +174,16 @@ public class TableViewCombo {
             	//System.out.println("Calling toString()");
                 return removeUnQualifiedChar(col, s, true);
             }
+
         }));
 
         return col;
 	}
 
 	public String removeUnQualifiedChar(TableColumn<SettlementBase, String> col, String s, boolean checkError) {
-    	if (col == latCol || (col == longCol)) {
-
+    	
+		if (col == latCol || col == longCol) {
+			
 	    	s = // remove multiple dot to one single dot
 	    			s.replaceAll("[\\.]+", ".")
 					// remove multiple comma to one single comma
@@ -200,11 +202,13 @@ public class TableViewCombo {
 		    		// remove all underscores
 					.replaceAll("[\\_]+", "")
 		    		// remove everything except for dot, letters, digits, underscores and whitespace.
-					.replaceAll("[^\\w\\s&&[^.]&&[^,]]+", "");
-	    	
+					.replaceAll("[^\\w\\s\\.\\,]+", "");
+					// remove dot if found elsewhere
+					//.replaceAll("\\.\\s", "").replaceAll("\\s\\.", "").replaceAll("\\,\\s", "").replaceAll("\\s\\,", "");
+			
     		//see http://stackoverflow.com/questions/13494912/java-regex-for-replacing-all-special-characters-except-underscore
     	}
-    	else if (col == botCol || (col == settlerCol)) {
+    	else if (col == botCol || col == settlerCol) {
         	//System.out.println("Calling fromString()");
     		// remove multiple dot to one single dot
     		// remove multiple whitespace to a single whitespace

@@ -1193,9 +1193,8 @@ public class ScenarioConfigEditorFX {
 				boolean isComma_lon = false;
 
 				// CHECK LATITUDE
-
 				String latStr = tableViewCombo.getAllData().get(x).getLatitude().toString().trim().toUpperCase();;
-
+	
 				// check if it's empty or having a length less than 2 characters.
 				if (latStr == null || latStr.length() < 2) {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$

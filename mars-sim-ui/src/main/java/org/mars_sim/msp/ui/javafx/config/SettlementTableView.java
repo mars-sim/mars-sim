@@ -133,14 +133,14 @@ public class SettlementTableView {
                             @Override
                             public String toString(Object o) {
                             	//updateSettlementInfo();
-                            	//System.out.println("t.toString() is "+ t.toString());                    	
+                            	//System.out.println("o.toString() is "+ o.toString());                    	
                         		//validationSupport.registerValidator((TextField) o, Validator.createEmptyValidator("Text is required"));
                             	return o.toString();
                             }
                             @Override
                             public Object fromString(String s) {
                             	//updateSettlementInfo();
-                            	//System.out.println("string() is "+ string);
+                            	//System.out.println("string() is "+ s);
                                 return s;
                             }                                    
                         });
