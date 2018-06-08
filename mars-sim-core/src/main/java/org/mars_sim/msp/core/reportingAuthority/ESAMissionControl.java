@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.reportingAuthority.objectives.DevelopingSurfaceOperations;
+
 /*
  * This class represents the Mission Control of the European Space Agency (ESA)
  */
@@ -32,7 +34,7 @@ implements Serializable {
 	//}
 
 	private ESAMissionControl() {
-		missionAgenda = new DevelopingSpaceActivity();
+		missionAgenda = new DevelopingSurfaceOperations();
 	}
 
 	public static ESAMissionControl createMissionControl() {

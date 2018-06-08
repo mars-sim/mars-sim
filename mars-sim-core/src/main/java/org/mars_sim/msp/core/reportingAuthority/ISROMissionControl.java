@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.reportingAuthority.objectives.PrototypingAdvancedTechnologies;
+
 /*
  * This class represents the Mission Control of the Indian Space Research Organisation (ISRO)
  */
@@ -32,7 +34,7 @@ implements Serializable {
 	//}
 
 	private ISROMissionControl() {
-		missionAgenda = new DevelopingAdvancedTechnology();
+		missionAgenda = new PrototypingAdvancedTechnologies();
 	}
 
 	public static ISROMissionControl createMissionControl() {

@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.reportingAuthority.objectives.ProspectingMinerals;
+
 /*
  * This class represents the Mission Control of the China National Space Administration (CNSA)
  */
@@ -32,7 +34,7 @@ implements Serializable {
 	//}
 
 	private CNSAMissionControl() {
-		missionAgenda = new ProspectingMineral();
+		missionAgenda = new ProspectingMinerals();
 	}
 
 	public static CNSAMissionControl createMissionControl() {

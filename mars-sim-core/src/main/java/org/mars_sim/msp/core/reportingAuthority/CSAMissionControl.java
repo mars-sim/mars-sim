@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.reportingAuthority.objectives.AdvancingScientificKnowledge;
+
 /*
  * This class represents the Mission Control of the Canadian Space Agency (CSA)
  */
@@ -32,7 +34,7 @@ implements Serializable {
 	//}
 
 	private CSAMissionControl() {
-		missionAgenda = new AdvancingSpaceKnowledge();
+		missionAgenda = new AdvancingScientificKnowledge();
 	}
 
 	public static CSAMissionControl createMissionControl() {

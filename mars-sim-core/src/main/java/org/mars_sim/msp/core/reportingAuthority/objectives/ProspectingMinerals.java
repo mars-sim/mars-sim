@@ -5,15 +5,27 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-public class ProspectingMineral implements MissionAgenda, Serializable  {
+import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+
+public class ProspectingMinerals implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "Finding Precious Minerals on Mars";
+	private final String name = "Prospercting Precious Minerals on Mars";
+	
+	private final String[] phases = new String[] {
+			"Corroborate Surface Geological Data with On-Orbit Scans",
+			"Core Drill Rock Samples from Selected Locations"};
+
+	@Override
+	public String[] getPhases() {
+		return phases;
+	}
+
 
 	@Override
 	public String getObjectiveName() {

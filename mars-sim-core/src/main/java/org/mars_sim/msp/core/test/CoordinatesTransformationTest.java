@@ -1,6 +1,6 @@
-package org.mars_sim.msp.core.demo;
+package org.mars_sim.msp.core.test;
 
-public class CoordinatesTransf {
+public class CoordinatesTransformationTest {
 
     public static void main(String [] args) {
 

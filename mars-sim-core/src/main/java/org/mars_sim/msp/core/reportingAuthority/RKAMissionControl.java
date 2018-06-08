@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.reportingAuthority.objectives.ResearchingHealthHazards;
+
 /*
  * This class represents the Mission Control of the Roscosmos (RKA)
  */
@@ -31,7 +33,7 @@ implements Serializable {
 	//}
 
 	private RKAMissionControl() {
-		missionAgenda = new ResearchingHealthHazard();
+		missionAgenda = new ResearchingHealthHazards();
 	}
 
 	public static RKAMissionControl createMissionControl() {

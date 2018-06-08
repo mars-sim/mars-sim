@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.javafx;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.alee.laf.WebLookAndFeel;
+import com.alee.managers.UIManagers;
 //import com.alee.managers.UIManagers;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.input.ActionType;
@@ -267,6 +268,9 @@ public class MainScene {
 
 	private float musicSliderCache = 0;
 	private float effectSliderCache = 0;
+	
+	private DoubleProperty musicProperty = new SimpleDoubleProperty(musicSliderValue);
+	private DoubleProperty soundEffectProperty = new SimpleDoubleProperty(soundEffectSliderValue);
 	
 	private double tpsCache;
 
@@ -741,7 +745,7 @@ public class MainScene {
 		Nodes.addInputMap(rootStackPane, ctrlDown);
 
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)),
-				e -> adjustVolume());
+				e -> toggleSound());
 		Nodes.addInputMap(rootStackPane, ctrlM);
 
 		InputMap<KeyEvent> ctrlS = consume(keyPressed(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)),
@@ -872,7 +876,7 @@ public class MainScene {
 		return text;
 	}
 
-	public void adjustVolume() {
+	public void toggleSound() {
 		if (!masterClock.isPaused()) {
 			
 			musicMuteBox.setSelected(!musicMuteBox.isSelected());
@@ -1484,13 +1488,17 @@ public class MainScene {
 		musicSlider.setOrientation(Orientation.HORIZONTAL);
 		musicSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 		setQuickToolTip(musicSlider, "Adjust the background music volume"); //$NON-NLS-1$
+		
+		musicSlider.valueProperty().bindBidirectional(musicProperty);
 		// detect dragging
 		musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
 					// Set to the new music volume in the sound player 
-					soundPlayer.setMusicVolume((float) convertSlider2Volume(sliderValue));
+					//System.out.println((float) convertSlider2Volume(sliderValue));
+					soundPlayer.setMusicVolume(convertSlider2Volume(sliderValue));
+					
 					if (sliderValue <= 0) {
 						// check the music mute box
 						musicMuteBox.setSelected(true);
@@ -1560,6 +1568,9 @@ public class MainScene {
 		soundEffectSlider.setOrientation(Orientation.HORIZONTAL);
 		soundEffectSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 		setQuickToolTip(soundEffectSlider, "Adjust the sound effect volume"); //$NON-NLS-1$
+		
+		soundEffectSlider.valueProperty().bindBidirectional(soundEffectProperty);
+		
 		// detect dragging
 		soundEffectSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
@@ -1567,7 +1578,9 @@ public class MainScene {
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
 					// Set to the new sound effect volume in the sound player 
-					soundPlayer.setSoundVolume((float) convertSlider2Volume(sliderValue));
+					soundPlayer.setSoundVolume(convertSlider2Volume(sliderValue));
+					
+					//soundPlayer.setSoundVolume(convertSlider2Volume((float)soundEffectProperty.get()));
 					
 					if (sliderValue <= 0) {
 						// check the sound effect mute box
@@ -2569,7 +2582,7 @@ public class MainScene {
 			try {
 				// use the weblaf skin
 				WebLookAndFeel.install();
-				//UIManagers.initialize();
+				UIManagers.initialize();
 					        
 				// need to load an uimanager
 				//if (theme == 0 || theme == 6)
@@ -3946,11 +3959,11 @@ public class MainScene {
 	// }
 
 	public float getMusic() {
-		return musicSliderValue;
+		return (float)musicProperty.get();
 	}
 
 	public float getSoundEffect() {
-		return soundEffectSliderValue;
+		return (float)soundEffectProperty.get();
 	}
 
 	public boolean isMinimized() {

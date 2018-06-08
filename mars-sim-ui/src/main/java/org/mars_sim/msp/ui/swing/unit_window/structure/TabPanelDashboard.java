@@ -53,14 +53,26 @@ public class TabPanelDashboard extends TabPanel {
 	private static final int width = 400;
 	private static final int height = 500;
 	
+	private static String header = "  Click on a new settlement goal below : ";
+	
+	private static String icon_crop = "/icons/settlement_goals/cropfarm.png";
+	private static String icon_manufacture = "/icons/settlement_goals/manufacture.png";
+	private static String icon_research = "/icons/settlement_goals/research.png";
+	private static String icon_transport = "/icons/settlement_goals//transport.png";
+	private static String icon_trade = "/icons/settlement_goals/trade.png";
+	private static String icon_trip = "/icons/settlement_goals//trip_128.png";
+	
+	private static String CURRENT_GOAL = "    Current Goal : ";
+			
+	private static ObjectiveType[] objectives;
+	
 	private int themeCache = -1;
 	//private double progress;
 	//private long lastTimerCall;
 	//private boolean toggle, running = false;
 
 	private ObjectiveType objectiveTypeCache;
-	private static ObjectiveType[] objectives;
-	
+
 	// Data members
 	private JFXPanel jfxpanel;
 	private Scene scene;
@@ -111,13 +123,13 @@ public class TabPanelDashboard extends TabPanel {
 				scene.setFill(Color.TRANSPARENT);// .BLACK);
 				jfxpanel.setScene(scene);
 
-				Label title = new Label(Msg.getString("TabPanelDashboard.title"));
-				Reflection reflection = new Reflection();
-				title.setEffect(reflection);
-				reflection.setTopOffset(0.0);
+				Label title = new Label(Msg.getString("TabPanelDashboard.title").toUpperCase());
+				//Reflection reflection = new Reflection();
+				//title.setEffect(reflection);
+				//reflection.setTopOffset(0.0);
 				title.setPadding(new Insets(5, 5, 0, 5));
 				// title.setFont(new Font("Arial", 20));
-				title.setFont(Font.font("Cambria", FontWeight.BOLD, 16));
+				title.setFont(Font.font("Cambria", FontWeight.BOLD, 18));
 
 				VBox toggleVBox = new VBox();
 				//toggleVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
@@ -153,7 +165,6 @@ public class TabPanelDashboard extends TabPanel {
 		mainBox = new VBox();
 
 		headerBox = new VBox();
-		String header = "  Select a new objective below : ";
 		headerLabel = new Label(header);
 		headerLabel.setMaxWidth(Double.MAX_VALUE);
 		headerBox.getChildren().add(headerLabel);
@@ -167,17 +178,17 @@ public class TabPanelDashboard extends TabPanel {
 			String s = ot.toString();
 			String ss = null;
 			if (i == 0)
-				ss = "/icons/settlement_goals/cropfarm.png";
+				ss = icon_crop;
 			else if (i == 1)
-				ss = "/icons/settlement_goals/manufacture.png";
+				ss = icon_manufacture;
 			else if (i == 2)
-				ss = "/icons/settlement_goals/research.png";
+				ss = icon_research;
 			else if (i == 3)
-				ss = "/icons/settlement_goals/transport.png";
+				ss = icon_transport;
 			else if (i == 4)
-				ss = "/icons/settlement_goals/trade.png";
+				ss = icon_trade;
 			else if (i == 5)
-				ss = "/icons/settlement_goals/trip_128.png";//free_market_128.png";
+				ss = icon_trip;
 
 			toggleBtn = new ToggleButton();
 			toggleBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ss))));
@@ -224,7 +235,7 @@ public class TabPanelDashboard extends TabPanel {
 		optionBox = new VBox();
 		optionBox.getChildren().addAll(row0, row1, commitPane);
 		
-		choiceHeader = new Label("    Current Choice : ");
+		choiceHeader = new Label(CURRENT_GOAL);
 		choiceHeader.setMinWidth(140);
 		choiceLabel = new Label(settlement.getObjective().toString());
 		choiceLabel.setAlignment(Pos.CENTER);

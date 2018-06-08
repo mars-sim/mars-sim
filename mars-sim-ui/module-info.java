@@ -29,6 +29,10 @@ module mars-sim-ui {
     requires nimrodlf;
     requires weblaf-core;
     requires weblaf-ui;
+    
+    requires com.alee.managers.tooltip.TooltipManager;
+    requires com.alee.managers.tooltip.TooltipWay;
+    
     requires controlsfx;
 
     requires jide-oss;

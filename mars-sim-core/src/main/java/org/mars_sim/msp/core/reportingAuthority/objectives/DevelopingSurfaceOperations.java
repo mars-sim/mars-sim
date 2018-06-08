@@ -5,15 +5,28 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-public class DevelopingSpaceActivity implements MissionAgenda, Serializable  {
+import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+
+public class DevelopingSurfaceOperations implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "Developing Space Activities";
+	private final String name = "Developing Standard Planetary Surface Operations";
+	
+	private final String[] phases = new String[] {
+			"Improve Rover Range and Performance",
+			"Test Building Integrity", 
+			"Test Return Vehicle Capability"};
+
+	@Override
+	public String[] getPhases() {
+		return phases;
+	}
+
 
 	@Override
 	public String getObjectiveName() {

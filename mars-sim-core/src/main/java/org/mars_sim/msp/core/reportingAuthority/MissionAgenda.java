@@ -15,4 +15,6 @@ public interface MissionAgenda {
 
 	public String getObjectiveName();
 
+	String[] getPhases();
+
 }

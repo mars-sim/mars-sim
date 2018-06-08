@@ -5,15 +5,27 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-public class AdvancingSpaceKnowledge implements MissionAgenda, Serializable  {
+import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+
+public class AdvancingScientificKnowledge implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "Advancing of the Knowledge of Space";
+	private final String name = "Advancing Scientific Knowledge";
+	
+	private final String[] phases = new String[] {
+			"Collect Astronomical Data",
+			"Collect Aerological Data", 
+			"Collect Geomagnetic Data"};
+
+	@Override
+	public String[] getPhases() {
+		return phases;
+	}
 
 	@Override
 	public String getObjectiveName() {
