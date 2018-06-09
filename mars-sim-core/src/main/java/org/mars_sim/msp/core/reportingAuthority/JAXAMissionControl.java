@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.reportingAuthority.objectives.ResearchingSpaceApplications;
+import org.mars_sim.msp.core.reportingAuthority.objectives.DevelopingSpaceApplications;
 
 /*
  * This class represents the Mission Control of the Japan Aerospace Exploration Agency
@@ -34,7 +34,7 @@ implements Serializable {
 	//}
 
 	private JAXAMissionControl() {
-		missionAgenda = new ResearchingSpaceApplications();
+		missionAgenda = new DevelopingSpaceApplications();
 	}
 
 	public static JAXAMissionControl createMissionControl() {

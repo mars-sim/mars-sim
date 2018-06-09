@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
-import org.mars_sim.msp.core.person.ai.job.Manager;
+import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -124,7 +124,7 @@ implements Serializable {
 	    	msolCache = msol1;
 
 	    	// Note : for now a Mayor/Manager cannot switch job
-	    	if (job instanceof Manager)
+	    	if (job instanceof Politician)
 	    		jobLock = true;
 	
 	     	else {

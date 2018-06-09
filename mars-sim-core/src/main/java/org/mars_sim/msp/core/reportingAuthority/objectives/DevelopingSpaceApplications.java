@@ -11,11 +11,11 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
-public class ResearchingSpaceApplications implements MissionAgenda, Serializable  {
+public class DevelopingSpaceApplications implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "Researching Practical Space Applications";
+	private final String name = "Developing Practical Space Applications";
 	
 	private final String[] phases = new String[] {
 			"Test Mesh Communication Network",

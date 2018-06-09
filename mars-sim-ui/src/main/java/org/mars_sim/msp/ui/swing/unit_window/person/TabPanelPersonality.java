@@ -66,6 +66,23 @@ import javafx.scene.layout.GridPane;
 public class TabPanelPersonality
 extends TabPanel {
 
+	private final static String E = "E";
+	private final static String N = "N";
+	private final static String F = "F";
+	private final static String J = "J";
+	
+	private final static String EXTROVERT = "Extrovert (E)";
+	private final static String INTROVERT = "Introvert (I)";
+	
+	private final static String INTUITIVE = "Intuitive (N)";
+	private final static String SENSING = "Sensing (S)";
+	
+	private final static String FEELER = "Feeler (F)";
+	private final static String THINKER = "Thinker (T)";
+	
+	private final static String JUDGER = "Judger (J)";
+	private final static String PERCEIVER = "Perceiver (P)";
+
 	// Data members
 	private int themeCache;
 	
@@ -154,28 +171,28 @@ extends TabPanel {
 				tf0.setPrefSize(70, 20);
 				
 				String type1 = personality.substring(0,1);
-				if (type1.equals("E"))
-					type1 = "Extrovert (E)";
+				if (type1.equals(E))
+					type1 = EXTROVERT;
 				else
-					type1 = "Introvert (I)";
+					type1 = INTROVERT;
 
 				String type2 = personality.substring(1,2);
-				if (type2.equals("N"))
-					type2 = "Intuitive (N)";
+				if (type2.equals(N))
+					type2 = INTUITIVE;
 				else
-					type2 = "Sensing (S)";
+					type2 = SENSING;
 
 				String type3 = personality.substring(2,3);
-				if (type3.equals("F"))
-					type3 = "Feeler (F)";
+				if (type3.equals(F))
+					type3 = FEELER;
 				else
-					type3 = "Thinker (T)";
+					type3 = THINKER;
 
 				String type4 = personality.substring(3,4);
-				if (type4.equals("J"))
-					type4 = "Judger (J)";
+				if (type4.equals(J))
+					type4 = JUDGER;
 				else
-					type4 = "Perceiver (P)";
+					type4 = PERCEIVER;
 
 				Tooltip i1 = new Tooltip(type1  + System.lineSeparator()
 										+ type2  + System.lineSeparator() 

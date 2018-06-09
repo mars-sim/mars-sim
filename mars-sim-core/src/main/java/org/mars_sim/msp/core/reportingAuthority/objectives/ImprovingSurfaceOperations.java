@@ -11,16 +11,18 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
-public class DevelopingSurfaceOperations implements MissionAgenda, Serializable  {
+public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "Developing Standard Planetary Surface Operations";
+	private final String name = "Pushing Boundaries of Standard Surface Operations";
 	
 	private final String[] phases = new String[] {
-			"Improve Rover Range and Performance",
-			"Test Building Integrity", 
-			"Test Return Vehicle Capability"};
+			"Demonstrate Human Survivability for certain period of time",
+			"Stress Test on Human Endurance", 
+			"Minimize Physiological Effects of Long Term Exposure to Martian Environment", 
+			"Characterize Human Interaction Dynamics During Contingency Situations",
+			"Extend EVA Operations to Distances beyond a certain radius"};
 
 	@Override
 	public String[] getPhases() {

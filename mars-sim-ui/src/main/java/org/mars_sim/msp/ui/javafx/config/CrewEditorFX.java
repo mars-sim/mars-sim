@@ -396,27 +396,26 @@ public class CrewEditorFX {
 		borderPane.setTop(hDestBox);
 
 
-		layout.setStyle("-fx-background-radius:20; -fx-background-color: null;");// -fx-background-color:
-																					// rgba(209,89,56,)");
+		layout.setStyle("-fx-background-radius:20; -fx-background-color: null;");
+		// -fx-background-color:  rgba(209,89,56,)");
 		// cyan blue: rgba(56, 176, 209, ");
 		// "-fx-background-color: null");
 		layout.setEffect(new DropShadow(10, Color.GREY));
 		layout.getChildren().addAll(borderPane);
 
-	    ScrollPane scrollPane = new ScrollPane(layout); //borderPane);//
+	    ScrollPane scrollPane = new ScrollPane(layout); 
 	    //scrollPane.setFitToHeight(true);
 	    scrollPane.setFitToWidth(true);
-	    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);//setVisible(true);
+	    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 	    scrollPane.setPrefHeight(HEIGHT);
 	    scrollPane.setPrefWidth(WIDTH);
 	    scrollPane.setMinHeight(HEIGHT);
 	    scrollPane.setMinWidth(WIDTH);
 
 		Scene scene = new Scene(scrollPane);//, HEIGHT, WIDTH); // Color.TRANSPARENT
-		scene.getStylesheets().add("/fxui/css/config/configEditorFXOrange.css");//
-		scene.getStylesheets().add("/fxui/css/config/crewEditorFXOrange.css");// configEditorFXOrange.css");//
-		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white
-											// border
+		scene.getStylesheets().add("/fxui/css/config/configEditorFXOrange.css");
+		scene.getStylesheets().add("/fxui/css/config/crewEditorFXOrange.css");
+		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
 
 		stage = new Stage();
 		stage.setMaxHeight(800);
@@ -743,7 +742,7 @@ public class CrewEditorFX {
 		jobs.add("Doctor");
 		jobs.add("Driver");
 		jobs.add("Engineer");
-		// jobs.add("Manager");
+		// jobs.add("Politician");
 		jobs.add("Mathematician");
 		jobs.add("Meteorologist");
 		jobs.add("Physicist");

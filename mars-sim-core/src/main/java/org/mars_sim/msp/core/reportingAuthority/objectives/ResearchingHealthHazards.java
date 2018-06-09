@@ -18,9 +18,10 @@ public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
 	private final String name = "Researching Short and Long Term Health Hazards";
 	
 	private final String[] phases = new String[] {
-			"Test Rover Performance",
+			"Follow up on Biological Risks",
 			"Set up Radiation Sensor Grid", 
-			"Gather Medical Data"};
+			"Characterize Radiation Countermeasures", 
+			"Observe Radiation Risks, Limits and Exposures"};
 
 	@Override
 	public String[] getPhases() {

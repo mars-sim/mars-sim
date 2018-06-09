@@ -68,7 +68,7 @@ public final class JobManager implements Serializable {
 		jobs.add(new Driver());
 		jobs.add(new Engineer());
 		jobs.add(new Mathematician());
-		jobs.add(new Manager());
+		jobs.add(new Politician());
 		jobs.add(new Meteorologist());
 		jobs.add(new Physicist());
 		jobs.add(new Trader());
@@ -200,7 +200,7 @@ public final class JobManager implements Serializable {
 			while (i.hasNext()) {
 				Job job = i.next();
 				// 2015-04-30 Exclude mayor/manager job
-				if (!job.equals(JobManager.getJob("Manager"))) {
+				if (!job.equals(JobManager.getJob("Politician"))) {
     				double jobProspect = getJobProspect(person, job, settlement, true);
     				if (jobProspect >= newJobProspect) {
     					newJob = job;

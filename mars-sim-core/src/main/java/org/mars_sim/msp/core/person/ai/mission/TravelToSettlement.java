@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
-import org.mars_sim.msp.core.person.ai.job.Manager;
+import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
@@ -556,7 +556,7 @@ implements Serializable {
                     result += 1D;
                 }
 
-                if (person.getMind().getJob() instanceof Manager) {
+                if (person.getMind().getJob() instanceof Politician) {
                     result += 10D;
                 }
             }

@@ -31,6 +31,11 @@ implements Serializable {
 	/** Probability penalty for joining a non-job-related mission. */
 	private static final double NON_JOB_MISSION_JOIN_PENALTY = .01D;
 
+	private static final String JOB_STR = "job.";
+	private static final String MALE_STR = "male.";
+	private static final String FEMALE_STR = "female.";
+	private static final String UNKNOWN = "unknown.";
+	
 	// Domain members
 	protected Class<? extends Job> jobClass;
 	/** List of tasks related to the job. */
@@ -61,11 +66,11 @@ implements Serializable {
 	 */
 	public String getName(GenderType gender) {
 		StringBuffer key = new StringBuffer()
-		.append("job."); //$NON-NLS-1$
+		.append(JOB_STR); //$NON-NLS-1$
 		switch (gender) {
-			case MALE : key.append("male."); break; //$NON-NLS-1$
-			case FEMALE : key.append("female."); break; //$NON-NLS-1$
-			default : key.append("unknown."); break; //$NON-NLS-1$
+			case MALE : key.append(MALE_STR); break; //$NON-NLS-1$
+			case FEMALE : key.append(FEMALE_STR); break; //$NON-NLS-1$
+			default : key.append(UNKNOWN); break; //$NON-NLS-1$
 		}
 		key.append(jobClass.getSimpleName());
 		return Msg.getString(key.toString()); //$NON-NLS-1$

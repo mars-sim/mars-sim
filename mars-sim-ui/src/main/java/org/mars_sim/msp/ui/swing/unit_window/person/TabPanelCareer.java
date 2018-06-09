@@ -618,18 +618,18 @@ implements ActionListener {
 				String selectedJobStr = (String) jobComboBox.getSelectedItem();
 				String jobStrCache = person.getMind().getJob().getName(person.getGender());
 
-				// 2015-04-30 if job is Manager, loads and set to the previous job and quit;
-				if (jobStrCache.equals("Manager")) {
+				// 2015-04-30 if job is Politician, loads and set to the previous job and quit;
+				if (jobStrCache.equals("Politician")) {
 					jobComboBox.setSelectedItem(jobStrCache);
 					jobChangeLabel.setForeground(Color.red);
 					jobChangeLabel.setText("Mayor cannot switch job arbitrarily!");
 					jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				}
 
-				else if (selectedJobStr.equals("Manager")) {
+				else if (selectedJobStr.equals("Politician")) {
 					jobComboBox.setSelectedItem(jobStrCache);
 					jobChangeLabel.setForeground(Color.red);
-					jobChangeLabel.setText("Manager job is available for Mayor only!");
+					jobChangeLabel.setText("The Job Politician is currently reserved for Mayor only.");
 					jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				}
 

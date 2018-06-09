@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * Manager.java
- * @version 3.1.0 2017-08-30
+ * Politician.java
+ * @version 3.1.0 2018-06-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Manager
+public class Politician
 extends Job
 implements Serializable {
 
@@ -39,9 +39,9 @@ implements Serializable {
 	/**
 	 * Constructor.
 	 */
-	public Manager() {
+	public Politician() {
 		// Use Job constructor.
-		super(Manager.class);
+		super(Politician.class);
 
 		// Add Manager-related tasks.
 		jobTasks.add(MeetTogether.class);
