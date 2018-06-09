@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -76,6 +77,8 @@ implements Serializable {
 	
 	private MarsClock marsClock;
 	
+	private MissionManager missionManager;
+	
 	private transient MarsClock timeCache;
 	
 	private transient Map<MetaTask, Double> taskProbCache;
@@ -92,6 +95,8 @@ implements Serializable {
 		this.mind = mind;
 
 		person = mind.getPerson();
+		
+		missionManager = Simulation.instance().getMissionManager();
 		
 		circadian = person.getCircadianClock();
 		
@@ -256,6 +261,9 @@ implements Serializable {
 	// 2015-10-22 Added recordTask()
 	public void recordTask() {
 		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
+		String missionName = "";
+		if (missionManager.getMission(person) != null)
+			missionName = missionManager.getMission(person).toString();
 		String taskName = getTaskClassName();//getTaskClassName();//currentTask.getTaskName(); //
 		//FunctionType functionType = getFunction(true);
 		
@@ -282,7 +290,7 @@ implements Serializable {
 		    	ts = person.getTaskSchedule();
 		    
 		    // TODO: decide if it needs to record the same task description as the last
-			ts.recordTask(taskName, taskDescription, taskPhaseName);//, functionType);
+			ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);//, functionType);
 			taskDescriptionCache = taskDescription;
 
 		}

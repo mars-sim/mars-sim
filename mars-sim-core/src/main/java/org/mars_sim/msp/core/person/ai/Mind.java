@@ -114,9 +114,9 @@ implements Serializable {
         	// 2015-10-22 Added recordTask()
     		taskManager.recordTask();
 
-        if (missionManager != null)
-        	// 2015-10-31 Added recordMission()
-        	missionManager.recordMission(person);
+//        if (missionManager != null)
+//        	// 2015-10-31 Added recordMission()
+//        	missionManager.recordMission(person);
 
 	    double msol1 = marsClock.getMsol1();
 	    

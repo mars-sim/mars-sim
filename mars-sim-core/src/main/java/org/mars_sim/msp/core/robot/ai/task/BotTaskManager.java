@@ -217,7 +217,7 @@ implements Serializable {
 					
 				}
 				
-				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);//, functionType);
+				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");//, functionType);
 				taskDescriptionCache = taskDescription;
 			}
 		}

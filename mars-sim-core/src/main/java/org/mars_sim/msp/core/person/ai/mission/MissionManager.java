@@ -159,48 +159,48 @@ implements Serializable {
 	 * @param newTask
 	 */
 	// 2015-10-22 Added recordMission()
-	public void recordMission(MissionMember member) {
-		Mission newMission = null;
-		Person p = null;
-		Robot r = null;
-		
-		if (member instanceof Person) {
-			p = (Person) member;
-			newMission = getMission(p);
-		}
-		else {
-			r = (Robot) member;
-			newMission = getMission(r);
-		}
-/*			
-
-		if (personCache != null) {
-			newMission = getMission(personCache);
-		}
-		else if (robotCache != null) {
-			newMission = getMission(robotCache);
-		}
-*/
-		if (newMission != null) {
-			String phaseDescription = newMission.getPhaseDescription();
-
-			if (!phaseDescription.equals(phaseDescriptionCache)) {
-
-				String desc = newMission.getDescription();
-				String name = newMission.getName();
-				//FunctionType type = FunctionType.UNKNOWN;//newMission.getFunction();
-				
-				if (p != null) {
-					p.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
-				}
-				else if (r != null) {
-					r.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
-				}
-
-				phaseDescriptionCache = phaseDescription;
-			}
-		}
-	}
+//	public void recordMission(MissionMember member) {
+//		Mission newMission = null;
+//		Person p = null;
+//		Robot r = null;
+//		
+//		if (member instanceof Person) {
+//			p = (Person) member;
+//			newMission = getMission(p);
+//		}
+//		else {
+//			r = (Robot) member;
+//			newMission = getMission(r);
+//		}
+///*			
+//
+//		if (personCache != null) {
+//			newMission = getMission(personCache);
+//		}
+//		else if (robotCache != null) {
+//			newMission = getMission(robotCache);
+//		}
+//*/
+//		if (newMission != null) {
+//			String phaseDescription = newMission.getPhaseDescription();
+//
+//			if (!phaseDescription.equals(phaseDescriptionCache)) {
+//
+//				String desc = newMission.getDescription();
+//				String name = newMission.getName();
+//				//FunctionType type = FunctionType.UNKNOWN;//newMission.getFunction();
+//				
+//				if (p != null) {
+//					p.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
+//				}
+//				else if (r != null) {
+//					r.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
+//				}
+//
+//				phaseDescriptionCache = phaseDescription;
+//			}
+//		}
+//	}
 
 	/**
 	 * Adds a new mission to the mission list.

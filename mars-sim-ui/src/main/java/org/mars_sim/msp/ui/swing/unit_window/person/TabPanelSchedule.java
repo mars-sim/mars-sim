@@ -582,7 +582,7 @@ extends TabPanel {
 			if (columnIndex == 0) return Msg.getString("TabPanelSchedule.column.time"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelSchedule.column.description"); //$NON-NLS-1$
 			else if (columnIndex == 2) return Msg.getString("TabPanelSchedule.column.phase"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelSchedule.column.taskName"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelSchedule.column.missionName"); //$NON-NLS-1$
 			else return null;
 		}
 
@@ -591,15 +591,16 @@ extends TabPanel {
 			if (column == 0) return fmt.format(activities.get(row).getStartTime());
 			else if (column == 1) return taskSchedule.convertTaskDescription(activities.get(row).getDescription());
 			else if (column == 2) return taskSchedule.convertTaskPhase(activities.get(row).getPhase());
-			else if (column == 3) return formatClassName(taskSchedule.convertTaskName(activities.get(row).getTaskName()));
+			else if (column == 3) return taskSchedule.convertMissionName(activities.get(row).getTaskName());
+					//formatClassName(taskSchedule.convertTaskName(activities.get(row).getTaskName()));
 			else return null;
 		}
 
-		public String formatClassName(String s) {
-			String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA ").replace("To ", "to ");
-			//System.out.println(ss + " <-- " + s);
-			return ss;
-		}
+//		public String formatClassName(String s) {
+//			String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA ").replace("To ", "to ");
+//			//System.out.println(ss + " <-- " + s);
+//			return ss;
+//		}
 
 
 		/**

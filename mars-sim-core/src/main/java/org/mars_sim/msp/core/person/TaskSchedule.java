@@ -69,13 +69,14 @@ public class TaskSchedule implements Serializable {
 	private Map <Integer, List<OneActivity>> allActivities;
 	private Map <String, Integer> taskDescriptions;
 	private Map <String, Integer> taskNames;
+	private Map <String, Integer> missionNames;
 	private Map <String, Integer> taskPhases;
 	private Map <String, Integer> functions;
 
 	private List<OneActivity> todayActivities;
 	
 
-	private static MarsClock marsClock;
+	private MarsClock marsClock;
 
 	/**
 	 * Constructor for TaskSchedule
@@ -91,6 +92,7 @@ public class TaskSchedule implements Serializable {
 		//this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
 		taskDescriptions = new ConcurrentHashMap <String, Integer>();
 		taskNames = new ConcurrentHashMap <String, Integer>();
+		missionNames = new ConcurrentHashMap <String, Integer>();
 		taskPhases = new ConcurrentHashMap <String, Integer>();
 		functions = new ConcurrentHashMap <String, Integer>();
 		
@@ -121,6 +123,7 @@ public class TaskSchedule implements Serializable {
 		//this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
 		taskDescriptions = new ConcurrentHashMap <String, Integer>();
 		taskNames = new ConcurrentHashMap <String, Integer>();
+		missionNames = new ConcurrentHashMap <String, Integer>();
 		taskPhases = new ConcurrentHashMap <String, Integer>();
 		functions = new ConcurrentHashMap <String, Integer>();
 		
@@ -132,12 +135,8 @@ public class TaskSchedule implements Serializable {
 	 * @param taskName
 	 * @param description
 	 */
-	public void recordTask(String taskName, String description, String phase) {//, FunctionType functionType) {
-		this.taskName = taskName;
-		this.doAction = description;
-		this.phase = phase;
-		//this.functionType = functionType;
-
+	public void recordTask(String task, String description, String phase, String mission) {
+	
 		int startTime = marsClock.getMsol0();
 		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
@@ -163,12 +162,13 @@ public class TaskSchedule implements Serializable {
 		}
 
 		// 2016-11-29 Add maps
-		int id0 = getID(taskNames, taskName);
+		int id0 = getID(taskNames, task);
 		int id1 = getID(taskDescriptions, description);
 		int id2 = getID(taskPhases, phase);
+		int id3 = getID(missionNames, mission);
 		//int id3 = getID(functions, functionType.toString());
 
-		todayActivities.add(new OneActivity(startTime, id0, id1, id2));//, id3));
+		todayActivities.add(new OneActivity(startTime, id0, id1, id2, id3));
 
 	}
 
@@ -196,6 +196,10 @@ public class TaskSchedule implements Serializable {
 		return getString(taskNames, id);
 	}
 
+	public String convertMissionName(Integer id) {
+		return getString(missionNames, id);
+	}
+	
 	public String convertTaskDescription(Integer id) {
 		return getString(taskDescriptions, id);
 	}
@@ -302,7 +306,7 @@ public class TaskSchedule implements Serializable {
 	    		if (size != 0) {
 	    			OneActivity lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
 	    			// Carry over and save the last yestersol task as the first task on today's schedule
-	    			todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));//, lastTask.getFunction()));
+	    			todayActivities.add(new OneActivity(lastTask.getStartTime(), lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase(), lastTask.getMission()));//, lastTask.getFunction()));
 	    		}
     		}
     	}
@@ -527,13 +531,15 @@ public class TaskSchedule implements Serializable {
 
 		// Data members
 		private int taskName;
+		private int missionName;
 		private int description;
 		private int phase;
 		private int startTime;
 		//private int function;
 
-		public OneActivity(int startTime, int taskName, int description, int phase) {//, int function) {
+		public OneActivity(int startTime, int taskName, int description, int phase, int missionName) {//, int function) {
 			this.taskName = taskName;
+			this.missionName = missionName;
 			this.description = description;
 			this.startTime = startTime;
 			this.phase = phase;
@@ -564,7 +570,6 @@ public class TaskSchedule implements Serializable {
 			return description;
 		}
 
-
 		/**
 		 * Gets the task phase.
 		 * @return task phase id
@@ -573,67 +578,11 @@ public class TaskSchedule implements Serializable {
 			return phase;
 		}
 		
-		//public int getFunction() {
-		//	return function;
-		//}
+		public int getMission() {
+			return missionName;
+		}
 	}
 
-
-	/*
-	 * This class represents a record of a given activity (task or mission) undertaken by a person
-	 */
-	public class OneTask implements Serializable {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members
-		private int startTime;
-		
-		private String taskName;
-		private String description;
-		private String phase;
-		
-		public OneTask(int startTime, String taskName, String description, String phase) {
-			this.taskName = taskName;
-			this.description = description;
-			this.startTime = startTime;
-			this.phase = phase;
-		}
-
-		/**
-		 * Gets the start time of the task.
-		 * @return start time
-		 */
-		public int getStartTime() {
-			return startTime;
-		}
-
-		/**
-		 * Gets the task name.
-		 * @return task name
-		 */
-		public String getTaskName() {
-			return taskName;
-		}
-
-		/**
-		 * Gets the description what the actor is doing
-		 * @return what the actor is doing
-		 */
-		public String getDescription() {
-			return description;
-		}
-
-		/**
-		 * Gets the task phase.
-		 * @return task phase
-		 */
-		public String getPhase() {
-			return phase;
-		}
-		
-	}
 
     public void destroy() {
     	person = null;
