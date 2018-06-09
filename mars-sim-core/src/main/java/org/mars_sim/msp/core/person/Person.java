@@ -86,6 +86,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private final static double AVERAGE_LOW_WEIGHT = 57.2;
 	final static double AVERAGE_WEIGHT = 62.85 ; //(AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
 	
+	private static final String POLITICIAN = "Politician";
+	
 	// static unit identifier
 	private static int unitCount = 0;
 	
@@ -569,12 +571,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Sets the role for a person.
 	 */
-	// 2015-04-28 Added setRole()
 	public void setRole(RoleType type) {
 
 		if (type == RoleType.MAYOR) {
 			getRole().setNewRoleType(type);
-			Job job = JobManager.getJob("Manager");
+			Job job = JobManager.getJob(POLITICIAN);
 			if (job != null) {
 				mind.setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
 			}
@@ -585,7 +586,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Gets the instance of Role for a person.
 	 */
-	// 2015-04-28 Added getRole()
 	public Role getRole() {
 		return role;
 	}
@@ -593,7 +593,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Gets the instance of JobHistory for a person.
 	 */
-	// 2015-02-27 Added getJobHistory()
 	public JobHistory getJobHistory() {
 		return jobHistory;
 	}

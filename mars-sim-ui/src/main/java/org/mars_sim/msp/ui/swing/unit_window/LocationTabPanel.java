@@ -734,9 +734,6 @@ implements ActionListener {
             lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
             lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 
-            lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
-            lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
-
             double elevation = terrainElevation.getElevation(location);
 
             if (elevationCache != elevation) {

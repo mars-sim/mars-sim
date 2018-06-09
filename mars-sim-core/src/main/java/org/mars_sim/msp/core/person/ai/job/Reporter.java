@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * Politician.java
+ * Reporter.java
  * @version 3.1.0 2018-06-09
  * @author Manny Kung
  */
@@ -12,7 +12,6 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
@@ -22,11 +21,11 @@ import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
-import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
+import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Politician
+public class Reporter
 extends Job
 implements Serializable {
 
@@ -36,23 +35,25 @@ implements Serializable {
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
 
+	private NaturalAttributeManager attributes;
+	
 	/**
 	 * Constructor.
 	 */
-	public Politician() {
+	public Reporter() {
 		// Use Job constructor.
-		super(Politician.class);
+		super(Reporter.class);
 
 		// Add Manager-related tasks.
 		jobTasks.add(MeetTogether.class);
 		jobTasks.add(ConnectWithEarth.class);
 		jobTasks.add(HaveConversation.class);
-
+		jobTasks.add(RecordActivity.class);
+		
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
 		jobTasks.add(DigLocalRegolith.class);
 		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(ReviewJobReassignment.class);
 		jobTasks.add(WriteReport.class);
 
 		// Add Manager-related missions.
@@ -76,25 +77,28 @@ implements Serializable {
 
 		double result = 0D;
 
-		int managerSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
-		result = managerSkill;
-
-		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-
+		if (attributes == null)
+			attributes = person.getNaturalAttributeManager();
+		 
 		// Add experience aptitude.
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		// Add leadership aptitude.
 		int leadershipAptitude = attributes.getAttribute(NaturalAttribute.LEADERSHIP);
-		result+= result * ((leadershipAptitude - 50D) / 100D);
+		result+= result * ((leadershipAptitude - 50D) / 100D) / 2D;
 
 		// Add conversation.
 		int conversation = attributes.getAttribute(NaturalAttribute.CONVERSATION);
-		result+= result * ((conversation - 50D) / 100D);
+		result+= 2D * result * ((conversation - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) 
-			result = 0D;
+		// Add artistry aptitude.
+		int artistry = attributes.getAttribute(NaturalAttribute.ARTISTRY);
+		result+= result * ((artistry - 50D) / 100D);
+
+		// Add attractiveness.
+		int attractiveness = attributes.getAttribute(NaturalAttribute.ATTRACTIVENESS);
+		result+= 2D * result * ((attractiveness - 50D) / 100D);
 		
 		return result;
 	}

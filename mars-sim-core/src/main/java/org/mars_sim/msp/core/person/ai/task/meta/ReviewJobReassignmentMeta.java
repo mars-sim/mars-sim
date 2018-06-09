@@ -90,41 +90,38 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	                while (i.hasNext()) {
 	                    Person p = i.next();
 
-	                    // commander and sub-commander should not approved his/her own job reassignment
+	                    // TODO: should commander and sub-commander approve his/her own job reassignment ?
 	                    if (roleType.equals(RoleType.SUB_COMMANDER)
 		                    && p.getRole().getType().equals(RoleType.SUB_COMMANDER))
-	                    	return 0;
+	    		            result -= 25D;
 
 	                    else if (roleType.equals(RoleType.COMMANDER)
 			                    && p.getRole().getType().equals(RoleType.COMMANDER))
-		                    return 0;
+	    		            result -= 50D;
 
-	                    else {
+	                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
+	                    JobAssignmentType status = list.get(list.size()-1).getStatus();
 
-		                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
-		                    JobAssignmentType status = list.get(list.size()-1).getStatus();
+	                    if (status != null) {
+		                    if (status.equals(JobAssignmentType.PENDING)) {
 
-		                    if (status != null) {
-			                    if (status.equals(JobAssignmentType.PENDING)) {
-
-			                    	result += 500D;
-			                    	//result = result + result * preference / 10D ;
-			                    	
-			                    	// 2015-09-24 Added adjustment based on how many sol the request has since been submitted
-		                            if (marsClock == null)
-		                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		                            // if the job assignment submitted date is > 1 sol
-		                            int sol = marsClock.getMissionSol();
-		                            int solRequest = list.get(list.size()-1).getSolSubmitted();
-		                            if (sol == solRequest+1)
-		                                result += 1000D;
-		                            else if (sol == solRequest+2)
-		                                result += 1500D;
-		                            else if (sol == solRequest+3)
-		                                result += 2000D;
-		                            else if (sol > solRequest+3)
-		                                result += 3000D;
-			                    }
+		                    	result += 500D;
+		                    	//result = result + result * preference / 10D ;
+		                    	
+		                    	// 2015-09-24 Added adjustment based on how many sol the request has since been submitted
+	                            if (marsClock == null)
+	                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	                            // if the job assignment submitted date is > 1 sol
+	                            int sol = marsClock.getMissionSol();
+	                            int solRequest = list.get(list.size()-1).getSolSubmitted();
+	                            if (sol == solRequest+1)
+	                                result += 1000D;
+	                            else if (sol == solRequest+2)
+	                                result += 1500D;
+	                            else if (sol == solRequest+3)
+	                                result += 2000D;
+	                            else if (sol > solRequest+3)
+	                                result += 3000D;
 		                    }
 	                    }
 	                }
@@ -135,7 +132,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	                    if (building != null) {
 	                        result += 200D;
 	                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+	                        //result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 	                    }
 
 	                    // Modify if operation is the person's favorite activity.

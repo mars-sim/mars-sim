@@ -128,25 +128,4 @@ implements Serializable {
 
 		return result;
 	}
-
-	/**
-	 * Gets a robot's capability to perform this job.
-	 * @param robot the person to check.
-	 * @return capability (min 0.0).
-	 */
-	public double getCapability(Robot robot) {
-
-		double result = 0D;
-
-		int mechanicSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result = mechanicSkill;
-
-		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
-		int experienceAptitude = attributes.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
-		result+= result * ((experienceAptitude - 50D) / 100D);
-
-		//if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-
-		return result;
-	}
 }

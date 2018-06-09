@@ -69,6 +69,7 @@ import org.controlsfx.validation.Validator;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.GenderType;
 
 import com.jfoenix.controls.JFXButton;
@@ -106,6 +107,8 @@ public class CrewEditorFX {
 
 	private static final double BLUR_AMOUNT = 10;
 
+	private static final String POLITICIAN = "Politician";
+	
 	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
 
 	private static final ImageView background = new ImageView();
@@ -296,6 +299,7 @@ public class CrewEditorFX {
 				} else {
 					Alert alert = new Alert(AlertType.ERROR, "A settler's name is invalid. Please double check again!");
 					alert.initOwner(stage);
+					alert.setTitle("Invalid Input");
 					alert.showAndWait();
 					goodToGo = false;
 					scenarioConfigEditorFX.disableStartButton();
@@ -521,35 +525,35 @@ public class CrewEditorFX {
 		// g.setPadding(new Insets(10,10,10,10));
 		// g.setId("combobox");
 
-		if (g != null) {
-			g.setOnAction((event) -> {
-				String s = (String) g.getValue();
-				g.setValue(s);
-
-				vs = new ValidationSupport();
-		        vs.registerValidator(g, Validator.createEmptyValidator( "ComboBox Selection required"));
-/*
-		        vs.validationResultProperty().addListener( (o, wasInvalid, isNowInvalid) -> {
-			    	//Collection<?> c
-			    	boolean b = o.getValue().getMessages().contains("ComboBox Selection required");
-			    	if (b)
-			    		System.out.println("Missing ComboBox Selection(s) in Crew Editor. Please double check!");
-				    	//if (o.getValue() == null || o.getValue().equals(""))
-				    	//	System.out.println("invalid choice of country of origin !");
-				    }
-			    );
-*/
-			    vs.invalidProperty().addListener((obs, wasInvalid, isNowInvalid) -> {
-			        if (isNowInvalid) {
-			            System.out.println("Missing a comboBox selection in Crew Editor!");
-			        } else {
-			            System.out.println("That comboBox selection is now valid");
-			        }
-			    });
-
-				commitButton.disableProperty().bind(vs.invalidProperty());
-			});
-		}
+//		if (g != null) {
+//			g.setOnAction((event) -> {
+//				String s = (String) g.getValue();
+//				g.setValue(s);
+//
+//				vs = new ValidationSupport();
+//		        vs.registerValidator(g, Validator.createEmptyValidator( "ComboBox Selection required"));
+///*
+//		        vs.validationResultProperty().addListener( (o, wasInvalid, isNowInvalid) -> {
+//			    	//Collection<?> c
+//			    	boolean b = o.getValue().getMessages().contains("ComboBox Selection required");
+//			    	if (b)
+//			    		System.out.println("Missing ComboBox Selection(s) in Crew Editor. Please double check!");
+//				    	//if (o.getValue() == null || o.getValue().equals(""))
+//				    	//	System.out.println("invalid choice of country of origin !");
+//				    }
+//			    );
+//*/
+//			    vs.invalidProperty().addListener((obs, wasInvalid, isNowInvalid) -> {
+//			        if (isNowInvalid) {
+//			            System.out.println("Missing a comboBox selection in Crew Editor!");
+//			        } else {
+//			            System.out.println("That comboBox selection is now valid");
+//			        }
+//			    });
+//
+//				commitButton.disableProperty().bind(vs.invalidProperty());
+//			});
+//		}
 
 		return g;
 	}
@@ -731,23 +735,10 @@ public class CrewEditorFX {
 		 * "Option 1", "Option 2", "Option 3" ); final ComboBox comboBox = new
 		 * ComboBox(options);
 		 */
-		List<String> jobs = new ArrayList<String>(15);
-		jobs.add("Architect");
-		jobs.add("Areologist");
-		jobs.add("Astronomer");
-		jobs.add("Biologist");
-		jobs.add("Botanist");
-		jobs.add("Chef");
-		jobs.add("Chemist");
-		jobs.add("Doctor");
-		jobs.add("Driver");
-		jobs.add("Engineer");
-		// jobs.add("Politician");
-		jobs.add("Mathematician");
-		jobs.add("Meteorologist");
-		jobs.add("Physicist");
-		jobs.add("Technician");
-		jobs.add("Trader");
+		List<String> jobs = JobType.getList();
+		
+		jobs.remove(POLITICIAN);
+
 		Collections.sort(jobs);
 
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
@@ -779,8 +770,7 @@ public class CrewEditorFX {
 		}
 	}
 
-	// 2017-02-14 Added setupSponsorCB()
-	@SuppressWarnings("unchecked")
+	// Added setupSponsorCB()
 	public JFXComboBox<String> setUpSponsorCB(int index) {
 
 		List<String> sponsors = personConfig.createSponsorList();

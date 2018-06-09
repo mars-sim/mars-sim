@@ -40,7 +40,7 @@ public final class JobManager implements Serializable {
 	public static final String SETTLEMENT = "Settlement";
 	public static final String MISSION_CONTROL = "Mission Control";
 	public static final String USER = "User";
-	//public static final String DIVISION_CHIEF = "Division Chief";
+	private static final String POLITICIAN = "Politician";
 
 	// Data members
 	/** List of the jobs in the simulation. */
@@ -71,6 +71,7 @@ public final class JobManager implements Serializable {
 		jobs.add(new Politician());
 		jobs.add(new Meteorologist());
 		jobs.add(new Physicist());
+		jobs.add(new Reporter());
 		jobs.add(new Trader());
 		jobs.add(new Technician());
 	}
@@ -199,8 +200,8 @@ public final class JobManager implements Serializable {
 			Iterator<Job> i = getJobs().iterator();
 			while (i.hasNext()) {
 				Job job = i.next();
-				// 2015-04-30 Exclude mayor/manager job
-				if (!job.equals(JobManager.getJob("Politician"))) {
+				// 2015-04-30 Exclude politician job which is reserved for Mayor only
+				if (!job.equals(JobManager.getJob(POLITICIAN))) {
     				double jobProspect = getJobProspect(person, job, settlement, true);
     				if (jobProspect >= newJobProspect) {
     					newJob = job;

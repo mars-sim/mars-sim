@@ -32,6 +32,7 @@ import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -47,6 +48,8 @@ public class CrewEditor implements ActionListener {
 
 	public static final int ALPHA_CREW = 0;
 
+	private static final String POLITICIAN = "Politician";
+	
 	// Data members
 	private PersonConfig pc;// = SimulationConfig.instance().getPersonConfiguration();
 	private SimulationConfigEditor simulationConfigEditor;
@@ -377,23 +380,12 @@ public class CrewEditor implements ActionListener {
 
 	public DefaultComboBoxModel<String> setUpJobCBModel() {
 
-		List<String> jobs = new ArrayList<String>(15);
-		jobs.add("Botanist");
-		jobs.add("Areologist");
-		jobs.add("Doctor");
-		jobs.add("Engineer");
-		jobs.add("Driver");
-		jobs.add("Chef");
-		jobs.add("Trader");
-		jobs.add("Technician");
-		jobs.add("Architect");
-		jobs.add("Biologist");
-		jobs.add("Astronomer");
-		jobs.add("Chemist");
-		jobs.add("Physicist");
-		jobs.add("Mathematician");
-		jobs.add("Meteorologist");
+		List<String> jobs = JobType.getList();
+				
+		jobs.add(POLITICIAN);
+
 		Collections.sort(jobs);
+
 		jobsComboBoxModel = new DefaultComboBoxModel<String>();
 		Iterator<String> j = jobs.iterator();
 

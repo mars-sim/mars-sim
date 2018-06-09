@@ -44,7 +44,7 @@ public class ReadMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (person.isInside()) {
-        	result += 3D;
+        	result += 10D;
 
         	if (person.isInVehicle())
         		result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle

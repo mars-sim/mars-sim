@@ -60,24 +60,9 @@ implements Serializable {
         super(NAME, person, true, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(20D));
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-/*
-            if (roleType == null)
-            	roleType = person.getRole().getType();
+        if (person.isInSettlement()) {
 
-            if (roleType.equals(RoleType.PRESIDENT)
-                	|| roleType.equals(RoleType.MAYOR)
-            		|| roleType.equals(RoleType.COMMANDER)
-            		|| roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) ) {
-*/
-	            // If person is in a settlement, try to find an office building.
+            // If person is in a settlement, try to find an office building.
 	            Building officeBuilding = getAvailableOffice(person);
 	            if (officeBuilding != null) {
 	                // Walk to the office building.
@@ -90,7 +75,7 @@ implements Serializable {
                 person.getPreference().setTaskDue(this, true);
             //}
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
 
             if (person.getVehicle() instanceof Rover) {
                 walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -162,7 +147,7 @@ implements Serializable {
         Building result = null;
 
         // If person is in a settlement, try to find a building with an office.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             BuildingManager buildingManager = person.getSettlement()
                     .getBuildingManager();
             List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);

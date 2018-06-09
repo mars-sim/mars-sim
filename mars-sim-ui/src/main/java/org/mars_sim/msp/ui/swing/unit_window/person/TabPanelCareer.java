@@ -70,7 +70,8 @@ implements ActionListener {
 	private static Logger logger = Logger.getLogger(TabPanelCareer.class.getName());
 
 	private static final int RATING_DAYS = 7;
-
+	private static final String POLITICIAN = "Politician";
+	
 	/** data cache */
 	private int solCache = 1;
 
@@ -618,15 +619,15 @@ implements ActionListener {
 				String selectedJobStr = (String) jobComboBox.getSelectedItem();
 				String jobStrCache = person.getMind().getJob().getName(person.getGender());
 
-				// 2015-04-30 if job is Politician, loads and set to the previous job and quit;
-				if (jobStrCache.equals("Politician")) {
+				// if job is Politician, loads and set to the previous job and quit;
+				if (jobStrCache.equals(POLITICIAN)) {
 					jobComboBox.setSelectedItem(jobStrCache);
 					jobChangeLabel.setForeground(Color.red);
 					jobChangeLabel.setText("Mayor cannot switch job arbitrarily!");
 					jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				}
 
-				else if (selectedJobStr.equals("Politician")) {
+				else if (selectedJobStr.equals(POLITICIAN)) {
 					jobComboBox.setSelectedItem(jobStrCache);
 					jobChangeLabel.setForeground(Color.red);
 					jobChangeLabel.setText("The Job Politician is currently reserved for Mayor only.");
@@ -634,7 +635,7 @@ implements ActionListener {
 				}
 
 				else if (!jobCache.equals(selectedJobStr)) {
-				// 2015-09-03 use getAssociatedSettlement instead of getSettlement()
+				// Use getAssociatedSettlement instead of getSettlement()
 					int pop = 0;
 			        Settlement settlement = null;
 			        if (person.getAssociatedSettlement() != null)

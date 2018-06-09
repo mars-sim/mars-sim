@@ -4,9 +4,11 @@
  * @version 3.1.0 2017-11-06
  * @author Manny Kung
  */
-package org.mars_sim.msp.core;
+package org.mars_sim.msp.core.tool;
 
 import java.util.Arrays;
+
+import org.mars_sim.msp.core.JumpPolynomial;
 
 /**
  * A SIMD-oriented Fast Mersenne Twister generator.

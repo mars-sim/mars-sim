@@ -209,6 +209,7 @@ public class MetaTaskUtil {
 	        tasks.add(new PrescribeMedicationMeta());
 	        tasks.add(new ProduceFoodMeta());
 	        tasks.add(new ProposeScientificStudyMeta());
+	        tasks.add(new RecordActivityMeta());
 	        tasks.add(new RespondToStudyInvitationMeta());
 	        //tasks.add(new ReturnLightUtilityVehicleMeta());
 	        tasks.add(new ReviewJobReassignmentMeta());

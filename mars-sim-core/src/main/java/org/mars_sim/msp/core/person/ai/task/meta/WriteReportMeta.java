@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WriteReportMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2018-06-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -53,31 +53,37 @@ public class WriteReportMeta implements MetaTask, Serializable {
 	            // Probability affected by the person's stress and fatigue.
 	            PhysicalCondition condition = person.getPhysicalCondition();
 	            
-	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-	
-		            RoleType roleType = person.getRole().getType();
-	
-		            if (roleType.equals(RoleType.PRESIDENT)
-		                	|| roleType.equals(RoleType.MAYOR)
-		            		|| roleType.equals(RoleType.COMMANDER)
-		                    || roleType.equals(RoleType.SUB_COMMANDER)) {
+	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D && condition.getHunger() < 500D) {
+		            
+		            if (result > 0) {
+		                RoleType roleType = person.getRole().getType();
+
+		                if (roleType.equals(RoleType.PRESIDENT))
+		                	result += 50D;
+		                
+		            	else if (roleType.equals(RoleType.MAYOR))
+		                	result -= 40D;
+		            			
+		            	else if (roleType.equals(RoleType.COMMANDER))
+		                    result += 30D;
 		            	
-		            	result += 50D;
+		            	else if (roleType.equals(RoleType.SUB_COMMANDER))
+		            		result += 20D;
+		                
+		                else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
+		                	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
+		                	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+		                	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
+		                	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
+		                	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
+		                	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
+		                
+		                	result += 15D;
+		                }
+		                
+			            else
+			            	result += 10D;
 		            }
-		            
-		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-		            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-		            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-		            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-		            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
-		            
-		            	result += 25D;
-		            }
-	
-		            else
-		            	result += 10D;
 		            
 		            // Get an available office space.
 		            Building building = WriteReport.getAvailableOffice(person);
