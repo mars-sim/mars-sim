@@ -28,7 +28,7 @@
 			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
 			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<content>
-				<VBox fx:id="innerVBox" layoutX="50.0" layoutY="143.0" spacing="15.0">
+				<VBox fx:id="innerVBox" layoutX="0.0" layoutY="163.0" spacing="15.0">
 				<padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
 					<children>
 					</children>

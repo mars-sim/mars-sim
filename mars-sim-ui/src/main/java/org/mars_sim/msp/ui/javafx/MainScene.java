@@ -129,6 +129,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -394,6 +395,8 @@ public class MainScene {
 	private static QuotationPopup quote;
 
 	private static Simulation sim = Simulation.instance();
+    private static UnitManager unitManager = sim.getUnitManager();
+    
 	private static MasterClock masterClock = sim.getMasterClock();
 	private static EarthClock earthClock;
 	private static MarsClock marsClock;
@@ -2243,9 +2246,14 @@ public class MainScene {
 
 		jfxTabPane.getTabs().addAll(dashboardTab, mainTab, mapTab, guideTab);
 
+		final DashboardController c = controller;
+		
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
 			if (newTab == dashboardTab) {
+				
+				c.checkSettlements();
+				
 				dashboardStackPane.requestFocus();
 				closeMaps();
 			}

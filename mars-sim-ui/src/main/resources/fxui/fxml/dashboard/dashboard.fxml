@@ -16,7 +16,8 @@
 <AnchorPane id="AnchorPane" fx:id="mainPane" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/9.0" 
 	xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.dashboard.DashboardController">
    <children>
-      <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 45; -fx-background-color: #2A3F54;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 45; -fx-background-color: #2A3F54;" 
+         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
 			<Label fx:id="insertLabel" layoutX="50.0" layoutY="0.0" prefHeight="60.0" prefWidth="750.0" text="" textFill="#a1aec4"
 			    style="-fx-alignment: center;" >
@@ -26,23 +27,25 @@
 			</Label>
          </left>
       </JFXToolbar>
-      <VBox fx:id="buttonBox" layoutY="46.0" prefHeight="900.0" prefWidth="250.0" style="-fx-background-color: #2A3F54;">
+      <VBox fx:id="leftVBox" layoutX="0.0" layoutY="46.0" prefWidth="250.0" style="-fx-background-color: #2A3F54;">
          <children>
-
-            <JFXButton fx:id="btnHome" onAction="#handleHome" prefHeight="42.0" prefWidth="250.0" style="-fx-alignment: center-left;" styleClass="nav-button" 
-            text="Mars" textFill="#a1aec4">
-               <font>
-                  <Font name="Roboto Bold" size="14.0" />
-               </font>
-               <graphic>
-                  <FontAwesomeIconView fill="#a1aec4" glyphName="MARS" size="17.0" wrappingWidth="25.0" />
-               </graphic>
-            </JFXButton>
- 
+             <JFXButton fx:id="btnHome" onAction="#handleMars" layoutY="46.0" prefHeight="42.0" prefWidth="250.0" style="-fx-alignment: center-left;" 
+      			styleClass="nav-button" text="Mars" textFill="#a1aec4">
+		         <font>
+		            <Font name="Roboto Bold" size="14.0" />
+		         </font>
+		         <graphic>
+		            <FontAwesomeIconView fill="#a1aec4" glyphName="MARS" size="17.0" wrappingWidth="25.0" />
+		         </graphic>
+		      </JFXButton>
+		      <VBox fx:id="buttonVBox" layoutX="0.0" layoutY="46.0" prefWidth="250.0" style="-fx-background-color: #2A3F54;">
+		         <children>
+		         </children>
+		      </VBox>
          </children>
       </VBox>
-
- 		
+  
+      
 	  <AnchorPane fx:id="insertPane" layoutX="140.0" layoutY="46.0"/>
    </children>
 </AnchorPane>

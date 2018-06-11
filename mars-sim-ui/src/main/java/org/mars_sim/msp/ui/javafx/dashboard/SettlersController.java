@@ -11,35 +11,28 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 
-//import org.mars_sim.msp.ui.javafx.MainScene;
-import javafx.collections.ObservableList;
-
+import javafx.event.EventHandler;
 import javafx.animation.FadeTransition;
-
-//import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-//import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.util.Duration;
-import javafx.collections.FXCollections;
 
 public class SettlersController implements Initializable {
 
@@ -58,20 +51,56 @@ public class SettlersController implements Initializable {
     
     private UnitManager unitManager;
     
+    private Settlement lastSelected;
+    
+    
     private Collection<Person> people;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+    	
+    	speedUpScroll();
+    	
     	unitManager = Simulation.instance().getUnitManager();
 
-    	// Get all people in a settlement
-    	people = FXCollections.observableArrayList(unitManager.getPeople());
+    	// Get all people from all settlement
+    	people = unitManager.getPeople();
     	//people = new ArrayList<>(unitManager.getPeople());
     	
     	// load settlers without modifying people instance
     	loadSettlers(null);
     }
 
+    public void speedUpScroll() {
+//    	final IntegerProperty vValueProperty = new SimpleIntegerProperty(0);
+//        final int steps = 20;
+//
+//        scrollPane.vvalueProperty().bind(vValueProperty);
+//
+//        scrollPane.setOnSwipeDown(new EventHandler<GestureEvent>() {
+//
+//            public void handle(GestureEvent event) {
+//                // calculate the needed value here
+//                vValueProperty.set(vValueProperty.get() + steps);
+//            }
+//        });
+        
+        scrollPane.setContent(innerVBox);
+
+        innerVBox.setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent event) {
+            	// deltaY makes the scrolling a bit faster
+                double deltaY = event.getDeltaY()*150; 
+                double width = scrollPane.getContent().getBoundsInLocal().getWidth();
+                double vvalue = scrollPane.getVvalue();
+                scrollPane.setVvalue(vvalue + -deltaY/width); 
+                // deltaY/width to make the scrolling equally fast regardless of the actual width of the component
+            }
+        });
+        
+    }
+    
 	public void setSize(int screen_width, int screen_height) {
 		scrollPane.setPrefWidth(screen_width - LEFT_PANEL_WIDTH);
 		scrollPane.setPrefHeight(screen_height);
@@ -81,7 +110,7 @@ public class SettlersController implements Initializable {
     private void setupNode(Node node) {	
     	innerVBox.getChildren().add((Node) node);      
 
-        FadeTransition ft = new FadeTransition(Duration.millis(1500));
+        FadeTransition ft = new FadeTransition(Duration.millis(1000));
         ft.setNode(node);
         ft.setFromValue(0.1);
         ft.setToValue(1);
@@ -93,17 +122,29 @@ public class SettlersController implements Initializable {
 
     
     private void loadSettlers(Settlement s) {
-    	if (s != null)
-    		people = s.getAllAssociatedPeople();
     	
+    	// if s is null, load people from all settlements
+    	if (s == null)
+    		people = unitManager.getPeople();
+    	else
+        	people = s.getAllAssociatedPeople();
+    		
     	innerVBox.getChildren().clear();
     	
-    	scrollPane.setHvalue(0.0);
-    	scrollPane.setVvalue(0.0);
+    	if (s != null && lastSelected != null) {
+    		if (!s.getName().equals(lastSelected.getName())) {
+		    	scrollPane.setHvalue(0.0);
+		    	scrollPane.setVvalue(0.0);
+	    	}
+    	}
     	
     	profile = new String[5];
       
-    	for (Person p : people) {
+    	List<Person> list = new ArrayList<>();
+    	list.addAll(people);
+    	Collections.sort(list);
+    	
+    	for (Person p : list) {
     		profile[0] = p.getName();
     		profile[1] = p.getMind().getJob().getName(p.getGender());
     		profile[2] = p.getRole().toString();
@@ -112,7 +153,9 @@ public class SettlersController implements Initializable {
         	load(profile);
     	}
     	
-
+       	// Store the selected settlement
+    	lastSelected = s;
+        
 
 /*    	
     	for (int i=0; i<8; i++) {
