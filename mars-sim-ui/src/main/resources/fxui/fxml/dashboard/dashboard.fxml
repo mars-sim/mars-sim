@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.geometry.Insets?>
 
 <AnchorPane id="AnchorPane" fx:id="mainPane" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/9.0" 
@@ -17,38 +18,31 @@
    <children>
       <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 45; -fx-background-color: #2A3F54;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
-			<Label fx:id="insertLabel" prefHeight="50.0" prefWidth="750.0" text="" textFill="white"
+			<Label fx:id="insertLabel" layoutX="50.0" layoutY="0.0" prefHeight="60.0" prefWidth="750.0" text="" textFill="#a1aec4"
 			    style="-fx-alignment: center;" >
 				<font>
-					<Font name="Roboto Bold" size="20.0" />
+					<Font name="Roboto Bold" size="16.0" />
 				</font>
 			</Label>
          </left>
       </JFXToolbar>
-      <VBox fx:id="leftVBox" layoutY="46.0" prefHeight="900.0" prefWidth="140.0" style="-fx-background-color: #2A3F54;">
+      <VBox fx:id="buttonBox" layoutY="46.0" prefHeight="900.0" prefWidth="250.0" style="-fx-background-color: #2A3F54;">
          <children>
-            <Label prefHeight="40.0" prefWidth="140.0" style="-fx-alignment: center; -fx-font-size: 16; -fx-text-fill: #7387A8; 
-            -fx-border-color: #7387A8; -fx-border-width: 0 0 2 0;" text="MarsNet" />
-            <JFXButton fx:id="btnHome" onAction="#updateSettlers" prefHeight="42.0" prefWidth="139.0" style="-fx-alignment: center-left;" styleClass="nav-button" 
-            text="Home" textFill="#a1aec4">
+
+            <JFXButton fx:id="btnHome" onAction="#handleHome" prefHeight="42.0" prefWidth="250.0" style="-fx-alignment: center-left;" styleClass="nav-button" 
+            text="Mars" textFill="#a1aec4">
                <font>
                   <Font name="Roboto Bold" size="14.0" />
                </font>
                <graphic>
-                  <FontAwesomeIconView fill="#a1aec4" glyphName="DASHBOARD" size="17.0" wrappingWidth="43.0" />
+                  <FontAwesomeIconView fill="#a1aec4" glyphName="MARS" size="17.0" wrappingWidth="25.0" />
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnSettlers" layoutX="10.0" layoutY="109.0" onAction="#updateSettlers" prefHeight="42.0" prefWidth="139.0" 
-            style="-fx-alignment: center-left;" styleClass="nav-button" text="Settlers" textFill="#a1aec4">
-               <font>
-                  <Font name="Roboto Bold" size="14.0" />
-               </font>
-               <graphic>
-                  <FontAwesomeIconView fill="#a1aec4" glyphName="GROUP" size="17.0" wrappingWidth="43.0" />
-               </graphic>
-            </JFXButton>
+ 
          </children>
       </VBox>
-		<AnchorPane fx:id="insertPane" layoutX="140.0" layoutY="46.0"/>
+
+ 		
+	  <AnchorPane fx:id="insertPane" layoutX="140.0" layoutY="46.0"/>
    </children>
 </AnchorPane>

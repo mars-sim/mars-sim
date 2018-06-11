@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane prefHeight="431.0" prefWidth="661.0" stylesheets="@../../css/tabboard/tabpane.css"
+xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" 
+fx:controller="org.mars_sim.msp.ui.javafx.tabboard.TabController">
+   <children>
+      <JFXTabPane fx:id="tabContainer" prefHeight="128.0" prefWidth="308.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+         <tabs>
+            <Tab fx:id="userProfileTab" closable="false" text="User Profile">
+               <content>
+                  <AnchorPane fx:id="userProfileContainer" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+            <Tab fx:id="settingsTab" closable="false" text="Settings">
+               <content>
+                  <AnchorPane fx:id="settingsContainer" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+            <Tab fx:id="logoutTab" closable="false" text="Logout">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+         </tabs>
+      </JFXTabPane>
+   </children>
+</StackPane>

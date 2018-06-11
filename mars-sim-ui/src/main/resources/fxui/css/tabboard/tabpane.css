@@ -1,0 +1,41 @@
+.root {
+    -fx-base: #222D32;
+    -fx-color: -fx-base;
+
+    -fx-font-family: "Montserrat";
+    -fx-accent: #2A3F54;
+    -fx-default-button: -fx-accent;
+    -jfx-primary-color: -fx-accent;
+    -jfx-light-primary-color: -fx-accent;
+    -jfx-dark-primary-color: -fx-accent;
+    -fx-focus-color: #2A3F54;
+    -jfx-secondary-color: -fx-focus-color;
+    -jfx-light-secondary-color: -fx-focus-color;
+    -jfx-dark-secondary-color: -fx-focus-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * JFX Tab Pane                                                                *
+ *                                                                             *
+ ******************************************************************************/
+
+.jfx-tab-pane .headers-region {
+    -fx-background-color: -fx-accent;
+}
+
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: -fx-accent;
+}
+
+.jfx-tab-pane .tab-selected-line {
+    -fx-stroke: -fx-accent;
+}
+
+.jfx-tab-pane .tab-header-area .jfx-rippler {
+    -jfx-rippler-fill: -fx-focus-color;
+}
+
+.tab-selected-line {
+    -fx-background-color: -fx-focus-color;
+}

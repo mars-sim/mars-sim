@@ -169,18 +169,17 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
  * The MainScene class is the primary Stage for MSP. It is the container for
  * housing desktop swing node, javaFX UI, pull-down menu and icons for tools.
  */
-@SuppressWarnings("restriction")
 public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
-	public final static String CSS_PATH = "/fxui/css/theme/";
+	public final static String THEME_PATH = "/fxui/css/theme/";
 
 	public final static String ORANGE_CSS_JFX = "/fxui/css/tab/jfx_orange.css";
 	public final static String BLUE_CSS_JFX = "/fxui/css/tab/jfx_blue.css";
 
-	public final static String ORANGE_CSS_THEME = "/fxui/css/theme/nimrodskin.css";
-	public final static String BLUE_CSS_THEME = "/fxui/css/theme/snowBlue.css";
+	public final static String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
+	public final static String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
 
 	public static String OS = Simulation.OS.toLowerCase();
 	// System.getProperty("os.name").toLowerCase();
@@ -953,7 +952,6 @@ public class MainScene {
 	 *
 	 * @return Scene
 	 */
-	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
 		IconFontFX.register(FontAwesome.getIconFont());
 
@@ -2141,7 +2139,6 @@ public class MainScene {
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
-	@SuppressWarnings("restriction")
 	public void createJFXTabs() {
 		jfxTabPane = new JFXTabPane();
 
@@ -2496,7 +2493,7 @@ public class MainScene {
 	 */
 	public void setTheme(int theme) {
 
-		String cssFile = CSS_PATH;
+		String cssFile = THEME_PATH;
 		
 		if (menuBar != null && menuBar.getStylesheets() != null)
 			menuBar.getStylesheets().clear();
@@ -2537,16 +2534,16 @@ public class MainScene {
 				themeSkin = "Night";
 
 			} else if (theme == 6) { // + skyblue
-
 				cssFile += "snowBlue.css";
 				updateThemeColor(6, Color.rgb(0, 107, 184), Color.rgb(255, 255, 255), cssFile); 
 				// (144, 208, 229) light blue , CADETBLUE (0,107,184), Color.rgb(23,138,255)
 				themeSkin = "snowBlue";
+				
 			} else if (theme == 7) { // mud orange/standard
-
 				cssFile += "nimrodskin.css";
 				updateThemeColor(7, Color.rgb(156, 77, 0), Color.rgb(255, 255, 255), cssFile); // DARKORANGE, CORAL
 				themeSkin = "nimrod";
+				
 			}
 
 			SwingUtilities.invokeLater(() -> {

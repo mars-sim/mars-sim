@@ -5,6 +5,36 @@ https://github.com/mars-sim/mars-sim
 
 -----------------------------------------------------------------------------------------
 
+## v3.1.0-Preview 10 (build 4___) - 2018-__-__
+
+### KNOWN LIMITATIONS :
+
+1. In MacOS, JavaFX WebEngine's bug creates garbled characters on certain 
+   webpages in Help Browser.
+
+2. In Linux, text fields do not allow text input.
+
+
+### CORE ENGINE IMPROVEMENTS :
+
+1. Add new Reporter Job and new RecordActivity task.
+
+2. Refine and revise mission objectives for each sponsor.
+
+
+### UI IMPROVEMENT :
+
+### FIXES :
+
+1. Correct the missing decimal place notation in Configuration Editor
+
+1. Fix excessive rows showing up in task schedules. Enable mission name to show up on
+   separate column.
+
+
+
+-----------------------------------------------------------------------------------------
+
 ## v3.1.0-Preview 9 (build 4271) - 2018-05-25
 
 ### KNOWN LIMITATIONS :

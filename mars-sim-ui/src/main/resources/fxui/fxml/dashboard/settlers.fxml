@@ -21,10 +21,11 @@
 <AnchorPane id="AnchorPane" fx:id="settlersPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0"
 	fx:controller="org.mars_sim.msp.ui.javafx.dashboard.SettlersController" >
 	<children>
-		<Label text="Settlers" layoutX="19.0" layoutY="17.0" prefHeight="25.0" prefWidth="200.0" style="-fx-font-size: 20; -fx-font-weight: bold; 
-      		-fx-text-fill: #7387A8;" />
+		<Label text="label" layoutX="19.0" layoutY="17.0" prefHeight="25.0" prefWidth="200.0" 
+			style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #7387A8;" />
 		<Separator layoutX="3.0" layoutY="55.0" prefHeight="4.0" />
-		<ScrollPane fx:id="scrollPane" layoutX="15.0" prefHeight="960.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+		<ScrollPane fx:id="scrollPane" layoutX="15.0" prefHeight="960.0" prefWidth="720.0" 
+			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
 			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<content>
 				<VBox fx:id="innerVBox" layoutX="50.0" layoutY="143.0" spacing="15.0">

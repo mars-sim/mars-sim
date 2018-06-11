@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.ui.javafx.dashboard;
 
-
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,7 +15,6 @@ import javafx.fxml.Initializable;
 
 import javafx.scene.control.Label;
 
-@SuppressWarnings("restriction")
 public class OneSettlerController implements Initializable {
 
     @FXML

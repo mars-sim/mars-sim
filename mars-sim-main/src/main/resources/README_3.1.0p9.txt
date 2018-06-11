@@ -13,9 +13,10 @@ https://github.com/mars-sim/mars-sim
 
 - 135 MB free disk space
 
-- Java 8 JRE/JDK (u77 above) for v3.1.0p1 to p8 and v3.1.0p9_java8   
+- Java 8 JRE/JDK (u77 above) for v3.1.0p1 to v3.1.0p8, v3.1.0p9_java8 
+  and v3.1.0p10_java8   
 
-- Java 9/10 JRE/JDK for v3.1.0p9_java9
+- Java 9/10 JRE/JDK for v3.1.0p9_java9 and v3.1.0p10_java9
 
 ---------------------------------------------------------------------
 
@@ -24,23 +25,24 @@ https://github.com/mars-sim/mars-sim
 - Install the latest Java JRE or JDK on your machine. 
   (See README.md from https://github.com/mars-sim/mars-sim) 
 
-- Download the mars-sim package available in three forms, namely,
-  Batch, Debian or Jar version.
+- Download the mars-sim package available in 3 editions, namely,
+  Batch, Debian or Jar editions.
 
 ---------------------------------------------------------------------
 
 ** Starting a new sim **
 
-A. Batch Version
+A. Batch Edition
 
-- Double click on "mars-sim.bat" or type "mars-sim.bat" to begin.
+- In Windows OS, double click on "mars-sim.bat" to begin.
+- In Linux/MacOS, type "mars-sim.bat" or "./mars-sim" to begin.
 
-B. Debian Version
+B. Debian Edition
 
 - If you have installed the debian version of mars-sim, type 
 "./mars-sim" to begin.
 
-C. Jar Version
+C. Jar Edition
 
 1. Graphics Mode
 
