@@ -22,7 +22,8 @@ extends HistoricalEvent implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private Person person;
 
 	/**
 	 * Constructor.
@@ -31,12 +32,21 @@ extends HistoricalEvent implements Serializable {
 	 * @param eventType the medical event type.
 	 */
 	public MedicalEvent(Person person, HealthProblem illness, EventType eventType) {
-		
 		// Call HistoricalEvent constructor.
 		super(HistoricalEventCategory.MEDICAL, 
 				eventType, 
+				illness.getSufferer(),
 				person,
-				person.getLocationTag().getLongLocationName(),//.getAssociatedSettlement().getName(),
+				illness.getSufferer().getLocationTag().getLongLocationName(),//.getAssociatedSettlement().getName(),
 				illness.getIllness().getType().getName());
+		
+		this.person = person;
 	}
+	
+    public Person getPerson() {
+    	return person;
+    }
+    
+    
+
 }

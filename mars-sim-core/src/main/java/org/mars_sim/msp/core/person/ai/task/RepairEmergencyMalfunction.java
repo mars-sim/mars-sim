@@ -77,9 +77,9 @@ implements Repair, Serializable {
             //2016-09-24 Factored in a person's preference for the new stress modifier
             super.setStressModifier(score/10D + STRESS_MODIFIER);
         }
-        else if (unit instanceof Robot) {
-        	//this.robot = (Robot) unit;
-        }
+//        else if (unit instanceof Robot) {
+//        	//this.robot = (Robot) unit;
+//        }
 
         claimMalfunction();
 
@@ -94,9 +94,18 @@ implements Repair, Serializable {
         TaskEvent startingEvent = null ;
         if (getCreateEvents() && !isDone()) {
         	if (person != null)
-                startingEvent = new TaskEvent(person, this, EventType.TASK_START, person.getAssociatedSettlement().getName(), "");
-        	else if (robot != null)
-                startingEvent = new TaskEvent(robot, this, EventType.TASK_START, robot.getAssociatedSettlement().getName(), "");
+                startingEvent = new TaskEvent(person, 
+                		this, 
+                		entity,
+                		EventType.TASK_START, 
+                		person.getSettlement().getName(), 
+                		"Repair Emergency Malfunction");
+//        	else if (robot != null)
+//                startingEvent = new TaskEvent(robot, 
+//                		this, 
+//                		EventType.TASK_START, 
+//                		robot.getAssociatedSettlement().getName(), 
+//                		"");
 
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }
@@ -110,10 +119,10 @@ implements Repair, Serializable {
                 logger.fine(person.getName() + " starting work on emergency malfunction: " +
                         malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
         	}
-        	else if (robot != null) {
-                //logger.fine(robot.getName() + " starting work on emergency malfunction: " +
-                        //malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
-        	}
+//        	else if (robot != null) {
+//                //logger.fine(robot.getName() + " starting work on emergency malfunction: " +
+//                        //malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+//        	}
         }
     }
 
@@ -317,7 +326,7 @@ implements Repair, Serializable {
     	else if (robot != null)
     	    ;//manager = robot.getBotMind().getSkillManager();
         return
-        		manager.getEffectiveSkillLevel(SkillType.MECHANICS);
+        	manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }
 
     @Override

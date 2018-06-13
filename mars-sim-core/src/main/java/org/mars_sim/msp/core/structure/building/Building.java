@@ -1399,8 +1399,7 @@ LocalBoundedObject, InsidePathLocation {
 						e.printStackTrace(System.err);
 					}
 					
-					HistoricalEvent newEvent = new MalfunctionEvent(this, malfunction_meteor, settlement.getName(), false);
-					Simulation.instance().getEventManager().registerNewEvent(newEvent);
+					Object actor = this;
 					
 					//check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
@@ -1418,12 +1417,22 @@ LocalBoundedObject, InsidePathLocation {
 							if (factor > 1)
 								pc.setStress(person.getStress() * factor);
 
+							actor = person;
+							
 							logger.info(person.getName() + " witnessed the latest meteorite impact in " + this + " at " + settlement);
 						}
 						//else {
 							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
 						//}
 					}
+					
+					HistoricalEvent newEvent = new MalfunctionEvent(this, 
+							malfunction_meteor,
+							actor,
+							settlement.getName(), 
+							false);
+					Simulation.instance().getEventManager().registerNewEvent(newEvent);
+					
 				}
 			}
 		}

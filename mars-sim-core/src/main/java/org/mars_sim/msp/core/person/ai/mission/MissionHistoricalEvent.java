@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
 
-
 /**
  * This class represents the historical actions involving missions.
  */
@@ -20,18 +19,21 @@ public class MissionHistoricalEvent extends HistoricalEvent implements Serializa
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+    
+    private static final String DURING = " during ";
 	/**
      * Constructor 1.
      * @param person The person on the mission.
      * @param mission The mission with the event.
      * @param eventType The type of event.
      */
-    public MissionHistoricalEvent(MissionMember member, Mission mission, String location, String reason, EventType eventType) {
+    public MissionHistoricalEvent(MissionMember member, Mission mission, String location, Object source, EventType eventType) {
         // Use HistoricalEvent constructor.
         super(HistoricalEventCategory.MISSION, 
-        		eventType, 
+        		eventType,
+        		source,
         		member, 
         		location,
-        		reason + " on " + mission.getName());
+        		eventType.getName() + DURING + mission.getName());
     }
 }

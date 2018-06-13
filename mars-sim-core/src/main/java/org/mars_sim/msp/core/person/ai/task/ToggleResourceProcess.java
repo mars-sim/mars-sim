@@ -479,7 +479,7 @@ implements Serializable {
             super.checkForAccident(time);
         }
 
-        double chance = .001D;
+        double chance = .005D;
 
         // Mechanic skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
@@ -495,11 +495,11 @@ implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while toggling a resource process.");
+//	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while toggling a resource process.");
 	            building.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while toggling a resource process.");
+//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while toggling a resource process.");
 	            building.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 

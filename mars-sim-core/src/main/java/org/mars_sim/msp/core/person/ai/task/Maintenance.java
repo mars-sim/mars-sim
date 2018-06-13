@@ -82,7 +82,7 @@ implements Serializable {
                 }
                 else {
 
-                    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                    if (person.isInVehicle()) {//person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                         // If person is in rover, walk to passenger activity spot.
                         if (person.getVehicle() instanceof Rover) {
                             walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -121,7 +121,7 @@ implements Serializable {
                 }
                 else {
 
-                    if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                    if (robot.isInVehicle()) {//getLocationSituation() == LocationSituation.IN_VEHICLE) {
                         // If robot is in rover, walk to passenger activity spot.
                         if (robot.getVehicle() instanceof Rover) {
                             walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), false);
@@ -283,7 +283,7 @@ implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .001D;
+        double chance = .005D;
 
         // Mechanic skill modification.
         int skill = 0;
@@ -302,18 +302,17 @@ implements Serializable {
         // Modify based on the entity's wear condition.
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
-
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while performing maintenance on "
-	                    + entity.getNickName()
-	                    + ".");
+//	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while performing maintenance on "
+//	                    + entity.getNickName()
+//	                    + ".");
 	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-	            logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while performing maintenance on "
-	                    + entity.getNickName()
-	                    + ".");
+//	            logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while performing maintenance on "
+//	                    + entity.getNickName()
+//	                    + ".");
 	            entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);   
 			}
 
@@ -426,7 +425,7 @@ implements Serializable {
 		        if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime && enoughParts) {
 		            result = effectiveTime;
 		            if (malfunctionable instanceof Building) {
-		                Building building = (Building) malfunctionable;
+		                //Building building = (Building) malfunctionable;
 		                if (isInhabitableBuilding(malfunctionable)) {
 		                    //result *= Task.getCrowdingProbabilityModifier(robot, building);
 		                    //result *= Task.getRelationshipModifier(robot, building);

@@ -70,13 +70,13 @@ implements SettlementMapLayer {
 	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 
 	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan;
-	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(50, 50, 50, 190); //(255, 255, 255, 190);
+	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(50, 50, 50); //(255, 255, 255, 190);
 
 	static final Color ROBOT_LABEL_COLOR = new Color(255, 153, 11);
 	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 	
 	static final Color SELECTED_ROBOT_LABEL_COLOR = new Color(255, 153, 11);
-	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(50, 50, 50, 190);
+	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(50, 50, 50);
 
 
 	// Data members
@@ -401,9 +401,10 @@ implements SettlementMapLayer {
 */
 			//int yOffset = 12 * size;
 			// Draw task.
-			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
+//			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
 			drawLabelRight(
-				g2d, taskString, selectedPerson.getXLocation(),
+				g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
+//				g2d, taskString, selectedPerson.getXLocation(),
 				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
 				offset, 12);
 				//yOffset);

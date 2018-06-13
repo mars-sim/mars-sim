@@ -629,8 +629,8 @@ public class Sleep extends Task implements Serializable {
         accommodations = null;
         circadian = null;
         pc = null;
-        sim = null;
-    	masterClock = null;
-    	marsClock = null;
+        //sim = null;
+    	//masterClock = null;
+    	//marsClock = null;
     }
 }

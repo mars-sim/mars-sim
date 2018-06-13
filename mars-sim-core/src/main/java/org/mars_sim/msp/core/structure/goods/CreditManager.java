@@ -35,7 +35,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Domain members
-	private static Graph creditGraph;
+	private Graph creditGraph;
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
 

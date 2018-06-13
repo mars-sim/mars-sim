@@ -255,7 +255,7 @@ implements Serializable {
         skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         skill = (int) Math.round(skill / 7D);
 
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
 			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
@@ -283,7 +283,7 @@ implements Serializable {
         //skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         //skill = (int) Math.round(skill / 7D);
 
-		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (robot.isInSettlement()) {//getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
 			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
@@ -720,7 +720,7 @@ implements Serializable {
 	 */
 	private void checkForAccident(double time) {
 
-		double chance = .001D;
+		double chance = .005D;
 
 		// Materials science skill modification.
 		int skill = getEffectiveSkillLevel();
@@ -736,11 +736,11 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident during food production.");
+//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident during food production.");
                 foodFactory.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident during food production.");
+//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident during food production.");
 				foodFactory.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 		}

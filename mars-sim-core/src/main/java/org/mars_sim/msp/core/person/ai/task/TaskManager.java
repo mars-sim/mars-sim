@@ -372,7 +372,7 @@ implements Serializable {
 		    double energyTime = time - remainingTime;
 
 		    // Double energy expenditure if performing effort-driven task.
-		    if (currentTask.isEffortDriven()) {
+		    if (currentTask.isEffortDriven()) { // why java.lang.NullPointerException at TR = 2048 ?
 		        energyTime *= 2D;
 		    }
 

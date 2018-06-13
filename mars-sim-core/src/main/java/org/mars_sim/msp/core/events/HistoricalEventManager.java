@@ -8,13 +8,16 @@
 package org.mars_sim.msp.core.events;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class provides a manager that maintains a model of the events that
@@ -38,10 +41,10 @@ public class HistoricalEventManager implements Serializable {
 
 	//private static int count;
 	
-	private List<HistoricalEventListener> listeners = new ArrayList<HistoricalEventListener>();
+	private transient List<HistoricalEventListener> listeners;
 	private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();
 	
-	private static MarsClock marsClock;
+	private MarsClock marsClock;
 
 	
 	/**
@@ -50,13 +53,16 @@ public class HistoricalEventManager implements Serializable {
 	public HistoricalEventManager() {
 		//logger.info("HistoricalEventManager's constructor is on " + Thread.currentThread().getName());
 		// Note : the masterClock and marsClock CANNOAT initialized until the simulation start
+		listeners = new ArrayList<HistoricalEventListener>();
 	}
 
 	/**
 	 * Add a historical event listener
 	 * @param newListener listener to add.
 	 */
+	// 5 models or panels called addListener()
 	public void addListener(HistoricalEventListener newListener) {
+		if (listeners == null) listeners = new ArrayList<HistoricalEventListener>();
 		if (!listeners.contains(newListener)) listeners.add(newListener);
 	}
 
@@ -84,25 +90,13 @@ public class HistoricalEventManager implements Serializable {
 	 */
 	// include any kind of events
 	public void registerNewEvent(HistoricalEvent newEvent) {
-
-		//MarsClock timestamp;
-
-		// TODO: for debugging the NullPointerException when calling registerNewEvent()
-        //if (newEvent == null) {
-        //    throw new IllegalStateException("newEvent is null");
-        //}
-
-		//System.out.println("HistoricalEventManager.java : calling registerNewEvent() : newEvent is " + newEvent);
 		// check if event is MALFUNCTION or MEDICAL, save it for notification box display
-
 		// Make space for the new event.
 		if (events.size() >= TRANSIENT_EVENTS) {
 			int excess = events.size() - (TRANSIENT_EVENTS - 1);
 			removeEvents(events.size() - excess, excess);
 		}
-
 		// Note : the elaborate if-else conditions below is for passing the maven test
-
 		if (marsClock == null) 
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	
@@ -114,12 +108,15 @@ public class HistoricalEventManager implements Serializable {
 		newEvent.setTimestamp(timestamp);
 
 		//System.out.println("New event : " + newEvent.getDescription());
-		events.add(0, newEvent);
+		HistoricalEventCategory category = newEvent.getCategory();
+		if (!category.equals(HistoricalEventCategory.TASK)) {
+//				&& !category.equals(HistoricalEventCategory.TRANSPORT)) {
+			events.add(0, newEvent);
 
-		Iterator<HistoricalEventListener> iter = listeners.iterator();
-		while (iter.hasNext()) 
-			iter.next().eventAdded(0, newEvent);
-
+			Iterator<HistoricalEventListener> iter = listeners.iterator();
+			while (iter.hasNext()) 
+				iter.next().eventAdded(0, newEvent);
+		}
 	}
 
 	/**
@@ -146,6 +143,11 @@ public class HistoricalEventManager implements Serializable {
 		return events.size();
 	}
 
+	public List<HistoricalEvent> getEvents() {
+		return events;
+	}
+	
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

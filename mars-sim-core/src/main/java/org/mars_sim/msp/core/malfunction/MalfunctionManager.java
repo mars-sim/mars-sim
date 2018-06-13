@@ -367,14 +367,17 @@ implements Serializable {
 	/**
 	 * Select a malfunction randomly to the unit (if possible).
 	 */
-	private boolean selectMalfunction() {
+	private boolean selectMalfunction(Unit actor) {
 		boolean result = false;
 		Malfunction malfunction = factory.pickAMalfunction(scopes);
-		if (malfunction != null) {
-			addMalfunction(malfunction, true);
+		if (malfunction != null) {		
+//			System.out.println("selectMalfunction() in MalfunctionManager : malfunction != null");
+			addMalfunction(malfunction, true, actor);
 			numberMalfunctions++;
 			result = true;
 		}
+//		else
+//			System.out.println("malfunction != null");
 		
 		return result; 
 	}
@@ -383,23 +386,12 @@ implements Serializable {
 	 * Adds a malfunction to the unit.
 	 * @param malfunction the malfunction to add.
 	 */
-	void addMalfunction(Malfunction malfunction, boolean registerEvent) {
-		if (malfunction == null) 
-			throw new IllegalArgumentException("malfunction is null");
-		else {
+	void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
+//		System.out.println("MalfunctionManager : addMalfunction()");
 			malfunctions.add(malfunction);
 
-			String mal_name = malfunction.getName();
-/*			
-			if (mal.equalsIgnoreCase("Major Fire"))
-				consumeFireExtingusher(2);
-			else if (mal.equalsIgnoreCase("Medium Fire"))
-				consumeFireExtingusher(1);
-			else if (mal.equalsIgnoreCase("Minor Fire"))
-				consumeFireExtingusher(0);
-			
-			consumeWorkGloves();
-*/			
+			String malfunctionName = malfunction.getName();
+
 			try {
 				getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 			}
@@ -407,19 +399,18 @@ implements Serializable {
 				e.printStackTrace(System.err);
 			}
 
-			//if (!registerEvent)
-			//	return;
-			
-			if (registerEvent) {
-				HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, entity.getLongLocationName(), false);
+			if (registerEvent && !malfunctionName.contains("Meteorite")) {
+				HistoricalEvent newEvent = new MalfunctionEvent(
+						entity, 
+						malfunction, 
+						actor,
+						entity.getLongLocationName(), 
+						false);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-	        			"The malfunction event '" + malfunction.getName() + "' has been registered", null);
+	        			malfunction.getName() + " in " + entity.getLongLocationName() + " has been reported", null);
 			}
 			else
-				return;
-			
-			if (mal_name.equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE))
 				return;
 			
 			 // Register the failure of the Parts involved
@@ -442,7 +433,7 @@ implements Serializable {
 				 if (part_name.equalsIgnoreCase("decontamination kit") 
 						 || part_name.equalsIgnoreCase("airleak patch") 
 						 || part_name.equalsIgnoreCase("fire extinguisher")) {
-					 // they do NOT contribute to the malfunctions and are tools to fix the malfunction
+					 // NOTE : they do NOT contribute to the malfunctions and are tools to fix the malfunction
 					 // and do NOT need to change their reliability.
 					 return ;
 				 }
@@ -461,7 +452,7 @@ implements Serializable {
 				 new_p += weight; 
 				 
 				 double old_p = malfunction.getProbability();
-				 logger.info("Updating '" + mal_name + "' failure rate : " 
+				 logger.info("Updating '" + malfunctionName + "' failure rate : " 
 						 + Math.round(old_p*10000.0)/10000.0  
 						 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
 				 malfunction.setProbability(new_p);
@@ -469,7 +460,7 @@ implements Serializable {
 			}
 			
 			issueMedicalComplaints(malfunction);
-		}
+//		}
 	}
 	
 /*
@@ -535,7 +526,7 @@ implements Serializable {
         			+ entity.getNickName() + " is behind on maintenance.  "
 					+ "Time since last check-up: " + solsLastMaint
 					+ " sols.  Condition: " + wearCondition + " %.", null);
-			selectMalfunction();
+			//selectMalfunction(null);
 		}
 	}
 
@@ -565,8 +556,14 @@ implements Serializable {
 					e.printStackTrace(System.err);
 				}
 
-				HistoricalEvent newEvent = new MalfunctionEvent(entity, item, entity.getLongLocationName(), true);
+				HistoricalEvent newEvent = new MalfunctionEvent(entity, 
+						item,
+						null,
+						entity.getLongLocationName(), 
+						true);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+	        			"The malfunction '" + item.getName() + "' has been fixed", null);
 			}
 		}
 
@@ -663,8 +660,8 @@ implements Serializable {
 	 * @param s the place of accident
 	 */
 	public void createASeriesOfMalfunctions(String s, Robot r) {
-		handleStringTypeOne(s, r);
-		determineNumOfMalfunctions();
+		//handleStringTypeOne(s, r);
+		determineNumOfMalfunctions(1, s, r);
 	}
 	
 	/**
@@ -672,9 +669,9 @@ implements Serializable {
 	 * @param s the place of accident
 	 */
 	public void createASeriesOfMalfunctions(String s, Person p) {
-		handleStringTypeOne(s, p);
+		//handleStringTypeOne(s, p);
     	int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
-		determineNumOfMalfunctions(nervousness);
+		determineNumOfMalfunctions(1, s, nervousness, p);
 	}
 	
 	public void handleStringTypeOne(String s, Unit u) {
@@ -714,17 +711,17 @@ implements Serializable {
 	 * Creates a series of related malfunctions
 	 */
 	public void createASeriesOfMalfunctions(Person p) {
-		handleStringTypeTwo();
+		//handleStringTypeTwo();
        	int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
-		determineNumOfMalfunctions(nervousness);
+		determineNumOfMalfunctions(2, null, nervousness, p);
 	}
 
 	/**
 	 * Creates a series of related malfunctions
 	 */
 	public void createASeriesOfMalfunctions(Robot r) {
-		handleStringTypeTwo();
-		determineNumOfMalfunctions();
+		//handleStringTypeTwo();
+		determineNumOfMalfunctions(2, null, r);
 	}
 	
 	public void handleStringTypeTwo() {
@@ -753,7 +750,7 @@ implements Serializable {
 	/**
 	 * Determines the numbers of malfunctions.
 	 */
-	public void determineNumOfMalfunctions(int score) {
+	public void determineNumOfMalfunctions(int type, String s, int score, Unit actor) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean hasMal = false;
@@ -762,7 +759,7 @@ implements Serializable {
 		double mod = score/50;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
-				hasMal = selectMalfunction();
+				hasMal = selectMalfunction(actor);
 				chance = chance / 3D * mod;
 			}
 			else {
@@ -771,6 +768,10 @@ implements Serializable {
 		}
 
 		if (hasMal) {
+			if (type == 1)
+				handleStringTypeOne(s, actor);
+			else if (type == 2)
+				handleStringTypeTwo();
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();
 			Iterator<Person> i = people.iterator();
@@ -784,7 +785,7 @@ implements Serializable {
 	/**
 	 * Determines the numbers of malfunctions.
 	 */
-	public void determineNumOfMalfunctions() {
+	public void determineNumOfMalfunctions(int type, String s, Unit actor) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean hasMal = false;
@@ -792,7 +793,7 @@ implements Serializable {
 		double chance = 100D;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
-				hasMal = selectMalfunction();
+				hasMal = selectMalfunction(actor);
 				chance /= 3D;
 			}
 			else {
@@ -801,6 +802,10 @@ implements Serializable {
 		}
 
 		if (hasMal) {
+			if (type == 1)
+				handleStringTypeOne(s, actor);
+			else if (type == 2)
+				handleStringTypeTwo();
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();
 			Iterator<Person> i = people.iterator();

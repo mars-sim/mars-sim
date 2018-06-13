@@ -356,7 +356,7 @@ implements ResearchScientificStudy, Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .001D;
+        double chance = .005D;
 
         // Astronomy skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
@@ -382,11 +382,11 @@ implements ResearchScientificStudy, Serializable {
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
     			if (person != null) {
-    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while observing astronomical objects.");
+//    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while observing astronomical objects.");
                     entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
     				}
     			else if (robot != null) {
-    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while observing astronomical objects.");
+//    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while observing astronomical objects.");
                     entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
     			}
             }

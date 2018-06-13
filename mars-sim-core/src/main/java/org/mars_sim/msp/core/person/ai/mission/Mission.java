@@ -142,8 +142,12 @@ implements Serializable {
 		
 	    if (s != null) {
 	   		// Created mission starting event.
-	   		HistoricalEvent newEvent = new MissionHistoricalEvent(startingMember, this, 
-	   				s.getName(), this.getName(), EventType.MISSION_START);
+	   		HistoricalEvent newEvent = new MissionHistoricalEvent(
+	   				startingMember,
+	   				this, 
+	   				s.getName(), 
+	   				startingMember.getVehicle(), 
+	   				EventType.MISSION_START);
 
 	   		Simulation.instance().getEventManager().registerNewEvent(newEvent);
  
@@ -245,8 +249,11 @@ implements Serializable {
 	        members.add(member);
 
 	        // Creating mission joining event.
-            HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, 
-            		member.getSettlement().getName(), this.getName(), EventType.MISSION_JOINING);
+            HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
+            		this, 
+            		member.getSettlement().getName(), 
+            		member.getVehicle(), 
+            		EventType.MISSION_JOINING);
             Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
             fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
@@ -290,7 +297,10 @@ implements Serializable {
             if (location == null)
             	location = member.getCoordinates().toString();
             Simulation.instance().getEventManager().registerNewEvent(new MissionHistoricalEvent(member,
-            		this, location, this.getName(), EventType.MISSION_FINISH));
+            		this, 
+            		location, 
+            		member.getVehicle(),
+            		EventType.MISSION_FINISH));
             fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
         	if ((members.size() == 0) && !done) {

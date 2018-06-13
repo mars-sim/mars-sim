@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -52,7 +51,7 @@ implements Serializable {
 
 	private static MalfunctionConfig config;
 	
-	private static Malfunction meteoriteMalfunction;
+	private static Malfunction meteoriteImpactMalfunction;
 	
 	private static MissionManager missionManager;
 
@@ -96,15 +95,15 @@ implements Serializable {
 		//System.out.println("   maxProb : " + maxProb);
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
-
 		for (Malfunction m : malfunctions) {
 			double probability = m.getProbability();
-			// will only pick one malfunction at a time
+			// will only pick one malfunction at a time (if mal == null, quit)
 			if (m.isMatched(scopes) && (mal == null) && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
 				if (r < probability) {
 					try {
-						mal = m.getClone();
-						mal.determineRepairParts();
+						mal = m;
+						//mal = m.getClone();
+						//mal.determineRepairParts();
 					}
 					catch (Exception e) {
 						e.printStackTrace(System.err);
@@ -117,9 +116,14 @@ implements Serializable {
 		
 		double failure_rate = mal.getProbability();
 		// Note : the composite probability of a malfunction is dynamically updated as the field reliability data trickles in
+//		System.out.println("failure_rate : " + failure_rate);
 		
-		if (RandomUtil.lessThanRandPercent(failure_rate))
+		if (RandomUtil.lessThanRandPercent(failure_rate)) {
+//			System.out.println("mal is : " + mal);
+			mal = mal.getClone();
+			mal.determineRepairParts();
 			return mal;
+		}
 		else
 			return null;
 
@@ -132,13 +136,13 @@ implements Serializable {
 	public static Collection<Malfunctionable> getMalfunctionables(Person person) {
 
 		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
-		LocationSituation location = person.getLocationSituation();
+		//LocationSituation location = person.getLocationSituation();
 
-		if (location == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {//location == LocationSituation.IN_SETTLEMENT) {
 		    entities = getMalfunctionables(person.getSettlement());
 		}
 
-		if (location == LocationSituation.IN_VEHICLE) {
+		if (person.isInVehicle()) {//location == LocationSituation.IN_VEHICLE) {
 		    entities = getMalfunctionables(person.getVehicle());
 		}
 
@@ -157,13 +161,13 @@ implements Serializable {
 	public static Collection<Malfunctionable> getMalfunctionables(Robot robot) {
 
 		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
-		LocationSituation location = robot.getLocationSituation();
+		//LocationSituation location = robot.getLocationSituation();
 
-		if (location == LocationSituation.IN_SETTLEMENT) {
+		if (robot.isInSettlement()) {//location == LocationSituation.IN_SETTLEMENT) {
 		    entities = getMalfunctionables(robot.getSettlement());
 		}
 
-		if (location == LocationSituation.IN_VEHICLE) {
+		if (robot.isInVehicle()) {//location == LocationSituation.IN_VEHICLE) {
 		    entities = getMalfunctionables(robot.getVehicle());
 		}
 
@@ -260,14 +264,14 @@ implements Serializable {
 
 		// Get entities carried by robots
 		for (Robot robot : settlement.getAllAssociatedRobots()) {
-			if (robot.getLocationSituation() == LocationSituation.OUTSIDE)
+			if (robot.isOutside()) //.getLocationSituation() == LocationSituation.OUTSIDE)
 				entities.addAll(getMalfunctionables(robot));
 		}
 
 		// TODO: how to ask robots first and only ask people if robots are not available so that the tasks are not duplicated ?
 		// Get entities carried by people on EVA.
 		for (Person person : settlement.getAllAssociatedPeople()) {
-			if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+			if (person.isOutside()) //getLocationSituation() == LocationSituation.OUTSIDE)
 				entities.addAll(getMalfunctionables(person));
 		}
 
@@ -335,13 +339,13 @@ implements Serializable {
 	 * @return {@link Malfunction}
 	 */
 	public static Malfunction getMeteoriteImpactMalfunction(String malfunctionName) {
-		if (meteoriteMalfunction == null) {
+		if (meteoriteImpactMalfunction == null) {
 			for (Malfunction m : config.getMalfunctionList()) {
 				if (m.getName().equals(malfunctionName))
-					meteoriteMalfunction = m;
+					meteoriteImpactMalfunction = m;
 			}
 		}
-		return meteoriteMalfunction;
+		return meteoriteImpactMalfunction;
 	}
 
 	public static int getNewIncidentNum() {
@@ -354,11 +358,8 @@ implements Serializable {
 	 */
 	public void destroy() {
 		malfunctions = null;
-
-		config = null;
-		
-		meteoriteMalfunction = null;
-		
+		config = null;	
+		meteoriteImpactMalfunction = null;
 		missionManager = null;
 	}
 }

@@ -233,7 +233,10 @@ extends BuildingFunctionPanel {
 			Collections.sort(processComboBoxCache);
 			
 			Iterator<FoodProductionProcessInfo> k = processComboBoxCache.iterator();
-			while (k.hasNext()) processComboBox.addItem(k.next());
+			
+			while (k.hasNext()) 
+				processComboBox.addItem(k.next());
+			
 			if (currentSelection != null) {
 				if (processComboBoxCache.contains(currentSelection))
 					processComboBox.setSelectedItem(currentSelection);

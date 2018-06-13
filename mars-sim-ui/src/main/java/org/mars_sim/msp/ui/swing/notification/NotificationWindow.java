@@ -256,10 +256,10 @@ public class NotificationWindow extends JDialog implements ClockListener {
 
 		    if (category.equals(HistoricalEventCategory.MALFUNCTION)
 		            && showMalfunction ) {
-		        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
+		        header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
 		        // Only display notification window when malfunction has occurred, not when fixed.
-		        if (event.getType() == EventType.MALFUNCTION_OCCURRED) {
+		        if (event.getType() == EventType.MALFUNCTION_REPORTED) {
 		            willNotify = true;
 		        }
 		    }
@@ -267,7 +267,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		    else if (category.equals(HistoricalEventCategory.MEDICAL)
 		            && showMedical )	{
 
-		        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
+		        header = Msg.getString("EventTableModel.message.medical"); //$NON-NLS-1$
 
 		        // Only display notification windows when medical problems are starting or person has died.
 		        if ((event.getType() == EventType.MEDICAL_STARTS) || 

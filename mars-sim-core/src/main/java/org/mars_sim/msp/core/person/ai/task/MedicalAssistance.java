@@ -118,11 +118,22 @@ implements Serializable {
 					//Building building = medicalCare.getBuilding();
 					// Walk to medical care building.
 					//walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
-	            	if (person.getBuildingLocation() != null)
-	            		walkToActivitySpotInBuilding(person.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+					Building b = person.getBuildingLocation();
+	            	if (b != null)
+	            		walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
 	            	else
 	            		endTask();
 
+					// Create starting task event if needed.
+					if (getCreateEvents()) {
+						TaskEvent startingEvent = new TaskEvent(person, 
+								this,
+								problem.getSufferer(),
+								EventType.TASK_START, 
+								person.getSettlement().getName(), 
+								"Provide Medical Assistance");
+						Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+					}
 					produceMedicalWaste();
 
 				}
@@ -133,15 +144,23 @@ implements Serializable {
 				        // Walk to rover sick bay activity spot.
 				        walkToSickBayActivitySpotInRover((Rover) vehicle, false);
 
+						// Create starting task event if needed.
+						if (getCreateEvents()) {
+							TaskEvent startingEvent = new TaskEvent(
+									person, 
+									this, 
+									problem.getSufferer(),
+									EventType.TASK_START, 
+									person.getVehicle().getName(), 
+									"Provide Medical Assistance");
+							Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+						}
+						
 						produceMedicalWaste();
 				    }
 				}
 
-				// Create starting task event if needed.
-				if (getCreateEvents()) {
-					TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, person.getAssociatedSettlement().getName(), "");
-					Simulation.instance().getEventManager().registerNewEvent(startingEvent);
-				}
+
 			}
 			catch (Exception e) {
 				logger.severe("MedicalAssistance: " + e.getMessage());
@@ -225,8 +244,8 @@ implements Serializable {
 	public static List<MedicalAid> getNeedyMedicalAids(Person person) {
 		List<MedicalAid> result = new ArrayList<MedicalAid>();
 
-		LocationSituation location = person.getLocationSituation();
-		if (location == LocationSituation.IN_SETTLEMENT) {
+		//LocationSituation location = person.getLocationSituation();
+		if (person.isInSettlement()) {//location == LocationSituation.IN_SETTLEMENT) {
 			try {
 				Building building = getMedicalAidBuilding(person);
 				if (building != null) {
@@ -237,7 +256,7 @@ implements Serializable {
 				logger.severe("MedicalAssistance.getNeedyMedicalAids(): " + e.getMessage());
 			}
 		}
-		else if (location == LocationSituation.IN_VEHICLE) {
+		else if (person.isInVehicle()) {//location == LocationSituation.IN_VEHICLE) {
 			Vehicle vehicle = person.getVehicle();
 			if (vehicle instanceof Medical) {
 				MedicalAid aid = ((Medical) vehicle).getSickBay();
@@ -293,7 +312,7 @@ implements Serializable {
 
 		Malfunctionable entity = getMalfunctionable(medical);
 
-		double chance = .001D;
+		double chance = .005D;
 
 		// Medical skill modification.
 		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
@@ -309,11 +328,11 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while offering medical assistance.");
+//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while offering medical assistance.");
                 entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while offering medical assistance.");
+//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while offering medical assistance.");
 				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 		}
@@ -348,7 +367,7 @@ implements Serializable {
 	public static Building getMedicalAidBuilding(Person person) {
 		Building result = null;
 
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> medicalBuildings = manager.getBuildings(FunctionType.MEDICAL_CARE);
@@ -387,7 +406,7 @@ implements Serializable {
 	public static boolean isThereADoctorInTheHouse(Person person) {
 		boolean result = false;
 
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
@@ -397,7 +416,7 @@ implements Serializable {
 				}
 			}
 		}
-		else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		else if (person.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 			if (person.getVehicle() instanceof Rover) {
 				Rover rover = (Rover) person.getVehicle();
 				Iterator<Person> i = rover.getCrew().iterator();

@@ -256,20 +256,12 @@ implements Serializable, LifeSupportType, Objective {
 	
 	private DustStorm storm;
 	
-	// 2017-04-10 WARNING: cannot use static or result in null
-	//public AmountResource foodAR = ResourceUtil.foodAR;
-	//public AmountResource waterAR = ResourceUtil.waterAR;
-	//public AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	//public AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
-
 	// Static members
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static Weather weather;// = sim.getMars().getWeather();
 	private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
-	
-	//private ShiftType currentShift;
 	
 	// Constructor 1 called by ConstructionStageTest
 	private Settlement() {
@@ -3342,7 +3334,7 @@ implements Serializable, LifeSupportType, Objective {
 	   	//System.out.println("chance1 : " + chance1);
 	    if (RandomUtil.lessThanRandPercent(chance1)) {
 	    	exposed[1] = true;
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + name + "] A GCR event is detected by the radiation sensor grid.", null);
 	    	this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 	    }
@@ -3355,7 +3347,7 @@ implements Serializable, LifeSupportType, Objective {
     	//System.out.println("chance2 : " + chance2);
 	    if (RandomUtil.lessThanRandPercent(chance2)) {
 	    	exposed[2] = true;
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + name + "] A SEP event is detected by the radiation sensor grid.", null);
 	    	this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 	    }

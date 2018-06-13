@@ -20,7 +20,6 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -503,6 +502,10 @@ public class AudioPlayer {
 	
 	public boolean isSoundDisabled() {
 		return isSoundDisabled;
+	}
+	
+	public void setSoundDisabled(boolean mode) {
+		isSoundDisabled = mode;
 	}
 	
 	public void destroy() {

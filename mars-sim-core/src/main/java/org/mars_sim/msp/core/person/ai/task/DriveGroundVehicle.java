@@ -438,14 +438,16 @@ implements Serializable {
         // Modify based on the vehicle's wear condition.
         chance *= malfunctionManager.getWearConditionAccidentModifier();
 
+//        System.out.println("chance*time : " + chance * time);
+
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null) {
-	            logger.info(person.getName() + " has an accident while driving " + vehicle.getName());
+	            //logger.info(person.getName() + " has an accident while driving " + vehicle.getName());
 		    	malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), person);
 			}
 			else if (robot != null) {
-				logger.info(robot.getName() + " has an accident while driving " + vehicle.getName());
+				//logger.info(robot.getName() + " has an accident while driving " + vehicle.getName());
 		    	malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), robot);
 			}
 

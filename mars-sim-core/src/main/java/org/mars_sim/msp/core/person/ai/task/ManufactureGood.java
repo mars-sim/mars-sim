@@ -705,7 +705,7 @@ implements Serializable {
 	 */
 	private void checkForAccident(double time) {
 
-		double chance = .001D;
+		double chance = .005D;
 
 		// Materials science skill modification.
 		int skill = getEffectiveSkillLevel();
@@ -722,11 +722,11 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null) {
-				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while manufacturing good.");
+//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while manufacturing good.");
                 workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while manufacturing godd.");
+//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while manufacturing godd.");
 				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 		}

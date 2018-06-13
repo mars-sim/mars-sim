@@ -2968,7 +2968,7 @@ public class MainScene {
 		// int msol = (int)(masterClock.getTimeRatio());
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
-		if (!soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled())
+		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled())
 		//if (musicSlider.getValue() > 0)
 			soundPlayer.playRandomMusicTrack();
 		// }
@@ -3934,6 +3934,7 @@ public class MainScene {
 	}
 
 	public static void disableSound() {
+		soundPlayer.setSoundDisabled(true);
 		soundPlayer.enableMasterGain(false);
 		if (musicSlider != null) {
 			musicSlider.setDisable(true);// .setValue(0);

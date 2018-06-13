@@ -56,7 +56,7 @@ implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .5D;
 	/** The base chance of an accident per millisol. */
-	public static final double BASE_ACCIDENT_CHANCE = .001;
+	public static final double BASE_ACCIDENT_CHANCE = .01;
 
 	// Data members
 	/** Flag for ending EVA operation externally. */
@@ -508,11 +508,11 @@ implements Serializable {
 
     	            if (RandomUtil.lessThanRandPercent(chance * time)) {
     	    			if (person != null) {
-    	    	            logger.info(person.getName() + " has an accident during an EVA operation.");
+//    	    	            logger.info(person.getName() + " has an accident during an EVA operation.");
         	                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", person);
     	    			}
     	    			else if (robot != null) {
-    	    				logger.info(robot.getName() + " has an accident during an EVA operation.");
+ //   	    				logger.info(robot.getName() + " has an accident during an EVA operation.");
         	                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", robot);
     	    			}
     	            }

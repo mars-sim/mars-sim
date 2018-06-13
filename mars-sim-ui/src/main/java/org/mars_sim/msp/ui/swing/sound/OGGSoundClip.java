@@ -228,13 +228,15 @@ public class OGGSoundClip {
 			}
 			else {
 				// in case of some versions of linux in which MASTER_GAIN is not supported
+				logger.log(Level.SEVERE, "Please ensure sound driver is working. MasterGain not supported. ");
 				MainScene.disableSound();
 			}
 
 
 		} catch (IllegalArgumentException e) {
 			// TODO: how to resolve 'IllegalArgumentException: Master Gain not supported' in ubuntu ?
-			e.printStackTrace();
+			//e.printStackTrace();
+			logger.log(Level.SEVERE, "Please ensure sound interface is working. Speakers NOT detected. " + e);
 			MainScene.disableSound();
 		}
 
@@ -290,6 +292,7 @@ public class OGGSoundClip {
 			control.setValue(balance);
 		} catch (IllegalArgumentException e) {
 			// balance not supported
+			MainScene.disableSound();
 		}
 	}
 
@@ -375,6 +378,7 @@ public class OGGSoundClip {
 		if (in == null) {
 			//throw new IOException("Couldn't find input source");
 			logger.log(Level.SEVERE, "Couldn't find input source");
+			MainScene.disableSound();
 		}
 		bitStream = new BufferedInputStream(in);
 		bitStream.mark(Integer.MAX_VALUE);
@@ -392,6 +396,7 @@ public class OGGSoundClip {
 		} catch (IOException e) {
 			// ignore if no mark
 			logger.log(Level.SEVERE, "IOException", e.getMessage());
+			MainScene.disableSound();
 		}
 
 		playerThread = new Thread() {
@@ -407,7 +412,8 @@ public class OGGSoundClip {
 					bitStream.reset();
 				} catch (IOException e) {
 					//e.printStackTrace();
-					logger.log(Level.SEVERE, "Trouble reseting the bit stream for the audio file " + name, e.getMessage());
+					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the audio file " + name, e.getMessage());
+					MainScene.disableSound();
 				}
 			};
 		};
@@ -437,6 +443,8 @@ public class OGGSoundClip {
 					//			+ "Please check your audio source.", e.getMessage());
 						//e.printStackTrace();
 						playerThread = null;
+						logger.log(Level.SEVERE, "Can't play the bit stream. ", e.getMessage());
+						MainScene.disableSound();
 					}
 
 					try {
@@ -444,6 +452,7 @@ public class OGGSoundClip {
 					} catch (IOException e) {
 						//e.printStackTrace();
 						logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name, e.getMessage());
+						MainScene.disableSound();
 					}
 				//}
 			};
@@ -494,24 +503,29 @@ public class OGGSoundClip {
 				
 				if (!AudioSystem.isLineSupported(info)) {
 					//throw new Exception("Line " + info + " not supported.");
-					logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a speaker/headphone? "
-							+ "Please check your audio source.");
+					logger.log(Level.SEVERE, "Sound system NOT supported. ");
+					MainScene.disableSound();
 				}
 					
 				isMasterGainSupported = outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN);
 				if (!isMasterGainSupported) {
 					// in case of some versions of linux in which MASTER_GAIN is not supported
+					logger.log(Level.SEVERE, "MasterGain NOT supported in this machine. Run the sim without audio");
 					MainScene.disableSound();
 				}
-				floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+				else
+					floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 				
 			} catch (LineUnavailableException ex) {
 				//throw new Exception("Unable to open the sourceDataLine: " + ex);
 				logger.log(Level.SEVERE, "Unable to open the sourceDataLine: " + ex);
+				MainScene.disableSound();
+				
 			} catch (IllegalArgumentException ex) {
 				//throw new Exception("Illegal Argument: " + ex);
-				logger.log(Level.SEVERE, "Illegal Argument: " + ex);
-				logger.log(Level.SEVERE, "Will continue to run the sim without audio");
+				//logger.log(Level.SEVERE, "Illegal Argument: " + ex);
+				logger.log(Level.SEVERE, "Sound line/system NOT detected. Please ensure speakers are plugged in. Run the sim without audio");
+				MainScene.disableSound();
 			}
 
 			this.rate = rate;
@@ -520,7 +534,8 @@ public class OGGSoundClip {
 			setBalance(balance);
 			determineGain(volume);
 		} catch (Exception ee) {
-			System.out.println(ee);
+			logger.log(Level.SEVERE, "Sound system NOT supported. Run the sim without audio." + ee);
+			MainScene.disableSound();
 		}
 	}
 

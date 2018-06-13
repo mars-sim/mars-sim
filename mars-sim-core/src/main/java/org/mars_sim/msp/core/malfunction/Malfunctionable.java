@@ -35,7 +35,7 @@ public interface Malfunctionable {
      * @return nickname
      */
     public String getNickName();
-
+    
     /**
      * Gets a collection of people affected by this entity.
      * @return person collection

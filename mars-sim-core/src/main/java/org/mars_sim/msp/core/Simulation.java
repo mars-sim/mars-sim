@@ -142,24 +142,23 @@ implements ClockListener, Serializable {
     private boolean isFXGL = false;
     
     private String lastSaveTimeStamp;
-				
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild;// = "unknown";
 
     private String lastSaveStr = null;
     // Note: Transient data members (aren't stored in save file)
-    // 2016-07-26 Added transient to avoid serialization error
+    // Added transient to avoid serialization error
 	private transient Timeline autosaveTimer;
-    /** All historical info. */
-    private transient HistoricalEventManager eventManager;
-
     //private transient ThreadPoolExecutor clockScheduler;
     private transient ExecutorService clockExecutor;
+    
     private transient ExecutorService simExecutor;
 
     // Intransient data members (stored in save file)
     /** Planet Mars. */
     private static Mars mars;
+    /** All historical info. */
+    private static HistoricalEventManager eventManager;
     /** The malfunction factory. */
     private static MalfunctionFactory malfunctionFactory;
     /** Manager for all units in simulation. */
@@ -190,7 +189,7 @@ implements ClockListener, Serializable {
     	//simulationConfig = SimulationConfig.instance();
         //logger.info("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
     	// INFO Simulation's constructor is on both JavaFX-Launcher Thread
-        initializeTransientData();
+//        initializeTransientData();
     }
 
 
@@ -275,7 +274,7 @@ implements ClockListener, Serializable {
         sim.initializeIntransientData();
 
         // Initialize transient data members.
-        sim.initializeTransientData(); // done in the constructor already (MultiplayerClient needs HistoricalEnventManager)
+//        sim.initializeTransientData(); // done in the constructor already (MultiplayerClient needs HistoricalEnventManager)
 
         // Sleep current thread for a short time to make sure all simulation objects are initialized.
         try {
@@ -295,10 +294,10 @@ implements ClockListener, Serializable {
     /**
      * Initialize transient data in the simulation.
      */
-    private void initializeTransientData() {
-       //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
-       eventManager = new HistoricalEventManager();
-    }
+//    private void initializeTransientData() {
+//       //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
+//       eventManager = new HistoricalEventManager();
+//    }
 
     /**
      * Initialize intransient data in the simulation.
@@ -306,8 +305,6 @@ implements ClockListener, Serializable {
     // 2015-02-04 Added threading
     private void initializeIntransientData() {
         //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
-        //if (eventManager == null)
-        //	eventManager = new HistoricalEventManager();
     	malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
         mars = new Mars();
         missionManager = new MissionManager();
@@ -316,10 +313,10 @@ implements ClockListener, Serializable {
         masterClock = new MasterClock(isFXGL);
         unitManager = new UnitManager();
 		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
 		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
-		//eventManager = new HistoricalEventManager();
 
 		//System.out.println("running Simulation's initializeIntransientData()");
         //ResourceUtil.getInstance().initializeNewSim();
@@ -505,6 +502,7 @@ implements ClockListener, Serializable {
             // Load intransient objects.
             SimulationConfig.setInstance((SimulationConfig) ois.readObject());
             ResourceUtil.setInstance((ResourceUtil) ois.readObject());
+
             malfunctionFactory = (MalfunctionFactory) ois.readObject();
             mars = (Mars) ois.readObject();
             mars.initializeTransientData();
@@ -514,9 +512,10 @@ implements ClockListener, Serializable {
             scientificStudyManager = (ScientificStudyManager) ois.readObject();
             transportManager = (TransportManager) ois.readObject();
             creditManager = (CreditManager) ois.readObject();
+            eventManager = (HistoricalEventManager) ois.readObject();
             unitManager = (UnitManager) ois.readObject();
             masterClock = (MasterClock) ois.readObject();
-            //eventManager = (HistoricalEventManager) ois.readObject();
+
 
 	        if (ois != null) {
 	            ois.close();
@@ -579,7 +578,7 @@ implements ClockListener, Serializable {
 
         //if (!no_go) {
 	        // Initialize transient data.
-	        instance().initializeTransientData();
+//	        instance().initializeTransientData();
 	        instance().initialSimulationCreated = true;
 	        isUpdating = false;
         //}
@@ -675,7 +674,7 @@ implements ClockListener, Serializable {
             // Store the in-transient objects.
             oos.writeObject(SimulationConfig.instance());
     		oos.writeObject(ResourceUtil.getInstance());
-            //oos.writeObject(eventManager);
+
             oos.writeObject(malfunctionFactory);
             oos.writeObject(mars);
             oos.writeObject(missionManager);
@@ -684,6 +683,7 @@ implements ClockListener, Serializable {
             oos.writeObject(scientificStudyManager);
             oos.writeObject(transportManager);
             oos.writeObject(creditManager);
+            oos.writeObject(eventManager);
             oos.writeObject(unitManager);
             oos.writeObject(masterClock);
 

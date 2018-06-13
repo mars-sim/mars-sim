@@ -83,7 +83,12 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         // Create starting task event if needed.
         if (getCreateEvents() && !isDone()) {
-            TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, person.getAssociatedSettlement().getName(), "");
+            TaskEvent startingEvent = new TaskEvent(person, 
+            		this, 
+            		entity,
+            		EventType.TASK_START, 
+            		person.getAssociatedSettlement().getName(), 
+            		"Repair Emergency EVA Malfunction");
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }
 

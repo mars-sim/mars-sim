@@ -30,7 +30,8 @@ extends HistoricalEvent implements Serializable {
 		super(
 			HistoricalEventCategory.TRANSPORT,
 			eventType,
-			transportItem, 
+			transportItem,
+			null, // TODO : define the sponsor 
 			location,
 			description
 		);

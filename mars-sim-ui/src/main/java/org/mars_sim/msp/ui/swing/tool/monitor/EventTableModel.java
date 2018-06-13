@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -20,8 +21,8 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -40,23 +41,23 @@ import javafx.scene.image.ImageView;
  * provides a mean to display the Historical Event. This is actually an
  * Adapter onto the existing Event Manager.
  */
-@SuppressWarnings("restriction")
 public class EventTableModel
 extends AbstractTableModel
 implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	 /** default logger.   */
-	//private static Logger logger = Logger.getLogger(EventTableModel.class.getName());
+	private static Logger logger = Logger.getLogger(EventTableModel.class.getName());
 
 	// Column names
 	private static final int TIMESTAMP = 0;
 	private static final int DESC = 1;
 	private static final int TYPE = 2;
 	private static final int CATEGORY = 3;
-	private static final int ACTOR = 4;
-	private static final int LOCATION = 5;
+	private static final int SOURCE = 4;
+	private static final int ACTOR = 5;
+	private static final int LOCATION = 6;
 	
-	private static final int COLUMNCOUNT = 6;
+	private static final int COLUMNCOUNT = 7;
 
 	private boolean showMedical = true;
 	private boolean showMedicalCache = true;
@@ -76,6 +77,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		columnNames[DESC] = Msg.getString("EventTableModel.column.description");	columnTypes[DESC] = String.class; //$NON-NLS-1$
 		columnNames[TYPE] = Msg.getString("EventTableModel.column.eventType");		columnTypes[TYPE] = String.class; //$NON-NLS-1$
 		columnNames[CATEGORY] = Msg.getString("EventTableModel.column.category");	columnTypes[CATEGORY] = String.class; //$NON-NLS-1$
+		columnNames[SOURCE] = Msg.getString("EventTableModel.column.source");			columnTypes[SOURCE] = Object.class; //$NON-NLS-1$
 		columnNames[ACTOR] = Msg.getString("EventTableModel.column.actor");			columnTypes[ACTOR] = Object.class; //$NON-NLS-1$
 		columnNames[LOCATION] = Msg.getString("EventTableModel.column.location");	columnTypes[LOCATION] = Object.class; //$NON-NLS-1$
 	}
@@ -120,41 +122,48 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	}
 
 	private void updateCachedEvents() {
-		// Clean out cached events.
+		// Clean out existing cached events for the Event Table.
 		cachedEvents = new ArrayList<HistoricalEvent>();
 
-
 		// Filter events based on category.
-		for (int x = 0; x < manager.size(); x++) {
+		for (int x = 0; x < manager.getEvents().size(); x++) {
 			HistoricalEvent event = manager.getEvent(x);
 			HistoricalEventCategory category = event.getCategory();
 
 			if (category.equals(HistoricalEventCategory.MALFUNCTION) && displayMalfunction
-				&& (event.getType() == EventType.MALFUNCTION_OCCURRED
-					|| event.getType() == EventType.MALFUNCTION_FIXED)) {
+				//&& (event.getType() == EventType.MALFUNCTION_OCCURRED
+				//	|| event.getType() == EventType.MALFUNCTION_FIXED)
+				) {
 				cachedEvents.add(event);
 			}
 			
 			else if (category.equals(HistoricalEventCategory.MEDICAL) && displayMedical
 				&& (event.getType() == EventType.MEDICAL_STARTS
-					|| event.getType() == EventType.MEDICAL_DEATH)) {
+					|| event.getType() == EventType.MEDICAL_CURED
+					|| event.getType() == EventType.MEDICAL_TREATED
+					|| event.getType() == EventType.MEDICAL_DEATH
+				)) {
 				cachedEvents.add(event);
 			}
 			
 			else if (category.equals(HistoricalEventCategory.MISSION) && displayMission
 				&& (event.getType() == EventType.MISSION_EMERGENCY_BEACON_ON
-			            || event.getType() == EventType.MISSION_EMERGENCY_DESTINATION
-			            || event.getType() == EventType.MISSION_RESCUE_PERSON
-			            || event.getType() == EventType.MISSION_RENDEZVOUS)) {
+					|| event.getType() == EventType.MISSION_EMERGENCY_DESTINATION
+					//|| event.getType() == EventType.MISSION_NOT_ENOUGH_RESOURCES
+					|| event.getType() == EventType.MISSION_MEDICAL_EMERGENCY
+					|| event.getType() == EventType.MISSION_RENDEZVOUS		
+					|| event.getType() == EventType.MISSION_RESCUE_PERSON					            
+					|| event.getType() == EventType.MISSION_SALVAGE_VEHICLE			        
+			    )) {
 				cachedEvents.add(event);
 			}
-/*
-			else if (category.equals(HistoricalEventCategory.TASK) && displayTask)
+
+//			else if (category.equals(HistoricalEventCategory.TASK) && displayTask)
+//				cachedEvents.add(event);
+
+			else if (category.equals(HistoricalEventCategory.TRANSPORT) && displayTransport)
 				cachedEvents.add(event);
 
-			if (category.equals(HistoricalEventCategory.TRANSPORT) && displayTransport)
-				cachedEvents.add(event);
-*/
 		}
 
 		// Update all table listeners.
@@ -267,36 +276,35 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					result = event.getTimestamp();
 					if (result == null) // at the start of the sim, MarsClock is not ready
 						result = "0015-Adir-01 000.000";
-					//System.out.println("getValueAt() : timestamp is " + result);
 				} break;
 
 				case CATEGORY: {
 					result = event.getCategory();
-					//System.out.println("getValueAt() : category is " + result);
 
 				} break;
 
 				case ACTOR: {
+					result = event.getActor();
+
+				} break;
+
+				case SOURCE: {
 					result = event.getSource();
-					//System.out.println("getValueAt() : actor is " + result);
 
 				} break;
 
 				case LOCATION: {
 					result = event.getLocation();
-					//System.out.println("getValueAt() : actor is " + result);
 
 				} break;
 				
 				case DESC : {
 					result = event.getDescription();
-					//System.out.println("getValueAt() : description is " + result);
 
 				} break;
 
 				case TYPE : {
 					result = event.getType();
-					//System.out.println("getValueAt() : type is " + result);
 
 				} break;
 				}
@@ -310,9 +318,9 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return " " + Msg.getString(
+		return "  " + Msg.getString(
 			"EventTableModel.numberOfEvents", //$NON-NLS-1$
-			Integer.toString(cachedEvents.size())
+			cachedEvents.size()
 		);
 	}
 
@@ -322,10 +330,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 * @param index Index of new event in the manager.
 	 * @param event The new event added.
 	 */
-	// 2015-05-04 Modified eventAdded to use controlsfx's notification window for javaFX UI
 	public void eventAdded(int index, HistoricalEvent event) {
 		// TODO: include historical events and ai.task.TaskEvent, filtered by user's options
-
 		updateCachedEvents();
 		// fireTableRowsInserted(index, index);
 		if (desktop.getMainWindow() != null) {
@@ -339,12 +345,9 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
-
 			} else if (nMenu != null) {
-
 				// 2015-01-14 Added noFiring condition
 				//Boolean noFiring = false;
-
 				showMedical = nMenu.getShowMedical();
 				if (showMedical != showMedicalCache ) {
 					showMedicalCache = showMedical;
@@ -375,67 +378,110 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 				}
 
 			} else if (mainSceneMenu != null) {
-
 				if (!noFiring && index == 0 && event != null) {
 
-					int type = 0;
-					String header = null ;
-					String message = event.getDescription(); //event.getType().toString();//  //.toUpperCase();
 					// reset willNotify to false
 					boolean willNotify = false;
-
-					if (message != null && message != "" ) {
+					int type = 0;
+					
+					String header = null ;
+					String message = null;
+					String description = event.getDescription(); //event.getType().toString();//  //.toUpperCase();
+							
+					if (description != null && description != "" ) {
 
 					    HistoricalEventCategory category = event.getCategory();
-
+						Object source = event.getSource();
+						Object actor = event.getActor();
+						String location = event.getLocation();
+						String eventType = event.getType().getName();
+						
 					    if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
 					           // && showMalfunction ) {
-					        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
+					        header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
 					        // Only display notification window when malfunction has occurred, not when fixed.
-					        if (event.getType() == EventType.MALFUNCTION_OCCURRED) {
-					            willNotify = true;
+					        if (event.getType() == EventType.MALFUNCTION_REPORTED
+//					        	|| event.getType() == EventType.MALFUNCTION_FIXED
+					        ) {
+					        	if (actor instanceof Building)	
+					        		message = description + " reported by sensors in " + ((Building)actor).getNickName()  + " in " + location;
+						        else
+							        message = description + " reported by " + ((Unit)actor).getName() + " in " + location;
 					        }
+		
+					        else
+						        message = description + " fixed by " + ((Person)actor).getName() + " in " + location;
 					        
-					        Malfunctionable mal = (Malfunctionable) event.getSource();
 					        
-					        message = message + " (" + mal.getNickName() + ") in " + mal.getLongLocationName();
-					        
+				            willNotify = true;
+				            
+//					        Malfunctionable mal = (Malfunctionable) event.getSource();
+//					        
+//					        String nickname = " (" + mal.getNickName() + ") in ";
+//					        String locationName = mal.getLongLocationName();
+//					        
+//					        if (nickname.equals(locationName))
+//					        	message = message + " in " + mal.getLongLocationName();
+//					        else
+//					        	message = message + nickname + mal.getLongLocationName();
+//					        
+
 					        type = 0;
 					    }
 
 					    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
 					            // && showMedical )	{
 
-					        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
+					        header = Msg.getString("EventTableModel.message.medical"); //$NON-NLS-1$
 
 					        // Only display notification windows when medical problems are starting or person has died.
-					        if ((event.getType() == EventType.MEDICAL_STARTS) ||
-					                (event.getType() == EventType.MEDICAL_DEATH)) {
+					        if (event.getType() == EventType.MEDICAL_STARTS) {
+					        	
 					            willNotify = true;
+					            message = ((Person)source).getName() + " suffered from " + description + " in " + location;
 					        }
-
+					        else if (event.getType() == EventType.MEDICAL_DEATH) {
+					        	
+					            willNotify = true;
+					            message = ((Person)source).getName() + " died from " + description + " in " + location;
+					        }
+					        else if (event.getType() == EventType.MEDICAL_TREATED) {
+					        	
+					            willNotify = true;
+					            message = ((Person)source).getName() + " was being treated from " + description + " in " + location;
+					        }
+					        else if (event.getType() == EventType.MEDICAL_CURED) {
+					        	
+					            willNotify = true;
+					            message = ((Person)source).getName() + " was cured from " + description + " in " + location;
+					        }
+					        
 					        type = 1;
 					    }
 					    
 					    else if (category.equals(HistoricalEventCategory.MISSION)) {
 					           // && showMalfunction ) {
-					        header = Msg.getString("NotificationManager.message.mission"); //$NON-NLS-1$
+					        header = Msg.getString("EventTableModel.message.mission"); //$NON-NLS-1$
 
 					        // Only display notification window when malfunction has occurred, not when fixed.
 					        if (event.getType() == EventType.MISSION_EMERGENCY_BEACON_ON
 					            || event.getType() == EventType.MISSION_EMERGENCY_DESTINATION
-					            || event.getType() == EventType.MISSION_RESCUE_PERSON
-					            || event.getType() == EventType.MISSION_RENDEZVOUS) {
+					            //|| event.getType() == EventType.MISSION_NOT_ENOUGH_RESOURCES
+					            || event.getType() == EventType.MISSION_MEDICAL_EMERGENCY
+					            || event.getType() == EventType.MISSION_RENDEZVOUS		
+					            || event.getType() == EventType.MISSION_RESCUE_PERSON					            
+					            || event.getType() == EventType.MISSION_SALVAGE_VEHICLE
+				        		) {
 					            	willNotify = true;
 					        }
 					       
-
+					        message = ((Person)actor).getName() + " has " + eventType + " due to " + description + " in " + location;
 					        type = 2;
 					    }
 					    
 					}
-
+					// Modified eventAdded to use controlsfx's notification window for javaFX UI
 					if (willNotify)
 						Platform.runLater(new NotifyFXLauncher(header, message, type));
 				}
@@ -582,12 +628,13 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	    public void run() {
 	    	//Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
-
+	    	System.out.println("Notification : " + message);
+	    	
 	    	if (type == 0 || type == 1 || type == 2) {
 	    		
 	    		int theme = MainScene.getTheme();
 	    		
-	    		if (theme == 7) {
+	    		if (theme == 7) {// use dark theme
 			    	Notifications.create()
 		    		.title(header)
 		    		.text(message)
@@ -595,16 +642,16 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		    		.onAction(new EventHandler<ActionEvent>() {
 		    			@Override
 		    			public void handle(ActionEvent event){
-		    				System.out.println("[Placeholder] The notification box '" + message + "' has just been clicked.");
+		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 		    			}
 		    		})
 		    		.graphic(v)
-		    		.darkStyle()
+		    		.darkStyle() 
 		    		.owner(desktop.getMainScene().getStage())
 		    		.show();
 		    	}
 
-		    	else {
+		    	else {// use light theme
 			    	Notifications.create()
 		    		.title(header)
 		    		.text(message)
@@ -612,7 +659,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		    		.onAction(new EventHandler<ActionEvent>() {
 		    			@Override
 		    			public void handle(ActionEvent event){
-		    				System.out.println("[Placeholder] You just clicked on the message '" + message + "'.");
+		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 		    			}
 		    		})
 		    		.graphic(v)

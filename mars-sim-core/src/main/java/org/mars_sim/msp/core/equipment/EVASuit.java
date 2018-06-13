@@ -334,11 +334,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		return getName();
 	}
 
-	public void destroy() {
-		malfunctionManager = null;
-		weather = null;
-	}
-/*
+	/*
 	@Override
 	public String getShortLocationName() {
 		return getLocationTag().getLongLocationName();//getSettlementName();
@@ -352,6 +348,11 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	@Override
 	public String getLongLocationName() {
 		return getLocationTag().getLongLocationName();
+	}
+	
+	public void destroy() {
+		malfunctionManager = null;
+		weather = null;
 	}
 
 	

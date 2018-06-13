@@ -416,7 +416,7 @@ implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .001D;
+        double chance = .005D;
         int skill = 0;
 
 		if (person != null)
@@ -438,11 +438,11 @@ implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null) {
-	            logger.info("[" + person.getSettlement() +  "] " + person.getName() + " has an accident while cooking.");
+//	            logger.info("[" + person.getSettlement() +  "] " + person.getName() + " has an accident while cooking.");
 	            kitchen.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info("[" + robot.getSettlement() +  "] " + robot.getName() + " has an accident while cooking.");
+//				logger.info("[" + robot.getSettlement() +  "] " + robot.getName() + " has an accident while cooking.");
 	            kitchen.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 

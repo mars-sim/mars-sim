@@ -957,7 +957,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	public void setWalk(Walk walk) {
 		this.walk = walk;
 	}
-	
+
     @Override
     public void destroy() {
         super.destroy();
@@ -978,7 +978,4 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         //scientificAchievement.clear();
         //scientificAchievement = null;
     }
-
-
-
 }

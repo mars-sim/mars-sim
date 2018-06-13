@@ -37,6 +37,8 @@ public class Malfunction implements Serializable {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
+    private static final String INCIDENT_NUM = " - incident #";
+    
     // Data members
     private int severity;
     private int incidentNum;
@@ -191,7 +193,7 @@ public class Malfunction implements Serializable {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
             emergencyWorkTimeCompleted = emergencyWorkTime;
             
-            String id_string = " incident #" + incidentNum  + "";
+            String id_string = INCIDENT_NUM + incidentNum;
             
         	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
         			name + id_string + " - emergency repair finished by " + repairer  + ".", null);
@@ -285,7 +287,7 @@ public class Malfunction implements Serializable {
         Malfunction clone = new Malfunction(name, id, severity, probability, emergencyWorkTime,
             workTime, EVAWorkTime, systems, resourceEffects, lifeSupportEffects, medicalComplaints);
 
-        String id_string = " incident #" + id  + "";
+        String id_string = INCIDENT_NUM + id;
         
         if (emergencyWorkTime > 0D)
         	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
@@ -306,7 +308,7 @@ public class Malfunction implements Serializable {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
                 Part part = (Part) ItemResource.findItemResource(partName);
                 repairParts.put(part, number);
-                String id_string = " incident #" + incidentNum  + "";
+                String id_string = INCIDENT_NUM + incidentNum;
             	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
             			name + id_string + " - the repair requires " + part.getName() 
             			+ " (quantity: " + number + ").", null);
@@ -373,8 +375,8 @@ public class Malfunction implements Serializable {
     public String toString() {
     	return name;
     }
+   
     
-
     public void destroy() {
         systems = null;
         resourceEffects = null;

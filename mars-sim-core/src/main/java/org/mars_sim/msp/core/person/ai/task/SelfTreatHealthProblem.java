@@ -340,7 +340,12 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
 
             // Create starting task event if needed.
             if (getCreateEvents()) {
-                TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, person.getAssociatedSettlement().getName(), "");
+                TaskEvent startingEvent = new TaskEvent(person,
+                		this, 
+                		person,
+                		EventType.TASK_START, 
+                		person.getAssociatedSettlement().getName(), 
+                		"Self-treating Health Problem");
                 Simulation.instance().getEventManager().registerNewEvent(startingEvent);
             }
         }
@@ -421,7 +426,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
 
         Malfunctionable entity = getMalfunctionable();
 
-        double chance = .001D;
+        double chance = .005D;
 
         // Medical skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
@@ -436,8 +441,8 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-        	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-        			"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName() + " got injuried during a medical self-treatment.", null);
+//        	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+//        			"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName() + " got injuried during a medical self-treatment.", null);
 
             entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
         }

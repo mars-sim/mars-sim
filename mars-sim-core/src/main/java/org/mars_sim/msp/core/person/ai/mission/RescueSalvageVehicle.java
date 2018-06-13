@@ -384,9 +384,11 @@ implements Serializable {
         	setEmergencyBeacon(member, vehicleTarget, false, EventType.MISSION_RENDEZVOUS.toString());
 
         // Set mission event.
-        HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
-        		this, vehicleTarget.getLocationTag().getLongLocationName(), 
-        		EventType.MISSION_RENDEZVOUS.toString(),
+        HistoricalEvent newEvent = new MissionHistoricalEvent(
+        		member, 
+        		this, 
+        		vehicleTarget.getLocationTag().getLongLocationName(), 
+        		member.getVehicle(), //
         		EventType.MISSION_RENDEZVOUS);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
@@ -436,9 +438,11 @@ implements Serializable {
             //towedVehicle.determinedSettlementParkedLocationAndFacing();
             logger.info(towedVehicle + " has been towed to " + disembarkSettlement.getName());
             
-            HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, 
-            		this, person.getSettlement().getName(), 
-            		EventType.MISSION_SALVAGE_VEHICLE.toString(),
+            HistoricalEvent salvageEvent = new MissionHistoricalEvent(
+            		person, 
+            		this, 
+            		person.getSettlement().getName(), 
+            		person.getVehicle(), //EventType.MISSION_SALVAGE_VEHICLE.toString(),
             		EventType.MISSION_SALVAGE_VEHICLE);
             Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
 
@@ -461,9 +465,11 @@ implements Serializable {
                     p.setAssociatedSettlement(disembarkSettlement);
                     p.getMind().getTaskManager().clearTask();
                     logger.info(p.getName() + " rescued.");
-                    HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, 
-                    		this, person.getSettlement().getName(), 
-                    		EventType.MISSION_RESCUE_PERSON.toString(),
+                    HistoricalEvent rescueEvent = new MissionHistoricalEvent(
+                    		person, 
+                    		this, 
+                    		person.getSettlement().getName(), 
+                    		person.getVehicle(), //EventType.MISSION_RESCUE_PERSON.toString(),
                     		EventType.MISSION_RESCUE_PERSON);
                     Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
                 }

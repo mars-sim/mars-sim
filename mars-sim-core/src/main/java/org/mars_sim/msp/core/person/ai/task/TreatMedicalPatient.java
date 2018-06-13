@@ -315,7 +315,12 @@ public class TreatMedicalPatient extends Task implements Serializable {
 
             // Create starting task event if needed.
             if (getCreateEvents()) {
-                TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, person.getAssociatedSettlement().getName(), "");
+                TaskEvent startingEvent = new TaskEvent(person, 
+                		this, 
+                		healthProblem.getSufferer(),
+                		EventType.TASK_START, 
+                		person.getAssociatedSettlement().getName(), 
+                		"Treating Medical Patient");
                 Simulation.instance().getEventManager().registerNewEvent(startingEvent);
             }
         }
@@ -377,7 +382,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
 
         Malfunctionable entity = getMalfunctionable();
 
-        double chance = .001D;
+        double chance = .005D;
 
         // Medical skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
@@ -394,11 +399,11 @@ public class TreatMedicalPatient extends Task implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
 
 			if (person != null) {
-				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while providing medical treatment.");
+//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while providing medical treatment.");
 	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while providing medical treatment.");
+//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while providing medical treatment.");
 				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
         	}
         }

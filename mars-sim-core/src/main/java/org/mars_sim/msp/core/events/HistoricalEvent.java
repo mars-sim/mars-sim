@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.events;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -17,8 +19,11 @@ import org.mars_sim.msp.core.time.MarsClock;
  * optional Unit that is the source of the event and an optional Object that has
  * triggered the event.
  */
-public abstract class HistoricalEvent {
-
+public abstract class HistoricalEvent implements Serializable {
+	
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	/**
 	 * Category of event.
 	 * @see HistoricalEventManager
@@ -33,6 +38,8 @@ public abstract class HistoricalEvent {
 	private MarsClock timestamp;
 	/** Source of event may be null. */
 	private Object source;
+	/** Actor or witness of the event. */
+	private Object actor;
 	/** Location occurred. */	
 	private String location;
 
@@ -46,10 +53,11 @@ public abstract class HistoricalEvent {
 	 * @param description Long description of event.
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
 	 */
-	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String location, String description) {
+	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, Object actor, String location, String description) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
+		this.actor = actor;
 		this.location = location;
 		this.description = description;
 		// need count++ next time: System.out.println("HistoricalEvent.java constructor");
@@ -64,7 +72,7 @@ public abstract class HistoricalEvent {
 	}
 
 	/**
-	 * Get description.
+	 * Get description of the event observed.
 	 * @return Description
 	 */
 	public String getDescription() {
@@ -79,6 +87,14 @@ public abstract class HistoricalEvent {
 		return source;
 	}
 
+	/**
+	 * Get the actor or witness.
+	 * @return Object as the actor of event.
+	 */
+	public Object getActor() {
+		return actor;
+	}
+	
 	/**
 	 * Get the location.
 	 * @return Object as the location.

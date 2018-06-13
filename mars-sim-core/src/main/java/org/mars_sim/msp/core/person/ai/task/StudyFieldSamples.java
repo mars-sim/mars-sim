@@ -532,7 +532,7 @@ implements ResearchScientificStudy, Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .001D;
+        double chance = .005D;
 
         // Science skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(science.getSkill());
@@ -557,7 +557,7 @@ implements ResearchScientificStudy, Serializable {
             chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has a lab accident while studying field samples.");
+//                logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has a lab accident while studying field samples.");
                 entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
             }
         }

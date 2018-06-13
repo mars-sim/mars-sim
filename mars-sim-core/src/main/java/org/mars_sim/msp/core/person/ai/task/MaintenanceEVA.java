@@ -286,7 +286,7 @@ implements Serializable {
 		// Use EVAOperation checkForAccident() method.
 		super.checkForAccident(time);
 
-		double chance = .001D;
+		double chance = .005D;
 		int skill = 0;
 		if (person != null)
 			// Mechanic skill modification.
@@ -303,13 +303,13 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
-				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while performing EVA maintenance on "
-					     + entity.getNickName() + ".");
+//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while performing EVA maintenance on "
+//					     + entity.getNickName() + ".");
 	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			}
 			else if (robot != null) {
-				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while performing EVA maintenance on "
-						     + entity.getNickName() + ".");
+//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while performing EVA maintenance on "
+//						     + entity.getNickName() + ".");
 				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 		}
