@@ -37,10 +37,12 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
-import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
+
 import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+
+import com.alee.laf.panel.WebPanel;
 
 import javafx.scene.control.Label;
 import javafx.animation.KeyFrame;
@@ -113,7 +115,7 @@ extends ToolWindow {
 
     //private JStatusBar statusBar;
     private Label solLabel, popLabel, capLabel, xyLabel, timeLabel, dateLabel;
-    private JPanel subPanel;
+    private WebPanel subPanel;
 
 	/** The main desktop. */
 	private MainDesktopPane desktop;
@@ -124,7 +126,7 @@ extends ToolWindow {
 	private static MarsClock marsClock;
 	//private javax.swing.Timer marsTimer = null;
 
-	private MarqueeTicker marqueeTicker;
+//	private MarqueeTicker marqueeTicker;
 
 	private JFXPanel jfxPanel;
 	private Scene scene;
@@ -150,8 +152,6 @@ extends ToolWindow {
 		//showMarsTime();
 	}
 
-	// 2015-02-04 Added init()
-	@SuppressWarnings("restriction")
 	public void init() {
 
 		if (mainScene != null) {
@@ -173,12 +173,12 @@ extends ToolWindow {
 	    //setOpaque(false);
 	    //setBackground(new Color(0,0,0,128));
 
-		JPanel mainPanel = new JPanel(new BorderLayout());
+		WebPanel mainPanel = new WebPanel(new BorderLayout());
 	    //mainPanel.setOpaque(false);
 	    //mainPanel.setBackground(new Color(0,0,0,128));
 		setContentPane(mainPanel);
 
-		subPanel = new JPanel(new BorderLayout());
+		subPanel = new WebPanel(new BorderLayout());
 	    mainPanel.add(subPanel, BorderLayout.CENTER);
 	    //subPanel.setOpaque(false);
 	    //subPanel.setBackground(new Color(0,0,0,128));
@@ -220,9 +220,9 @@ extends ToolWindow {
     	// https://github.com/TomasMikula/RichTextFX/wiki/RichTextFX-CSS-Reference-Guide
 
     	// 2015-10-24 Create MarqueeTicker
-		marqueeTicker = new MarqueeTicker(this);
-		//marqueeTicker.setBackground(Color.BLACK);
-    	subPanel.add(marqueeTicker, BorderLayout.SOUTH);
+//		marqueeTicker = new MarqueeTicker(this);
+//		//marqueeTicker.setBackground(Color.BLACK);
+//    	subPanel.add(marqueeTicker, BorderLayout.SOUTH);
 
 		jfxPanel = new JFXPanel();
 
@@ -512,9 +512,9 @@ extends ToolWindow {
 		return desktop;
 	}
 
-	public MarqueeTicker getMarqueeTicker() {
-		return marqueeTicker;
-	}
+//	public MarqueeTicker getMarqueeTicker() {
+//		return marqueeTicker;
+//	}
 
 /*
 	public void paintComponent(Graphics g){
@@ -595,7 +595,7 @@ extends ToolWindow {
 		mapPanel = null;
 		desktop = null;
 		timeline = null;
-		marqueeTicker = null;
+//		marqueeTicker = null;
 		jfxPanel = null;
 		scene = null;
 		stack = null;

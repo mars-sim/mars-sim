@@ -27,12 +27,9 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
@@ -51,6 +48,11 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ManufacturePanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /**
  * A building panel displaying the manufacture building function.
  */
@@ -65,8 +67,8 @@ extends BuildingFunctionPanel {
 	/** The manufacture building. */
 	private Manufacture workshop;
 	/** Panel for displaying process panels. */
-	private JPanel processListPane;
-	private JScrollPane scrollPanel;
+	private WebPanel processListPane;
+	private WebScrollPane scrollPanel;
 	/** List of manufacture processes in building. */
 	private List<ManufactureProcess> processCache;
 	/** List of salvage processes in building. */
@@ -78,7 +80,7 @@ extends BuildingFunctionPanel {
 	/** List of available salvage processes. */
 	private List<SalvageProcessInfo> salvageSelectionCache;
 	/** Process selection button. */
-	private JButton newProcessButton;
+	private WebButton newProcessButton;
 
 	/**
 	 * Constructor.
@@ -97,7 +99,7 @@ extends BuildingFunctionPanel {
 
         // Prepare label panel
         //JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 0));
-        JPanel labelPane = new JPanel();
+        WebPanel labelPane = new WebPanel();
         labelPane.setLayout(new GridLayout(3, 1, 0, 0));
         //labelPane.setOpaque(false);
         //labelPane.setBackground(new Color(0,0,0,128));
@@ -119,7 +121,7 @@ extends BuildingFunctionPanel {
         labelPane.add(processCapacityLabel);
 
         // Create scroll pane for manufacturing processes
-        scrollPanel = new JScrollPane();
+        scrollPanel = new WebScrollPane();
         scrollPanel.setPreferredSize(new Dimension(170, 90));
         add(scrollPanel, BorderLayout.CENTER);
         //scrollPanel.setOpaque(false);
@@ -129,13 +131,13 @@ extends BuildingFunctionPanel {
         scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
         // Create process list main panel
-        JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
+        WebPanel processListMainPane = new WebPanel(new BorderLayout(0, 0));
         scrollPanel.setViewportView(processListMainPane);
         //processListMainPane.setOpaque(false);
         //processListMainPane.setBackground(new Color(0,0,0,128));
 
         // Create process list panel
-        processListPane = new JPanel();
+        processListPane = new WebPanel();
         processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
         processListMainPane.add(processListPane, BorderLayout.NORTH);
         //processListPane.setOpaque(false);
@@ -155,7 +157,7 @@ extends BuildingFunctionPanel {
         while (j.hasNext()) processListPane.add(new SalvagePanel(j.next(), false, processStringWidth));
 
         // Create interaction panel.
-        JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        WebPanel interactionPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
         add(interactionPanel, BorderLayout.SOUTH);
         //interactionPanel.setOpaque(false);
         //interactionPanel.setBackground(new Color(0,0,0,128));
@@ -182,8 +184,8 @@ extends BuildingFunctionPanel {
         while (k.hasNext()) processComboBox.addItem(k.next());
 
         // Create new process button.
-        JPanel btnPanel = new JPanel(new FlowLayout()); 
-        newProcessButton = new JButton("Create New Process");
+        WebPanel btnPanel = new WebPanel(new FlowLayout()); 
+        newProcessButton = new WebButton("Create New Process");
         btnPanel.add(newProcessButton);
         //newProcessButton.setOpaque(false);
         //newProcessButton.setBackground(new Color(51,25,0,128));
@@ -448,7 +450,8 @@ extends BuildingFunctionPanel {
 			    if (info != null) {
 			    	// 2014-11-21 Capitalized processName
 			        String processName = Conversion.capitalize(info.getName());
-			        if (processName.length() > processStringWidth) processName = processName.substring(0, processStringWidth) + "...";
+			        if (processName.length() > processStringWidth) 
+			        	processName = processName.substring(0, processStringWidth) + "...";
 			        ((JLabel) result).setText(processName);
 			        ((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
 			    }
@@ -458,7 +461,8 @@ extends BuildingFunctionPanel {
 			    if (info != null) {
 			    	// 2014-11-21 Capitalized processName
 			        String processName = Conversion.capitalize(info.toString());
-			        if (processName.length() > processStringWidth) processName = processName.substring(0, processStringWidth) + "...";
+			        if (processName.length() > processStringWidth) 
+			        	processName = processName.substring(0, processStringWidth) + "...";
                     ((JLabel) result).setText(processName);
                     ((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 			    }

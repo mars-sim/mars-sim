@@ -23,9 +23,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -49,6 +46,9 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
 
@@ -62,8 +62,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
-    private JTable equipmentTable;
-    private JTable resourcesTable;
+    private WebTable equipmentTable;
+    private WebTable resourcesTable;
     
 
     /**
@@ -78,7 +78,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         Inventory inv = unit.getInventory();
 
         // Create inventory label panel.
-        JPanel inventoryLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        WebPanel inventoryLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
         topContentPanel.add(inventoryLabelPanel);
 
         // Create inventory label
@@ -88,11 +88,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryLabelPanel.add(titleLabel);
 
         // Create inventory content panel
-        JPanel inventoryContentPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        WebPanel inventoryContentPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
         centerContentPanel.add(inventoryContentPanel, BorderLayout.CENTER);
 
         // Create resources panel
-        JScrollPane resourcesPanel = new JScrollPane();
+        WebScrollPane resourcesPanel = new WebScrollPane();
         resourcesPanel.setBorder(new MarsPanelBorder());
         inventoryContentPanel.add(resourcesPanel);
 
@@ -129,7 +129,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      	searchable.setCaseSensitive(false);
 
         // Create equipment panel
-        JScrollPane equipmentPanel = new JScrollPane();
+        WebScrollPane equipmentPanel = new WebScrollPane();
         equipmentPanel.setBorder(new MarsPanelBorder());
         inventoryContentPanel.add(equipmentPanel);
 

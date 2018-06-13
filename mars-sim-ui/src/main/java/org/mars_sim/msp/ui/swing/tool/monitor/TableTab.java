@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
@@ -37,16 +36,20 @@ import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+import com.alee.laf.table.WebTableHeader;
+
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
- * displays the contents of a UnitTableModel in a JTable window. It supports
+ * displays the contents of a UnitTableModel in a WebTable window. It supports
  * the selection and deletion of rows.
  */
 abstract class TableTab
 extends MonitorTab {
 	
-	private JTableHeader header;
+	private WebTableHeader header;
 	private TableCellRenderer tableCellRenderer;
 	private TableProperties propsWindow;
 	
@@ -154,7 +157,7 @@ extends MonitorTab {
 	//private final static Icon TABLEICON = ImageLoader.getIcon("Table");
 
 	/** Table component. */
-	protected JTable table;
+	protected WebTable table;
 	/** Sortable model proxy. */
 	private TableSorter sortedModel;
 	/** Constructor will flip this. */
@@ -163,7 +166,7 @@ extends MonitorTab {
 	private int sortedColumn = 0;
 
     /**
-     * Create a Jtable within a tab displaying the specified model.
+     * Create a WebTable within a tab displaying the specified model.
      * @param model The model of Units to display.
      * @param mandatory Is this table view mandatory.
      * @param singleSelection Does this table only allow single selection?
@@ -247,7 +250,7 @@ extends MonitorTab {
          	// Not the best way but no double click is provided on Header class
         	// Get the TableColumn header to display sorted column
 
-           	header = table.getTableHeader();
+           	header = (WebTableHeader) table.getTableHeader();
         	//theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
         	//header.setDefaultRenderer(theRenderer);
         	header.addMouseListener(new MouseAdapter() {
@@ -261,7 +264,7 @@ extends MonitorTab {
 
         }
         else {
-            // Simple JTable
+            // Simple WebTable
             this.table = new ZebraJTable(model) {
 
             	/** default serial id. */
@@ -320,14 +323,14 @@ extends MonitorTab {
         	table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		// 2015-06-08 Added RowNumberTable
-        JTable rowTable = new RowNumberTable(table);
+        WebTable rowTable = new RowNumberTable(table);
         TableStyle.setTableStyle(rowTable);
         // Add a scrolled window and center it with the table
-        JScrollPane scroller = new JScrollPane(table);
+        WebScrollPane scroller = new WebScrollPane(table);
         //scroller.setBorder(new MarsPanelBorder());
 
         scroller.setRowHeaderView(rowTable);
-        scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
+        scroller.setCorner(WebScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 
         add(scroller, BorderLayout.CENTER);
 
@@ -337,12 +340,12 @@ extends MonitorTab {
 
     }
 
-    public JTable getTable() {
+    public WebTable getTable() {
     	//System.out.println("table is "+ table);
     	return table;
     }
 
-    public void adjustColumnPreferredWidths(JTable table) {
+    public void adjustColumnPreferredWidths(WebTable table) {
         // Gets max width for cells in column as the preferred width
         TableColumnModel columnModel = table.getColumnModel();
         for (int col = 0; col < table.getColumnCount(); col++) {

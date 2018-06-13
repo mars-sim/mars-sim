@@ -188,14 +188,14 @@ public class MainScene {
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
-	private enum ThemeType {
+	public enum ThemeType {
 	    System,
 	    Nimbus,
 	    Nimrod,
 	    Weblaf
 	}
 
-	private ThemeType defaultThemeType = ThemeType.Weblaf;
+	public static ThemeType defaultThemeType = ThemeType.Weblaf;
 
 	private static int defaultThemeColor = 0;
 
@@ -470,15 +470,21 @@ public class MainScene {
 	 * Loads the rest of the methods in MainScene.
 	 */
 	public void finalizeMainScene() {
-
-		Platform.runLater(() -> {
-			prepareScene();
-			initializeTheme();
-			prepareOthers();
 			
+		SwingUtilities.invokeLater(() -> {
+			WebLookAndFeel.install();
+			//UIManagers.initialize();
+		});
+		
+		Platform.runLater(() -> {
+
+			prepareScene();
+			
+			initializeTheme();
+			
+			prepareOthers();		
 			// Call setMonitor() for screen detection and placing quotation pop at top right corner
 			setMonitor(stage);
-
 			//stage.centerOnScreen();
 			stage.setTitle(Simulation.title);
 			stage.setResizable(false);
@@ -499,6 +505,7 @@ public class MainScene {
 		// logger.info("MainMenu's prepareScene() is on " +
 		// Thread.currentThread().getName());
 		UIConfig.INSTANCE.useUIDefault();
+	
 		// creates and initialize scene
 		scene = initializeScene();
 		// switch from the main menu's scene to the main scene's scene
@@ -2593,12 +2600,12 @@ public class MainScene {
 				//if (theme == 0 || theme == 6)
 				//	UIManager.setLookAndFeel (NimbusLookAndFeel.class.getCanonicalName());
 				//else if (theme == 7){
-					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
-					NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
-					// working if switching to a brand new .theme file 
-					NimRODLookAndFeel nf = new NimRODLookAndFeel();
-					nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme // file
-					UIManager.setLookAndFeel(nf); 
+//					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
+//					NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
+//					// working if switching to a brand new .theme file 
+//					NimRODLookAndFeel nf = new NimRODLookAndFeel();
+//					nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme // file
+//					UIManager.setLookAndFeel(nf); 
 				//}
 				
 				changed = true;

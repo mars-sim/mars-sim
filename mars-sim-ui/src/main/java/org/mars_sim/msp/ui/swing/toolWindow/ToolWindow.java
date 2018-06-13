@@ -19,6 +19,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 
+import com.alee.laf.desktoppane.WebInternalFrame;
+
 import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
 
@@ -27,7 +29,7 @@ import javafx.scene.control.CheckMenuItem;
  * Particular tool windows should be derived from this.
  */
 @SuppressWarnings("restriction")
-public abstract class ToolWindow extends JInternalFrame { // WebInternalFrame { //
+public abstract class ToolWindow extends WebInternalFrame { //
 
 	// Data members
 	/** The name of the tool the window is for. */
@@ -68,10 +70,10 @@ public abstract class ToolWindow extends JInternalFrame { // WebInternalFrame { 
 
 		// 2016-10-21 Remove title bar
 	    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
-	    getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-	    BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
-	    bi.setNorthPane(null);
-	    setBorder(null);
+//	    getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+//	    BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
+//	    bi.setNorthPane(null);
+//	    setBorder(null);
 
 	    //getRootPane().setOpaque(false);
 	    //getRootPane().setBackground(new Color(0,0,0,128));

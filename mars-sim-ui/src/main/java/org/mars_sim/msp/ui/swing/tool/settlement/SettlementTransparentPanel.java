@@ -75,8 +75,12 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
+import com.alee.extended.WebComponent;
+import com.alee.laf.combobox.WebComboBox;
+import com.alee.managers.style.StyleId;
+
 @SuppressWarnings("restriction")
-public class SettlementTransparentPanel extends JComponent {
+public class SettlementTransparentPanel extends WebComponent {
 
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
@@ -91,7 +95,7 @@ public class SettlementTransparentPanel extends JComponent {
 	//private JLabel zoomLabel;
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
-	private JComboBoxMW<?> settlementListBox;
+	private WebComboBox settlementListBox;
 	/** Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
 
@@ -196,7 +200,7 @@ public class SettlementTransparentPanel extends JComponent {
 	public void buildSettlementNameComboBox() {
 
 		settlementCBModel = new SettlementComboBoxModel();
-		settlementListBox = new JComboBoxMW(settlementCBModel);
+		settlementListBox = new WebComboBox(settlementCBModel);
 		//settlementListBox.setBorder(null);
 		//setBackground(new Color(139,69,19));
 		//settlementListBox.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
@@ -939,10 +943,14 @@ public class SettlementTransparentPanel extends JComponent {
 		}
 	}
 
-	public JComboBoxMW<?> getSettlementListBox() {
+//	public JComboBoxMW<?> getSettlementListBox() {
+//		return settlementListBox;
+//	}
+
+	public WebComboBox getSettlementListBox() {
 		return settlementListBox;
 	}
-
+	
 /*
 	public JCustomCheckBoxMenuItem getBuildingLabelMenuItem() {
 		return buildingLabelMenuItem;
@@ -973,5 +981,26 @@ public class SettlementTransparentPanel extends JComponent {
 		desktop = null;
 		settlementListBox = null;
 		settlementCBModel = null;
+	}
+
+
+	@Override
+	public StyleId getDefaultStyleId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String getUIClassID() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void updateUI() {
+		// TODO Auto-generated method stub
+		
 	}
 }

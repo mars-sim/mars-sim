@@ -21,7 +21,6 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
@@ -44,6 +43,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multimap;
@@ -75,7 +76,7 @@ extends TabPanel {
 	/** Sort column is defined. */
 	//private int sortedColumn = 0;
 
-    private JTable table;
+    private WebTable table;
     private CookingTableModel cookingTableModel;
 
 	/** The number of available meals. */
@@ -218,7 +219,7 @@ extends TabPanel {
 		splitPanel.add(m);
 
 		// Create scroll panel for the outer table panel.
-		JScrollPane scrollPane = new JScrollPane();
+		WebScrollPane scrollPane = new WebScrollPane();
 		//scrollPane.setOpaque(false);
 		//scrollPane.setBackground(new Color(0,0,0,128));
 		//scrollPane.setForeground(Color.orange);
@@ -231,7 +232,7 @@ extends TabPanel {
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
-		table = new JTable(cookingTableModel) {
+		table = new WebTable(cookingTableModel) {
 
         public String getToolTipText(java.awt.event.MouseEvent e) {
             String personName = null;

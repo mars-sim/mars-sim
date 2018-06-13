@@ -11,10 +11,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import com.alee.laf.panel.WebPanel;
 
 
 /**
@@ -23,7 +24,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * a UnitTableModel
  */
 public abstract class MonitorTab
-extends JPanel {
+extends WebPanel {
 
 	/** Model providing the data. */
 	private MonitorModel model;

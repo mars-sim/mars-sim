@@ -11,21 +11,22 @@ import java.awt.BorderLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-public abstract class TabPanel extends JScrollPane {
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
+public abstract class TabPanel extends WebScrollPane {
 
 
 	protected String tabTitle;
 	protected Icon tabIcon;
 	protected String tabToolTip;
-	protected JPanel viewPanel;
-	protected JPanel topContentPanel;
-	protected JPanel centerContentPanel;
+	protected WebPanel viewPanel;
+	protected WebPanel topContentPanel;
+	protected WebPanel centerContentPanel;
 	protected Unit unit;
 	protected MainDesktopPane desktop;
 
@@ -52,19 +53,19 @@ public abstract class TabPanel extends JScrollPane {
         this.desktop = desktop;
 
         // Create the view panel
-        viewPanel = new JPanel(new BorderLayout(0, 0));
+        viewPanel = new WebPanel(new BorderLayout(0, 0));
         //viewPanel.setBackground(THEME_COLOR);
         setViewportView(viewPanel);
 
         // Create top content panel
-        topContentPanel = new JPanel();
+        topContentPanel = new WebPanel();
         //topContentPanel.setBackground(THEME_COLOR);
         topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
         topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
         // Create center content panel
-        centerContentPanel = new JPanel(new BorderLayout(0, 0));
+        centerContentPanel = new WebPanel(new BorderLayout(0, 0));
         //centerContentPanel.setBackground(THEME_COLOR);
         centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(centerContentPanel, BorderLayout.CENTER);

@@ -38,27 +38,10 @@ import javafx.scene.Group;
 //import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-//import javafx.scene.control.Separator;
-//import javafx.scene.control.Toggle;
-//import javafx.scene.control.ToggleGroup;
-//import javafx.geometry.HPos;
-//import javafx.scene.control.Button;
-//import javafx.scene.control.TextField;
-//import javafx.scene.layout.ColumnConstraints;
-//import javafx.scene.layout.GridPane;
-//import javafx.scene.layout.Priority;
-//import javafx.scene.SceneAntialiasing;
-//import javafx.scene.control.Alert;
-//import javafx.scene.control.Alert.AlertType;
-//import javafx.scene.control.ButtonType;
-//import javafx.stage.Window;
-//import javafx.geometry.Point2D;
-//import javafx.stage.Modality;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-//import javafx.scene.shape.RectangleBuilder;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -93,7 +76,6 @@ import eu.hansolo.tilesfx.Tile.SkinType;
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
  */
-@SuppressWarnings({ "restriction"})
 public class MainMenu {
 
 	// ------------------------------ FIELDS ------------------------------
@@ -169,7 +151,7 @@ public class MainMenu {
     public MainMenu() {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	mainMenu = this;
-    	
+
 		// See DPI Scaling at
 		// http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
 		// "I guess we'll have to wait until Java 9 for more flexible DPI support.

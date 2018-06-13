@@ -47,7 +47,6 @@ import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -57,6 +56,7 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.laf.combobox.WebComboBox;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 
@@ -87,7 +87,8 @@ implements ActionListener {
 	private JLabel jobLabel, roleLabel, jobChangeLabel, ratingLabel;
 	private JTextField roleTF;
 
-	private JComboBoxMW<?> jobComboBox;
+//	private JComboBoxMW<?> jobComboBox;
+	private WebComboBox jobComboBox;
 
 	private JobHistoryTableModel jobHistoryTableModel;
 
@@ -171,7 +172,8 @@ implements ActionListener {
 			}
 
 			Collections.sort(jobNames);
-			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+//			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+			jobComboBox = new WebComboBox(jobNames.toArray());
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
 

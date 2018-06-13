@@ -10,20 +10,20 @@ package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.event.MouseEvent;
 
-import javax.swing.JTable;
+import com.alee.laf.table.WebTable;
 
 
 /**
- * A JTable that draws a zebra striped background.
+ * A WebTable that draws a zebra striped background.
  */
-public class ZebraJTable extends JTable {
+public class ZebraJTable extends WebTable {
 
     private java.awt.Color rowColors[] = new java.awt.Color[2];
     private boolean drawStripes = false;
 
     public ZebraJTable(){
     }
-    public ZebraJTable(JTable table) {// javax.swing.table.TableModel dataModel ) {
+    public ZebraJTable(WebTable table) {// javax.swing.table.TableModel dataModel ) {
         super(table.getModel());
     }
     public ZebraJTable( int numRows, int numColumns )

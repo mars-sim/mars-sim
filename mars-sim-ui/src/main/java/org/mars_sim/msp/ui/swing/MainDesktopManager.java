@@ -6,10 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing;
 
+
 import java.awt.Container;
 import java.awt.Dimension;
 
-import javax.swing.*;
+import javax.swing.DefaultDesktopManager;
+import javax.swing.JComponent;
+import javax.swing.JInternalFrame;
+
+import com.alee.laf.desktoppane.WebInternalFrame;
+
 
 /**
  * The MainDesktopManager class is a custom desktop manager for the Mars
@@ -17,9 +23,6 @@ import javax.swing.*;
  * when their iconify buttons are pressed.
  */
 class MainDesktopManager extends DefaultDesktopManager {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** Constructs a MainDesktopManager object */
 	public MainDesktopManager() {
@@ -53,7 +56,7 @@ class MainDesktopManager extends DefaultDesktopManager {
 	public void setBoundsForFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
 		boolean hitBoundary = (f.getWidth() != newWidth || f.getHeight() != newHeight);
 
-		if (!inBounds((JInternalFrame) f, newX, newY, newWidth, newHeight)) {
+		if (!inBounds((WebInternalFrame) f, newX, newY, newWidth, newHeight)) {
 			Container parent = f.getParent();
 			Dimension parentSize = parent.getSize();
 

@@ -37,11 +37,12 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
+import com.alee.laf.panel.WebPanel;
 import com.jidesoft.swing.MarqueePane;
 import com.jidesoft.swing.StyleRange;
 import com.jidesoft.swing.StyledLabel;
 
-public class MarqueeTicker extends JPanel {
+public class MarqueeTicker extends WebPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,7 +62,10 @@ public class MarqueeTicker extends JPanel {
 
 	private int[] steps = new int[NUM_OF_RESOURCES * (NUM_STEPS+1)];
 
-	private boolean firstTime = true, is10SolsVisible = false, is3SolsVisible = false, is1SolVisible = false;
+	private boolean firstTime = true;
+	private boolean is10SolsVisible = false;
+	private boolean is3SolsVisible = false;
+	private boolean is1SolVisible = false;
 
 	private String sp3 = "   ",	sp10 = "          ";
 	private String label_1sol = " (1 sol)", label_3sols = " (3 sols)", label_10sols = " (10 sols)";
@@ -123,7 +127,7 @@ public class MarqueeTicker extends JPanel {
     	}
 
 		// leave a reference in desktop so that TimeWindow can retrieve an instance of MarqueeTicker for pausing/unpausing the ticker
-		desktop.setMarqueeTicker(this);
+//		desktop.setMarqueeTicker(this);
 	}
 
 

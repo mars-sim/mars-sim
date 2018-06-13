@@ -11,26 +11,31 @@ import java.awt.*;
 import java.beans.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import com.alee.laf.table.WebTable;
+import com.alee.laf.table.WebTableHeader;
 
 /*
  *  Adopted from Rob Camick's post on https://tips4java.wordpress.com/2008/11/18/row-number-table/
  *
- *	Use a JTable as a renderer for row numbers of a given main table.
+ *	Use a WebTable as a renderer for row numbers of a given main table.
  *  This table must be added to the row header of the scrollpane that
  *  contains the main table.
  */
-public class RowNumberTable extends JTable
+public class RowNumberTable extends WebTable
 	implements ChangeListener, PropertyChangeListener, TableModelListener
 {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTable main;
+	private WebTable main;
 
-	public RowNumberTable(JTable table)
+	public RowNumberTable(WebTable table)
 	{
 		main = table;
 		main.addPropertyChangeListener( this );
@@ -43,7 +48,7 @@ public class RowNumberTable extends JTable
 		TableColumn column = new TableColumn();
 		column.setHeaderValue(" ");
 		addColumn( column );
-		column.setCellRenderer(new RowNumberRenderer());
+		column.setCellRenderer((TableCellRenderer) new RowNumberRenderer());
 
 		getColumnModel().getColumn(0).setPreferredWidth(25);
 		setPreferredScrollableViewportSize(getPreferredSize());
@@ -167,11 +172,11 @@ public class RowNumberTable extends JTable
 		}
 
 		public Component getTableCellRendererComponent(
-			JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+			WebTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 		{
 			if (table != null)
 			{
-				JTableHeader header = table.getTableHeader();
+				WebTableHeader header = (WebTableHeader) table.getTableHeader();
 
 				if (header != null)
 				{

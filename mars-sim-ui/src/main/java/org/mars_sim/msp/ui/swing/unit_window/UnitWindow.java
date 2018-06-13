@@ -19,10 +19,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.ImageIcon;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+
 import javax.swing.SwingConstants;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -32,11 +31,14 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.sidepanel.SlidePaneFactory;
+//import org.mars_sim.msp.ui.swing.sidepanel.SlidePaneFactory;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.alee.laf.desktoppane.WebInternalFrame;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 import com.jidesoft.plaf.LookAndFeelFactory;
 import com.jidesoft.swing.JideTabbedPane;
 
@@ -44,7 +46,7 @@ import com.jidesoft.swing.JideTabbedPane;
 /**
  * The UnitWindow is the base window for displaying units.
  */
-public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { //
+public abstract class UnitWindow extends WebInternalFrame { //
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -69,10 +71,10 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 	private static final String MILLISOLS = " millisols)";
 	private static final String SHIFT_ANYTIME = " Shift :  Anytime";
 	private static final String ONE_SPACE_SHIFT = " Shift";
-	private static final String STATUS = "Status";
-	private static final String DETAILS = "Details";
+	private static final String STATUS = "Status (click to open/close)";
+	//private static final String DETAILS = "Details";
 	private static final String STATUS_ICON = Msg.getString("icon.status");
-	private static final String DETAILS_ICON = Msg.getString("icon.details");
+	//private static final String DETAILS_ICON = Msg.getString("icon.details");
 
 	// Data members
 	private int themeCache = -1;
@@ -81,12 +83,12 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 					oldJobString = "",
 					oldTownString = "";
 	private ShiftType oldShiftType = null;
-	private JLabel townLabel;
-    private JLabel jobLabel;
-    private JLabel roleLabel;
-    private JLabel shiftLabel;
+	private WebLabel townLabel;
+    private WebLabel jobLabel;
+    private WebLabel roleLabel;
+    private WebLabel shiftLabel;
 
-    private JPanel namePanel;
+    private WebPanel namePanel;
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
@@ -98,7 +100,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
 	protected Unit unit;
-	protected SlidePaneFactory factory;
+//	protected SlidePaneFactory factory;
 	protected MainScene mainScene;
 
     /**
@@ -128,30 +130,34 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
         tabPanels = new ArrayList<TabPanel>();
 
         // Create main panel
-        JPanel mainPane = new JPanel();//new BorderLayout());
+        WebPanel mainPane = new WebPanel(new BorderLayout());
         mainPane.setBorder(new MarsPanelBorder());//setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
         //getContentPane().setBackground(THEME_COLOR);
-
+	    
         // Create name panel
-        //namePanel = new JPanel(new BorderLayout(0, 0));
-        namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        //namePanel = new WebPanel(new BorderLayout(0, 0));
+        namePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
         //namePanel.setPreferredSize(new Dimension(465,196));
         //namePanel.setBackground(THEME_COLOR);
         //namePanel.setBorder(new MarsPanelBorder());
-        //mainPane.add(namePanel, BorderLayout.NORTH);
         //mainPane.setBackground(THEME_COLOR);
-
+        
+        mainPane.add(namePanel, BorderLayout.NORTH); 
+        
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         String name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
         if (unit instanceof Person) {
-            namePanel.setPreferredSize(new Dimension(WIDTH-5,160));
+            namePanel.setPreferredSize(new Dimension(WIDTH-10,100));
+            namePanel.setBorder(null);
         }
-        else
-            namePanel.setPreferredSize(new Dimension(WIDTH-5,70));
+//	    else {
+//	        namePanel.setPreferredSize(new Dimension(WIDTH-10,70));
+//	        mainPane.add(namePanel, BorderLayout.NORTH);    
+//	    }
 
-        namePanel.setBorder(null);
+
         int theme = 0;
     	if (mainScene != null) {
 	    	theme = MainScene.getTheme();
@@ -163,114 +169,118 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 	    	}
     	}
     	
-    	else {
-    		theme = 7;
+	    else
+	    	theme = 7;
+    			
+	    if (unit instanceof Person) {
+	            
+//	        factory = SlidePaneFactory.getInstance(theme);
+//	        factory.add(namePanel, STATUS, getImage(STATUS_ICON), false);
+//	        mainPane.add(factory, BorderLayout.CENTER);
+	
+	        //	name = " " + Conversion.capitalize(unit.getName()) + " ";
+	
+	        WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEFT);
+	        //nameLabel.setOpaque(true);
+	
+	        Font font = null;
+	
+			if (MainScene.OS.contains("linux")) {
+				new Font("DIALOG", Font.BOLD, 8);
+			}
+			else {
+				new Font("DIALOG", Font.BOLD, 10);
+			}
+	        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+	        nameLabel.setFont(font);
+	        nameLabel.setVerticalTextPosition(WebLabel.BOTTOM);
+	        nameLabel.setHorizontalTextPosition(WebLabel.CENTER);
+	        //nameLabel.setBorder(new EmptyBorder(5, 5, 5, 5) );
+	        //nameLabel.setBorder(new MarsPanelBorder());
+	        //namePanel.setBorder(new MarsPanelBorder());
+	        //namePanel.add(nameLabel, BorderLayout.EAST);
+	        //namePanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
+	        //namePanel.add(nameLabel, BorderLayout.WEST);
+	        namePanel.add(nameLabel);
+	
+	        WebLabel empty = new WebLabel(ONE_SPACE);
+	        namePanel.add(empty);
+	        empty.setAlignmentX(Component.CENTER_ALIGNMENT);
+	
+	        // Create description label if necessary.
+	        if (hasDescription) {
+
+//	            if (unit instanceof Person) {
+	
+	        		WebLabel townIconLabel = new WebLabel();
+	            	townIconLabel.setToolTipText("Associated Settlement");
+	            	setImage(TOWN, townIconLabel);
+	
+	            	WebLabel jobIconLabel = new WebLabel();
+	            	jobIconLabel.setToolTipText("Job");
+	            	setImage(JOB, jobIconLabel);
+	
+	            	WebLabel roleIconLabel = new WebLabel();
+	            	roleIconLabel.setToolTipText("Role");
+	            	setImage(ROLE, roleIconLabel);
+	
+	            	WebLabel shiftIconLabel = new WebLabel();
+	            	shiftIconLabel.setToolTipText("Work Shift");
+	            	setImage(SHIFT, shiftIconLabel);
+	
+	            	WebPanel townPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	            	WebPanel jobPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	            	WebPanel rolePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	            	WebPanel shiftPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	
+	            	townLabel = new WebLabel();
+	             	townLabel.setFont(font);
+	
+	             	jobLabel = new WebLabel();
+	                jobLabel.setFont(font);
+	
+	                roleLabel = new WebLabel();
+	                roleLabel.setFont(font);
+	
+	                shiftLabel = new WebLabel();
+	                shiftLabel.setFont(font);
+	
+	            	statusUpdate();
+	
+	                townPanel.add(townIconLabel);
+	                townPanel.add(townLabel);
+	                townPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	
+	                jobPanel.add(jobIconLabel);
+	                jobPanel.add(jobLabel);
+	                jobPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	
+	                rolePanel.add(roleIconLabel);
+	                rolePanel.add(roleLabel);
+	                rolePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	
+	                shiftPanel.add(shiftIconLabel);
+	                shiftPanel.add(shiftLabel);
+	                shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	
+	            	WebPanel rowPanel = new WebPanel(new GridLayout(4,1,0,0));
+	            	//rowPanel.setBorder(new MarsPanelBorder());
+	
+	            	rowPanel.add(townPanel);//, FlowLayout.LEFT);
+	            	rowPanel.add(rolePanel);//, FlowLayout.LEFT);
+	            	rowPanel.add(shiftPanel);//, FlowLayout.LEFT);
+	            	rowPanel.add(jobPanel);//, FlowLayout.LEFT);
+	
+	                namePanel.add(rowPanel);
+	                rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+	
+//	            }
+	        }
+
+	        //factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
     	}
     	
-        factory = SlidePaneFactory.getInstance(theme);
-        factory.add(namePanel, STATUS, getImage(STATUS_ICON), false);
-        mainPane.add(factory);//, BorderLayout.CENTER);
-
-        //	name = " " + Conversion.capitalize(unit.getName()) + " ";
-
-        JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEFT);
-        nameLabel.setOpaque(true);
-
-        Font font = null;
-
-		if (MainScene.OS.contains("linux")) {
-			new Font("DIALOG", Font.BOLD, 8);
-		}
-		else {
-			new Font("DIALOG", Font.BOLD, 10);
-		}
-        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-        nameLabel.setFont(font);
-        nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
-        nameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        //nameLabel.setBorder(new EmptyBorder(5, 5, 5, 5) );
-        //nameLabel.setBorder(new MarsPanelBorder());
-        namePanel.setBorder(new MarsPanelBorder());
-        //namePanel.add(nameLabel, BorderLayout.EAST);
-        //namePanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
-        //namePanel.add(nameLabel, BorderLayout.WEST);
-        namePanel.add(nameLabel);
-
-        JLabel empty = new JLabel(ONE_SPACE);
-        namePanel.add(empty);
-        empty.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Create description label if necessary.
-        if (hasDescription) {
-            if (unit instanceof Person) {
-
-            	JLabel townIconLabel = new JLabel();
-            	townIconLabel.setToolTipText("Associated Settlement");
-            	setImage(TOWN, townIconLabel);
-
-            	JLabel jobIconLabel = new JLabel();
-            	jobIconLabel.setToolTipText("Job");
-            	setImage(JOB, jobIconLabel);
-
-            	JLabel roleIconLabel = new JLabel();
-            	roleIconLabel.setToolTipText("Role");
-            	setImage(ROLE, roleIconLabel);
-
-            	JLabel shiftIconLabel = new JLabel();
-            	shiftIconLabel.setToolTipText("Work Shift");
-            	setImage(SHIFT, shiftIconLabel);
-
-            	JPanel townPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            	JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            	JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            	JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-            	townLabel = new JLabel();
-             	townLabel.setFont(font);
-
-             	jobLabel = new JLabel();
-                jobLabel.setFont(font);
-
-                roleLabel = new JLabel();
-                roleLabel.setFont(font);
-
-                shiftLabel = new JLabel();
-                shiftLabel.setFont(font);
-
-            	statusUpdate();
-
-                townPanel.add(townIconLabel);
-                townPanel.add(townLabel);
-                townPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                jobPanel.add(jobIconLabel);
-                jobPanel.add(jobLabel);
-                jobPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                rolePanel.add(roleIconLabel);
-                rolePanel.add(roleLabel);
-                rolePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                shiftPanel.add(shiftIconLabel);
-                shiftPanel.add(shiftLabel);
-                shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            	JPanel rowPanel = new JPanel(new GridLayout(4,1,0,0));
-            	rowPanel.setBorder(new MarsPanelBorder());
-
-            	rowPanel.add(townPanel);//, FlowLayout.LEFT);
-            	rowPanel.add(rolePanel);//, FlowLayout.LEFT);
-            	rowPanel.add(shiftPanel);//, FlowLayout.LEFT);
-            	rowPanel.add(jobPanel);//, FlowLayout.LEFT);
-
-                namePanel.add(rowPanel);
-                rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
-            }
-        }
-
         // Create center panel
 /*        
         tabPanel = new WebTabbedPane();
@@ -306,14 +316,13 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
         tabPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
   
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
         centerPanel.add(tabPanel);
         centerPanel.setPreferredSize(new Dimension(WIDTH-5, 512));
         
-        factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
         //update();
 
-        //mainPane.add(centerPanel, BorderLayout.CENTER);
+        mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
 
         //TODO: disabled in SVN while in development
@@ -327,7 +336,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 	/**
 	 * Sets weather image.
 	 */
-	public void setImage(String imageLocation, JLabel label) {
+	public void setImage(String imageLocation, WebLabel label) {
 		//URL resource = ImageLoader.class.getResource(imageLocation);
         //Toolkit kit = Toolkit.getDefaultToolkit();
         //Image img = kit.createImage(resource);
@@ -468,24 +477,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
      * Updates this window.
      */
     public void update() {
-    	if (mainScene != null) {
-	    	int theme = MainScene.getTheme();
-	    	if (themeCache != theme) {
-	        	themeCache = theme;
-	        	// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
-	        	// pale grey : Color(214,217,223) = D6D9DF
-	        	// pale mud : (193, 191, 157) = C1BF9D
-				if (theme == 7)
-			    	factory.update(new Color(0xC1BF9D));
-		    	else
-		    		factory.update(new Color(0xD6D9DF));
-	    	}
-    	}
-    	
-    	else if (factory != null) {
-    		factory.update(new Color(0xC1BF9D));
-    	}
-    	
+    
 		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()
     	//SwingUtilities.invokeLater(() -> {
 	    	// Update each of the tab panels.
@@ -496,6 +488,24 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 
 	        if (unit instanceof Person) {
 	        	statusUpdate();
+	        	
+//	        	if (mainScene != null) {
+//	    	    	int theme = MainScene.getTheme();
+//	    	    	if (themeCache != theme) {
+//	    	        	themeCache = theme;
+//	    	        	// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
+//	    	        	// pale grey : Color(214,217,223) = D6D9DF
+//	    	        	// pale mud : (193, 191, 157) = C1BF9D
+//	    				if (theme == 7)
+//	    			    	factory.update(new Color(0xC1BF9D));
+//	    		    	else
+//	    		    		factory.update(new Color(0xD6D9DF));
+//	    	    	}
+//	        	}
+//	        	
+//	        	else if (factory != null) {
+//	        		factory.update(new Color(0xC1BF9D));
+//	        	}
 	        }
     	//});
     }
@@ -618,7 +628,7 @@ public abstract class UnitWindow extends JInternalFrame { //WebInternalFrame { /
 		desktop = null;
 		/** Unit for this window. */
 		unit = null;
-		factory = null;
+//		factory = null;
 		mainScene = null;
 	}
 }

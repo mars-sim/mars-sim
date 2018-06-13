@@ -14,13 +14,14 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
+
+import com.alee.laf.combobox.WebComboBox;
 
 /**
  * A Combobox that is mousewheel-enabled.
  */
-public class JComboBoxMW<T> extends JComboBox<T> implements MouseWheelListener {
+public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
 
 	private static final long serialVersionUID = -3527247980947082803L;
 

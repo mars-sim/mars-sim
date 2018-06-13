@@ -30,8 +30,6 @@ import javafx.application.Platform;
 import javafx.scene.control.SingleSelectionModel;
 
 import javax.swing.ImageIcon;
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -58,7 +56,6 @@ import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
-import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.EventTableModel;
@@ -75,14 +72,15 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
+import com.alee.laf.desktoppane.WebDesktopPane;
+import com.alee.laf.desktoppane.WebInternalFrame;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
  * contains all tool and unit windows, and is itself contained, along with the
  * tool bars, by the main window.
  */
-@SuppressWarnings("restriction")
-public class MainDesktopPane extends JDesktopPane
+public class MainDesktopPane extends WebDesktopPane
 		implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	/** default logger. */
@@ -125,7 +123,7 @@ public class MainDesktopPane extends JDesktopPane
 	private Building building;
 	private MainWindow mainWindow;
 	private MainScene mainScene;
-	private MarqueeTicker marqueeTicker;
+//	private MarqueeTicker marqueeTicker;
 	private OrbitViewer orbitViewer;
 	private BrowserJFX browserJFX;
 	private EventTableModel eventTableModel;
@@ -162,8 +160,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	// 2015-02-04 Added init()
 	public void init() {
-		// logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
-
+		// logger.info("init() is on " + Thread.currentThread().getName() + " Thread");	
 		// Set background color to black
 		setBackground(Color.black);
 
@@ -262,8 +259,8 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void componentShown(ComponentEvent e) {
 		logger.info("componentShown()");
-		JInternalFrame[] frames = this.getAllFrames();
-		for (JInternalFrame f : frames) {
+		WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
+		for (WebInternalFrame f : frames) {
 			// ((ToolWindow)f).update();
 			f.updateUI();
 			// SwingUtilities.updateComponentTreeUI(f);
@@ -278,8 +275,8 @@ public class MainDesktopPane extends JDesktopPane
 
 	public void updateToolWindow() {
 		logger.info("updateToolWindow()");
-		JInternalFrame[] frames = this.getAllFrames();
-		for (JInternalFrame f : frames) {
+		WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
+		for (WebInternalFrame f : frames) {
 			f.updateUI();
 
 		}
@@ -439,11 +436,9 @@ public class MainDesktopPane extends JDesktopPane
 	private void prepareToolWindows() {
 		// logger.info("MainDesktopPane's prepareToolWindows() is on " +
 		// Thread.currentThread().getName() + " Thread");
-
+	
 		if (toolWindows != null)
 			toolWindows.clear();
-
-		// logger.info("toolWindows.clear()");
 
 		// Prepare navigator window
 		navWindow = new NavigatorWindow(this);
@@ -481,7 +476,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		toolWindows.add(settlementWindow);
 		setSettlementWindow(settlementWindow);
-
+		
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try {
@@ -497,7 +492,7 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(guideWindow);
-
+		
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
 		try {
@@ -788,12 +783,12 @@ public class MainDesktopPane extends JDesktopPane
 				add(tempWindow, 0);
 			}
 
-			try {
-				tempWindow.setIcon(false);
-			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				tempWindow.setIcon(false);
+//			} catch (PropertyVetoException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 
 		else {
@@ -1068,7 +1063,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	}
 
-	private Point getCenterLocation(JInternalFrame tempWindow) {
+	private Point getCenterLocation(WebInternalFrame tempWindow) {
 
 		Dimension desktop_size = getSize();
 		Dimension window_size = tempWindow.getSize();
@@ -1090,13 +1085,13 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Gets a random location on the desktop for a given {@link JInternalFrame}.
+	 * Gets a random location on the desktop for a given {@link WebInternalFrame}.
 	 * 
 	 * @param tempWindow
 	 *            an internal window
 	 * @return random point on the desktop
 	 */
-	private Point getRandomLocation(JInternalFrame tempWindow) {
+	private Point getRandomLocation(WebInternalFrame tempWindow) {
 
 		Dimension desktop_size = getSize();
 		Dimension window_size = tempWindow.getSize();
@@ -1114,12 +1109,12 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Gets the starting location on the desktop for a given {@link JInternalFrame}.
+	 * Gets the starting location on the desktop for a given {@link WebInternalFrame}.
 	 * 
 	 * @return a specific point on the desktop
 	 */
 	// 2016-11-26 getStartingLocation()
-	private Point getStartingLocation(JInternalFrame f) {
+	private Point getStartingLocation(WebInternalFrame f) {
 
 		// 2016-11-24 populate windows in grid=like starting position
 		// int w = desktop_size.width - f_size.width;
@@ -1191,7 +1186,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			// Note : Call updateComponentTreeUI() below is must-have or else Monitor Tool
 			// won't work
-			SwingUtilities.updateComponentTreeUI(toolWindow);
+			//SwingUtilities.updateComponentTreeUI(toolWindow); // does Weblaf throw Exception in thread "AWT-EventQueue-0" com.alee.managers.style.StyleException ?
 		}
 	}
 
@@ -1201,7 +1196,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			window.update();
 			// });
-			SwingUtilities.updateComponentTreeUI(window);
+			//SwingUtilities.updateComponentTreeUI(window);
 		}
 	}
 
@@ -1325,13 +1320,13 @@ public class MainDesktopPane extends JDesktopPane
 		return isConstructingSite;
 	}
 
-	public void setMarqueeTicker(MarqueeTicker marqueeTicker) {
-		this.marqueeTicker = marqueeTicker;
-	}
+//	public void setMarqueeTicker(MarqueeTicker marqueeTicker) {
+//		this.marqueeTicker = marqueeTicker;
+//	}
 
-	public MarqueeTicker getMarqueeTicker() {
-		return marqueeTicker;
-	}
+//	public MarqueeTicker getMarqueeTicker() {
+//		return marqueeTicker;
+//	}
 
 	// 2014-12-19 Added unitUpdate()
 	@SuppressWarnings("restriction")
@@ -1435,12 +1430,10 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {
-			marqueeTicker.pauseMarqueeTimer(true);
-
+//			marqueeTicker.pauseMarqueeTimer(true);
 			soundPlayer.mute(true, true);
 		} else {
-			marqueeTicker.pauseMarqueeTimer(false);
-
+//			marqueeTicker.pauseMarqueeTimer(false);
 			soundPlayer.unmute(true, true);
 		}
 	}
@@ -1469,7 +1462,7 @@ public class MainDesktopPane extends JDesktopPane
 		building = null;
 		mainWindow = null;
 		mainScene = null;
-		marqueeTicker = null;
+//		marqueeTicker = null;
 		orbitViewer = null;
 		browserJFX = null;
 		eventTableModel = null;

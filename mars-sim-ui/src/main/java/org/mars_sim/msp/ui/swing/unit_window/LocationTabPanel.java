@@ -50,6 +50,8 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
+import com.alee.laf.combobox.WebComboBox;
+
 import javafx.application.Platform;
 
 
@@ -104,7 +106,8 @@ implements ActionListener {
 	private Unit containerCache;
 	private Unit topContainerCache;
 
-	private JComboBoxMW<?> combox;
+//	private JComboBoxMW<?> combox;
+	private WebComboBox combox;
 	
 	private TerrainElevation terrainElevation;
 	private Coordinates locationCache;

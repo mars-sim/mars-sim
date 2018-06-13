@@ -27,13 +27,10 @@ import javafx.scene.control.Alert.AlertType;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
+
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -53,20 +50,23 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.tool.settlement.PopUpUnitMenu;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelPreparingDessert;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /**
  * The BuildingPanel class is a panel representing a settlement building.
  */
 @SuppressWarnings("restriction")
 public class BuildingPanel
-extends JPanel {
+extends WebPanel {
 
     private static final Logger logger = Logger.getLogger(BuildingPanel.class.getName());
 
@@ -80,8 +80,8 @@ extends JPanel {
 	private List<BuildingFunctionPanel> functionPanels;
 
 
-	private JLabel buildingNameLabel;
-	private JPanel namePanel;
+	private WebLabel buildingNameLabel;
+	private WebPanel namePanel;
 
 	/** The building this panel is for. */
 	private Building building;
@@ -141,15 +141,15 @@ extends JPanel {
         setLayout(new BorderLayout(0, 5));
 
         // 2014-11-27 Added namePanel and buildingNameLabel
-        namePanel = new JPanel(new GridLayout(2,1,0,0));
-        buildingNameLabel = new JLabel(building.getNickName(), JLabel.CENTER);
+        namePanel = new WebPanel(new GridLayout(2,1,0,0));
+        buildingNameLabel = new WebLabel(building.getNickName(), WebLabel.CENTER);
         buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));
         namePanel.add(buildingNameLabel);
         add(namePanel, BorderLayout.NORTH);
 	
 		//2014-11-27  Added renameBtn for renaming a building
-		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JButton renameBtn = new JButton(Msg.getString(
+        WebPanel btnPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+        WebButton renameBtn = new WebButton(Msg.getString(
 				"BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
 		renameBtn.setPreferredSize(new Dimension(70, 20));
 		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
@@ -165,11 +165,11 @@ extends JPanel {
 		namePanel.add(btnPanel);
 
 	    // Prepare function list panel.
-        JPanel functionListPanel = new JPanel();
+		WebPanel functionListPanel = new WebPanel();
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
 
         // Prepare function scroll panel.
-        JScrollPane scrollPanel = new JScrollPane();
+        WebScrollPane scrollPanel = new WebScrollPane();
         scrollPanel.setViewportView(functionListPanel);
         //CustomScroll scrollPanel = new CustomScroll(functionListPanel);
         scrollPanel.setPreferredSize(new Dimension(PopUpUnitMenu.WIDTH, PopUpUnitMenu.HEIGHT-70));
@@ -196,8 +196,8 @@ extends JPanel {
 	    svgPanel.setMinimumSize(expectedDimension);
 		//setPanelStyle(svgPanel);
 
-		JPanel borderPanel = new JPanel();
-		borderPanel.setBorder(new MarsPanelBorder());// BorderFactory.createLineBorder(Color.black, 2, true));//
+	    WebPanel borderPanel = new WebPanel();
+		//borderPanel.setBorder(new MarsPanelBorder());// BorderFactory.createLineBorder(Color.black, 2, true));//
 		//borderPanel.setBackground(new Color(255,255,255,255));
 		borderPanel.add(svgPanel);
 
@@ -415,23 +415,23 @@ extends JPanel {
         functionListPanel.add(maintenancePanel);
         //setPanelStyle(maintenancePanel);
 
-        setPanelTranslucent();
+//        setPanelTranslucent();
     }
 
 
-	public void setPanelTranslucent() {
-/*
-		if (isTranslucent) {
-	        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
-	   	 	while (i.hasNext()) {
-	   	 		BuildingFunctionPanel p = i.next();
-	   	 		setPanelStyle(p);
-	   	 	}
-		}
-*/
-	    setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16, false, true, true, true));
-
-	}
+//	public void setPanelTranslucent() {
+///*
+//		if (isTranslucent) {
+//	        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
+//	   	 	while (i.hasNext()) {
+//	   	 		BuildingFunctionPanel p = i.next();
+//	   	 		setPanelStyle(p);
+//	   	 	}
+//		}
+//*/
+//	    //setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16, false, true, true, true));
+//
+//	}
 
 	//public void setPanelStyle(JPanel p) {
 		//System.out.println("BuildingPanel.java : isTranslucent is "+ isTranslucent);

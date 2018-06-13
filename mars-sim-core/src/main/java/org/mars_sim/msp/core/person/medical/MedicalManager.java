@@ -21,8 +21,7 @@ import java.util.List;
  * This class provides a Factory for the {@link Complaint} class. Some of the Medical Complaints are pre-defined. Instances are
  * accessed via a factory method since the properties of the individual complaints are loaded from the XML.
  */
-public class MedicalManager //extends Thread
-implements Serializable {
+public class MedicalManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

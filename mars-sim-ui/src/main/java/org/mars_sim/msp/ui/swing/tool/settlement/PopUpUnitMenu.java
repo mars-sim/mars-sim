@@ -558,7 +558,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		f.setLayout(new FlowLayout());
 
 		f.setVisible(true);
-		f.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
+		//f.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
 
 	    f.addWindowFocusListener(new WindowFocusListener() {
 			public void windowLostFocus(WindowEvent e) {

@@ -40,12 +40,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
+import com.alee.laf.panel.WebPanel;
+
 
 /**
  * A panel for displaying the settlement map.
  */
 public class SettlementMapPanel
-extends JPanel
+extends WebPanel
 implements ClockListener {
 
 	// default logger.
@@ -412,8 +414,8 @@ implements ClockListener {
 		if (newSettlement != settlement) {
 
 			this.settlement = newSettlement;
-			if (settlementWindow != null && settlementWindow.getMarqueeTicker() != null)
-				settlementWindow.getMarqueeTicker().updateSettlement(newSettlement);
+//			if (settlementWindow != null && settlementWindow.getMarqueeTicker() != null)
+//				settlementWindow.getMarqueeTicker().updateSettlement(newSettlement);
 			//paintDoubleBuffer();
 			repaint();
 		}

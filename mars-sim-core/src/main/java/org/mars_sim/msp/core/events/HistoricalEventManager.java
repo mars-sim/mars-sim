@@ -8,16 +8,13 @@
 package org.mars_sim.msp.core.events;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class provides a manager that maintains a model of the events that

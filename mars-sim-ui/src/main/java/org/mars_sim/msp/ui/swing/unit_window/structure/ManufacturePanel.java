@@ -16,7 +16,7 @@ import java.util.Iterator;
 import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
+
 import javax.swing.JProgressBar;
 
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
@@ -28,10 +28,12 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
+import com.alee.laf.panel.WebPanel;
+
 /**
  * A panel showing information about a manufacturing process.
  */
-public class ManufacturePanel extends JPanel {
+public class ManufacturePanel extends WebPanel {
 
 	// Data members
 	private ManufactureProcess process;
@@ -45,7 +47,7 @@ public class ManufacturePanel extends JPanel {
 	 * @param processStringWidth the max string width to display for the process name.
 	 */
 	public ManufacturePanel(ManufactureProcess process, boolean showBuilding, int processStringWidth) {
-		// Call JPanel constructor
+		// Call WebPanel constructor
 		super();
 
 		// Initialize data members.
@@ -59,7 +61,7 @@ public class ManufacturePanel extends JPanel {
         setBorder(new MarsPanelBorder());
 
         // Prepare name panel.
-        JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
+        WebPanel namePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
         add(namePane);
 
         // Prepare cancel button.
@@ -96,7 +98,7 @@ public class ManufacturePanel extends JPanel {
         }
 
         // Prepare work panel.
-        JPanel workPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        WebPanel workPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         add(workPane);
 
         // Prepare work label.
@@ -110,7 +112,7 @@ public class ManufacturePanel extends JPanel {
         workPane.add(workBar);
 
         // Prepare time panel.
-        JPanel timePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        WebPanel timePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         add(timePane);
 
         // Prepare time label.
