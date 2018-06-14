@@ -20,11 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -57,6 +52,11 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.managers.tooltip.TooltipWay;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+import com.alee.laf.text.WebTextField;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 
@@ -82,10 +82,10 @@ implements ActionListener {
 
 	private int solRatingSubmitted = -1;
 
-	private JTable table;
+	private WebTable table;
 
-	private JLabel jobLabel, roleLabel, jobChangeLabel, ratingLabel;
-	private JTextField roleTF;
+	private WebLabel jobLabel, roleLabel, jobChangeLabel, ratingLabel;
+	private WebTextField roleTF;
 
 //	private JComboBoxMW<?> jobComboBox;
 	private WebComboBox jobComboBox;
@@ -134,11 +134,11 @@ implements ActionListener {
 		}
 
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
 
 		// Prepare title label
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCareer.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelCareer.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		labelPanel.add(titleLabel);
 
@@ -147,19 +147,19 @@ implements ActionListener {
 
     		solCache = person.getJobHistory().getSolCache();
 
-    		JPanel firstPanel = new JPanel(new BorderLayout());//GridLayout(2, 1, 5, 0));
+    		WebPanel firstPanel = new WebPanel(new BorderLayout());//GridLayout(2, 1, 5, 0));
 			//firstPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			firstPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(firstPanel, BorderLayout.NORTH);
 
 			// Prepare job panel
-			JPanel topPanel = new JPanel(new SpringLayout());//GridLayout(2, 2, 0, 0));
+			WebPanel topPanel = new WebPanel(new SpringLayout());//GridLayout(2, 2, 0, 0));
 
 			firstPanel.add(topPanel, BorderLayout.CENTER);
 
 
 			// Prepare job label
-			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.RIGHT); //$NON-NLS-1$
+			jobLabel = new WebLabel(Msg.getString("TabPanelCareer.jobType"), WebLabel.RIGHT); //$NON-NLS-1$
 			topPanel.add(jobLabel);
 			//balloonToolTip.createBalloonTip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
 			TooltipManager.setTooltip (jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip"), TooltipWay.down);
@@ -177,7 +177,7 @@ implements ActionListener {
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
 
-			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); //new GridLayout(3, 1, 0, 0)); //
+			WebPanel jobPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT)); //new GridLayout(3, 1, 0, 0)); //
 			jobPanel.add(jobComboBox);
 
 			topPanel.add(jobPanel);
@@ -188,25 +188,25 @@ implements ActionListener {
 			// if true, disable the combobox
 
 			// Prepare role label
-			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"), JLabel.RIGHT); //$NON-NLS-1$
+			roleLabel = new WebLabel(Msg.getString("TabPanelCareer.roleType"), WebLabel.RIGHT); //$NON-NLS-1$
 			roleLabel.setSize(10, 2);
 			topPanel.add(roleLabel);//, JLabel.BOTTOM);
 
 			roleCache = person.getRole().toString();
-			roleTF = new JTextField(roleCache);
+			roleTF = new WebTextField(roleCache);
 			roleTF.setEditable(false);
 			//roleTF.setBounds(0, 0, 0, 0);
 			roleTF.setColumns(20);
 
 			// Prepare role panel
-			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); //GridLayout(1, 2));
+			WebPanel rolePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT)); //GridLayout(1, 2));
 			//rolePanel.setSize(120, 20);
 			//rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			rolePanel.add(roleTF);
 
 			topPanel.add(rolePanel);
 
-			jobChangeLabel = new JLabel();
+			jobChangeLabel = new WebLabel();
 			//jobChangeLabel.setSize(300, 30);
 			jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			jobChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
@@ -223,18 +223,18 @@ implements ActionListener {
 			                                10, 1);       //xPad, yPad
 
 
-			JPanel ratingPanel = new JPanel(new BorderLayout());
+			WebPanel ratingPanel = new WebPanel(new BorderLayout());
 			ratingPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(ratingPanel, BorderLayout.CENTER);
 
 			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 			//int size = list.size();
 
-			JPanel springPanel = new JPanel(new SpringLayout());//GridLayout(2,1,5,5));// GridLayout(1, 2, 0, 0));
+			WebPanel springPanel = new WebPanel(new SpringLayout());//GridLayout(2,1,5,5));// GridLayout(1, 2, 0, 0));
 			ratingPanel.add(springPanel, BorderLayout.CENTER);
 			//raterPanel.setAlignmentY(TOP_ALIGNMENT);
 
-			JLabel aveRatingLabel = new JLabel("Overall Performance : ", JLabel.RIGHT);
+			WebLabel aveRatingLabel = new WebLabel("Overall Performance : ", WebLabel.RIGHT);
 			springPanel.add(aveRatingLabel);
 
 			aveRater = new StarRater(5, calculateAveRating(list));
@@ -247,7 +247,7 @@ implements ActionListener {
 			//balloonToolTip.createBalloonTip(aveRater, tip); //$NON-NLS-1$
 			TooltipManager.setTooltip (aveRatingLabel, Msg.getString("TabPanelCareer.aveRater.tooltip"), TooltipWay.down);//$NON-NLS-1$
 			
-			JLabel raterLabel = new JLabel("Your Rating : ", JLabel.RIGHT);
+			WebLabel raterLabel = new WebLabel("Your Rating : ", WebLabel.RIGHT);
 			springPanel.add(raterLabel);
 			starRater = new StarRater(5, 0, 0);
 			
@@ -296,7 +296,7 @@ implements ActionListener {
 			                                80, 10,        //initX, initY
 			                                20, 10);       //xPad, yPad
 
-			ratingLabel = new JLabel("Job Rating");
+			ratingLabel = new WebLabel("Job Rating");
 			//ratingLabel.setSize(300, 30);
 			ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			ratingLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
@@ -343,13 +343,13 @@ implements ActionListener {
 		}
 
 		// Prepare job title panel
-		JPanel jobHistoryPanel = new JPanel(new GridLayout(2, 1, 1, 1));
+		WebPanel jobHistoryPanel = new WebPanel(new GridLayout(2, 1, 1, 1));
 		centerContentPanel.add(jobHistoryPanel, BorderLayout.NORTH);
 
 		// Prepare job title label
-		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel historyLabel = new WebLabel(Msg.getString("TabPanelCareer.history"), WebLabel.CENTER); //$NON-NLS-1$
 		//historyLabel.setBounds(0, 0, width, height);
-		jobHistoryPanel.add(new JLabel());
+		jobHistoryPanel.add(new WebLabel());
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
 		// Create schedule table model
@@ -359,7 +359,7 @@ implements ActionListener {
 			jobHistoryTableModel = new JobHistoryTableModel((Robot) unit);
 
 		// Create attribute scroll panel
-		JScrollPane scrollPanel = new JScrollPane();
+		WebScrollPane scrollPanel = new WebScrollPane();
 		scrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(scrollPanel, BorderLayout.CENTER);
 

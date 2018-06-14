@@ -110,6 +110,10 @@ public class HistoricalEventManager implements Serializable {
 //				&& !category.equals(HistoricalEventCategory.TRANSPORT)) {
 			events.add(0, newEvent);
 
+			if (listeners == null) {
+				listeners = new ArrayList<HistoricalEventListener>();
+			}
+			
 			Iterator<HistoricalEventListener> iter = listeners.iterator();
 			while (iter.hasNext()) 
 				iter.next().eventAdded(0, newEvent);

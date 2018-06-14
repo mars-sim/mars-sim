@@ -471,10 +471,10 @@ public class MainScene {
 	 */
 	public void finalizeMainScene() {
 			
-		SwingUtilities.invokeLater(() -> {
+		//SwingUtilities.invokeLater(() -> {
 			WebLookAndFeel.install();
-			//UIManagers.initialize();
-		});
+			UIManagers.initialize();
+		//});
 		
 		Platform.runLater(() -> {
 

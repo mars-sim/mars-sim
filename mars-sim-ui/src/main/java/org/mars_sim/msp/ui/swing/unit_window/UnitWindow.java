@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.ImageIcon;
-
 import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.Msg;
@@ -36,9 +35,12 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.desktoppane.WebInternalFrame;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 import com.jidesoft.plaf.LookAndFeelFactory;
 import com.jidesoft.swing.JideTabbedPane;
 
@@ -62,7 +64,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	private static final String ROLE = Msg.getString("icon.role");
 	private static final String SHIFT = Msg.getString("icon.shift");
 
-	private static final String TITLE = Msg.getString("icon.title");
+	//private static final String TITLE = Msg.getString("icon.title");
 	private static final String ONE_SPACE = " ";
 	private static final String TWO_SPACES = "  ";
 	private static final String DEAD =	"Dead";
@@ -71,9 +73,9 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	private static final String MILLISOLS = " millisols)";
 	private static final String SHIFT_ANYTIME = " Shift :  Anytime";
 	private static final String ONE_SPACE_SHIFT = " Shift";
-	private static final String STATUS = "Status (click to open/close)";
+	//private static final String STATUS = "Status (click to open/close)";
 	//private static final String DETAILS = "Details";
-	private static final String STATUS_ICON = Msg.getString("icon.status");
+	//private static final String STATUS_ICON = Msg.getString("icon.status");
 	//private static final String DETAILS_ICON = Msg.getString("icon.details");
 
 	// Data members
@@ -145,12 +147,16 @@ public abstract class UnitWindow extends WebInternalFrame { //
         
         mainPane.add(namePanel, BorderLayout.NORTH); 
         
+        //final WebComboBox styled = new WebComboBox();
+        //styled.setSelectedIndex(0);
+        //mainPane.add(styled, BorderLayout.CENTER); 
+        
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         String name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
         if (unit instanceof Person) {
-            namePanel.setPreferredSize(new Dimension(WIDTH-10,100));
-            namePanel.setBorder(null);
+            namePanel.setPreferredSize(new Dimension(WIDTH/8,60));
+            //namePanel.setBorder(null);
         }
 //	    else {
 //	        namePanel.setPreferredSize(new Dimension(WIDTH-10,70));
@@ -180,7 +186,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	
 	        //	name = " " + Conversion.capitalize(unit.getName()) + " ";
 	
-	        WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEFT);
+	        WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEADING);
 	        //nameLabel.setOpaque(true);
 	
 	        Font font = null;
@@ -191,7 +197,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 			else {
 				new Font("DIALOG", Font.BOLD, 10);
 			}
-	        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 	        nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 	        nameLabel.setFont(font);
 	        nameLabel.setVerticalTextPosition(WebLabel.BOTTOM);
@@ -204,9 +210,9 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	        //namePanel.add(nameLabel, BorderLayout.WEST);
 	        namePanel.add(nameLabel);
 	
-	        WebLabel empty = new WebLabel(ONE_SPACE);
-	        namePanel.add(empty);
-	        empty.setAlignmentX(Component.CENTER_ALIGNMENT);
+//	        WebLabel empty = new WebLabel(ONE_SPACE);
+//	        namePanel.add(empty);
+//	        empty.setAlignmentX(Component.CENTER_ALIGNMENT);
 	
 	        // Create description label if necessary.
 	        if (hasDescription) {
@@ -214,19 +220,19 @@ public abstract class UnitWindow extends WebInternalFrame { //
 //	            if (unit instanceof Person) {
 	
 	        		WebLabel townIconLabel = new WebLabel();
-	            	townIconLabel.setToolTipText("Associated Settlement");
+	    			TooltipManager.setTooltip (townIconLabel, "Associated Settlement", TooltipWay.down);    			
 	            	setImage(TOWN, townIconLabel);
 	
 	            	WebLabel jobIconLabel = new WebLabel();
-	            	jobIconLabel.setToolTipText("Job");
+	    			TooltipManager.setTooltip (jobIconLabel, "Job", TooltipWay.down);
 	            	setImage(JOB, jobIconLabel);
 	
 	            	WebLabel roleIconLabel = new WebLabel();
-	            	roleIconLabel.setToolTipText("Role");
+	    			TooltipManager.setTooltip (roleIconLabel, "Role", TooltipWay.down);
 	            	setImage(ROLE, roleIconLabel);
 	
 	            	WebLabel shiftIconLabel = new WebLabel();
-	            	shiftIconLabel.setToolTipText("Work Shift");
+	    			TooltipManager.setTooltip (shiftIconLabel, "Work Shift", TooltipWay.down);
 	            	setImage(SHIFT, shiftIconLabel);
 	
 	            	WebPanel townPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -264,7 +270,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	                shiftPanel.add(shiftLabel);
 	                shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 	
-	            	WebPanel rowPanel = new WebPanel(new GridLayout(4,1,0,0));
+	            	WebPanel rowPanel = new WebPanel(new GridLayout(2,2,0,0));
 	            	//rowPanel.setBorder(new MarsPanelBorder());
 	
 	            	rowPanel.add(townPanel);//, FlowLayout.LEFT);
@@ -411,7 +417,8 @@ public abstract class UnitWindow extends WebInternalFrame { //
         ShiftType newShiftType = p.getTaskSchedule().getShiftType();
         if (oldShiftType != newShiftType) {
         	oldShiftType = newShiftType;
-        	shiftLabel.setText(TWO_SPACES + newShiftType.getName() + getTimePeriod(newShiftType));
+        	shiftLabel.setText(TWO_SPACES + newShiftType.getName());
+			TooltipManager.setTooltip (shiftLabel, newShiftType.getName() + getTimePeriod(newShiftType), TooltipWay.down);
         }
     }
 

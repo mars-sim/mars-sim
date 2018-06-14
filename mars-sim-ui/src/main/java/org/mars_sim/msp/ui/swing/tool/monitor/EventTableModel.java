@@ -476,7 +476,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					            	willNotify = true;
 					        }
 					       
-					        message = ((Person)actor).getName() + " has " + eventType + " due to " + description + " in " + location;
+					        message = ((Person)actor).getName() + " has " + description + " in " + location;
 					        type = 2;
 					    }
 					    
