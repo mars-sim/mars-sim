@@ -7,14 +7,14 @@
 	<groupId>net.sf</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.1.0-SNAPSHOT</version>
+	<version>3.1.0-p10</version>
 	<name>mars-sim</name>
 	<url>http://mars-sim.sourceforge.net/site</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<maven.compiler.source>9</maven.compiler.source>
 		<maven.compiler.target>9</maven.compiler.target>	
-		<project.version>3.1.0-SNAPSHOT</project.version>
+		<project.version>3.1.0-p10</project.version>
 		<junit.version>4.12</junit.version>		
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
