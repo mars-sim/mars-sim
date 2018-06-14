@@ -188,7 +188,6 @@ import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 /**
  * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.
  */
-@SuppressWarnings("restriction")
 public class MarsProjectFX extends Application  {
 
     /** initialized logger for this class. */

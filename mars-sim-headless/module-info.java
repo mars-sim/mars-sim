@@ -1,10 +1,9 @@
-module mars-sim {
+module mars-sim-headless {
 
     requires junit;
     
-    requires mars-sim-ui;
     requires mars-sim-mapdata;
     requires mars-sim-core;
     
-	exports mars-sim;
+	exports mars-sim-headless;
 }

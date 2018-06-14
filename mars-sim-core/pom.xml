@@ -9,6 +9,9 @@
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-core</artifactId>
 	<name>mars-sim-core</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencies>
     <dependency>
     	<groupId>net.sf.mars-sim</groupId>

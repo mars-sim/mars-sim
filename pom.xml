@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 	<version>3.1.0-p10</version>
 	<name>mars-sim</name>
-	<url>http://mars-sim.sourceforge.net/site</url>
+	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<maven.compiler.source>9</maven.compiler.source>
@@ -100,8 +100,8 @@
 		<url>https://svn.code.sf.net/p/mars-sim/code/trunk/mars-sim</url>
 	</scm>
 	<issueManagement>
-		<system>sourceforge</system>
-		<url>http://sourceforge.net/p/mars-sim/tickets/</url>
+		<system>GitHub</system>
+		<url>https://github.com/mars-sim/mars-sim/issues</url>
 	</issueManagement>
 	<mailingLists>
 		<mailingList>
@@ -164,12 +164,13 @@
 	<modules>
 		<!-- module>mars-sim-android</module -->
 		<module>mars-sim-core</module>
+		<module>mars-sim-headless</module>		
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module>
 		<!-- module>mars-sim-network</module -->
 		<!-- module>mars-sim-service</module -->
 		<module>mars-sim-ui</module>
-	</modules>
+  </modules>
 	<!-- ************************************************************************************************* -->
 	<!-- * Build Section                                                                                 * -->
 	<!-- ************************************************************************************************* -->
