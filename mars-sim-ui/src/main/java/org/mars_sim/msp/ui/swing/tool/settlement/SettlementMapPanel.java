@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
@@ -116,8 +115,8 @@ implements ClockListener {
 			height = SettlementWindow.VERTICAL;
 		}
 */		
-		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
-
+		settlement = (Settlement) Simulation.instance().getUnitManager().getSettlements().toArray()[0];
+		
 		setLayout(new BorderLayout());
 
 		setDoubleBuffered(true);

@@ -10,7 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import javax.swing.*;
 
-import org.mars_sim.msp.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.MapDataUtil;
 
 
 /**

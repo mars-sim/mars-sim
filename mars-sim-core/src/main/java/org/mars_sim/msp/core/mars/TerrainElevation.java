@@ -7,13 +7,12 @@
 
 package org.mars_sim.msp.core.mars;
 
+import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 
 import java.awt.Color;
 import java.io.Serializable;
-
-import org.mars_sim.msp.mapdata.MapDataUtil;
 
 /** 
  * The TerrainElevation class represents the surface terrain of the

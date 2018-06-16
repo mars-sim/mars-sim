@@ -8,12 +8,14 @@ module mars-sim-core {
     requires commons-collections;
     requires javax.json;
     requires xz;
-    requires reactfx;
-    requires fxgl;
     
-    requires mars-sim-ui;
+//    requires reactfx;
+//   requires fxgl;
+//    requires javafx.collections.FXCollections;
+//    requires javafx.collections.ObservableList;
+    
+//   requires mars-sim-ui;
     requires mars-sim-mapdata;
-    requires mars-sim-core;
     
 	exports mars-sim-core;
 }

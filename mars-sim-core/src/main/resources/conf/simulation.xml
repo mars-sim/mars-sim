@@ -14,7 +14,7 @@
 			         The base TR value below will be overridden by the calculated TR at the start of the sim..
 		-->
 		<!-- Default: 256.0 -->
-		<base-time-ratio value="256" />
+		<base-time-ratio value="1024" />
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
 			 2. time ratio must be a multiple of 2.
 			 3. if time ratio is 512, then 1 real second equals 512 simulation seconds in mars-sim

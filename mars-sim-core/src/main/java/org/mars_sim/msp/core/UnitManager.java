@@ -57,16 +57,12 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
  * methods for getting information about units. It is also responsible for
  * creating all units on its construction. There should be only one instance of
  * this class and it should be constructed and owned by Simulation.
  */
-@SuppressWarnings("restriction")
 public class UnitManager implements Serializable {
 
 	/** default serial id. */
@@ -1994,11 +1990,6 @@ public class UnitManager implements Serializable {
 			}
 		}
 		return result;
-	}
-
-	@SuppressWarnings("restriction")
-	public ObservableList<Settlement> getSettlementOList() {
-		return FXCollections.observableArrayList(getSettlements());
 	}
 
 	public String getCountry(String sponsor) {

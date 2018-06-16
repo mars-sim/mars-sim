@@ -1,0 +1,12 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>Mars Simulation Project - Main</title>
+    <author email="scud1@users.sourceforge.net">Scott Davis</author>
+  </properties>
+  <body>
+    <release version="3.1.0" date="2018" description="">
+    </release>
+  </body>
+</document>

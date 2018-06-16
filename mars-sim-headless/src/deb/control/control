@@ -1,0 +1,13 @@
+Package: [[name]]
+Version: [[version]]
+Section: misc
+Priority: optional
+Architecture: all
+Depends: default-jre (>= 1.8)
+Maintainer: Scott Davis <scud1@users.sourceforge.net>
+Homepage: https://mars-sim.github.io
+Distribution: development
+Description: Mars Simulation Project
+ A open source simulation of Mars exploration and colonization.  A GUI provides
+ users with a functional view of the running simulation and the ability to interact
+ with it.

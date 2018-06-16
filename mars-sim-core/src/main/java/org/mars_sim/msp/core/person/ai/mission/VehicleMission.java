@@ -361,11 +361,20 @@ implements UnitListener {
 						//if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
 						if (!vehicle.isBeingTowed()) {
-							setEmergencyBeacon(startingMember, vehicle, true, reason);
-							logger.warning("[" + startingMember.getLocationTag().getShortLocationName() + "] " 
-									+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
-									+ reason);
-							//don't end the mission yet
+							
+							if (reason.equals(Mission.NOT_ENOUGH_RESOURCES)) {
+								LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+										"[" + startingMember.getLocationTag().getShortLocationName() + "] " 
+										+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
+										+ reason, null);
+							}
+							else {
+								setEmergencyBeacon(startingMember, vehicle, true, reason);
+								logger.warning("[" + startingMember.getLocationTag().getShortLocationName() + "] " 
+										+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
+										+ reason);
+								//don't end the mission yet
+							}
 						}
 
 						else {

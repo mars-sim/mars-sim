@@ -51,7 +51,7 @@ implements Serializable {
 	// Cache variables.
 	private transient double totalProbCache;
 
-	private String phaseDescriptionCache;
+	//private String phaseDescriptionCache;
 	
     // Transient members
 	//private transient Person personCache;

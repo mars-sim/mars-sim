@@ -50,6 +50,7 @@ import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
+import com.alee.managers.UIManagers;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
 /**
@@ -692,7 +693,7 @@ public class MainWindow extends JComponent {
 
 		// use the weblaf skin
 		WebLookAndFeel.install();
-		//UIManagers.initialize();
+		UIManagers.initialize();
 		
 		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 
@@ -706,9 +707,9 @@ public class MainWindow extends JComponent {
 			}
 		} else if (nimRODLookAndFeel) {
 			try {
-				UIManager.setLookAndFeel(new NimRODLookAndFeel());
-				changed = true;
-				lookAndFeelTheme = "nimrod";
+//				UIManager.setLookAndFeel(new NimRODLookAndFeel());
+//				changed = true;
+//				lookAndFeelTheme = "nimrod";
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}

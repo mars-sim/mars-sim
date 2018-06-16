@@ -26,7 +26,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
           			<archive>
            				<manifest>
             				<addClasspath>true</addClasspath>
-              				<mainClass>org.mars_sim.msp.MarsProjectStarter</mainClass>
+              				<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
             			</manifest>
           			</archive>
         		</configuration>
@@ -43,7 +43,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.mars_sim.msp.MarsProjectStarter</mainClass>
+                            <mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -149,14 +149,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		</dependency>
 		<dependency>
 			<groupId>net.sf.mars-sim</groupId>
+			<artifactId>mars-sim-headless</artifactId>
+			<version>${project.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-mapdata</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency-->
 	    <!-- dependency>
 	    	<groupId>net.sf.mars-sim</groupId>
 	    	<artifactId>mars-sim-network</artifactId>

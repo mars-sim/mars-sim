@@ -16,8 +16,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,15 +42,21 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
+
+//import org.reactfx.EventStreams;
+//import org.reactfx.util.FxTimer;
+//import org.reactfx.util.Timer;
+
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
-import javafx.util.Duration;
+//import javafx.animation.Timeline;
 
+//import javafx.animation.KeyFrame;
+//import javafx.animation.Timeline;
+//import javafx.application.Platform;
+//import javafx.util.Duration;
 
 //import mikera.gui.Frames;
 //import mikera.gui.JConsole;
@@ -53,7 +66,6 @@ import javafx.util.Duration;
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
  */
-@SuppressWarnings("restriction")
 public class Simulation
 implements ClockListener, Serializable {
 
@@ -61,7 +73,7 @@ implements ClockListener, Serializable {
     private static final long serialVersionUID = -631308653510974249L;
 
     private static Logger logger = Logger.getLogger(Simulation.class.getName());
-
+    
 	// Categories of loading and saving simulation
 	public static final int OTHER = 0; // load other file
 	public static final int SAVE_DEFAULT = 1; // save as default.sim
@@ -129,17 +141,21 @@ implements ClockListener, Serializable {
     /** Flag to indicate that a new simulation is being created or loaded. */
     private static boolean isUpdating = false;
 
-    private static int autosave_minute;// = 15;
+    private static boolean defaultLoad = false;
+    
+    private static boolean justSaved = true;
 
-    private double fileSize;
-
-    private boolean defaultLoad = false, justSaved = true;
-
+    private static boolean autosaveDefault;
+    
+    //private static int autosave_minute;// = 15;
+    
     private boolean initialSimulationCreated = false;
 
     private boolean changed = true;
     
     private boolean isFXGL = false;
+    
+    private double fileSize;
     
     private String lastSaveTimeStamp;
     /* The build version of the SimulationConfig of the loading .sim */
@@ -148,12 +164,16 @@ implements ClockListener, Serializable {
     private String lastSaveStr = null;
     // Note: Transient data members (aren't stored in save file)
     // Added transient to avoid serialization error
-	private transient Timeline autosaveTimer;
+//	private transient Timer autosaveTimer;
+	//private transient Timeline timer;
+    private transient ScheduledExecutorService autosaveService;// = Executors.newSingleThreadScheduledExecutor();
+    
     //private transient ThreadPoolExecutor clockScheduler;
     private transient ExecutorService clockExecutor;
     
     private transient ExecutorService simExecutor;
 
+    
     // Intransient data members (stored in save file)
     /** Planet Mars. */
     private static Mars mars;
@@ -385,7 +405,8 @@ implements ClockListener, Serializable {
         		clockExecutor.execute(masterClock.getClockThreadTask());
         }
 
-        startAutosaveTimer(autosaveDefault);
+        this.autosaveDefault = autosaveDefault;
+        startAutosaveTimer();//autosaveDefault);
 
 	    ut = masterClock.getUpTimer();
     }
@@ -433,17 +454,17 @@ implements ClockListener, Serializable {
 
             } catch (ClassNotFoundException e2) {
             	logger.log(Level.SEVERE, "Quitting mars-sim with Class Not Found Exception when loading the simulation! " + " : " + e2.getMessage());
-    	        Platform.exit();
+//    	        Platform.exit();
     	        System.exit(1);
 
             } catch (IOException e1) {
             	logger.log(Level.SEVERE, "Quitting mars-sim with I/O error when loading the simulation! " + " : " + e1.getMessage());
-    	        Platform.exit();
+//    	        Platform.exit();
     	        System.exit(1);
 
 	        } catch (Exception e0) {
 	        	logger.log(Level.SEVERE, "Quitting mars-sim. Could not create a new simulation " + " : " + e0.getMessage());
-    	        Platform.exit();
+//    	        Platform.exit();
     	        System.exit(1);
 	        }
 
@@ -453,7 +474,7 @@ implements ClockListener, Serializable {
         	logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read or found. ");
             //throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
             //        f.getPath() + " is not accessible");
-            Platform.exit();
+//            Platform.exit();
             System.exit(1);
 
         }
@@ -507,12 +528,12 @@ implements ClockListener, Serializable {
             mars = (Mars) ois.readObject();
             mars.initializeTransientData();
             missionManager = (MissionManager) ois.readObject();
-            relationshipManager = (RelationshipManager) ois.readObject();
             medicalManager = (MedicalManager) ois.readObject();
             scientificStudyManager = (ScientificStudyManager) ois.readObject();
             transportManager = (TransportManager) ois.readObject();
             creditManager = (CreditManager) ois.readObject();
             eventManager = (HistoricalEventManager) ois.readObject();
+            relationshipManager = (RelationshipManager) ois.readObject();
             unitManager = (UnitManager) ois.readObject();
             masterClock = (MasterClock) ois.readObject();
 
@@ -552,27 +573,27 @@ implements ClockListener, Serializable {
 
         } catch (FileNotFoundException e) {
         	logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());
-            Platform.exit();
+//            Platform.exit();
             System.exit(1);
 
         } catch (EOFException e) {
         	logger.log(Level.SEVERE, "Quitting mars-sim. Unexpected End of File error on " + file + " : " + e.getMessage());
-            Platform.exit();
+//            Platform.exit();
             System.exit(1);
 
         } catch (IOException e) {
         	logger.log(Level.SEVERE, "Quitting mars-sim. I/O error when decompressing " + file + " : " + e.getMessage());
-            Platform.exit();
+//            Platform.exit();
             System.exit(1);
 
 	    } catch (NullPointerException e) {
 	    	logger.log(Level.SEVERE, "Quitting mars-sim. Null pointer error when loading " + file + " : " + e.getMessage());
-	        Platform.exit();
+//	        Platform.exit();
 	        System.exit(1);
 
 	    } catch (Exception e) {
 	    	logger.log(Level.SEVERE, "Quitting mars-sim with errors when loading " + file + " : " + e.getMessage());
-	        Platform.exit();
+//	        Platform.exit();
 	        System.exit(1);
 	    }
 
@@ -592,9 +613,10 @@ implements ClockListener, Serializable {
      * @param file the file to be saved to.
      */
     public synchronized void saveSimulation(int type, File file) throws IOException {
-        logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
+        logger.info("SImulation's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
+    	logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
     	//System.out.println("file is " + file);
-
+    	
     	// 2015-12-18 Check if it was previously on pause
 		boolean previous = masterClock.isPaused();
 		// Pause simulation.
@@ -609,9 +631,24 @@ implements ClockListener, Serializable {
     	lastSaveStr = new SystemDateTime().getDateTimeStr();
     	changed = true;
     	
+    	File backupFile = new File(DEFAULT_DIR, "previous" + DEFAULT_EXTENSION);	
+    	FileSystem fileSys = null;
+        Path destPath = null;
+        Path srcPath = null;
+    	
         // 2016-09-22 Use type to differentiate in what name/dir it is saved
         if (type == SAVE_DEFAULT) {
+        	
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+            
+            if (file.exists() && !file.isDirectory()) { 
+                fileSys = FileSystems.getDefault();
+                destPath = fileSys.getPath(backupFile.getPath());
+                srcPath = fileSys.getPath(file.getPath());
+                // backup the existing default.sim
+                Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            
             logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
 
         }
@@ -629,9 +666,22 @@ implements ClockListener, Serializable {
         }
 
         else if (type == AUTOSAVE_AS_DEFAULT) {
-            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
-            logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
+        	
+//            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+//            logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
 
+        	file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+      	
+            if (file.exists() && !file.isDirectory()) { 
+                fileSys = FileSystems.getDefault();
+                destPath = fileSys.getPath(backupFile.getPath());
+                srcPath = fileSys.getPath(file.getPath());
+                // backup the existing default.sim
+                Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+          
+            logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
+            
         }
 
         else if (type == AUTOSAVE) {
@@ -674,16 +724,15 @@ implements ClockListener, Serializable {
             // Store the in-transient objects.
             oos.writeObject(SimulationConfig.instance());
     		oos.writeObject(ResourceUtil.getInstance());
-
             oos.writeObject(malfunctionFactory);
             oos.writeObject(mars);
             oos.writeObject(missionManager);
-            oos.writeObject(relationshipManager);
             oos.writeObject(medicalManager);
             oos.writeObject(scientificStudyManager);
             oos.writeObject(transportManager);
             oos.writeObject(creditManager);
             oos.writeObject(eventManager);
+            oos.writeObject(relationshipManager);
             oos.writeObject(unitManager);
             oos.writeObject(masterClock);
 
@@ -704,48 +753,88 @@ implements ClockListener, Serializable {
 			   xzout.write(buf, 0, size);
 
 			xzout.finish();
+			
+	        logger.info("Done saving. Resuming the sim.");
 
 
+	     
+        } catch (NullPointerException e0){
+            logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
+            e0.printStackTrace();
+            
+	        if (fos != null)
+	        	fos.close();
+	        if (xzout != null)
+	        	xzout.close();
+            
+            if (type == AUTOSAVE_AS_DEFAULT
+            		|| type == SAVE_DEFAULT) {
+//	            backupFile = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+//	            backupFile.renameTo(file);
+	            
+                if (file.exists() && !file.isDirectory()) {
+                    // backup the existing default.sim
+    	            Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            
+			
         } catch (Exception e){
             logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
             e.printStackTrace();
-            //throw e;
+            
+	        if (fos != null)
+	        	fos.close();
+	        if (xzout != null)
+	        	xzout.close();
+            
+            if (type == AUTOSAVE_AS_DEFAULT
+            		|| type == SAVE_DEFAULT) {
+//	            backupFile = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+//	            backupFile.renameTo(file);
+	            
+                if (file.exists() && !file.isDirectory()) {
+                    // backup the existing default.sim
+    	            Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            
+        }
+        
+        finally {
+			uncompressed = null;			
+	        //uncompressed.delete(); // cannot be deleted;
 
-        //} finally {
-        //    if (oos != null) {
-        //        oos.close();
-        //    }
-        //}
+	        //fis.close(); // fis closed automatically
+	        //fos.close(); // fos closed automatically
+	        if (oos != null)
+	            oos.close();
+	        
+	        if (xzout != null)
+	        	xzout.close();
+   
+	        sim.proceed();
+
+	     	justSaved = true;
+	     	
+			// Check if it was previously on pause
+			boolean now = masterClock.isPaused();
+			if (!previous) {
+				if (now) {
+					masterClock.setPaused(false, false);
+		    		//System.out.println("previous is false. now is true. Unpaused sim");
+				}
+			} else {
+				if (!now) {
+					masterClock.setPaused(false, false);
+		    		//System.out.println("previous is true. now is false. Unpaused sim");
+				}
+			}
+			
+			
         }
 
-        //uncompressed.delete(); // cannot be deleted;
-		uncompressed = null;
-        //fis.close(); // fis closed automatically
-        //fos.close(); // fos closed automatically
-        if (oos != null)
-            oos.close();
-        
-        if (xzout != null)
-        	xzout.close();
 
-        sim.proceed();
-
-        // 2017-02-03 Added justSaved
-     	justSaved = true;
-
-		// 2015-12-18 Check if it was previously on pause
-		boolean now = masterClock.isPaused();
-		if (!previous) {
-			if (now) {
-				masterClock.setPaused(false, false);
-	    		//System.out.println("previous is false. now is true. Unpaused sim");
-			}
-		} else {
-			if (!now) {
-				masterClock.setPaused(false, false);
-	    		//System.out.println("previous is true. now is false. Unpaused sim");
-			}
-		}
     }
 
 
@@ -784,6 +873,7 @@ implements ClockListener, Serializable {
             masterClock.stop();
             masterClock.setPaused(true, false);
             masterClock.removeClockListener(this);
+//            autosaveService.shutdown();
         }
     }
 
@@ -795,6 +885,7 @@ implements ClockListener, Serializable {
             masterClock.addClockListener(this);
             masterClock.setPaused(false, false);
             masterClock.restart();
+//            startAutosaveTimer();
         }
     }
 
@@ -907,56 +998,82 @@ implements ClockListener, Serializable {
 	}
 
 	/*
-	 *
+	 * Set up a timer for periodically saving the sim
 	 */
-	//2015-01-07 Added startAutosaveTimer()
-    //2016-04-28 Relocated the autosave timer from MainMenu to here
-	@SuppressWarnings("restriction")
-    private void startAutosaveTimer(boolean autosaveDefault) {
+    public void startAutosaveTimer() {//boolean autosaveDefault) {
         //logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
-		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
+		//autosave_minute = SimulationConfig.instance().getAutosaveInterval();
 		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock,
 		// instead of directly call saveSimulation() here in Simulation
 
-		if (autosaveTimer != null) {
-			autosaveTimer.stop();
-			autosaveTimer = null;
+		if (autosaveService != null) {
+			autosaveService.shutdown();
+			autosaveService = null;
 		}
-
+    	
+    	autosaveService = Executors.newSingleThreadScheduledExecutor();
+		
+		//AutosaveTask autosaveRunnable = new AutosaveTask();
+		
 		if (autosaveDefault) {
+      
 			// For headless
-			autosaveTimer = new Timeline(
-				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null)));
-			//autosaveTimer = FxTimer.runLater(
-    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
-    		//        () -> masterClock.saveSimulation(null));
-			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
-	        //.subscribe(tick -> masterClock.saveSimulation(null));
+//			autosaveTimer = new Timeline(
+//				new KeyFrame(Duration.seconds(60 * autosave_minute),
+//						ae -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null)));
+//			autosaveTimer = FxTimer.runLater(
+//    				java.time.Duration.ofMinutes(60 * autosave_minute),
+//    		        () -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null));
+//			EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+//	        .subscribe(tick -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null));
+
+			setAutosaveDefault();
 		}
 		else {
 			// for GUI
-			autosaveTimer = new Timeline(
-				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.setAutosave(true)));
-				//masterClock.saveSimulation(AUTOSAVE, null)));
-
-			//autosaveTimer = FxTimer.runLater(
-    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
-    		//        () -> masterClock.autosaveSimulation());
-			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
-	        //.subscribe(tick -> masterClock.autosaveSimulation());
-		}
+//			autosaveTimer = new Timeline(
+//				new KeyFrame(Duration.seconds(60 * autosave_minute),
+//						ae -> masterClock.setAutosave(true)));
+//			autosaveTimer = FxTimer.runLater(
+//    				java.time.Duration.ofMinutes(60 * autosave_minute),
+//    		        () -> masterClock.setAutosave(true));
+//			EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+//	        .subscribe(tick -> masterClock.setAutosave(true));
+			
+			setAutosave();
 
 		// Note1: Infinite Timeline might result in a memory leak if not stopped properly.
 		// Note2: All the objects with animated properties would NOT be garbage collected.
 
-		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
-		autosaveTimer.play();
-
+//		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
+//		autosaveTimer.play();
+		}
 	}
+    
+	
+    public void setAutosaveDefault() {
+    	Runnable autosaveRunnable = new Runnable() {
+	        public void run() {
+	        	masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null);
+	        }
+		};
+		autosaveService.scheduleAtFixedRate(autosaveRunnable, SimulationConfig.instance().getAutosaveInterval(), 
+				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
 
+    }
+    
 
+	
+    public void setAutosave() {
+    	Runnable autosaveRunnable = new Runnable() {
+	        public void run() {
+	        	masterClock.setAutosave(true);
+	        }
+		};
+		autosaveService.scheduleAtFixedRate(autosaveRunnable, SimulationConfig.instance().getAutosaveInterval(), 
+				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
+    }
+	
 /*
     // 2015-10-08 Added testConsole() for outputting text messages to mars-simmers
     public void testConsole() {
@@ -987,10 +1104,10 @@ implements ClockListener, Serializable {
 	 * Gets the Timer instance of the autosave timer.
 	 * @return autosaveTimeline
 	 */
-	public Timeline getAutosaveTimer() {
-		return autosaveTimer;
+	public ScheduledExecutorService getAutosaveTimer() {
+		return autosaveService;
 	}
-
+	
     /**
      * Get the planet Mars.
      * @return Mars
@@ -1152,7 +1269,7 @@ implements ClockListener, Serializable {
     public void destroyOldSimulation() {
     	//logger.info("starting Simulation's destroyOldSimulation()");
 
-		autosaveTimer = null;
+		autosaveService = null;
 
         if (malfunctionFactory != null) {
             malfunctionFactory.destroy();
@@ -1214,3 +1331,9 @@ implements ClockListener, Serializable {
     }
 
 }
+    
+//	class AutosaveTask implements Runnable {
+//		  public void run() {
+//			  //;
+//		  }
+//	}

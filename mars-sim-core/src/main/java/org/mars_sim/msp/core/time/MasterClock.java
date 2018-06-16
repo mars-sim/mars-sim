@@ -194,7 +194,7 @@ public class MasterClock implements Serializable {
 
     	current_TR = cal_tr;
     	
-        // 2015-10-31 Added loading the values below from SimulationConfig
+        // Added loading the values below from SimulationConfig
         setNoDelaysPerYield(config.getNoDelaysPerYield());
         setMaxFrameSkips(config.getMaxFrameSkips());
 
@@ -243,7 +243,6 @@ public class MasterClock implements Serializable {
      * Adds a clock listener
      * @param newListener the listener to add.
      */
-    // 2015-04-02 Modified addClockListener()
     public final void addClockListener(ClockListener newListener) {
         // if listeners list does not exist, create one
     	if (clockListeners == null) clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
@@ -258,7 +257,6 @@ public class MasterClock implements Serializable {
      * Removes a clock listener
      * @param oldListener the listener to remove.
      */
-    // 2015-04-02 Modified removeClockListener()
     public final void removeClockListener(ClockListener oldListener) {
         if (clockListeners == null) clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         if (clockListeners.contains(oldListener)) clockListeners.remove(oldListener);
@@ -272,7 +270,6 @@ public class MasterClock implements Serializable {
      *
      * @param newListener the clock listener task to add.
      */
-    // 2015-04-02 addClockListenerTask()
     public void addClockListenerTask(ClockListener listener) {
     	boolean hasIt = false;
     	if (clockListenerTasks == null)
@@ -292,7 +289,6 @@ public class MasterClock implements Serializable {
      * Retrieve a clock listener task
      * @param oldListener the clock listener task to remove.
      */
-    // 2015-04-02 retrieveClockListenerTask()
     public ClockListenerTask retrieveClockListenerTask(ClockListener oldListener) {
 /*     	ClockListenerTask c = null;
     	clockListenerTaskList.forEach(t -> {
@@ -359,16 +355,6 @@ public class MasterClock implements Serializable {
     		return false;
         //return saveSimulation || autosaveSimulation;
     }
-
-    /**
-     * Checks if in the process of autosaving a simulation.
-     * @return true if autosaving simulation.
-  
-    // 2015-01-08 Added isAutosavingSimulation
-    //public boolean isAutosavingSimulation() {
-    //    return autosaveSimulation;
-    //}
-   */
     
     /**
      * Sets the exit program flag.
@@ -617,6 +603,33 @@ public class MasterClock implements Serializable {
      */
     private void statusUpdate() {
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
+    	
+        if (saveType != 0) {
+            try {
+            	logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
+                sim.saveSimulation(saveType, file);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "IOException. Could not save the simulation as "
+                        + (file == null ? "null" : file.getPath()), e);
+                e.printStackTrace();
+
+	        } catch (Exception e1) {
+	            logger.log(Level.SEVERE, "Exception. Could not save the simulation as "
+	                    + (file == null ? "null" : file.getPath()), e1);
+	            e1.printStackTrace();
+	        }
+            
+            saveType = 0;
+        }
+        
+        // Exit program if exitProgram flag is true.
+        if (exitProgram) {
+        	if (sim.getAutosaveTimer() != null)
+        		sim.getAutosaveTimer().shutdownNow();//.stop();
+            System.exit(0);
+        }
+        
+        
         if (!isPaused) {
             // Update elapsed milliseconds.
             long millis = updateElapsedMilliseconds();
@@ -641,36 +654,14 @@ public class MasterClock implements Serializable {
 	            	earthTime.addTime(millis * current_TR);
 	            	marsTime.addTime(timePulse);
 				  	fireClockPulse(timePulse);
-            }
-            
+            }   
         }
-
-        if (saveType != 0) {
-            try {
-                sim.saveSimulation(saveType, file);
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "Could not save the simulation as "
-                        + (file == null ? "null" : file.getPath()), e);
-                e.printStackTrace();
-            }
-
-            saveType = 0;
-        }
-
-        // Exit program if exitProgram flag is true.
-        if (exitProgram) {
-        	if (sim.getAutosaveTimer() != null)
-        		sim.getAutosaveTimer().stop();
-            System.exit(0);
-        }
-
     }
 
 
     /**
      * Looks at the clock listener list and checks if each listener has already had a corresponding task in the clock listener task list.
      */
-    // 2015-04-02 setupClockListenerTask()
     public void setupClockListenerTask() {
 		clockListeners.forEach(t -> {
 			// Check if it has a corresponding task or not, if it doesn't, create a task for t
@@ -742,11 +733,16 @@ public class MasterClock implements Serializable {
         //logger.info("MasterClock's setPaused() is on " + Thread.currentThread().getName());
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
-        //if (Simulation.instance().getAutosaveTimer() == null)
-        if (isPaused)
-        	sim.getAutosaveTimer().pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
-		else
-			sim.getAutosaveTimer().play();
+        
+//        if (isPaused
+//        	&& sim.getAutosaveTimer() != null
+//        	&& !sim.getAutosaveTimer().isShutdown()
+//            && !sim.getAutosaveTimer().isTerminated()
+//            ) {
+//        		sim.getAutosaveTimer().shutdown();//.pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
+//        }
+//        else
+//			sim.startAutosaveTimer();//getAutosaveTimer().restart();//.play();
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.
@@ -946,6 +942,7 @@ public class MasterClock implements Serializable {
 	}
 	
     public void onUpdate(double tpf) {
+//        logger.info("MasterClock onUpdate() is on " + Thread.currentThread().getName() + " Thread");
     	if (!isPaused) {
 	    	tpfCache += tpf;
 	    	//System.out.println("tpfCache: " + Math.round(tpfCache *1000.0)/1000.0 
@@ -1016,7 +1013,7 @@ public class MasterClock implements Serializable {
 	        // Exit program if exitProgram flag is true.
 	        if (exitProgram) {
 	        	if (sim.getAutosaveTimer() != null)
-	        		sim.getAutosaveTimer().stop();
+	        		sim.getAutosaveTimer().shutdownNow();//.stop();
 	            System.exit(0);
 	        }
 	        

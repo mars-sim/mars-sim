@@ -3,8 +3,9 @@ module mars-sim-ui {
     requires java.io;
     requires java.net;
     requires java.util;
-    requires javax.swing;
     requires java.awt;
+    
+    requires javax.swing;
     
     requires javafx.stage;
     requires javafx.application.Application;
@@ -18,6 +19,7 @@ module mars-sim-ui {
     requires javafx.scene;
     requires javafx.util;
     requires javafx.embed.swing.JFXPanel;
+    
     requires netscape.javascript.JSObject;
     
     requires junit;
@@ -29,6 +31,7 @@ module mars-sim-ui {
     requires nimrodlf;
     requires weblaf-core;
     requires weblaf-ui;
+    requires reactfx;
     
     requires com.alee.managers.tooltip.TooltipManager;
     requires com.alee.managers.tooltip.TooltipWay;
@@ -56,11 +59,7 @@ module mars-sim-ui {
     requires jiconfont-javafx;
     requires jiconfont-font_awesome;
     
-    requires com.almasb.fxgl.app;
-    requires com.almasb.fxgl.settings;
-    requires com.almasb.fxgl.input;
-    requires com.almasb.fxgl.scene.GameScene;
-    requires com.almasb.fxgl.ui;
+    requires com.almasb.fxgl;
     
     requires mars-sim-core;
     requires mars-sim-mapdata;

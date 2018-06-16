@@ -292,6 +292,8 @@ public class MainScene {
 
 	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
 	
+	//private transient Timer autosaveTimer;
+	
 	private GameScene gameScene;
 	private Parent root;
 	private StackPane rootStackPane;
@@ -382,7 +384,7 @@ public class MainScene {
 	private static CheckBox soundEffectMuteBox;
 	
 	private ESCHandler esc = null;
-	private Timeline timeline;
+	private Timeline timeLabeltimer;
 
 	private static ChatBox chatBox;
 	private static MainDesktopPane desktop;
@@ -2033,7 +2035,8 @@ public class MainScene {
 		sBox.getStyleClass().add("jfx-combo-box");
 		setQuickToolTip(sBox, Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		// ObservableList<Settlement> names = sim.getUnitManager().getSettlementOList();
-		sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
+		//sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
+		sBox.itemsProperty().setValue(FXCollections.observableArrayList(sim.getUnitManager().getSettlements()));
 		sBox.setPromptText("Select a settlement to view");
 		sBox.getSelectionModel().selectFirst();
 
@@ -2051,7 +2054,7 @@ public class MainScene {
 	}
 
 	public void changeSBox() {
-		sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
+		sBox.itemsProperty().setValue(FXCollections.observableArrayList(sim.getUnitManager().getSettlements()));
 	}
 
 	public void createFXMapLabelBox() {
@@ -2852,12 +2855,12 @@ public class MainScene {
 	 */
 	public void startEarthTimer() {
 		// Set up earth time text update
-		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeLabels()));
+		timeLabeltimer = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeLabels()));
 		// Note: Infinite Timeline might result in a memory leak if not stopped
 		// properly.
 		// All the objects with animated properties would not be garbage collected.
-		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-		timeline.play();
+		timeLabeltimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		timeLabeltimer.play();
 
 	}
 
@@ -3346,7 +3349,7 @@ public class MainScene {
 		if (exitDialog == null || !exitDialog.isVisible()) {
 			isShowingDialog = true;
 			masterClock.setPaused(true, showPane);
-			timeline.pause();
+			timeLabeltimer.pause();
 			if (showPane && !masterClock.isSavingSimulation())
 				startPausePopup();
 		}
@@ -3358,7 +3361,7 @@ public class MainScene {
 	public void unpauseSimulation() {
 		isShowingDialog = false;
 		masterClock.setPaused(false, true);
-		timeline.play();
+		timeLabeltimer.play();
 		stopPausePopup();
 	}
 
@@ -3415,7 +3418,7 @@ public class MainScene {
 		Simulation.instance().getSimExecutor().shutdownNow();
 		mainSceneExecutor.shutdownNow();
 		getDesktop().clearDesktop();
-		timeline.stop();
+		timeLabeltimer.stop();
 		stage.close();
 	}
 
@@ -4010,7 +4013,7 @@ public class MainScene {
 		stage = null;
 		loadingStage = null;
 		savingStage = null;
-		timeline = null;
+		timeLabeltimer = null;
 		// notificationPane = null;
 		desktop.destroy();
 		desktop = null;

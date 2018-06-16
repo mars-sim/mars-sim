@@ -1,13 +1,15 @@
 The Mars Simulation Project can be configured by editing the 
-XML files in the 'conf' subdirectory.  You can then select the "New"
-option in the project menu to start a new simulation that uses the 
-edited configuration.
+XML files inside mars-sim-core-${Version}.jar's 'conf' subdirectory.
+ 
+It's recommended you use utility tool such as '7 Zip File Manager' 
+to manipulate these xml files inside the jar file without having to 
+compress and uncompress other files. 
 
 It is recommended that you make a backup of the original configuration
-file before editing it as XML errors in the file can cause the program
-to fail.
+file before editing it as user-created XML errors can cause mars-sim
+fail to start.
 
-The following files can be edited:
+The following files are edited:
 
 buildings.xml:	    Modify or create new buildings based on functional 
                   	components.

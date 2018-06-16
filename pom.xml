@@ -18,12 +18,13 @@
 		<junit.version>4.12</junit.version>		
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<!-- springboot.version>1.3.5.RELEASE</springboot.version-->
-		<!-- mapstruct.version>1.1.0.Final</mapstruct.version-->
-		<!-- lwjgl.version>3.1.2</lwjgl.version-->
 		<!-- Set file encoding to UTF-8. See http://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- springboot.version>1.3.5.RELEASE</springboot.version-->
+		<!-- mapstruct.version>1.1.0.Final</mapstruct.version-->
+		<!-- lwjgl.version>3.1.2</lwjgl.version-->
+
 	</properties>
 	
  <!--
@@ -401,7 +402,7 @@
 		<repository>
 			<id>mars-sim</id>
 			<name>Mars Sim Project Maven Repository</name>
-			<url>http://mars-sim.sourceforge.net/maven-repo</url>
+			<url>https://mars-sim.sourceforge.io/maven-repo/</url>
 		</repository>
 	</repositories>
 	<!-- ************************************************************************************************* -->

@@ -139,7 +139,7 @@ public class MenuApp {
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
         title.setTranslateY(44);
         
-        MenuTitle version = new MenuTitle("Version " + Simulation.VERSION, 18, Color.DARKGOLDENROD, true);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        MenuTitle version = new MenuTitle("Version " + Simulation.VERSION, 18, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
         version.setTranslateX(WIDTH / 2 - version.getTitleWidth() / 2);
         version.setTranslateY(80);
         

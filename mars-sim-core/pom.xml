@@ -96,22 +96,6 @@
 		<artifactId>xz</artifactId>
 		<version>1.8</version>
 	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/com.github.almasb/fxgl 
-		 https://github.com/AlmasB/FXGL -->
-	<dependency>
-		<groupId>com.github.almasb</groupId>
-		<artifactId>fxgl</artifactId>
-		<version>0.5.1</version>	
-	</dependency> 
-	
-	<!-- https://mvnrepository.com/artifact/org.reactfx/reactfx : 418 KB 
-		 Needed by https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless/0.5.2 in mars-sim-ui's pom.xml -->
-	<dependency>
-		<groupId>org.reactfx</groupId>
-		<artifactId>reactfx</artifactId>
-		<version>2.0-M5</version>
-	</dependency>
 
 	<!-- https://mvnrepository.com/artifact/nz.sodium/sodium : 112KB 
 		 Recent fix on https://github.com/SodiumFRP/sodium

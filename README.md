@@ -74,13 +74,14 @@ For a more detail description of this project, see our project website at at htt
 ## Getting Started
 
 ### Prerequisites
-* Require Java 8 JRE/JDK (u77 or above) for mars-sim v3.1.0p1 to p8 and v3.1.0p9_java8   
-* Require Java 9/10 JRE/JDK for mars-sim v3.1.0p9_java9
+* Require JRE/JDK 8 (u77 or above) for binaries compiled under Java 8 
+* Require JRE/JDK 9 or above for binaries compiled under Java 9
 * For Windows OS, one should manually set up the following : 
   - Edit the `JAVA_HOME` and `PATH` in the System's "Environment Variables" in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_151` or `C:\Program Files\Java\jdk1.8.0_151`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
-  - Remove the path `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It interferes with the correct version of the Java that should be used. 
+  - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It interferes with the correct version of 
+    Java that should be used. 
   - Check if the correct version of Java is being enable in "Java Control Panel" in Windows's Control Panel. 
 
 > Note 1 The best approach is enabling only one Java build (such as Java 10.0.1) at a time and disable all other versions/builds.

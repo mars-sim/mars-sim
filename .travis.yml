@@ -3,11 +3,12 @@ dist: trusty
 script:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 jdk:
-- oraclejdk9
+- oraclejdk10
+- openjdk10
 addons:
 apt:
 packages:
-- oracle-java9-installer
+- oracle-java10-installer
 cache:
 directories:
 - $HOME/.m2

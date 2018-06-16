@@ -53,8 +53,8 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
-import com.nilo.plaf.nimrod.NimRODLookAndFeel;
-import com.nilo.plaf.nimrod.NimRODTheme;
+import com.alee.laf.WebLookAndFeel;
+import com.alee.managers.UIManagers;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
@@ -96,10 +96,13 @@ public class SimulationConfigEditor {
 		hasError = false;
 
 		try {
-			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/nimrod.theme"));
-			NimRODLookAndFeel nf = new NimRODLookAndFeel();
-			nf.setCurrentTheme(nt);
-			UIManager.setLookAndFeel(nf);
+			// use the weblaf skin
+			WebLookAndFeel.install();
+			UIManagers.initialize();
+			//			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/nimrod.theme"));
+//			NimRODLookAndFeel nf = new NimRODLookAndFeel();
+//			nf.setCurrentTheme(nt);
+//			UIManager.setLookAndFeel(nf);
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
 		}

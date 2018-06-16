@@ -1,0 +1,5 @@
+#!/bin/bash
+if [[ $(java -version 2>&1) == *"OpenJDK"* ]]; then echo 'You are using OpenJDK'; else echo 'You are not using OpenJDK'; fi
+
+#!/bin/sh
+java -Djava.util.logging.config.file=logging.properties -cp .::jars/ org.mars_sim.main.javafx.MarsProjectFX -Xms256m -Xmx1024m -new

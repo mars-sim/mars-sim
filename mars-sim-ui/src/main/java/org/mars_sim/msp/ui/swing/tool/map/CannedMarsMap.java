@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
+import org.mars_sim.mapdata.MapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.mapdata.MapData;
 
 /** 
  * The CannedMarsMap class reads in data from files in the map_data

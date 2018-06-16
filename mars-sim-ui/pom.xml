@@ -376,7 +376,23 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>jiconfont-font_awesome</artifactId>
 		    <version>4.7.0.0</version>
 		</dependency>
-  
+	  	<!-- https://mvnrepository.com/artifact/com.github.almasb/fxgl 
+			 https://github.com/AlmasB/FXGL -->
+		<dependency>
+			<groupId>com.github.almasb</groupId>
+			<artifactId>fxgl</artifactId>
+			<version>0.5.1</version>	
+		</dependency> 
+	<!-- https://mvnrepository.com/artifact/org.reactfx/reactfx : 418 KB 
+		 Needed by https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless/0.5.2 in mars-sim-ui's pom.xml 
+		 reactfx requires javafx api
+		 -->
+	<dependency>
+		<groupId>org.reactfx</groupId>
+		<artifactId>reactfx</artifactId>
+		<version>2.0-M5</version>
+	</dependency>
+		
   </dependencies>
   
 	<repositories>

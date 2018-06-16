@@ -104,7 +104,7 @@ public class MarqueeTicker extends WebPanel {
 	    setOpaque(false);
 		setBackground(Color.BLACK);
 
-		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
+		settlement = (Settlement) Simulation.instance().getUnitManager().getSettlements().toArray()[0];
 		settlement.sampleAllResources();
 
 		createMarqueePanel();

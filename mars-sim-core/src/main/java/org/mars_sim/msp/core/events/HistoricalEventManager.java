@@ -39,7 +39,8 @@ public class HistoricalEventManager implements Serializable {
 	//private static int count;
 	
 	private transient List<HistoricalEventListener> listeners;
-	private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();
+	
+	private List<HistoricalEvent> events;// = new LinkedList<HistoricalEvent>();
 	
 	private MarsClock marsClock;
 
@@ -51,6 +52,7 @@ public class HistoricalEventManager implements Serializable {
 		//logger.info("HistoricalEventManager's constructor is on " + Thread.currentThread().getName());
 		// Note : the masterClock and marsClock CANNOAT initialized until the simulation start
 		listeners = new ArrayList<HistoricalEventListener>();
+		events = new LinkedList<HistoricalEvent>();
 	}
 
 	/**
