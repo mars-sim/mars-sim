@@ -7,6 +7,10 @@
 
 package org.mars_sim.msp.core.robot;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.mars_sim.msp.core.Msg;
 
 public enum RobotType {
@@ -43,4 +47,18 @@ public enum RobotType {
 	public static RobotType valueOfIgnoreCase(String s) {
 		return valueOf(s.toUpperCase().replace(' ','_'));
 	}
+	
+	/**
+	 * gets an array of internationalized robottype
+	 * in alphabetical order.
+	 */
+	public static String[] getNames() {
+		List<String> list = new ArrayList<String>();
+		for (RobotType value : RobotType.values()) {
+			list.add(value.getName());
+		}
+		Collections.sort(list);
+		return list.toArray(new String[] {});
+	}
+	
 }

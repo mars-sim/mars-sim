@@ -167,11 +167,12 @@ extends TabPanel {
     		shiftTF.setEditable(false);
     		shiftTF.setColumns(4);
 
-    		if (shiftCache != ShiftType.OFF)
-    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
-    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
-    		else
-    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip"), TooltipWay.down);
+//    		if (shiftCache != ShiftType.OFF)
+//    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
+//    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
+//    		else
+//    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip"), TooltipWay.down);
+    		
     			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
     		shiftTF.setHorizontalAlignment(JTextField.CENTER);
     		buttonPane.add(shiftTF);
@@ -367,10 +368,10 @@ extends TabPanel {
     		start = taskSchedule.getShiftStart();
     		end = taskSchedule.getShiftEnd();
     		
-    		if (shiftCache != ShiftType.OFF && shiftTF != null)
-    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
-    		else
-    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off"), TooltipWay.down);
+//    		if (shiftCache != ShiftType.OFF && shiftTF != null)
+//    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
+//    		else
+//    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off"), TooltipWay.down);
  
 /*
 			//System.out.println("fillColorCache is "+ fillColorCache);

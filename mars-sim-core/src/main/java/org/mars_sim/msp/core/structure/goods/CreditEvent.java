@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditEvent.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2014-12-06
  * @author Scott Davis
  */
 
@@ -11,12 +10,15 @@ package org.mars_sim.msp.core.structure.goods;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 
+import java.io.Serializable;
 import java.util.EventObject;
 
 /**
  * A credit change event.
  */
-public class CreditEvent extends EventObject {
+public class CreditEvent extends EventObject implements Serializable {
+
+    private static final long serialVersionUID = 2L;
     
 	// Data members
 	private Settlement settlement1;

@@ -49,7 +49,7 @@ import java.util.Iterator;
  *
  *  @since      1.0
  */
-public interface Traverser extends Iterator
+public interface Traverser extends Iterator 
 {
 
     /**

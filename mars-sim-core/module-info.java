@@ -1,12 +1,15 @@
 module mars-sim-core {
 
+	requires java;
+    requires javax.json;
+    
     requires junit;
     requires jdom;
     requires guava;
     requires guice;
     requires log4j;
     requires commons-collections;
-    requires javax.json;
+
     requires xz;
     
 //    requires reactfx;

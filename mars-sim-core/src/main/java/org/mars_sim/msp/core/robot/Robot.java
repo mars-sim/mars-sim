@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -213,7 +213,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         height = 156 + RandomUtil.getRandomInt(22);
 
         // Set inventory total mass capacity based on the robot's strength.
-        int strength = attributes.getAttribute(RoboticAttribute.STRENGTH);
+        int strength = attributes.getAttribute(RoboticAttributeType.STRENGTH);
         getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
         // Put robot into the settlement.

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -238,9 +238,9 @@ implements Serializable {
 	        
 	        sellerAttributes = person.getNaturalAttributeManager();
 	        // Modify by 10% for conversation natural attributes in buyer and seller.
-	        modifier += sellerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
+	        modifier += sellerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
 	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
-	        modifier += sellerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
+	        modifier += sellerAttributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) / 1000D;
 
 		}
 	 	else if (buyingTrader instanceof Robot) {
@@ -251,7 +251,7 @@ implements Serializable {
 	        sellerAttributes = robot.getRoboticAttributeManager();
 	        
 	        // Modify by 10% for conversation natural attributes in buyer and seller.
-	        modifier += sellerAttributes.getAttribute(RoboticAttribute.CONVERSATION) / 1000D;	
+	        modifier += sellerAttributes.getAttribute(RoboticAttributeType.CONVERSATION) / 1000D;	
 	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
 	        //modifier += sellerAttributes.getAttribute(RoboticAttribute.ATTRACTIVENESS) / 1000D;
 	
@@ -261,9 +261,9 @@ implements Serializable {
 	        NaturalAttributeManager buyerAttributes = person.getNaturalAttributeManager();
 	   		
 	        // Modify by 10% for conversation natural attributes in buyer and seller.
-	        modifier -= buyerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
+	        modifier -= buyerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
 	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
-	        modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
+	        modifier -= buyerAttributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) / 1000D;
 
 		}
 	 	else if (sellingTrader instanceof Robot) {
@@ -271,7 +271,7 @@ implements Serializable {
 	  	 	RoboticAttributeManager buyerAttributes = robot.getRoboticAttributeManager();
 	  	 	
 	        // Modify by 10% for conversation natural attributes in buyer and seller.
-	        modifier -= buyerAttributes.getAttribute(RoboticAttribute.CONVERSATION) / 1000D;
+	        modifier -= buyerAttributes.getAttribute(RoboticAttributeType.CONVERSATION) / 1000D;
 	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
 	        // modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
 
@@ -338,7 +338,7 @@ implements Serializable {
     	        
     	if (trader instanceof Person) {
     		person = (Person) trader;    
-    	    experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+    	    experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             newPoints *= getTeachingExperienceModifier();          
             person.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);
@@ -346,7 +346,7 @@ implements Serializable {
     	}
     	else if (trader instanceof Robot) {
     		robot = (Robot) trader;
-    		experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+    		experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             newPoints *= getTeachingExperienceModifier();            
             robot.getBotMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);           

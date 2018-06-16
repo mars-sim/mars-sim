@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.job;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -81,23 +81,23 @@ implements Serializable {
 			attributes = person.getNaturalAttributeManager();
 		 
 		// Add experience aptitude.
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		// Add leadership aptitude.
-		int leadershipAptitude = attributes.getAttribute(NaturalAttribute.LEADERSHIP);
+		int leadershipAptitude = attributes.getAttribute(NaturalAttributeType.LEADERSHIP);
 		result+= result * ((leadershipAptitude - 50D) / 100D) / 2D;
 
 		// Add conversation.
-		int conversation = attributes.getAttribute(NaturalAttribute.CONVERSATION);
+		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
 		result+= 2D * result * ((conversation - 50D) / 100D);
 
 		// Add artistry aptitude.
-		int artistry = attributes.getAttribute(NaturalAttribute.ARTISTRY);
+		int artistry = attributes.getAttribute(NaturalAttributeType.ARTISTRY);
 		result+= result * ((artistry - 50D) / 100D);
 
 		// Add attractiveness.
-		int attractiveness = attributes.getAttribute(NaturalAttribute.ATTRACTIVENESS);
+		int attractiveness = attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
 		result+= 2D * result * ((attractiveness - 50D) / 100D);
 		
 		return result;

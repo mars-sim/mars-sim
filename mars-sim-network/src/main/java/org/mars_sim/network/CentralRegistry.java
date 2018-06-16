@@ -4,7 +4,7 @@
  * @version 3.08 2015-04-16
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.networking;
+package org.mars_sim.network;
 
 import java.io.*;
 import java.util.*;

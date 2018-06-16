@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -714,10 +714,10 @@ implements Serializable, Comparable<Task> {
         double result = 1D;
 
         if (hasTeacher()) {
-            int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttribute.TEACHING);
+            int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.TEACHING);
             int learningModifier = 0;
             if (person != null) {
-                learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+                learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 			}
 			else if (robot != null) {
 	            learningModifier = 0;//robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.ACADEMIC_APTITUDE);

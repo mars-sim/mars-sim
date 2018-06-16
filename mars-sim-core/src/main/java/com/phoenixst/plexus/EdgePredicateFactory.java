@@ -30,8 +30,10 @@ import com.phoenixst.collections.*;
  *
  *  @since      1.0
  */
-public class EdgePredicateFactory
-{
+public class EdgePredicateFactory implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     ////////////////////////////////////////
     // Private constructor
@@ -286,8 +288,8 @@ public class EdgePredicateFactory
     }
 
 
-    private static final class EqualsNodesPredicate extends AbstractEdgePredicate
-    {
+    private static final class EqualsNodesPredicate extends AbstractEdgePredicate implements Serializable {
+    
         private static final long serialVersionUID = 1L;
 
         /**
@@ -332,7 +334,7 @@ public class EdgePredicateFactory
     }
 
 
-    private static final class EqualsUserPredicate extends AbstractEdgePredicate
+    private static final class EqualsUserPredicate extends AbstractEdgePredicate implements Serializable
     {
         private static final long serialVersionUID = 1L;
 
@@ -365,7 +367,7 @@ public class EdgePredicateFactory
     }
 
 
-    private static final class EqualsUserNodesPredicate extends AbstractEdgePredicate
+    private static final class EqualsUserNodesPredicate extends AbstractEdgePredicate implements Serializable
     {
         private static final long serialVersionUID = 1L;
 
@@ -423,7 +425,7 @@ public class EdgePredicateFactory
     }
 
 
-    private static final class PredicatedUserNodesPredicate extends AbstractEdgePredicate
+    private static final class PredicatedUserNodesPredicate extends AbstractEdgePredicate implements Serializable
     {
         private static final long serialVersionUID = 1L;
 

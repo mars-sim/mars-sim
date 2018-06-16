@@ -180,36 +180,44 @@ public class DefaultGraph
      *  Map from nodes to adjacency lists.
      */
     transient Map nodeMap;
-
+    //Map nodeMap;
+    
     /**
      *  The number of edges in this graph.
      */
     transient int edgeSize = 0;
-
+    //int edgeSize = 0;
+    
     /**
      *  A lazy collection of all the nodes backed by the nodeMap.
      */
     private transient final Collection nodeCollection = new AllNodesCollection();
-
+    //private final Collection nodeCollection = new AllNodesCollection();
+    
     /**
      *  A lazy collection of all the edges backed by the nodeMap.
      */
     private transient final Collection edgeCollection = new AllEdgesCollection();
-
+    //private final Collection edgeCollection = new AllEdgesCollection();
+    
     /**
      *  The delegate to handle observable functionality.
      */
     private transient ObservableGraphDelegate observableDelegate;
+    //private ObservableGraphDelegate observableDelegate;
 
+    
     /**
      *  A String representing this instance for logging purposes.
      */
     transient final String instanceString = "(" + System.identityHashCode( this ) + ")";
+    //final String instanceString = "(" + System.identityHashCode( this ) + ")";
 
     /**
      *  The reapable collection of currently iterating cursors.
      */
     transient final Collection cursors = new ReapableCollection();
+    //final Collection cursors = new ReapableCollection();
 
 
     ////////////////////////////////////////

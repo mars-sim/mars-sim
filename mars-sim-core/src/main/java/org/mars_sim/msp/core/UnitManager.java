@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -44,7 +44,7 @@ import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -781,7 +781,7 @@ public class UnitManager implements Serializable {
 				while (i.hasNext()) {
 					String attributeName = i.next();
 					int value = (Integer) naturalAttributeMap.get(attributeName);
-					person.getNaturalAttributeManager().setAttribute(NaturalAttribute
+					person.getNaturalAttributeManager().setAttribute(NaturalAttributeType
 							.valueOfIgnoreCase(attributeName), value);
 				}
 			}
@@ -1063,11 +1063,11 @@ public class UnitManager implements Serializable {
 		// compare their leadership scores
 		for (Person p : people) {
 			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
-			int p_leadership = mgr.getAttribute(NaturalAttribute.LEADERSHIP);
-			int p_combined = 3 * mgr.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-					+ 2 * mgr.getAttribute(NaturalAttribute.EMOTIONAL_STABILITY)
-					+ mgr.getAttribute(NaturalAttribute.ATTRACTIVENESS)
-					+ mgr.getAttribute(NaturalAttribute.CONVERSATION);
+			int p_leadership = mgr.getAttribute(NaturalAttributeType.LEADERSHIP);
+			int p_combined = 3 * mgr.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE)
+					+ 2 * mgr.getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY)
+					+ mgr.getAttribute(NaturalAttributeType.ATTRACTIVENESS)
+					+ mgr.getAttribute(NaturalAttributeType.CONVERSATION);
 			// if this person p has a higher leadership score than the previous
 			// cc
 			if (p_leadership > cc_leadership) {
@@ -1207,12 +1207,12 @@ public class UnitManager implements Serializable {
 		// compare their leadership scores
 		for (Person p : people) {
 			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
-			int p_leadership = mgr.getAttribute(NaturalAttribute.LEADERSHIP);
+			int p_leadership = mgr.getAttribute(NaturalAttributeType.LEADERSHIP);
 			int p_tradeSkill = 5 * p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 			p_leadership = p_leadership + p_tradeSkill;
-			int p_combined = mgr.getAttribute(NaturalAttribute.ATTRACTIVENESS)
-					+ 3 * mgr.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-					+ mgr.getAttribute(NaturalAttribute.CONVERSATION);
+			int p_combined = mgr.getAttribute(NaturalAttributeType.ATTRACTIVENESS)
+					+ 3 * mgr.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE)
+					+ mgr.getAttribute(NaturalAttributeType.CONVERSATION);
 			// if this person p has a higher leadership score than the previous
 			// cc
 			if (p_leadership > m_leadership) {
@@ -1309,8 +1309,8 @@ public class UnitManager implements Serializable {
 						+ 4 * skillMgr.getEffectiveSkillLevel(skill_3)
 						+ 3 * skillMgr.getEffectiveSkillLevel(skill_4);
 
-				int p_combined = mgr.getAttribute(NaturalAttribute.LEADERSHIP)
-						+ mgr.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+				int p_combined = mgr.getAttribute(NaturalAttributeType.LEADERSHIP)
+						+ mgr.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE)
 						+ skillMgr.getEffectiveSkillLevel(SkillType.MANAGEMENT);
 				// if this person p has a higher experience score than the
 				// previous cc
@@ -1443,7 +1443,7 @@ public class UnitManager implements Serializable {
 								String attributeName = i.next();
 								int value = (Integer) attributeMap.get(attributeName);
 								robot.getRoboticAttributeManager()
-										.setAttribute(RoboticAttribute.valueOfIgnoreCase(attributeName), value);
+										.setAttribute(RoboticAttributeType.valueOfIgnoreCase(attributeName), value);
 							}
 						}
 
@@ -1703,7 +1703,7 @@ public class UnitManager implements Serializable {
 		}
 
 		if (robotType == null) {
-			System.out.println("robotType : null");
+			System.out.println("UnitManager : robotType is null");
 			robotType = RobotType.MAKERBOT;
 		}
 		return robotType;

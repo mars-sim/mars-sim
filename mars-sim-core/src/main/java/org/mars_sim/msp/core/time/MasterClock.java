@@ -734,15 +734,16 @@ public class MasterClock implements Serializable {
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
         
-//        if (isPaused
-//        	&& sim.getAutosaveTimer() != null
-//        	&& !sim.getAutosaveTimer().isShutdown()
-//            && !sim.getAutosaveTimer().isTerminated()
-//            ) {
-//        		sim.getAutosaveTimer().shutdown();//.pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
-//        }
-//        else
-//			sim.startAutosaveTimer();//getAutosaveTimer().restart();//.play();
+        if (isPaused
+        	&& sim.getAutosaveTimer() != null
+        	&& !sim.getAutosaveTimer().isShutdown()
+            && !sim.getAutosaveTimer().isTerminated()
+            ) {
+        		sim.getAutosaveTimer().shutdown();//.pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
+        }
+        else
+			sim.startAutosaveTimer();//getAutosaveTimer().restart();//.play();
+        
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.

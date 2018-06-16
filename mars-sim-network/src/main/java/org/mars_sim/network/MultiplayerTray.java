@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.networking;
+package org.mars_sim.network;
 
 import javafx.application.*;
 import javafx.geometry.Pos;

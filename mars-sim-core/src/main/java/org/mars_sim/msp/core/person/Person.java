@@ -364,7 +364,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		boolean dominant = false;
 
 		// Set inventory total mass capacity based on the person's strength.
-		int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
+		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
 		int rand = RandomUtil.getRandomInt(100);

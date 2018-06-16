@@ -26,7 +26,7 @@ package com.phoenixst.plexus;
  *
  *  @since      1.0
  */
-public class NoSuchNodeException extends RuntimeException
+public class NoSuchNodeException extends RuntimeException 
 {
 
     private static final long serialVersionUID = 1L;

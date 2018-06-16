@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -223,7 +223,7 @@ implements ResearchScientificStudy, Serializable {
         // Experience points adjusted by person's "Academic Aptitude" attribute.
         double newPoints = time / 25D;
         int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttribute.ACADEMIC_APTITUDE);
+                NaturalAttributeType.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         ScienceType astronomyScience = ScienceType.ASTRONOMY;

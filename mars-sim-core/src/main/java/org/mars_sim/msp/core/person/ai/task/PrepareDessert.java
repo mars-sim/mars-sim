@@ -16,12 +16,12 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -292,11 +292,11 @@ implements Serializable {
 
 		if (person != null) {
 	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-	                NaturalAttribute.EXPERIENCE_APTITUDE);
+	                NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 		else if (robot != null) {
 			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(
-                RoboticAttribute.EXPERIENCE_APTITUDE);
+                RoboticAttributeType.EXPERIENCE_APTITUDE);
 		}
 
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;

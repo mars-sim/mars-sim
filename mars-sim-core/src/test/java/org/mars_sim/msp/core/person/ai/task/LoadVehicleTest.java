@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -79,7 +79,7 @@ extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initialize();
-		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
+		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
         ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
 

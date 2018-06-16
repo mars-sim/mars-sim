@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -80,8 +80,8 @@ implements Serializable {
 		result = constructionSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 		result+= result * ((averageAptitude - 50D) / 100D);
 

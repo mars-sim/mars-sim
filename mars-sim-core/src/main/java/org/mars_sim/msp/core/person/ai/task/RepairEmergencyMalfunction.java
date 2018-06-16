@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -196,7 +196,7 @@ implements Repair, Serializable {
         double newPoints = time / 20D;
         if (person != null) {
             int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                    NaturalAttribute.EXPERIENCE_APTITUDE);
+                    NaturalAttributeType.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             newPoints *= getTeachingExperienceModifier();
             person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);

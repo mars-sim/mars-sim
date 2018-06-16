@@ -132,24 +132,24 @@ public class Preference implements Serializable {
 		int result = 0 ;
 
 		// Computes the adjustment from a person's natural attributes
-        double aa =  naturalAttributeManager.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE)/50D * 1.5;
-        double t =  naturalAttributeManager.getAttribute(NaturalAttribute.TEACHING)/50D * 1.5;
-        double l =  naturalAttributeManager.getAttribute(NaturalAttribute.LEADERSHIP)/50D * 1.5;
-        double es =  (naturalAttributeManager.getAttribute(NaturalAttribute.ENDURANCE)
-        			+ naturalAttributeManager.getAttribute(NaturalAttribute.STRENGTH))/100D * 1.5;
-        double ag =  naturalAttributeManager.getAttribute(NaturalAttribute.AGILITY)/500D * 1.5;
+        double aa =  naturalAttributeManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE)/50D * 1.5;
+        double t =  naturalAttributeManager.getAttribute(NaturalAttributeType.TEACHING)/50D * 1.5;
+        double l =  naturalAttributeManager.getAttribute(NaturalAttributeType.LEADERSHIP)/50D * 1.5;
+        double es =  (naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE)
+        			+ naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH))/100D * 1.5;
+        double ag =  naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY)/500D * 1.5;
 
-        double ss =  (naturalAttributeManager.getAttribute(NaturalAttribute.STRESS_RESILIENCE)
-        			+ naturalAttributeManager.getAttribute(NaturalAttribute.SPIRITUALITY))/100D * 1.5;
-        double se =  (naturalAttributeManager.getAttribute(NaturalAttribute.STRESS_RESILIENCE)
-        			+ naturalAttributeManager.getAttribute(NaturalAttribute.EMOTIONAL_STABILITY))/100D * 1.5;
+        double ss =  (naturalAttributeManager.getAttribute(NaturalAttributeType.STRESS_RESILIENCE)
+        			+ naturalAttributeManager.getAttribute(NaturalAttributeType.SPIRITUALITY))/100D * 1.5;
+        double se =  (naturalAttributeManager.getAttribute(NaturalAttributeType.STRESS_RESILIENCE)
+        			+ naturalAttributeManager.getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY))/100D * 1.5;
 
-        double ca = (naturalAttributeManager.getAttribute(NaturalAttribute.CONVERSATION)/50D
-    			+ naturalAttributeManager.getAttribute(NaturalAttribute.ATTRACTIVENESS)/200D) * 1.5;
+        double ca = (naturalAttributeManager.getAttribute(NaturalAttributeType.CONVERSATION)/50D
+    			+ naturalAttributeManager.getAttribute(NaturalAttributeType.ATTRACTIVENESS)/200D) * 1.5;
 
-        double art = naturalAttributeManager.getAttribute(NaturalAttribute.ARTISTRY)/50D * 1.5;
+        double art = naturalAttributeManager.getAttribute(NaturalAttributeType.ARTISTRY)/50D * 1.5;
 
-        double cou = naturalAttributeManager.getAttribute(NaturalAttribute.COURAGE)/50D * 1.5;
+        double cou = naturalAttributeManager.getAttribute(NaturalAttributeType.COURAGE)/50D * 1.5;
 
         //TODO: how to incorporate EXPERIENCE_APTITUDE ?
 
@@ -495,7 +495,7 @@ public class Preference implements Serializable {
     public void setTaskDue(Task task, boolean value) {
       	MetaTask mt = convertTask2MetaTask(task);
 
-		// if this accomplished meta task is onceOnly task, remove it.
+		// if this accomplished meta task is once-a-day task, remove it.
 		if (value && oneADayMap.get(mt) != null && !oneADayMap.isEmpty())
 			if (oneADayMap.get(mt) != null && oneADayMap.get(mt)) {
 				futureTaskMap.remove(mt);

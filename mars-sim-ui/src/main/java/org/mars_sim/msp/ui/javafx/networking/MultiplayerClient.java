@@ -38,12 +38,12 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.networking.ClientRegistry;
-import org.mars_sim.msp.core.networking.Receiver;
-import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
+import org.mars_sim.network.ClientRegistry;
+import org.mars_sim.network.Receiver;
+import org.mars_sim.network.SettlementRegistry;
 
 import javafx.animation.Timeline;
 import javafx.application.Platform;

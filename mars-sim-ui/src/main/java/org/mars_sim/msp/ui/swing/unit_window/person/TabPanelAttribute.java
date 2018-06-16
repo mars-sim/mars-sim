@@ -24,11 +24,11 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -155,8 +155,8 @@ extends TabPanel {
 class AttributeTableModel
 extends AbstractTableModel {
 
-	private List<Map<String, NaturalAttribute>> n_attributes;
-	private List<Map<String, RoboticAttribute>> r_attributes;
+	private List<Map<String, NaturalAttributeType>> n_attributes;
+	private List<Map<String, RoboticAttributeType>> r_attributes;
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -176,17 +176,17 @@ extends AbstractTableModel {
          	person = (Person) unit;
          	n_manager = person.getNaturalAttributeManager();
 
-    		n_attributes = new ArrayList<Map<String, NaturalAttribute>>();
-			for (NaturalAttribute value : NaturalAttribute.values()) {
-				Map<String,NaturalAttribute> map = new TreeMap<String,NaturalAttribute>();
+    		n_attributes = new ArrayList<Map<String, NaturalAttributeType>>();
+			for (NaturalAttributeType value : NaturalAttributeType.values()) {
+				Map<String,NaturalAttributeType> map = new TreeMap<String,NaturalAttributeType>();
 				map.put(value.getName(),value);
 				n_attributes.add(map);
 			}
 			Collections.sort(
 				n_attributes,
-				new Comparator<Map<String, NaturalAttribute>>() {
+				new Comparator<Map<String, NaturalAttributeType>>() {
 					@Override
-					public int compare(Map<String, NaturalAttribute> o1,Map<String, NaturalAttribute> o2) {
+					public int compare(Map<String, NaturalAttributeType> o1,Map<String, NaturalAttributeType> o2) {
 						return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
 					}
 				}
@@ -197,17 +197,17 @@ extends AbstractTableModel {
         	robot = (Robot) unit;
         	r_manager = robot.getRoboticAttributeManager();
 
-    		r_attributes = new ArrayList<Map<String, RoboticAttribute>>();
-			for (RoboticAttribute value : RoboticAttribute.values()) {
-				Map<String, RoboticAttribute> map = new TreeMap<String, RoboticAttribute>();
+    		r_attributes = new ArrayList<Map<String, RoboticAttributeType>>();
+			for (RoboticAttributeType value : RoboticAttributeType.values()) {
+				Map<String, RoboticAttributeType> map = new TreeMap<String, RoboticAttributeType>();
 				map.put(value.getName(),value);
 				r_attributes.add(map);
 			}
 			Collections.sort(
 				r_attributes,
-				new Comparator<Map<String,RoboticAttribute>>() {
+				new Comparator<Map<String,RoboticAttributeType>>() {
 					@Override
-					public int compare(Map<String,RoboticAttribute> o1,Map<String,RoboticAttribute> o2) {
+					public int compare(Map<String,RoboticAttributeType> o1,Map<String,RoboticAttributeType> o2) {
 						return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
 					}
 				}

@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -693,7 +693,7 @@ implements Serializable {
         if (person != null) {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-            int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
             double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
             evaExperience += evaExperience * experienceAptitudeModifier;
             evaExperience *= getTeachingExperienceModifier();
@@ -706,7 +706,7 @@ implements Serializable {
 
             // Experience points adjusted by robot's "Experience Aptitude" attribute.
             RoboticAttributeManager nManager = robot.getRoboticAttributeManager();
-            int experienceAptitude = nManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+            int experienceAptitude = nManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
             double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
             evaExperience += evaExperience * experienceAptitudeModifier;
             evaExperience *= getTeachingExperienceModifier();

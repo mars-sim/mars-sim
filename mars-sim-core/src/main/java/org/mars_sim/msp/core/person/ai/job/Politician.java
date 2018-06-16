@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.job;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -82,15 +82,15 @@ implements Serializable {
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 
 		// Add experience aptitude.
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		// Add leadership aptitude.
-		int leadershipAptitude = attributes.getAttribute(NaturalAttribute.LEADERSHIP);
+		int leadershipAptitude = attributes.getAttribute(NaturalAttributeType.LEADERSHIP);
 		result+= result * ((leadershipAptitude - 50D) / 100D);
 
 		// Add conversation.
-		int conversation = attributes.getAttribute(NaturalAttribute.CONVERSATION);
+		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
 		result+= result * ((conversation - 50D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) 

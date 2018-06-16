@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -92,7 +92,7 @@ extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initialize();
-		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
+		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
 
 		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);
 		unloadVehicle.unloadingPhase(11D);

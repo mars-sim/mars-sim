@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -376,9 +376,9 @@ implements Serializable {
     	int strength = 0;
         // Determine unload rate.
 		if (person != null) 
-	        strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
+	        strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);			
 		else if (robot != null)
-			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.STRENGTH);
+			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
         
         double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time;

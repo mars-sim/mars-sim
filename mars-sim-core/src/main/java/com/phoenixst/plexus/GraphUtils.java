@@ -15,6 +15,7 @@
 
 package com.phoenixst.plexus;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.apache.commons.collections.*;
@@ -34,8 +35,10 @@ import com.phoenixst.plexus.util.*;
  *
  *  @since      1.0
  */
-public class GraphUtils
-{
+public class GraphUtils implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     /**
      *  The logger.

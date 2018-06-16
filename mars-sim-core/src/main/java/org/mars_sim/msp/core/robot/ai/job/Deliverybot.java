@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -63,11 +63,11 @@ implements Serializable {
 		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
 
 		// Add experience aptitude.
-		int experienceAptitude = attributes.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		// Add conversation.
-		int conversation = attributes.getAttribute(RoboticAttribute.CONVERSATION);
+		int conversation = attributes.getAttribute(RoboticAttributeType.CONVERSATION);
 		result+= result * ((conversation - 50D) / 100D);
 
 		return result;

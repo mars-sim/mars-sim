@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionEvent;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -1411,8 +1411,8 @@ LocalBoundedObject, InsidePathLocation {
 							// currently, malfunction whether a person gets hurt is handled by Malfunction above
 
 							PhysicalCondition pc = person.getPhysicalCondition();
-				            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
-				            int courage = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.COURAGE);
+				            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+				            int courage = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.COURAGE);
 				            double factor = 1 + RandomUtil.getRandomDouble(1) - resilience/100 - courage/100D;
 							if (factor > 1)
 								pc.setStress(person.getStress() * factor);

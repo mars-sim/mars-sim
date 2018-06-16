@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -104,7 +104,7 @@ implements Serializable {
 		result = areologySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		result+= result * ((academicAptitude - 50D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;

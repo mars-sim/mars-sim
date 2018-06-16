@@ -16,8 +16,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.network.SettlementRegistry;
 
 import javafx.application.Platform;
 import javafx.scene.control.Tooltip;

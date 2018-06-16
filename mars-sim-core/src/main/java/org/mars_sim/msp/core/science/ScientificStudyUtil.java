@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -80,7 +80,7 @@ public class ScientificStudyUtil {
         double baseChance = 50D;
         
         // Modify based on primary researcher's academic aptitude attribute.
-        int academicAptitude = study.getPrimaryResearcher().getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+        int academicAptitude = study.getPrimaryResearcher().getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         double academicAptitudeModifier = (academicAptitude - 50) / 2D;
         baseChance += academicAptitudeModifier;
         
@@ -96,7 +96,7 @@ public class ScientificStudyUtil {
             collaboratorModifier *= (double) skillLevel / (double) study.getDifficultyLevel();
             
             // Modify based on researcher's academic aptitude attribute.
-            int collaboratorAcademicAptitude = researcher.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+            int collaboratorAcademicAptitude = researcher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
             double collaboratorAcademicAptitudeModifier = (collaboratorAcademicAptitude - 50) / 10D;
             collaboratorModifier += collaboratorAcademicAptitudeModifier;
             

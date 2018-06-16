@@ -240,10 +240,10 @@ public class PhysicalCondition implements Serializable {
 		// panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
 		// highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 
-		endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
-		strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
-		resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
-		emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+		endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ENDURANCE);
+		strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
+		resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+		emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
 
 		taskMgr = person.getMind().getTaskManager();
 
@@ -261,9 +261,9 @@ public class PhysicalCondition implements Serializable {
 		if (naturalAttributeManager == null)
 			naturalAttributeManager = person.getNaturalAttributeManager();
 		// Computes the adjustment from a person's natural attributes
-        double es =  (naturalAttributeManager.getAttribute(NaturalAttribute.ENDURANCE)
-        			+ naturalAttributeManager.getAttribute(NaturalAttribute.STRENGTH) 
-        			+ naturalAttributeManager.getAttribute(NaturalAttribute.AGILITY))/300D;
+        double es =  (naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE)
+        			+ naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH) 
+        			+ naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY))/300D;
         
         
         // TODO: may incorporate real world parameters such as areal density in g cm−2, T-socre and Z-score (see https://en.wikipedia.org/wiki/Bone_density)

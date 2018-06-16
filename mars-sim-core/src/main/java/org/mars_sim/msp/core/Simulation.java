@@ -873,7 +873,10 @@ implements ClockListener, Serializable {
             masterClock.stop();
             masterClock.setPaused(true, false);
             masterClock.removeClockListener(this);
-//            autosaveService.shutdown();
+            if (autosaveService != null
+                && !autosaveService.isShutdown()
+                && !autosaveService.isTerminated())
+            		autosaveService.shutdown();
         }
     }
 
@@ -885,7 +888,7 @@ implements ClockListener, Serializable {
             masterClock.addClockListener(this);
             masterClock.setPaused(false, false);
             masterClock.restart();
-//            startAutosaveTimer();
+            startAutosaveTimer();
         }
     }
 

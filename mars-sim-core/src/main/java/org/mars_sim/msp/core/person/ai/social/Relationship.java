@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.social;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.PersonalityType;
@@ -152,12 +152,12 @@ implements Serializable {
 		NaturalAttributeManager attributes = impressionee.getNaturalAttributeManager();
 
 		// Modify based on conversation attribute.
-		double conversationModifier = (double) attributes.getAttribute(NaturalAttribute.CONVERSATION) - 50D;
+		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
 		result+= RandomUtil.getRandomDouble(conversationModifier);
 
 		// Modify based on attractiveness attribute if people are of opposite genders.
 		// Note: We may add sexual orientation later that will add further complexity to this.
-		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) - 50D;
+		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
 		boolean oppositeGenders = (!impressioner.getGender().equals(impressionee.getGender()));
 		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
 
@@ -191,12 +191,12 @@ implements Serializable {
 		NaturalAttributeManager attributes = target.getNaturalAttributeManager();
 
 		// Modify based on conversation attribute.
-		double conversationModifier = (double) attributes.getAttribute(NaturalAttribute.CONVERSATION) - 50D;
+		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
 		result+= RandomUtil.getRandomDouble(conversationModifier);
 
 		// Modify based on attractiveness attribute if people are of opposite genders.
 		// Note: We may add sexual orientation later that will add further complexity to this.
-		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) - 50D;
+		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
 		boolean oppositeGenders = (!person.getGender().equals(target.getGender()));
 		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
 

@@ -28,8 +28,7 @@ import com.phoenixst.plexus.GraphUtils;
  * The CreditManager class keeps track of all credits/debts between settlements.
  * The simulation instance has only one credit manager.
  */
-public class CreditManager
-implements Serializable {
+public class CreditManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
