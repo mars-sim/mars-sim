@@ -573,7 +573,7 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-			Simulation.createNewSimulation();
+			Simulation.createNewSimulation(-1);
 			Simulation.instance().start(false);
 			Platform.runLater(() -> {
 				mainScene.finalizeMainScene();

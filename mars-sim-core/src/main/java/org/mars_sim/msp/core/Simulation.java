@@ -274,7 +274,7 @@ implements ClockListener, Serializable {
     /**
      * Creates a new simulation instance.
      */
-    public static void createNewSimulation() {
+    public static void createNewSimulation(int timeRatio) {
         //logger.info("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
         isUpdating = true;
@@ -291,7 +291,7 @@ implements ClockListener, Serializable {
         sim.initialSimulationCreated = true;
 
         // Initialize intransient data members.
-        sim.initializeIntransientData();
+        sim.initializeIntransientData(timeRatio);
 
         // Initialize transient data members.
 //        sim.initializeTransientData(); // done in the constructor already (MultiplayerClient needs HistoricalEnventManager)
@@ -323,14 +323,14 @@ implements ClockListener, Serializable {
      * Initialize intransient data in the simulation.
      */
     // 2015-02-04 Added threading
-    private void initializeIntransientData() {
+    private void initializeIntransientData(int timeRatio) {
         //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
     	malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
         mars = new Mars();
         missionManager = new MissionManager();
         relationshipManager = new RelationshipManager();
         medicalManager = new MedicalManager();
-        masterClock = new MasterClock(isFXGL);
+        masterClock = new MasterClock(isFXGL, timeRatio);
         unitManager = new UnitManager();
 		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
 		eventManager = new HistoricalEventManager();

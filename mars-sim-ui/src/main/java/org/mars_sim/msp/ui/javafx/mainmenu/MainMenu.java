@@ -757,7 +757,7 @@ public class MainMenu {
 
 			Simulation sim = Simulation.instance();
    			// Initialize the simulation.
-			Simulation.createNewSimulation();
+			Simulation.createNewSimulation(-1);
 
 			try {
 				// Loading settlement data from the default saved simulation

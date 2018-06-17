@@ -65,13 +65,19 @@ public class MarsProjectHeadless {
      */
     boolean initializeSimulation(String[] args) {
         boolean result = false;
-
+        int userTimeRatio = -1;
+        
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
+        if (argList.contains("-1024x")) 
+        	userTimeRatio = 1024;
+        else if (argList.contains("-512x")) 
+            userTimeRatio = 512;
+        	
         if (argList.contains("-new")) {
             // If new argument, create new simulation.
-            handleNewSimulation(); // if this fails we always exit, continuing is useless
+            handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
             result = true;
 
         } else if (argList.contains("-load")) {
@@ -79,19 +85,19 @@ public class MarsProjectHeadless {
             try {
 				// Initialize the simulation.
                 SimulationConfig.loadConfig();
-	        	Simulation.createNewSimulation();
+	        	Simulation.createNewSimulation(userTimeRatio);
                 handleLoadDefaultSimulation();
 
                 //FIXME : make it work
             } catch (Exception e) {
                 showError("Could not load the desired simulation. Staring a new Simulation instead. ", e);
-                handleNewSimulation();
+                handleNewSimulation(userTimeRatio);
                 result = true;
             }
         } else {
         	// if there is no args, load default.sim
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
-                handleNewSimulation();
+                handleNewSimulation(userTimeRatio);
                 result = true;
         }
 
@@ -147,7 +153,7 @@ public class MarsProjectHeadless {
     /**
      * Create a new simulation instance.
      */
-    private void handleNewSimulation() {
+    private void handleNewSimulation(int userTimeRatio) {
 		//logger.info("MarsProject's handleNewSimulation() is on "+Thread.currentThread().getName() + " Thread");
 
         try {
@@ -155,7 +161,7 @@ public class MarsProjectHeadless {
 
 			// Correct order:
 			Simulation.instance().destroyOldSimulation();
-			Simulation.createNewSimulation();
+			Simulation.createNewSimulation(userTimeRatio);
 			Simulation.instance().start(true);
 			
         } catch (Exception e) {

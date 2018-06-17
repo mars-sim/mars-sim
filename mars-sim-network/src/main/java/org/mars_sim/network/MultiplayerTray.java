@@ -7,23 +7,32 @@
 
 package org.mars_sim.network;
 
-import javafx.application.*;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.stage.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
 
 import java.io.IOException;
-import java.text.*;
-import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 // Original Java 8 codes by jewelsea at https://gist.github.com/jewelsea/e231e89e8d36ef4e5d8a
 public class MultiplayerTray { //extends Application {

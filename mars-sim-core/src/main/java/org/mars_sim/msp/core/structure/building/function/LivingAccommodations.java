@@ -186,7 +186,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	    		}
 	    		else {
 	                LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
-	                		"[" + settlement.getName() + "] " + person + " could not find any unmarked beds in "
+	                		"[" + settlement.getName() + "] " + person + " hasn't been able to find an unmarked bed. At least NOT in "
 	    					+ building.getNickName() + "." , null);
 	    		}
         	}

@@ -104,6 +104,19 @@ simulation.xml :
 
 	<autosave-interval value="15.0" />
 
+- One may alter the default time ratio for faster simulation
+  by adding '512x' or '1024x' as follows when starting a new
+  sim or loading from a saved sim :
+
+> java -jar mars-sim-main-[version/build].jar 2 headless 512x
+
+	OR
+
+> java -jar mars-sim-main-[version/build].jar 2 headless 1024x
+
+Note d: the time ratio argument is optional and is by default
+        '256x' as defined in Simulations.xml.
+        
 ---------------------------------------------------------------------
 
 ** Command-Line Arguments Summary **
@@ -132,7 +145,9 @@ simulation.xml :
     load 123.sim    load the sim with filename '123.sim'
                     (Note : '123.sim' must be located at the same 
                      		folder as the jarfile)
-    noaudio         disable background music and sound effect\n";                     		
+    noaudio         disable background music and sound effect\n"
+    512x            set time ratio to 512x (for headless edition only)			
+    1024x           set time ratio to 1024x (for headless edition only)                     		
 
 ---------------------------------------------------------------------
 

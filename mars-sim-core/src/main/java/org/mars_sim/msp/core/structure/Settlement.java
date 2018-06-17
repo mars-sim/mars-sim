@@ -379,9 +379,9 @@ implements Serializable, LifeSupportType, Objective {
 		else
 			setObjective(ObjectiveType.CROP_FARM);
 
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + this + "] Set development objective to " + objectiveType.toString() 
-				+ " (based upon the '" + template + "' Template).", null);
+//		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//				"[" + this + "] Set development objective to " + objectiveType.toString() 
+//				+ " (based upon the '" + template + "' Template).", null);
 		
 
 	}

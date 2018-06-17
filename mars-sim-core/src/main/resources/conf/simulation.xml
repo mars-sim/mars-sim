@@ -14,7 +14,7 @@
 			         The base TR value below will be overridden by the calculated TR at the start of the sim..
 		-->
 		<!-- Default: 256.0 -->
-		<base-time-ratio value="1024" />
+		<base-time-ratio value="256" />
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
 			 2. time ratio must be a multiple of 2.
 			 3. if time ratio is 512, then 1 real second equals 512 simulation seconds in mars-sim
@@ -84,7 +84,7 @@
 		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->
 		<!-- Min : 1 ; Max : 1440 -->
 		<!-- Default: 15 -->
-		<autosave-interval value="1" />
+		<autosave-interval value="15" />
 
 		<!-- average transit-time is the number of sols to send payload/cargo from Earth to Mars -->
 		<!-- Min : 1 ; Max : 430 -->

@@ -438,7 +438,7 @@ public class MarsProjectFXGL extends GameApplication {
 		   		// CASE A //
 				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
 				// Initialize the simulation.
-	        	Simulation.createNewSimulation();
+	        	Simulation.createNewSimulation(-1);
 			    // Start the simulation.
 			    startSimulation(true);
 			}
@@ -446,7 +446,7 @@ public class MarsProjectFXGL extends GameApplication {
 			else if (loadSim) {
 		   		// CASE B //
 				// Initialize the simulation.
-	        	Simulation.createNewSimulation();
+	        	Simulation.createNewSimulation(-1);
 
 	        	if (savedSim) {
 

@@ -246,7 +246,7 @@ public class SimulationConfigEditor {
 					// 2. MainWindow mw = new MainWindow(true);
 					// 3. Simulation.instance().start();
 					Simulation.instance().destroyOldSimulation();
-					Simulation.createNewSimulation();
+					Simulation.createNewSimulation(-1);
 					new MainWindow(true);
 					Simulation.instance().start(false);
 

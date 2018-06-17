@@ -286,6 +286,7 @@ public class DefaultGraph
             out.writeObject( i.next() );
         }
         out.writeInt( edgeSize );
+        if (edgeCollection == null) System.out.println("edgeCollection == null");
         for( Iterator i = edgeCollection.iterator(); i.hasNext(); ) {
             out.writeObject( i.next() );
         }
@@ -1832,9 +1833,10 @@ public class DefaultGraph
     ////////////////////////////////////////
 
 
-    private class AllNodesCollection
-        implements Collection
-    {
+    private class AllNodesCollection implements Collection, Serializable {
+
+        private static final long serialVersionUID = 2L;
+        	
         AllNodesCollection()
         {
             super();
@@ -2011,9 +2013,10 @@ public class DefaultGraph
             return string;
         }
 
-        private class NodeIterator
-            implements Iterator
-        {
+        private class NodeIterator implements Iterator, Serializable {
+
+            private static final long serialVersionUID = 2L;
+            	
             private final Iterator adjIter = nodeMap.values().iterator();
             private AdjacencyList adj = null;
             private boolean isCurrentValid = false;
@@ -2057,8 +2060,10 @@ public class DefaultGraph
     }
 
 
-    private class AdjNodeCollection extends AbstractCollection
-    {
+    private class AdjNodeCollection extends AbstractCollection implements Serializable {
+
+    	private static final long serialVersionUID = 2L;
+    	
         private final AdjacencyList adj;
         private final CursorFilter filter;
 
@@ -2257,8 +2262,11 @@ public class DefaultGraph
      *  private get() method to just get a single Edge from the
      *  Collection.
      */
-    private abstract class EdgeCollection extends AbstractCollection
-    {
+    private abstract class EdgeCollection extends AbstractCollection implements Serializable {
+
+    	/** default serial id. */
+    	private static final long serialVersionUID = 1L;
+  
         EdgeCollection()
         {
             super();
@@ -2273,8 +2281,11 @@ public class DefaultGraph
     }
 
 
-    private class IncEdgeCollection extends EdgeCollection
-    {
+    private class IncEdgeCollection extends EdgeCollection implements Serializable {
+
+    	/** default serial id. */
+    	private static final long serialVersionUID = 1L;
+    	
         private final AdjacencyList adj;
         private final CursorFilter filter;
 
@@ -2454,8 +2465,10 @@ public class DefaultGraph
     }
 
 
-    private abstract class FilteredEdgeCollection extends EdgeCollection
-    {
+    private abstract class FilteredEdgeCollection extends EdgeCollection implements Serializable {
+
+    	private static final long serialVersionUID = 2L;
+
         private final Predicate edgePredicate;
 
         FilteredEdgeCollection( Predicate edgePredicate )
@@ -2648,9 +2661,10 @@ public class DefaultGraph
             return string;
         }
 
-        private class EdgeIterator
-            implements Iterator
-        {
+        private class EdgeIterator implements Iterator, Serializable {
+
+            private static final long serialVersionUID = 2L;
+            
             private final Iterator adjIter = nodeMap.values().iterator();
             private Cursor cursor = EMPTY_CURSOR;
             private Object current = null;
@@ -2716,8 +2730,10 @@ public class DefaultGraph
     /**
      *  Edge collection for all the edges.
      */
-    private class AllEdgesCollection extends FilteredEdgeCollection
-    {
+    private class AllEdgesCollection extends FilteredEdgeCollection implements Serializable {
+
+    	private static final long serialVersionUID = 2L;
+    	
         AllEdgesCollection()
         {
             super( null );
@@ -2789,8 +2805,9 @@ public class DefaultGraph
      *  An Edge collection where there is no way to filter either
      *  endpoint.
      */
-    private class AnyToAnyEdgeCollection extends FilteredEdgeCollection
-    {
+    private class AnyToAnyEdgeCollection extends FilteredEdgeCollection implements Serializable {
+
+    	private static final long serialVersionUID = 2L;
         private final CursorFilter filter;
 
         AnyToAnyEdgeCollection( Predicate edgePredicate,
@@ -2810,8 +2827,9 @@ public class DefaultGraph
     /**
      *  An Edge collection where one endpoint is filtered.
      */
-    private class PredToAnyEdgeCollection extends FilteredEdgeCollection
-    {
+    private class PredToAnyEdgeCollection extends FilteredEdgeCollection implements Serializable {
+
+    	private static final long serialVersionUID = 2L;
         private final Predicate basePredicate;
         private final CursorFilter filter;
 
@@ -2836,8 +2854,10 @@ public class DefaultGraph
     /**
      *  An Edge collection where both endpoints are filtered.
      */
-    private class PToQEdgeCollection extends FilteredEdgeCollection
-    {
+    private class PToQEdgeCollection extends FilteredEdgeCollection implements Serializable {
+
+    	private static final long serialVersionUID = 2L;
+    	
         private final Predicate basePredicate;
         private final Predicate nodePredicate;
         private final CursorFilter qBaseFilter;
@@ -2879,8 +2899,10 @@ public class DefaultGraph
      *  about which other nodes are adjacent to it, and through which
      *  edges.  A self-loop should only be included once.
      */
-    private class AdjacencyList
-    {
+    private class AdjacencyList implements Serializable {
+
+    	private static final long serialVersionUID = 2L;
+    	
         /**
          *  The node for which this is an adjacency list.
          */
@@ -3295,9 +3317,10 @@ public class DefaultGraph
         ////////////////////////////////////////
 
 
-        private class CursorImpl
-            implements Cursor
-        {
+        private class CursorImpl implements Cursor, Serializable {
+
+            private static final long serialVersionUID = 2L;
+            	
             /**
              *  The predicate being used to filter this cursor.
              */

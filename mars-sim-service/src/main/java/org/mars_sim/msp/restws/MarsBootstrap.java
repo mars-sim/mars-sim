@@ -78,7 +78,7 @@ public class MarsBootstrap {
     	log.info("Creating new simulation");
     	
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation();     
+        Simulation.createNewSimulation(-1);     
         
         return Simulation.instance();
     }

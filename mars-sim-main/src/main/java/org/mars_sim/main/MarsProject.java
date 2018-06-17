@@ -125,7 +125,7 @@ public class MarsProject {
             try {
 				// Initialize the simulation.
                 SimulationConfig.loadConfig();
-	        	Simulation.createNewSimulation();
+	        	Simulation.createNewSimulation(-1);
                 handleLoadSimulation(argList);
 
                 //FIXME : make it work
@@ -139,7 +139,7 @@ public class MarsProject {
             try {
 				// Initialize the simulation.
                 SimulationConfig.loadConfig();
-	        	Simulation.createNewSimulation();
+	        	Simulation.createNewSimulation(-1);
                 handleLoadDefaultSimulation();
             } catch (Exception e) {
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
