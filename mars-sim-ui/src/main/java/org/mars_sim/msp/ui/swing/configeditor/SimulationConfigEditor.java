@@ -87,7 +87,6 @@ public class SimulationConfigEditor {
 	 * @param config
 	 *            the simulation configuration.
 	 */
-	@SuppressWarnings("static-access")
 	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
 
 		// Initialize data members.

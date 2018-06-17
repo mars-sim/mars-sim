@@ -99,7 +99,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.9.1</version>
+			<version>1.10</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim 
@@ -339,11 +339,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 		<!-- https://plugins.gradle.org/plugin/me.tatarka.retrolambda
 			 https://mvnrepository.com/artifact/me.tatarka/gradle-retrolambda : 14 KB-->
-		<dependency>
+		<!--dependency>
 		    <groupId>me.tatarka</groupId>
 		    <artifactId>gradle-retrolambda</artifactId>
 		    <version>3.7.0</version>
-		</dependency>
+		</dependency-->
 
 		<!-- https://github.com/codecentric/NSMenuFX
 		https://mvnrepository.com/artifact/de.codecentric.centerdevice/centerdevice-nsmenufx : 37 KB -->
@@ -381,7 +381,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.github.almasb</groupId>
 			<artifactId>fxgl</artifactId>
-			<version>0.5.1</version>	
+			<version>0.5.2</version>	
 		</dependency> 
 	<!-- https://mvnrepository.com/artifact/org.reactfx/reactfx : 418 KB 
 		 Needed by https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless/0.5.2 in mars-sim-ui's pom.xml 

@@ -7,6 +7,10 @@ module mars-sim-ui {
     
     requires javax.swing;
     
+    requires org.w3c.dom.Document;
+    requires org.w3c.dom.Element;
+    requires org.w3c.dom.Text;
+    
     requires javafx.stage;
     requires javafx.application.Application;
     requires javafx.application.Platform;

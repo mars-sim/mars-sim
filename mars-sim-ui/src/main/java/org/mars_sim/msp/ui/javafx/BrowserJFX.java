@@ -967,16 +967,14 @@ public class BrowserJFX {
 
             //engine.executeScript(CSS);
 
-			Document doc = engine.getDocument() ;
-			//SwingUtilities.invokeLater(() -> {
-			    Element styleNode = doc.createElement("style");
-			    Text styleContent = doc.createTextNode(CSS);
-			    styleNode.appendChild(styleContent);
-			    if (doc.getDocumentElement().getElementsByTagName("head").item(0) != null)
-			    	doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
-			    if (doc.getDocumentElement().getElementsByTagName("HEAD").item(0) != null)
-			    	doc.getDocumentElement().getElementsByTagName("HEAD").item(0).appendChild(styleNode);
-			//});
+    		Document doc = engine.getDocument() ;
+		    Element styleNode = engine.getDocument().createElement("style");
+		    Text styleContent = engine.getDocument().createTextNode(CSS);
+		    styleNode.appendChild(styleContent);
+		    if (doc.getDocumentElement().getElementsByTagName("head").item(0) != null)
+		    	doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
+		    if (doc.getDocumentElement().getElementsByTagName("HEAD").item(0) != null)
+		    	doc.getDocumentElement().getElementsByTagName("HEAD").item(0).appendChild(styleNode);
 
 	   }
     }

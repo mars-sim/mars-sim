@@ -147,7 +147,7 @@ public class MasterClock implements Serializable {
         // Setting the initial time ratio.
         double tr = 0;
         if (userTimeRatio == -1)
-        	config.getTimeRatio();
+        	tr = config.getTimeRatio();
         else {
         	tr = userTimeRatio;
         	logger.info("User-Defined Time Ratio is " + (int)tr + "x");
