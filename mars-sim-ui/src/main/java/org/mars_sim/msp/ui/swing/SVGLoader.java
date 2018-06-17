@@ -16,6 +16,7 @@ import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory; // for batik-transcoder1.8 and 1.9
+
 //import org.apache.batik.dom.svg.SAXSVGDocumentFactory; // for batik-transcoder 1.7
 //import org.apache.batik.dom.util.SAXDocumentFactory; // up to 1.6
 import org.apache.batik.gvt.GraphicsNode;

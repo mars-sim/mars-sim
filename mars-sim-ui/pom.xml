@@ -101,7 +101,21 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.10</version>
 		</dependency>
-		
+		<!--dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-gvt</artifactId>
+			<version>1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-script</artifactId>
+			<version>1.10</version>
+		</dependency>			
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-bridge</artifactId>
+			<version>1.10</version>
+		</dependency-->		
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim 
 			 Needed by afester's svg class
 		<dependency>

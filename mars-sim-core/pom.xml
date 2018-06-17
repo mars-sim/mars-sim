@@ -18,11 +18,6 @@
     	<artifactId>mars-sim-mapdata</artifactId>
     	<version>${project.version}</version>
     </dependency>
-    <!-- dependency>
-    	<groupId>net.sf.mars-sim</groupId>
-    	<artifactId>mars-sim-network</artifactId>
-    	<version>${project.version}</version>
-    </dependency-->
 	<dependency>
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
@@ -30,6 +25,12 @@
 		<scope>test</scope>
 	</dependency>
 
+    <dependency>
+    	<groupId>com.phoenixst</groupId>
+    	<artifactId>plexus-core</artifactId>
+    	<version>0.9</version>
+    </dependency>
+    
     <!--  https://mvnrepository.com/artifact/org.jdom/jdom/1.1.3 : 230 KB   -->
 	<dependency>
     	<groupId>org.jdom</groupId>
@@ -117,6 +118,11 @@
         <repository>
             <id>oss.sonatype.org-snapshot</id>
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>    
+        </repository>  
+		<repository>
+			<id>sourceforge.net</id>
+			<name>Mars Sim Releases</name>
+			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/maven-repo</url>
+		</repository>          
 	</repositories>
 </project>

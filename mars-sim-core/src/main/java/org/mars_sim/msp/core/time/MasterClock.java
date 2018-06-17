@@ -52,23 +52,23 @@ public class MasterClock implements Serializable {
 	/** Pausing clock. */
 	private transient volatile boolean isPaused = false;
 	/** Simulation time ratio. */
-	private volatile double current_TR = 0D;
+	private volatile double currentTR = 0D;
 	/** The Current time between updates (TBU). */
-	private volatile long current_tbu_ns = 0L;
-	/** Default time ratio. */
-	private volatile double cal_tr = 0D;
-	/** Default time between updates in nanoseconds. */
-	private volatile double cal_tbu_ns = 0D;
-	/** Default time between updates in milliseconds. */
-	private volatile double cal_tbu_ms = 0;
-	/** Default time between updates in seconds. */
-	private volatile double cal_tbu_s = 0;
-	/** Default frame per sec */
-	private volatile double cal_fps = 0;
+	private volatile long currentTBU_ns = 0L;
+	/** Adjusted time ratio. */
+	private volatile double adjustedTR = 0D;
+	/** Adjusted time between updates in nanoseconds. */
+	private volatile double adjustedTBU_ns = 0D;
+	/** Adjusted time between updates in milliseconds. */
+	private volatile double adjustedTBU_ms = 0;
+	/** Adjusted time between updates in seconds. */
+	private volatile double adjustedTBU_s = 0;
+	/** Adjusted frame per sec */
+	private volatile double adjustedFPS = 0;
 	
 	private int noDelaysPerYield = 0;
 	private int maxFrameSkips = 0;
-	private int count = -100;
+//	private int count = -100;
 
 	private double tpfCache = 0;
 	
@@ -80,8 +80,8 @@ public class MasterClock implements Serializable {
 	private transient volatile boolean autosave;
 
 	private long totalPulses = 1;
-	private long t2Cache = 0;
-	private long diffCache = 0;
+//	private long t2Cache = 0;
+//	private long diffCache = 0;
 	private transient long elapsedLast;
 
 	/** Clock listeners. */
@@ -158,57 +158,57 @@ public class MasterClock implements Serializable {
      
         // Tune the time between update
         if (threads <= 32) {
-        	cal_tbu_ms =  12D / (Math.sqrt(threads) *2) * tbu;     	
+        	adjustedTBU_ms =  12D / (Math.sqrt(threads) *2) * tbu;     	
         }
         else {
-        	cal_tbu_ms = 1.5 * tbu;
+        	adjustedTBU_ms = 1.5 * tbu;
         }
     	
         // Tune the time ratio
         if (threads == 1) {
-        	cal_tr = tr/16D;
+        	adjustedTR = tr/16D;
         }
         else if (threads == 2) {
-        	cal_tr = tr/8D;
+        	adjustedTR = tr/8D;
         }
         else if (threads <= 3) {
-        	cal_tr = tr/4D;
+        	adjustedTR = tr/4D;
         }
         else if (threads <= 4) {
-           	cal_tr = tr/4D;
+           	adjustedTR = tr/4D;
         }
         else if (threads <= 6) {
-        	cal_tr = tr/2D;
+        	adjustedTR = tr/2D;
         }
         else if (threads <= 8) {
-        	cal_tr = tr/2D;
+        	adjustedTR = tr/2D;
         }
         else if (threads <= 12) {
-        	cal_tr = tr;
+        	adjustedTR = tr;
         }
         else if (threads <= 16) {
-        	cal_tr = tr;
+        	adjustedTR = tr;
         }
         else {
-        	cal_tr = tr;
+        	adjustedTR = tr;
         }
 
-        cal_tbu_ns = cal_tbu_ms * 1_000_000.0; // convert from millis to nano
-     	cal_tbu_s = cal_tbu_ms / 1_000.0;
-     	cal_fps = 1.0/cal_tbu_s;
-        current_tbu_ns = (long) cal_tbu_ns;
+        adjustedTBU_ns = adjustedTBU_ms * 1_000_000.0; // convert from millis to nano
+     	adjustedTBU_s = adjustedTBU_ms / 1_000.0;
+     	adjustedFPS = 1.0/adjustedTBU_s;
+        currentTBU_ns = (long) adjustedTBU_ns;
 
-    	current_TR = cal_tr;
+    	currentTR = adjustedTR;
     	
         // Added loading the values below from SimulationConfig
         setNoDelaysPerYield(config.getNoDelaysPerYield());
         setMaxFrameSkips(config.getMaxFrameSkips());
 
-        logger.info("Based on # CPU cores/threads, we re-adjust the parameters as follows :");
-        logger.info("Time Ratio (TR) : " + (int)cal_tr + "x");
-        logger.info("Time between Updates (TBU) : " + Math.round(cal_tbu_ms * 10D)/10D + " ms");
-        logger.info("Ticks Per Second (TPS) : " + Math.round(cal_fps*10D)/10D + " Hz");
-		logger.info("*** Welcome to Mars and the beginning of the new adventure of humankind. ***");
+        logger.info("Based on # CPU cores/threads, the following parameters have been re-adjusted :");
+        logger.info("Time Ratio (TR) : " + (int)adjustedTR + "x");
+        logger.info("Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 10D)/10D + " ms");
+        logger.info("Ticks Per Second (TPS) : " + Math.round(adjustedFPS*10D)/10D + " Hz");
+		logger.info("*** Welcome to Mars and the beginning of the new adventure of humankind ***");
     }
 
     /**
@@ -387,7 +387,7 @@ public class MasterClock implements Serializable {
      * @return time pulse length in seconds
      */
     public double computeTimePulseInSeconds(long elapsedMilliseconds) {
-    	return elapsedMilliseconds * current_TR / 1000D;
+    	return elapsedMilliseconds * currentTR / 1000D;
     }
     
     /*
@@ -402,7 +402,7 @@ public class MasterClock implements Serializable {
      * @return totalPulses
      */
 	public void resetTotalPulses() {
-		totalPulses = (long) (1D/cal_tbu_ms * uptimer.getLastUptime());
+		totalPulses = (long) (1D/adjustedTBU_ms * uptimer.getLastUptime());
 	}
 
     /**
@@ -412,13 +412,13 @@ public class MasterClock implements Serializable {
     public void setTimeRatio(double ratio) {
         if (ratio >= 1D && ratio <= 65536D) {
 
-        	if (ratio > current_TR)
-        		current_tbu_ns = (long) (current_tbu_ns * 1.0025); // increment by .5%
+        	if (ratio > currentTR)
+        		currentTBU_ns = (long) (currentTBU_ns * 1.0025); // increment by .5%
         	else
-        		current_tbu_ns = (long) (current_tbu_ns * .9975); // decrement by .5%
+        		currentTBU_ns = (long) (currentTBU_ns * .9975); // decrement by .5%
 
-        	cal_tbu_s = current_tbu_ns/1_000_000_000D;
-            current_TR = ratio;
+        	adjustedTBU_s = currentTBU_ns/1_000_000_000D;
+            currentTR = ratio;
         }
         else throw new IllegalArgumentException("Time ratio is out of bounds ");
     }
@@ -429,7 +429,7 @@ public class MasterClock implements Serializable {
      * @return ratio
      */
     public double getTimeRatio() {
-        return current_TR;
+        return currentTR;
     }
 
     /**
@@ -438,7 +438,7 @@ public class MasterClock implements Serializable {
      * @return ratio
      */
     public double getCalculatedTimeRatio() {
-        return cal_tr;
+        return adjustedTR;
     }
 
 
@@ -447,7 +447,7 @@ public class MasterClock implements Serializable {
      * @return value in nanoseconds
      */
     public long getCurrentTBU() {
-        return current_tbu_ns;
+        return currentTBU_ns;
     }
 
 
@@ -521,49 +521,25 @@ public class MasterClock implements Serializable {
 		        
 	        	 while (keepRunning) {
 	 		        // Refactored codes for variable sleepTime
-	 	            t2 = System.nanoTime();
+	        		t2 = System.nanoTime();
 
+	        		addTime();
+	 	           
 	 		        // Benchmark CPU speed
-	 		        long diff = 0;
-
-	 		        if (count >= 1000)
-	 		        	count = 0;
-
-	 		        if (count >= 0) {
-	 			        diff = (long) ((t2 - t2Cache) / 1_000_000D);
-	 		        	diffCache = (diff * count + diffCache)/(count + 1);
-	 		        }
+//	 		        long diff = 0;
+//
+//	 		        if (count >= 1000)
+//	 		        	count = 0;
+//
+//	 		        if (count >= 0) {
+//	 			        diff = (long) ((t2 - t2Cache) / 1_000_000D);
+//	 		        	diffCache = (diff * count + diffCache)/(count + 1);
+//	 		        }
 
 	 		        //if (count == 0) logger.info("Benchmarking this machine : " + diff + " per 1000 frames");
-
-	 		        if (!isPaused) {
-	 		            // Update elapsed milliseconds.
-	 		            long millis = updateElapsedMilliseconds();
-	 		            // Get the sim millisecond for EarthClock
-	 		        	//double ms = millis * timeRatio;
-	 		            // Get the time pulse length in millisols.
-	 		            //double timePulse = millis / 1000 * timeRatio / MarsClock.SECONDS_IN_MILLISOL;
-	 		            // Get the time pulse length in millisols.
-	 		            double timePulse = computeTimePulseInMillisols(millis);
-	 		            // Incrementing total time pulse number.
-	 		            totalPulses++;
-
-	 		            if (timePulse > 0
-	 		            	&& keepRunning
-	 			            //|| !clockListenerExecutor.isTerminating()
-	 		            	&& clockListenerExecutor != null
-	 		            	&& !clockListenerExecutor.isTerminated()
-	 		            	&& !clockListenerExecutor.isShutdown()) {
-
-	 			                // Add time pulse length to Earth and Mars clocks.
-	 			            	earthTime.addTime(millis * current_TR);
-	 			            	marsTime.addTime(timePulse);
-	 						  	fireClockPulse(timePulse);
-	 		            }   
-	 		        }
 	 		        
 	 	            //dt = t2 - t1;
-	 	            sleepTime = current_tbu_ns - t2 + t1 - overSleepTime;
+	 	            sleepTime = currentTBU_ns - t2 + t1 - overSleepTime;
 	 	            //System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
 
 	 	            if (sleepTime > 0 && keepRunning) {
@@ -594,30 +570,34 @@ public class MasterClock implements Serializable {
 	 	            	//timeBetweenUpdates = (long) (timeBetweenUpdates * 1.0025); // increment by 0.25%
 	 	            }
 
-	 	            t1 = System.nanoTime();
-
-	 	            // Skip the sleep time if the statusUpdate() or other processes take too long
 	 	            int skips = 0;
 
-	 	            while ((excess > current_tbu_ns) && (skips < maxFrameSkips)) {
-	 	            	excess -= current_tbu_ns;
-	 	            	//logger.warning("Making up a lost frame by calling statusUpdate() again. skips :" + skips);
-	 	            	// Make up a lost frame by calling addTime() in MarsClock and EarthClock via statusUpdate()
+	 	            while ((excess > currentTBU_ns) && (skips < maxFrameSkips)) {
+	 	            	excess -= currentTBU_ns;
+	 	            	// Make up lost frames 
 	 	            	skips++;
 
 	 	            	if (skips >= maxFrameSkips) {
 	 		            	logger.info("# of skips has reached the maximum # of frame skips. Resetting total pulse and slowing down (TBU).");
 	 		            	resetTotalPulses();
-	 		            	if (current_tbu_ns > (long) (cal_tbu_ns * 1.25))
-	 		            		current_tbu_ns = (long) (cal_tbu_ns * 1.25);
+	 		            	if (currentTBU_ns > (long) (adjustedTBU_ns * 1.25))
+	 		            		currentTBU_ns = (long) (adjustedTBU_ns * 1.25);
 	 		            	else
-	 		            		current_tbu_ns = (long) (current_tbu_ns * .9925); // decrement by 2.5%
-	 	            	}
+	 		            		currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
+	 	            	}	
 	 	            	
+	 	            	addTime();
 	 	            }
-
- 	            	checkSave();
- 	            	
+	 	            
+	 	            // Set excess to zero to prevent getting stuck in the above while loop after waking up from power saving
+	 	            excess = 0;
+	 	            
+	 	            t1 = System.nanoTime();
+ 	            
+	 	            if (checkSave())
+		 	            // Reset t1 time due to the long process of saving
+	 	            	t1 = System.nanoTime();
+	 	            
  	               // Exit program if exitProgram flag is true.
  	               if (exitProgram) {
  	            	   if (sim.getAutosaveTimer() != null)
@@ -626,27 +606,55 @@ public class MasterClock implements Serializable {
  	            	   System.exit(0);
  	               }
  	               
-	 	            // Set excess to zero to prevent getting stuck in the above while loop after waking up from power saving
-	 	            excess = 0;
-
-	 		        t2Cache = t2;
-
-	 		        count++;
+ 	               // For performance benchmarking
+//	 		       t2Cache = t2;
+//	 		       count++;
 
 	 	        } // end of while
 	        } // if fxgl is not used
 	    } // end of run
     }
 
+   /*
+    * Add earth time and mars time
+    */
+    private void addTime() {
+        if (!isPaused) {
+            // Update elapsed milliseconds.
+            long millis = updateElapsedMilliseconds();
+            // Get the sim millisecond for EarthClock
+        	//double ms = millis * timeRatio;
+            // Get the time pulse length in millisols.
+            //double timePulse = millis / 1000 * timeRatio / MarsClock.SECONDS_IN_MILLISOL;
+            // Get the time pulse length in millisols.
+            double timePulse = computeTimePulseInMillisols(millis);
+            // Incrementing total time pulse number.
+            totalPulses++;
+
+            if (timePulse > 0
+            	&& keepRunning
+	            //|| !clockListenerExecutor.isTerminating()
+            	&& clockListenerExecutor != null
+            	&& !clockListenerExecutor.isTerminated()
+            	&& !clockListenerExecutor.isShutdown()) {
+
+	                // Add time pulse length to Earth and Mars clocks.
+	            	earthTime.addTime(millis * currentTR);
+	            	marsTime.addTime(timePulse);
+				  	fireClockPulse(timePulse);
+            }   
+	}
+    }
+    
     /**
      * Checks if it is on pause or a saving process has been requested. Keeps track of the time pulse 
      */
-    private void checkSave() {
-        //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
+    private boolean checkSave() {
+        //logger.info("MasterClock's checkSave() is on " + Thread.currentThread().getName() + " Thread");
     	
         if (saveType != 0) {
             try {
-            	logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
+            	//logger.info("MasterClock's checkSave() is on " + Thread.currentThread().getName() + " Thread");
                 sim.saveSimulation(saveType, file);
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "IOException. Could not save the simulation as "
@@ -660,10 +668,12 @@ public class MasterClock implements Serializable {
 	        }
             
             saveType = 0;
+            
+            return true;
         }
-        
 
-        
+        else
+        	return false; 
     }
 
 
@@ -933,21 +943,19 @@ public class MasterClock implements Serializable {
 		return clockListenerExecutor;
 	}
 	
-	public long getDiffCache() {
-		return diffCache;
-	}
+//	public long getDiffCache() {
+//		return diffCache;
+//	}
 
-	public double getFPS() {
-/*		
-		List<Double> list = new ArrayList<>(TPFList);
-		double sum = 0;
-		int size = list.size();
-		for (int i = 0; i < size; i++) {
-			sum += list.get(i);
-		}
-		return size/sum;
-*/
-		return Math.round(10.0/cal_tbu_s)/10.0;//1_000_000/tbu_ns;
+	public double getFPS() {		
+//		List<Double> list = new ArrayList<>(TPFList);
+//		double sum = 0;
+//		int size = list.size();
+//		for (int i = 0; i < size; i++) {
+//			sum += list.get(i);
+//		}
+//		return size/sum;
+		return Math.round(10.0/adjustedTBU_s)/10.0;//1_000_000/tbu_ns;
 	}
 	
     public void onUpdate(double tpf) {
@@ -957,7 +965,7 @@ public class MasterClock implements Serializable {
 	    	//System.out.println("tpfCache: " + Math.round(tpfCache *1000.0)/1000.0 
 	    	//		+ "   tpf: " + Math.round(tpf *1000.0)/1000.0 
 	    	//		+ "   cal_tbu_s : " + Math.round(cal_tbu_s *1000.0)/1000.0);
-	    	if (tpfCache >= cal_tbu_s) {
+	    	if (tpfCache >= adjustedTBU_s) {
 /*   		
 	    		TPFList.add(tpfCache);
 	    		// Remove the first 5 
@@ -975,7 +983,7 @@ public class MasterClock implements Serializable {
     			//resetTotalPulses();
     		//}
     		//else {
-		        double t = tpfCache * current_TR;
+		        double t = tpfCache * currentTR;
 		        // Get the time pulse length in millisols.
 		        double timePulse = t / MarsClock.SECONDS_IN_MILLISOL;
 	        	//System.out.println("tpfCache : " + Math.round(tpfCache *1000.0)/1000.0 
