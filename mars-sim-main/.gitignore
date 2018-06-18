@@ -4,3 +4,5 @@
 /system/
 .classpath
 .project
+/.settings
+.idea
