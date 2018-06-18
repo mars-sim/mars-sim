@@ -252,7 +252,10 @@ implements Serializable {
 					sponsors.get(5).add(name);
 				else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 					sponsors.get(6).add(name);
-
+				else if (sponsor.equals("Mars Society"))// && type[i] == ReportingAuthorityType.RKA)
+					sponsors.get(7).add(name);
+				else if (sponsor.equals("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
+					sponsors.get(8).add(name);
 
 				/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/
 				if (country.equals("China")) countries.get(0).add(name);
@@ -384,6 +387,12 @@ implements Serializable {
 					else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						malesBySponsor.get(6).add(name);
 
+					else if (sponsor.equals("Mars Society"))// && type[i] == ReportingAuthorityType.NASA)
+						malesBySponsor.get(7).add(name);
+
+					else if (sponsor.equals("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
+						malesBySponsor.get(8).add(name);
+					
 					/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/
 					if (country.equals("China")) malesByCountry.get(0).add(name);
 					else if (country.equals("Canada")) malesByCountry.get(1).add(name);
@@ -444,7 +453,12 @@ implements Serializable {
 					else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						femalesBySponsor.get(6).add(name);
 
+					else if (sponsor.equals("Mars Society"))// && type[i] == ReportingAuthorityType.NASA)
+						femalesBySponsor.get(7).add(name);
 
+					else if (sponsor.equals("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
+						femalesBySponsor.get(8).add(name);
+					
 					/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/
 					if (country.equals("China")) femalesByCountry.get(0).add(name);
 					else if (country.equals("Canada")) femalesByCountry.get(1).add(name);
@@ -515,9 +529,8 @@ implements Serializable {
 	 * @param name the name of the person
 	 * @return the sponsor of the person
 	 */
-	//2015-11-29 Added getPersonSponsor
     @SuppressWarnings("unchecked")
-	public ReportingAuthorityType getPersonSponsor(String name) {
+	public ReportingAuthorityType getMarsSocietySponsor(String name) {
     	ReportingAuthorityType type = null;
 
     	//Element root = personDoc.getRootElement();

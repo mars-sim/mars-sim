@@ -488,7 +488,7 @@ public class MainScene {
 			createSavingIndicator();
 
 			openInitialWindows();
-			hideWaitStage(MainScene.LOADING);
+//			hideWaitStage(MainScene.LOADING);
 		});
 	}
 
@@ -509,11 +509,11 @@ public class MainScene {
 
 	}
 
-	public void createLoadingIndicator() {
-		// 2016-10-01 Added mainSceneExecutor for executing wait stages
-		startMainSceneExecutor();
-		createProgressCircle(LOADING);
-	}
+//	public void createLoadingIndicator() {
+//		// 2016-10-01 Added mainSceneExecutor for executing wait stages
+//		startMainSceneExecutor();
+//		createProgressCircle(LOADING);
+//	}
 
 	public void createSavingIndicator() {
 		createProgressCircle(AUTOSAVING);
@@ -2343,13 +2343,13 @@ public class MainScene {
 	public void anchorToggles() {
 		
 		AnchorPane.setRightAnchor(cacheToggle, 25.0);
-		AnchorPane.setTopAnchor(cacheToggle, 45.0); // 55.0
+		AnchorPane.setTopAnchor(cacheToggle, 55.0); // 55.0
 	
 		AnchorPane.setLeftAnchor(minimapToggle, 10.0);
-		AnchorPane.setTopAnchor(minimapToggle, 20.0); // 55.0
+		AnchorPane.setTopAnchor(minimapToggle, 17.0); // 55.0
 	
 		AnchorPane.setRightAnchor(mapToggle, 15.0);
-		AnchorPane.setTopAnchor(mapToggle, 20.0); // 55.0
+		AnchorPane.setTopAnchor(mapToggle, 17.0); // 55.0
 	
 		mapsAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, mapToggle);
 		
@@ -3440,7 +3440,7 @@ public class MainScene {
 	private void endSim() {
 		Simulation.instance().endSimulation();
 		Simulation.instance().getSimExecutor().shutdownNow();
-		mainSceneExecutor.shutdownNow();
+//		mainSceneExecutor.shutdownNow();
 		getDesktop().clearDesktop();
 		timeLabeltimer.stop();
 		stage.close();
@@ -3666,45 +3666,45 @@ public class MainScene {
 	 */
 	public void createProgressCircle(int type) {
 
-		if (type == LOADING) {
-			ProgressIndicator indicator = new ProgressIndicator();
-			indicator.setSkin(null);
-			// indicator.setOpacity(.5);
-			indicator.setStyle("-fx-background-color: transparent; ");
-			StackPane stackPane = new StackPane();
-			Rectangle2D rect = Screen.getPrimary().getBounds();
-			int w = (int) rect.getWidth();
-			int h = (int) rect.getHeight();
-			//stackPane.setLayoutX(w/2);
-			//stackPane.setLayoutY(h/2);
-			stackPane.setTranslateX(w/2);
-			stackPane.setTranslateY(h/2);
-			// stackPane.setOpacity(0.5);
-			stackPane.getChildren().add(indicator);
-			StackPane.setAlignment(indicator, Pos.CENTER);
-			stackPane.setBackground(Background.EMPTY);
-			stackPane.setStyle(
-					// "-fx-border-style: none; "
-					"-fx-background-color: transparent; "
-			// + "-fx-background-radius: 3px;"
-			);
-			Scene scene = new Scene(stackPane, 100, 100);
-			scene.setFill(Color.TRANSPARENT);
-			loadingStage = new Stage();
-			//loadingStage.centerOnScreen();
-			// loadingCircleStage.setOpacity(1);
-			if (!isFXGL) setEscapeEventHandler(true, loadingStage);
-			//loadingStage.initOwner(stage);
-			loadingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
-																// specified.
-			loadingStage.getIcons()
-					.add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-			loadingStage.initStyle(StageStyle.TRANSPARENT);
-			loadingStage.setScene(scene);
-			loadingStage.hide();
-		}
+//		if (type == LOADING) {
+//			ProgressIndicator indicator = new ProgressIndicator();
+//			indicator.setSkin(null);
+//			// indicator.setOpacity(.5);
+//			indicator.setStyle("-fx-background-color: transparent; ");
+//			StackPane stackPane = new StackPane();
+//			Rectangle2D rect = Screen.getPrimary().getBounds();
+//			int w = (int) rect.getWidth();
+//			int h = (int) rect.getHeight();
+//			//stackPane.setLayoutX(w/2);
+//			//stackPane.setLayoutY(h/2);
+//			stackPane.setTranslateX(w/2);
+//			stackPane.setTranslateY(h/2);
+//			// stackPane.setOpacity(0.5);
+//			stackPane.getChildren().add(indicator);
+//			StackPane.setAlignment(indicator, Pos.CENTER);
+//			stackPane.setBackground(Background.EMPTY);
+//			stackPane.setStyle(
+//					// "-fx-border-style: none; "
+//					"-fx-background-color: transparent; "
+//			// + "-fx-background-radius: 3px;"
+//			);
+//			Scene scene = new Scene(stackPane, 100, 100);
+//			scene.setFill(Color.TRANSPARENT);
+//			loadingStage = new Stage();
+//			//loadingStage.centerOnScreen();
+//			// loadingCircleStage.setOpacity(1);
+//			if (!isFXGL) setEscapeEventHandler(true, loadingStage);
+//			//loadingStage.initOwner(stage);
+//			loadingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
+//																// specified.
+//			loadingStage.getIcons()
+//					.add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+//			loadingStage.initStyle(StageStyle.TRANSPARENT);
+//			loadingStage.setScene(scene);
+//			loadingStage.hide();
+//		}
 
-		else if (type == AUTOSAVING) {
+		if (type == AUTOSAVING) {
 			// ProgressIndicator indicator = new ProgressIndicator();
 			MaskerPane mPane = new MaskerPane();
 			mPane.setText("Autosaving");
@@ -3803,9 +3803,9 @@ public class MainScene {
 					savingStage.setX((int) (stage.getX() + scene.getWidth() / 2 - 50));
 					savingStage.setY((int) (stage.getY() + scene.getHeight() / 2 - 50));
 					savingStage.show();
-				} else if (type == LOADING) {
-					setMonitor(loadingStage);
-					loadingStage.show();
+//				} else if (type == LOADING) {
+//					setMonitor(loadingStage);
+//					loadingStage.show();
 				} else if (type == PAUSED) {
 					stopPausePopup();
 					startPausePopup();
@@ -3818,9 +3818,9 @@ public class MainScene {
 		// FXUtilities.runAndWait(() -> { // not working for loading sim
 		if (type == AUTOSAVING || type == SAVING) {
 			savingStage.hide();
-		} else if (type == LOADING) {
-			loadingStage.hide();
-			loadingStage.close();
+//		} else if (type == LOADING) {
+//			loadingStage.hide();
+//			loadingStage.close();
 		} else if (type == PAUSED) {
 			stopPausePopup();
 		} else

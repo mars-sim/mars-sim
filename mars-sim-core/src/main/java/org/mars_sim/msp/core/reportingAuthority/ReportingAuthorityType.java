@@ -22,7 +22,8 @@ public enum ReportingAuthorityType {
 	JAXA				(Msg.getString("ReportingAuthorityType.JAXA")), //$NON-NLS-1$
 	NASA				(Msg.getString("ReportingAuthorityType.NASA")), //$NON-NLS-1$
 	RKA					(Msg.getString("ReportingAuthorityType.RKA")), //$NON-NLS-1$
-	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MarsSociety")) //$NON-NLS-1$
+	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MarsSociety")), //$NON-NLS-1$
+	SPACE_X				(Msg.getString("ReportingAuthorityType.SpaceX")) //$NON-NLS-1$
 	;
 
 	public static ReportingAuthorityType[] SPONSORS = new ReportingAuthorityType[]{
@@ -33,7 +34,8 @@ public enum ReportingAuthorityType {
 			JAXA,
 			NASA,
 			RKA,
-			MARS_SOCIETY};
+			MARS_SOCIETY,
+			SPACE_X};
 
 	public static int numSponsors = SPONSORS.length;
 	private String name;

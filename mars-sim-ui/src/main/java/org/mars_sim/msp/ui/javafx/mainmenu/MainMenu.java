@@ -720,8 +720,8 @@ public class MainMenu {
 				if (isSoundDisabled)
 					mainMenu.setSoundDisabled();
 				   
-				mainScene.createLoadingIndicator();
-				mainScene.showWaitStage(MainScene.LOADING);
+//				mainScene.createLoadingIndicator();
+//				mainScene.showWaitStage(MainScene.LOADING);
 			});
 
 			CompletableFuture.supplyAsync(() -> submitTask(fileLocn, false));

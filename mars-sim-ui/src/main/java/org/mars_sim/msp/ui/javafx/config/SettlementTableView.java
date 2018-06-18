@@ -40,7 +40,7 @@ public class SettlementTableView {
     public static final int Column5MapKey = 5;
     public static final int Column6MapKey = 6; 
     public static final int NUM_COLUMNS = 7;
-    public static final int NUM_SPONSORS = 8;
+    public static final int NUM_SPONSORS = ReportingAuthorityType.SPONSORS.length;
     
     private int rowCount = 2; //Will be re-calculated after if incorrect.
 
@@ -56,15 +56,7 @@ public class SettlementTableView {
 	
     //private SpreadsheetView spreadSheetView;
 	
-	private ReportingAuthorityType[] sponsors = new ReportingAuthorityType[]{
-			ReportingAuthorityType.CNSA,
-			ReportingAuthorityType.CSA,
-			ReportingAuthorityType.ESA,
-			ReportingAuthorityType.ISRO,
-			ReportingAuthorityType.JAXA,
-			ReportingAuthorityType.MARS_SOCIETY,
-			ReportingAuthorityType.NASA,
-			ReportingAuthorityType.RKA};
+	private final ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
 	
 	private String[] headers = new String[]{"Settlement","Template","Settlers",
 	                                      "Bots","Sponsor","Latitude","Longitude"};
@@ -442,7 +434,7 @@ public class SettlementTableView {
     public ObservableList<String> createAutoCompleteData() {
         List<String> sponsorList = new ArrayList<>();
         for (int i= 0; i<NUM_SPONSORS; i++) {
-        	String s = sponsors[i].toString();//.getName();
+        	String s = SPONSORS[i].toString();//.getName();
         	//System.out.println(s);
         	sponsorList.add(s);
         }

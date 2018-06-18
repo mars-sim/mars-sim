@@ -30,7 +30,6 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.StringConverter;
 
-@SuppressWarnings({"restriction" })
 public class TableViewCombo {
 
 	/** default logger. */
@@ -52,8 +51,6 @@ public class TableViewCombo {
 	private TableColumn<SettlementBase, String> latCol, longCol, settlerCol, botCol, templateCol;
 
 	private List<SettlementBase> settlements = new ArrayList<>();
-
-	//private List<String> settlementConfigNames;
 
 	private List<SettlementTemplate> templates;
 
@@ -79,8 +76,7 @@ public class TableViewCombo {
 
 	}
 
-	@SuppressWarnings("restriction")
-	public TableView createGUI() {
+	public TableView<SettlementBase> createGUI() {
 
         table_view = new TableView<>();
         table_view.setEditable(true);
@@ -92,7 +88,6 @@ public class TableViewCombo {
         return table_view;
 	}
 
-	@SuppressWarnings("restriction")
 	public void init() {
         TableColumn<SettlementBase, String> nameCol = new TableColumn<>(headers[0]);
         nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -136,7 +131,9 @@ public class TableViewCombo {
         		SPONSORS[4].toString(),
         		SPONSORS[5].toString(),
         		SPONSORS[6].toString(),
-        		SPONSORS[7].toString()));
+        		SPONSORS[7].toString(),
+        		SPONSORS[8].toString()    		
+        		));
         sponsorCol.setMinWidth(250);
 
 
@@ -158,7 +155,6 @@ public class TableViewCombo {
 
     }
 
-	@SuppressWarnings("restriction")
 	public TableColumn<SettlementBase, String> setCellFactory(TableColumn<SettlementBase, String> col) {
 
         col.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<String>(){
@@ -281,7 +277,7 @@ public class TableViewCombo {
     	}
 	}
 
-	public TableView getTableView() {
+	public TableView<SettlementBase> getTableView() {
 		return table_view;
 	}
 
@@ -304,10 +300,9 @@ public class TableViewCombo {
 	//	allData.add(base);
 	//}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void addListChangeLister() {
 
-	    allData.addListener(new ListChangeListener() {
+	    allData.addListener(new ListChangeListener<Object>() {
 	    	@Override
 	    	public void onChanged(ListChangeListener.Change change) {
 	    		//System.out.println("onChange event: ");
@@ -360,7 +355,6 @@ public class TableViewCombo {
 	    });
 	}
 
-    @SuppressWarnings("unchecked")
 	private ObservableList<SettlementBase> generateDataInMap() {
 
 		settlements.clear();

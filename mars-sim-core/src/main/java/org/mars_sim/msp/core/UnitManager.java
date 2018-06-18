@@ -855,6 +855,8 @@ public class UnitManager implements Serializable {
 					// Make sure settlement name isn't already being used.
 					while (!isUniqueName) {
 
+						int index = -1;
+						
 						isUniqueName = true;
 
 						gender = GenderType.FEMALE;
@@ -871,18 +873,14 @@ public class UnitManager implements Serializable {
 						List<String> male_first_list = new ArrayList<>();
 						List<String> female_first_list = new ArrayList<>();
 
-
 						if (sponsor.contains("CNSA")) { //if (type == ReportingAuthorityType.CNSA) {
-							last_list = lastNamesBySponsor.get(0);
-							male_first_list = maleFirstNamesBySponsor.get(0);
-							female_first_list = femaleFirstNamesBySponsor.get(0);
+							index = 0;
 
 						} else if (sponsor.contains("CSA")) {//if (type == ReportingAuthorityType.CSA) {
-							last_list = lastNamesBySponsor.get(1);
-							male_first_list = maleFirstNamesBySponsor.get(1);
-							female_first_list = femaleFirstNamesBySponsor.get(1);
+							index = 1;
 
 						} else if (sponsor.contains("ESA")) {//if (type == ReportingAuthorityType.ESA) {
+							index = 2;
 							//System.out.println("country is " + country);
 							int countryID = getCountryID(country);
 							//System.out.println("countryID is " + countryID);
@@ -891,32 +889,39 @@ public class UnitManager implements Serializable {
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
 
 						} else if (sponsor.contains("ISRO")) {//if (type == ReportingAuthorityType.ISRO) {
-							last_list = lastNamesBySponsor.get(3);
-							male_first_list = maleFirstNamesBySponsor.get(3);
-							female_first_list = femaleFirstNamesBySponsor.get(3);
+							index = 3;
 
 						} else if (sponsor.contains("JAXA")) {//if (type == ReportingAuthorityType.JAXA) {
-							last_list = lastNamesBySponsor.get(4);
-							male_first_list = maleFirstNamesBySponsor.get(4);
-							female_first_list = femaleFirstNamesBySponsor.get(4);
+							index = 4;
 
 			    		} else if (sponsor.contains("NASA")) {//if (type == ReportingAuthorityType.NASA) {
-							last_list = lastNamesBySponsor.get(5);
-							male_first_list = maleFirstNamesBySponsor.get(5);
-							female_first_list = femaleFirstNamesBySponsor.get(5);
+			    			index = 5;
 
 						} else if (sponsor.contains("RKA")) { //if (type == ReportingAuthorityType.RKA) {
-							last_list = lastNamesBySponsor.get(6);
-							male_first_list = maleFirstNamesBySponsor.get(6);
-							female_first_list = femaleFirstNamesBySponsor.get(6);
+							index = 6;
 
+						} else if (sponsor.contains("Mars Society")) {
+							index = 7;
+			    			skip = true;
+				    		fullname = getNewName(UnitType.PERSON, null, gender, null);
+				    		
+						} else if (sponsor.contains("SpaceX")) {
+							index = 8;
+							
 			    		} else { // if belonging to the Mars Society
+			    			index = 7;
 			    			skip = true;
 				    		fullname = getNewName(UnitType.PERSON, null, gender, null);
 			    		}
 
+						if (index != -1 && index != 2 && index != 7 && index != 8) {
+			    			last_list = lastNamesBySponsor.get(index);
+							male_first_list = maleFirstNamesBySponsor.get(index);
+							female_first_list = femaleFirstNamesBySponsor.get(index);
+						}
+						
 						if (!skip) {
-
+							
 			    			int rand0 = RandomUtil.getRandomInt(last_list.size()-1);
 			    			lastN = last_list.get(rand0);
 
@@ -2009,6 +2014,8 @@ public class UnitManager implements Serializable {
 		else if (sponsor.contains("RKA"))//.equals(Msg.getString("ReportingAuthorityType.RKA")))
 			return "Russia";
 		else if (sponsor.contains("MS"))
+			return "US";
+		else if (sponsor.contains("SpaceX"))
 			return "US";
 		else
 			return "US";
