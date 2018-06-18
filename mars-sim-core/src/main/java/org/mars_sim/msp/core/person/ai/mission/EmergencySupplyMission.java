@@ -683,7 +683,7 @@ implements Serializable {
             if (resource.equals(waterAR)) amountNeededSol = config.getWaterConsumptionRate();
             if (resource.equals(foodAR)) amountNeededSol = config.getFoodConsumptionRate();
 
-            double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_IN_MONTH_LONG * 3D);
+            double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_PER_MONTH_LONG * 3D);
             int numPeople = startingSettlement.getAllAssociatedPeople().size();
             result = numPeople * amountNeededOrbit ;
         }
@@ -757,7 +757,7 @@ implements Serializable {
 
         Map<AmountResource, Double> result = new HashMap<AmountResource, Double>();
 
-        double solsMonth = MarsClock.SOLS_IN_MONTH_LONG;
+        double solsMonth = MarsClock.SOLS_PER_MONTH_LONG;
         int numPeople = settlement.getAllAssociatedPeople().size();
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.

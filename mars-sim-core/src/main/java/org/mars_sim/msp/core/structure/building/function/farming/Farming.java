@@ -1066,7 +1066,7 @@ implements Serializable {
     public double getAverageGrowingCyclesPerOrbit() {
 
         double aveGrowingTime = Crop.getAverageCropGrowingTime();
-        int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
         double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000 millisols
 
         return aveGrowingCyclesPerOrbit;

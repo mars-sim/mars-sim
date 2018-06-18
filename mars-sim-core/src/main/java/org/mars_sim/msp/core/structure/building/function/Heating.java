@@ -290,7 +290,7 @@ implements Serializable {
 		U_value_area_crack_length_for_airlock = 0.244 * .075 * airChangePerHr * q_H_factor * (2 * (2 + 6) + 4 * (.5 + .5) );
 		//assuming two EVA airlock
 
-		timeSlice = MarsClock.SECONDS_IN_MILLISOL / PER_UPDATE ;
+		timeSlice = MarsClock.SECONDS_PER_MILLISOL / PER_UPDATE ;
 	
 		// References : 
 		// (1) https://en.wiktionary.org/wiki/humid_heat

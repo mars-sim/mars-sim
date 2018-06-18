@@ -625,9 +625,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		s.append(year);
 
 		int month = RandomUtil.getRandomInt(11) + 1;
-        //String monthString = EarthClock.getMonthForInt(month-1).substring(0, 3);
-        s.append("-").append(month).append("-");
-
+        s.append("-");
+        if (month < 10) s.append(0);
+        s.append(month).append("-");
+        
 		int day;
 		if (month == 2) {
 			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
@@ -665,8 +666,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		int second = RandomUtil.getRandomInt(59);
 		if (second < 10)
 			s.append(0);
-		s.append(second);
-
+    	s.append(second).append(".000");
+    	
 		return s.toString();
 	}
 

@@ -49,7 +49,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
-	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_IN_MILLISOL;
+	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
 
 	public final static int GLOBE_BOX_HEIGHT = MarsGlobe.map_height;
 	public final static int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;

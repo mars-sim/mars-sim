@@ -1029,7 +1029,7 @@ implements Serializable {
 				currentTime = masterClock.getMarsClock();
 
 			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 			if (totalTimeOrbits < 1D) {
 				avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
@@ -1060,7 +1060,7 @@ implements Serializable {
 				currentTime = masterClock.getMarsClock();
 
 			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 			if (totalTimeOrbits < 1D) {
 				avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;

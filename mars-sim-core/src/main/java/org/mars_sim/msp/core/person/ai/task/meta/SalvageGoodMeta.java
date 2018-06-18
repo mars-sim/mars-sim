@@ -56,8 +56,8 @@ public class SalvageGoodMeta implements MetaTask, Serializable {
 	        MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
 	        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	        double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-	        if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
+	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+	        if (totalTimeOrbits < MarsClock.SOLS_PER_MONTH_LONG) {
 	            result = 0D;
 	            return 0;
 	        }

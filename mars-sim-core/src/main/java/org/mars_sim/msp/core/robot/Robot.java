@@ -243,8 +243,9 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         s.append(year);
 
         int month = RandomUtil.getRandomInt(11) + 1;
-        //String monthString = EarthClock.getMonthForInt(month-1).substring(0, 3);
-        s.append("-").append(month).append("-");
+        s.append("-");
+        if (month < 10) s.append(0);
+        s.append(month).append("-");
 
         int day;
         if (month == 2) {
@@ -279,7 +280,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 
         int second = RandomUtil.getRandomInt(59);
         if (second < 10) s.append(0);
-    	s.append(second);
+    	s.append(second).append(".000");
 
         //return month + "/" + day + "/" + year + " " + hour + ":"
         //+ minute + ":" + second;

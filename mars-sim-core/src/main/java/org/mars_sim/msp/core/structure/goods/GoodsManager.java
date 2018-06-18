@@ -592,7 +592,7 @@ public class GoodsManager implements Serializable {
                 amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_FACTOR;
             }
 
-            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
         }
@@ -606,7 +606,7 @@ public class GoodsManager implements Serializable {
      */
     private double getFuelDemand(AmountResource resource) {
         if (resource.equals(ResourceUtil.methaneAR)) {
-            double amountNeededOrbit = METHANE_AVERAGE_DEMAND * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            double amountNeededOrbit = METHANE_AVERAGE_DEMAND * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * FUEL_FACTOR * trade_factor;
         }
@@ -669,7 +669,7 @@ public class GoodsManager implements Serializable {
         if (resource.equals(ResourceUtil.waterAR)) {
             //double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
         	double amountNeededSol = personConfig.getWaterUsageRate();
-            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getNumCurrentPopulation();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
         }
@@ -685,7 +685,7 @@ public class GoodsManager implements Serializable {
         //AmountResource toiletTissue = AmountResource.findAmountResource("toilet tissue");
         if (resource.equals(ResourceUtil.toiletTissueAR)) {
             double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
-            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getNumCurrentPopulation();
             return numPeople * amountNeededOrbit;
         }
@@ -817,7 +817,7 @@ public class GoodsManager implements Serializable {
         
         double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
         double totalCropArea = farm.getGrowingArea();
-        int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
         if (resource.equals(ResourceUtil.waterAR)) {
             // Average water consumption rate of crops per orbit using total growing area.
@@ -910,7 +910,7 @@ public class GoodsManager implements Serializable {
             if (totalInputsValue > 0D) {
                 double demandMillisol = resourceInputRate;
                 double demandSol = demandMillisol * 1000D;
-                double demandOrbit = demandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+                double demandOrbit = demandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
                 demand = demandOrbit;
             }
@@ -1102,13 +1102,13 @@ public class GoodsManager implements Serializable {
 
         if (r.equals(ResourceUtil.TABLE_SALT)) {
             // Assuming a person takes 2.5 meals per sol
-            demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
+            demand = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
         }
         else {
 	        for (AmountResource ar : Cooking.getOilMenuARList()) {
 		        if (r.equals(ar.getName().toLowerCase())){
 		            // Assuming a person takes 2.5 meals per sol
-		            demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;
+		            demand = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;
 		        }
 	        }
         }
@@ -1116,7 +1116,7 @@ public class GoodsManager implements Serializable {
         // Determine total demand for cooked meal mass for the settlement.
         //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
-        double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
         int numPeople = settlement.getAllAssociatedPeople().size();
         double cookedMealDemand = numPeople * cookedMealDemandOrbit;
 
@@ -1162,7 +1162,7 @@ public class GoodsManager implements Serializable {
 	        if (hasDessert) {
 	            //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 	            double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
-	            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+	            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 	            int numPeople = settlement.getAllAssociatedPeople().size();
 	            demand = numPeople * amountNeededOrbit * DESSERT_FACTOR;
 	        }

@@ -11,11 +11,15 @@ import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
@@ -34,7 +38,16 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// Data members
+	/* number of milliseconds since 1 January 1970 00:00:00 at the start of the sim (2043 Sep 30 00:00:00 UTC0)*/
+	private static long millisAtStart;
+	
+	// Data members	
+//	private double seconds;
+//	private int minutes;
+//	private int hours;
+	
+
+	
 	private GregorianCalendar gregCal;
 
 	private SimpleDateFormat f0, f2, f1, f3;
@@ -42,6 +55,8 @@ implements Serializable {
 	private SimpleTimeZone zone;
 
 	private ZonedDateTime zonedDateTime;
+	
+	private static ZonedDateTime dateOfFirstLanding;
 
 	/**
 	 * Constructor.
@@ -74,11 +89,11 @@ implements Serializable {
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
 
-		//2017-03-27 set it to Locale.US
+		// Set it to Locale.US
 		f0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss '(UT)'", Locale.US);
 		f0.setTimeZone(zone);
 
-		//2017-03-27 set it to Locale.US
+		// Set it to Locale.US
 		f1 = new SimpleDateFormat("yyyy-MM-dd HH:mm '(UT)'", Locale.US);
 		f1.setTimeZone(zone);
 
@@ -86,26 +101,42 @@ implements Serializable {
 		// i.e. f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault(Locale.Category.FORMAT));
 		//2017-03-27 set it to Locale.US
 
-		f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-		f2.setTimeZone(zone);
+		f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+		f2.setTimeZone(zone);   
+		
+		String iso8601 = null;//"2043-09-30T00:00:00.000Z"; //"2043-09-30T00:00:00"; 
+		
+		iso8601 = fullDateTimeString.replace(" ","T") + "Z";
+		
+		dateOfFirstLanding = ZonedDateTime.parse(iso8601);
+		//LocalDateTime ldt = zdt.toLocalDateTime();
+		
+		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-ddTHH:m:ss.fff+zz:zz[Etc/UTC]"); //2043-09-30T00:0:00.000+00:00[Etc/UTC]
+		//dateOfFirstLanding = ZonedDateTime.parse(fullDateTimeString);//, formatter);	
+
+//		LocalDateTime dateOfFirstLanding = LocalDateTime.of(2043, Month.SEPTEMBER, 30, 0, 0);
+//		String formattedDateTime = dateOfFirstLanding.format(formatter); 
+		
 		try {
 			gregCal.setTime(f2.parse(fullDateTimeString));
-			
+			computeMillisAtStart();
 		} catch (Exception ex) {//ParseException ex) {
 			ex.printStackTrace();
 			//throw new IllegalStateException(ex);
 		}
 
 		// Initialize a second formatter
-		//2017-03-27 set it to Locale.US
+		// Set it to Locale.US
 		f3 = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);//.SSS"); // :SSS
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
+		
+		
 
 	}
 
-    // 2017-01-03 Added getMonthForInt()
+
 	public static String getMonthForInt(int m) {
 	    String month = "invalid";
 	    DateFormatSymbols dfs = new DateFormatSymbols();
@@ -116,7 +147,7 @@ implements Serializable {
 	    return month;
 	}
 
-	   // 2017-01-03 Added getMonthForInt()
+
 	public static int getCurrentYear(EarthClock clock) {
 		return clock.getYear();
 	}
@@ -125,6 +156,33 @@ implements Serializable {
 		return gregCal;
 	}
 
+	/**
+	 * Returns the current date/time 
+	 * @return date
+	 */
+	public Date getCurrentDateTime() {
+		return gregCal.getTime();
+	}
+	
+	public static ZonedDateTime getDateOfFirstLanding() {
+		return dateOfFirstLanding;
+	}
+	/**
+	 * Returns the number of milliseconds since 1 January 1970 00:00:00
+	 * @return long
+	 */
+	public static long getMillisAtStart() {
+		return millisAtStart;
+	}
+	
+	/**
+	 * Returns the number of milliseconds since 1 January 1970 00:00:00
+	 * @return long
+	 */
+	public void computeMillisAtStart() {
+		millisAtStart = gregCal.getTimeInMillis();
+	}
+	
 	/**
 	 * Returns the number of milliseconds since 1 January 1970 00:00:00
 	 * @return long
@@ -160,6 +218,7 @@ implements Serializable {
 
 		return millis;
 	}
+
 
 	/**
 	 * Returns the date/time formatted in a string

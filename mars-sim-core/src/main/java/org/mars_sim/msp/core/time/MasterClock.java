@@ -133,6 +133,8 @@ public class MasterClock implements Serializable {
 
         // Create an Earth clock
         earthTime = new EarthClock(config.getEarthStartDateTime());
+        
+        ClockUtils.getFirstLandingDateTime();
 
         // Create an Uptime Timer
         uptimer = new UpTimer(this);
@@ -379,7 +381,7 @@ public class MasterClock implements Serializable {
      * @throws Exception if time pulse length could not be determined.
      */
     public double computeTimePulseInMillisols(long elapsedMilliseconds) {
-    	return computeTimePulseInSeconds(elapsedMilliseconds)/MarsClock.SECONDS_IN_MILLISOL;
+    	return computeTimePulseInSeconds(elapsedMilliseconds)/MarsClock.SECONDS_PER_MILLISOL;
     }
 
     /**
@@ -985,7 +987,7 @@ public class MasterClock implements Serializable {
     		//else {
 		        double t = tpfCache * currentTR;
 		        // Get the time pulse length in millisols.
-		        double timePulse = t / MarsClock.SECONDS_IN_MILLISOL;
+		        double timePulse = t / MarsClock.SECONDS_PER_MILLISOL;
 	        	//System.out.println("tpfCache : " + Math.round(tpfCache *1000.0)/1000.0 
 	        	//		+ "   tpfCache * timeRatio : " + Math.round(t *1000.0)/1000.0 
 	        	//		+ "   elapsedLast : " + Math.round(elapsedLast *1000.0)/1000.0

@@ -279,7 +279,7 @@ public class Crop implements Serializable {
 	    averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
 		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
 
-	    conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_IN_MILLISOL ;
+	    conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_PER_MILLISOL ;
 
 		t_initial = building.getInitialTemperature();
 
@@ -928,7 +928,7 @@ public class Crop implements Serializable {
 		// 2015-04-09 Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)]  * [Wm^-2]
-		double PAR_interval = uPAR / 1_000_000D * time * MarsClock.SECONDS_IN_MILLISOL ; // in mol / m^2 within this period of time
+		double PAR_interval = uPAR / 1_000_000D * time * MarsClock.SECONDS_PER_MILLISOL ; // in mol / m^2 within this period of time
 		// [mol /m^2] = [umol /m^2 /s] / u  * [millisols] * [s /millisols]
 		// 1 u = 1 micro = 1/1_000_000
 		// Note : daily-PAR has the unit of [mol /m^2 /day]

@@ -70,8 +70,10 @@
 		<!-- Earth start date/time -->
 		<!-- "yyyy-MM-dd hh:mm:ss" format -->
 		<!-- Default: 2043-09-30 00:00:00 -->
+		<!-- Note that iso8601 String is "2043-09-30T00:0:00.000Z". 
+		     see https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME --> 
 		<!-- Note that changing this date to another value is currently UNSUPPORTED -->
-		<earth-start-date-time value="2043-09-30 00:00:00 GMT00:00 " />
+		<earth-start-date-time value="2043-09-30 00:00:00.000" />
 
 		<!-- Mars start date/time -->
 		<!-- (See time.txt) -->

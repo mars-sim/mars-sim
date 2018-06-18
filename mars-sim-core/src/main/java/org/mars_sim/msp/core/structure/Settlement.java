@@ -3368,7 +3368,7 @@ implements Serializable, LifeSupportType, Objective {
 
         double storedWater = getInventory().getARStored(ResourceUtil.waterID, false);
         double requiredDrinkingWaterOrbit = water_consumption * getNumCurrentPopulation() *
-                MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+                MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
         // If stored water is less than 20% of required drinking water for Orbit, wash water should be rationed.
         if (storedWater < (requiredDrinkingWaterOrbit * .0025D)) {
