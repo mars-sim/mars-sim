@@ -61,6 +61,8 @@ public class ClockUtils implements Serializable {
 
 	// Martian/Gregorian calendar conversion
 	public static final double SECONDS_PER_MILLISOL = 88.775244; 
+	
+	public static final double MILLISOLS_PER_DAY = 973.2469726;
 
 	private Simulation sim = Simulation.instance();
 	

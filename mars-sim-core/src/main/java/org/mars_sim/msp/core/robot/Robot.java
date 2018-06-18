@@ -254,13 +254,14 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
             } else {
                 day = RandomUtil.getRandomInt(27) + 1;
             }
-        } else {
-            if (month % 2 == 1) {
-                day = RandomUtil.getRandomInt(30) + 1;
-            } else {
-                day = RandomUtil.getRandomInt(29) + 1;
-            }
         }
+        
+		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+			day = RandomUtil.getRandomInt(30) + 1;
+		} else {
+			day = RandomUtil.getRandomInt(29) + 1;
+		}
+    		
         // TODO: find out why sometimes day = 0 as seen on
         if (day == 0) {
         	logger.warning( name + "'s date of birth is on the day 0th. Incremementing to the 1st.");

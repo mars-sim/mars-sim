@@ -35,7 +35,7 @@ implements Serializable {
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
 
-	private NaturalAttributeManager attributes;
+//	private NaturalAttributeManager attributes;
 	
 	/**
 	 * Constructor.
@@ -76,9 +76,11 @@ implements Serializable {
 	public double getCapability(Person person) {
 
 		double result = 0D;
-
-		if (attributes == null)
-			attributes = person.getNaturalAttributeManager();
+		
+		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
+		
+//		if (attributes == null)
+//			attributes = person.getNaturalAttributeManager();
 		 
 		// Add experience aptitude.
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
