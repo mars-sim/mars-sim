@@ -6,5 +6,5 @@
 /profiles/
 .classpath
 .project
-/.settings
+/.settings/*
 .idea
