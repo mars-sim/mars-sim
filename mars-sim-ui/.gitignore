@@ -6,6 +6,5 @@
 /profiles/
 .classpath
 .project
-/.settings/*
+/.settings/**
 .idea
-org.eclipse.jdt.core.prefs
