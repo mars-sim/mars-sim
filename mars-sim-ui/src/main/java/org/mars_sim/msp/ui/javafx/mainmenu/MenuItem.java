@@ -24,7 +24,6 @@ import javafx.scene.text.Text;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SuppressWarnings("restriction")
 public class MenuItem extends Pane {
     private Text text;
 

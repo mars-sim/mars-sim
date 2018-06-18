@@ -12,7 +12,6 @@ import insidefx.undecorator.UndecoratorScene;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerClient;
-import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import org.mars_sim.network.SettlementRegistry;
 
 import com.jfoenix.controls.JFXButton;
@@ -36,7 +35,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -49,7 +47,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -60,12 +57,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-
-import org.controlsfx.control.MaskerPane;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -79,7 +73,6 @@ import org.mars_sim.msp.core.structure.SettlementTemplate;
  * ScenarioConfigEditorFX allows users to configure the types of settlements
  * available at the start of the simulation.
  */
-@SuppressWarnings("restriction")
 public class ScenarioConfigEditorFX {
 
 	/** default logger. */
@@ -176,16 +169,15 @@ public class ScenarioConfigEditorFX {
 
 	}
 
-	@SuppressWarnings("restriction")
 	public void createGUI() {
 		Platform.setImplicitExit(false);
-		/*
-		 * try { UIManager.setLookAndFeel(new NimRODLookAndFeel()); }
-		 * catch(Exception ex){ logger.log(Level.WARNING,
-		 * Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
-		 * }
-		 */
-
+//		try { 
+//			UIManager.setLookAndFeel(new NimRODLookAndFeel()); 
+//		}
+//		catch(Exception ex) { 
+//			logger.log(Level.WARNING,
+//			Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
+//		}
 		FXMLLoader fxmlLoader = null;
 
 		try {
@@ -287,14 +279,8 @@ public class ScenarioConfigEditorFX {
 
 	}
 
-	// private Parent createEditor() {
-	@SuppressWarnings("restriction")
 	private BorderPane createEditorFrame() {
-		// AnchorPane pane = new AnchorPane();
 		borderAll = new BorderPane();
-		// AnchorPane.setTopAnchor(borderAll, 50.0);
-		// AnchorPane.setLeftAnchor(borderAll, 50.0);
-		// AnchorPane.setRightAnchor(borderAll, 50.0);
 		borderAll.setPadding(new Insets(0, 15, 0, 15));
 
 		topVB = new VBox();
@@ -430,7 +416,7 @@ public class ScenarioConfigEditorFX {
 		// vbCenter.getChildren().add(defaultButton);
 		//vbTopLeft.getChildren().add(refreshDefaultButton);
 
-		// 2014-12-15 Added Edit Alpha Crew button.
+		// Added Edit Alpha Crew button.
 		crewButton = new JFXButton();//Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
 		crewButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/people32.png"))));
 		setMouseCursor(crewButton);
@@ -475,7 +461,7 @@ public class ScenarioConfigEditorFX {
 		setMouseCursor(startButton);
 		setQuickToolTip(startButton, Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		startButton.setId("startButton");
-		// 2015-10-15 Made "Enter" key to work like the space bar for firing the
+		// Made "Enter" key to work like the space bar for firing the
 		// button on focus
 		startButton.defaultButtonProperty().bind(startButton.focusedProperty());
 		startButton.requestFocus();
@@ -668,9 +654,6 @@ public class ScenarioConfigEditorFX {
 		// Clear configuration settlements.
 		settlementConfig.clearInitialSettlements();
 		// Add configuration settlements from table data.
-		//for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-		//System.out.println("rows : "+ settlementTableView.getRowCount());
-		//System.out.println("rows : "+ settlementTableView.getTableView().getItems().size());
 		for (int x = 0; x < tableViewCombo.getRowCount(); x++) {
 			if (multiplayerClient != null) {
 				if (hasSettlement && x < settlementList.size())
@@ -710,46 +693,46 @@ public class ScenarioConfigEditorFX {
 		}
 	}
 
-	/**
-	 * Close and dispose dialog window.
-	 */
-	private int waitLoading() {
-
-		StackPane stackPane = new StackPane();
-		MaskerPane indicator = new MaskerPane();
-		indicator.setScaleX(1.2);
-		indicator.setScaleY(1.2);
-		stackPane.getChildren().add(indicator);
-		StackPane.setAlignment(indicator, Pos.CENTER);
-		stackPane.setBackground(Background.EMPTY);
-
-		// stage.hide();
-		Scene scene = new Scene(stackPane);// , 200, 200);
-		scene.setFill(Color.TRANSPARENT);
-
-		// cstage = stage;
-		cstage.initStyle(StageStyle.TRANSPARENT);
-		cstage.setScene(scene);
-
-		StartUpLocation startUpLoc = new StartUpLocation(borderAll.getPrefWidth(), borderAll.getPrefHeight());
-		double xPos = startUpLoc.getXPos();
-		double yPos = startUpLoc.getYPos();
-
-		if (xPos != 0 && yPos != 0) {
-			cstage.setX(xPos);
-			cstage.setY(yPos);
-			cstage.centerOnScreen();
-			// System.out.println(" x : " + xPos + " y : " + yPos);
-		} else {
-			cstage.centerOnScreen();
-			// System.out.println("calling centerOnScreen()");
-			// System.out.println(" x : " + xPos + " y : " + yPos);
-		}
-		cstage.show();
-		cstage.requestFocus();
-		stage.hide();
-		return 1;
-	}
+//	/**
+//	 * Close and dispose dialog window.
+//	 */
+//	private int waitLoading() {
+//
+//		StackPane stackPane = new StackPane();
+//		MaskerPane indicator = new MaskerPane();
+//		indicator.setScaleX(1.2);
+//		indicator.setScaleY(1.2);
+//		stackPane.getChildren().add(indicator);
+//		StackPane.setAlignment(indicator, Pos.CENTER);
+//		stackPane.setBackground(Background.EMPTY);
+//
+//		// stage.hide();
+//		Scene scene = new Scene(stackPane);// , 200, 200);
+//		scene.setFill(Color.TRANSPARENT);
+//
+//		// cstage = stage;
+//		cstage.initStyle(StageStyle.TRANSPARENT);
+//		cstage.setScene(scene);
+//
+//		StartUpLocation startUpLoc = new StartUpLocation(borderAll.getPrefWidth(), borderAll.getPrefHeight());
+//		double xPos = startUpLoc.getXPos();
+//		double yPos = startUpLoc.getYPos();
+//
+//		if (xPos != 0 && yPos != 0) {
+//			cstage.setX(xPos);
+//			cstage.setY(yPos);
+//			cstage.centerOnScreen();
+//			// System.out.println(" x : " + xPos + " y : " + yPos);
+//		} else {
+//			cstage.centerOnScreen();
+//			// System.out.println("calling centerOnScreen()");
+//			// System.out.println(" x : " + xPos + " y : " + yPos);
+//		}
+//		cstage.show();
+//		cstage.requestFocus();
+//		stage.hide();
+//		return 1;
+//	}
 
 	/**
 	 * Close and dispose dialog window.

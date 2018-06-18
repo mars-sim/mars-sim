@@ -84,8 +84,8 @@ implements ActionListener {
 	public static final int HORIZONTAL = 635;
 	public static final int VERTICAL = 435;
 
-	public static final int HORIZONTAL_MINIMAP = 320;
-	public static final int VERTICAL_MINIMAP = 695;
+	public static final int HORIZONTAL_MINIMAP = 300;//274
+	public static final int VERTICAL_MINIMAP = 695;//695;
 
 	// Data members
 	private Integer[] lon_degrees = new Integer[361];
@@ -177,10 +177,11 @@ implements ActionListener {
 			// Prepare globe display
 			globeNav = new GlobeDisplay(this);
 			JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			//globePane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
 			globePane.setBackground(Color.black);
 			globePane.setOpaque(true);
-			globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-					new LineBorder(Color.gray)));
+			//globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+			//		new LineBorder(Color.gray)));
 			globePane.add(globeNav);
 
 			globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -189,9 +190,10 @@ implements ActionListener {
 			///////////////////////////////////////////////////////////////////////////
 
 			mapPaneInner = new JPanel(new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT, 0, 0));
-			//mapPaneInner.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-			//		new LineBorder(Color.gray)));
+			mapPaneInner.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+					new LineBorder(Color.gray)));
 			mapPaneInner.setBackground(Color.black);
+			mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
 			mapPaneInner.setOpaque(true);
 			mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
 			mapPaneInner.setAlignmentY(CENTER_ALIGNMENT);
@@ -199,13 +201,14 @@ implements ActionListener {
 
 
 			JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-			detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-					new LineBorder(Color.gray)));
+			//detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+			//		new LineBorder(Color.gray)));
 			detailPane.setBackground(Color.black);
 			detailPane.setOpaque(true);
 			detailPane.add(mapPaneInner);
 
 			map = new MapPanel(desktop, 500L);
+			map.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
 			map.setNavWin(this);
 			map.addMouseListener(new mapListener());
 			map.addMouseMotionListener(new mouseMotionListener());
@@ -243,6 +246,8 @@ implements ActionListener {
 			bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
 			//bottomPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 			bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+			bottomPane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, 15));
+			
 			wholePane.add(bottomPane);//, BorderLayout.SOUTH);
 			//mapPaneInner.add(bottomPane, BorderLayout.SOUTH);
 
@@ -394,7 +399,9 @@ implements ActionListener {
 			//JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
 			//legendPanel.add(ruler, BorderLayout.NORTH);
 			//buttonsPane.add(legendPanel, BorderLayout.NORTH);
-
+			optionsPane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, 15));
+			
+			setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 			setSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 			setPreferredSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 
@@ -593,8 +600,9 @@ implements ActionListener {
 			goThere.setAlignmentY(.5F);
 			positionPane.add(goThere);
 
-			setSize(new Dimension(HORIZONTAL, VERTICAL));
-			setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
+			setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
+			//setSize(new Dimension(HORIZONTAL, VERTICAL));
+			//setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 
 		}
 

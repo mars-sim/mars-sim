@@ -51,8 +51,8 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
 	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_IN_MILLISOL;
 
-	public final static int GLOBE_BOX_HEIGHT = 300;
-	public final static int GLOBE_BOX_WIDTH = 300;
+	public final static int GLOBE_BOX_HEIGHT = MarsGlobe.map_height;
+	public final static int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
 	public final static int LIMIT = 60; // the max amount of pixels in each mouse drag that the globe will update itself
 
 	private static final double HALF_PI = Math.PI / 2d;
@@ -378,7 +378,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
 			//dbImage = createImage(150,150);
-			dbImage = createImage(height, height);
+			dbImage = createImage(width, height);
 			if (dbImage == null) {
 				//System.out.println("dbImage is null");
 				return;
@@ -389,7 +389,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		dbg.setColor(Color.black);
 		//dbg.fillRect(0, 0, 150, 150);
-		dbg.fillRect(0, 0, height, height);
+		dbg.fillRect(0, 0, width, height);
 		//Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		dbg.drawImage(starfield, 0, 0, Color.black, null);
 
@@ -579,6 +579,13 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			g.drawLine(150, 0, 150, 117);
 			g.drawLine(150, 185, 150, 300);
 
+//			g.drawRect(105, 105, 53, 53);
+//			g.drawLine(0, 137, 104, 137);
+//			g.drawLine(171, 137, 273, 137);
+//			g.drawLine(137, 0, 137, 104);
+//			g.drawLine(137, 172, 137, 274);
+
+			
 		}
 
 		// use prepared font
@@ -588,7 +595,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		//g.drawString(latitude, 5, 130);
 		g.drawString(latitude, 5, 260);
 		//g.drawString(longitude, 145 - rightWidth, 130);
-		g.drawString(longitude, 290 - rightWidth, 260);
+		g.drawString(longitude, 300 - rightWidth, 260);
 
 		String latString = centerCoords.getFormattedLatitudeString();
 		String longString = centerCoords.getFormattedLongitudeString();
@@ -597,7 +604,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		int longWidth = positionMetrics.stringWidth(longString);
 
 		int latPosition = ((leftWidth - latWidth) / 2) + 5;
-		int longPosition = 290 - rightWidth + ((rightWidth - longWidth) / 2);
+		int longPosition = 285 - rightWidth + ((rightWidth - longWidth) / 2);
 
 		//g.drawString(latString, latPosition, 142);
 		//g.drawString(longString, longPosition, 142);

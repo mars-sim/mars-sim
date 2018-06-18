@@ -58,12 +58,13 @@ extends BuildingFunctionPanel {
 	 * @param The main desktop
 	 */
 	//2014-10-28 mkung: Modified the structure of the constructor 
-	public BuildingPanelThermal(Building building, MainDesktopPane desktop) {
-
+	public BuildingPanelThermal(ThermalGeneration furnace, MainDesktopPane desktop) {
+		super(furnace.getBuilding(), desktop);
 		// Use BuildingFunctionPanel constructor
-		super(building, desktop);
-
-		this.building = building;
+		//super(building, desktop);
+		
+		this.furnace = furnace;
+		this.building = furnace.getBuilding();
 		
 		furnace = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);	
 			

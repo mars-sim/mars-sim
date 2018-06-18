@@ -55,8 +55,11 @@ public abstract class TabPanel extends WebScrollPane {
         // Create the view panel
         viewPanel = new WebPanel(new BorderLayout(0, 0));
         //viewPanel.setBackground(THEME_COLOR);
+        createViewport();
         setViewportView(viewPanel);
-
+        createVerticalScrollBar();
+        setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
+        
         // Create top content panel
         topContentPanel = new WebPanel();
         //topContentPanel.setBackground(THEME_COLOR);

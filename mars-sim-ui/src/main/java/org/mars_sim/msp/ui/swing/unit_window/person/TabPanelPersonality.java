@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-//import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.mars_sim.msp.ui.steelseries.gauges.Radial2Top;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.jfoenix.controls.JFXTextField;
 
@@ -52,6 +52,7 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -62,7 +63,6 @@ import javafx.scene.layout.GridPane;
 /**
  * The TabPanelPersonality is a tab panel about the personality, emotional state and mood of a person.
  */
-@SuppressWarnings("restriction")
 public class TabPanelPersonality
 extends TabPanel {
 
@@ -98,7 +98,6 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	@SuppressWarnings("restriction")
 	public TabPanelPersonality(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
@@ -116,19 +115,27 @@ extends TabPanel {
 		
 		jfxpanel = new JFXPanel();
 
-		int width = 400;
-		int height = 700;
+		int width = UnitWindow.WIDTH-30;//400;
+		int height = UnitWindow.HEIGHT;//700;
 
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				stack = new StackPane();
+				stack.setPrefSize(width, height);
+				
+				ScrollPane scrollPane = new ScrollPane();
+				scrollPane.setPrefSize(width, height);
+				scrollPane.setFitToWidth(true);
+		        scrollPane.setContent(stack);
+		        scrollPane.setPrefViewportHeight(height);
+		        
 				// Updates the stack pane's background color
 				update();
 				//stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
 				//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
 
-				scene = new Scene(stack, width, height);
+				scene = new Scene(scrollPane, width, height);
 				scene.setFill(Color.TRANSPARENT);// .BLACK);
 				jfxpanel.setScene(scene);
 
@@ -214,24 +221,25 @@ extends TabPanel {
 				
 				List<Gauge> bars = new ArrayList<Gauge>();
 				for (int i=0; i< 4; i++) {
-						Gauge bar = GaugeBuilder.create()
-		                        .skinType(SkinType.BULLET_CHART)
-		                        .sections(new Section(0, 16.66666, "0", Color.web("#11632f")),
-		                                  new Section(16.66666, 33.33333, "1", Color.web("#36843d")),
-		                                  new Section(33.33333, 50.0, "2", Color.web("#67a328")),
-		                                  new Section(50.0, 66.66666, "3", Color.web("#80b940")),
-		                                  new Section(66.66666, 83.33333, "4", Color.web("#95c262")),
-		                                  new Section(83.33333, 100.0, "5", Color.web("#badf8d")))
-		                        .threshold(50)
-		                        .titleColor(Color.SADDLEBROWN)
-		                        //.subTitle("score")
-		                        //.subTitleColor(Color.MAROON)
-		                        .thresholdColor(Color.GREY)
-		                        .valueColor(Color.BROWN)
-		                        .animated(false)
-		                        .build();
-						bars.add(bar);
-						barBox.getChildren().addAll(bar);
+					Gauge bar = GaugeBuilder.create()
+	                        .skinType(SkinType.BULLET_CHART)
+	                        .sections(new Section(0, 16.66666, "0", Color.web("#11632f")),
+	                                  new Section(16.66666, 33.33333, "1", Color.web("#36843d")),
+	                                  new Section(33.33333, 50.0, "2", Color.web("#67a328")),
+	                                  new Section(50.0, 66.66666, "3", Color.web("#80b940")),
+	                                  new Section(66.66666, 83.33333, "4", Color.web("#95c262")),
+	                                  new Section(83.33333, 100.0, "5", Color.web("#badf8d")))
+	                        .threshold(50)
+	                        .titleColor(Color.SADDLEBROWN)
+	                        //.subTitle("score")
+	                        //.subTitleColor(Color.MAROON)
+	                        .thresholdColor(Color.GREY)
+	                        .valueColor(Color.BROWN)
+	                        .animated(false)
+	                        .maxSize(width*3/4, height*3/4)
+	                        .build();
+					bars.add(bar);
+					barBox.getChildren().addAll(bar);
 				}
 				
 				  

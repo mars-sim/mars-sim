@@ -44,8 +44,8 @@ public class MapPanel extends JPanel implements ClockListener {
 	private static Logger logger = Logger.getLogger(MapPanel.class.getName());
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public final static int MAP_BOX_HEIGHT = 300;
-	public final static int MAP_BOX_WIDTH = 300;
+	public final static int MAP_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_MINIMAP;
+	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_MINIMAP;
 	private static int dragx, dragy;
 
 	private static final int PERIOD_IN_MILLISOLS = 3;
@@ -136,7 +136,7 @@ public class MapPanel extends JPanel implements ClockListener {
 
 
 				if (dx != 0 || dy != 0) {
-					if (x > 0 && x < 300 && y > 0 && y < 300) {
+					if (x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
 					    //double rho = CannedMarsMap.PIXEL_RHO;
 			            centerCoords = centerCoords.convertRectToSpherical(
 			                    (double) dx, (double) dy, rho);
@@ -350,7 +350,7 @@ public class MapPanel extends JPanel implements ClockListener {
 	 */
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
-			dbImage = createImage(300,300);
+			dbImage = createImage(MAP_BOX_WIDTH, MAP_BOX_HEIGHT);
 			if (dbImage == null) {
 				//System.out.println("dbImage is null");
 				return;

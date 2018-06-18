@@ -72,7 +72,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
-@SuppressWarnings({ "unused", "restriction" })
 public class SettlementWindow
 extends ToolWindow {
 
@@ -328,16 +327,16 @@ extends ToolWindow {
 	    }
 	    
 		//statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
-		statusBar.getLeftItems().add(solLabel);
-		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
+		statusBar.getRightItems().add(solLabel);
+		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 
-		statusBar.getLeftItems().add(popLabel);
-		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
+		statusBar.getRightItems().add(popLabel);
+		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 
-		statusBar.getLeftItems().add(capLabel);
-		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
+		statusBar.getRightItems().add(capLabel);
+		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 
-		statusBar.getLeftItems().add(xyLabel);
+		statusBar.getRightItems().add(xyLabel);
 		//statusBar.getLeftItems().add(yLabel);
 		//statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 

@@ -401,24 +401,26 @@ implements SettlementMapLayer {
 */
 			//int yOffset = 12 * size;
 			// Draw task.
-//			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
-			drawLabelRight(
-				g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
-//				g2d, taskString, selectedPerson.getXLocation(),
-				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
-				offset, 12);
-				//yOffset);
+			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
+			if (taskString != null && !taskString.equals(""))
+				drawLabelRight(
+					g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
+	//				g2d, taskString, selectedPerson.getXLocation(),
+					selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
+					offset, 12);
+					//yOffset);
 
 			//yOffset = yOffset + 12;
 			// Draw mission.
 			Mission mission = selectedPerson.getMind().getMission();
 			if (mission != null) {
 				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
-				drawLabelRight(
-					g2d, missionString, selectedPerson.getXLocation(),
-					selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
-					offset, 24);
-					//yOffset);
+				if (missionString != null && !missionString.equals(""))
+					drawLabelRight(
+						g2d, missionString, selectedPerson.getXLocation(),
+						selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
+						offset, 24);
+						//yOffset);
 			}
 		}
 	}
@@ -466,21 +468,23 @@ implements SettlementMapLayer {
 
 			// Draw task.
 			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getBotTaskManager().getTaskDescription(false)); //$NON-NLS-1$
-			drawLabelRight(
-				g2d, taskString, selectedRobot.getXLocation(),
-				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
-				offset, 12
-			);
+			if (taskString != null && !taskString.equals(""))
+				drawLabelRight(
+					g2d, taskString, selectedRobot.getXLocation(),
+					selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
+					offset, 12
+				);
 
 			// Draw mission.
 			Mission mission = selectedRobot.getBotMind().getMission();
 			if (mission != null) {
 				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
-				drawLabelRight(
-					g2d, missionString, selectedRobot.getXLocation(),
-					selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
-					offset, 24
-				);
+				if (missionString != null && !missionString.equals(""))
+					drawLabelRight(
+						g2d, missionString, selectedRobot.getXLocation(),
+						selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
+						offset, 24
+					);
 			}
 		}
 	}

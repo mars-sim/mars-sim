@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -52,6 +53,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.settlement.PopUpUnitMenu;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelPreparingDessert;
@@ -64,7 +66,6 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * The BuildingPanel class is a panel representing a settlement building.
  */
-@SuppressWarnings("restriction")
 public class BuildingPanel
 extends WebPanel {
 
@@ -139,6 +140,7 @@ extends WebPanel {
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
    
         setLayout(new BorderLayout(0, 5));
+        this.setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT));
 
         // 2014-11-27 Added namePanel and buildingNameLabel
         namePanel = new WebPanel(new GridLayout(2,1,0,0));
@@ -167,12 +169,13 @@ extends WebPanel {
 	    // Prepare function list panel.
 		WebPanel functionListPanel = new WebPanel();
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
-
+        functionListPanel.setMaximumWidth(PopUpUnitMenu.WIDTH-80); // This width is very important
+        
         // Prepare function scroll panel.
         WebScrollPane scrollPanel = new WebScrollPane();
         scrollPanel.setViewportView(functionListPanel);
         //CustomScroll scrollPanel = new CustomScroll(functionListPanel);
-        scrollPanel.setPreferredSize(new Dimension(PopUpUnitMenu.WIDTH, PopUpUnitMenu.HEIGHT-70));
+        scrollPanel.setPreferredSize(new Dimension(PopUpUnitMenu.WIDTH-80, PopUpUnitMenu.HEIGHT-70));
         scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPanel, BorderLayout.CENTER);
 /*
@@ -216,7 +219,7 @@ extends WebPanel {
         // Prepare inhabitable panel if building has lifeSupport.
         if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 //        	try {
-        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+        		LifeSupport lifeSupport = building.getLifeSupport();//.getFunction(FunctionType.LIFE_SUPPORT);
             	BuildingFunctionPanel inhabitablePanel = new BuildingPanelInhabitable(lifeSupport, desktop);
             	functionPanels.add(inhabitablePanel);
             	functionListPanel.add(inhabitablePanel);
@@ -227,7 +230,7 @@ extends WebPanel {
         // Prepare manufacture panel if building has manufacturing.
         if (building.hasFunction(FunctionType.MANUFACTURE)) {
 //        	try {
-        		Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+        		Manufacture workshop = building.getManufacture();//.getFunction(FunctionType.MANUFACTURE);
         		BuildingFunctionPanel manufacturePanel = new BuildingPanelManufacture(workshop, desktop);
         		//manufacturePanel.setOpaque(false);
         		//manufacturePanel.setBackground(new Color(0,0,0,128));
@@ -241,7 +244,7 @@ extends WebPanel {
         // 2014-11-24 Added FoodProduction
         if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
 //        	try {
-        		FoodProduction foodFactory = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+        		FoodProduction foodFactory = building.getFoodProduction();//.getFunction(FunctionType.FOOD_PRODUCTION);
         		BuildingFunctionPanel foodProductionPanel = new BuildingPanelFoodProduction(foodFactory, desktop);
         		functionPanels.add(foodProductionPanel);
         		functionListPanel.add(foodProductionPanel);
@@ -252,7 +255,7 @@ extends WebPanel {
         // Prepare farming panel if building has farming.
         if (building.hasFunction(FunctionType.FARMING)) {
 //        	try {
-        		Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
+        		Farming farm = building.getFarming();//.getFunction(FunctionType.FARMING);
             	BuildingFunctionPanel farmingPanel = new BuildingPanelFarming(farm, desktop);
             	functionPanels.add(farmingPanel);
             	functionListPanel.add(farmingPanel);
@@ -263,7 +266,7 @@ extends WebPanel {
 		// Prepare cooking panel if building has cooking.
 		if (building.hasFunction(FunctionType.COOKING)) {
 //			try {
-				Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING);
+				Cooking kitchen = building.getCooking();//.getFunction(FunctionType.COOKING);
 				BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
 				functionPanels.add(cookingPanel);
 				functionListPanel.add(cookingPanel);
@@ -276,7 +279,7 @@ extends WebPanel {
 		// Prepare dessert panel if building has preparing dessert function.
 		if (building.hasFunction(FunctionType.PREPARING_DESSERT)) {
 //			try {
-			PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT);
+			PreparingDessert kitchen = building.getPreparingDessert();//.getFunction(FunctionType.PREPARING_DESSERT);
 				BuildingFunctionPanel preparingDessertPanel = new BuildingPanelPreparingDessert(kitchen, desktop);
 				functionPanels.add(preparingDessertPanel);
 				functionListPanel.add(preparingDessertPanel);
@@ -288,7 +291,7 @@ extends WebPanel {
         // Prepare medical care panel if building has medical care.
         if (building.hasFunction(FunctionType.MEDICAL_CARE)) {
 //        	try {
-        		MedicalCare med = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+        		MedicalCare med = building.getMedical();//.getFunction(FunctionType.MEDICAL_CARE);
             	BuildingFunctionPanel medicalCarePanel = new BuildingPanelMedicalCare(med, desktop);
             	functionPanels.add(medicalCarePanel);
             	functionListPanel.add(medicalCarePanel);
@@ -300,7 +303,7 @@ extends WebPanel {
 		// Prepare vehicle maintenance panel if building has vehicle maintenance.
 		if (building.hasFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
 //			try {
-				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+				VehicleMaintenance garage = building.getVehicleMaintenance();//.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 				BuildingFunctionPanel vehicleMaintenancePanel = new BuildingPanelVehicleMaintenance(garage, desktop);
 				functionPanels.add(vehicleMaintenancePanel);
 				functionListPanel.add(vehicleMaintenancePanel);
@@ -312,7 +315,7 @@ extends WebPanel {
         // Prepare research panel if building has research.
         if (building.hasFunction(FunctionType.RESEARCH)) {
 //        	try {
-        		Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+        		Research lab = building.getResearch();//.getFunction(FunctionType.RESEARCH);
             	BuildingFunctionPanel researchPanel = new BuildingPanelResearch(lab, desktop);
             	functionPanels.add(researchPanel);
             	functionListPanel.add(researchPanel);
@@ -325,7 +328,7 @@ extends WebPanel {
         // Prepare Observation panel if building has Observatory.
         if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS)) {
 //        	try {
-        		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+        		AstronomicalObservation observation = building.getAstronomicalObservation();//.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
             	BuildingFunctionPanel observationPanel = new BuildingPanelAstronomicalObservation(observation, desktop);
             	functionPanels.add(observationPanel);
             	functionListPanel.add(observationPanel);
@@ -343,7 +346,7 @@ extends WebPanel {
         // Prepare power storage panel if building has power storage.
         if (building.hasFunction(FunctionType.POWER_STORAGE)) {
 //            try {
-                PowerStorage storage = (PowerStorage) building.getFunction(FunctionType.POWER_STORAGE);
+                PowerStorage storage = building.getPowerStorage();//.getFunction(FunctionType.POWER_STORAGE);
                 BuildingFunctionPanel powerStoragePanel = new BuildingPanelPowerStorage(storage, desktop);
                 functionPanels.add(powerStoragePanel);
                 functionListPanel.add(powerStoragePanel);
@@ -355,7 +358,8 @@ extends WebPanel {
         //2014-10-27 mkung: Modified Heating Panel
         if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 //          try {
-		        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(building, desktop);
+    			ThermalGeneration heat = building.getThermalGeneration();
+	        	BuildingFunctionPanel heatPanel = new BuildingPanelThermal(heat, desktop);
 		        functionPanels.add(heatPanel);
 		        functionListPanel.add(heatPanel);
 		        //if (isTranslucent) setPanelStyle(heatPanel);

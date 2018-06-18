@@ -18,7 +18,6 @@ import javafx.scene.text.TextAlignment;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SuppressWarnings("restriction")
 public class MenuTitle extends Pane {
     private Text text;
 

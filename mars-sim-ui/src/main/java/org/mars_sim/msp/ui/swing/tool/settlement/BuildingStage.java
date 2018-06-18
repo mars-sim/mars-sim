@@ -21,8 +21,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
@@ -38,6 +36,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -45,6 +44,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelAstronomicalObservation;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelFarming;
@@ -63,6 +63,9 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelVeh
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelPreparingDessert;
+
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
@@ -89,7 +92,7 @@ public class BuildingStage {
 
 	private Label buildingNameLabel;
 	private VBox box1;
-	private BorderPane mainPane;
+	private BorderPane borderPane;
 	private Button renameBtn;
 	
 	/** The building this panel is for. */
@@ -131,8 +134,8 @@ public class BuildingStage {
         buildingNameLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         buildingNameLabel.getStyleClass().add("label-large");
             
-        mainPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-        mainPane.getStyleClass().add("borderpane");
+        borderPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        borderPane.getStyleClass().add("borderpane");
                
         box1.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         box1.getStyleClass().add("borderpane");
@@ -150,14 +153,14 @@ public class BuildingStage {
 
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
    
-        mainPane = new BorderPane();
-        mainPane.setPadding(new Insets(3,3,3,3));    
+        borderPane = new BorderPane();
+        borderPane.setPadding(new Insets(3,3,3,3));    
+        borderPane.setMaxWidth(PopUpUnitMenu.WIDTH);
         
         box1 = new VBox();
         box1.setAlignment(Pos.CENTER);
         box1.setSpacing(2);
         
-
         buildingNameLabel = new Label(building.getNickName());
         
         buildingNameLabel.setTextAlignment(TextAlignment.CENTER);
@@ -173,18 +176,18 @@ public class BuildingStage {
 		});
 	    renameBtn.setLineSpacing(2);
 
-	    
 	    box1.getChildren().addAll(buildingNameLabel, renameBtn);
 		
         applyTheme();
         
-		mainPane.setTop(box1);
-	
+		borderPane.setTop(box1);
+		
     	//Popup stage = new Popup();
     	SwingNode swingNode  = new SwingNode();
-    	mainPane.setCenter(swingNode);
-		
-		JPanel mainPanel = new JPanel(new BorderLayout());
+    	borderPane.setCenter(swingNode);
+    	//borderPane.setMaxSize(PopUpUnitMenu.WIDTH, PopUpUnitMenu.HEIGHT-70);
+    	
+		WebPanel mainPanel = new WebPanel(new BorderLayout(0,0));
 
 		SwingUtilities.invokeLater(() -> {
 			swingNode.setContent(mainPanel);
@@ -192,14 +195,16 @@ public class BuildingStage {
 	    });		
 		
 	    // Prepare function list panel.
-        JPanel functionListPanel = new JPanel();
+        WebPanel functionListPanel = new WebPanel();
+        functionListPanel.setMaximumWidth(PopUpUnitMenu.WIDTH-80); // This width is very important
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
-
+        //mainPanel.add(functionListPanel, BorderLayout.CENTER);
+        
         // Prepare function scroll panel.
-        JScrollPane scrollPanel = new JScrollPane();
+        WebScrollPane scrollPanel = new WebScrollPane();
         scrollPanel.setViewportView(functionListPanel);
         //CustomScroll scrollPanel = new CustomScroll(functionListPanel);
-        scrollPanel.setPreferredSize(new Dimension(290, 280));
+        scrollPanel.setPreferredSize(new Dimension(PopUpUnitMenu.WIDTH-80, PopUpUnitMenu.HEIGHT-70));
         scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
         mainPanel.add(scrollPanel, BorderLayout.CENTER);
 
@@ -215,17 +220,17 @@ public class BuildingStage {
 	    svgPanel.setMinimumSize(expectedDimension);
 		//setPanelStyle(svgPanel);
 
-		JPanel borderPanel = new JPanel();
-		borderPanel.setBorder(new MarsPanelBorder());// BorderFactory.createLineBorder(Color.black, 2, true));//
-		//borderPanel.setBackground(new Color(255,255,255,255));
-		borderPanel.add(svgPanel);
+		WebPanel svgHolder = new WebPanel();
+		svgHolder.setBorder(new MarsPanelBorder());// BorderFactory.createLineBorder(Color.black, 2, true));//
+		//svgHolder.setBackground(new Color(255,255,255,255));
+		svgHolder.add(svgPanel);
 
 	    Box box = new Box(BoxLayout.Y_AXIS);
 	    box.add(Box.createVerticalGlue());
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	        // 2014-11-05 Added setBorder()
 	    //box.setBorder(BorderFactory.createLineBorder(Color.black, 2, true));
-	    box.add(borderPanel);
+	    box.add(svgHolder);
 	    box.add(Box.createVerticalGlue());
 		//box.setOpaque(false);
 		//box.setBackground(new Color(0,0,0,128)); //
@@ -235,7 +240,7 @@ public class BuildingStage {
         // Prepare inhabitable panel if building has lifeSupport.
         if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 //        	try {
-        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+        		LifeSupport lifeSupport = building.getLifeSupport();//(LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
             	BuildingFunctionPanel inhabitablePanel = new BuildingPanelInhabitable(lifeSupport, desktop);
             	functionPanels.add(inhabitablePanel);
             	functionListPanel.add(inhabitablePanel);
@@ -246,7 +251,7 @@ public class BuildingStage {
         // Prepare manufacture panel if building has manufacturing.
         if (building.hasFunction(FunctionType.MANUFACTURE)) {
 //        	try {
-        		Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+        		Manufacture workshop = building.getManufacture();//.getFunction(FunctionType.MANUFACTURE);
         		BuildingFunctionPanel manufacturePanel = new BuildingPanelManufacture(workshop, desktop);
         		//manufacturePanel.setOpaque(false);
         		//manufacturePanel.setBackground(new Color(0,0,0,128));
@@ -260,7 +265,7 @@ public class BuildingStage {
         // 2014-11-24 Added FoodProduction
         if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
 //        	try {
-        		FoodProduction foodFactory = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+        		FoodProduction foodFactory = building.getFoodProduction();//.getFunction(FunctionType.FOOD_PRODUCTION);
         		BuildingFunctionPanel foodProductionPanel = new BuildingPanelFoodProduction(foodFactory, desktop);
         		functionPanels.add(foodProductionPanel);
         		functionListPanel.add(foodProductionPanel);
@@ -271,7 +276,7 @@ public class BuildingStage {
         // Prepare farming panel if building has farming.
         if (building.hasFunction(FunctionType.FARMING)) {
 //        	try {
-        		Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
+        		Farming farm = building.getFarming();//.getFunction(FunctionType.FARMING);
             	BuildingFunctionPanel farmingPanel = new BuildingPanelFarming(farm, desktop);
             	functionPanels.add(farmingPanel);
             	functionListPanel.add(farmingPanel);
@@ -282,7 +287,7 @@ public class BuildingStage {
 		// Prepare cooking panel if building has cooking.
 		if (building.hasFunction(FunctionType.COOKING)) {
 //			try {
-				Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING);
+				Cooking kitchen = building.getCooking();//.getFunction(FunctionType.COOKING);
 				BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
 				functionPanels.add(cookingPanel);
 				functionListPanel.add(cookingPanel);
@@ -295,7 +300,7 @@ public class BuildingStage {
 		// Prepare dessert panel if building has preparing dessert function.
 		if (building.hasFunction(FunctionType.PREPARING_DESSERT)) {
 //			try {
-			PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT);
+			PreparingDessert kitchen = building.getPreparingDessert();//.getFunction(FunctionType.PREPARING_DESSERT);
 				BuildingFunctionPanel preparingDessertPanel = new BuildingPanelPreparingDessert(kitchen, desktop);
 				functionPanels.add(preparingDessertPanel);
 				functionListPanel.add(preparingDessertPanel);
@@ -307,7 +312,7 @@ public class BuildingStage {
         // Prepare medical care panel if building has medical care.
         if (building.hasFunction(FunctionType.MEDICAL_CARE)) {
 //        	try {
-        		MedicalCare med = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+        		MedicalCare med = building.getMedical();//.getFunction(FunctionType.MEDICAL_CARE);
             	BuildingFunctionPanel medicalCarePanel = new BuildingPanelMedicalCare(med, desktop);
             	functionPanels.add(medicalCarePanel);
             	functionListPanel.add(medicalCarePanel);
@@ -319,7 +324,7 @@ public class BuildingStage {
 		// Prepare vehicle maintenance panel if building has vehicle maintenance.
 		if (building.hasFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
 //			try {
-				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+				VehicleMaintenance garage = building.getVehicleMaintenance();//.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 				BuildingFunctionPanel vehicleMaintenancePanel = new BuildingPanelVehicleMaintenance(garage, desktop);
 				functionPanels.add(vehicleMaintenancePanel);
 				functionListPanel.add(vehicleMaintenancePanel);
@@ -331,7 +336,7 @@ public class BuildingStage {
         // Prepare research panel if building has research.
         if (building.hasFunction(FunctionType.RESEARCH)) {
 //        	try {
-        		Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+        		Research lab = building.getResearch();//.getFunction(FunctionType.RESEARCH);
             	BuildingFunctionPanel researchPanel = new BuildingPanelResearch(lab, desktop);
             	functionPanels.add(researchPanel);
             	functionListPanel.add(researchPanel);
@@ -344,7 +349,7 @@ public class BuildingStage {
         // Prepare Observation panel if building has Observatory.
         if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS)) {
 //        	try {
-        		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+        		AstronomicalObservation observation = building.getAstronomicalObservation();//.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
             	BuildingFunctionPanel observationPanel = new BuildingPanelAstronomicalObservation(observation, desktop);
             	functionPanels.add(observationPanel);
             	functionListPanel.add(observationPanel);
@@ -362,7 +367,7 @@ public class BuildingStage {
         // Prepare power storage panel if building has power storage.
         if (building.hasFunction(FunctionType.POWER_STORAGE)) {
 //            try {
-                PowerStorage storage = (PowerStorage) building.getFunction(FunctionType.POWER_STORAGE);
+                PowerStorage storage = building.getPowerStorage();//.getFunction(FunctionType.POWER_STORAGE);
                 BuildingFunctionPanel powerStoragePanel = new BuildingPanelPowerStorage(storage, desktop);
                 functionPanels.add(powerStoragePanel);
                 functionListPanel.add(powerStoragePanel);
@@ -374,7 +379,8 @@ public class BuildingStage {
         //2014-10-27 mkung: Modified Heating Panel
         if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 //          try {
-		        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(building, desktop);
+        		ThermalGeneration heat = building.getThermalGeneration();
+		        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(heat, desktop);
 		        functionPanels.add(heatPanel);
 		        functionListPanel.add(heatPanel);
 		        //if (isTranslucent) setPanelStyle(heatPanel);
@@ -434,7 +440,7 @@ public class BuildingStage {
         functionListPanel.add(maintenancePanel);
         //setPanelStyle(maintenancePanel);
 
-        return mainPane;
+        return borderPane;
     }
 
 	/**

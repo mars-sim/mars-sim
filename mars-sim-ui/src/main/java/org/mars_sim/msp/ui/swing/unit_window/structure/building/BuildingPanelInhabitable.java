@@ -11,6 +11,9 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+
+import com.alee.laf.scroll.WebScrollPane;
 
 import javax.swing.*;
 
@@ -92,15 +95,15 @@ implements MouseListener {
 
 		
 		// Create scroll panel for inhabitant list
-		JScrollPane scrollPanel = new JScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(160, 60));
-		inhabitantListPanel.add(scrollPanel);
-		scrollPanel.setViewportView(inhabitantList);
-		//scrollPanel.getViewport().setOpaque(false);
-		//scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
-		//scrollPanel.setOpaque(false);
-		//scrollPanel.setBackground(new Color(0,0,0,128));
-	    scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
+//		WebScrollPane scrollPanel = new WebScrollPane();
+//		scrollPanel.setPreferredSize(new Dimension(UnitWindow.WIDTH-80, 60));
+//		inhabitantListPanel.add(scrollPanel);
+//		scrollPanel.setViewportView(inhabitantList);
+//		//scrollPanel.getViewport().setOpaque(false);
+//		//scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
+//		//scrollPanel.setOpaque(false);
+//		//scrollPanel.setBackground(new Color(0,0,0,128));
+//	    scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		
 		// Create inhabitant list model

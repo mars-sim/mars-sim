@@ -11,6 +11,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.ui.swing.tool.navigator.MarsGlobe;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 import java.awt.*;
 import java.awt.image.MemoryImageSource;
@@ -51,8 +53,8 @@ public class ShadingMapLayer implements MapLayer {
      */
     public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 
-        int centerX = 150;
-        int centerY = 150;
+        int centerX = MarsGlobe.map_width/2;
+        int centerY = centerX;
 
         // Coordinates sunDirection = orbitInfo.getSunDirection();
 

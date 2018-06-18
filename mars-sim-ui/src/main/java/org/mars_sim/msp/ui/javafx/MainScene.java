@@ -7,38 +7,23 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-import com.jfoenix.controls.JFXPopup.PopupHPosition;
-import com.jfoenix.controls.JFXPopup.PopupVPosition;
-import com.alee.laf.WebLookAndFeel;
-import com.alee.managers.UIManagers;
-//import com.alee.managers.UIManagers;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.input.ActionType;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.InputMapping;
-import com.almasb.fxgl.input.OnUserAction;
-import com.almasb.fxgl.scene.GameScene;
-import com.almasb.fxgl.ui.InGameWindow;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXDatePicker;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXPopup;
-import com.jfoenix.controls.JFXSlider;
-import com.jfoenix.controls.JFXSlider.IndicatorPosition;
+import java.awt.BorderLayout;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.jfoenix.controls.JFXTabPane;
-import com.jfoenix.controls.JFXTimePicker;
-import com.jfoenix.controls.JFXToggleButton;
-import com.nilo.plaf.nimrod.NimRODLookAndFeel;
-import com.nilo.plaf.nimrod.NimRODTheme;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import org.controlsfx.control.MaskerPane;
-import org.fxmisc.wellbehaved.event.InputMap;
-import org.fxmisc.wellbehaved.event.Nodes;
-
-//import javafx.stage.Screen;
 import javafx.scene.Parent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -60,21 +45,17 @@ import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-//import javafx.geometry.Rectangle2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-//import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tab;
-//import javafx.scene.control.Alert;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.MenuItem;
-//import javafx.scene.control.ButtonType;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
@@ -86,7 +67,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
-
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -97,35 +77,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.geometry.HPos;
-
 import javafx.util.Duration;
-import jiconfont.icons.FontAwesome;
-import jiconfont.javafx.IconFontFX;
-import jiconfont.javafx.IconNode;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
-//import javafx.geometry.Point2D;
 import javafx.scene.input.ScrollEvent;
-
-import java.awt.BorderLayout;
-//import java.awt.Point;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.plaf.metal.MetalLookAndFeel;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -139,10 +98,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
-//import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.Spinner;
-//import org.mars_sim.msp.ui.javafx.demo.spinnerValueFactory.SpinnerValueFactory;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -162,6 +117,42 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
+
+import jiconfont.icons.FontAwesome;
+import jiconfont.javafx.IconFontFX;
+import jiconfont.javafx.IconNode;
+
+import com.alee.laf.WebLookAndFeel;
+import com.alee.managers.UIManagers;
+//import com.alee.managers.UIManagers;
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.input.ActionType;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.InputMapping;
+import com.almasb.fxgl.input.OnUserAction;
+import com.almasb.fxgl.scene.GameScene;
+import com.almasb.fxgl.ui.InGameWindow;
+
+import com.jfoenix.controls.JFXPopup.PopupHPosition;
+import com.jfoenix.controls.JFXPopup.PopupVPosition;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.controls.JFXSlider;
+import com.jfoenix.controls.JFXSlider.IndicatorPosition;
+import com.jfoenix.controls.JFXTabPane;
+import com.jfoenix.controls.JFXTimePicker;
+import com.jfoenix.controls.JFXToggleButton;
+
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+import com.nilo.plaf.nimrod.NimRODTheme;
+
+import org.controlsfx.control.MaskerPane;
+import org.fxmisc.wellbehaved.event.InputMap;
+import org.fxmisc.wellbehaved.event.Nodes;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.*;
 import static org.fxmisc.wellbehaved.event.InputMap.*;
@@ -296,10 +287,11 @@ public class MainScene {
 	
 	private GameScene gameScene;
 	private Parent root;
+//	private StackPane sMapToolPane;
 	private StackPane rootStackPane;
 	private StackPane mainStackPane;
 	private StackPane dashboardStackPane; // monPane,
-	private StackPane mapStackPane;
+	private StackPane sMapStackPane;
 	private StackPane minimapStackPane;
 	private StackPane speedPane;
 	private StackPane soundPane;
@@ -311,7 +303,7 @@ public class MainScene {
 	private StackPane sPane;
 
 	private AnchorPane anchorPane;
-	private AnchorPane mapAnchorPane;
+	private AnchorPane mapsAnchorPane;
 	private SwingNode desktopNode;
 	private SwingNode mapNode;
 	private SwingNode minimapNode;// , guideNode;// monNode, missionNode, resupplyNode, sciNode,
@@ -354,7 +346,7 @@ public class MainScene {
 	private VBox soundVBox;
 	private Tab mainTab, dashboardTab;
 
-	private Spinner<Integer> spinner;
+	private Spinner<Integer> timeRatioSpinner;
 	private JFXComboBox<Settlement> sBox;
 	private JFXToggleButton cacheToggle;
 	private JFXToggleButton minimapToggle;
@@ -1008,7 +1000,7 @@ public class MainScene {
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
 		pausePane.getChildren().add(createPausePaneContent());
 		pausePane.setPrefSize(150, 150);
-
+		
 		if (OS.contains("mac")) {
 			((MenuBar) menuBar).useSystemMenuBarProperty().set(true);
 		}
@@ -1092,8 +1084,8 @@ public class MainScene {
 		mainStackPane.prefWidthProperty().bind(scene.widthProperty());
 
 		// anchorTabPane is within jfxTabPane
-		mapAnchorPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
-		mapAnchorPane.prefWidthProperty().bind(scene.widthProperty());
+		mapsAnchorPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
+		mapsAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 
 		// Setup key events using wellbehavedfx
 		setupKeyEvents();
@@ -1161,8 +1153,8 @@ public class MainScene {
 	 * Creates and returns the panel for simulation speed and time info
 	 */
 	public void createSpeedPanel() {
-		spinner = new Spinner<Integer>();
-		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+		timeRatioSpinner = new Spinner<Integer>();
+		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 
         //Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL
         //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_VERTICAL
@@ -1183,7 +1175,7 @@ public class MainScene {
 		setQuickToolTip(speedBtn, "Click to open Speed Panel");
 		speedBtn.setOnAction(e -> {
 			int current = (int) masterClock.getTimeRatio();
-			spinner.getValueFactory().setValue(current);
+			timeRatioSpinner.getValueFactory().setValue(current);
 
 			if (simSpeedPopup.isShowing()) {
 				simSpeedPopup.hide();// close();
@@ -1262,7 +1254,7 @@ public class MainScene {
 		s1.append(masterClock.getTimeTruncated(ratio));
 		real_time_label.setText(s1.toString());
 
-		spinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 
 //		List<Integer> items = null;
 //		if (default_ratio == 16)
@@ -1288,15 +1280,15 @@ public class MainScene {
 		else // if (default_ratio == 256)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
 		
-		spinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
+		timeRatioSpinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
 		//spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
-		spinner.setMaxSize(85, 15);
-		spinner.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 11px;"
+		timeRatioSpinner.setMaxSize(85, 15);
+		timeRatioSpinner.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 11px;"
 				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
 				+ "-fx-font-weight:bold; -fx-text-alignment: center;");
 		// spinner.setAlignment(Pos.CENTER);
-		spinner.getValueFactory().setValue(default_ratio);
-		spinner.valueProperty().addListener((o, old_val, new_val) -> {
+		timeRatioSpinner.getValueFactory().setValue(default_ratio);
+		timeRatioSpinner.valueProperty().addListener((o, old_val, new_val) -> {
 
 			if (old_val != new_val) {
 				// newTimeRatio = value;
@@ -1384,7 +1376,7 @@ public class MainScene {
 		ColumnConstraints left = new ColumnConstraints();
 		left.setPrefWidth(80);// earthTimeButton.getPrefWidth() * .4);
 
-		GridPane.setConstraints(spinner, 1, 0);
+		GridPane.setConstraints(timeRatioSpinner, 1, 0);
 		GridPane.setConstraints(default_ratio_label, 1, 1);
 		GridPane.setConstraints(real_time_label, 1, 2);
 		GridPane.setConstraints(tpsLabel, 1, 3);
@@ -1398,7 +1390,7 @@ public class MainScene {
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
 		// GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
-		GridPane.setHalignment(spinner, HPos.CENTER);
+		GridPane.setHalignment(timeRatioSpinner, HPos.CENTER);
 		GridPane.setHalignment(default_ratio_label, HPos.CENTER);
 		GridPane.setHalignment(real_time_label, HPos.CENTER);
 		GridPane.setHalignment(tpsLabel, HPos.CENTER);
@@ -1413,7 +1405,7 @@ public class MainScene {
 		// GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
-		gridPane.getChildren().addAll(spinner_label0, spinner, default_ratio_label0, default_ratio_label,
+		gridPane.getChildren().addAll(spinner_label0, timeRatioSpinner, default_ratio_label0, default_ratio_label,
 				real_time_label0, real_time_label, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel);// , benchmarkLabel0,
 		// benchmarkLabel);
 
@@ -1869,8 +1861,41 @@ public class MainScene {
 
 	}
 
-	public void createFXButtons() {
+	public void createMapToolBox() {
 
+		// Add toolStackPane for map tool
+//		sMapToolPane = new StackPane();
+		
+		createMapButtons();
+		createMapCacheToggles();
+		createFXSettlementComboBox();
+		createFXZoomSlider();
+		createFXMapLabelBox();
+		
+		// detect mouse wheel scrolling
+		sMapStackPane.setOnScroll(new EventHandler<ScrollEvent>() {
+			public void handle(ScrollEvent event) {
+
+				if (event.getDeltaY() == 0)
+					return;
+
+				double direction = event.getDeltaY();
+
+				if (direction > 0) {
+					// Move zoom slider down.
+					if (zoomSlider.getValue() > zoomSlider.getMin())
+						zoomSlider.setValue((zoomSlider.getValue() - 1));
+				} else if (direction < 0) {
+					// Move zoom slider up.
+					if (zoomSlider.getValue() < zoomSlider.getMax())
+						zoomSlider.setValue((zoomSlider.getValue() + 1));
+				}
+				// event.consume();
+			}
+		});
+	}
+
+	public void createMapCacheToggles() { 
 		minimapToggle = new JFXToggleButton();
 		// pinButton.setTextFill(Paint.OPAQUE);
 		minimapToggle.setText("Minimap Off");
@@ -1935,6 +1960,11 @@ public class MainScene {
 			e.consume();
 		});
 
+
+		
+	}
+	
+	public void createMapButtons() { 
 		rotateCWBtn = new JFXButton();
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw"))))); //$NON-NLS-1$
 		// IconNode rotateCWIcon = new IconNode(FontAwesome.ar.ARROW_CIRCLE_O_RIGHT);
@@ -1983,8 +2013,10 @@ public class MainScene {
 			e.consume();
 		});
 
+		
 	}
-
+	
+	
 	public void createFXZoomSlider() {
 		// logger.info("MainScene's createFXZoomSlider() is on " +
 		// Thread.currentThread().getName() + " Thread");
@@ -1994,7 +2026,7 @@ public class MainScene {
 		zoomSlider.getStyleClass().add("jfx-slider");
 		// zoom.setMinHeight(100);
 		// zoom.setMaxHeight(200);
-		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
+		zoomSlider.prefHeightProperty().bind(sMapStackPane.heightProperty().multiply(.3d));
 		zoomSlider.setMin(1);
 		zoomSlider.setMax(35);
 		zoomSlider.setValue(DEFAULT_ZOOM);
@@ -2196,12 +2228,12 @@ public class MainScene {
 		mainTab.setContent(mainStackPane);
 
 		// set up mapTab
-		mapAnchorPane = new AnchorPane();
-		mapAnchorPane.setStyle("-fx-background-color: black; ");
+		mapsAnchorPane = new AnchorPane();
+		mapsAnchorPane.setStyle("-fx-background-color: black; ");
 
 		Tab mapTab = new Tab();
 		mapTab.setText("Map");
-		mapTab.setContent(mapAnchorPane);
+		mapTab.setContent(mapsAnchorPane);
 
 		navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 
@@ -2215,37 +2247,12 @@ public class MainScene {
 		mapPanel = settlementWindow.getMapPanel();
 
 		mapNode = new SwingNode();
-		mapStackPane = new StackPane(mapNode);
+		sMapStackPane = new StackPane(mapNode);
 		mapNode.setContent(settlementWindow);
-		mapStackPane.setStyle("-fx-background-color: black; ");
+		sMapStackPane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 
-		createFXButtons();
-		createFXSettlementComboBox();
-		createFXZoomSlider();
-		createFXMapLabelBox();
-
-		// detect mouse wheel scrolling
-		mapStackPane.setOnScroll(new EventHandler<ScrollEvent>() {
-			public void handle(ScrollEvent event) {
-
-				if (event.getDeltaY() == 0)
-					return;
-
-				double direction = event.getDeltaY();
-
-				if (direction > 0) {
-					// Move zoom slider down.
-					if (zoomSlider.getValue() > zoomSlider.getMin())
-						zoomSlider.setValue((zoomSlider.getValue() - 1));
-				} else if (direction < 0) {
-					// Move zoom slider up.
-					if (zoomSlider.getValue() < zoomSlider.getMax())
-						zoomSlider.setValue((zoomSlider.getValue() + 1));
-				}
-				// event.consume();
-			}
-		});
+		createMapToolBox();
 
 		BrowserJFX helpBrowser = desktop.getBrowserJFX();
 		// StackPane guidePane = new StackPane(guideNode);
@@ -2275,16 +2282,7 @@ public class MainScene {
 
 			else if (newTab == mapTab) {
 
-				AnchorPane.setRightAnchor(cacheToggle, 25.0);
-				AnchorPane.setTopAnchor(cacheToggle, 45.0); // 55.0
-
-				AnchorPane.setLeftAnchor(minimapToggle, 10.0);
-				AnchorPane.setTopAnchor(minimapToggle, 10.0); // 55.0
-
-				AnchorPane.setRightAnchor(mapToggle, 15.0);
-				AnchorPane.setTopAnchor(mapToggle, 10.0); // 55.0
-
-				mapAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, mapToggle);
+				anchorToggles();
 
 				desktop.closeToolWindow(GuideWindow.NAME);
 
@@ -2292,7 +2290,7 @@ public class MainScene {
 
 			else if (newTab == guideTab) {
 
-				if (!desktop.isToolWindowOpen(GuideWindow.NAME))
+				//if (!desktop.isToolWindowOpen(GuideWindow.NAME))
 					desktop.openToolWindow(GuideWindow.NAME);
 
 				closeMaps();
@@ -2300,7 +2298,7 @@ public class MainScene {
 			}
 
 			else {
-				mapAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
+				mapsAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
 			}
 
 		});
@@ -2314,45 +2312,14 @@ public class MainScene {
 
 	}
 
-	public void openMinimap() {
-		desktop.openToolWindow(NavigatorWindow.NAME);
-
-		AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
-		AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0
-		boolean flag = false;
-		for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
-			if (node == minimapStackPane) {
-				flag = true;
-				break;
-			}
-		}
-
-		if (!flag)
-			mapAnchorPane.getChildren().addAll(minimapStackPane);
-		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
-		navWin.toFront();
-		navWin.requestFocus();
-		minimapStackPane.toFront();
-		minimapToggle.setSelected(true);
-		minimapToggle.setText("Minimap On");
-		minimapToggle.toFront();
-
-	}
-
-	public void openSettlementMap() {
-
-		mapStackPane.prefWidthProperty().unbind();
-		mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));
-
-		desktop.openToolWindow(SettlementWindow.NAME);
-		// mapNode.setContent(settlementWindow);
-
-		AnchorPane.setRightAnchor(mapStackPane, 0.0);
-		AnchorPane.setTopAnchor(mapStackPane, 0.0);
-
+	public void anchorMapTool() {
+	
+//		AnchorPane.setRightAnchor(sMapToolPane, 25.0);
+//		AnchorPane.setTopAnchor(sMapToolPane, 20.0);
+//		mapsAnchorPane.getChildren().add(sMapToolPane);
+						
 		AnchorPane.setRightAnchor(zoomSlider, 65.0);
-		AnchorPane.setTopAnchor(zoomSlider, 350.0);// (mapNodePane.heightProperty().get() -
-													// zoomSlider.heightProperty().get())*.4d);
+		AnchorPane.setTopAnchor(zoomSlider, 350.0);
 
 		AnchorPane.setRightAnchor(rotateCWBtn, 110.0);
 		AnchorPane.setTopAnchor(rotateCWBtn, 300.0);
@@ -2369,16 +2336,73 @@ public class MainScene {
 
 		AnchorPane.setRightAnchor(mapLabelBox, -10.0);
 		AnchorPane.setTopAnchor(mapLabelBox, 140.0);
+		
+		
+	}
+	
+	public void anchorToggles() {
+		
+		AnchorPane.setRightAnchor(cacheToggle, 25.0);
+		AnchorPane.setTopAnchor(cacheToggle, 45.0); // 55.0
+	
+		AnchorPane.setLeftAnchor(minimapToggle, 10.0);
+		AnchorPane.setTopAnchor(minimapToggle, 20.0); // 55.0
+	
+		AnchorPane.setRightAnchor(mapToggle, 15.0);
+		AnchorPane.setTopAnchor(mapToggle, 20.0); // 55.0
+	
+		mapsAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, mapToggle);
+		
+	}
+	
+	public void openMinimap() {
+		desktop.openToolWindow(NavigatorWindow.NAME);
+
+		AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
+		AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0
+		boolean flag = false;
+		for (Node node : mapsAnchorPane.getChildrenUnmodifiable()) {
+			if (node == minimapStackPane) {
+				flag = true;
+				break;
+			}
+		}
+
+		if (!flag)
+			mapsAnchorPane.getChildren().addAll(minimapStackPane);
+		
+		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
+		navWin.toFront();
+		navWin.requestFocus();
+		minimapStackPane.toFront();
+		minimapToggle.setSelected(true);
+		minimapToggle.setText("Minimap On");
+		minimapToggle.toFront();
+
+	}
+
+	public void openSettlementMap() {
+
+		sMapStackPane.prefWidthProperty().unbind();
+		sMapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));
+
+		desktop.openToolWindow(SettlementWindow.NAME);
+		// mapNode.setContent(settlementWindow);
+
+		AnchorPane.setRightAnchor(sMapStackPane, 0.0);
+		AnchorPane.setTopAnchor(sMapStackPane, 0.0);
+
+		anchorMapTool();
 
 		boolean hasMap = false, hasZoom = false, hasButtons = false, hasSettlements = false, hasMapLabel = false;
 
-		ObservableList<Node> nodes = mapAnchorPane.getChildrenUnmodifiable();
+		ObservableList<Node> nodes = mapsAnchorPane.getChildrenUnmodifiable();
 
 		for (Node node : nodes) {
 
 			if (node == settlementBox) {
 				hasSettlements = true;
-			} else if (node == mapStackPane) {
+			} else if (node == sMapStackPane) {
 				hasMap = true;
 			} else if (node == zoomSlider) {
 				hasZoom = true;
@@ -2390,19 +2414,19 @@ public class MainScene {
 		}
 
 		if (!hasMap)
-			mapAnchorPane.getChildren().addAll(mapStackPane);
+			mapsAnchorPane.getChildren().addAll(sMapStackPane);
 
 		if (!hasSettlements)
-			mapAnchorPane.getChildren().addAll(settlementBox);
+			mapsAnchorPane.getChildren().addAll(settlementBox);
 
 		if (!hasMapLabel)
-			mapAnchorPane.getChildren().addAll(mapLabelBox);
+			mapsAnchorPane.getChildren().addAll(mapLabelBox);
 
 		if (!hasZoom)
-			mapAnchorPane.getChildren().addAll(zoomSlider);
+			mapsAnchorPane.getChildren().addAll(zoomSlider);
 
 		if (!hasButtons)
-			mapAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
+			mapsAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
 		/*
 		 * for (Node node : mapAnchorPane.getChildrenUnmodifiable()) { if (node ==
 		 * cacheButton) { node.toFront(); } else if (node == minimapButton) {
@@ -2433,7 +2457,7 @@ public class MainScene {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
 			// addNavWin();
-			mapAnchorPane.getChildren().remove(minimapStackPane);
+			mapsAnchorPane.getChildren().remove(minimapStackPane);
 			minimapToggle.setSelected(false);
 			minimapToggle.setText("Minimap Off");
 			jfxTabPane.requestFocus();
@@ -2443,7 +2467,7 @@ public class MainScene {
 	public void closeSettlementMap() {
 		desktop.closeToolWindow(SettlementWindow.NAME);
 		Platform.runLater(() -> {
-			mapAnchorPane.getChildren().removeAll(mapStackPane, settlementBox, mapLabelBox, zoomSlider, rotateCWBtn,
+			mapsAnchorPane.getChildren().removeAll(sMapStackPane, settlementBox, mapLabelBox, zoomSlider, rotateCWBtn,
 					rotateCCWBtn, recenterBtn);
 			mapToggle.setSelected(false);
 			mapToggle.setText("Settlement Map Off");
@@ -2452,12 +2476,12 @@ public class MainScene {
 	}
 
 	public void closeMaps() {
-		mapAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
+		mapsAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
 		if (!isCacheButtonOn()) {
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
 			Platform.runLater(() -> {
-				mapAnchorPane.getChildren().removeAll(minimapStackPane, mapStackPane, zoomSlider, rotateCWBtn,
+				mapsAnchorPane.getChildren().removeAll(minimapStackPane, sMapStackPane, zoomSlider, rotateCWBtn,
 						rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
 				minimapToggle.setSelected(false);
 				minimapToggle.setText("Minimap Off");
@@ -3445,11 +3469,14 @@ public class MainScene {
 		// Create group to hold swingNode which in turns holds the Swing desktop
 		desktopNode = new SwingNode();
 		desktop = new MainDesktopPane(this);
+		//SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
+		
+		// Add main pane
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setSize(screen_width, screen_height);
-		// Add main pane
 		mainPane.add(desktop, BorderLayout.CENTER);
-		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
+		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));	
+
 		desktopNode.requestFocus();
 	}
 
@@ -3993,7 +4020,7 @@ public class MainScene {
 		marsNetBox = null;
 		marsNetBtn = null;
 		chatBox = null;
-		mapStackPane = null;
+		sMapStackPane = null;
 		mainStackPane = null;
 		dashboardStackPane = null;
 		root = null;

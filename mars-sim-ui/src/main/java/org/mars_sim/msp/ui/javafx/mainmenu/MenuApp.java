@@ -35,7 +35,6 @@ import org.mars_sim.msp.ui.javafx.config.StarfieldFX;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.input.Input;
 
-@SuppressWarnings("restriction")
 public class MenuApp {
 
     private static final int WIDTH = MainMenu.WIDTH;
@@ -143,17 +142,17 @@ public class MenuApp {
         version.setTranslateX(WIDTH / 2 - version.getTitleWidth() / 2);
         version.setTranslateY(80);
         
-        MenuTitle build = new MenuTitle("Build " + Simulation.BUILD + "", 16, Color.DARKGOLDENROD, true);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        MenuTitle build = new MenuTitle("Build " + Simulation.BUILD, 14, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
         build.setTranslateX(15);
-        build.setTranslateY(HEIGHT-7);
+        build.setTranslateY(HEIGHT - 10);
 
         MenuTitle year = new MenuTitle("All Rights Reserved, 2018", 14, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
-        year.setTranslateX(WIDTH - 180);
-        year.setTranslateY(HEIGHT-7);
+        year.setTranslateX(WIDTH - year.getTitleWidth() - 10);
+        year.setTranslateY(HEIGHT - 10);
      
         MenuTitle site = new MenuTitle("https://mars-sim.github.io/", 16, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
-        site.setTranslateX(420);
-        site.setTranslateY(HEIGHT-7);
+        site.setTranslateX((WIDTH - site.getTitleWidth())/2);
+        site.setTranslateY(HEIGHT - 10);
         
         titleStackPane = new StackPane(title, version, year, site, build, optionMenu);
         root.getChildren().addAll(titleStackPane);

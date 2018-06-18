@@ -13,31 +13,19 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.StackPane;
-//import javafx.scene.AmbientLight;
 import javafx.scene.Node;
-//import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-//import javafx.stage.Stage;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.paint.PhongMaterial;
-//import javafx.scene.shape.Box;
-//import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
-//import javafx.scene.transform.Rotate;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
-//import static javafx.scene.input.KeyCode.*;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 import org.mars_sim.msp.ui.javafx.mainmenu.Xform;
 
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-//import javafx.util.Duration;
-//import javafx.scene.Node;
-
-
-@SuppressWarnings("restriction")
 public class Globe {
 
 	protected double ONE_FRAME = 1.0 / 24.0;
@@ -91,7 +79,7 @@ public class Globe {
     //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
     private Group root = new Group();
-    private  Group axisGroup = new Group();
+    private Group axisGroup = new Group();
 
     private StackPane stackPane;
     
@@ -157,18 +145,8 @@ public class Globe {
 
         material.setDiffuseColor(Color.WHITE);//TRANSPARENT);//BROWN);
         material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
-
         material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
-
-
-        //if (!MainMenu.OS.contains("linux")) {
-        //    material.setSpecularColor(Color.LIGHTGOLDENRODYELLOW);//WHITE);
-        //    material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
-        //}
-        //else
-        	material.setSpecularColor(Color.LIGHTGRAY);//LIGHTGOLDENRODYELLOW);//		.DARKGOLDENROD);//ORANGE);//.LIGHTGRAY);//WHITE);
-
-
+        material.setSpecularColor(Color.LIGHTGRAY);
         //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
         Xform marsXform = new Xform();

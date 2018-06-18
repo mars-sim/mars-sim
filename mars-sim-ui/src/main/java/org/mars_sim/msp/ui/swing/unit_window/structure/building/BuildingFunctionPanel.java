@@ -6,9 +6,12 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.Dimension;
+
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.alee.laf.panel.WebPanel;
 
@@ -35,6 +38,8 @@ public abstract class BuildingFunctionPanel extends WebPanel {
 		// Initialize data members
 		this.building = building;
 		this.desktop = desktop;
+
+        this.setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT));
 
         //this.setOpaque(false);
         //this.setBackground(new Color(0,0,0,128));

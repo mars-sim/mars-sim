@@ -85,7 +85,7 @@ public class MainMenu {
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
-    public static final int WIDTH = 1024;
+    public static final int WIDTH = 1366;
     public static final int HEIGHT = 768;
   
     //public static final int MUSIC_VOLUME = 0;
@@ -152,22 +152,21 @@ public class MainMenu {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	mainMenu = this;
 
-		// See DPI Scaling at
-		// http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
+		// See DPI Scaling at http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
 		// "I guess we'll have to wait until Java 9 for more flexible DPI support.
 		// In the meantime I managed to get JavaFX DPI scale factor,
 		// but it is a hack (uses both AWT and JavaFX methods)"
-/*
-		// Number of actual horizontal lines (768p)
-		double trueHorizontalLines = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		// Number of scaled horizontal lines. (384p for 200%)
-		double scaledHorizontalLines = Screen.getPrimary().getBounds().getHeight();
-		// DPI scale factor.
-		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
-		
-		logger.info("horizontal lines : " + trueHorizontalLines);
-		logger.info("DPI Scale Factor is " + dpiScaleFactor);
-*/
+
+//		// Number of actual horizontal lines (768p)
+//		double trueHorizontalLines = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+//		// Number of scaled horizontal lines. (384p for 200%)
+//		double scaledHorizontalLines = Screen.getPrimary().getBounds().getHeight();
+//		// DPI scale factor.
+//		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
+//		
+//		logger.info("horizontal lines : " + trueHorizontalLines);
+//		logger.info("DPI Scale Factor is " + dpiScaleFactor);
+
 		
 		Screen screen = Screen.getPrimary(); 
 		Rectangle2D bounds = screen.getVisualBounds(); // getBounds();//
@@ -175,9 +174,14 @@ public class MainMenu {
 		native_width = (int) bounds.getWidth();
 		native_height = (int) bounds.getHeight();
 
-		mainscene_height = native_height;//currentRes.getHeight();
-		mainscene_width = native_width;//currentRes.getWidth();
+		// Detect the current native screen resolution
+//		mainscene_height = native_height;
+//		mainscene_width = native_width;
 
+		// Assume the typical laptop screen resolution. Will change it later all modifications are done
+		mainscene_height = HEIGHT;
+		mainscene_width = WIDTH;
+		
 		setupResolutions();
 		
 		logger.info("Current Screen Resolution is " + native_width + " x " + native_height);
@@ -190,7 +194,6 @@ public class MainMenu {
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
-	@SuppressWarnings("restriction")
 	public void initMainMenu(GameScene gameScene) {
 		System.setProperty("sampler.mode", "true");   
 		isFXGL = true;
@@ -324,7 +327,6 @@ public class MainMenu {
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
-	@SuppressWarnings("restriction")
 	public void initMainMenu(Stage stage) {
 		System.setProperty("sampler.mode", "true");   
 	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName());
@@ -988,31 +990,31 @@ public class MainMenu {
 	 */
 	public Resolution obtainResolution() {
 		Resolution r = null;
-	    if (native_width == 2560) {
-	    	if (native_height == 1600) {
+	    if (mainscene_width == 2560) {
+	    	if (mainscene_height == 1600) {
 			    r = resList.get(8);
 	    	}
 	    	else if (native_height == 1440) {
 	    		r = resList.get(7);
 	    	}
 	    }
-	    else if (native_width == 1920)
+	    else if (mainscene_width == 1920)
 	    	r = resList.get(6);
-	    else if (native_width == 1600)
+	    else if (mainscene_width == 1600)
 	    	r = resList.get(5);	 
-	    else if (native_width == 1440)
+	    else if (mainscene_width == 1440)
 	    	r = resList.get(4);	    
-	    else if (native_width == 1366)
+	    else if (mainscene_width == 1366)
 	    	r = resList.get(3);	    
-	    else if (native_width == 1280) {	 
-	    	if (native_height == 800) {
+	    else if (mainscene_width == 1280) {	 
+	    	if (mainscene_height == 800) {
 	    		r = resList.get(2);
 	    	}
-	    	else if (native_height == 720) {
+	    	else if (mainscene_height == 720) {
 	    		r = resList.get(1);
 	    	}
 	    }
-	    else if (native_width == 1024)
+	    else if (mainscene_width == 1024)
 	    	r = resList.get(0);
 	    else 
 	    	// by default, set to 1024 x 768

@@ -35,9 +35,9 @@ public class MarsGlobe {
 	// Constant data members
 	/** Height of map source image (pixels). */
 	//private final static int map_height = 150;
-	private final static int map_height = GlobeDisplay.GLOBE_BOX_HEIGHT;
+	public final static int map_height = 300;//GlobeDisplay.GLOBE_BOX_HEIGHT;
 	/** Width of map source image (pixels). */
-	private final static int map_width = map_height * 2;
+	public final static int map_width = map_height * 2 ;
 
 	private final double PI_half = Math.PI / 2D;
 	private final double PI_double = Math.PI * 2D;

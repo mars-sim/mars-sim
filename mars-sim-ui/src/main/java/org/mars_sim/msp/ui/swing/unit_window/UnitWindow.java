@@ -35,7 +35,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.desktoppane.WebInternalFrame;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -50,11 +49,9 @@ import com.jidesoft.swing.JideTabbedPane;
  */
 public abstract class UnitWindow extends WebInternalFrame { //
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
     //private static final int BLUR_SIZE = 7;
 	
-	public static final int WIDTH = 512;
+	public static final int WIDTH = 480;//512;
 	public static final int HEIGHT = 605;
 	
 	//private BufferedImage image;
@@ -112,7 +109,6 @@ public abstract class UnitWindow extends WebInternalFrame { //
      * @param unit the unit for this window.
      * @param hasDescription true if unit description is to be displayed.
      */
-    @SuppressWarnings("restriction")
 	public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
         // Use JInternalFrame constructor
         super(unit.getName(), false, true, false, true);
@@ -186,7 +182,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	
 	        //	name = " " + Conversion.capitalize(unit.getName()) + " ";
 	
-	        WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEADING);
+	        WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 	        //nameLabel.setOpaque(true);
 	
 	        Font font = null;
@@ -197,7 +193,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 			else {
 				new Font("DIALOG", Font.BOLD, 10);
 			}
-	        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+	        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);//.CENTER_ALIGNMENT);
 	        nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 	        nameLabel.setFont(font);
 	        nameLabel.setVerticalTextPosition(WebLabel.BOTTOM);

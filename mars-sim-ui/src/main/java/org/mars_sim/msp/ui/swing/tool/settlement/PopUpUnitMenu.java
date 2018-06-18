@@ -18,7 +18,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -31,6 +30,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.StageStyle;
 import javafx.scene.Cursor;
 import javafx.event.EventHandler;
@@ -54,6 +54,7 @@ import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 /*
 import com.jfoenix.controls.JFXPopup;
@@ -77,11 +78,9 @@ import javafx.scene.shape.Rectangle;
 */
 
 // TODO: is extending to JInternalFrame better?
-@SuppressWarnings("restriction")
 public class PopUpUnitMenu extends JPopupMenu {
 
-	private static final long serialVersionUID = 1L;
-	public static final int WIDTH = 380;
+	public static final int WIDTH = UnitWindow.WIDTH;//380;
 	public static final int HEIGHT = 350;
 	
 	private JMenuItem itemOne, itemTwo, itemThree;
@@ -231,7 +230,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 		UnitDescriptionStage unitInfo = new UnitDescriptionStage();//desktop);
 		BorderPane pane = (BorderPane) unitInfo.init(name, type, description);
 
-	   	Scene scene = new Scene(pane, 350, (int) height, javafx.scene.paint.Color.TRANSPARENT);
+		ScrollPane scroller = new ScrollPane(pane);
+        scroller.setFitToWidth(true);
+        
+	   	Scene scene = new Scene(pane, WIDTH, HEIGHT, javafx.scene.paint.Color.TRANSPARENT);
 	   	//scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
 	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
@@ -442,10 +444,13 @@ public class PopUpUnitMenu extends JPopupMenu {
     	Stage stage = new Stage();
 
 		BuildingStage buildingPanel = new BuildingStage("Building Detail", building, desktop);
-    	StackPane swingPane = new StackPane(buildingPanel.init());
-
-
-    	Scene scene = new Scene(swingPane, 400, 400, javafx.scene.paint.Color.TRANSPARENT);
+    	StackPane p = new StackPane(buildingPanel.init());
+    	p.setMaxSize(WIDTH, HEIGHT); 
+//		ScrollPane scroller = new ScrollPane(buildingPanel.init());
+//        scroller.setFitToWidth(true);
+//        scroller.setMaxSize(WIDTH, HEIGHT*3); 
+    			
+    	Scene scene = new Scene(p, WIDTH, HEIGHT, javafx.scene.paint.Color.TRANSPARENT);
 
 	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 	   	//addDraggableNode(swingNode);
