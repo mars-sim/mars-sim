@@ -2,3 +2,5 @@
 /logs/
 /profiles/
 /system/
+.classpath
+.project
