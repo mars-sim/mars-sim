@@ -31,7 +31,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -66,6 +65,8 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.alee.laf.panel.WebPanel;
+
 /**
  * The NavigatorWindow is a tool window that displays a map and a
  * globe showing Mars, and various other elements. It is the primary
@@ -85,7 +86,7 @@ implements ActionListener {
 	public static final int VERTICAL = 435;
 
 	public static final int HORIZONTAL_MINIMAP = 300;//274
-	public static final int VERTICAL_MINIMAP = 695;//695;
+	public static final int VERTICAL_MINIMAP = 700;//695;
 
 	// Data members
 	private Integer[] lon_degrees = new Integer[361];
@@ -133,7 +134,7 @@ implements ActionListener {
 	/** Show minerals menu item. */
 	private JCheckBoxMenuItem mineralItem;
 
-	private JPanel mapPaneInner;
+	private WebPanel mapPaneInner;
 
 	private MapLayer unitIconLayer;
 	private MapLayer unitLabelLayer;
@@ -168,7 +169,7 @@ implements ActionListener {
 		    //setBorder(null);
 
 			// Prepare content pane
-			JPanel wholePane = new JPanel();
+			WebPanel wholePane = new WebPanel();
 			//mainPane.setLayout(new BorderLayout());
 			wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 			//mainPane.setBorder(new MarsPanelBorder());
@@ -176,12 +177,12 @@ implements ActionListener {
 
 			// Prepare globe display
 			globeNav = new GlobeDisplay(this);
-			JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 			//globePane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
 			globePane.setBackground(Color.black);
 			globePane.setOpaque(true);
-			//globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-			//		new LineBorder(Color.gray)));
+			globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+					new LineBorder(Color.gray)));
 			globePane.add(globeNav);
 
 			globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -189,18 +190,19 @@ implements ActionListener {
 
 			///////////////////////////////////////////////////////////////////////////
 
-			mapPaneInner = new JPanel(new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT, 0, 0));
+			mapPaneInner = new WebPanel(new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT, 0, 0));
 			mapPaneInner.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 					new LineBorder(Color.gray)));
 			mapPaneInner.setBackground(Color.black);
-			mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
+			//mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
 			mapPaneInner.setOpaque(true);
 			mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
 			mapPaneInner.setAlignmentY(CENTER_ALIGNMENT);
 	//		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 
-			JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			WebPanel detailPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			detailPane.setMaximumHeight(HORIZONTAL_MINIMAP-10);
 			//detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 			//		new LineBorder(Color.gray)));
 			detailPane.setBackground(Color.black);
@@ -208,7 +210,7 @@ implements ActionListener {
 			detailPane.add(mapPaneInner);
 
 			map = new MapPanel(desktop, 500L);
-			map.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
+			//map.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
 			map.setNavWin(this);
 			map.addMouseListener(new mapListener());
 			map.addMouseMotionListener(new mouseMotionListener());
@@ -242,19 +244,20 @@ implements ActionListener {
 			///////////////////////////////////////////////////////////////////////////
 
 
-			JPanel bottomPane = new JPanel();//new BorderLayout(0,0));//FlowLayout(FlowLayout.CENTER, 0, 0));/
+			WebPanel bottomPane = new WebPanel();//new BorderLayout(0,0));//FlowLayout(FlowLayout.CENTER, 0, 0));/
 			bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
 			//bottomPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 			bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-			bottomPane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, 15));
-			
+			//bottomPane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, 15));
+			bottomPane.setMaximumHeight(35);
 			wholePane.add(bottomPane);//, BorderLayout.SOUTH);
 			//mapPaneInner.add(bottomPane, BorderLayout.SOUTH);
 
 			///////////////////////////////////////////////////////////////////////////
 			// Prepare position entry panel
-			JPanel coordPane = new JPanel(new GridLayout(1, 6, 0, 0));//FlowLayout(FlowLayout.LEFT));//
+			WebPanel coordPane = new WebPanel(new GridLayout(1, 6, 0, 0));//FlowLayout(FlowLayout.LEFT));//
 			//coordPane.setBorder(new EmptyBorder(6, 6, 3, 3));
+			coordPane.setMaximumHeight(18);
 			coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 			coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
 			bottomPane.add(coordPane);//, BorderLayout.NORTH);
@@ -283,7 +286,7 @@ implements ActionListener {
 			
 			latCB = new JComboBoxMW<Integer>(lat_degrees);
 			latCB.setSelectedItem(0);
-			latCB.setPreferredSize(new Dimension(60, -1));
+			latCB.setPreferredSize(new Dimension(50, -1));
 			coordPane.add(latCB);
 
 
@@ -293,7 +296,7 @@ implements ActionListener {
 			};
 			latDir = new JComboBoxMW<Object>(latStrings);
 			latDir.setEditable(false);
-			latDir.setPreferredSize(new Dimension(25, -1));
+			latDir.setPreferredSize(new Dimension(20, -1));
 			coordPane.add(latDir);
 
 			// Put glue and strut spacers in
@@ -313,7 +316,7 @@ implements ActionListener {
 			// 2016-11-24 Switch to using ComboBoxMW for longtitude
 			longCB = new JComboBoxMW<Integer>(lon_degrees);
 			longCB.setSelectedItem(0);
-			longCB.setPreferredSize(new Dimension(60, -1));
+			longCB.setPreferredSize(new Dimension(50, -1));
 			coordPane.add(longCB);
 
 			String[] longStrings = {
@@ -322,7 +325,7 @@ implements ActionListener {
 			};
 			longDir = new JComboBoxMW<Object>(longStrings);
 			longDir.setEditable(false);
-			longDir.setPreferredSize(new Dimension(25, -1));
+			longDir.setPreferredSize(new Dimension(20, -1));
 			coordPane.add(longDir);
 
 			// Put glue and strut spacers in
@@ -342,12 +345,13 @@ implements ActionListener {
 
 
 			// Prepare topographical panel
-			//JPanel buttonsPane = new JPanel(new BorderLayout());
+			//WebPanel buttonsPane = new WebPanel(new BorderLayout());
 			//buttonsPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 			//bottomPane.add(buttonsPane, BorderLayout.NORTH);
 
 			// Prepare options panel
-			JPanel optionsPane = new JPanel(new GridLayout(1, 3));
+			WebPanel optionsPane = new WebPanel(new GridLayout(1, 3));
+			optionsPane.setMaximumHeight(15);
 			optionsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 			bottomPane.add(optionsPane);//, BorderLayout.CENTER);
 
@@ -396,13 +400,13 @@ implements ActionListener {
 			//ruler = new LegendDisplay();
 			//ruler.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 			//		new LineBorder(Color.gray)));
-			//JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
+			//WebPanel legendPanel = new WebPanel(new BorderLayout(0, 0));
 			//legendPanel.add(ruler, BorderLayout.NORTH);
 			//buttonsPane.add(legendPanel, BorderLayout.NORTH);
-			optionsPane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, 15));
+			optionsPane.setSize(new Dimension(HORIZONTAL_MINIMAP, 30));
 			
-			setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
-			setSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
+//			setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
+//			setSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 			setPreferredSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 
 		}
@@ -410,26 +414,26 @@ implements ActionListener {
 		else {
 
 			// Prepare content pane
-			JPanel mainPane = new JPanel();
+			WebPanel mainPane = new WebPanel();
 			mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 			mainPane.setBorder(new MarsPanelBorder());
 			setContentPane(mainPane);
 
 
 			// Prepare top layout panes
-			JPanel topMainPane = new JPanel();
+			WebPanel topMainPane = new WebPanel();
 			topMainPane.setLayout(new BoxLayout(topMainPane, BoxLayout.X_AXIS));
 			mainPane.add(topMainPane);
 
 
-			JPanel leftTopPane = new JPanel();
+			WebPanel leftTopPane = new WebPanel();
 			leftTopPane.setLayout(new BoxLayout(leftTopPane, BoxLayout.Y_AXIS));
 			topMainPane.add(leftTopPane);
 
 			// Prepare globe display
 			//globeNav = new GlobeDisplay(this, 150, 150);
 			globeNav = new GlobeDisplay(this);//, GlobeDisplay.GLOBE_MAP_WIDTH, GlobeDisplay.GLOBE_MAP_HEIGHT);
-			JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			globePane.setBackground(Color.black);
 			globePane.setOpaque(true);
 			globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
@@ -439,7 +443,7 @@ implements ActionListener {
 	/*
 			// Prepare navigation buttons display
 			navButtons = new NavButtonDisplay(this);
-			JPanel navPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			WebPanel navPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			navPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 					new LineBorder(Color.gray)));
 			navPane.add(navButtons);
@@ -448,16 +452,16 @@ implements ActionListener {
 			// Put strut spacer in
 			topMainPane.add(Box.createHorizontalStrut(5));
 
-			JPanel rightTopPane = new JPanel();
+			WebPanel rightTopPane = new WebPanel();
 			rightTopPane.setLayout(new BoxLayout(rightTopPane, BoxLayout.Y_AXIS));
 			topMainPane.add(rightTopPane);
 
 			// Prepare surface map display
-			JPanel mapPane = new JPanel(new BorderLayout(0, 0));
+			WebPanel mapPane = new WebPanel(new BorderLayout(0, 0));
 			mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 					new LineBorder(Color.gray)));
 			rightTopPane.add(mapPane);
-			mapPaneInner = new JPanel(new BorderLayout(0, 0));
+			mapPaneInner = new WebPanel(new BorderLayout(0, 0));
 			mapPaneInner.setBackground(Color.black);
 			mapPaneInner.setOpaque(true);
 	//		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -495,12 +499,12 @@ implements ActionListener {
 			rightTopPane.add(Box.createVerticalStrut(5));
 
 			// Prepare topographical panel
-			JPanel topoPane = new JPanel(new BorderLayout());
+			WebPanel topoPane = new WebPanel(new BorderLayout());
 			topoPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 			mainPane.add(topoPane);
 
 			// Prepare options panel
-			JPanel optionsPane = new JPanel(new GridLayout(2, 1));
+			WebPanel optionsPane = new WebPanel(new GridLayout(2, 1));
 			topoPane.add(optionsPane, BorderLayout.CENTER);
 
 			// Prepare options button.
@@ -538,16 +542,12 @@ implements ActionListener {
 			ruler = new LegendDisplay();
 			ruler.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 					new LineBorder(Color.gray)));
-			JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
+			WebPanel legendPanel = new WebPanel(new BorderLayout(0, 0));
 			legendPanel.add(ruler, BorderLayout.NORTH);
 			topoPane.add(legendPanel, BorderLayout.EAST);
 
-
-
-
-
 			// Prepare position entry panel
-			JPanel positionPane = new JPanel();
+			WebPanel positionPane = new WebPanel();
 			positionPane.setLayout(new BoxLayout(positionPane, BoxLayout.X_AXIS));
 			positionPane.setBorder(new EmptyBorder(6, 6, 3, 3));
 			mainPane.add(positionPane);

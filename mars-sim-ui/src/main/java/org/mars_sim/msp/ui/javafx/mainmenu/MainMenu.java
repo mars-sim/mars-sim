@@ -720,7 +720,7 @@ public class MainMenu {
 				if (isSoundDisabled)
 					mainMenu.setSoundDisabled();
 				   
-//				mainScene.createLoadingIndicator();
+				mainScene.createLoadingIndicator();
 //				mainScene.showWaitStage(MainScene.LOADING);
 			});
 

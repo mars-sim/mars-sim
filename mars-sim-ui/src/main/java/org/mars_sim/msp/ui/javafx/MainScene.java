@@ -509,11 +509,11 @@ public class MainScene {
 
 	}
 
-//	public void createLoadingIndicator() {
-//		// 2016-10-01 Added mainSceneExecutor for executing wait stages
-//		startMainSceneExecutor();
+	public void createLoadingIndicator() {
+		// 2016-10-01 Added mainSceneExecutor for executing wait stages
+		startMainSceneExecutor();
 //		createProgressCircle(LOADING);
-//	}
+	}
 
 	public void createSavingIndicator() {
 		createProgressCircle(AUTOSAVING);
@@ -1051,11 +1051,13 @@ public class MainScene {
 		AnchorPane.setRightAnchor(lastSaveLabel, 105.0);
 
 		anchorPane = new AnchorPane();
+		//anchorPane.setStyle("-fx-background-color: black; ");
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
 				soundBtn);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(anchorPane);
+		//rootStackPane.setStyle("-fx-background-color: black; ");
 		rootStackPane.setPrefWidth(sceneWidth.get());
 		rootStackPane.setPrefHeight(sceneHeight.get());
 		// rootStackPane.setBackground(new Background(new
@@ -1086,7 +1088,8 @@ public class MainScene {
 		// anchorTabPane is within jfxTabPane
 		mapsAnchorPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
 		mapsAnchorPane.prefWidthProperty().bind(scene.widthProperty());
-
+		//mapsAnchorPane.setStyle("-fx-background-color: black; ");
+		
 		// Setup key events using wellbehavedfx
 		setupKeyEvents();
 
@@ -2188,6 +2191,7 @@ public class MainScene {
 		jfxTabPane = new JFXTabPane();
 
 		mainStackPane = new StackPane();
+		mainStackPane.setStyle("-fx-background-color: black; ");
 		mainStackPane.getChildren().add(desktopNode);
 
 		dashboardStackPane = new StackPane();
@@ -2233,6 +2237,7 @@ public class MainScene {
 
 		Tab mapTab = new Tab();
 		mapTab.setText("Map");
+		//mapTab.setStyle("-fx-background-color: black; ");
 		mapTab.setContent(mapsAnchorPane);
 
 		navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
@@ -2240,17 +2245,18 @@ public class MainScene {
 		minimapNode = new SwingNode();
 		minimapStackPane = new StackPane(minimapNode);
 		minimapNode.setContent(navWin);
-		minimapStackPane.setStyle("-fx-background-color: black; ");
-		minimapNode.setStyle("-fx-background-color: black; ");
+		minimapStackPane.setStyle("-fx-background-color: transparent; ");
+		minimapNode.setStyle("-fx-background-color: transparent; ");
 
 		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapPanel = settlementWindow.getMapPanel();
 
 		mapNode = new SwingNode();
+		mapNode.setStyle("-fx-background-color: black; ");
 		sMapStackPane = new StackPane(mapNode);
 		mapNode.setContent(settlementWindow);
-		sMapStackPane.setStyle("-fx-background-color: black; ");
-		mapNode.setStyle("-fx-background-color: black; ");
+		sMapStackPane.setStyle("-fx-background-color: transparent; ");
+
 
 		createMapToolBox();
 
@@ -3468,6 +3474,7 @@ public class MainScene {
 	private void createDesktopNode() {
 		// Create group to hold swingNode which in turns holds the Swing desktop
 		desktopNode = new SwingNode();
+		desktopNode.setStyle("-fx-background-color: black; ");
 		desktop = new MainDesktopPane(this);
 		//SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
 		

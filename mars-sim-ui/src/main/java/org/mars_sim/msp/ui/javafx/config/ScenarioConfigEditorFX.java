@@ -490,10 +490,10 @@ public class ScenarioConfigEditorFX {
 
 			if (!hasError) {
 				// create wait indicators
-//				Platform.runLater(() -> {
-//					mainScene.createLoadingIndicator();
+				Platform.runLater(() -> {
+					mainScene.createLoadingIndicator();
 //					mainScene.showWaitStage(MainScene.LOADING);
-//				});
+				});
 
 				setConfiguration();
 
@@ -547,7 +547,7 @@ public class ScenarioConfigEditorFX {
 
 	public class WaitTask implements Runnable {
 		public void run() {
-//			mainScene.createLoadingIndicator();
+			mainScene.createLoadingIndicator();
 //			mainScene.showWaitStage(MainScene.LOADING);
 		}
 	}

@@ -21,8 +21,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JComponent;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
@@ -38,11 +36,14 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.alee.extended.WebComponent;
+import com.alee.managers.style.StyleId;
+
 /**
  * The Globe Display class displays a graphical globe of Mars in the Navigator
  * tool.
  */
-public class GlobeDisplay extends JComponent implements ClockListener {
+public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -705,5 +706,23 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public StyleId getDefaultStyleId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getUIClassID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -253,7 +253,7 @@ public class MainDesktopPane extends WebDesktopPane
 	@Override
 	public void componentMoved(ComponentEvent e) {
 		logger.info("componentMoved()");
-		updateToolWindow();
+		//updateToolWindow();
 	}
 
 	@Override

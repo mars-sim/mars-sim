@@ -536,6 +536,13 @@ public class OGGSoundClip {
 		} catch (Exception ee) {
 			logger.log(Level.SEVERE, "Sound system NOT supported. Run the sim without audio." + ee);
 			MainScene.disableSound();
+//			if (mainScene != null)
+//				MainScene.disableSound();
+//			else {
+//				soundPlayer.setSoundDisabled(true);
+//				soundPlayer.enableMasterGain(false);
+//			}
+				
 		}
 	}
 

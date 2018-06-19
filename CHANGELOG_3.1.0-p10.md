@@ -1,11 +1,11 @@
-** Mars Simulation Project **
+# Mars Simulation Project
 Copyright (C) 2018 Scott Davis
-https://mars-sim.github.io
-https://github.com/mars-sim/mars-sim
+[Project Website](https://mars-sim.github.io)
+[GitHub Page](https://github.com/mars-sim/mars-sim)
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 10 (build 4300) - 2018-06-16
+## v3.1.0-Preview 10 (build 43__) - 2018-06-__
 
 ### KNOWN LIMITATIONS :
 
@@ -26,7 +26,7 @@ https://github.com/mars-sim/mars-sim
 
 ### UI IMPROVEMENT :
 
-1. Separate how settlers are shown according to their associated settlement in 
+1. Separate lists of settlers according to their associated settlement in 
    Dashboard tab.
 
 

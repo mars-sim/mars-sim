@@ -25,8 +25,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -36,7 +34,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
-public class MapPanel extends JPanel implements ClockListener {
+import com.alee.laf.panel.WebPanel;
+
+public class MapPanel extends WebPanel implements ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
