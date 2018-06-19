@@ -14,10 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -35,6 +31,11 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+
 /**
  * The SkillTabPanel is a tab panel for the skills of a person.
  */
@@ -44,7 +45,7 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private JTable skillTable ;
+	private WebTable skillTable ;
 	private SkillTableModel skillTableModel;
 	//private Person person;
 	//private Robot robot;
@@ -95,16 +96,16 @@ extends TabPanel {
 	public void init() {
 
 		// Create skill label panel.
-		JPanel skillLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel skillLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(skillLabelPanel);
 
 		// Create skill label
-		JLabel skillLabel = new JLabel(Msg.getString("TabPanelSkill.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel skillLabel = new WebLabel(Msg.getString("TabPanelSkill.label"), WebLabel.CENTER); //$NON-NLS-1$
 		skillLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		skillLabelPanel.add(skillLabel);
 
 		// Create skill scroll panel
-		JScrollPane skillScrollPanel = new JScrollPane();
+		WebScrollPane skillScrollPanel = new WebScrollPane();
 		skillScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(skillScrollPanel);
 
@@ -116,20 +117,17 @@ extends TabPanel {
 		skillTable.setCellSelectionEnabled(false);
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
-		// 2015-09-24 Align the content to the center of the cell
+		// Align the content to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		//skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		skillScrollPanel.setViewportView(skillTable);
 
-		// 2015-06-08 Added sorting
+		// Added sorting
 		skillTable.setAutoCreateRowSorter(true);
-	    //if (!MainScene.OS.equals("linux")) {
-	    //	skillTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    //}
-		// 2015-06-08 Added setTableStyle()
+
 		TableStyle.setTableStyle(skillTable);
 	}
 

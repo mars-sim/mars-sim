@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -17,11 +16,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -41,6 +37,10 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 
@@ -63,19 +63,21 @@ extends TabPanel {
 	private double stressCache;
 	private double performanceCache;
 
-	private JLabel thirstLabel;
-	private JLabel fatigueLabel;
-	private JLabel hungerLabel;
-	private JLabel energyLabel;
-	private JLabel stressLabel;
-	private JLabel performanceLabel;
+	private WebLabel thirstLabel;
+	private WebLabel fatigueLabel;
+	private WebLabel hungerLabel;
+	private WebLabel energyLabel;
+	private WebLabel stressLabel;
+	private WebLabel performanceLabel;
 
 	private PhysicalCondition condition;
 	
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
 	private RadiationTableModel radiationTableModel;
-	private JTable radiationTable, medicationTable, healthProblemTable;
+	private WebTable radiationTable;
+	private WebTable medicationTable;
+	private WebTable healthProblemTable;
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 
@@ -104,80 +106,80 @@ extends TabPanel {
 		//PhysicalCondition condition = ((Person) unit).getPhysicalCondition();
 		
 		// Create health label panel.
-		JPanel healthLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel healthLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(healthLabelPanel);
 
 		// Prepare health label
-		JLabel healthLabel = new JLabel(Msg.getString("TabPanelHealth.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel healthLabel = new WebLabel(Msg.getString("TabPanelHealth.label"), WebLabel.CENTER); //$NON-NLS-1$
 		healthLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		healthLabelPanel.add(healthLabel);
 
 		// Prepare condition panel
-		JPanel conditionPanel = new JPanel(new SpringLayout());//GridLayout(5, 2, 0, 0));
+		WebPanel conditionPanel = new WebPanel(new SpringLayout());//GridLayout(5, 2, 0, 0));
 		conditionPanel.setBorder(new MarsPanelBorder());
 		//conditionPanel.setSize(180, 60);
 		centerContentPanel.add(conditionPanel, BorderLayout.NORTH);
 
 		// Prepare fatigue name label
-		JLabel fatigueNameLabel = new JLabel(Msg.getString("TabPanelHealth.fatigue"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel fatigueNameLabel = new WebLabel(Msg.getString("TabPanelHealth.fatigue"), WebLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(fatigueNameLabel);
 
 		// Prepare fatigue label
 		fatigueCache = condition.getFatigue();
-		fatigueLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(fatigueCache)), JLabel.LEFT);
+		fatigueLabel = new WebLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+		        formatter.format(fatigueCache)), WebLabel.LEFT);
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
-		JLabel thirstNameLabel = new JLabel(Msg.getString("TabPanelHealth.thirst"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel thirstNameLabel = new WebLabel(Msg.getString("TabPanelHealth.thirst"), WebLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(thirstNameLabel);
 
 		// Prepare hunger label
 		thirstCache = condition.getThirst();
-		thirstLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(thirstCache)), JLabel.LEFT);
+		thirstLabel = new WebLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+		        formatter.format(thirstCache)), WebLabel.LEFT);
 		conditionPanel.add(thirstLabel);
 		
 		// Prepare hunger name label
-		JLabel hungerNameLabel = new JLabel(Msg.getString("TabPanelHealth.hunger"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel hungerNameLabel = new WebLabel(Msg.getString("TabPanelHealth.hunger"), WebLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(hungerNameLabel);
 
 		// Prepare hunger label
 		hungerCache = condition.getHunger();
-		hungerLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(hungerCache)), JLabel.LEFT);
+		hungerLabel = new WebLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+		        formatter.format(hungerCache)), WebLabel.LEFT);
 		conditionPanel.add(hungerLabel);
 
 		//
 		// Prepare energy name label
-		JLabel energyNameLabel = new JLabel(Msg.getString("TabPanelHealth.energy"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel energyNameLabel = new WebLabel(Msg.getString("TabPanelHealth.energy"), WebLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(energyNameLabel);
 
 		// Prepare energy label
 		energyCache = condition.getEnergy();
-		energyLabel = new JLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-		        formatter.format(energyCache)), JLabel.LEFT);
+		energyLabel = new WebLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
+		        formatter.format(energyCache)), WebLabel.LEFT);
 		conditionPanel.add(energyLabel);
 
 
 		// Prepare stress name label
-		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel stressNameLabel = new WebLabel(Msg.getString("TabPanelHealth.stress"), WebLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(stressNameLabel);
 
 		// Prepare stress label
 		stressCache = condition.getStress();
-		stressLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(stressCache)), JLabel.LEFT);
+		stressLabel = new WebLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+		        formatter.format(stressCache)), WebLabel.LEFT);
 		conditionPanel.add(stressLabel);
 
 		// Prepare performance rating label
-		JLabel performanceNameLabel = new JLabel(Msg.getString("TabPanelHealth.performance"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel performanceNameLabel = new WebLabel(Msg.getString("TabPanelHealth.performance"), WebLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(performanceNameLabel);
 
 		// Performance rating label
 		performanceCache = person.getPerformanceRating() * 100D;
-		performanceLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(performanceCache)), JLabel.LEFT);
+		performanceLabel = new WebLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+		        formatter.format(performanceCache)), WebLabel.LEFT);
 		conditionPanel.add(performanceLabel);
 
 		// 2017-03-28 Prepare SpringLayout
@@ -188,19 +190,19 @@ extends TabPanel {
 
 		// 2015-04-29 Added radiation dose info
 		// Prepare radiation panel
-		JPanel radiationPanel = new JPanel(new BorderLayout());//new GridLayout(2, 1, 0, 0));
+		WebPanel radiationPanel = new WebPanel(new BorderLayout());//new GridLayout(2, 1, 0, 0));
 		radiationPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(radiationPanel, BorderLayout.CENTER);
 
 		// Prepare radiation label
-		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.label"), WebLabel.CENTER); //$NON-NLS-1$
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
 		//radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
 		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.tooltip"), TooltipWay.down);
 			 
 
 		// Prepare radiation scroll panel
-		JScrollPane radiationScrollPanel = new JScrollPane();
+		WebScrollPane radiationScrollPanel = new WebScrollPane();
 		radiationPanel.add(radiationScrollPanel, BorderLayout.CENTER);
 
 		// Prepare radiation table model
@@ -228,6 +230,14 @@ extends TabPanel {
 		    }
 */		        
 		};
+		
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		radiationTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		radiationTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		radiationTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		radiationTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		
 		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 30));
 		radiationTable.setCellSelectionEnabled(false);
@@ -242,20 +252,20 @@ extends TabPanel {
 		TableStyle.setTableStyle(radiationTable);
 
 		// Prepare table panel.
-		JPanel tablePanel = new JPanel(new GridLayout(2, 1));
+		WebPanel tablePanel = new WebPanel(new GridLayout(2, 1));
 		centerContentPanel.add(tablePanel, BorderLayout.SOUTH);
 
 		// Prepare medication panel.
-		JPanel medicationPanel = new JPanel(new BorderLayout());
+		WebPanel medicationPanel = new WebPanel(new BorderLayout());
 		medicationPanel.setBorder(new MarsPanelBorder());
 		tablePanel.add(medicationPanel);
 
 		// Prepare medication label.
-		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel medicationLabel = new WebLabel(Msg.getString("TabPanelHealth.medication"), WebLabel.CENTER); //$NON-NLS-1$
 		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
 
 		// Prepare medication scroll panel
-		JScrollPane medicationScrollPanel = new JScrollPane();
+		WebScrollPane medicationScrollPanel = new WebScrollPane();
 		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
 
 		// Prepare medication table model.
@@ -276,16 +286,16 @@ extends TabPanel {
 		TableStyle.setTableStyle(medicationTable);
 
 		// Prepare health problem panel
-		JPanel healthProblemPanel = new JPanel(new BorderLayout());
+		WebPanel healthProblemPanel = new WebPanel(new BorderLayout());
 		healthProblemPanel.setBorder(new MarsPanelBorder());
 		tablePanel.add(healthProblemPanel);
 
 		// Prepare health problem label
-		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel healthProblemLabel = new WebLabel(Msg.getString("TabPanelHealth.healthProblems"), WebLabel.CENTER); //$NON-NLS-1$
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
 		// Prepare health problem scroll panel
-		JScrollPane healthProblemScrollPanel = new JScrollPane();
+		WebScrollPane healthProblemScrollPanel = new WebScrollPane();
 		healthProblemPanel.add(healthProblemScrollPanel, BorderLayout.CENTER);
 
 		// Prepare health problem table model
@@ -384,21 +394,21 @@ extends TabPanel {
 		radiationTableModel.update();
 	}
 
-	public class IconTextCellRemderer extends DefaultTableCellRenderer {
-	    public Component getTableCellRendererComponent(JTable table,
-	                                  Object value,
-	                                  boolean isSelected,
-	                                  boolean hasFocus,
-	                                  int row,
-	                                  int column) {
-	        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-	        //setToolTipText(...);
-	        //BalloonToolTip balloonToolTip = new BalloonToolTip();
-	        //balloonToolTip.createBalloonTip(value, ""); //$NON-NLS-1$
-
-	        return this;
-	    }
-	}
+//	public class IconTextCellRenderer extends DefaultTableCellRenderer {
+//	    public Component getTableCellRendererComponent(WebTable table,
+//	                                  Object value,
+//	                                  boolean isSelected,
+//	                                  boolean hasFocus,
+//	                                  int row,
+//	                                  int column) {
+//	        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+//	        //setToolTipText(...);
+//	        //BalloonToolTip balloonToolTip = new BalloonToolTip();
+//	        //balloonToolTip.createBalloonTip(value, ""); //$NON-NLS-1$
+//
+//	        return this;
+//	    }
+//	}
 
 	/**
 	 * Internal class used as model for the radiation dose table.

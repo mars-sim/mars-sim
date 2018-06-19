@@ -20,13 +20,13 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+
+
+
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -42,6 +42,12 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.radiobutton.WebRadioButton;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
@@ -66,24 +72,24 @@ extends TabPanel {
 	
 	private List<Building> buildingsCache;
 
-	private JLabel o2Label;
-	private JLabel cO2Label;
-	private JLabel n2Label;
-	private JLabel h2OLabel;
-	private JLabel arLabel;
-	private JLabel totalPressureLabel;
-	private JLabel averageTemperatureLabel;
+	private WebLabel o2Label;
+	private WebLabel cO2Label;
+	private WebLabel n2Label;
+	private WebLabel h2OLabel;
+	private WebLabel arLabel;
+	private WebLabel totalPressureLabel;
+	private WebLabel averageTemperatureLabel;
 
-	private JTable table ;
+	private WebTable table ;
 
-	private JRadioButton percent_btn;
-	private JRadioButton mass_btn;//, moles_btn, temperature_btn;
-	private JRadioButton kPa_btn;
-	private JRadioButton atm_btn;
-	private JRadioButton psi_btn;
-	private JRadioButton mb_btn;
+	private WebRadioButton percent_btn;
+	private WebRadioButton mass_btn;//, moles_btn, temperature_btn;
+	private WebRadioButton kPa_btn;
+	private WebRadioButton atm_btn;
+	private WebRadioButton psi_btn;
+	private WebRadioButton mb_btn;
 	
-	private JScrollPane scrollPane;
+	private WebScrollPane scrollPane;
 	
 	private ButtonGroup bG;
 	
@@ -121,28 +127,28 @@ extends TabPanel {
 		numBuildingsCache = buildingsCache.size();
 
 		// Prepare label panel.
-		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel titlePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePanel);
 
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelAirComposition.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelAirComposition.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titlePanel.add(titleLabel);
 
 		// Prepare info panel.
-		JPanel topPanel = new JPanel(new SpringLayout());
+		WebPanel topPanel = new WebPanel(new SpringLayout());
 		//topPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(topPanel);
 
-		JLabel t_label = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), JLabel.RIGHT);
+		WebLabel t_label = new WebLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), WebLabel.RIGHT);
 		topPanel.add(t_label);
 		averageTemperatureCache = settlement.getTemperature();
-		averageTemperatureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", fmt2.format(averageTemperatureCache)), JLabel.LEFT); //$NON-NLS-1$
+		averageTemperatureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", fmt2.format(averageTemperatureCache)), WebLabel.LEFT); //$NON-NLS-1$
 		topPanel.add(averageTemperatureLabel);
 		
-		JLabel p_label = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.title"), JLabel.RIGHT);
+		WebLabel p_label = new WebLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.title"), WebLabel.RIGHT);
 		topPanel.add(p_label);
 		totalPressureCache = Math.round(settlement.getAirPressure()*100.0)/100.0 + "";
-		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.kPa", totalPressureCache), JLabel.LEFT); //$NON-NLS-1$
+		totalPressureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.kPa", totalPressureCache), WebLabel.LEFT); //$NON-NLS-1$
 		topPanel.add(totalPressureLabel);
 		
 		//Lay out the spring panel.
@@ -151,52 +157,52 @@ extends TabPanel {
 		                                5, 5,        //initX, initY
 		                                10, 1);       //xPad, yPad
 		
-		JPanel gasesPanel = new JPanel(new GridLayout(2,1));
+		WebPanel gasesPanel = new WebPanel(new GridLayout(2,1));
 		gasesPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(gasesPanel); 
 		
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
-		JPanel gasTitle = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JLabel gasLabel = new JLabel(Msg.getString("TabPanelAirComposition.label"), JLabel.CENTER);
+		WebPanel gasTitle = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		WebLabel gasLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label"), WebLabel.CENTER);
 		gasLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		gasTitle.add(gasLabel);
 		gasesPanel.add(gasTitle);
 
-		JPanel gasPanel = new JPanel(new SpringLayout());
+		WebPanel gasPanel = new WebPanel(new SpringLayout());
 		//gasPanel.setBorder(new MarsPanelBorder());
 		gasesPanel.add(gasPanel);
 
-		JLabel co2 = new JLabel(Msg.getString("TabPanelAirComposition.cO2.title"), JLabel.RIGHT);
+		WebLabel co2 = new WebLabel(Msg.getString("TabPanelAirComposition.cO2.title"), WebLabel.RIGHT);
 		gasPanel.add(co2);
 		cO2Cache = getOverallComposition(0);
-		cO2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt3.format(cO2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
+		cO2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt3.format(cO2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(cO2Label);
 
-		JLabel ar = new JLabel(Msg.getString("TabPanelAirComposition.ar.title"), JLabel.RIGHT);
+		WebLabel ar = new WebLabel(Msg.getString("TabPanelAirComposition.ar.title"), WebLabel.RIGHT);
 		gasPanel.add(ar);
 		arCache = getOverallComposition(1);
-		arLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(arCache))+"   ", JLabel.LEFT); //$NON-NLS-1$
+		arLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(arCache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(arLabel);
 		
-		JLabel n2 = new JLabel(Msg.getString("TabPanelAirComposition.n2.title"), JLabel.RIGHT);
+		WebLabel n2 = new WebLabel(Msg.getString("TabPanelAirComposition.n2.title"), WebLabel.RIGHT);
 		gasPanel.add(n2);
 		n2Cache = getOverallComposition(2);
-		n2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt1.format(n2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
+		n2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt1.format(n2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(n2Label);
 
-		JLabel o2 = new JLabel(Msg.getString("TabPanelAirComposition.o2.title"), JLabel.RIGHT);
+		WebLabel o2 = new WebLabel(Msg.getString("TabPanelAirComposition.o2.title"), WebLabel.RIGHT);
 		gasPanel.add(o2);
 		o2Cache = getOverallComposition(3);
-		o2Label = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(o2Cache))+"   ", JLabel.LEFT); //$NON-NLS-1$
+		o2Label = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(o2Cache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(o2Label);
 
-		JLabel h2O = new JLabel(Msg.getString("TabPanelAirComposition.h2O.title"), JLabel.RIGHT);
+		WebLabel h2O = new WebLabel(Msg.getString("TabPanelAirComposition.h2O.title"), WebLabel.RIGHT);
 		gasPanel.add(h2O);
 		h2OCache = getOverallComposition(4);
-		h2OLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(h2OCache))+"   ", JLabel.LEFT); //$NON-NLS-1$
+		h2OLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.percent", fmt2.format(h2OCache))+"   ", WebLabel.LEFT); //$NON-NLS-1$
 		gasPanel.add(h2OLabel);
-		gasPanel.add(new JLabel(""));
-		gasPanel.add(new JLabel(""));
+		gasPanel.add(new WebLabel(""));
+		gasPanel.add(new WebLabel(""));
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(gasPanel,
 		                                2, 6, //rows, cols
@@ -204,28 +210,23 @@ extends TabPanel {
 		                                10, 1);       //xPad, yPad
 		
 		// Create override check box panel.
-		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel radioPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(radioPane, BorderLayout.SOUTH);
 		
-	    percent_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.percent")); //$NON-NLS-1$
+	    percent_btn = new WebRadioButton(Msg.getString("TabPanelAirComposition.checkbox.percent")); //$NON-NLS-1$
 	    percent_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.percent.tooltip")); //$NON-NLS-1$
-	    mass_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mass")); //$NON-NLS-1$
+	    mass_btn = new WebRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mass")); //$NON-NLS-1$
 	    mass_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.mass.tooltip")); //$NON-NLS-1$
    
-	    kPa_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.kPa")); //$NON-NLS-1$
+	    kPa_btn = new WebRadioButton(Msg.getString("TabPanelAirComposition.checkbox.kPa")); //$NON-NLS-1$
 	    kPa_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.kPa.tooltip")); //$NON-NLS-1$
-	    atm_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.atm")); //$NON-NLS-1$
+	    atm_btn = new WebRadioButton(Msg.getString("TabPanelAirComposition.checkbox.atm")); //$NON-NLS-1$
 	    atm_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.atm.tooltip")); //$NON-NLS-1$
-	    psi_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.psi")); //$NON-NLS-1$
+	    psi_btn = new WebRadioButton(Msg.getString("TabPanelAirComposition.checkbox.psi")); //$NON-NLS-1$
 	    psi_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.psi.tooltip")); //$NON-NLS-1$
-	    mb_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mb")); //$NON-NLS-1$
+	    mb_btn = new WebRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mb")); //$NON-NLS-1$
 	    mb_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.mb.tooltip")); //$NON-NLS-1$
 
-	    //moles_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.moles")); //$NON-NLS-1$
-	    //moles_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.moles.tooltip")); //$NON-NLS-1$
-	    //temperature_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.temperature")); //$NON-NLS-1$
-	    //temperature_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.temperature.tooltip")); //$NON-NLS-1$
-	    
 	    percent_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				tableModel.update();
@@ -256,23 +257,8 @@ extends TabPanel {
 				tableModel.update();
 			}
 		});
-/*
-	    moles_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
-	    temperature_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
-*/	    
 
-		//radioPane.add(moles_btn);
-		//radioPane.add(temperature_btn);
-		
-		JPanel pressure_p = new JPanel(new FlowLayout());
+		WebPanel pressure_p = new WebPanel(new FlowLayout());
 		pressure_p.setBorder(BorderFactory.createTitledBorder("Pressure"));
 		pressure_p.add(kPa_btn);
 		pressure_p.add(atm_btn);
@@ -280,12 +266,12 @@ extends TabPanel {
 		pressure_p.add(psi_btn);
 		radioPane.add(pressure_p);
 		
-		JPanel mass_p = new JPanel(new FlowLayout());
+		WebPanel mass_p = new WebPanel(new FlowLayout());
 		mass_p.setBorder(BorderFactory.createTitledBorder("Mass"));
 		mass_p.add(mass_btn);
 		radioPane.add(mass_p);
     
-		JPanel vol_p = new JPanel(new FlowLayout());
+		WebPanel vol_p = new WebPanel(new FlowLayout());
 		vol_p.setSize(60, 40);
 		vol_p.setBorder(BorderFactory.createTitledBorder("Content"));
 		vol_p.add(percent_btn);
@@ -304,10 +290,10 @@ extends TabPanel {
 	    //bG.add(temperature_btn);
 	    
 		// Create scroll panel for the outer table panel.
-		scrollPane = new JScrollPane();
+		scrollPane = new WebScrollPane();
 		// scrollPane.setPreferredSize(new Dimension(257, 230));
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		centerContentPanel.add(scrollPane,BorderLayout.CENTER);
 
 		tableModel = new TableModel(settlement);
@@ -324,13 +310,20 @@ extends TabPanel {
 		table.getColumnModel().getColumn(5).setPreferredWidth(20);
 		table.getColumnModel().getColumn(6).setPreferredWidth(20);
 
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(5).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(6).setCellRenderer(renderer);
+		
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//table.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.setAutoCreateRowSorter(true);
-		//if (!MainScene.OS.equals("linux")) {
-		//	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
 
 		TableStyle.setTableStyle(table);
 

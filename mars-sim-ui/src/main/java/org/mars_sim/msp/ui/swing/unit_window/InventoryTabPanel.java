@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.swing.JLabel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -46,6 +45,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
@@ -82,7 +82,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         topContentPanel.add(inventoryLabelPanel);
 
         // Create inventory label
-        JLabel titleLabel = new JLabel("Inventory", JLabel.CENTER);
+        WebLabel titleLabel = new WebLabel("Inventory", WebLabel.CENTER);
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         inventoryLabelPanel.add(titleLabel);
@@ -100,30 +100,29 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourceTableModel = new ResourceTableModel(inv);
 
         // Create resources table
-        //resourcesTable = new JTable(resourceTableModel);
         resourcesTable = new ZebraJTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
         resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+        resourcesTable.getColumnModel().getColumn(2).setPreferredWidth(50);
         resourcesTable.setCellSelectionEnabled(false);
         resourcesPanel.setViewportView(resourcesTable);
 
-		// 2015-06-08 Added sorting
+		// Added sorting
         resourcesTable.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        //	resourcesTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		// 2015-09-28 Align the preference score to the center of the cell
+
+		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		resourcesTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		resourcesTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		resourcesTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 
-		// 2015-06-08 Added setTableStyle()
+		// Added setTableStyle()
 		TableStyle.setTableStyle(resourcesTable);
 
-     	// 2015-06-17 Added resourcesSearchable
+     	// Added resourcesSearchable
      	TableSearchable searchable = SearchableUtils.installSearchable(resourcesTable);
         searchable.setPopupTimeout(5000);
      	searchable.setCaseSensitive(false);
@@ -137,7 +136,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentTableModel = new EquipmentTableModel(inv);
 
         // Create equipment table
-        //equipmentTable = new JTable(equipmentTableModel);
         equipmentTable = new ZebraJTable(equipmentTableModel);
         equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
         equipmentTable.setCellSelectionEnabled(true);
@@ -146,18 +144,16 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentPanel.setViewportView(equipmentTable);
 
 
-		// 2015-09-28 Align the preference score to the center of the cell
+		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
 		renderer2.setHorizontalAlignment(SwingConstants.CENTER);
+		equipmentTable.getColumnModel().getColumn(0).setCellRenderer(renderer2);
 		equipmentTable.getColumnModel().getColumn(1).setCellRenderer(renderer2);
 
-
-		// 2015-06-08 Added sorting
+		// Added sorting
         equipmentTable.setAutoCreateRowSorter(true);
-       // if (!MainScene.OS.equals("linux")) {
-       // 	equipmentTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		// 2015-06-08 Added setTableStyle()
+
+		// Added setTableStyle()
 		TableStyle.setTableStyle(equipmentTable);
 
     }

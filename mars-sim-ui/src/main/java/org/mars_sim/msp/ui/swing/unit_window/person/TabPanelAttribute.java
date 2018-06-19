@@ -16,11 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -36,6 +34,11 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+
 
 /**
  * The TabPanelAttribute is a tab panel for the natural attributes of a person.
@@ -44,7 +47,7 @@ public class TabPanelAttribute
 extends TabPanel {
 
 	private AttributeTableModel attributeTableModel;
-	private JTable attributeTable;
+	private WebTable attributeTable;
 
 	//private Person person;
 	//private Robot robot;
@@ -97,16 +100,16 @@ extends TabPanel {
 	public void init() {
 
 		// Create attribute label panel.
-		JPanel attributeLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel attributeLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(attributeLabelPanel);
 
 		// Create attribute label
-		JLabel attributeLabel = new JLabel(Msg.getString("TabPanelAttribute.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel attributeLabel = new WebLabel(Msg.getString("TabPanelAttribute.label"), WebLabel.CENTER); //$NON-NLS-1$
 		attributeLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		attributeLabelPanel.add(attributeLabel);
 
 		// Create attribute scroll panel
-		JScrollPane attributeScrollPanel = new JScrollPane();
+		WebScrollPane attributeScrollPanel = new WebScrollPane();
 		attributeScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(attributeScrollPanel);
 
@@ -127,10 +130,10 @@ extends TabPanel {
 		//}
 		// 2015-09-24 Align the content to the center of the cell
         // Note: DefaultTableCellRenderer does NOT work well with nimrod
-		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		//attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		//attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// 2015-06-08 Added setTableStyle()
         TableStyle.setTableStyle(attributeTable);

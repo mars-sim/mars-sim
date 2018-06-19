@@ -14,11 +14,8 @@ import java.awt.Font;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -40,6 +37,12 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+import com.alee.laf.text.WebTextField;
+
 //import com.vdurmont.emoji.EmojiParser;
 
 /**
@@ -48,7 +51,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelFavorite
 extends TabPanel {
 
-	private JTable table;
+	private WebTable table;
 	private PreferenceTableModel tableModel;
 	
 
@@ -69,29 +72,27 @@ extends TabPanel {
 		Person person = (Person) unit;
 
 		// Create Favorite label panel.
-		JPanel favoriteLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel favoriteLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(favoriteLabelPanel);
 
 		// Prepare  Favorite label
-		JLabel favoriteLabel = new JLabel(Msg.getString("TabPanelFavorite.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel favoriteLabel = new WebLabel(Msg.getString("TabPanelFavorite.label"), WebLabel.CENTER); //$NON-NLS-1$
 		favoriteLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		favoriteLabelPanel.add(favoriteLabel);
 
-		// 2017-03-28 Prepare SpringLayout for info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());//GridLayout(4, 2, 0, 0));
+		// Prepare SpringLayout for info panel.
+		WebPanel infoPanel = new WebPanel(new SpringLayout());//GridLayout(4, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare main dish name label
-		JLabel mainDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.mainDish"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel mainDishNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.mainDish"), WebLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(mainDishNameLabel);
 
 		// Prepare main dish label
 		String mainDish = person.getFavorite().getFavoriteMainDish();
-		//JLabel mainDishLabel = new JLabel(mainDish, JLabel.RIGHT);
-		//infoPanel.add(mainDishLabel);
-		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField mainDishTF = new JTextField(Conversion.capitalize(mainDish));
+		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebTextField mainDishTF = new WebTextField(Conversion.capitalize(mainDish));
 		mainDishTF.setEditable(false);
 		mainDishTF.setColumns(17);
 		//mainDishTF.requestFocus();
@@ -100,15 +101,13 @@ extends TabPanel {
 		infoPanel.add(wrapper1);
 
 		// Prepare side dish name label
-		JLabel sideDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.sideDish"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel sideDishNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.sideDish"), WebLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(sideDishNameLabel);
 
 		// Prepare side dish label
 		String sideDish = person.getFavorite().getFavoriteSideDish();
-		//JLabel sideDishLabel = new JLabel(sideDish, JLabel.RIGHT);
-		//infoPanel.add(sideDishLabel);
-		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField sideDishTF = new JTextField(Conversion.capitalize(sideDish));
+		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebTextField sideDishTF = new WebTextField(Conversion.capitalize(sideDish));
 		sideDishTF.setEditable(false);
 		sideDishTF.setColumns(17);
 		//sideDishTF.requestFocus();
@@ -117,15 +116,13 @@ extends TabPanel {
 		infoPanel.add(wrapper2);
 
 		// Prepare dessert name label
-		JLabel dessertNameLabel = new JLabel(Msg.getString("TabPanelFavorite.dessert"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel dessertNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.dessert"), WebLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(dessertNameLabel);
 
 		// Prepare dessert label
 		String dessert = person.getFavorite().getFavoriteDessert();
-		//JLabel dessertLabel = new JLabel(Conversion.capitalize(dessert), JLabel.RIGHT);
-		//infoPanel.add(dessertLabel);
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField dessertTF = new JTextField(Conversion.capitalize(dessert));
+		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebTextField dessertTF = new WebTextField(Conversion.capitalize(dessert));
 		dessertTF.setEditable(false);
 		dessertTF.setColumns(17);
 		//dessertTF.requestFocus();
@@ -134,13 +131,13 @@ extends TabPanel {
 		infoPanel.add(wrapper3);
 
 		// Prepare activity name label
-		JLabel activityNameLabel = new JLabel(Msg.getString("TabPanelFavorite.activity"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel activityNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.activity"), WebLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(activityNameLabel);
 
 		// Prepare activity label
 		FavoriteType activity = person.getFavorite().getFavoriteActivity();
-		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField activityTF = new JTextField(Conversion.capitalize(activity.getName()));
+		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebTextField activityTF = new WebTextField(Conversion.capitalize(activity.getName()));
 		activityTF.setEditable(false);
 		activityTF.setColumns(17);
 		//activityTF.requestFocus();
@@ -148,89 +145,37 @@ extends TabPanel {
 		wrapper4.add(activityTF);
 		infoPanel.add(wrapper4);
 
-		// 2017-03-28 Prepare SpringLayout
+		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                4, 2, //rows, cols
 		                                50, 10,        //initX, initY
 		                                10, 2);       //xPad, yPad
 
-		//JLabel activityLabel = new JLabel(Conversion.capitalize(activity), JLabel.RIGHT);
-		//infoPanel.add(activityLabel);
-
 		// Create label panel.
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		centerContentPanel.add(labelPanel, BorderLayout.NORTH);
 
 		// Create preference title label
-		JLabel preferenceLabel = new JLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel preferenceLabel = new WebLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), WebLabel.RIGHT); //$NON-NLS-1$
 		preferenceLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		labelPanel.add(preferenceLabel);
 
 		// Create scroll panel
-		JScrollPane scrollPane = new JScrollPane();
+		WebScrollPane scrollPane = new WebScrollPane();
 		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		centerContentPanel.add(scrollPane,  BorderLayout.CENTER);
 
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
 		table = new ZebraJTable(tableModel);
 
-		// 2015-09-24 Align the preference score to the center of the cell
+		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
-/*
-		DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
-			//private Font font;
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object
-                value, boolean isSelected, boolean hasFocus, int row, int column) {
-                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            	// Align the preference score to the center of the cell
-                setHorizontalAlignment(JLabel.CENTER);
-                //String s = EmojiParser.parseToUnicode(value.toString());
-                String s = value.toString();
-                setText(s);
-                //setText("<html>"+s+"</html>");
-                return this;
-/*
-        		Component c = getTableCellRendererComponent(
-        				table, value, isSelected, hasFocus,
-        				row, column);
-        		if (c instanceof JLabel) {
-        			JLabel cell = (JLabel) c;
-        			cell.setText((String) value);
-        		}
-        		                return c;
-*/
-/*
-    			InputStream is = getClass().getResourceAsStream("/fxui/fonts/fontawesome-webfont.ttf");
-				try {
-					font = Font.createFont(Font.TRUETYPE_FONT, is);
-		            font = font.deriveFont(Font.PLAIN, 12f);
-		            setFont(font);
-		            //setFont(font.deriveFont(10f));
-				} catch (FontFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-                setHorizontalAlignment(JLabel.CENTER);
-                //setIcon(value);
-				return this;
-*/
-/*
-            }
-        };
-
-*/
-        //table.getColumnModel().getColumn(1).setCellRenderer(r);
 
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -238,12 +183,9 @@ extends TabPanel {
 		table.setCellSelectionEnabled(false);
 		table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
-		// 2015-06-08 Added sorting
+		// Added sorting
 		table.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        //	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		// 2015-06-08 Added setTableStyle()
+
 		TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);
@@ -255,7 +197,6 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		//tableModel.update();
 		TableStyle.setTableStyle(table);
 	}
 
@@ -334,30 +275,13 @@ extends TabPanel {
 				return name;
 			else if (column == 1) {
 				return scoreStringMap.get(name);
-				/*
-				int score = scoreStringMap.get(name);
-				if (score > 0)
-					return "+" + score;
-				else
-					return score;
-				*/
+
 			}
 			else
 				return null;
 		}
 
 		public void update() {
-
-/*
-			List<String> n = manager.getMetaTaskNameList();
-	        Map<String, Integer> m = manager.getMetaTaskMap();
-
-			if (!metaTaskMap.equals(m)) {
-				metaTaskNameList = n;
-				metaTaskMap = m;
-				fireTableDataChanged();
-			}
-*/
 
 		}
 	}
@@ -388,12 +312,12 @@ extends TabPanel {
 					table, value, isSelected, hasFocus,
 					row, column);
 
-			if (theResult instanceof JLabel) {
-				JLabel cell = (JLabel) theResult;
+			if (theResult instanceof WebLabel) {
+				WebLabel cell = (WebLabel) theResult;
 				cell.setText((String)value);
 			}
 /*
-			//JTableHeader tableHeader = table.getTableHeader();
+			//WebTableHeader tableHeader = table.getTableHeader();
 		    //if (tableHeader != null) {
 		   // 	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
 		    //	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());

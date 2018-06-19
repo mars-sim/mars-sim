@@ -1190,7 +1190,7 @@ public class MainScene {
 
 		speedPane = new StackPane();
 		// speedPane.setEffect(blend);
-		speedPane.getStyleClass().add("jfx-popup-container");
+		//speedPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
 		speedPane.setPrefWidth(250);// earthTimeButton.getPrefWidth());
@@ -1368,7 +1368,7 @@ public class MainScene {
 		 * //$NON-NLS-1$
 		 */
 		GridPane gridPane = new GridPane();
-		gridPane.getStyleClass().add("jfx-popup-container");
+		//gridPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(1, 1, 1, 1));
 		gridPane.setHgap(1.0);
@@ -1413,7 +1413,7 @@ public class MainScene {
 		// benchmarkLabel);
 
 		speedVBox = new VBox();
-		speedVBox.getStyleClass().add("jfx-popup-container");
+		//speedVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		speedVBox.setPadding(new Insets(2, 2, 2, 2));
 		speedVBox.setAlignment(Pos.CENTER);
 		speedVBox.getChildren().addAll(header_label, gridPane); // timeSliderBox
@@ -1463,7 +1463,7 @@ public class MainScene {
 
 		soundPane = new StackPane();
 		// soundPane.setEffect(blend);
-		soundPane.getStyleClass().add("jfx-popup-container");
+		soundPane.getStyleClass().add("jfx-popup-container");// -fx-background-radius: 10;");
 		soundPane.setAlignment(Pos.CENTER);
 		soundPane.setPrefHeight(100);
 		soundPane.setPrefWidth(300);
@@ -1673,7 +1673,7 @@ public class MainScene {
 		gridPane1.getChildren().addAll(effectLabel, soundEffectMuteBox);
 
 		soundVBox = new VBox();
-		soundVBox.getStyleClass().add("jfx-popup-container");
+		//soundVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		soundVBox.setPadding(new Insets(1, 1, 1, 1));
 		soundVBox.setAlignment(Pos.CENTER);
 		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, soundEffectSlider);
@@ -1778,10 +1778,11 @@ public class MainScene {
 		calendarDisplay = new MarsCalendarDisplay(marsClock, desktop);
 
 		SwingNode calNode = new SwingNode();
+		calNode.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;"); 
 		calNode.setContent(calendarDisplay);
 
 		StackPane calPane = new StackPane(calNode);
-		calPane.getStyleClass().add("jfx-popup-container");
+		calPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;"); 
 		calPane.setAlignment(Pos.CENTER);
 		calPane.setPrefHeight(100);
 		calPane.setPrefWidth(140);
@@ -1790,7 +1791,7 @@ public class MainScene {
 		calBox.setPadding(new Insets(0, 3, 3, 3));
 		calBox.setAlignment(Pos.BOTTOM_CENTER);
 		calBox.getChildren().addAll(calPane);
-		setQuickToolTip(calBox, "Martian Calendar showing all 4 weeks for current month");
+		setQuickToolTip(calBox, "Martian Calendar showing the 4 weeks for current month");
 
 		// Label header_label = createHeader("MARS CALENDAR");
 		Text header_label = createTextHeader("MARS CALENDAR PANEL");
@@ -3978,14 +3979,15 @@ public class MainScene {
 	}
 
 	public static void disableSound() {
-		soundPlayer.setSoundDisabled(true);
-		soundPlayer.enableMasterGain(false);
+		desktop.disableSound();
+		
 		if (musicSlider != null) {
 			musicSlider.setDisable(true);// .setValue(0);
 		}
 		if (soundEffectSlider != null) {
 			soundEffectSlider.setDisable(true);// .setValue(0);
 		}
+		
 		soundEffectMuteBox.setDisable(true);
 		musicMuteBox.setDisable(true);
 	}

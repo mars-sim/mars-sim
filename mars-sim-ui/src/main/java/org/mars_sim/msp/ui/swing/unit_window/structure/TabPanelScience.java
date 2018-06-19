@@ -17,11 +17,6 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -45,6 +40,12 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+
 /**
  * A tab panel displaying a settlement's scientific studies and achievements.
  */
@@ -52,10 +53,11 @@ public class TabPanelScience
 extends TabPanel {
 
 	// Data members
-	private JButton scienceToolButton;
-	private JLabel totalAchievementLabel;
+	private WebButton scienceToolButton;
+	private WebLabel totalAchievementLabel;
 
-	private JTable achievementTable, studyTable;
+	private WebTable achievementTable;
+	private WebTable studyTable;
 
 	private StudyTableModel studyTableModel;
 	private AchievementTableModel achievementTableModel;
@@ -76,37 +78,43 @@ extends TabPanel {
 		);
 
 		// Create the title panel.
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
 		// Create the title label.
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelScience.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelScience.label"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(titleLabel);
 
 		// Create the main panel.
-		JPanel mainPane = new JPanel(new GridLayout(2, 1, 0, 0));
+		WebPanel mainPane = new WebPanel(new GridLayout(2, 1, 0, 0));
 		centerContentPanel.add(mainPane);
 
 		// Create the studies panel.
-		JPanel studiesPane = new JPanel(new BorderLayout());
+		WebPanel studiesPane = new WebPanel(new BorderLayout());
 		studiesPane.setBorder(new MarsPanelBorder());
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
-		JLabel studiesLabel = new JLabel(Msg.getString("TabPanelScience.scientificStudies"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel studiesLabel = new WebLabel(Msg.getString("TabPanelScience.scientificStudies"), WebLabel.CENTER); //$NON-NLS-1$
 		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.
-		JScrollPane studyScrollPane = new JScrollPane();
+		WebScrollPane studyScrollPane = new WebScrollPane();
 		studyScrollPane.setBorder(new MarsPanelBorder());
-		studyScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		studyScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
 		// Create the study table.
 		studyTableModel = new StudyTableModel(settlement);
 		studyTable = new ZebraJTable(studyTableModel);
+		
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		studyTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		studyTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
@@ -120,20 +128,17 @@ extends TabPanel {
 		});
 		studyScrollPane.setViewportView(studyTable);
 
-		// 2015-06-08 Added sorting
+		// Added sorting
 		studyTable.setAutoCreateRowSorter(true);
-	    //if (!MainScene.OS.equals("linux")) {
-	    //	studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    //}
-		// 2015-06-08 Added setTableStyle()
+
 		TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		studiesPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the science tool button.
-		scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
+		scienceToolButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
 		scienceToolButton.setEnabled(false);
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science")); //$NON-NLS-1$
@@ -145,32 +150,32 @@ extends TabPanel {
 		buttonPane.add(scienceToolButton);
 
 		// Create the achievement panel.
-		JPanel achievementPane = new JPanel(new BorderLayout());
+		WebPanel achievementPane = new WebPanel(new BorderLayout());
 		achievementPane.setBorder(new MarsPanelBorder());
 		mainPane.add(achievementPane);
 
 		// Create achievement label panel.
-		JPanel achievementLabelPane = new JPanel(new GridLayout(2, 1, 0, 0));
+		WebPanel achievementLabelPane = new WebPanel(new GridLayout(2, 1, 0, 0));
 		achievementPane.add(achievementLabelPane, BorderLayout.NORTH);
 
 		// Create the achievement label.
-		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel achievementLabel = new WebLabel(Msg.getString("TabPanelScience.scientificAchievement"), WebLabel.CENTER); //$NON-NLS-1$
 		achievementLabelPane.add(achievementLabel);
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelScience.decimalFormat")); //$NON-NLS-1$
 		String totalAchievementString = formatter.format(settlement.getTotalScientificAchievement());
-		totalAchievementLabel = new JLabel(
+		totalAchievementLabel = new WebLabel(
 			Msg.getString(
 				"TabPanelScience.totalAchievementCredit", //$NON-NLS-1$
 				totalAchievementString
-			),JLabel.CENTER
+			),WebLabel.CENTER
 		);
 		achievementLabelPane.add(totalAchievementLabel);
 
 		// Create the achievement scroll panel.
-		JScrollPane achievementScrollPane = new JScrollPane();
+		WebScrollPane achievementScrollPane = new WebScrollPane();
 		achievementScrollPane.setBorder(new MarsPanelBorder());
-		achievementScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		achievementScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		achievementPane.add(achievementScrollPane, BorderLayout.CENTER);
 
 		// Create the achievement table.
@@ -181,19 +186,16 @@ extends TabPanel {
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
 		achievementScrollPane.setViewportView(achievementTable);
 
-		// 2015-06-08 Added sorting
+		// Added sorting
 		achievementTable.setAutoCreateRowSorter(true);
-		//achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
-		// 2015-09-28 Align the preference score to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		achievementTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		// Align the preference score to the center of the cell
+		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
+		renderer1.setHorizontalAlignment(SwingConstants.CENTER);
+		achievementTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
+		achievementTable.getColumnModel().getColumn(1).setCellRenderer(renderer1);
 
-		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(achievementTable);
-
-
 	}
 
 	@Override

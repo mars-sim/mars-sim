@@ -113,7 +113,7 @@ public class MainDesktopPane extends WebDesktopPane
 	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
 
 	/** The sound player. */
-	private AudioPlayer soundPlayer;
+	private static AudioPlayer soundPlayer;
 
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
@@ -122,7 +122,7 @@ public class MainDesktopPane extends WebDesktopPane
 	private TimeWindow timeWindow;
 	private Building building;
 	private MainWindow mainWindow;
-	private MainScene mainScene;
+	public static MainScene mainScene;
 //	private MarqueeTicker marqueeTicker;
 	private OrbitViewer orbitViewer;
 	private BrowserJFX browserJFX;
@@ -1132,6 +1132,10 @@ public class MainDesktopPane extends WebDesktopPane
 		return soundPlayer;
 	}
 
+	public static void disableSound() {
+		soundPlayer.setSoundDisabled(true);
+		soundPlayer.enableMasterGain(false);
+	}
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * 
@@ -1328,8 +1332,6 @@ public class MainDesktopPane extends WebDesktopPane
 //		return marqueeTicker;
 //	}
 
-	// 2014-12-19 Added unitUpdate()
-	@SuppressWarnings("restriction")
 	@Override // @Override needed for Main window
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();

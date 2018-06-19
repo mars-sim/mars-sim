@@ -250,7 +250,7 @@ public class GoodsManager implements Serializable {
      */
     public double getGoodValuePerItem(Good good) {
         try {
-            if (goodsValues.containsKey(good)) return goodsValues.get(good);
+            if (goodsValues.containsKey(good)) return Math.round(goodsValues.get(good)*1000.0)/1000.0;
             else throw new IllegalArgumentException("Good: " + good + " not valid.");
         } catch (Exception e) {
             logger.log(Level.SEVERE,e.getMessage());

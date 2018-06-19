@@ -17,14 +17,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -47,6 +44,12 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+import com.alee.laf.text.WebTextField;
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
 
@@ -62,28 +65,28 @@ extends TabPanel {
 	private static final String PERCENT = " %";
 
 	// Data Members
-	private JTable powerTable ;
+	private WebTable powerTable ;
 	/** The total power generated label. */
-	private JLabel powerGeneratedLabel;
+	private WebLabel powerGeneratedLabel;
 	/** The total power used label. */
-	private JLabel powerUsedLabel;
+	private WebLabel powerUsedLabel;
 	/** The total power storage capacity label. */
-	private JLabel energyStorageCapacityLabel;
+	private WebLabel energyStorageCapacityLabel;
 	/** The total power stored label. */
-	private JLabel energyStoredLabel;
+	private WebLabel energyStoredLabel;
 
-	private JLabel electricEfficiencyLabel;
+	private WebLabel electricEfficiencyLabel;
 
-	private JTextField powerGeneratedTF;
-	private JTextField powerUsedTF;
-	private JTextField energyStorageCapacityTF;
-	private JTextField energyStoredTF;
-	private JTextField solarCellEfficiencyTF;
-	private JTextField degradRateTF;
+	private WebTextField powerGeneratedTF;
+	private WebTextField powerUsedTF;
+	private WebTextField energyStorageCapacityTF;
+	private WebTextField energyStoredTF;
+	private WebTextField solarCellEfficiencyTF;
+	private WebTextField degradRateTF;
 
-	private JScrollPane powerScrollPane;
+	private WebScrollPane powerScrollPane;
 	
-	private JCheckBox checkbox;
+	private WebCheckBox checkbox;
 
 	// Data cache
 	/** The total power generated cache. */
@@ -136,28 +139,28 @@ extends TabPanel {
 		buildings = manager.getBuildingsWithPowerGeneration();
 		
 		// Prepare power grid label panel.
-		JPanel powerGridLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel powerGridLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(powerGridLabelPanel);
 
 		// Prepare power grid label.
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelPowerGrid.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.label"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		powerGridLabelPanel.add(titleLabel);
 
 		// Prepare spring layout power info panel.
-		JPanel powerInfoPanel = new JPanel(new SpringLayout());//GridLayout(6, 2, 0, 0));
+		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());//GridLayout(6, 2, 0, 0));
 		powerInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated label.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
-		powerGeneratedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerGenerated"), JLabel.RIGHT); //$NON-NLS-1$
+		powerGeneratedLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.totalPowerGenerated"), WebLabel.RIGHT); //$NON-NLS-1$
 		powerGeneratedLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalPowerGenerated.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(powerGeneratedLabel);
 
-		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGeneratedTF = new JTextField(formatter.format(powerGeneratedCache) + kW);
+		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerGeneratedTF = new WebTextField(formatter.format(powerGeneratedCache) + kW);
 		powerGeneratedTF.setEditable(false);
 		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper1.add(powerGeneratedTF);
@@ -165,12 +168,12 @@ extends TabPanel {
 
 		// Prepare power used label.
 		powerUsedCache = powerGrid.getRequiredPower();
-		powerUsedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerUsed"), JLabel.RIGHT); //$NON-NLS-1$
+		powerUsedLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.totalPowerUsed"), WebLabel.RIGHT); //$NON-NLS-1$
 		powerUsedLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(powerUsedLabel);
 
-		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerUsedTF = new JTextField(formatter.format(powerUsedCache) + kW);
+		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerUsedTF = new WebTextField(formatter.format(powerUsedCache) + kW);
 		powerUsedTF.setEditable(false);
 		powerUsedTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper2.add(powerUsedTF);
@@ -178,12 +181,12 @@ extends TabPanel {
 
 		// Prepare power storage capacity label.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
-		energyStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.energyStorageCapacity"), JLabel.RIGHT); //$NON-NLS-1$
+		energyStorageCapacityLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.energyStorageCapacity"), WebLabel.RIGHT); //$NON-NLS-1$
 		energyStorageCapacityLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(energyStorageCapacityLabel);
 
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStorageCapacityTF = new JTextField(formatter.format(energyStorageCapacityCache) + kWh);
+		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		energyStorageCapacityTF = new WebTextField(formatter.format(energyStorageCapacityCache) + kWh);
 		energyStorageCapacityTF.setEditable(false);
 		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper3.add(energyStorageCapacityTF);
@@ -191,12 +194,12 @@ extends TabPanel {
 
 		// Prepare power stored label.
 		energyStoredCache = powerGrid.getStoredEnergy();
-		energyStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalEnergyStored"), JLabel.RIGHT); //$NON-NLS-1$
+		energyStoredLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.totalEnergyStored"), WebLabel.RIGHT); //$NON-NLS-1$
 		energyStoredLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.totalEnergyStored.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(energyStoredLabel);
 
-		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStoredTF = new JTextField(formatter.format(energyStoredCache) + kWh);
+		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		energyStoredTF = new WebTextField(formatter.format(energyStoredCache) + kWh);
 		energyStoredTF.setEditable(false);
 		energyStoredTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper4.add(energyStoredTF);
@@ -204,14 +207,14 @@ extends TabPanel {
 
 		// 2015-05-08 Added eff_electric_label
 		solarCellEfficiencyCache = getAverageEfficiency();
-		electricEfficiencyLabel = new JLabel(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
+		electricEfficiencyLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"), WebLabel.RIGHT); //$NON-NLS-1$
 		electricEfficiencyLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 		//	("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a single junction solar cell is only 33.7%. "
 		//	+ "For a tandem structure or multi-junction p-n cells, the limit can be as high as ~68% for unconcentrated sunlight.</p></html>");
 		powerInfoPanel.add(electricEfficiencyLabel);
 
-		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarCellEfficiencyTF = new JTextField(formatter2.format(solarCellEfficiencyCache*100D) + PERCENT);
+		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		solarCellEfficiencyTF = new WebTextField(formatter2.format(solarCellEfficiencyCache*100D) + PERCENT);
 		solarCellEfficiencyTF.setEditable(false);
 		solarCellEfficiencyTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper5.add(solarCellEfficiencyTF);
@@ -219,23 +222,23 @@ extends TabPanel {
 
 		// 2015-05-08 Added degradation rate label.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
-		JLabel solarPowerDegradRateLabel = new JLabel(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel solarPowerDegradRateLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"), WebLabel.RIGHT); //$NON-NLS-1$
 		solarPowerDegradRateLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 		powerInfoPanel.add(solarPowerDegradRateLabel);
 
-		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		degradRateTF = new JTextField(formatter2.format(solarPowerDegradRate*100D) + PERCENT_PER_SOL);
+		WebPanel wrapper6 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		degradRateTF = new WebTextField(formatter2.format(solarPowerDegradRate*100D) + PERCENT_PER_SOL);
 		degradRateTF.setEditable(false);
 		degradRateTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper6.add(degradRateTF);
 		powerInfoPanel.add(wrapper6);
 
 		// Create override check box panel.
-		JPanel checkboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel checkboxPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(checkboxPane, BorderLayout.SOUTH);
 		
 		// Create override check box.
-		checkbox = new JCheckBox(Msg.getString("TabPanelPowerGrid.checkbox.value")); //$NON-NLS-1$
+		checkbox = new WebCheckBox(Msg.getString("TabPanelPowerGrid.checkbox.value")); //$NON-NLS-1$
 		checkbox.setToolTipText(Msg.getString("TabPanelPowerGrid.checkbox.tooltip")); //$NON-NLS-1$
 		checkbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -246,11 +249,11 @@ extends TabPanel {
 		checkboxPane.add(checkbox);
 		
 		// Create scroll panel for the outer table panel.
-		powerScrollPane = new JScrollPane();
+		powerScrollPane = new WebScrollPane();
 		//powerScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		powerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		powerScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);
 
 		// Prepare power table model.
@@ -264,12 +267,20 @@ extends TabPanel {
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		powerTable.getColumnModel().getColumn(1).setPreferredWidth(130);
-		//powerTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-		//powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+		powerTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+	    powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+		
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//powerTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		powerTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		powerTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		powerTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		
 		// 2014-12-03 Added the two methods below to make all heatTable columns
 		//resizable automatically when its Panel resizes
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//powerTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 		powerTable.setAutoCreateRowSorter(true);
 		TableStyle.setTableStyle(powerTable);
 
@@ -456,14 +467,14 @@ extends TabPanel {
 				if (building.hasFunction(FunctionType.POWER_GENERATION)) {
 					try {
 						//PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-						generated = building.getPowerGeneration().getGeneratedPower();
+						generated =  Math.round(building.getPowerGeneration().getGeneratedPower()*1000.0)/1000.0;
 					}
 					catch (Exception e) {}
 				}
 				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 					try {
 						//ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-						generated += building.getThermalGeneration().getGeneratedPower();
+						generated +=  Math.round(building.getThermalGeneration().getGeneratedPower()*1000.0)/1000.0;
 					}
 					catch (Exception e) {}
 				}
@@ -472,9 +483,9 @@ extends TabPanel {
 			else if (column == 3) {
 				double used = 0D;
 				if (powerMode == PowerMode.FULL_POWER)
-					used = building.getFullPowerRequired();
+					used =  Math.round(building.getFullPowerRequired()*1000.0)/1000.0;
 				else if (powerMode == PowerMode.POWER_DOWN)
-					used = building.getPoweredDownPowerRequired();
+					used =  Math.round(building.getPoweredDownPowerRequired()*1000.0)/1000.0;
 				return used;
 			}
 			else return null;

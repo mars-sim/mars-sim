@@ -33,6 +33,10 @@ public class TradeTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
+	private static final String TRADE_GOODS = "Trade Goods";
+	private static final String VP_AT = "VP at ";
+	private static final String CATEGORY = "Category";
+	private static final String ONE_SPACE = " ";
 	// Data members
 	private List<Good> goodsList;
 	private List<Settlement> settlements;
@@ -87,7 +91,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getCountString() {
-		return " " + goodsList.size() + " Trade Goods";
+		return new StringBuilder(ONE_SPACE + goodsList.size() + ONE_SPACE + TRADE_GOODS).toString();
 	}
 
 	/**
@@ -125,12 +129,11 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return "Trade Goods";
-		else if (columnIndex == 1) return "Category";
+		if (columnIndex == 0) return TRADE_GOODS;
+		else if (columnIndex == 1) return CATEGORY;
 		else {
 			// 2014-11-16 Added "VP at "
-			String columnName = "VP at " + settlements.get(columnIndex - 2).getName();
-			return columnName;
+			return VP_AT + settlements.get(columnIndex - 2).getName();
 		}
 	}
 

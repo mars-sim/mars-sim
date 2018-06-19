@@ -14,10 +14,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -40,10 +36,15 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+
 public class TabPanelCredit
 extends TabPanel {
 
-	private JTable creditTable;
+	private WebTable creditTable;
 
 	/**
 	 * Constructor.
@@ -60,28 +61,19 @@ extends TabPanel {
 		);
 
 		// Prepare credit label panel.
-		JPanel creditLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel creditLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(creditLabelPanel);
 
 		// Prepare credit label.
-		JLabel creditLabel = new JLabel(Msg.getString("TabPanelCredit.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel creditLabel = new WebLabel(Msg.getString("TabPanelCredit.label"), WebLabel.CENTER); //$NON-NLS-1$
 		creditLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//creditLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		creditLabelPanel.add(creditLabel);
 
 		// Create scroll panel for the outer table panel.
-		JScrollPane creditScrollPanel = new JScrollPane();
+		WebScrollPane creditScrollPanel = new WebScrollPane();
 		creditScrollPanel.setPreferredSize(new Dimension(280, 280));
 		centerContentPanel.add(creditScrollPanel);
-
-		// Prepare outer table panel.
-		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		//outerTablePanel.setBorder(new MarsPanelBorder());
-		//creditScrollPanel.setViewportView(outerTablePanel);
-
-		// Prepare credit table panel.
-		//JPanel creditTablePanel = new JPanel(new BorderLayout(0, 0));
-		//outerTablePanel.add(creditTablePanel);
 
 		// Prepare credit table model.
 		CreditTableModel creditTableModel = new CreditTableModel((Settlement) unit);
@@ -94,25 +86,23 @@ extends TabPanel {
 		creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		creditTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-		// 2014-12-03 Added the two methods below to make all heatTable columns
-		//resizable automatically when its Panel resizes
+		// Added the two methods below to make all heatTable columns
+		// Resizable automatically when its Panel resizes
 		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		creditTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//creditTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 		//creditTablePanel.add(creditTable.getTableHeader(), BorderLayout.NORTH);
 		//creditTablePanel.add(creditTable, BorderLayout.CENTER);
 
-		// 2015-06-08 Added sorting
+		// Added sorting
 		creditTable.setAutoCreateRowSorter(true);
-		//if (!MainScene.OS.equals("linux")) {
-		//	creditTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		// 2015-09-28 Align the preference score to the center of the cell
+
+		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		creditTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		creditTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-
-
-		// 2015-06-08 Added setTableStyle()
+		creditTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		
 		TableStyle.setTableStyle(creditTable);
 
 	}

@@ -16,14 +16,11 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -46,6 +43,13 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+import com.alee.laf.text.WebTextField;
 
 /**
  * This is a tab panel for settlement's Thermal System .
@@ -70,21 +74,21 @@ extends TabPanel {
 	
 	
 	/** The total heat generated label. */
-	private JLabel heatGenLabel;
+	private WebLabel heatGenLabel;
 	
-	private JLabel powerGenLabel;
+	private WebLabel powerGenLabel;
 	
-	private JLabel eff_solar_heat_Label;
+	private WebLabel eff_solar_heat_Label;
 	
-	private JLabel eff_electric_heat_Label;
+	private WebLabel eff_electric_heat_Label;
 
-	private JTable heatTable ;
+	private WebTable heatTable ;
 
-	private JScrollPane heatScrollPane;
+	private WebScrollPane heatScrollPane;
 	
-	private JCheckBox checkbox;
+	private WebCheckBox checkbox;
 
-	private JTextField heatGenTF, powerGenTF, electricEffTF, solarEffTF, cellDegradTF;
+	private WebTextField heatGenTF, powerGenTF, electricEffTF, solarEffTF, cellDegradTF;
 	
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("decimalFormat1"));//TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
@@ -129,28 +133,28 @@ extends TabPanel {
 		buildings = manager.getBuildingsWithThermal();
 
 		// Prepare heating System label panel.
-		JPanel thermalSystemLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel thermalSystemLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(thermalSystemLabelPanel);
 
 		// Prepare heating System label.
-		JLabel thermalSystemLabel = new JLabel(Msg.getString("TabPanelThermalSystem.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel thermalSystemLabel = new WebLabel(Msg.getString("TabPanelThermalSystem.label"), WebLabel.CENTER); //$NON-NLS-1$
 		thermalSystemLabel.setFont(new Font("Serif", Font.BOLD, 16));
 	    //thermalSystemLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		thermalSystemLabelPanel.add(thermalSystemLabel);
 
 		// Prepare heat info panel.
-		JPanel heatInfoPanel = new JPanel(new SpringLayout());//GridLayout(6, 1, 0, 0));
+		WebPanel heatInfoPanel = new WebPanel(new SpringLayout());//GridLayout(6, 1, 0, 0));
 		heatInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(heatInfoPanel);
 
 		// Prepare heat generated label.
 		heatGenCache = thermalSystem.getGeneratedHeat();
-		heatGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatGen"), JLabel.RIGHT); //$NON-NLS-1$
+		heatGenLabel = new WebLabel(Msg.getString("TabPanelThermalSystem.totalHeatGen"), WebLabel.RIGHT); //$NON-NLS-1$
 		heatGenLabel.setToolTipText(Msg.getString("TabPanelThermalSystem.totalHeatGen.tooltip")); //$NON-NLS-1$
 		heatInfoPanel.add(heatGenLabel);
 
-		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		heatGenTF = new JTextField(formatter.format(heatGenCache) + kW);
+		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		heatGenTF = new WebTextField(formatter.format(heatGenCache) + kW);
 		heatGenTF.setEditable(false);
 		heatGenTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper1.add(heatGenTF);
@@ -158,36 +162,36 @@ extends TabPanel {
 
 		// Prepare power generated label.
 		powerGenCache = thermalSystem.getGeneratedPower();
-		powerGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalPowerGen"), JLabel.RIGHT); //$NON-NLS-1$
+		powerGenLabel = new WebLabel(Msg.getString("TabPanelThermalSystem.totalPowerGen"), WebLabel.RIGHT); //$NON-NLS-1$
 		powerGenLabel.setToolTipText(Msg.getString("TabPanelThermalSystem.totalPowerGen.tooltip")); //$NON-NLS-1$
 		heatInfoPanel.add(powerGenLabel);
 
-		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGenTF = new JTextField(formatter.format(powerGenCache) + kW);
+		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerGenTF = new WebTextField(formatter.format(powerGenCache) + kW);
 		powerGenTF.setEditable(false);
 		powerGenTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper2.add(powerGenTF);
 		heatInfoPanel.add(wrapper2);
 
 		double eff_electric_Heating = getAverageEfficiencyElectricHeat();
-		eff_electric_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
+		eff_electric_heat_Label = new WebLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"), WebLabel.RIGHT); //$NON-NLS-1$
 		eff_electric_heat_Label.setToolTipText(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency.tooltip")); //$NON-NLS-1$
 		heatInfoPanel.add(eff_electric_heat_Label);
 
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		electricEffTF = new JTextField(formatter.format(eff_electric_Heating*100D) + PERCENT);
+		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		electricEffTF = new WebTextField(formatter.format(eff_electric_Heating*100D) + PERCENT);
 		electricEffTF.setEditable(false);
 		electricEffTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper3.add(electricEffTF);
 		heatInfoPanel.add(wrapper3);
 
 		double eff_solar_heat =  getAverageEfficiencySolarHeating();
-		eff_solar_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
+		eff_solar_heat_Label = new WebLabel(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"), WebLabel.RIGHT); //$NON-NLS-1$
 		eff_solar_heat_Label.setToolTipText(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency.tooltip")); //$NON-NLS-1$		
 		heatInfoPanel.add(eff_solar_heat_Label);
 
-		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarEffTF = new JTextField(formatter2.format(eff_solar_heat*100D) + PERCENT);
+		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		solarEffTF = new WebTextField(formatter2.format(eff_solar_heat*100D) + PERCENT);
 		solarEffTF.setEditable(false);
 		solarEffTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper4.add(solarEffTF);
@@ -195,33 +199,23 @@ extends TabPanel {
 
 		// Prepare degradation rate label.
 		double degradRate = SolarHeatSource.DEGRADATION_RATE_PER_SOL;
-		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelThermalSystem.degradRate"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel degradRateLabel = new WebLabel(Msg.getString("TabPanelThermalSystem.degradRate"), WebLabel.RIGHT); //$NON-NLS-1$
 		degradRateLabel.setToolTipText(Msg.getString("TabPanelThermalSystem.degradRate.tooltip")); //$NON-NLS-1$	
 		heatInfoPanel.add(degradRateLabel);
 
-		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		cellDegradTF = new JTextField(formatter2.format(degradRate*100D) + PERCENT_PER_SOL);
+		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		cellDegradTF = new WebTextField(formatter2.format(degradRate*100D) + PERCENT_PER_SOL);
 		cellDegradTF.setEditable(false);
 		cellDegradTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper5.add(cellDegradTF);
 		heatInfoPanel.add(wrapper5);
 
-		// Prepare heat storage capacity label.
-		//thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
-		//thermalStorageCapacityLabel = new JLabel(Msg.getString("TabPanelThermalSystem.heatStorageCapacity", formatter.format(thermalStorageCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
-		//heatInfoPanel.add(thermalStorageCapacityLabel);
-
-		// Prepare heat stored label.
-		//heatStoredCache = thermalSystem.getStoredHeat();
-		//heatStoredLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatStored", formatter.format(heatStoredCache)), JLabel.CENTER); //$NON-NLS-1$
-		//heatInfoPanel.add(heatStoredLabel);
-
 		// Create override check box panel.
-		JPanel checkboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel checkboxPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(checkboxPane, BorderLayout.SOUTH);
 		
 		// Create override check box.
-		checkbox = new JCheckBox(Msg.getString("TabPanelThermalSystem.checkbox.value")); //$NON-NLS-1$
+		checkbox = new WebCheckBox(Msg.getString("TabPanelThermalSystem.checkbox.value")); //$NON-NLS-1$
 		checkbox.setToolTipText(Msg.getString("TabPanelThermalSystem.checkbox.tooltip")); //$NON-NLS-1$
 		checkbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -232,11 +226,11 @@ extends TabPanel {
 		checkboxPane.add(checkbox);
 		
 		// Create scroll panel for the outer table panel.
-		heatScrollPane = new JScrollPane();
+		heatScrollPane = new WebScrollPane();
 		//heatScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		heatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		heatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		heatScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		centerContentPanel.add(heatScrollPane,BorderLayout.CENTER);
 		
 		// Prepare thermal control table model.
@@ -251,21 +245,25 @@ extends TabPanel {
 		heatTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		heatTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		heatTable.getColumnModel().getColumn(2).setPreferredWidth(15);
-		//heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
-		//heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
-		// 2014-12-03 Added the two methods below to make all heatTable columns
-		//resizable automatically when its Panel resizes
-		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		//heatTable.getModel().addTableModelListener(this);
+		heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
+		heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
 		
-		// 2015-06-08 Added sorting
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//heatTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		heatTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		heatTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		heatTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		heatTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		
+		// Added the two methods below to make all heatTable columns
+		// Resizable automatically when its Panel resizes
+		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		//heatTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
+
+		// Added sorting
 		heatTable.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        //	heatTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		// 2015-06-08 Added setTableStyle()
+
 		TableStyle.setTableStyle(heatTable);
 
 		heatScrollPane.setViewportView(heatTable);
@@ -513,7 +511,7 @@ extends TabPanel {
 					return buildings.get(row);
 				else if (column == 2)
 					// return temperature of the building;
-					return building.getCurrentTemperature();
+					return  Math.round(building.getCurrentTemperature()*10.0)/10.0;
 				else if (column == 3) {
 					//double generated = 0.0;
 					if (heatMode == HeatMode.FULL_HEAT 
@@ -523,7 +521,7 @@ extends TabPanel {
 						//try {
 							ThermalGeneration heater = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 							if (heater != null) {
-								return heater.getGeneratedHeat();
+								return  Math.round(heater.getGeneratedHeat()*1000.0)/1000.0;
 							}
 							else
 								return 0;
@@ -539,7 +537,7 @@ extends TabPanel {
 					try {
 						//ThermalGeneration heater = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 						// 2014-10-25  Changed to calling getGeneratedCapacity()
-						generatedCapacity = building.getThermalGeneration().getHeatGenerationCapacity();
+						generatedCapacity = Math.round(building.getThermalGeneration().getHeatGenerationCapacity()*1000.0)/1000.0;
 					}
 					catch (Exception e) {}
 					return generatedCapacity;

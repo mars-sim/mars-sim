@@ -14,13 +14,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -33,6 +31,11 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+
 /**
  * A tab panel displaying a person's social relationships.
  */
@@ -41,7 +44,7 @@ extends TabPanel
 implements ListSelectionListener {
 
 	// Data members
-	private JTable relationshipTable;
+	private WebTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
 
 	/**
@@ -59,16 +62,16 @@ implements ListSelectionListener {
 		);
 
 		// Create relationship label panel.
-		JPanel relationshipLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel relationshipLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(relationshipLabelPanel);
 
 		// Create relationship label
-		JLabel relationshipLabel = new JLabel(Msg.getString("TabPanelSocial.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel relationshipLabel = new WebLabel(Msg.getString("TabPanelSocial.label"), WebLabel.CENTER); //$NON-NLS-1$
 		relationshipLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		relationshipLabelPanel.add(relationshipLabel);
 
 		// Create relationship scroll panel
-		JScrollPane relationshipScrollPanel = new JScrollPane();
+		WebScrollPane relationshipScrollPanel = new WebScrollPane();
 		relationshipScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(relationshipScrollPanel);
 
@@ -87,10 +90,10 @@ implements ListSelectionListener {
 		//relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	
 		//relationshipTable.getSelectionModel().addListSelectionListener(this); 
 
-		// 2016-10-19 Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
+		// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
 		relationshipTable.addMouseListener(new MouseAdapter() {
 		    public void mousePressed(MouseEvent me) {
-		        JTable table =(JTable) me.getSource();
+		        WebTable table =(WebTable) me.getSource();
 		        Point p = me.getPoint();
 		        int row = table.rowAtPoint(p);
 		        int col = table.columnAtPoint(p);
@@ -103,20 +106,17 @@ implements ListSelectionListener {
 		    }
 		});
 		
-		// 2015-09-24 Align the content to the center of the cell
-		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		//relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		//relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-
 		relationshipScrollPanel.setViewportView(relationshipTable);
 
-		// 2015-06-08 Added sorting
+		// Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
+		// Added sorting
 		relationshipTable.setAutoCreateRowSorter(true); // in conflict with valueChanged(), throw exception if clicking on a person
-	    //if (!MainScene.OS.equals("linux")) {
-	    //	relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    //}
-		// 2015-06-08 Added setTableStyle()
+
 		TableStyle.setTableStyle(relationshipTable);
 	}
 

@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -371,10 +372,19 @@ implements ActionListener {
 		table.getColumnModel().getColumn(2).setPreferredWidth(50);
 		table.getColumnModel().getColumn(3).setPreferredWidth(50);
 		table.getColumnModel().getColumn(4).setPreferredWidth(50);
+		
 		table.setCellSelectionEnabled(false);
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 		scrollPanel.setViewportView(table);
 
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(4).setCellRenderer(renderer);
+	
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
 		//if (!MainScene.OS.equals("linux")) {

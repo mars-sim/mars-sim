@@ -22,17 +22,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -50,6 +45,12 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+import com.alee.laf.text.WebTextField;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 
@@ -60,6 +61,8 @@ import com.alee.managers.tooltip.TooltipManager;
 public class TabPanelSchedule
 extends TabPanel {
 
+	private static final String SOL = " Sol ";
+	
 	//private int sol;
 	private int todayCache = 1;
 	private int today;
@@ -74,12 +77,12 @@ extends TabPanel {
 
 	private ShiftType shiftType, shiftCache = null;
 
-	private JTable table ;
+	private WebTable table ;
 
-	private JCheckBox hideBox;
-	private JCheckBox realTimeBox;
-	private JTextField shiftTF;
-	private JLabel shiftLabel;
+	private WebCheckBox hideBox;
+	private WebCheckBox realTimeBox;
+	private WebTextField shiftTF;
+	private WebLabel shiftLabel;
 
 	private JComboBoxMW<Object> solBox;
 	private DefaultComboBoxModel<Object> comboBoxModel;
@@ -133,27 +136,23 @@ extends TabPanel {
         allActivities = taskSchedule.getAllActivities();
 
 		// Create label panel.
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
 
 		// Prepare label
-		JLabel label = new JLabel(Msg.getString("TabPanelSchedule.label"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel label = new WebLabel(Msg.getString("TabPanelSchedule.label"), WebLabel.CENTER); //$NON-NLS-1$
 		label.setFont(new Font("Serif", Font.BOLD, 16));
 		labelPanel.add(label);
 
-		// Prepare info panel.
-//		JPanel infoPanel = new JPanel(new GridLayout(1, 3, 40, 0)); //new FlowLayout(FlowLayout.CENTER));
-//		infoPanel.setBorder(new MarsPanelBorder());
-
-       	// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+     	// Create the button panel.
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(buttonPane);//, BorderLayout.NORTH);
 
         if (unit instanceof Person) {
 
     		shiftType = taskSchedule.getShiftType();
     		shiftCache = shiftType;
-    		shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift.label"), JLabel.CENTER); //$NON-NLS-1$
+    		shiftLabel = new WebLabel(Msg.getString("TabPanelSchedule.shift.label"), WebLabel.CENTER); //$NON-NLS-1$
 
     		TooltipManager.setTooltip (shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip"), TooltipWay.down);
     		//balloonToolTip.createBalloonTip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
@@ -161,35 +160,15 @@ extends TabPanel {
 
     		fillColorCache = shiftLabel.getBackground();
 
-    		shiftTF = new JTextField(shiftCache.toString());
+    		shiftTF = new WebTextField(shiftCache.toString());
     		start = taskSchedule.getShiftStart();
     		end = taskSchedule.getShiftEnd();
     		shiftTF.setEditable(false);
     		shiftTF.setColumns(4);
 
-//    		if (shiftCache != ShiftType.OFF)
-//    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end), TooltipWay.down);
-//    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
-//    		else
-//    			TooltipManager.setTooltip (shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip"), TooltipWay.down);
-    		
-    			//balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
-    		shiftTF.setHorizontalAlignment(JTextField.CENTER);
+    		shiftTF.setHorizontalAlignment(WebTextField.CENTER);
     		buttonPane.add(shiftTF);
-    		//buttonPane.add(new JLabel("           "));
-/*
-    		// Create the future task planner button
-    		JButton button = new JButton("Open Planner");
-    		button.setToolTipText("Click to Open Personal Planner");
-    		button.addActionListener(
-    			new ActionListener() {
-    				public void actionPerformed(ActionEvent e) {
-    					// Open storm tracking window.
-    					openPlannerWindow();
-    				}
-    			});
-    		buttonPane.add(button);
-*/
+
         }
 
 		Box box = Box.createHorizontalBox();
@@ -199,7 +178,7 @@ extends TabPanel {
 		centerContentPanel.add(box, BorderLayout.NORTH);
 
 		// Create hideRepeatedTaskBox.
-		hideBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
+		hideBox = new WebCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
 		//hideRepeatedTasksCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
 		hideBox.setFont(new Font("Serif", Font.PLAIN, 12));
 		//hideRepeatedTasksCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$
@@ -228,17 +207,9 @@ extends TabPanel {
 		for (int key : allActivities.keySet() ) {
 			solList.add(key);
 		}
-		//OptionalInt max = solList.stream().mapToInt((x) -> x).max();
-		//solList.add(max + 1);
+
        	if (!solList.contains(today))
        		solList.add(today);
-
-/*
-		int size = schedules.size();
-		for (int i = 0 ; i < size + 1; i++ )
-			// size + 1 is needed to add today into solList
-			solList.add(i + 1);
-*/
 
     	// Create comboBoxModel
     	Collections.sort(solList, Collections.reverseOrder());
@@ -251,14 +222,9 @@ extends TabPanel {
 		solBox.setSelectedItem(todayInteger);
 		//comboBox.setOpaque(false);
 		solBox.setRenderer(new PromptComboBoxRenderer());
-		//comboBox.setRenderer(new PromptComboBoxRenderer(" List of Schedules "));
-		//comboBox.setBackground(new Color(0,0,0,128));
-		//comboBox.setBackground(new Color(255,229,204));
-		//comboBox.setForeground(Color.orange);
 		solBox.setMaximumRowCount(7);
-		//comboBox.setBorder(null);
 
-		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		solPanel.add(solBox);
 
 //		infoPanel.add(solPanel);
@@ -282,7 +248,7 @@ extends TabPanel {
 		});
 
 		// Create realTimeUpdateCheckBox.
-		realTimeBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
+		realTimeBox = new WebCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
 		realTimeBox.setSelected(true);
 		realTimeBox.setHorizontalTextPosition(SwingConstants.RIGHT);
 		realTimeBox.setFont(new Font("Serif", Font.PLAIN, 12));
@@ -309,7 +275,7 @@ extends TabPanel {
 			scheduleTableModel = new ScheduleTableModel((Robot) unit);
 
 		// Create attribute scroll panel
-		JScrollPane scrollPanel = new JScrollPane();
+		WebScrollPane scrollPanel = new WebScrollPane();
 		scrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(scrollPanel);
 
@@ -326,18 +292,18 @@ extends TabPanel {
 
 	    scrollPanel.setViewportView(table);
 
-		// 2015-09-24 Align the content to the center of the cell
-		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-
+		// Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		
 	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
 
-		// 2015-06-08 Added sorting
-		//table.setAutoCreateRowSorter(true);
-	    //if (!MainScene.OS.equals("linux")) {
-	    //	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    //}
+		// Added sorting
+		table.setAutoCreateRowSorter(true);
 
 		update();
 	}
@@ -503,7 +469,7 @@ extends TabPanel {
 					return this;
 				}
 
-				setText(" Sol " + value);
+				setText(SOL + value);
 
 				// 184,134,11 mud yellow
 				// 255,229,204 white-ish (super pale) yellow
