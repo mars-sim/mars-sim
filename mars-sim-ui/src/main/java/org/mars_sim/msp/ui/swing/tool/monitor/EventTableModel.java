@@ -601,13 +601,13 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 			this.message = message;
 	   	    this.type = type;
 
-			if (type == 0) {
+			if (type == 1) {
 				pos = Pos.BOTTOM_LEFT;
 		   	    v = new ImageView(getClass().getResource("/icons/notification/medical_48.png").toExternalForm());
 
 			}
 
-			else if (type == 1) {
+			else if (type == 0) {
 				pos = Pos.BOTTOM_RIGHT;
 				v = new ImageView(getClass().getResource("/icons/notification/malfunction_48.png").toExternalForm());
 

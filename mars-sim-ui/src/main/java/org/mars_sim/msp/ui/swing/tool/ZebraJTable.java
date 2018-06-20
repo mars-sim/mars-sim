@@ -8,7 +8,17 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.alee.laf.table.WebTable;
 
@@ -18,7 +28,7 @@ import com.alee.laf.table.WebTable;
  */
 public class ZebraJTable extends WebTable {
 
-    private java.awt.Color rowColors[] = new java.awt.Color[2];
+    private Color rowColors[] = new Color[2];
     private boolean drawStripes = false;
 
     public ZebraJTable(){
@@ -34,18 +44,18 @@ public class ZebraJTable extends WebTable {
     {
         super( rowData, columnNames );
     }
-    public ZebraJTable( javax.swing.table.TableModel dataModel )
+    public ZebraJTable(TableModel dataModel )
     {
         super( dataModel );
     }
-    public ZebraJTable( javax.swing.table.TableModel dataModel,
-        javax.swing.table.TableColumnModel columnModel )
+    public ZebraJTable(TableModel dataModel,
+        TableColumnModel columnModel )
     {
         super( dataModel, columnModel );
     }
-    public ZebraJTable( javax.swing.table.TableModel dataModel,
-        javax.swing.table.TableColumnModel columnModel,
-        javax.swing.ListSelectionModel selectionModel )
+    public ZebraJTable(TableModel dataModel,
+        TableColumnModel columnModel,
+        ListSelectionModel selectionModel )
     {
         super( dataModel, columnModel, selectionModel );
     }
@@ -57,7 +67,7 @@ public class ZebraJTable extends WebTable {
 //    }
 
     /** Add stripes between cells and behind non-opaque cells. */
-    public void paintComponent( java.awt.Graphics g )
+    public void paintComponent(Graphics g )
     {
         if ( !(drawStripes = isOpaque( )) )
         {
@@ -101,18 +111,18 @@ public class ZebraJTable extends WebTable {
     }
 
     /** Add background stripes behind rendered cells. */
-    public java.awt.Component prepareRenderer(
-        javax.swing.table.TableCellRenderer renderer, int row, int col )
+    public Component prepareRenderer(
+        TableCellRenderer renderer, int row, int col )
     {
-        final java.awt.Component c = super.prepareRenderer( renderer, row, col );
+        final Component c = super.prepareRenderer( renderer, row, col );
         if ( drawStripes && !isCellSelected( row, col ) )
             c.setBackground( rowColors[row&1] );
         return c;
     }
 
     /** Add background stripes behind edited cells. */
-    public java.awt.Component prepareEditor(
-        javax.swing.table.TableCellEditor editor, int row, int col )
+    public Component prepareEditor(
+        TableCellEditor editor, int row, int col )
     {
         final java.awt.Component c = super.prepareEditor( editor, row, col );
         if ( drawStripes && !isCellSelected( row, col ) )
@@ -123,37 +133,64 @@ public class ZebraJTable extends WebTable {
     /** Force the table to fill the viewport's height. */
     public boolean getScrollableTracksViewportHeight( )
     {
-        final java.awt.Component p = getParent( );
-        if ( !(p instanceof javax.swing.JViewport) )
+        final Component p = getParent( );
+        if ( !(p instanceof JViewport) )
             return false;
-        return ((javax.swing.JViewport)p).getHeight() > getPreferredSize().height;
+        return ((JViewport)p).getHeight() > getPreferredSize().height;
     }
 
-    /** Compute zebra background stripe colors. */
+//    /** Compute zebra background stripe colors. */
+//    private void updateZebraColors( )
+//    {
+//        if ( (rowColors[0] = getBackground( )) == null )
+//        {
+//            rowColors[0] = rowColors[1] = Color.white;
+//            return;
+//        }
+//        final Color sel = getSelectionBackground( );
+//        if ( sel == null )
+//        {
+//            rowColors[1] = rowColors[0];
+//            return;
+//        }
+//        final float[] bgHSB = Color.RGBtoHSB(
+//            rowColors[0].getRed( ), rowColors[0].getGreen( ),
+//            rowColors[0].getBlue( ), null );
+//        final float[] selHSB  = java.awt.Color.RGBtoHSB(
+//            sel.getRed( ), sel.getGreen( ), sel.getBlue( ), null );
+//        rowColors[1] = java.awt.Color.getHSBColor(
+//            (selHSB[1]==0.0||selHSB[2]==0.0) ? bgHSB[0] : selHSB[0],
+//            0.1f * selHSB[1] + 0.9f * bgHSB[1],
+//            bgHSB[2] + ((bgHSB[2]<0.5f) ? 0.05f : -0.05f) );
+//    }
+    
     private void updateZebraColors( )
     {
-        if ( (rowColors[0] = getBackground( )) == null )
+        if ( (rowColors[1] = getBackground( )) == null )
         {
-            rowColors[0] = rowColors[1] = java.awt.Color.white;
+            rowColors[1] = rowColors[0] = Color.white;
             return;
         }
-        final java.awt.Color sel = getSelectionBackground( );
+        final Color sel = getSelectionBackground( );
         if ( sel == null )
         {
-            rowColors[1] = rowColors[0];
+            rowColors[0] = rowColors[1];
             return;
         }
-        final float[] bgHSB = java.awt.Color.RGBtoHSB(
-            rowColors[0].getRed( ), rowColors[0].getGreen( ),
-            rowColors[0].getBlue( ), null );
-        final float[] selHSB  = java.awt.Color.RGBtoHSB(
+        final float[] bgHSB = Color.RGBtoHSB(
+            rowColors[1].getRed( ), rowColors[1].getGreen( ),
+            rowColors[1].getBlue( ), null );
+        final float[] selHSB  = Color.RGBtoHSB(
             sel.getRed( ), sel.getGreen( ), sel.getBlue( ), null );
-        rowColors[1] = java.awt.Color.getHSBColor(
+        rowColors[0] = Color.getHSBColor(
             (selHSB[1]==0.0||selHSB[2]==0.0) ? bgHSB[0] : selHSB[0],
             0.1f * selHSB[1] + 0.9f * bgHSB[1],
-            bgHSB[2] + ((bgHSB[2]<0.5f) ? 0.05f : -0.05f) );
+//            bgHSB[2] + ((bgHSB[2]<0.5f) ? 0.05f : -0.05f) 
+            // Match the slightly darkened background color of a zebra row
+            bgHSB[2] + ((bgHSB[2]<0.5f) ? 0.0005f : -0.0005f) 
+            );
     }
-
+    
     public String getToolTipText(MouseEvent e) {
 		//TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelRadiation.tooltip"), TooltipWay.down);
 		return super.getToolTipText();

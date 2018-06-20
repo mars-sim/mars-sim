@@ -1,10 +1,18 @@
 package org.mars_sim.msp.ui.javafx.tools;
 
+import java.util.ArrayList;
 
-/**
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.util.Pair;
+
+// https://github.com/innFactory/JFXC
+
 public class KeyValueTableViewDemo extends Application {
 
-	private KeyValueTableView<String, ArrayList<String>> keyValueTableView;
+	private KeyValueTableView keyValueTableView;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -41,10 +49,7 @@ public class KeyValueTableViewDemo extends Application {
 	    primaryStage.show();
 	}
 
-     * @param args the command line arguments
-
     public static void main(String[] args) {
         launch(args);
     }
 }
-*/

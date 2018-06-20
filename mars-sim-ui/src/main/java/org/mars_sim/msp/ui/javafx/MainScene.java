@@ -28,6 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -67,6 +68,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -853,7 +855,7 @@ public class MainScene {
 		t.setCache(true);
 		t.setX(10.0f);
 		t.setY(270.0f);
-		t.setFill(Color.DARKSLATEGREY);
+		t.setFill(Color.LIGHTBLUE);//.ORANGE);//.DARKSLATEGREY);
 		t.setText(s);
 		t.setFont(Font.font(null, FontWeight.BOLD, 14));
 		return t;
@@ -862,7 +864,7 @@ public class MainScene {
 	public Label createBlendLabel(String s) {
 		Label header_label = new Label(s);
 		// header_label.setEffect(blend);
-		header_label.setStyle("-fx-text-fill: black;" + "-fx-font-size: 13px;"
+		header_label.setStyle("-fx-text-fill: white; -fx-font-size: 13px; -fx-background-color:transparent;"
 				//+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
 				+ "-fx-font-weight: bold;");
 		header_label.setPadding(new Insets(3, 0, 1, 2));
@@ -872,7 +874,7 @@ public class MainScene {
 	public Text createBlendText(String s) {
 		Text text = new Text(s);
 		// text.setEffect(blend);
-		text.setStyle("-fx-text-fill: black;" + "-fx-font-size: 11px;"
+		text.setStyle("-fx-text-fill: white; -fx-font-size: 11px; -fx-background-color:transparent;"
 		// + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0
 		// #000;"
 				+ "-fx-font-weight: normal;");
@@ -1189,6 +1191,9 @@ public class MainScene {
 		});
 
 		speedPane = new StackPane();
+		speedPane.setBackground(new Background(new BackgroundFill(Color.rgb(54, 54, 54), CornerRadii.EMPTY, Insets.EMPTY)));
+		// soundPane.setEffect(blend);
+		speedPane.getStyleClass().add("jfx-popup-container; -fx-text-fill: white;");// -fx-background-radius: 10;");
 		// speedPane.setEffect(blend);
 		//speedPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		speedPane.setAlignment(Pos.CENTER);
@@ -1196,6 +1201,10 @@ public class MainScene {
 		speedPane.setPrefWidth(250);// earthTimeButton.getPrefWidth());
 		simSpeedPopup = new JFXPopup(speedPane);
 
+		String LABEL_CSS_STYLE = "-fx-background-color:transparent; -fx-text-fill: white;" + "-fx-font-size: 11px;" 
+						+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;" 
+						+ "-fx-font-weight:bold; -fx-text-alignment: center;";
+		
 		Text header_label = createTextHeader("SPEED PANEL");
 
 		int default_ratio = (int) masterClock.getCalculatedTimeRatio();
@@ -1204,26 +1213,21 @@ public class MainScene {
 		Label default_ratio_label0 = new Label(DTR);
 		// time_ratio_label0.setEffect(blend);
 		default_ratio_label0.setAlignment(Pos.CENTER_RIGHT);
-		default_ratio_label0.setStyle("-fx-text-fill: #206982;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: normal;");
+		default_ratio_label0.setStyle(LABEL_CSS_STYLE);
+		
 		default_ratio_label0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(default_ratio_label0, "The default time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
 
 		Label spinner_label0 = new Label(TR);
 		// time_ratio_label0.setEffect(blend);
 		spinner_label0.setAlignment(Pos.CENTER_RIGHT);
-		spinner_label0.setStyle("-fx-text-fill: #206982;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: normal;");
+		spinner_label0.setStyle(LABEL_CSS_STYLE);
 		spinner_label0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(spinner_label0, "The current time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
 
 		Label default_ratio_label = new Label();
 		// time_ratio_label.setEffect(blend);
-		default_ratio_label.setStyle("-fx-text-fill: #206982;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: normal;");
+		default_ratio_label.setStyle(LABEL_CSS_STYLE);
 		// default_ratio_label.setPadding(new Insets(1, 1, 1, 5));
 		default_ratio_label.setAlignment(Pos.CENTER);
 		// s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
@@ -1234,17 +1238,13 @@ public class MainScene {
 		Label real_time_label0 = new Label(SEC);
 		// real_time_label0.setEffect(blend);
 		real_time_label0.setAlignment(Pos.CENTER_RIGHT);
-		real_time_label0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
+		real_time_label0.setStyle(LABEL_CSS_STYLE);
 		real_time_label0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(real_time_label0, "the amount of simulation time per real second"); //$NON-NLS-1$
 
 		Label real_time_label = new Label();
 		// real_time_label.setEffect(blend);
-		real_time_label.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
+		real_time_label.setStyle(LABEL_CSS_STYLE);
 		// real_time_label.setPadding(new Insets(1, 1, 1, 5));
 		real_time_label.setAlignment(Pos.CENTER);
 		setQuickToolTip(real_time_label,
@@ -1256,7 +1256,7 @@ public class MainScene {
 		// //$NON-NLS-1$
 		s1.append(masterClock.getTimeTruncated(ratio));
 		real_time_label.setText(s1.toString());
-
+		
 		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 
 //		List<Integer> items = null;
@@ -1286,9 +1286,7 @@ public class MainScene {
 		timeRatioSpinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
 		//spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
 		timeRatioSpinner.setMaxSize(85, 15);
-		timeRatioSpinner.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 11px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight:bold; -fx-text-alignment: center;");
+		timeRatioSpinner.setStyle(LABEL_CSS_STYLE);
 		// spinner.setAlignment(Pos.CENTER);
 		timeRatioSpinner.getValueFactory().setValue(default_ratio);
 		timeRatioSpinner.valueProperty().addListener((o, old_val, new_val) -> {
@@ -1310,17 +1308,13 @@ public class MainScene {
 		Label tpsLabel0 = new Label(TPS);
 		// TPSLabel0.setEffect(blend);
 		tpsLabel0.setAlignment(Pos.CENTER_RIGHT);
-		tpsLabel0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
+		tpsLabel0.setStyle(LABEL_CSS_STYLE);
 		tpsLabel0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(tpsLabel0, "how often the simulation updates the changes"); //$NON-NLS-1$
 
 		tpsLabel = new Label();
 		// TPSLabel.setEffect(blend);
-		tpsLabel.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
+		tpsLabel.setStyle(LABEL_CSS_STYLE);
 		// TPSLabel.setPadding(new Insets(1, 1, 1, 5));
 		tpsLabel.setAlignment(Pos.CENTER);
 		tpsLabel.setText(masterClock.getPulsesPerSecond() + HZ);
@@ -1330,18 +1324,14 @@ public class MainScene {
 		// upTimeLabel0.setEffect(blend);
 		upTimeLabel0.setAlignment(Pos.CENTER_RIGHT);
 		upTimeLabel0.setTextAlignment(TextAlignment.RIGHT);
-		upTimeLabel0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
+		upTimeLabel0.setStyle(LABEL_CSS_STYLE);
 		upTimeLabel0.setPadding(new Insets(1, 1, 1, 2));
 		setQuickToolTip(upTimeLabel0, "how long the simulation has been up running"); //$NON-NLS-1$
 
 		upTimeLabel = new Label();
 		upTimeLabel.setAlignment(Pos.CENTER);
 		// upTimeLabel.setEffect(blend);
-		upTimeLabel.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;"
-				+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-				+ "-fx-font-weight: italic;");
+		upTimeLabel.setStyle(LABEL_CSS_STYLE);
 		upTimeLabel.setPadding(new Insets(1, 1, 1, 2));
 		if (uptimer != null)
 			upTimeLabel.setText(uptimer.getUptime());
@@ -1368,6 +1358,7 @@ public class MainScene {
 		 * //$NON-NLS-1$
 		 */
 		GridPane gridPane = new GridPane();
+		gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
 		//gridPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(1, 1, 1, 1));
@@ -1412,8 +1403,8 @@ public class MainScene {
 				real_time_label0, real_time_label, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel);// , benchmarkLabel0,
 		// benchmarkLabel);
 
-		speedVBox = new VBox();
-		//speedVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
+		speedVBox = new VBox();	
+		speedVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;");
 		speedVBox.setPadding(new Insets(2, 2, 2, 2));
 		speedVBox.setAlignment(Pos.CENTER);
 		speedVBox.getChildren().addAll(header_label, gridPane); // timeSliderBox
@@ -1462,8 +1453,9 @@ public class MainScene {
 		});
 
 		soundPane = new StackPane();
+		soundPane.setBackground(new Background(new BackgroundFill(Color.rgb(54, 54, 54), CornerRadii.EMPTY, Insets.EMPTY)));
 		// soundPane.setEffect(blend);
-		soundPane.getStyleClass().add("jfx-popup-container");// -fx-background-radius: 10;");
+		soundPane.getStyleClass().add("jfx-popup-container; -fx-text-fill: white;");// -fx-background-radius: 10;");
 		soundPane.setAlignment(Pos.CENTER);
 		soundPane.setPrefHeight(100);
 		soundPane.setPrefWidth(300);
@@ -1475,7 +1467,7 @@ public class MainScene {
 		// Set up a settlement view zoom bar
 		musicSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
-		musicSlider.getStyleClass().add("jfx-slider");
+		musicSlider.getStyleClass().add("jfx-slider; -fx-background-color:transparent;");
 		// soundSlider.setEffect(blend);
 		musicSlider.setPrefWidth(220);
 		musicSlider.setPrefHeight(20);
@@ -1555,7 +1547,7 @@ public class MainScene {
 		// Set up a settlement view zoom bar
 		soundEffectSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
-		soundEffectSlider.getStyleClass().add("jfx-slider");
+		soundEffectSlider.getStyleClass().add("jfx-slider; -fx-background-color:transparent;");
 		// soundSlider.setEffect(blend);
 		soundEffectSlider.setPrefWidth(220);
 		soundEffectSlider.setPrefHeight(20);
@@ -1638,14 +1630,14 @@ public class MainScene {
 		// Label empty = new Label();
 
 		GridPane gridPane0 = new GridPane();
-		gridPane0.getStyleClass().add("jfx-popup-container");
+		gridPane0.getStyleClass().add("jfx-popup-container ; -fx-background-color:transparent;");
 		gridPane0.setAlignment(Pos.CENTER);
 		gridPane0.setPadding(new Insets(1, 1, 1, 1));
 		gridPane0.setHgap(1.0);
 		gridPane0.setVgap(1.0);
 
 		GridPane gridPane1 = new GridPane();
-		gridPane1.getStyleClass().add("jfx-popup-container");
+		gridPane1.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
 		gridPane1.setAlignment(Pos.CENTER);
 		gridPane1.setPadding(new Insets(1, 1, 1, 1));
 		gridPane1.setHgap(1.0);
@@ -1673,7 +1665,7 @@ public class MainScene {
 		gridPane1.getChildren().addAll(effectLabel, soundEffectMuteBox);
 
 		soundVBox = new VBox();
-		//soundVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
+		soundVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;");
 		soundVBox.setPadding(new Insets(1, 1, 1, 1));
 		soundVBox.setAlignment(Pos.CENTER);
 		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, soundEffectSlider);
@@ -3503,14 +3495,16 @@ public class MainScene {
 				Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
 				l.setPadding(new Insets(10, 10, 10, 10));
 				l.setFont(Font.font(null, FontWeight.BOLD, 14));
+				l.setStyle("-fx-text-fill: white;");
 
 				HBox hb = new HBox();
+				hb.setAlignment(Pos.CENTER);
 				JFXButton b0 = new JFXButton("Save & Exit");
-				b0.setStyle("-fx-background-color: white;");
+				b0.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
 				JFXButton b1 = new JFXButton("Exit");
-				b1.setStyle("-fx-background-color: white;");
+				b1.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
 				JFXButton b2 = new JFXButton("Back");
-				b2.setStyle("-fx-background-color: white;");
+				b2.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
 				// b0.setPadding(new Insets(2, 2, 2, 2));
 
 				hb.getChildren().addAll(b0, b1, b2);
@@ -3521,8 +3515,10 @@ public class MainScene {
 				VBox vb = new VBox();
 				vb.setPadding(new Insets(5, 5, 5, 5));
 				vb.getChildren().addAll(l, hb);
+				vb.setAlignment(Pos.CENTER);
+				
 				StackPane sp = new StackPane(vb);
-				sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
+				sp.setStyle("-fx-background-color: black;");//rgba(0,0,0,0.1);");
 				StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
 
 				exitDialog = new JFXDialog();

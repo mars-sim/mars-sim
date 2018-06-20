@@ -74,7 +74,8 @@ implements Serializable {
     // Data members.
     private int solCache = 0;
     private int techLevel;
-    private int supportingProcesses, maxProcesses;
+    private int supportingProcesses;
+    private int maxProcesses;
     //private boolean checkNumPrinter;
 
     private List<ManufactureProcess> processes;
@@ -82,11 +83,13 @@ implements Serializable {
 
     private Building building;
     private Settlement settlement;
-    private Inventory inv;// b_inv;
+    private Inventory inv;
     private ItemResource printerItem;
+    private BuildingManager buildingManager;
     
     private MarsClock marsClock;
 
+	private static UnitManager manager = Simulation.instance().getUnitManager();
 	private static BuildingConfig buildingConfig;
 	
     /**
@@ -99,7 +102,7 @@ implements Serializable {
         super(FUNCTION, building);
 
         this.building = building;
-        BuildingManager buildingManager = getBuilding().getBuildingManager();
+        buildingManager = building.getBuildingManager();
         settlement = buildingManager.getSettlement();
 
         inv = building.getSettlementInventory();
@@ -158,9 +161,9 @@ implements Serializable {
                 removedBuilding = true;
             }
             else {
-                Manufacture manFunction = (Manufacture) building.getFunction(FUNCTION);
+                Manufacture manFunction = building.getManufacture();
                 int tech = manFunction.techLevel;
-                double processes = manFunction.supportingProcesses;
+                double processes = manFunction.getNumPrinterInUse();
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 supply += (tech * tech) * processes * wearModifier;
 
@@ -485,7 +488,7 @@ implements Serializable {
 
         if (!premature) {
             // Produce outputs.
-            UnitManager manager = Simulation.instance().getUnitManager();
+            //UnitManager manager = Simulation.instance().getUnitManager();
 
             Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
             while (j.hasNext()) {
@@ -552,7 +555,7 @@ implements Serializable {
         else {
 
             // Premature end of process.  Return all input materials.
-            UnitManager manager = Simulation.instance().getUnitManager();
+            //UnitManager manager = Simulation.instance().getUnitManager();
 
             Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
             while (j.hasNext()) {
@@ -624,7 +627,7 @@ implements Serializable {
 
         // Log process ending.
         if (logger.isLoggable(Level.FINEST)) {
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             logger.finest(getBuilding() + " at " + settlement + " ending manufacturing process: " +
                     process.getInfo().getName());
         }
@@ -703,7 +706,7 @@ implements Serializable {
         // Add maintenance for tech level.
         result += techLevel * 10D;
 
-        // Add maintenance for concurrect process capacity.
+        // Add maintenance for concurrent process capacity.
         result += supportingProcesses * 10D;
 
         return result;
@@ -716,13 +719,12 @@ implements Serializable {
     /**
      * Check once a sol if enough 3D printer(s) are supporting the manufacturing processes
      */
-    // 2016-10-11 Replaced with checkPrinters()
     public void checkPrinters() {
         //System.out.println("Manufacture : checkPrinters()");
 
         //MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-        // check for the passing of each day
+        // Check only once a day for # of processes that are needed.
         int solElapsed = marsClock.getMissionSol();
         if (solElapsed != solCache) {
             solCache = solElapsed;
@@ -738,7 +740,6 @@ implements Serializable {
     /**
      * Takes 3D printer(s) from settlement's inventory and assigns them to this building's inventory
      */
-    // 2016-10-11 Created distributePrinters()
     public void distributePrinters() {
 
         int s_available = inv.getItemResourceNum(printerItem);

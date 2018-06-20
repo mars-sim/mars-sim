@@ -22,6 +22,10 @@ import org.codefx.libfx.listener.handle.ListenerHandle;
  */
 public class WebViewHyperlinkListenerDemo extends Application {
 
+	static final String PAGE_URL = "https://github.com/mars-sim/mars-sim/issues";
+	// "https://en.wikipedia.org/wiki/Main_Page"
+	// "https://sourceforge.net/p/mars-sim/discussion/"
+	
 	// #begin INITIALIZATION
 
 	/**
@@ -51,6 +55,7 @@ public class WebViewHyperlinkListenerDemo extends Application {
 
 		// put together
 		VBox box = new VBox(webView, listenerAttachedBox, cancelEventBox, urlLabel);
+		java.net.CookieHandler.setDefault(null);
 		Scene scene = new Scene(box);
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -63,9 +68,10 @@ public class WebViewHyperlinkListenerDemo extends Application {
 	 */
 	private static WebView createWebView() {
 		WebView webView = new WebView();
+		System.setProperty("jsse.enableSNIExtension", "false");
 		webView.getEngine().getLoadWorker().stateProperty().addListener(
 				(obs, o, n) -> System.out.println("WEB VIEW WORKER STATUS: " + n));
-		webView.getEngine().load("https://en.wikipedia.org/wiki/Main_Page"); //"https://sourceforge.net/p/mars-sim/discussion/");//
+		webView.getEngine().load(PAGE_URL); 
 		return webView;
 	}
 

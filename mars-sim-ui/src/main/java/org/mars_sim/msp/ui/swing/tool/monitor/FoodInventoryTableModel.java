@@ -32,6 +32,8 @@ public class FoodInventoryTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
+	private static final String FOOD_ITEMS = " Food Items";
+	
 	// Data members
 	private List<Food> foodList;
 	private List<Settlement> settlements;
@@ -90,7 +92,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getCountString() {
-		return " " + foodList.size() + " Food Items"; // do need a white space before Food Items
+		return " " + foodList.size() + FOOD_ITEMS; // do need a white space before Food Items
 	}
 
 	/**
@@ -208,9 +210,10 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 
 		public void run() {
-			foodList = FoodUtil.getFoodList();
+
 			if (event.getTarget() == null) fireTableDataChanged();
 			else {
+				foodList = FoodUtil.getFoodList();
 				int rowIndex = foodList.indexOf(event.getTarget());
 				int columnIndex = settlements.indexOf(event.getSource()) + 2;
 				fireTableCellUpdated(rowIndex, columnIndex);

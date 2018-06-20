@@ -61,7 +61,6 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import static javafx.concurrent.Worker.State.FAILED;
 import static javafx.concurrent.Worker.State;
 
-@SuppressWarnings("restriction")
 public class BrowserJFX {
 
     /** initialized logger for this class. */
@@ -105,7 +104,10 @@ public class BrowserJFX {
 
 	private boolean isLocalHtml = true;
 
-    public volatile String textInputCache, addressURLText, statusBarURLText, inputCache;
+    public volatile String textInputCache;
+    public volatile String addressURLText;
+    public volatile String statusBarURLText;
+    public volatile String inputCache;
 
     private JFXPanel jfxPanel = new JFXPanel();
     private JPanel panel = new JPanel(new BorderLayout());
@@ -133,8 +135,6 @@ public class BrowserJFX {
 	private BorderPane borderPane;
 
 	// see http://www.java2s.com/Tutorials/Java/JavaFX/1500__JavaFX_WebEngine.htm
-
-    @SuppressWarnings("restriction")
 	public BrowserJFX(MainDesktopPane desktop) {
     	this.desktop = desktop;
     	mainScene = desktop.getMainScene();
@@ -158,15 +158,14 @@ public class BrowserJFX {
     }
 
     public void createTopButtonBar() {
-
-    	String guideURL, aboutURL, tutorialURL, shortcutsURL, wikiURL, projectsiteURL;
     	
-		shortcutsURL = getClass().getResource(Msg.getString("doc.shortcuts")).toExternalForm(); //$NON-NLS-1$
-		guideURL = getClass().getResource(Msg.getString("doc.guide")).toExternalForm(); //$NON-NLS-1$
-		aboutURL = getClass().getResource(Msg.getString("doc.about")).toExternalForm(); //$NON-NLS-1$
-		tutorialURL = getClass().getResource(Msg.getString("doc.tutorial")).toExternalForm(); //$NON-NLS-1$
-		projectsiteURL = Msg.getString("url.projectsite"); //$NON-NLS-1$
-		wikiURL = Msg.getString("url.wiki"); //$NON-NLS-1$
+    	String shortcutsURL = getClass().getResource(Msg.getString("doc.shortcuts")).toExternalForm(); //$NON-NLS-1$
+    	String guideURL = getClass().getResource(Msg.getString("doc.guide")).toExternalForm(); //$NON-NLS-1$
+    	String aboutURL = getClass().getResource(Msg.getString("doc.about")).toExternalForm(); //$NON-NLS-1$
+    	String tutorialURL = getClass().getResource(Msg.getString("doc.tutorial")).toExternalForm(); //$NON-NLS-1$
+    	String projectsiteURL = Msg.getString("url.projectsite"); //$NON-NLS-1$
+    	String wikiURL = Msg.getString("url.wiki"); //$NON-NLS-1$
+    	String marspediaURL = Msg.getString("url.marspedia"); //$NON-NLS-1$
 		
     	JFXButton b0 = new JFXButton(Msg.getString("GuideWindow.button.about")); //$NON-NLS-1$
     	b0.setPadding(new Insets(5,15,5,15));
@@ -203,7 +202,7 @@ public class BrowserJFX {
     	JFXButton b4 = new JFXButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
     	b4.setPadding(new Insets(5,15,5,15));
     	b4.setMinWidth(WIDTH+5);
-    	b4.setTooltip(new Tooltip("GitHub's Project Site"));
+    	b4.setTooltip(new Tooltip("Project Site in GitHub"));
     	b4.setOnAction(e -> {
     		fireURL(projectsiteURL);
         });
@@ -211,14 +210,23 @@ public class BrowserJFX {
     	JFXButton b5 = new JFXButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
     	b5.setPadding(new Insets(5,15,5,15));
     	b5.setMinWidth(WIDTH+5);
-    	b5.setTooltip(new Tooltip("GitHub Wikis"));
+    	b5.setTooltip(new Tooltip("mars-sim Wiki"));
     	b5.setOnAction(e -> {
 			fireURL(wikiURL);
         });
-    	
+ 
+    	JFXButton b6 = new JFXButton(Msg.getString("GuideWindow.button.marspedia")); //$NON-NLS-1$
+    	b6.setPadding(new Insets(5,15,5,15));
+    	b6.setMinWidth(WIDTH+5);
+    	b6.setTooltip(new Tooltip("A Random Page from Marspedia"));
+    	b6.setOnAction(e -> {
+			fireURL(marspediaURL);
+        });
+    	    	
     	topButtonBar.setPadding(new Insets(5,5,5,5));
-    	topButtonBar.getChildren().addAll(b0, b1, b2, b3, b4, b5);
+    	topButtonBar.getChildren().addAll(b0, b1, b2, b3, b4, b5, b6);
     }
+    
     
     public void fireURL(String input) {
 		setTextInputCache(input);
@@ -635,7 +643,6 @@ public class BrowserJFX {
 
     }
 
-    // 2016-04-22 Added parseInput()
     public void parseInput(String input, int URL_type) {
 
 		// Type 0 is internal command
@@ -682,9 +689,10 @@ public class BrowserJFX {
     }
 
 
-    @SuppressWarnings("restriction")
 	private void initJFX() {
 
+		engine.setUserAgent("AppleWebKit/537.44");
+		
     	//java.net.CookieHandler.setDefault(null);
 
         //Platform.runLater(() -> {
@@ -711,7 +719,7 @@ public class BrowserJFX {
 		    				}
 
 		                    updateButtons();
-		                    // 2016-11-30 Fix the URL not being displayed correctly
+		                    // Fix the URL not being displayed correctly
 		                    textInputCache = input;
 
 		                    showFormattedURL();
@@ -979,7 +987,6 @@ public class BrowserJFX {
 	   }
     }
 
-	// 2016-04-18 Added updateURL()
     public void determineURL(String href, int URL_type) {
     	if (href != null && !href.isEmpty()) {
 	    	if (URL_type == INTERNAL_COMMAND) {
@@ -1012,7 +1019,7 @@ public class BrowserJFX {
     	}
     }
 
-    @SuppressWarnings("restriction")
+
 	public void loadRemoteURL(final String content) {
     	isLocalHtml = false;
     	//Platform.runLater(()-> {
@@ -1029,7 +1036,6 @@ public class BrowserJFX {
         SwingUtilities.invokeLater(()-> statusBarLbl.setText(content));
     }
 
-    @SuppressWarnings("restriction")
 	public void loadLocalURL(String content) {
        	isLocalHtml = true;
     	Platform.runLater(()-> {
@@ -1037,7 +1043,7 @@ public class BrowserJFX {
             updateButtons();
             textInputCache = content;
             if (content != null && !content.isEmpty()) {
-            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
+            	// Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
             	if (content.contains(DOCS_HELP_DIR)) {
             		int i = content.indexOf("docs")-1;
                     addressURLText = content;
@@ -1055,7 +1061,6 @@ public class BrowserJFX {
 
     }
 
-    @SuppressWarnings("restriction")
 	public void highlight() {
         //System.out.println("highlight()");
         Platform.runLater(() -> {
@@ -1074,7 +1079,7 @@ public class BrowserJFX {
     }
 */
 
-    @SuppressWarnings("restriction")
+
 	public String getCurrentURL() {
         //history = engine.getHistory();
         ObservableList<WebHistory.Entry> entryList = history.getEntries();

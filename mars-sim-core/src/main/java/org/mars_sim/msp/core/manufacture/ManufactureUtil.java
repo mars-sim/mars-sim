@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 3.07 2014-10-10
+ * @version 3.1.0 2018-06-19
  * @author Scott Davis
  */
 
@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
 public final class ManufactureUtil {
 
 
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static ItemResource printerItem;
 
     /** Private constructor. */
@@ -59,8 +60,7 @@ public final class ManufactureUtil {
      * @throws Exception if error getting processes.
      */
     public static List<ManufactureProcessInfo> getAllManufactureProcesses() {
-        return SimulationConfig
-                .instance()
+        return simulationConfig
                 .getManufactureConfiguration()
                 .getManufactureProcessList();
     }
@@ -87,7 +87,7 @@ public final class ManufactureUtil {
             int techLevel) {
         List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 
-        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
+        ManufactureConfig config = simulationConfig.getManufactureConfiguration();
         Iterator<ManufactureProcessInfo> i = config.getManufactureProcessList().iterator();
         while (i.hasNext()) {
             ManufactureProcessInfo process = i.next();

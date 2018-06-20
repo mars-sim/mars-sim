@@ -22,7 +22,9 @@ public enum EquipmentType {
 	LARGE_BAG			("Large Bag"),
 	ROBOT				("Robot"),	
 	SPECIMEN_CONTAINER	("Specimen Box");
-
+	// should 3D printer be an equipment or an itemResource ?
+	
+	
 	private String name;	
 
 	private static Set<EquipmentType> equipmentSet;

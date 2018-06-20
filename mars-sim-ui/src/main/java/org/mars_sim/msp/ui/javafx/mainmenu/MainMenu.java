@@ -943,22 +943,28 @@ public class MainMenu {
 			Label l = new Label("Do you really want to exit ?");//mainScene.createBlendLabel(Msg.getString("MainScene.exit.header"));
 			l.setPadding(new Insets(10, 10, 10, 10));
 			l.setFont(Font.font(null, FontWeight.BOLD, 14));
+			l.setStyle("-fx-text-fill: white;");
+			
 			HBox hb = new HBox();
 			JFXButton b1 = new JFXButton("Exit");
-			b1.setStyle("-fx-background-color: white;");
+			b1.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
 			JFXButton b2 = new JFXButton("Back");
-			b2.setStyle("-fx-background-color: white;");
+			b2.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
+			
 			hb.getChildren().addAll(b1, b2);
 			hb.setAlignment(Pos.CENTER);
 			HBox.setMargin(b1, new Insets(3,3,3,3));
 			HBox.setMargin(b2, new Insets(3,3,3,3));
+			
 			VBox vb = new VBox();
 			vb.setAlignment(Pos.CENTER);
 			vb.setPadding(new Insets(5, 5, 5, 5));
 			vb.getChildren().addAll(l, hb);
+			
 			StackPane sp = new StackPane(vb);
-			sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
+			sp.setStyle("-fx-background-color: black;");
 			StackPane.setMargin(vb, new Insets(10,10,10,10));
+			
 			exitDialog = new JFXDialog();
 			//dialog.setDialogContainer(pane);
 			exitDialog.setTransitionType(DialogTransition.BOTTOM);

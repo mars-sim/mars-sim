@@ -3418,9 +3418,8 @@ implements Serializable, LifeSupportType, Objective {
         return result;
     }
 
-	//@Override
+
 	public void setObjective(ObjectiveType objectiveType) {
-		//System.out.println(name + "'s objective is " + objectiveType.toString());
 		this.objectiveType = objectiveType;
 
 		// reset all to 1
@@ -3429,6 +3428,7 @@ implements Serializable, LifeSupportType, Objective {
 		goodsManager.setResearchFactor(1);
 		goodsManager.setTransportationFactor(1);
 		goodsManager.setTradeFactor(1);
+		//goodsManager.setTourismFactor(1);
 		//goodsManager.setFreeMarketFactor(1);
 
 		if (objectiveType == ObjectiveType.CROP_FARM) {
@@ -3455,18 +3455,14 @@ implements Serializable, LifeSupportType, Objective {
 			goodsManager.setTourismFactor(1.5);
 		}
 
-		//else if (objectiveType == ObjectiveType.FREE_MARKET) {
-		//	goodsManager.setFreeMarketFactor(1.5);
-		//}
-
 	}
 
-	//@Override
+
 	public ObjectiveType getObjective() {
 		return objectiveType;
 	}
 
-	// 2016-05-08 Added getObjectiveBuildingType()
+
 	public String getObjectiveBuildingType() {
 
 		// TODO: check if a particular building has existed, if yes, build the next relevant building
@@ -3486,24 +3482,17 @@ implements Serializable, LifeSupportType, Objective {
 			return "storage shed";
 		else if (objectiveType == ObjectiveType.TOURISM)
 			return "loading dock garage";
-		//else if (objectiveType == ObjectiveType.FREE_MARKET)
-		//	return "";
-
 
 		// Future alternatives :
-
-		//else if (objectiveType == ObjectiveType.POWER_HUB)
-		//	return "";
-		//else if (objectiveType == ObjectiveType.RESIDENTIAL_DISTRICT)
-		//	return "bunkhouse" or "outpost hub";
+		// FREE_MARKET
+		// POWER_HUB
+		// RESIDENTIAL_DISTRICT
+		//" bunkhouse" or "outpost hub";
 
 		else
 			return null;
 	}
 
-	//public ObservableList<String> getObjectivesOList() {
-	//	return objectivesOList;
-	//}
 
 	public String[] getObjectiveArray() {
 		return objectiveArray;
@@ -3530,7 +3519,7 @@ implements Serializable, LifeSupportType, Objective {
      * Gets the number of crops that currently need work this Sol.
      * @return number of crops.
      */
-    // 2016-10-28 Modified, added caching and relocated from TendGreenhouse
+    // Add caching and relocated from TendGreenhouse
     public int getCropsNeedingTending() {
         int result = 0;
 
@@ -3551,11 +3540,10 @@ implements Serializable, LifeSupportType, Objective {
 	        }
         	cropsNeedingTendingCache = result;
     	}
-        //System.out.println("getCropsNeedingTending() : result is " + result);
+
         return result;
     }
 
-    // 2016-10-28 Added getCropsNeedingTendingCache()
     public int getCropsNeedingTendingCache() {
     	return cropsNeedingTendingCache;
     }
