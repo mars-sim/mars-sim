@@ -35,6 +35,7 @@ implements ActionListener {
 	private JCheckBox missionCheck;
 	private JCheckBox taskCheck;
 	private JCheckBox transportCheck;
+	private JCheckBox hazardCheck;
 
 	/**
 	 * Constructor.
@@ -60,6 +61,12 @@ implements ActionListener {
 		categoryPane.setBorder(new MarsPanelBorder());
 		mainPane.add(categoryPane, BorderLayout.CENTER);
 
+		// Create transport events checkbox.
+		hazardCheck = new JCheckBox(HistoricalEventCategory.HAZARD.getName());
+		hazardCheck.setSelected(model.getDisplayHazard());
+		hazardCheck.addActionListener(this);
+		categoryPane.add(hazardCheck);
+		
 		// Create mechanical events checkbox.
 		malfunctionCheck = new JCheckBox(HistoricalEventCategory.MALFUNCTION.getName());
 		malfunctionCheck.setSelected(model.getDisplayMalfunction());
@@ -111,20 +118,23 @@ implements ActionListener {
 
 		JCheckBox check = (JCheckBox) event.getSource();
 
-		if (check == malfunctionCheck) 
+		if (check == taskCheck)
+			model.setDisplayTask(taskCheck.isSelected());
+		else if (check == malfunctionCheck) 
 			model.setDisplayMalfunction(malfunctionCheck.isSelected());
 		else if (check == medicalCheck)
 			model.setDisplayMedical(medicalCheck.isSelected());
 		else if (check == missionCheck)
 			model.setDisplayMission(missionCheck.isSelected());
-		else if (check == taskCheck)
-			model.setDisplayTask(taskCheck.isSelected());
 		else if (check == transportCheck)
 			model.setDisplayTransport(transportCheck.isSelected());
+		else if (check == hazardCheck)
+			model.setDisplayHazard(hazardCheck.isSelected());
 	}
 	
 	public void destroy() {
 		model = null;
+		hazardCheck = null;
 		malfunctionCheck = null;
 		medicalCheck = null;
 		missionCheck = null;

@@ -89,6 +89,8 @@ implements Serializable, LifeSupportType, Objective {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
+    private static String DETECTOR_GRID = "] The detector grid forecast that ";
+    
 	/** Normal air pressure [in kPa] */
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_IN_KPA;//101.325D;
 	
@@ -586,7 +588,8 @@ implements Serializable, LifeSupportType, Objective {
 
 		return allAssociatedPeople
 				.stream()
-				.filter(p-> p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+				.filter(p-> p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+					|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				.collect(Collectors.toList());
 		
 	}
@@ -1580,8 +1583,8 @@ implements Serializable, LifeSupportType, Objective {
 
         while (i.hasNext()) {
             Person person = i.next();
-            if (person.getLocationStateType() == LocationStateType.INSIDE_BUILDING
-            	&& initiator.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {
+            if (person.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
+            	&& initiator.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
             	Task task = person.getMind().getTaskManager().getTask();
 
             	if (sameBuilding) {
@@ -3320,14 +3323,17 @@ implements Serializable, LifeSupportType, Objective {
 
 		// Baseline radiation event
    	    // Note: RadiationExposure.BASELINE_CHANCE_PER_100MSOL_DURING_EVA * time / 100D
-		if (RandomUtil.lessThanRandPercent(chance0)) {
-	    	//System.out.println("chance0 : " + chance0);
-	    	exposed[0] = true;
-	    	//logger.info("An unspecified low-dose radiation event is detected by the radiation sensor grid on " + getName());
-	    	this.fireUnitUpdate(UnitEventType.LOW_DOSE_EVENT);
-	    }
-	    else
-	    	exposed[0] = false;
+ 		// Assume the baseline radiation can be fully shielded by the EVA suit
+//		if (RandomUtil.lessThanRandPercent(chance0)) {
+//	    	//System.out.println("chance0 : " + chance0);
+//	    	exposed[0] = true;
+//	    	//logger.info("An unspecified low-dose radiation event is detected by the radiation sensor grid on " + getName());
+//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//					"[" + name + DETECTOR_GRID + UnitEventType.LOW_DOSE_EVENT.toString() + " is imminent.", null);
+//	    	this.fireUnitUpdate(UnitEventType.LOW_DOSE_EVENT);
+//	    }
+//	    else
+//	    	exposed[0] = false;
 
 	    // Galactic cosmic rays (GCRs) event
 	    //double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
@@ -3335,7 +3341,7 @@ implements Serializable, LifeSupportType, Objective {
 	    if (RandomUtil.lessThanRandPercent(chance1)) {
 	    	exposed[1] = true;
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + name + "] A GCR event is detected by the radiation sensor grid.", null);
+					"[" + name + DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " is imminent.", null);
 	    	this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 	    }
 	    else
@@ -3348,7 +3354,7 @@ implements Serializable, LifeSupportType, Objective {
 	    if (RandomUtil.lessThanRandPercent(chance2)) {
 	    	exposed[2] = true;
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + name + "] A SEP event is detected by the radiation sensor grid.", null);
+					"[" + name + DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " is imminent.", null);
 	    	this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 	    }
 	    else

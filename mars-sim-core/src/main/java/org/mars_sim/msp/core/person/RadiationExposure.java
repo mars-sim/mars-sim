@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -173,6 +175,10 @@ public class RadiationExposure implements Serializable {
 	// Career whole-body effective dose limits, per NCRP guidelines
 	private static final int WHOLE_BODY_DOSE = 1000; // TODO: it varies with age and differs in male and female
 
+	private static final String	EXPOSED = " was exposed to ";
+	private static final String	DOSE = " mSv dose of radiation";
+	private static final String	EVA_OPERATION = " during an EVA operation near ";
+	
 	private int solCache = 1, counter30 = 1, counter360 = 1;
 
 	private int msolsCache;
@@ -200,7 +206,7 @@ public class RadiationExposure implements Serializable {
 	private double [][] dose;
 
 	//private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
-	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
+	private Map<RadiationHit, Integer> eventMap = new ConcurrentHashMap<>();
 
 	private static MarsClock marsClock;
 
@@ -226,19 +232,18 @@ public class RadiationExposure implements Serializable {
 	}
 
 
-	public Map<RadiationEvent, Integer> getRadiationEventMap() {
+	public Map<RadiationHit, Integer> getRadiationEventMap() {
 		return eventMap;
 	}
 
-	/*
-	 * Adds the dose
-	 * @bodyRegion
-	 * @amount
+	/**
+	 * Adds the dose of radiation exposure. Called by isRadiationDetected. 
+	 * @param bodyRegion
+	 * @param amount
+	 * @see checkForRadiation() in EVAOperation and WalkOutside
 	 */
-	// Called by checkForRadiation() in EVAOperation and WalkOutside
 	public void addDose(int bodyRegion, double amount) {
-
-		// amount is cumulative
+		// Since amount is cumulative, need to carry over
 		dose[bodyRegion][THIRTY_DAY] = dose[bodyRegion][THIRTY_DAY] + amount;
 		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
 		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] + amount;
@@ -255,7 +260,7 @@ public class RadiationExposure implements Serializable {
 	   	//if (marsClock == null)
     	//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		RadiationEvent event = new RadiationEvent(marsClock, region, amount);
+		RadiationHit event = new RadiationHit(marsClock, region, amount);
 		eventMap.put(event, solCache);
 
 	}
@@ -398,11 +403,11 @@ public class RadiationExposure implements Serializable {
 		double dosage = 0;
 		BodyRegionType region = null;
 
-		Iterator<Map.Entry<RadiationEvent, Integer>> entries = eventMap.entrySet().iterator();
+		Iterator<Map.Entry<RadiationHit, Integer>> entries = eventMap.entrySet().iterator();
 
 		while (entries.hasNext()) {
-			Map.Entry<RadiationEvent, Integer> entry = entries.next();
-			RadiationEvent key = entry.getKey();
+			Map.Entry<RadiationHit, Integer> entry = entries.next();
+			RadiationHit key = entry.getKey();
 			Integer value = entry.getValue();
 
 			if (solCache - (int)value == interval + 1 )  {
@@ -464,7 +469,11 @@ public class RadiationExposure implements Serializable {
       	    // TODO: account for the effect of atmosphere pressure on radiation dosage as shown by RAD data
 
        	    // TODO: compute radiation if a person steps outside of a rover on a mission somewhere on Mars
-    		boolean[] exposed = person.getAssociatedSettlement().getExposed();
+    		boolean[] exposed = null;
+    		
+    		if (person.isOutside())
+    			// if a person is outside
+    			exposed = person.getAssociatedSettlement().getExposed();
 
     		if (exposed[1])
 	    		shield_factor = RandomUtil.getRandomDouble(1) ; // arbitrary
@@ -510,19 +519,30 @@ public class RadiationExposure implements Serializable {
     	    }
 
     		if (totalExposure > 0) {
-	    		if (person.getSettlement() != null)
+	    		if (person.getVehicle() == null)
+	    			// if a person steps outside of the vehicle
 				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-				    	"[" + person.getSettlement().toString() + "] " 
-				    	+ person.getName() + " was exposed to " + exposure
-    	    			+ " mSv dose of radiation" //in body region " + i
-    	    			+ " during an EVA operation near " + person.getSettlement(), null);
+				    	"[" + person.getLocationTag().getShortLocationName() + "] " 
+				    	+ person.getName() + EXPOSED + exposure
+    	    			+ DOSE //in body region " + i
+    	    			+ EVA_OPERATION
+    	    			+ person.getLocationTag().getShortLocationName(), null);
 	    		else if (person.getMind().getMission() != null)
 	    			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 	    				"[" + person.getCoordinates().getFormattedString() + "] "
-	    				+ person.getName() + " was exposed to " + exposure
-    	    			+ " mSv dose of radiation" // in body region " + i
+	    				+ person.getName() + EXPOSED + exposure
+    	    			+ DOSE // in body region " + i
     	    			+ " during " + person.getMind().getMission().getName(), null);
 
+	    		
+	    		HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
+						null,
+						person, 
+						person.getLocationTag().getLongLocationName(), 
+						person + EXPOSED + exposure + DOSE 
+						);
+				Simulation.instance().getEventManager().registerNewEvent(hEvent);
+				
     	    	person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
 
     	    	return true;

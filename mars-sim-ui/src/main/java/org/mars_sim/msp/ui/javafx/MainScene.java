@@ -34,11 +34,11 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.stage.Modality;
-import javafx.stage.Screen;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,8 +48,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.CheckBox;
@@ -100,6 +98,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
+import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix;
+import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrixBuilder;
+import org.mars_sim.msp.ui.javafx.dotMatrix.MatrixFont8x8;
+import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix.DotShape;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -175,12 +177,23 @@ public class MainScene {
 	public final static String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
 	public final static String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
 
+	public final static String BREAKING_NEWS = "Breaking News: ";
+	public final static String HEALTH_NEWS = "Health News: ";
+	public final static String MISSION_REPORTS = "Mission Reports: ";
+	public final static String HAZARD = "Safety News: ";
+	
 	public static String OS = Simulation.OS.toLowerCase();
 	// System.getProperty("os.name").toLowerCase();
 	// e.g. 'linux', 'mac os x'
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
+    private static final int            LIME = DotMatrix.convertToInt(Color.LIME);
+    private static final int            RED  = DotMatrix.convertToInt(Color.RED);
+    private static final int            ORANGE  = DotMatrix.convertToInt(Color.ORANGE);
+    private static final int            YELLOW  = DotMatrix.convertToInt(Color.YELLOW);
+    private static final int            BLACK  = DotMatrix.convertToInt(Color.BLACK);
+    
 	public enum ThemeType {
 	    System,
 	    Nimbus,
@@ -256,12 +269,19 @@ public class MainScene {
 	private int screen_height = DEFAULT_HEIGHT;
 	private int solCache = 0;
 
+	// For DotMatrix billboard
+	private int textLength;
+	private int textLengthInPixel;
+	private int offset;
+	private int x;
+
 	public float musicSliderValue = AudioPlayer.DEFAULT_VOL * 100;
 	public float soundEffectSliderValue = AudioPlayer.DEFAULT_VOL * 100;
 
 	private float musicSliderCache = 0;
 	private float effectSliderCache = 0;
 	
+	private long lastTimerCall;
 	private DoubleProperty musicProperty = new SimpleDoubleProperty(musicSliderValue);
 	private DoubleProperty soundEffectProperty = new SimpleDoubleProperty(soundEffectSliderValue);
 	
@@ -277,12 +297,16 @@ public class MainScene {
 
 	private volatile transient ExecutorService mainSceneExecutor;
 
+	private String newsHeader;
+	private String messageCache;
 	private String upTimeCache = "";
 	private String themeSkin = "nimrod";
 	private String title = null;
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
+    private DotMatrix matrix;
+    
 	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
 	
 	//private transient Timer autosaveTimer;
@@ -303,18 +327,22 @@ public class MainScene {
 	private StackPane pausePane;
 	private StackPane savePane;
 	private StackPane sPane;
-
+	private StackPane billboard;
+	
 	private AnchorPane anchorPane;
 	private AnchorPane mapsAnchorPane;
 	private SwingNode desktopNode;
 	private SwingNode mapNode;
 	private SwingNode minimapNode;// , guideNode;// monNode, missionNode, resupplyNode, sciNode,
 														// guideNode ;
-	private Stage stage, loadingStage, savingStage;
-	private Scene scene, savingScene;
+	private Stage stage;
+	private Stage loadingStage;
+	private Stage savingStage;
+	
+	private Scene scene;
+	private Scene savingScene;
 
 	private File fileLocn = null;
-	//private Thread newSimThread;
 
 	private JFXDatePicker datePickerFX;
 	private JFXTimePicker timePickerFX;
@@ -405,6 +433,8 @@ public class MainScene {
 	private static MarsCalendarDisplay calendarDisplay;
 	private static UpTimer uptimer;
 
+    private AnimationTimer billboardTimer;
+    
 	private static OrbitInfo orbitInfo;
 
 	/**
@@ -491,6 +521,7 @@ public class MainScene {
 
 			openInitialWindows();
 //			hideWaitStage(MainScene.LOADING);
+			
 		});
 	}
 
@@ -1003,6 +1034,7 @@ public class MainScene {
 		pausePane.getChildren().add(createPausePaneContent());
 		pausePane.setPrefSize(150, 150);
 		
+		
 		if (OS.contains("mac")) {
 			((MenuBar) menuBar).useSystemMenuBarProperty().set(true);
 		}
@@ -1052,10 +1084,15 @@ public class MainScene {
 		AnchorPane.setRightAnchor(earthTimeBox, sceneWidth.get() / 2 - earthTimeBox.getPrefWidth() - 30);
 		AnchorPane.setRightAnchor(lastSaveLabel, 105.0);
 
+		createBillboard();
+
+		AnchorPane.setBottomAnchor(billboard, 35.0);
+		AnchorPane.setLeftAnchor(billboard, (sceneWidth.get() - 1000) / 2);
+		
 		anchorPane = new AnchorPane();
 		//anchorPane.setStyle("-fx-background-color: black; ");
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
-				soundBtn);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
+				soundBtn, billboard);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(anchorPane);
@@ -1080,7 +1117,9 @@ public class MainScene {
 
 		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
-
+		
+		//matrix.setPrefWidth(jfxTabPane.getWidth());
+		
 		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
 		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
 
@@ -3975,7 +4014,7 @@ public class MainScene {
 	}
 
 	public static void disableSound() {
-		desktop.disableSound();
+		MainDesktopPane.disableSound();
 		
 		if (musicSlider != null) {
 			musicSlider.setDisable(true);// .setValue(0);
@@ -4018,6 +4057,98 @@ public class MainScene {
 		return minimized;
 	}
 	
+	public void createBillboard() {
+
+	    matrix = DotMatrixBuilder.create()
+//                .prefSize(536, 50)
+//                .colsAndRows(512, 13)
+                .prefSize(900, 45)
+                .colsAndRows(256, 13)                
+                //.dotOnColor(Color.WHITE)//rgb(255, 55, 0))
+                .dotOnColor(Color.rgb(255, 55, 0))
+                .dotOffColor(Color.BLACK)//.ORANGE)
+                .dotShape(DotShape.ROUND)
+                .matrixFont(MatrixFont8x8.INSTANCE)
+                .build();
+	    
+		billboard = new StackPane(matrix);
+		billboard.setPadding(new Insets(10));
+		billboard.setBackground(new Background(new BackgroundFill(Color.rgb(20, 20, 20), CornerRadii.EMPTY, Insets.EMPTY)));
+		
+	}
+	
+	public void sendMsg(String str) {
+      
+		if (!str.equals(messageCache)) {
+			
+	        if (billboardTimer != null) {
+	        	matrix.clear();
+	        	billboardTimer.stop();
+	        	billboardTimer = null;
+	        }
+	        
+			messageCache = str;
+			
+			newsHeader = null;
+			if (str.contains("died"))
+				newsHeader = BREAKING_NEWS;
+			else if (str.contains("suffered") || str.contains("cured"))
+				newsHeader = HEALTH_NEWS;
+			else if (str.toLowerCase().contains("mission") || str.toLowerCase().contains("beacon"))
+				newsHeader = MISSION_REPORTS;
+			else if (str.toLowerCase().contains("radiation"))			
+				newsHeader = HAZARD;
+			else
+				newsHeader = BREAKING_NEWS;
+	
+			String text = newsHeader + str.replaceAll("\\u00B0 ", "").replace("ć", "c").replace("æ", "a");
+			
+	        textLength = text.length();
+	        textLengthInPixel = textLength * 8;
+		    offset = 3;
+		    x = matrix.getCols() + 7;
+	        lastTimerCall = System.nanoTime();
+	        
+	        billboardTimer = new AnimationTimer() {
+	            @Override public void handle(final long now) {
+	                if (now > lastTimerCall + 10_000_000l) {
+	                    if (x < -textLengthInPixel) {
+	                      x = matrix.getCols() + 7;
+	//                      System.out.println("x is " + x 
+	//                    		  + "; textLengthInPixel is " + textLengthInPixel
+	//                    		  + "; textLength is " + textLength); 
+	//                        if (matrix.getMatrixFont().equals(MatrixFont8x8.INSTANCE)) {
+	//                            matrix.setMatrixFont(MatrixFont8x11.INSTANCE);
+	//                            offset     = 1;
+	//                            matrix.setDotShape(DotShape.SQUARE);
+	//                        } else {
+	//                            matrix.setMatrixFont(MatrixFont8x8.INSTANCE);
+	//                            offset     = 3;
+	//                            matrix.setDotShape(DotShape.ROUND);
+	//                        }
+	//                        textLength        = text.length();
+	//                        textLengthInPixel = textLength * 8;
+	                    }
+	                    int color = RED;
+	                    if (newsHeader.equals(MISSION_REPORTS))
+	                    	color = LIME;
+	                    else if (newsHeader.equals(HEALTH_NEWS))
+	                    	color = YELLOW;
+	                    else if (newsHeader.equals(HAZARD))
+	                    	color = ORANGE;
+	                    for (int i = 0 ; i < textLength ; i++) {
+	                        matrix.setCharAt(text.charAt(i), x + i * 8, offset, color);//i % 2 == 0 ? LIME : RED);
+	                    }
+	                    x--;
+	                    lastTimerCall = now;
+	                }
+	            }
+	        };
+	        
+	        billboardTimer.start();
+		}
+	}
+			
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;
@@ -4039,7 +4170,7 @@ public class MainScene {
 		pausePane = null;
 		savePane = null;
 		sPane = null;
-
+		billboard = null;
 		anchorPane = null;
 		//newSimThread = null;
 		stage = null;

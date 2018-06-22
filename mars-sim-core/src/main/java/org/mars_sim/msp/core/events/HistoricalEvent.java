@@ -48,10 +48,10 @@ public abstract class HistoricalEvent implements Serializable {
 	 * defined until the evnet is registered with the Event Manager.
 	 * @param category {@link HistoricalEventCategory} Category of event.
 	 * @param type {@link EventType} Type of event.
-	 * @param source The object that has produced the event, if this is null
+	 * @param source The object that has produced the event. If null,
 	 * then it is a global simulation event. It could be a Unit or a Building.
 	 * @param description Long description of event.
-	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
+	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, Object actor, String location, String description) {
 		this.category = category;
@@ -60,12 +60,11 @@ public abstract class HistoricalEvent implements Serializable {
 		this.actor = actor;
 		this.location = location;
 		this.description = description;
-		// need count++ next time: System.out.println("HistoricalEvent.java constructor");
 	}
 
 	/**
 	 * Set the timestamp for this event.
-	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
+	 * @param timestamp
 	 */
 	void setTimestamp(MarsClock timestamp) {
 		this.timestamp = timestamp;

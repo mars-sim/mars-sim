@@ -499,6 +499,7 @@ public class ScenarioConfigEditorFX {
 
 				CompletableFuture.supplyAsync(() -> submitTask());
 
+
 				// Lookup the thready service in the service registry
 				//ThreadSynchronize threadSync = ServiceUtils.getService(ThreadSynchronize.class).get();
 
@@ -512,7 +513,7 @@ public class ScenarioConfigEditorFX {
 				closeWindow();
 
 				// scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
-
+				
 			} // end of if (!hasError)
 
 		});

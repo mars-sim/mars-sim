@@ -16,7 +16,7 @@ public class SettlementVicinity implements LocationState, Serializable {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private String name = "Within a settlement's vicinity";
+	private String name = "Outside but within a settlement's vicinity";
 	
 	private Unit unit;
 
@@ -29,7 +29,7 @@ public class SettlementVicinity implements LocationState, Serializable {
 	}
 
 	public LocationStateType getType() {
-		return LocationStateType.SETTLEMENT_VICINITY;
+		return LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 	}
 /*	
 	public void leaveBuilding() {

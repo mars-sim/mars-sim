@@ -28,11 +28,13 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionEvent;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -1399,7 +1401,7 @@ LocalBoundedObject, InsidePathLocation {
 						e.printStackTrace(System.err);
 					}
 					
-					Object actor = this;
+					Object witness = this;
 					
 					//check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
@@ -1417,21 +1419,30 @@ LocalBoundedObject, InsidePathLocation {
 							if (factor > 1)
 								pc.setStress(person.getStress() * factor);
 
-							actor = person;
+							witness = person;
 							
-							logger.info(person.getName() + " witnessed the latest meteorite impact in " + this + " at " + settlement);
+							logger.info(person.getName() + " witnessed an meteorite impact in " + this + " at " + settlement);
 						}
 						//else {
 							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
 						//}
 					}
 					
-					HistoricalEvent newEvent = new MalfunctionEvent(this, 
+					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT,
+							null, 
+							witness, 
+							this + " at " + settlement, 
+							"A meteorite struck "  
+							);
+					Simulation.instance().getEventManager().registerNewEvent(hEvent);
+					
+					HistoricalEvent mEvent = new MalfunctionEvent(this, 
 							malfunction_meteor,
-							actor,
-							settlement.getName(), 
+							witness,
+							" at " + settlement, 
 							false);
-					Simulation.instance().getEventManager().registerNewEvent(newEvent);
+					Simulation.instance().getEventManager().registerNewEvent(mEvent);
+					
 					
 				}
 			}

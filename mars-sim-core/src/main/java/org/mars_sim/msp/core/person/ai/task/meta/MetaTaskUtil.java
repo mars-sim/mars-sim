@@ -155,6 +155,7 @@ public class MetaTaskUtil {
 	        tasks.add(new LoadVehicleEVAMeta());
 	        tasks.add(new LoadVehicleGarageMeta());
 	        tasks.add(new ObserveAstronomicalObjectsMeta());
+	        tasks.add(new PrescribeMedicationMeta());	        
 	        tasks.add(new RelaxMeta());
 	        tasks.add(new RepairEVAMalfunctionMeta());
 	        tasks.add(new RepairMalfunctionMeta());
@@ -163,9 +164,9 @@ public class MetaTaskUtil {
 	        tasks.add(new ReturnLightUtilityVehicleMeta());
 	        tasks.add(new SelfTreatHealthProblemMeta());
 	        tasks.add(new SleepMeta()); // if a person is having high fatigue, he/she may fall asleep at work
+	        tasks.add(new TreatMedicalPatientMeta());
 	        tasks.add(new WalkMeta());
-
-	        
+        
 	        anyHourMetaTasks.addAll(tasks);
 	        //System.out.println("size of anyHourTasks : " + anyHourTasks.size());
        	}
@@ -206,7 +207,7 @@ public class MetaTaskUtil {
 	        tasks.add(new PerformLaboratoryResearchMeta());
 	        tasks.add(new PerformMathematicalModelingMeta());
 	        tasks.add(new PrepareDessertMeta());
-	        tasks.add(new PrescribeMedicationMeta());
+//	        tasks.add(new PrescribeMedicationMeta());
 	        tasks.add(new ProduceFoodMeta());
 	        tasks.add(new ProposeScientificStudyMeta());
 	        tasks.add(new RecordActivityMeta());
@@ -220,7 +221,7 @@ public class MetaTaskUtil {
 	        tasks.add(new TendGreenhouseMeta());
 	        tasks.add(new ToggleFuelPowerSourceMeta());
 	        tasks.add(new ToggleResourceProcessMeta());
-	        tasks.add(new TreatMedicalPatientMeta());
+//	        tasks.add(new TreatMedicalPatientMeta());
 	        tasks.add(new UnloadVehicleEVAMeta());
 	        tasks.add(new UnloadVehicleGarageMeta());
 	        tasks.add(new WriteReportMeta());

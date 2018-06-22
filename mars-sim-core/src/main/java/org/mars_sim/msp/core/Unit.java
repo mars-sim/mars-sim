@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -110,15 +111,15 @@ implements Serializable, Comparable<Unit> {
 
 		// Define the default LocationStateType of an unit at the start of the sim
 		if (this instanceof Robot)
-			currentStateType = LocationStateType.INSIDE_BUILDING;
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		else if (this instanceof Equipment)
-			currentStateType = LocationStateType.INSIDE_BUILDING;
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		else if (this instanceof Person)
-			currentStateType = LocationStateType.INSIDE_BUILDING;
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		else if (this instanceof Building)
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		else if (this instanceof Vehicle)
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 
@@ -355,7 +356,7 @@ implements Serializable, Comparable<Unit> {
 		else if (this instanceof Vehicle)
 			updateVehicleState(newContainer);
 		else if (this instanceof Building)
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY; 
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT; 
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		
@@ -637,38 +638,39 @@ implements Serializable, Comparable<Unit> {
 	public void updatePersonRobotState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 
-		// Case 1a
+		// Case 1a : exiting a settlement
 		if (oldContainer instanceof Settlement && newContainer == null)
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 
 		// Case 1b (reverse of Case 1a)
 		else if (oldContainer == null && newContainer instanceof Settlement)
-			currentStateType = LocationStateType.INSIDE_BUILDING;
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 
-		// Case 2a
+		// Case 2a : boarding a vehicle parked in a garage
 		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
 			// only if the vehicle is inside a garage can this happen
-			currentStateType = LocationStateType.INSIDE_VEHICLE_INSIDE_GARAGE;
+			currentStateType = LocationStateType.INSIDE_VEHICLE;
 
 		// Case 2b (reverse of Case 2a)
 		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
 			// only if the vehicle is inside a garage can this happen
-			currentStateType = LocationStateType.INSIDE_BUILDING;
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		
-		// Case 3a 
+		// Case 3a : to board a vehicle from outside  
 		else if (oldContainer == null && newContainer instanceof Vehicle)
 			currentStateType = LocationStateType.INSIDE_VEHICLE;
 	
 		// Case 3b and 3c
 		else if (oldContainer instanceof Vehicle && newContainer == null) {
-			// Case 3b (reverse of Case 3a)
-			if (((Vehicle)oldContainer).getSettlement() != null)
-				// a person can be in the settlement vicinity loading a vehicle
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-			else //Case 3c (reverse of Case 3a)
-				// a person can be out there on a mission
+			if (((Vehicle)oldContainer).getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+				// Case 3b : a person exits a vehicle that is within the settlement vicinity 
+				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
+			else 
+				//Case 3c : a person exits a vehicle that is outside on Mars on a mission
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		}
+		// Case 4a and 4b : a person walks from the settlement vicinity to outside on Mars
+		// Unrealistic and forbidden at this point.
 
 	}
 
@@ -679,55 +681,40 @@ implements Serializable, Comparable<Unit> {
 	public void updateEquipmentState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 
-		// Case 1a
-		if (oldContainer instanceof Settlement && newContainer == null)
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-
-		// Case 1b
-		else if (oldContainer == null && newContainer instanceof Settlement)
-			currentStateType = LocationStateType.INSIDE_BUILDING;
-
-		// Case 2a
-		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
-			currentStateType = LocationStateType.INSIDE_VEHICLE_INSIDE_GARAGE;
-
-		// Case 2b
-		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
-			currentStateType = LocationStateType.INSIDE_BUILDING;
+		// Note : a person or a robot must be the carrier of an equipment
 		
-		// Case 3a 
-		else if (oldContainer == null && newContainer instanceof Vehicle)
-			currentStateType = LocationStateType.INSIDE_VEHICLE;
-
-		// Case 3b and 3c
-		else if (oldContainer instanceof Vehicle && newContainer == null) {
-			// Case 3b (reverse of Case 3a)
-			if (((Vehicle)oldContainer).getSettlement() != null)
-				// this equipment can be placed in the settlement vicinity (Note : a new field work feature for future)
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
-			else
-				// Case 3c (reverse of Case 3a)
-				// this equipment can be placed out there on the surface of Mars (Note : a new field work feature for future)
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			
-		}
-
-		// Case 4a
-		else if (oldContainer instanceof Vehicle && newContainer instanceof Person)
+		// Case 1a
+		if (oldContainer instanceof Settlement && newContainer instanceof Person)
 			currentStateType = LocationStateType.ON_A_PERSON;
 
-		// Case 4b (reverse of Case 4a)
+		// Case 2b (reverse of Case 5a)
+		else if (oldContainer instanceof Person && newContainer instanceof Settlement)
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+
+		
+		// Case 2a
 		else if (oldContainer instanceof Person && newContainer instanceof Vehicle)
 			currentStateType = LocationStateType.INSIDE_VEHICLE;
 
-		// Case 5a
-		else if (oldContainer instanceof Settlement && newContainer instanceof Person)
+		// Case 2b
+		else if (oldContainer instanceof Vehicle && newContainer instanceof Person)
+			currentStateType = LocationStateType.ON_A_PERSON;
+		
+		// Case 3a 
+		else if (oldContainer == null && newContainer instanceof Person)
 			currentStateType = LocationStateType.ON_A_PERSON;
 
-		// Case 5b (reverse of Case 5a)
-		else if (oldContainer instanceof Person && newContainer instanceof Settlement)
-			currentStateType = LocationStateType.INSIDE_BUILDING;
-
+		// Case 3b and 3c
+		else if (oldContainer instanceof Person && newContainer == null) {
+			// Case 3b (reverse of Case 3a)
+			if (((Person)oldContainer).getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+				// this equipment can be placed in the settlement vicinity (Note : a new field work feature for future)
+				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
+			else
+				// Case 3c (reverse of Case 3a)
+				// this equipment can be placed out there on the surface of Mars (Note : a new field work feature for future)
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;	
+		}
 	}
 
 
@@ -736,22 +723,30 @@ implements Serializable, Comparable<Unit> {
 	 * @param newContainer
 	 */
 	public void updateVehicleState(Unit newContainer) {
-		//Unit oldContainer = this.containerUnit;
+		Unit oldContainer = this.containerUnit;
 
+		// Note : "within a settlement vicinity" is the intermediate state between being "in a settlement" and being "outside on Mars"
+		
 		if (newContainer != null) {
-			if (((Vehicle)this).getGarage() != null) {
-				// Case 1
-				currentStateType = LocationStateType.INSIDE_VEHICLE_INSIDE_GARAGE;//.INSIDE_BUILDING;
-	        	//System.out.println(((Vehicle)this) + " is inside a building.");
-			}
-			else // if (this.getSettlemet() != null)
-				// Case 2
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			// Case 1 : to park in a garage
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;//.INSIDE_BUILDING;
 		}
 
 		else {
-			// Case 3
-			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			if (oldContainer == null)
+				// Case 2 : leaving settlement vicinity to outside on mars
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			else if (oldContainer instanceof Settlement)
+				// Case 3 : leaving the garage to settlement vicinity
+				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
+						
+//			if (((Vehicle)oldContainer).getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+//				// Case 2 : this equipment can be placed in the settlement vicinity (Note : a new field work feature for future)
+//				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+//			else
+//				// Case 3 
+//				// this equipment can be placed out there on the surface of Mars (Note : a new field work feature for future)
+//				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 		}
 	}
 

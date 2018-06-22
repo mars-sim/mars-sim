@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -685,6 +686,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			else
 				return false;
 		}
+	}
+
+	/**
+	 * Is the person outside of a settlement but within its vicinity
+	 * @return true if the person is just right outside of a settlement
+	 */
+	public boolean isRightOutsideSettlement() {
+		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+			return true;
+		else
+			return false;
 	}
 	
 	/**

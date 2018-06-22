@@ -21,9 +21,7 @@ extends HistoricalEvent implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-//    private Person handyman;
-//    
+   
 	/**
 	 * Create an event associated to a Malfunction.
 	 * @param entity Malfunctionable entity with problem.
@@ -42,13 +40,4 @@ extends HistoricalEvent implements Serializable {
 			malfunction.getName()
 		);
 	}
-	
-//    public Person getHandyman() {
-//    	return handyman;
-//    }
-//
-//    public void setHandyman(Person p) {
-//    	handyman = p;
-//    }
-    
 }

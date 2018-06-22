@@ -1,6 +1,3 @@
-
-package org.mars_sim.msp.ui.javafx.dotMatrix;
-
 /*
  * Copyright (c) 2017 by Gerrit Grunwald
  *
@@ -16,6 +13,8 @@ package org.mars_sim.msp.ui.javafx.dotMatrix;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package org.mars_sim.msp.ui.javafx.dotMatrix;
 
 import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix.DotShape;
 
@@ -36,7 +35,7 @@ import javafx.scene.Scene;
  * Date: 19.03.17
  * Time: 05:00
  */
-public class Demo extends Application {
+public class DotMatrixDemo extends Application {
     private static final int            LIME = DotMatrix.convertToInt(Color.LIME);
     private static final int            RED  = DotMatrix.convertToInt(Color.RED);
     private              int            x;
@@ -44,17 +43,19 @@ public class Demo extends Application {
     private              String         text;
     private              int            textLength;
     private              int            textLengthInPixel;
-    private              MatrixFont     matrixFont;
     private              int            offset;
     private              long           lastTimerCall;
     private              AnimationTimer timer;
 
 
-    @Override public void init() {
+    @Override 
+    public void init() {
         matrix            = DotMatrixBuilder.create()
                                             .prefSize(500, 50)
                                             .colsAndRows(128, 13)
+                                            //.dotOnColor(Color.WHITE)//rgb(255, 55, 0))
                                             .dotOnColor(Color.rgb(255, 55, 0))
+                                            .dotOffColor(Color.BLACK)//.ORANGE)
                                             .dotShape(DotShape.ROUND)
                                             .matrixFont(MatrixFont8x8.INSTANCE)
                                             .build();
@@ -62,7 +63,6 @@ public class Demo extends Application {
         text              = "8x8 Font Round Dots (@hansolo_) ";
         textLength        = text.length();
         textLengthInPixel = textLength * 8;
-        matrixFont        = matrix.getMatrixFont();
         offset            = 3;
 
         lastTimerCall = System.nanoTime();
@@ -71,7 +71,7 @@ public class Demo extends Application {
                 if (now > lastTimerCall + 10_000_000l) {
                     if (x < -textLengthInPixel) {
                         x = matrix.getCols() + 7;
-                        if (matrixFont.equals(MatrixFont8x8.INSTANCE)) {
+                        if (matrix.getMatrixFont().equals(MatrixFont8x8.INSTANCE)) {
                             matrix.setMatrixFont(MatrixFont8x11.INSTANCE);
                             text       = "8x11 Font Square Dots (@hansolo_) ";
                             offset     = 1;
@@ -87,7 +87,6 @@ public class Demo extends Application {
                     }
                     for (int i = 0 ; i < textLength ; i++) {
                         matrix.setCharAt(text.charAt(i), x + i * 8, offset, i % 2 == 0 ? LIME : RED);
-                        //matrix.setDigitAt(RND.nextInt(9), x + i * 8, 4, i % 2 == 0 ? LIME : RED);
                     }
                     x--;
                     lastTimerCall = now;

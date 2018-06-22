@@ -880,7 +880,7 @@ implements ActionListener {
 			// not possible
 			loc = BURIED + AT + p.getBuriedSettlement().getName();
 
-		if (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
+		if (p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
 			loc = WITHIN_THE_VINCINITY_OF + topContainerCache;
 		}
 
@@ -978,7 +978,7 @@ implements ActionListener {
 
 		else if (r.isOutside()) {
 
-			if (r.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
+			if (r.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
 				loc = WITHIN_THE_VINCINITY_OF + topContainerCache;
 			}
 
@@ -1064,7 +1064,7 @@ implements ActionListener {
 
 		else if (e.getLocationSituation() == LocationSituation.OUTSIDE) {
 
-			if (e.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
+			if (e.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
 				if (topContainerCache == null)
 					loc = WITHIN_THE_VINCINITY_OF + containerCache;
 				else if (containerCache == null)
@@ -1089,13 +1089,13 @@ implements ActionListener {
     	
    		Settlement s = v.getSettlement();
 		
-   		if (v.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+   		if (v.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
 			loc = PARKED + WITHIN_THE_VINCINITY_OF + s;
 
 		else if (v.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 			loc = OUTSIDE_ON_A_MISSION; //or OUTSIDE_ON_THE_SURFACE_OF_MARS;
 
-		else if (v.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {
+		else if (v.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
    			Unit tc = v.getTopContainerUnit();
    			s = (Settlement)tc;
 

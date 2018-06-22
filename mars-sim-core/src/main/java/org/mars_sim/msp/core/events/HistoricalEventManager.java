@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.events;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.narrator.Narrator;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
@@ -42,6 +43,8 @@ public class HistoricalEventManager implements Serializable {
 	
 	private List<HistoricalEvent> events;// = new LinkedList<HistoricalEvent>();
 	
+	private Narrator narrator;
+	
 	private MarsClock marsClock;
 
 	
@@ -53,6 +56,8 @@ public class HistoricalEventManager implements Serializable {
 		// Note : the masterClock and marsClock CANNOAT initialized until the simulation start
 		listeners = new ArrayList<HistoricalEventListener>();
 		events = new LinkedList<HistoricalEvent>();
+		
+		narrator = new Narrator();		
 	}
 
 	/**
@@ -120,6 +125,8 @@ public class HistoricalEventManager implements Serializable {
 			while (iter.hasNext()) 
 				iter.next().eventAdded(0, newEvent);
 		}
+		
+		narrator.translate(newEvent);
 	}
 
 	/**

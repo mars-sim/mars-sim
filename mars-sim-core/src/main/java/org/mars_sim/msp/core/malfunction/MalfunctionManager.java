@@ -408,7 +408,7 @@ implements Serializable {
 						false);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-	        			malfunction.getName() + " in " + entity.getLongLocationName() + " has been reported", null);
+	        			malfunction.getName() + " damaged detected in " + entity.getLongLocationName(), null);
 			}
 			else
 				return;

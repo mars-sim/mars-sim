@@ -14,8 +14,9 @@ public enum HistoricalEventCategory {
 	MALFUNCTION (Msg.getString("HistoricalEventType.malfunction")), //$NON-NLS-1$
 	MISSION (Msg.getString("HistoricalEventType.mission")), //$NON-NLS-1$
 	TASK (Msg.getString("HistoricalEventType.task")), //$NON-NLS-1$
-	TRANSPORT (Msg.getString("HistoricalEventType.transport")); //$NON-NLS-1$
-
+	TRANSPORT (Msg.getString("HistoricalEventType.transport")), //$NON-NLS-1$
+	HAZARD (Msg.getString("HistoricalEventType.hazard")); //$NON-NLS-1$
+	
 	private String name;
 
 	/** hidden constructor. */
