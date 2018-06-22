@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -942,6 +943,17 @@ public abstract class Vehicle extends Unit implements Serializable,
 		return getLocationTag().getLongLocationName();
 	}
 
+	/**
+	 * Is the person outside of a settlement but within its vicinity
+	 * @return true if the person is just right outside of a settlement
+	 */
+	public boolean isRightOutsideSettlement() {
+		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+			return true;
+		else
+			return false;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();

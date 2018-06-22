@@ -38,8 +38,10 @@ extends HistoricalEvent implements Serializable {
 		super(HistoricalEventCategory.TASK, 
 				eventType, 
 				source,
-				unit, 
-				location, 
-				task.getDescription() + " " + description);
+				task.getDescription() + " " + description,
+				unit.getName(), 
+				"None",
+				location
+				);
 	}
 }

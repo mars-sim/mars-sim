@@ -1087,7 +1087,7 @@ public class MainScene {
 		createBillboard();
 
 		AnchorPane.setBottomAnchor(billboard, 35.0);
-		AnchorPane.setLeftAnchor(billboard, (sceneWidth.get() - 1000) / 2);
+		AnchorPane.setLeftAnchor(billboard, 335.0);//(sceneWidth.get() - 300) / 2);
 		
 		anchorPane = new AnchorPane();
 		//anchorPane.setStyle("-fx-background-color: black; ");
@@ -4062,8 +4062,8 @@ public class MainScene {
 	    matrix = DotMatrixBuilder.create()
 //                .prefSize(536, 50)
 //                .colsAndRows(512, 13)
-                .prefSize(900, 45)
-                .colsAndRows(256, 13)                
+                .prefSize(700, 40)
+                .colsAndRows(196, 10)                
                 //.dotOnColor(Color.WHITE)//rgb(255, 55, 0))
                 .dotOnColor(Color.rgb(255, 55, 0))
                 .dotOffColor(Color.BLACK)//.ORANGE)

@@ -603,6 +603,7 @@ implements UnitListener {
 		if (!hasEnoughResourcesForRemainingMission(false)) {
 			// If not, determine an emergency destination.
 			determineEmergencyDestination(member);
+			setPhaseEnded(true);
 		}
 		
 
@@ -848,19 +849,25 @@ implements UnitListener {
 			hasEmergency = true;	
 			// Creating emergency destination mission event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(
-					member, 
-					this, 
-					member.getLocationTag().getLongLocationName(),
-					member.getVehicle(), //Mission.MEDICAL_EMERGENCY,
-					EventType.MISSION_MEDICAL_EMERGENCY);
+					EventType.MISSION_MEDICAL_EMERGENCY,
+    				this,
+					this.getName(),
+					member.getName(), 
+					member.getVehicle().getName(),
+					member.getLocationTag().getShortLocationName()
+					);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
 		else {
 			// Creating emergency destination mission event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(
-					member, this, member.getLocationTag().getLongLocationName(), 
-					member.getVehicle(), //Mission.NOT_ENOUGH_RESOURCES,
-					EventType.MISSION_NOT_ENOUGH_RESOURCES);
+					EventType.MISSION_NOT_ENOUGH_RESOURCES,
+    				this,
+					this.getName(),
+					member.getName(), 
+					member.getVehicle().getName(),
+					member.getLocationTag().getShortLocationName()
+					);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
 		
@@ -899,21 +906,25 @@ implements UnitListener {
 						if (hasEmergency) {
 						// Creating emergency destination mission event.
 							HistoricalEvent newEvent = new MissionHistoricalEvent(
-								member, 
-								this, 
-								member.getLocationTag().getLongLocationName(), 
-								member.getVehicle(), //Mission.MEDICAL_EMERGENCY,
-								EventType.MISSION_EMERGENCY_DESTINATION);
+									EventType.MISSION_EMERGENCY_DESTINATION,
+				    				this,
+									this.getName(),
+									member.getName(), 
+									member.getVehicle().getName(),
+									member.getLocationTag().getShortLocationName()
+									);
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						}
 						else {
 							// Creating emergency destination mission event.
 							HistoricalEvent newEvent = new MissionHistoricalEvent(
-								member, 
-								this, 
-								member.getLocationTag().getLongLocationName(), 
-								member.getVehicle(), //Mission.MEDICAL_EMERGENCY,//Mission.NOT_ENOUGH_RESOURCES,
-								EventType.MISSION_NOT_ENOUGH_RESOURCES);
+								EventType.MISSION_NOT_ENOUGH_RESOURCES,
+			    				this,
+								this.getName(),
+								member.getName(), 
+								member.getVehicle().getName(),
+								member.getLocationTag().getShortLocationName()
+								);
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						}
 						
@@ -965,11 +976,13 @@ implements UnitListener {
 		if (beaconOn) {
 			// Creating mission emergency beacon event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(
-					member, 
-					this, 
-					vehicle.getLocationTag().getLongLocationName(), 
-					member.getVehicle(),
-					EventType.MISSION_EMERGENCY_BEACON_ON);
+					EventType.MISSION_EMERGENCY_BEACON_ON,
+    				this,
+					this.getName(),
+					member.getName(), 
+					member.getVehicle().getName(),
+					member.getLocationTag().getShortLocationName()
+					);
 
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " 

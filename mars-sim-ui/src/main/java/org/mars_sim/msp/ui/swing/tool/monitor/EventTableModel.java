@@ -48,6 +48,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 /** default logger.   */
 	private static Logger logger = Logger.getLogger(EventTableModel.class.getName());
 
+	private static final int MSG_CACHE = 10;
+	
 	private ImageView icon_med = new ImageView(EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
 	private ImageView icon_mal = new ImageView(EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
 	private ImageView icon_mission = new ImageView(EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
@@ -56,12 +58,12 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    
 	// Column names
 	private static final int TIMESTAMP = 0;
-	private static final int DESC = 1;
+	private static final int CATEGORY = 1;
 	private static final int TYPE = 2;
-	private static final int CATEGORY = 3;
-	private static final int SOURCE = 4;
-	private static final int ACTOR = 5;
-	private static final int LOCATION = 6;
+	private static final int CAUSE = 3;
+	private static final int WHO = 4;
+	private static final int LOCATION0 = 5;
+	private static final int LOCATION1 = 6;
 	
 	private static final int COLUMNCOUNT = 7;
 
@@ -74,12 +76,12 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[TIMESTAMP] = Msg.getString("EventTableModel.column.time");		columnTypes[TIMESTAMP] = String.class; //$NON-NLS-1$
-		columnNames[DESC] = Msg.getString("EventTableModel.column.description");	columnTypes[DESC] = String.class; //$NON-NLS-1$
-		columnNames[TYPE] = Msg.getString("EventTableModel.column.eventType");		columnTypes[TYPE] = String.class; //$NON-NLS-1$
 		columnNames[CATEGORY] = Msg.getString("EventTableModel.column.category");	columnTypes[CATEGORY] = String.class; //$NON-NLS-1$
-		columnNames[SOURCE] = Msg.getString("EventTableModel.column.source");			columnTypes[SOURCE] = Object.class; //$NON-NLS-1$
-		columnNames[ACTOR] = Msg.getString("EventTableModel.column.actor");			columnTypes[ACTOR] = Object.class; //$NON-NLS-1$
-		columnNames[LOCATION] = Msg.getString("EventTableModel.column.location");	columnTypes[LOCATION] = Object.class; //$NON-NLS-1$
+		columnNames[TYPE] = Msg.getString("EventTableModel.column.eventType");		columnTypes[TYPE] = String.class; //$NON-NLS-1$
+		columnNames[CAUSE] = Msg.getString("EventTableModel.column.cause");	columnTypes[CAUSE] = String.class; //$NON-NLS-1$
+		columnNames[WHO] = Msg.getString("EventTableModel.column.who");			columnTypes[WHO] = Object.class; //$NON-NLS-1$
+		columnNames[LOCATION0] = Msg.getString("EventTableModel.column.location0");			columnTypes[LOCATION0] = Object.class; //$NON-NLS-1$
+		columnNames[LOCATION1] = Msg.getString("EventTableModel.column.location1");	columnTypes[LOCATION1] = Object.class; //$NON-NLS-1$
 	}
 
 	
@@ -141,7 +143,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		for (int x = 0; x < manager.getEvents().size(); x++) {
 			HistoricalEvent event = manager.getEvent(x);
 			HistoricalEventCategory category = event.getCategory();
-
+			EventType eventType = event.getType();
 			if (category.equals(HistoricalEventCategory.HAZARD) && displayHazard
 					//&& (event.getType() == EventType.MALFUNCTION_OCCURRED
 					//	|| event.getType() == EventType.MALFUNCTION_FIXED)
@@ -157,22 +159,22 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 			}
 			
 			else if (category.equals(HistoricalEventCategory.MEDICAL) && displayMedical
-				&& (event.getType() == EventType.MEDICAL_STARTS
-					|| event.getType() == EventType.MEDICAL_CURED
-					|| event.getType() == EventType.MEDICAL_TREATED
-					|| event.getType() == EventType.MEDICAL_DEATH
+				&& (eventType == EventType.MEDICAL_STARTS
+					|| eventType == EventType.MEDICAL_CURED
+					|| eventType == EventType.MEDICAL_TREATED
+					|| eventType == EventType.MEDICAL_DEATH
 				)) {
 				cachedEvents.add(event);
 			}
 			
 			else if (category.equals(HistoricalEventCategory.MISSION) && displayMission
-				&& (event.getType() == EventType.MISSION_EMERGENCY_BEACON_ON
+				&& (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
 					|| event.getType() == EventType.MISSION_EMERGENCY_DESTINATION
-					//|| event.getType() == EventType.MISSION_NOT_ENOUGH_RESOURCES
+					|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 					|| event.getType() == EventType.MISSION_MEDICAL_EMERGENCY
-					|| event.getType() == EventType.MISSION_RENDEZVOUS		
+					|| eventType == EventType.MISSION_RENDEZVOUS		
 					|| event.getType() == EventType.MISSION_RESCUE_PERSON					            
-					|| event.getType() == EventType.MISSION_SALVAGE_VEHICLE			        
+					|| eventType == EventType.MISSION_SALVAGE_VEHICLE
 			    )) {
 				cachedEvents.add(event);
 			}
@@ -262,7 +264,24 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		}
 		return result;
 	}
-
+	
+	public Object getWho(int row) {
+		HistoricalEvent event = cachedEvents.get(row);
+		if (event != null) {
+			return event.getWho();
+		}
+		return "N/A";
+	}
+	
+	public Object getCause(int row) {
+		HistoricalEvent event = cachedEvents.get(row);
+		Object result = null;
+		if (event != null) {
+			return event.getWhatCause();
+		}
+		return "Unknown";
+	}
+	
 	/**
 	 * Is this model already ordered according to some external criteria.
 	 * @return TRUE as the events are time ordered.
@@ -291,41 +310,41 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 				// Invoke the appropriate method, switch is the best solution
 				// although disliked by some
 				switch (columnIndex) {
-				case TIMESTAMP : {
-					result = event.getTimestamp();
-					if (result == null) // at the start of the sim, MarsClock is not ready
-						result = "0015-Adir-01 000.000";
-				} break;
-
-				case CATEGORY: {
-					result = event.getCategory();
-
-				} break;
-
-				case ACTOR: {
-					result = event.getActor();
-
-				} break;
-
-				case SOURCE: {
-					result = event.getSource();
-
-				} break;
-
-				case LOCATION: {
-					result = event.getLocation();
-
-				} break;
-				
-				case DESC : {
-					result = event.getDescription();
-
-				} break;
-
-				case TYPE : {
-					result = event.getType();
-
-				} break;
+					case TIMESTAMP : {
+						result = event.getTimestamp();
+						if (result == null) // at the start of the sim, MarsClock is not ready
+							result = "0015-Adir-01 000.000";
+					} break;
+	
+					case CATEGORY: {
+						result = event.getCategory();
+	
+					} break;
+					
+					case TYPE : {
+						result = event.getType();
+						
+					} break;
+		
+					case CAUSE: {
+						result = event.getWhatCause();
+	
+					} break;
+	
+					case WHO: {
+						result = event.getWho();
+	
+					} break;
+	
+					case LOCATION0: {
+						result = event.getLocation0();
+	
+					} break;
+					
+					case LOCATION1 : {
+						result = event.getLocation1();
+	
+					} break;
 				}
 			} // end of if event
 		}
@@ -404,127 +423,131 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					int type = 0;
 					
 					String header = null ;
-					String message = null;
-					String description = event.getDescription(); //event.getType().toString();//  //.toUpperCase();
-							
-					if (description != null && description != "" ) {
+					String message = null;						
+				    HistoricalEventCategory category = event.getCategory();
+					EventType eventType = event.getType();
+					String cause = event.getWhatCause(); 
+					String who = event.getWho();
+					String location0 = event.getLocation0();
+					String location1 = event.getLocation1();
 
-					    HistoricalEventCategory category = event.getCategory();
-						Object source = event.getSource();
-						Object actor = event.getActor();
-						String location = event.getLocation();
-						EventType eventType = event.getType();
+					if (category.equals(HistoricalEventCategory.HAZARD)) {
 						
-						if (category.equals(HistoricalEventCategory.HAZARD)) {
+						if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
+							header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 							
-							if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
-								header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
-							}
-							else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
-								header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$								
-							}
-							
-							message = description + location; 
-
-					        if (!messageCache.contains(message)) {
-					        	messageCache.add(0, message);
-					        	if (messageCache.size() > 5)
-					        		messageCache.remove(messageCache.size()-1);
-					        	willNotify = true;
-						        type = 3;
-					        }
-
+							if (who.toLowerCase().equals("no one"))
+								message = "There is a " + cause + " in " + location0 + " at " + location1;
+							else
+								message = who + " witnessed " + cause + " in " + location0 + " at " + location1;
 						}
 						
-						else if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+						else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
+							header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$	
+							
+							message = who + " was " + cause + " in " + location0 + " at " + location1;
+						}
 
-					        header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
+				        if (!messageCache.contains(message)) {
+				        	messageCache.add(0, message);
+				        	if (messageCache.size() > MSG_CACHE)
+				        		messageCache.remove(messageCache.size()-1);
+				        	willNotify = true;
+					        type = 3;
+				        }
 
-					        // Only display notification window when malfunction has occurred, not when fixed.
-					        if (eventType == EventType.MALFUNCTION_REPORTED
-//					        	|| event.getType() == EventType.MALFUNCTION_FIXED
-					        ) {
-					        	if (actor instanceof Building)	
-					        		message = description + " reported by sensor grid " + location;
-						        else
-							        message = description + " reported by " + ((Unit)actor).getName() + " in " + location;
-					        }
-		
-					        else
-						        message = description + " fixed by " + ((Person)actor).getName() + " in " + location;
-					        
-					        if (!messageCache.contains(message)) {
-					        	messageCache.add(0, message);
-					        	if (messageCache.size() > 5)
-					        		messageCache.remove(messageCache.size()-1);
-					        	willNotify = true;
-						        type = 0;
-					        }
-
-					    }
-
-					    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
-					        header = Msg.getString("EventTableModel.message.medical"); //$NON-NLS-1$
-					        // Only display notification windows when medical problems are starting or person has died.
-					        if (eventType == EventType.MEDICAL_STARTS) {
-					        	
-					            willNotify = true;
-					            message = ((Person)source).getName() + " suffered from " + description + " in " + location;
-					            					            
-					        }
-					        else if (eventType == EventType.MEDICAL_DEATH) {
-					        	
-					            willNotify = true;
-					            message = ((Person)source).getName() + " died from " + description + " in " + location;
-					        }
-					        else if (eventType == EventType.MEDICAL_TREATED) {
-					        	
-					            willNotify = true;
-					            message = ((Person)source).getName() + " was being treated from " + description + " in " + location;
-					        }
-					        else if (eventType == EventType.MEDICAL_CURED) {
-					        	
-					            willNotify = true;
-					            message = ((Person)source).getName() + " was cured from " + description + " in " + location;
-					        }
-					        
-					        if (willNotify && !messageCache.contains(message)) {
-					        	messageCache.add(0, message);
-					        	if (messageCache.size() > 5)
-					        		messageCache.remove(messageCache.size()-1);
-					        	//willNotify = true;
-						        type = 1;
-					        }
-
-					    }
-					    
-					    else if (category.equals(HistoricalEventCategory.MISSION)) {
-					        header = Msg.getString("EventTableModel.message.mission"); //$NON-NLS-1$
-
-					        // Only display notification window when malfunction has occurred, not when fixed.
-					        if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
-					            || eventType == EventType.MISSION_EMERGENCY_DESTINATION
-					            || eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
-					            || eventType == EventType.MISSION_MEDICAL_EMERGENCY
-					            || eventType == EventType.MISSION_RENDEZVOUS		
-					            || eventType == EventType.MISSION_RESCUE_PERSON					            
-					            || eventType == EventType.MISSION_SALVAGE_VEHICLE
-				        		) {
-					            	willNotify = true;
-					        }
-					       
-					        message = ((Person)actor).getName() + " has " + description + " in " + location;
-
-					        if (willNotify && !messageCache.contains(message)) {
-					        	messageCache.add(0, message);
-					        	if (messageCache.size() > 5)
-					        		messageCache.remove(messageCache.size()-1);
-					        	//willNotify = true;
-						        type = 2;
-					        }
-					    }
-					    
 					}
+					
+					else if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+
+				        header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
+
+				        // Only display notification window when malfunction has occurred, not when fixed.
+				        if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
+			        		message = who + " accidently caused " + cause + " in " + location0 + " at " + location1;
+			        		willNotify = true;
+				        }
+				        
+				        else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
+					        message = who + " witnessed "  + cause + " in " + location0 + " at " + location1;
+					        willNotify = true;
+				        }
+	
+				        else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
+					        message = who + " was most traumatized by " + cause + " in " + location0 + " at " + location1;
+					        willNotify = true;
+				        }
+				        
+				        if (willNotify && !messageCache.contains(message)) {
+				        	messageCache.add(0, message);
+				        	if (messageCache.size() > MSG_CACHE)
+				        		messageCache.remove(messageCache.size()-1);
+					        type = 0;
+				        }
+
+				    }
+
+				    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
+				        header = Msg.getString("EventTableModel.message.medical"); //$NON-NLS-1$
+				        // Only display notification windows when medical problems are starting or person has died.
+				        if (eventType == EventType.MEDICAL_STARTS) {
+				        	
+				            willNotify = true;
+				            message = who + " suffered from " + cause + " in " + location0 + " at " + location1;
+				            					            
+				        }
+				        else if (eventType == EventType.MEDICAL_DEATH) {
+				        	
+				            willNotify = true;
+				            message = who + " died from " + cause + " in " + location0 + " at " + location1;
+				        }
+				        else if (eventType == EventType.MEDICAL_TREATED) {
+				        	
+				            willNotify = true;
+				            message = who + " was being treated for " + cause + " in " + location0 + " at " + location1;
+				        }
+				        else if (eventType == EventType.MEDICAL_CURED) {
+				        	
+				            willNotify = true;
+				            message = who + " was cured from " + cause + " in " + location0 + " at " + location1;
+				        }
+				        
+				        if (willNotify && !messageCache.contains(message)) {
+				        	messageCache.add(0, message);
+				        	if (messageCache.size() > MSG_CACHE)
+				        		messageCache.remove(messageCache.size()-1);
+				        	//willNotify = true;
+					        type = 1;
+				        }
+
+				    }
+				    
+				    else if (category.equals(HistoricalEventCategory.MISSION)) {
+				        header = Msg.getString("EventTableModel.message.mission"); //$NON-NLS-1$
+
+				        // Only display notification window when malfunction has occurred, not when fixed.
+				        if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
+				            || eventType == EventType.MISSION_EMERGENCY_DESTINATION
+				            || eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
+				            || eventType == EventType.MISSION_MEDICAL_EMERGENCY
+				            || eventType == EventType.MISSION_RENDEZVOUS		
+				            || eventType == EventType.MISSION_RESCUE_PERSON					            
+				            || eventType == EventType.MISSION_SALVAGE_VEHICLE
+			        		) {
+				            	willNotify = true;
+						        message = who + " has " + cause + " in " + location0 + " at " + location1;
+				        }
+				       
+
+				        if (willNotify && !messageCache.contains(message)) {
+				        	messageCache.add(0, message);
+				        	if (messageCache.size() > MSG_CACHE)
+				        		messageCache.remove(messageCache.size()-1);
+				        	//willNotify = true;
+					        type = 2;
+				        }
+				    }
+
 					// Modified eventAdded to use controlsfx's notification window for javaFX UI
 					if (willNotify)
 						Platform.runLater(new NotifyFXLauncher(header, message, type));
@@ -690,7 +713,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    	//Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
 	    	System.out.println("Notification : " + message);
 	    	
-	    	if (type == 0 || type == 1 || type == 2) {
+	    	if (type == 0 || type == 1 || type == 2 || type == 3) {
 	    		
 	    		int theme = MainScene.getTheme();
 	    		

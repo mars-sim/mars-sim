@@ -426,7 +426,13 @@ implements Repair, Serializable {
 
         // Add work to malfunction.
         // logger.info(description);
-        double workTimeLeft = malfunction.addWorkTime(workTime);
+        double workTimeLeft = 0;
+        if (person != null) {
+        	malfunction.addWorkTime(workTime, person.getName());
+        }
+        else {
+        	malfunction.addWorkTime(workTime, robot.getName());
+        }
 
         // Add experience
         addExperience(time);

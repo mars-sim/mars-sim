@@ -238,7 +238,8 @@ public class DotMatrix extends Region {
     private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
 
     public void clear() {
-        ctx.clearRect(0, 0, width, height);
+        //ctx.clearRect(0, 0, width, height);
+        setDotOffColor(getDotOffColor());
     }
     
     public void drawMatrix() {

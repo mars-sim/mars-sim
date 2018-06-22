@@ -21,34 +21,34 @@ public class HazardEvent extends HistoricalEvent implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
    
-	/** Type of historical events. */
-	private EventType type;
-	/** TODO Long description of historical events should be internationalizable. */
-	private String description;
-	/** Source of event. May be null. */
-	private Object source;
-	/** Actor or witness of the event. */
-	private Object actor;
-	/** Location occurred. */	
-	private String location;
+//	/** Type of historical events. */
+//	private EventType type;
+//	/** TODO Long description of historical events should be internationalizable. */
+//	private String description;
+//	/** Source of event. May be null. */
+//	private Object source;
+//	/** Actor or witness of the event. */
+//	private Object actor;
+//	/** Location occurred. */	
+//	private String location;
 	
 	/**
 	 * Create an event associated to a hazard.
 	 * @param type {@link EventType} Type of hazard event.
-	 * @param source The object that has produced the event. If null,
-	 * then it is a global simulation event.
-	 * @param actor The person/robot who causes or witnesses it.
-	 * @param location the place where the malfunction took place.
-	 * @param description Long description of event.
+	 * @param whatCause The cause for this event
+	 * @param whoAffected Who is being primarily affected by this event.
+	 * @param location0 the building/vehicle where it occurs
+	 * @param location1 the settlement/coordinate where it occurs
 	 */
-	public HazardEvent(EventType type, Object source, Object actor, String location, String description) {
+	public HazardEvent(EventType type, Object source, String whatCause, String whoAffected, String location0, String location1) {
 		super(
 			HistoricalEventCategory.HAZARD,
 			type,
 			source,
-			actor,
-			location,
-			description
+			whatCause,
+			whoAffected,
+			location0,
+			location1
 		);
 	}
 }

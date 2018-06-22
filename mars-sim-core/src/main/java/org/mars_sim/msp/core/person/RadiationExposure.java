@@ -8,7 +8,9 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -175,9 +177,11 @@ public class RadiationExposure implements Serializable {
 	// Career whole-body effective dose limits, per NCRP guidelines
 	private static final int WHOLE_BODY_DOSE = 1000; // TODO: it varies with age and differs in male and female
 
-	private static final String	EXPOSED = " was exposed to ";
+	private static final String	WAS = " was ";
+	private static final String	EXPOSED_TO = "exposed to ";
 	private static final String	DOSE = " mSv dose of radiation";
 	private static final String	EVA_OPERATION = " during an EVA operation near ";
+	
 	
 	private int solCache = 1, counter30 = 1, counter360 = 1;
 
@@ -206,7 +210,7 @@ public class RadiationExposure implements Serializable {
 	private double [][] dose;
 
 	//private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
-	private Map<RadiationHit, Integer> eventMap = new ConcurrentHashMap<>();
+	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
 
 	private static MarsClock marsClock;
 
@@ -232,7 +236,7 @@ public class RadiationExposure implements Serializable {
 	}
 
 
-	public Map<RadiationHit, Integer> getRadiationEventMap() {
+	public Map<RadiationEvent, Integer> getRadiationEventMap() {
 		return eventMap;
 	}
 
@@ -242,7 +246,7 @@ public class RadiationExposure implements Serializable {
 	 * @param amount
 	 * @see checkForRadiation() in EVAOperation and WalkOutside
 	 */
-	public void addDose(int bodyRegion, double amount) {
+	public RadiationEvent addDose(int bodyRegion, double amount) {
 		// Since amount is cumulative, need to carry over
 		dose[bodyRegion][THIRTY_DAY] = dose[bodyRegion][THIRTY_DAY] + amount;
 		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
@@ -260,8 +264,10 @@ public class RadiationExposure implements Serializable {
 	   	//if (marsClock == null)
     	//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		RadiationHit event = new RadiationHit(marsClock, region, amount);
+		RadiationEvent event = new RadiationEvent(marsClock, region, amount);
 		eventMap.put(event, solCache);
+		
+		return event;
 
 	}
 
@@ -403,11 +409,11 @@ public class RadiationExposure implements Serializable {
 		double dosage = 0;
 		BodyRegionType region = null;
 
-		Iterator<Map.Entry<RadiationHit, Integer>> entries = eventMap.entrySet().iterator();
+		Iterator<Map.Entry<RadiationEvent, Integer>> entries = eventMap.entrySet().iterator();
 
 		while (entries.hasNext()) {
-			Map.Entry<RadiationHit, Integer> entry = entries.next();
-			RadiationHit key = entry.getKey();
+			Map.Entry<RadiationEvent, Integer> entry = entries.next();
+			RadiationEvent key = entry.getKey();
 			Integer value = entry.getValue();
 
 			if (solCache - (int)value == interval + 1 )  {
@@ -473,7 +479,8 @@ public class RadiationExposure implements Serializable {
     		
     		if (person.isOutside())
     			// if a person is outside
-    			exposed = person.getAssociatedSettlement().getExposed();
+    			// TODO: how to make radiation more consistent/less random by coordinates/locale ?
+    			exposed = person.getAssociatedSettlement().getExposed(); 
 
     		if (exposed[1])
 	    		shield_factor = RandomUtil.getRandomDouble(1) ; // arbitrary
@@ -482,9 +489,8 @@ public class RadiationExposure implements Serializable {
 	    	// and INCREASES during solar activity minimum
 	    	else
 	    		shield_factor = 1 ; // arbitrary
-
-       	    //System.out.println("chance is " + chance + " rand is "+ rand);
-    		
+   		
+    		List<RadiationEvent> eventMap = new ArrayList<>();
     	    // Compute whether a baseline, GCR, or SEP event has occurred
     	    for (int i = 0; i < 3 ; i++) {
     	    	if (exposed[i]) {
@@ -511,7 +517,8 @@ public class RadiationExposure implements Serializable {
 		    	    	}
 
 		    	    	exposure = Math.round(exposure*10000.0)/10000.0;
-		    	    	addDose(j, exposure);
+		    	    	RadiationEvent event = addDose(j, exposure);
+		    	    	eventMap.add(event);
 
 		    	    	totalExposure = totalExposure + exposure;
 	        	    }
@@ -519,27 +526,33 @@ public class RadiationExposure implements Serializable {
     	    }
 
     		if (totalExposure > 0) {
+	    		String vehicle = "Outside";
+	    		String coord = person.getCoordinates().getFormattedString();
 	    		if (person.getVehicle() == null)
 	    			// if a person steps outside of the vehicle
 				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 				    	"[" + person.getLocationTag().getShortLocationName() + "] " 
-				    	+ person.getName() + EXPOSED + exposure
+				    	+ person.getName() + WAS + EXPOSED_TO + exposure
     	    			+ DOSE //in body region " + i
     	    			+ EVA_OPERATION
-    	    			+ person.getLocationTag().getShortLocationName(), null);
-	    		else if (person.getMind().getMission() != null)
+    	    			+ coord, null);
+	    		else if (person.getMind().getMission() != null) {
+	    			// if a person is inside a vehicle
+	    			vehicle = person.getVehicle().getName();
 	    			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	    				"[" + person.getCoordinates().getFormattedString() + "] "
-	    				+ person.getName() + EXPOSED + exposure
+	    				"[" + coord + "] "
+	    				+ person.getName() + WAS + EXPOSED_TO + exposure
     	    			+ DOSE // in body region " + i
     	    			+ " during " + person.getMind().getMission().getName(), null);
-
-	    		
-	    		HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
-						null,
-						person, 
-						person.getLocationTag().getLongLocationName(), 
-						person + EXPOSED + exposure + DOSE 
+	    		}
+	    				
+	    		HistoricalEvent hEvent = new HazardEvent(
+	    				EventType.HAZARD_RADIATION_EXPOSURE,
+	    				eventMap,
+	    				EXPOSED_TO + exposure + DOSE, 
+						person.getName(), 
+						vehicle, 
+						coord 
 						);
 				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 				

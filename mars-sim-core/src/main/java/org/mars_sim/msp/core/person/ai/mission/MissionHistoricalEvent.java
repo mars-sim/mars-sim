@@ -27,13 +27,15 @@ public class MissionHistoricalEvent extends HistoricalEvent implements Serializa
      * @param mission The mission with the event.
      * @param eventType The type of event.
      */
-    public MissionHistoricalEvent(MissionMember member, Mission mission, String location, Object source, EventType eventType) {
+    public MissionHistoricalEvent(EventType eventType, Mission mission, String cause, String member, String location0, String location1) {
         // Use HistoricalEvent constructor.
         super(HistoricalEventCategory.MISSION, 
         		eventType,
-        		source,
+        		mission,
+        		cause,
         		member, 
-        		location,
-        		eventType.getName() + DURING + mission.getName());
+        		location0,
+        		location1
+        		);
     }
 }

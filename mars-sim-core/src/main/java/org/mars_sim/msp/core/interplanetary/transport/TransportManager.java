@@ -63,8 +63,8 @@ implements Serializable {
 	    transportItems.add(transportItem);
 	    HistoricalEvent newEvent = new TransportEvent(transportItem, 
 	    		EventType.TRANSPORT_ITEM_CREATED,
-	    		transportItem.getSettlementName(),
-            "Transport item created: " + transportItem.getName());
+	    		"Mission Control",
+	    		transportItem.getSettlementName());
 	    Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	    logger.info("A new transport item was created ");// + transportItem.toString());
 	}
@@ -124,8 +124,8 @@ implements Serializable {
 		  transportItem.setTransitState(TransitState.CANCELED);
           HistoricalEvent cancelEvent = new TransportEvent(transportItem, 
         		  EventType.TRANSPORT_ITEM_CANCELLED,
-        		  transportItem.getSettlementName(),
-                  "Transport item cancelled");
+        		  "Reserved",
+        		  transportItem.getSettlementName());
           Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
           logger.info("A transport item was cancelled: ");// + transportItem.toString());
 	}
@@ -147,8 +147,9 @@ implements Serializable {
 			        transportItem.setTransitState(TransitState.IN_TRANSIT);
 			        HistoricalEvent deliverEvent = new TransportEvent(transportItem,
 			        		EventType.TRANSPORT_ITEM_LAUNCHED, 
-			        		transportItem.getSettlementName(),
-			        		"Transport item launched");
+			        		"Transport item launched",
+			        		transportItem.getSettlementName()
+			        		);
 			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);
 			        logger.info("Transport item launched: " + transportItem.toString());
 			        continue;

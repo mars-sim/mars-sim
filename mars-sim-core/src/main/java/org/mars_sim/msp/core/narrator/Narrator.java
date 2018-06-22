@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.person.EventType;
 
 public class Narrator implements Serializable {
 
@@ -22,13 +23,13 @@ public class Narrator implements Serializable {
 	}
 	
 	public void translate(HistoricalEvent event) {
-		String description = event.getDescription();
+		String caue = event.getWhatCause();
 	    HistoricalEventCategory category = event.getCategory();
-		Object source = event.getSource();
-		Object actor = event.getActor();
-		String location = event.getLocation();
-		String eventType = event.getType().getName();
-		
+		//Object source = event.getSource();
+		Object who = event.getWho();
+		String location0 = event.getLocation0();
+		String location1 = event.getLocation1();
+		EventType eventType = event.getType();
 		
 	}
 	

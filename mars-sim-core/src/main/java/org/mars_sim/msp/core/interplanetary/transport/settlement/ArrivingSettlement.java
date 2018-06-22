@@ -241,8 +241,8 @@ implements Transportable, Serializable {
 		HistoricalEvent newEvent = new TransportEvent(
 			this,
 			EventType.TRANSPORT_ITEM_MODIFIED,
-			landingLocation.toString(),
-			"Arriving settlement modded"
+    		"Arriving settlement mission modded",
+			landingLocation.toString()
 		);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}

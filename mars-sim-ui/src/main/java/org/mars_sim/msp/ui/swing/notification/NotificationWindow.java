@@ -246,7 +246,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 	public void validateMsg(HistoricalEvent event) {
 			
 		String header = "";
-		String message = event.getDescription(); //.toUpperCase();
+		String message = event.getWhatCause(); //.toUpperCase();
 		// reset willNotify to false
 		willNotify = false;
 		
@@ -259,7 +259,10 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		        header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
 		        // Only display notification window when malfunction has occurred, not when fixed.
-		        if (event.getType() == EventType.MALFUNCTION_REPORTED) {
+		        if (event.getType() == EventType.MALFUNCTION_ACT_OF_GOD
+		        	||event.getType() == EventType.MALFUNCTION_HUMAN_FACTORS
+		        	||event.getType() == EventType.MALFUNCTION_PARTS_FAILURE
+		        		) {
 		            willNotify = true;
 		        }
 		    }

@@ -628,10 +628,10 @@ implements Repair, Serializable {
         // Add EVA work to malfunction.
         double workTimeLeft = 0D;
         if (isEVAMalfunction) {
-            workTimeLeft = malfunction.addEVAWorkTime(workTime);
+            workTimeLeft = malfunction.addEVAWorkTime(workTime, person.getName());
         }
         else {
-            workTimeLeft = malfunction.addWorkTime(workTime);
+            workTimeLeft = malfunction.addWorkTime(workTime, person.getName());
         }
 
         // Add experience points

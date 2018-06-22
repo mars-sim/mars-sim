@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -356,6 +357,17 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 				return false;
 		}
 
+	}
+
+	/**
+	 * Is the robot outside of a settlement but within its vicinity
+	 * @return true if the robot is just right outside of a settlement
+	 */
+	public boolean isRightOutsideSettlement() {
+		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+			return true;
+		else
+			return false;
 	}
 	
     /**

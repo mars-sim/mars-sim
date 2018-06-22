@@ -124,8 +124,8 @@ implements Serializable, Transportable {
     public void commitModification() {
         HistoricalEvent newEvent = new TransportEvent(this, 
         		EventType.TRANSPORT_ITEM_MODIFIED,
-        		settlement.getName(),
-                "Resupply mission modded");
+        		"Resupply mission modded",
+        		settlement.getName());
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
 

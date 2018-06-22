@@ -264,6 +264,19 @@ public class TableSorter extends AbstractTableModel
     	else return null;
     }
 
+//    public String getCause(int row) {
+//    	if (row < indexes.length)
+//    		return sourceModel.getCause(indexes[row]);
+//    	else return null;
+//    }
+//
+//    public String getWho(int row) {
+//    	if (row < indexes.length)
+//    		return sourceModel.getWho(indexes[row]);
+//    	else return null;
+//    }
+
+    
     /**
      * The mapping only affects the contents of the data rows.
      * Pass all requests to these rows through the mapping array: "indexes".

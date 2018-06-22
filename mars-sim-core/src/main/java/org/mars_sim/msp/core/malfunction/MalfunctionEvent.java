@@ -24,20 +24,24 @@ extends HistoricalEvent implements Serializable {
    
 	/**
 	 * Create an event associated to a Malfunction.
-	 * @param entity Malfunctionable entity with problem.
-	 * @param malfunction Problem that has occurred.
-	 * @param actor The person/robot who causes or witnesses it.
-	 * @param location the place where the malfunction took place.
-	 * @param fixed Is the malfunction resolved.
+	 * @param type {@link EventType} Type of event.
+	 * @param whatCause The cause for this event
+	 * @param whoAffected Who is being primarily affected by this event.
+	 * @param location0 the building/vehicle where it occurs
+	 * @param location1 the settlement/coordinate where it occurs
+	 * 
+	 * 
 	 */
-	public MalfunctionEvent(Malfunctionable entity, Malfunction malfunction, Object actor, String location, boolean fixed) {
+	public MalfunctionEvent(EventType type, Malfunction malfunction, String whatCause, String whoAffected, String location0, String location1) {			
+//			Malfunctionable entity, Malfunction malfunction, EventType eventType, Object actor, String location, boolean fixed) {
 		super(
 			HistoricalEventCategory.MALFUNCTION,
-			(fixed ? EventType.MALFUNCTION_FIXED : EventType.MALFUNCTION_REPORTED),
-			entity,
-			actor,
-			location,
-			malfunction.getName()
+			type,
+			malfunction,
+			whatCause,
+			whoAffected,
+			location0,
+			location1
 		);
 	}
 }

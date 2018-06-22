@@ -1372,7 +1372,7 @@ LocalBoundedObject, InsidePathLocation {
         	int delta = (int)Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
         	if (now > moment_of_impact - 2 *delta && now < moment_of_impact + 2 *delta) {
             	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-            			"[" + settlement + "]  A meteorite impact over " + nickName 
+            			"[" + settlement + "] A meteorite impact over " + nickName 
     					+ " is imminent.", null);
 	        	// reset the boolean immmediately. This is for keeping track of whether the impact has occurred at msols
 				isImpactImminent = false;
@@ -1401,7 +1401,7 @@ LocalBoundedObject, InsidePathLocation {
 						e.printStackTrace(System.err);
 					}
 					
-					Object witness = this;
+					String victimName = null;
 					
 					//check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
@@ -1419,9 +1419,10 @@ LocalBoundedObject, InsidePathLocation {
 							if (factor > 1)
 								pc.setStress(person.getStress() * factor);
 
-							witness = person;
+							victimName = person.getName();
+							malfunction_meteor.setTraumatized(victimName);
 							
-							logger.info(person.getName() + " witnessed an meteorite impact in " + this + " at " + settlement);
+							logger.info(victimName + " witnessed an meteorite impact in " + this + " at " + settlement);
 						}
 						//else {
 							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
@@ -1429,19 +1430,21 @@ LocalBoundedObject, InsidePathLocation {
 					}
 					
 					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT,
-							null, 
-							witness, 
-							this + " at " + settlement, 
-							"A meteorite struck "  
+							malfunction_meteor,
+							malfunction_meteor.getName(),//"Natural Cause",
+							victimName,
+							this.getNickName(),
+							settlement.getName()
 							);
 					Simulation.instance().getEventManager().registerNewEvent(hEvent);
 					
-					HistoricalEvent mEvent = new MalfunctionEvent(this, 
-							malfunction_meteor,
-							witness,
-							" at " + settlement, 
-							false);
-					Simulation.instance().getEventManager().registerNewEvent(mEvent);
+//					HistoricalEvent mEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACCIDENT,
+//							malfunction_meteor.getName(),
+//							name,
+//							this.getNickName(),
+//							settlement.getName()
+//							);
+//					Simulation.instance().getEventManager().registerNewEvent(mEvent);
 					
 					
 				}

@@ -385,11 +385,13 @@ implements Serializable {
 
         // Set mission event.
         HistoricalEvent newEvent = new MissionHistoricalEvent(
-        		member, 
-        		this, 
-        		vehicleTarget.getLocationTag().getLongLocationName(), 
-        		member.getVehicle(), //
-        		EventType.MISSION_RENDEZVOUS);
+        		EventType.MISSION_RENDEZVOUS,
+				this,
+        		this.getName(),
+        		member.getName(), 
+        		member.getVehicle().getName(),
+        		vehicleTarget.getLocationTag().getShortLocationName() 
+        		);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
 
@@ -439,11 +441,13 @@ implements Serializable {
             logger.info(towedVehicle + " has been towed to " + disembarkSettlement.getName());
             
             HistoricalEvent salvageEvent = new MissionHistoricalEvent(
-            		person, 
-            		this, 
-            		person.getSettlement().getName(), 
-            		person.getVehicle(), //EventType.MISSION_SALVAGE_VEHICLE.toString(),
-            		EventType.MISSION_SALVAGE_VEHICLE);
+            		EventType.MISSION_SALVAGE_VEHICLE,
+    				this,
+            		this.getName(),
+            		person.getName(),
+            		person.getVehicle().getName(),
+            		person.getSettlement().getName()
+            		);
             Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
 
             // Unload any crew at settlement.
@@ -466,11 +470,13 @@ implements Serializable {
                     p.getMind().getTaskManager().clearTask();
                     logger.info(p.getName() + " rescued.");
                     HistoricalEvent rescueEvent = new MissionHistoricalEvent(
-                    		person, 
-                    		this, 
-                    		person.getSettlement().getName(), 
-                    		person.getVehicle(), //EventType.MISSION_RESCUE_PERSON.toString(),
-                    		EventType.MISSION_RESCUE_PERSON);
+                    		EventType.MISSION_RESCUE_PERSON,
+            				this,
+                    		this.getName(), 
+                    		person.getName(),
+                    		person.getVehicle().getName(),
+                    		person.getSettlement().getName()
+                    		);
                     Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
                 }
             }

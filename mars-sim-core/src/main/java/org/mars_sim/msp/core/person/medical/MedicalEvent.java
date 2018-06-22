@@ -35,10 +35,12 @@ extends HistoricalEvent implements Serializable {
 		// Call HistoricalEvent constructor.
 		super(HistoricalEventCategory.MEDICAL, 
 				eventType, 
-				illness.getSufferer(),
-				person,
-				illness.getSufferer().getLocationTag().getLongLocationName(),//.getAssociatedSettlement().getName(),
-				illness.getIllness().getType().getName());
+				illness, 
+				illness.getIllness().getType().getName(),
+				person.getName(),
+				person.getLocationTag().getImmediateLocation(),
+				illness.getSufferer().getLocationTag().getShortLocationName()
+				);
 		
 		this.person = person;
 	}

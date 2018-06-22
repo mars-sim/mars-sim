@@ -26,14 +26,15 @@ extends HistoricalEvent implements Serializable {
 	 * @param eventType the event type string.
 	 * @param description of the event.
 	 */
-	public TransportEvent(Transportable transportItem, EventType eventType, String location, String description) {
+	public TransportEvent(Transportable transportItem, EventType eventType, String cause, String location) {
 		super(
 			HistoricalEventCategory.TRANSPORT,
 			eventType,
 			transportItem,
-			null, // TODO : define the sponsor 
-			location,
-			description
+			transportItem.getName(),
+			cause,
+			"N/A", // TODO: Add the type of rocket
+			location
 		);
 	}
 }

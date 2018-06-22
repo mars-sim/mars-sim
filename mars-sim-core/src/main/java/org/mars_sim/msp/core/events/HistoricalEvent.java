@@ -32,34 +32,38 @@ public abstract class HistoricalEvent implements Serializable {
 	private HistoricalEventCategory category;
 	/** Type of historical events. */
 	private EventType type;
-	/** TODO Long description of historical events should be internationalizable. */
-	private String description;
+//	/** TODO Long description of historical events should be internationalizable. */
+//	private String description;
 	/** Time event occurred. */
 	private MarsClock timestamp;
 	/** Source of event may be null. */
 	private Object source;
-	/** Actor or witness of the event. */
-	private Object actor;
-	/** Location occurred. */	
-	private String location;
+
+	private String whatCause;
+	private String who;
+	private String location0;
+	private String location1;
+	
 
 	/**
 	 * Construct an event with the appropriate information. The time is not
 	 * defined until the evnet is registered with the Event Manager.
 	 * @param category {@link HistoricalEventCategory} Category of event.
 	 * @param type {@link EventType} Type of event.
-	 * @param source The object that has produced the event. If null,
-	 * then it is a global simulation event. It could be a Unit or a Building.
-	 * @param description Long description of event.
+	 * @param whatCause The cause for this event
+	 * @param whoAffected Who is being primarily affected by this event.
+	 * @param location0 the building/vehicle where it occurs
+	 * @param location1 the settlement/coordinate where it occurs
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
-	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, Object actor, String location, String description) {
+	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause, String whoAffected, String location0, String location1) { 
 		this.category = category;
 		this.type = type;
 		this.source = source;
-		this.actor = actor;
-		this.location = location;
-		this.description = description;
+		this.whatCause = whatCause;
+		this.who = whoAffected;
+		this.location0 = location0;
+		this.location1 = location1;
 	}
 
 	/**
@@ -71,35 +75,36 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get description of the event observed.
-	 * @return Description
+	 * Get the cause.
+	 * @return String the cause.
 	 */
-	public String getDescription() {
-		return description;
+	public String getWhatCause() {
+		return whatCause;
 	}
 
 	/**
-	 * Get the Unit source.
-	 * @return Object as the source of event.
+	 * Get the name of the offender or the person affected.
+	 * @return String the name.
 	 */
-	public Object getSource() {
-		return source;
-	}
-
-	/**
-	 * Get the actor or witness.
-	 * @return Object as the actor of event.
-	 */
-	public Object getActor() {
-		return actor;
+	public String getWho() {
+		return who;
 	}
 	
+	
 	/**
-	 * Get the location.
-	 * @return Object as the location.
+	 * Get the building/vehicle.
+	 * @return String the building/vehicle.
 	 */
-	public String getLocation() {
-		return location;
+	public String getLocation0() {
+		return location0;
+	}
+
+	/**
+	 * Get the settlement/coordinates.
+	 * @return String the settlement/coordinates
+	 */
+	public String getLocation1() {
+		return location1;
 	}
 	
 	/**
@@ -118,6 +123,14 @@ public abstract class HistoricalEvent implements Serializable {
 		return type;
 	}
 
+	/**
+	 * Get event source.
+	 * @return source 
+	 */
+	public Object getSource() {
+		return source;
+	}
+	
 	/**
 	 * Gets the category of the event.
 	 * @return {@link HistoricalEventCategory}

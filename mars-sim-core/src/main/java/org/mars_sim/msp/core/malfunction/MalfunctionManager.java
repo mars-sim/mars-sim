@@ -27,6 +27,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -77,6 +79,8 @@ implements Serializable {
 	private static final String PRESSURE = "Air Pressure";
 	private static final String TEMPERATURE = "Temperature";
 
+	private static final String PARTS_FAILURE = "Parts Failure";// due to reliability";
+	
 	// Data members
 	/** The owning entity. */
 	private Malfunctionable entity;
@@ -390,6 +394,11 @@ implements Serializable {
 //		System.out.println("MalfunctionManager : addMalfunction()");
 			malfunctions.add(malfunction);
 
+			String offender = PARTS_FAILURE;
+			
+			if (actor != null)
+				offender = actor.getName();
+				
 			String malfunctionName = malfunction.getName();
 
 			try {
@@ -399,16 +408,35 @@ implements Serializable {
 				e.printStackTrace(System.err);
 			}
 
-			if (registerEvent && !malfunctionName.contains("Meteorite")) {
-				HistoricalEvent newEvent = new MalfunctionEvent(
-						entity, 
-						malfunction, 
-						actor,
-						entity.getLongLocationName(), 
-						false);
-				Simulation.instance().getEventManager().registerNewEvent(newEvent);
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-	        			malfunction.getName() + " damaged detected in " + entity.getLongLocationName(), null);
+
+			if (registerEvent) {
+				
+				if (!malfunctionName.contains("Meteorite")) {
+					// if it has nothing to do with meteorite impact
+					HistoricalEvent newEvent = new MalfunctionEvent(
+						EventType.MALFUNCTION_HUMAN_FACTORS,
+						malfunction,
+						malfunctionName,
+						offender,
+						entity.getNickName(),
+						entity.getShortLocationName());
+					Simulation.instance().getEventManager().registerNewEvent(newEvent);
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+		        			malfunction.getName() + " damaged detected in " + entity.getLongLocationName(), null);
+				}
+				else {
+					// if it is a meteorite impact
+					HistoricalEvent newEvent = new MalfunctionEvent(
+							EventType.MALFUNCTION_ACT_OF_GOD,
+							malfunction,
+							malfunctionName,
+							malfunction.getTraumatized(),
+							entity.getNickName(),
+							entity.getShortLocationName());
+						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+			        			malfunction.getName() + " damaged detected in " + entity.getLongLocationName(), null);
+				}
 			}
 			else
 				return;
@@ -526,7 +554,9 @@ implements Serializable {
         			+ entity.getNickName() + " is behind on maintenance.  "
 					+ "Time since last check-up: " + solsLastMaint
 					+ " sols.  Condition: " + wearCondition + " %.", null);
-			//selectMalfunction(null);
+        	
+        	// TODO: does it use field reliability statistics to select a malfunction ?
+			selectMalfunction(null);
 		}
 	}
 
@@ -546,24 +576,33 @@ implements Serializable {
 		}
 
 		if (fixedMalfunctions.size() > 0) {
-			for (Malfunction item : fixedMalfunctions) {	
-				malfunctions.remove(item);
+			for (Malfunction malfunction : fixedMalfunctions) {	
+				malfunctions.remove(malfunction);
 
 				try {
-					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
+					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 				}
 				catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
 
-				HistoricalEvent newEvent = new MalfunctionEvent(entity, 
-						item,
-						null,
-						entity.getLongLocationName(), 
-						true);
+				String chiefRepairer = malfunction.getChiefRepairer();
+				
+				HistoricalEvent newEvent = new MalfunctionEvent(
+						EventType.MALFUNCTION_FIXED,
+						malfunction,
+						malfunction.getName(),
+						chiefRepairer,
+						entity.getNickName(),
+						entity.getShortLocationName());
+//						entity, 
+//						item,
+//						null,
+//						entity.getLongLocationName(), 
+//						true);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-	        			"The malfunction '" + item.getName() + "' has been fixed", null);
+	        			"The malfunction '" + malfunction.getName() + "' has been fixed", null);
 			}
 		}
 

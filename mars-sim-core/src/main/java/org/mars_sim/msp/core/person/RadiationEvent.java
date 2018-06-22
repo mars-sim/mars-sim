@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.time.MarsClock;
 
-public class RadiationHit implements Serializable {
+public class RadiationEvent implements Serializable {
 
 	/** default serial id.*/
 	private static final long serialVersionUID = 1L;
@@ -26,7 +26,7 @@ public class RadiationHit implements Serializable {
 	 * @param region {@link BodyRegionType} the body region affected.
 	 * @param amount the dosage amount.
 	 */
-	public RadiationHit(MarsClock clock, BodyRegionType region, double amount ) {
+	public RadiationEvent(MarsClock clock, BodyRegionType region, double amount) {
 		this.clock = clock;
 		this.region = region;
 		this.amount = amount;

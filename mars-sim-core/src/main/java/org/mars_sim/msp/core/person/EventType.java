@@ -11,8 +11,10 @@ import org.mars_sim.msp.core.Msg;
 
 public enum EventType {
 
-	MALFUNCTION_FIXED		(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$
-	MALFUNCTION_REPORTED	(Msg.getString("EventType.malfunction.reported")), //$NON-NLS-1$
+	MALFUNCTION_PARTS_FAILURE	(Msg.getString("EventType.malfunction.partsFailure")), //$NON-NLS-1$
+	MALFUNCTION_HUMAN_FACTORS	(Msg.getString("EventType.malfunction.humanFactors")), //$NON-NLS-1$
+	MALFUNCTION_ACT_OF_GOD		(Msg.getString("EventType.malfunction.actOfGod")), //$NON-NLS-1$
+	MALFUNCTION_FIXED			(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$
 
 	MEDICAL_CURED		(Msg.getString("EventType.illness.cured")), //$NON-NLS-1$
 	MEDICAL_STARTS		(Msg.getString("EventType.illness.starts")), //$NON-NLS-1$

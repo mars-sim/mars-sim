@@ -139,15 +139,27 @@ implements Serializable {
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
 		Settlement s = startingMember.getSettlement();
+		String loc0 = null;
+		String loc1 = null;
+		if (s != null) {
+			loc0 = ((Person)startingMember).getBuildingLocation().getNickName();
+			loc1 = s.getName();
+		}
+		else {
+			loc0 = startingMember.getVehicle().getName();
+			loc1 = startingMember.getCoordinates().toString();
+		}
 		
 	    if (s != null) {
 	   		// Created mission starting event.
 	   		HistoricalEvent newEvent = new MissionHistoricalEvent(
-	   				startingMember,
-	   				this, 
-	   				s.getName(), 
-	   				startingMember.getVehicle(), 
-	   				EventType.MISSION_START);
+	   				EventType.MISSION_START,
+    				this,
+    				missionName,
+	   				startingMember.getName(),
+	   				loc0,
+	   				loc1
+	   				);
 
 	   		Simulation.instance().getEventManager().registerNewEvent(newEvent);
  
@@ -248,12 +260,26 @@ implements Serializable {
 	    if (!members.contains(member)) {
 	        members.add(member);
 
+			Settlement s = member.getSettlement();
+			String loc0 = null;
+			String loc1 = null;
+			if (s != null) {
+				loc0 = ((Person)member).getBuildingLocation().getNickName();
+				loc1 = s.getName();
+			}
+			else {
+				loc0 = member.getVehicle().getName();
+				loc1 = member.getCoordinates().toString();
+			}
 	        // Creating mission joining event.
-            HistoricalEvent newEvent = new MissionHistoricalEvent(member, 
-            		this, 
-            		member.getSettlement().getName(), 
-            		member.getVehicle(), 
-            		EventType.MISSION_JOINING);
+            HistoricalEvent newEvent = new MissionHistoricalEvent(
+	   				EventType.MISSION_JOINING,
+    				this,
+	   				missionName,
+	   				member.getName(),
+	   				loc0,
+	   				loc1
+            		);
             Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
             fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
@@ -293,14 +319,28 @@ implements Serializable {
 
             // Creating missing finishing event.
             //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
-            String location = ((Person)member).getAssociatedSettlement().getName();
-            if (location == null)
-            	location = member.getCoordinates().toString();
-            Simulation.instance().getEventManager().registerNewEvent(new MissionHistoricalEvent(member,
-            		this, 
-            		location, 
-            		member.getVehicle(),
-            		EventType.MISSION_FINISH));
+            
+			Settlement s = ((Person)member).getSettlement();
+			String loc0 = null;
+			String loc1 = null;
+			if (s != null) {
+				loc0 = ((Person)startingMember).getBuildingLocation().getNickName();
+				loc1 = s.getName();
+			}
+			else {
+				loc0 = member.getVehicle().getName();
+				loc1 = member.getCoordinates().toString();
+			}
+			
+            Simulation.instance().getEventManager().registerNewEvent(
+            		new MissionHistoricalEvent(
+            				EventType.MISSION_FINISH,
+            				this,
+            				missionName,
+            				member.getName(), 
+		            		loc0,
+		            		loc1
+		            		));
             fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
         	if ((members.size() == 0) && !done) {

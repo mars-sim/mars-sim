@@ -54,11 +54,18 @@ public class Malfunction implements Serializable {
     
     private String name;
 
+    /* The person who are being the most traumatized by this malfunction */
+    private String mostTraumatized;
+    
     private Collection<String> systems;
     private Map<AmountResource, Double> resourceEffects;
     private Map<String, Double> lifeSupportEffects;
     private Map<ComplaintType, Double> medicalComplaints;
     private Map<Part, Integer> repairParts;
+
+    /* The map for storing how much worktime the repairers spent in fixing this malfunction*/
+    private Map<String, Double> repairersWorkTime;
+
 
     private static MalfunctionConfig config;
  
@@ -88,6 +95,8 @@ public class Malfunction implements Serializable {
         workTimeCompleted = 0D;
         emergencyWorkTimeCompleted = 0D;
         EVAWorkTimeCompleted = 0D;
+        
+        repairersWorkTime = new HashMap<String, Double>();
         
     	config = SimulationConfig.instance().getMalfunctionConfiguration();
     	
@@ -156,11 +165,15 @@ public class Malfunction implements Serializable {
      * @param time work time (in millisols)
      * @return remaining work time not used (in millisols)
      */
-    public double addWorkTime(double time) {
+    public double addWorkTime(double time, String repairer) {
         workTimeCompleted += time;
         if (workTimeCompleted >= workTime) {
             double remaining = workTimeCompleted - workTime;
             workTimeCompleted = workTime;
+            
+        	if (repairersWorkTime.get(repairer) > 0)
+        		repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
+        	
             return remaining;
         }
         return 0D;
@@ -196,7 +209,11 @@ public class Malfunction implements Serializable {
             String id_string = INCIDENT_NUM + incidentNum;
             
         	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-        			name + id_string + " - emergency repair finished by " + repairer  + ".", null);
+        			name + id_string + " - emergency repair worked by " + repairer  + ".", null);
+        	
+        	if (repairersWorkTime.get(repairer) > 0)
+        		repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
+        		
             return remaining;
         }
         return 0D;
@@ -223,16 +240,27 @@ public class Malfunction implements Serializable {
      * @param time EVA work time (in millisols)
      * @return remaining work time not used (in millisols)
      */
-    public double addEVAWorkTime(double time) {
+    public double addEVAWorkTime(double time, String repairer) {
         EVAWorkTimeCompleted += time;
         if (EVAWorkTimeCompleted >= EVAWorkTime) {
             double remaining = EVAWorkTimeCompleted - EVAWorkTime;
             EVAWorkTimeCompleted = EVAWorkTime;
+            
+        	if (repairersWorkTime.get(repairer) > 0)
+        		repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
+        	
             return remaining;
         }
         return 0D;
     }
 
+    public String getChiefRepairer() {
+    	Map.Entry<String, Double> maxEntry = repairersWorkTime.entrySet().stream()
+    	  .max(Map.Entry.comparingByValue()).get();
+    	
+    	return maxEntry.getKey();
+    }
+    
     /**
      * Checks if a unit's scope strings have any matches
      * with the malfunction's scope strings.
@@ -376,6 +404,14 @@ public class Malfunction implements Serializable {
     	return name;
     }
    
+    public void setTraumatized(String name) {
+    	mostTraumatized = name;
+    }
+
+    public String getTraumatized() {
+    	return mostTraumatized;
+    }
+
     
     public void destroy() {
         systems = null;

@@ -22,6 +22,8 @@ public class LocationTag implements LocationState, Serializable {
 
 	public static String OUTSIDE_ON_MARS = "Outside on Mars";
 
+	public static String VICINITY = " vicinity";
+	
 	private String UNKNOWN = "Unknown";
 	
 	private Unit unit;
@@ -196,6 +198,83 @@ public class LocationTag implements LocationState, Serializable {
 			}
 			else
 				return v.getCoordinates().getFormattedString();
+		}
+		
+		return UNKNOWN;
+	}
+	
+	
+	/**
+	 * Obtains the long location name
+	 * @return the name string of the location the unit is at
+	 */
+	public String getImmediateLocation() {
+		if (p != null) {
+			if (p.getSettlement() != null) {
+				if (p.getBuildingLocation() != null) {
+					return p.getBuildingLocation().getNickName();
+				}
+//				else {
+//					return OUTSIDE_ON_MARS;
+//				}
+			}
+			else if (p.getVehicle() != null) {
+				if (p.getVehicle().getBuildingLocation() != null) {
+					return p.getBuildingLocation().getNickName();
+				}
+				else {
+					return p.getVehicle().getName();
+				}
+			}
+			else if (p.isRightOutsideSettlement())
+				return p.getAssociatedSettlement() + VICINITY;
+			else
+				return OUTSIDE_ON_MARS;
+		}
+		
+		else if (e != null) {
+			if (e.getContainerUnit() != null)
+				return e.getContainerUnit().getName();
+			else if (e.getTopContainerUnit() != null)
+				return e.getTopContainerUnit().getName();
+			else
+				return OUTSIDE_ON_MARS;
+		}
+		
+		else if (r != null) {
+			if (r.getSettlement() != null) {
+				if (r.getBuildingLocation() != null) {
+					return r.getBuildingLocation().getNickName();
+				}
+				else {
+					return OUTSIDE_ON_MARS;
+				}
+			}
+			else if (r.getVehicle() != null)
+				return r.getVehicle().getName();
+			else if (r.isRightOutsideSettlement())
+				return r.getAssociatedSettlement() + VICINITY;
+			else
+				return OUTSIDE_ON_MARS;
+			
+		}
+		else if (b != null) {
+			return b.getNickName();
+		}
+		
+		else if (v != null) {
+			if (v.getSettlement() != null) {
+				if (v.getBuildingLocation() != null) {
+					return v.getBuildingLocation().getNickName();
+				}
+				else {
+					return OUTSIDE_ON_MARS;
+				}
+			}
+			else if (v.isRightOutsideSettlement())
+				return v.getAssociatedSettlement() + VICINITY;
+			else
+				return OUTSIDE_ON_MARS;
 		}
 		
 		return UNKNOWN;
