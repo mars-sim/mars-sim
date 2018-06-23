@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -64,10 +63,6 @@ implements Serializable, Comparable<Unit> {
 	/** Unit location coordinates. */
 	private Coordinates location;
 
-	// 2015-12-20 Added LocationState class
-	//private LocationState currentState, insideBuilding, insideVehicleOutsideOnMars, insideVehicleInSettlement, insideSettlement, outsideOnMars, settlementVicinity, onAPerson;
-
-	// 2016-11-21 Added LocationStateType
 	private LocationStateType currentStateType;
 
 	/** Unit listeners. */

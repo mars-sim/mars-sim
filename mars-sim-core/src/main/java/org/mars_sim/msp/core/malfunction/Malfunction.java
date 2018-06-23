@@ -170,9 +170,13 @@ public class Malfunction implements Serializable {
         if (workTimeCompleted >= workTime) {
             double remaining = workTimeCompleted - workTime;
             workTimeCompleted = workTime;
-            
-        	if (repairersWorkTime.get(repairer) > 0)
+                     
+        	if (repairersWorkTime.containsKey(repairer)) {
         		repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
+        	}
+        	else {
+        		repairersWorkTime.put(repairer, time);
+        	}
         	
             return remaining;
         }
@@ -256,9 +260,11 @@ public class Malfunction implements Serializable {
 
     public String getChiefRepairer() {
     	Map.Entry<String, Double> maxEntry = repairersWorkTime.entrySet().stream()
-    	  .max(Map.Entry.comparingByValue()).get();
-    	
-    	return maxEntry.getKey();
+    	  .max(Map.Entry.comparingByValue()).get(); // may get null ?
+//    	if (maxEntry.getKey() != null)
+    		return maxEntry.getKey();
+//    	else
+//    		return 
     }
     
     /**

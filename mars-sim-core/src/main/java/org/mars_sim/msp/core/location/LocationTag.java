@@ -134,6 +134,58 @@ public class LocationTag implements LocationState, Serializable {
 	}
 	
 	/**
+	 * Obtains the general locale (settlement or coordinates)
+	 * @return the settlement or the coordinates
+	 */
+	public String getLocale() {
+		if (p != null) {
+			if (p.getSettlement() != null)
+				return p.getSettlement().getName();
+			else
+				return p.getCoordinates().getFormattedString();		
+		}
+		
+		else if (e != null) {
+//			if (e.getContainerUnit() != null)
+//				return e.getContainerUnit().getName();
+			if (e.getTopContainerUnit() != null)
+				return e.getTopContainerUnit().getName();
+			else
+				return e.getCoordinates().getFormattedString();	
+		}
+		
+		else if (r != null) {
+			if (r.getSettlement() != null)
+				return r.getSettlement().getName();
+//			else if (r.getVehicle() != null)
+//				return r.getVehicle().getName();
+			else
+				return r.getCoordinates().getFormattedString();
+	
+		}
+		else if (b != null) {
+			return b.getSettlement().getName();
+		}
+		
+		else if (v != null) {
+			if (v.getSettlement() != null) {
+//				if (v.getBuildingLocation() != null)
+//					return v.getBuildingLocation().getNickName();
+//				else
+					return v.getSettlement().getName();
+			}
+			else {
+//				if (v.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+//					return v.getAssociatedSettlement().getName() + " Vicinity";
+//				else
+					return v.getCoordinates().getFormattedString();	
+			}
+		}
+		
+		return UNKNOWN;
+	}
+	
+	/**
 	 * Obtains the long location name
 	 * @return the name string of the location the unit is at
 	 */

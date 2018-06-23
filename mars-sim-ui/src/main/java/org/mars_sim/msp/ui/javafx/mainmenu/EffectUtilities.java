@@ -3,7 +3,7 @@
  * EffectUtilities.java
  * Based on jewelsea's AnalogueClock.java
  * https://gist.github.com/jewelsea/3388637
- * @version 3.08 2015-10-13
+ * @version 3.1.0 2015-10-13
  * @author Manny Kung
  */
 
@@ -21,7 +21,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /** Various utilities for applying different effects to nodes. */
-@SuppressWarnings("restriction")
 public class EffectUtilities {
   /** configures the node to fade when it is clicked on performed the onFinished handler when the fade is complete */
   public static void fadeOnClick(final Node node, final EventHandler<ActionEvent> onFinished) {

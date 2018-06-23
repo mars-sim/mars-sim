@@ -98,7 +98,7 @@ public class SimulationController {
 				entityType = "mission";
 			}
 			
-			events.add(new EventDTO(idx, event.getType().getName(), event.getDescription(), event.getTimestamp().getDateTimeStamp(),
+			events.add(new EventDTO(idx, event.getType().getName(), event.getWhatCause(), event.getTimestamp().getDateTimeStamp(),
 					   entityRef, entityType));
 		}
 		

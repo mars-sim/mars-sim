@@ -39,7 +39,7 @@ extends HistoricalEvent implements Serializable {
 				illness.getIllness().getType().getName(),
 				person.getName(),
 				person.getLocationTag().getImmediateLocation(),
-				illness.getSufferer().getLocationTag().getShortLocationName()
+				illness.getSufferer().getLocationTag().getLocale()
 				);
 		
 		this.person = person;

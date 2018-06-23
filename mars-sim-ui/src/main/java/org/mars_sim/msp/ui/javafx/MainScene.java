@@ -29,6 +29,10 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -104,6 +108,7 @@ import org.mars_sim.msp.ui.javafx.dotMatrix.MatrixFont8x8;
 import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix.DotShape;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
+import org.mars_sim.msp.ui.javafx.tools.DraggableNode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
@@ -282,6 +287,7 @@ public class MainScene {
 	private float effectSliderCache = 0;
 	
 	private long lastTimerCall;
+	
 	private DoubleProperty musicProperty = new SimpleDoubleProperty(musicSliderValue);
 	private DoubleProperty soundEffectProperty = new SimpleDoubleProperty(soundEffectSliderValue);
 	
@@ -311,6 +317,7 @@ public class MainScene {
 	
 	//private transient Timer autosaveTimer;
 	
+	private DraggableNode gNode;
 	private GameScene gameScene;
 	private Parent root;
 //	private StackPane sMapToolPane;
@@ -327,7 +334,7 @@ public class MainScene {
 	private StackPane pausePane;
 	private StackPane savePane;
 	private StackPane sPane;
-	private StackPane billboard;
+	private Pane billboard;
 	
 	private AnchorPane anchorPane;
 	private AnchorPane mapsAnchorPane;
@@ -511,7 +518,7 @@ public class MainScene {
 			prepareOthers();		
 			// Call setMonitor() for screen detection and placing quotation pop at top right corner
 			setMonitor(stage);
-			//stage.centerOnScreen();
+			stage.centerOnScreen();
 			stage.setTitle(Simulation.title);
 			stage.setResizable(false);
 			stage.show();
@@ -1086,14 +1093,17 @@ public class MainScene {
 
 		createBillboard();
 
-		AnchorPane.setBottomAnchor(billboard, 35.0);
-		AnchorPane.setLeftAnchor(billboard, 335.0);//(sceneWidth.get() - 300) / 2);
+//		AnchorPane.setBottomAnchor(billboard, 35.0);
+//		AnchorPane.setLeftAnchor(billboard, 335.0);//(sceneWidth.get() - 300) / 2);
 		
 		anchorPane = new AnchorPane();
 		//anchorPane.setStyle("-fx-background-color: black; ");
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
-				soundBtn, billboard);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
+				soundBtn, gNode);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
+		gNode.setLayoutX(333);
+	    gNode.setLayoutY(65);
+		
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(anchorPane);
 		//rootStackPane.setStyle("-fx-background-color: black; ");
@@ -4059,10 +4069,8 @@ public class MainScene {
 	
 	public void createBillboard() {
 
-	    matrix = DotMatrixBuilder.create()
-//                .prefSize(536, 50)
-//                .colsAndRows(512, 13)
-                .prefSize(700, 40)
+	    matrix = DotMatrixBuilder.create()              
+                .prefSize(925, 50)
                 .colsAndRows(196, 10)                
                 //.dotOnColor(Color.WHITE)//rgb(255, 55, 0))
                 .dotOnColor(Color.rgb(255, 55, 0))
@@ -4070,11 +4078,14 @@ public class MainScene {
                 .dotShape(DotShape.ROUND)
                 .matrixFont(MatrixFont8x8.INSTANCE)
                 .build();
-	    
-		billboard = new StackPane(matrix);
-		billboard.setPadding(new Insets(10));
+
+		billboard = new Pane(matrix);
+		billboard.setPadding(new Insets(1));
 		billboard.setBackground(new Background(new BackgroundFill(Color.rgb(20, 20, 20), CornerRadii.EMPTY, Insets.EMPTY)));
-		
+		billboard.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+
+	    gNode = new DraggableNode(billboard);
+
 	}
 	
 	public void sendMsg(String str) {

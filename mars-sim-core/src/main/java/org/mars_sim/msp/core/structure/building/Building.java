@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.MalfunctionEvent;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -1401,7 +1400,7 @@ LocalBoundedObject, InsidePathLocation {
 						e.printStackTrace(System.err);
 					}
 					
-					String victimName = null;
+					String victimName = "No one";
 					
 					//check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
