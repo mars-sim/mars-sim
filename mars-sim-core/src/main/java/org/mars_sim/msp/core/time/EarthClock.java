@@ -11,13 +11,11 @@ import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,13 +38,6 @@ implements Serializable {
 
 	/* number of milliseconds since 1 January 1970 00:00:00 at the start of the sim (2043 Sep 30 00:00:00 UTC0)*/
 	private static long millisAtStart;
-	
-	// Data members	
-//	private double seconds;
-//	private int minutes;
-//	private int hours;
-	
-
 	
 	private GregorianCalendar gregCal;
 

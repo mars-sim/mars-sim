@@ -34,6 +34,7 @@ implements Serializable {
 		// Use MedicalStation constructor
 		super(treatmentLevel, sickBedNum);
 
+		setVehicle(vehicle);
 		this.vehicle = vehicle;
 	}
 

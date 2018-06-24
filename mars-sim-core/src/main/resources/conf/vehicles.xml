@@ -108,7 +108,7 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 		<!-- Sickbay -->
 		<!-- Medical tech level of sickbay (see tech_level.txt) - default: 1 -->
 		<!-- Number of beds in sickbay - default: 1 -->
-		<sickbay tech-level="1" beds="1" />
+		<sickbay tech-level="2" beds="1" />
 
 		<!-- Lab -->
 		<!-- Science tech level of lab (see tech_level.txt) - default: 1 -->

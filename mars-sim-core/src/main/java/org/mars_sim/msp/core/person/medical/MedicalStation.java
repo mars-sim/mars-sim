@@ -7,19 +7,22 @@
  */
 package org.mars_sim.msp.core.person.medical;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.MedicalCare;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class represents a medical station.
@@ -35,6 +38,8 @@ public class MedicalStation
 	/** default logger. */
     private static Logger logger = Logger.getLogger(MedicalStation.class.getName());
 
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    
 	/** Treatment level of the facility. */
 	private int level;
 	/** Number of sick beds. */
@@ -47,8 +52,14 @@ public class MedicalStation
 	private List<Person> restingRecoveryPeople;
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
+	
+//	private MedicalCare medicalCare;
+	
+	private Vehicle vehicle;
+	
+	private Building building;
 
-    private Map<Person, Point2D> bedMap = new HashMap<>();
+//    private Map<Person, Point2D> bedMap = new HashMap<>();
 
 	/** 
 	 * Constructor.
@@ -56,6 +67,7 @@ public class MedicalStation
 	 * @param sickBeds Number of sickbeds. 
 	 */
 	public MedicalStation(int level, int sickBeds) {
+//		this.medicalCare = medicalCare;
 		this.level = level;
 		this.sickBeds = sickBeds;
 		problemsBeingTreated = new ArrayList<HealthProblem>();
@@ -67,6 +79,14 @@ public class MedicalStation
 		supportedTreatments = medManager.getSupportedTreatments(level);
 	}
 
+	public void setVehicle(Vehicle v) {
+		vehicle = v;
+	}
+	
+	public void setBuilding(Building b) {
+		building = b;
+	}
+	
 	@Override
 	public List<HealthProblem> getProblemsAwaitingTreatment() {
 		return new ArrayList<HealthProblem>(problemsAwaitingTreatment);
@@ -165,8 +185,21 @@ public class MedicalStation
 		    problemsAwaitingTreatment.add(problem);
 		}
 		else {
-		    logger.severe("Health problem " + problem.getIllness() + 
-		            " cannot be treated at this facility.");
+			String loc0 = null;
+			String loc1 = null;
+			if (building != null) {
+				loc0 = building.getNickName();
+				loc1 = building.getLocationTag().getSettlementName();
+			}
+			else if (vehicle != null) {
+				loc0 = vehicle.getName();
+				loc1 = loc0;
+			}
+			
+			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,  
+			        "[" + loc0 + "] " 
+			        + problem.getIllness() + " cannot be treated in " 
+			        + loc1 + "'s medical station.", null);
 		}
 	}
 	
@@ -200,8 +233,21 @@ public class MedicalStation
 			problemsAwaitingTreatment.remove(problem);
 		}
 		else {
-		    logger.severe("Health problem " + problem.getIllness() + 
-                    " cannot be treated as it is not in medical station's waiting queue.");
+			String loc0 = null;
+			String loc1 = null;
+			if (building != null) {
+				loc0 = building.getNickName();
+				loc1 = building.getLocationTag().getSettlementName();
+			}
+			else if (vehicle != null) {
+				loc0 = vehicle.getName();
+				loc1 = loc0;
+			}
+			
+			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,  
+			        "[" + loc0 + "] " 
+			        + problem.getIllness() + " cannot be treated in " 
+			        + loc1 + "'s medical station is not equipped to handle.", null);		
 		}
 	}
 
@@ -254,6 +300,10 @@ public class MedicalStation
 		return level;
 	}
 
+//	public MedicalCare getMedicalCare() {
+//		return medicalCare;
+//	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

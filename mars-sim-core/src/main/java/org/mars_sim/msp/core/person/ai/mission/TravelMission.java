@@ -210,7 +210,7 @@ extends Mission {
      * @return navpoint or null if mission is not stopped at a navpoint.
      */
     public final NavPoint getCurrentNavpoint() {
-        if (AT_NAVPOINT.equals(travelStatus)) {
+        if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)) {
             if (navIndex < navPoints.size())
                 return navPoints.get(navIndex);
             else
@@ -224,7 +224,7 @@ extends Mission {
      * @return index of current navpoint or -1 if mission is not stopped at a navpoint.
      */
     public final int getCurrentNavpointIndex() {
-        if (AT_NAVPOINT.equals(travelStatus))
+        if (travelStatus != null && AT_NAVPOINT.equals(travelStatus))
             return navIndex;
         else
             return -1;
@@ -292,7 +292,7 @@ extends Mission {
      * @return distance (km)
      */
     public final double getCurrentLegDistance() {
-        if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
+        if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
             return lastStopNavpoint.getLocation().getDistance(
                     getNextNavpoint().getLocation());
         }
@@ -307,7 +307,7 @@ extends Mission {
      * @throws MissionException if error determining distance.
      */
     public final double getCurrentLegRemainingDistance() {
-        if (travelStatus.equals(TRAVEL_TO_NAVPOINT)) {
+        if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
         	
         	if (getNextNavpoint() == null) {
         		int offset = 2;

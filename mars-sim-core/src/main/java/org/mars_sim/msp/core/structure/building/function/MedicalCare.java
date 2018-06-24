@@ -37,6 +37,8 @@ implements MedicalAid, Serializable {
     private static final FunctionType FUNCTION = FunctionType.MEDICAL_CARE;
 
     private MedicalStation medicalStation;
+    
+    private Building building;
 
     private static BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
     
@@ -49,9 +51,11 @@ implements MedicalAid, Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
+        this.building = building;
         int techLevel = config.getMedicalCareTechLevel(building.getBuildingType());
         int beds = config.getMedicalCareBeds(building.getBuildingType());
         medicalStation = new MedicalStation(techLevel, beds);
+        medicalStation.setBuilding(building);
 
         // Load activity spots
         loadActivitySpots(config.getMedicalCareActivitySpots(building.getBuildingType()));
@@ -226,6 +230,10 @@ implements MedicalAid, Serializable {
         return medicalStation.getTreatmentLevel();
     }
 
+    public Building getBuilding() {
+    	return building;
+    }
+    
     @Override
     public double getMaintenanceTime() {
 

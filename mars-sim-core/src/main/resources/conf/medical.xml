@@ -120,8 +120,8 @@
 			<degrade-time value="7.0" />
 			<recovery-time value="14.0" />
 			<probability value="5.0" />
-			<performance-percent value="10.0" />
-			<bed-rest-recovery value="false" />
+			<performance-percent value="20.0" />
+			<bed-rest-recovery value="true" />
 			<treatment-type value="Plaster Cast" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
@@ -145,7 +145,7 @@
 			<degrade-time value="7.0" />
 			<recovery-time value="15.0" />
 			<probability value="0.0" />
-			<performance-percent value="10.0" />
+			<performance-percent value="40.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Antibiotics" />
 		</medical-complaint>
@@ -325,7 +325,7 @@
             <!-- Required medical tech level of facility. (optional) -->
             <!-- (see tech_level.txt) -->
             <!-- Values: 0 - 10 -->
-            <medical-tech-level value="2" />
+            <medical-tech-level value="1" />
 
             <!-- Time required for the treatment. (millisols) (optional) -->
             <treatment-time value="40.0" />
@@ -355,7 +355,7 @@
 		<!-- A relatively simple surgical operation. -->
 		<treatment name="Minor Operation">
 			<skill value="3" />
-			<medical-tech-level value="3" />
+			<medical-tech-level value="2" />
 			<treatment-time value="200.0" />
 			<self-admin value="false" />
 		</treatment>
@@ -393,7 +393,7 @@
 
         <treatment name="Radioprotective Agent">
         	<skill value="1" />
-        	<medical-tech-level value="2" />
+        	<medical-tech-level value="1" />
         	<treatment-time value="100.0" />
         	<self-admin value="true" />
         </treatment>        

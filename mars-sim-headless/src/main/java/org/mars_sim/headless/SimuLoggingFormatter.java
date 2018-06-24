@@ -9,7 +9,7 @@
 package org.mars_sim.headless;
 
 import java.text.DateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
@@ -31,7 +31,7 @@ public class SimuLoggingFormatter extends Formatter {
     public final static String COLON = " : ";
     
     public final static DateFormat df = DateFormat.getDateTimeInstance();
-    private Date date = new Date();
+   // private Date date = new Date();
     
     private StringBuffer sb = new StringBuffer();
 
@@ -40,10 +40,15 @@ public class SimuLoggingFormatter extends Formatter {
 		String msg = formatMessage(record);
 
 		sb.delete(0,sb.length());
-		date.setTime(record.getMillis());
+		//date.setTime(record.getMillis());
 
 		//String dateTimeStamp = df.format(date);//.replaceAll("AM", "").replaceAll("PM", "");
-		sb.append(df.format(date));
+		
+		String dt = LocalDateTime.now().toString();
+		
+		dt = dt.substring(0, dt.lastIndexOf(".")+2);
+		
+		sb.append(dt);//(df.format(date).replace(",", "")));
 
 		// Get the level name and add it to the buffer
 		sb.append(O_PAREN);
@@ -83,7 +88,7 @@ public class SimuLoggingFormatter extends Formatter {
     
     public void destroy() {
     	//df = null;
-        date = null;
+        //date = null;
         sb = null;
     }
 

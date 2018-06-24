@@ -54,21 +54,23 @@ implements Serializable {
     // Global mission identifier
 	private static int missionIdentifer = 0;
 
-	public static String SUCCESSFULLY_ENDED_CONSTRUCTION = "Mission accomplished and all members successfully ended construction";
-	public static String SUCCESSFULLY_DISEMBARKED = "Mission accomplished and all members successfully disembarked";
-	public static String USER_ABORTED_MISSION = "Mission aborted by user";
-	public static String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction";
-	public static String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
-	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
-	public static String NOT_ENOUGH_RESOURCES = "Not enough resources";
-	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
-	public static String MEDICAL_EMERGENCY = "A member has a medical emergency";
-	public static String NO_TRADING_SETTLEMENT = "No trading settlement";
-	public static String NO_GOOD_EVA_SUIT = "No good EVA suit";
-	public static String REQUEST_RESCUE = "Requesting rescue";	
-	public static String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going Scientific study in this subject";
-	public static String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
-	public static String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
+	public static final String SUCCESSFULLY_ENDED_CONSTRUCTION = "Mission accomplished and all members successfully ended construction";
+	public static final String SUCCESSFULLY_DISEMBARKED = "Mission accomplished and all members successfully disembarked";
+	public static final String USER_ABORTED_MISSION = "Mission aborted by user";
+	public static final String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction";
+	public static final String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
+	public static final String NO_AVAILABLE_VEHICLES = "No available vehicles";
+	public static final String NOT_ENOUGH_RESOURCES = "Not enough resources";
+	public static final String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
+	public static final String MEDICAL_EMERGENCY = "A member has a medical emergency";
+	public static final String NO_TRADING_SETTLEMENT = "No trading settlement";
+	public static final String NO_GOOD_EVA_SUIT = "No good EVA suit";
+	public static final String REQUEST_RESCUE = "Requesting rescue";	
+	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going Scientific study in this subject";
+	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
+	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
+	
+	public static final String OUTSIDE = "Outside";
 	
 	/** The marginal factor for the amount of water to be brought during a mission. */
 	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle
@@ -138,25 +140,20 @@ implements Serializable {
 		
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
-		Settlement s = startingMember.getSettlement();
+		Person person = ((Person)startingMember);
 		String loc0 = null;
 		String loc1 = null;
-		if (s != null) {
-			loc0 = ((Person)startingMember).getBuildingLocation().getNickName();
-			loc1 = s.getName();
-		}
-		else {
-			loc0 = startingMember.getVehicle().getName();
-			loc1 = startingMember.getCoordinates().toString();
-		}
 		
-	    if (s != null) {
+        if (person.isInSettlement()) {
+			loc0 = person.getBuildingLocation().getNickName();
+			loc1 = person.getSettlement().getName();           	
+
 	   		// Created mission starting event.
 	   		HistoricalEvent newEvent = new MissionHistoricalEvent(
 	   				EventType.MISSION_START,
     				this,
     				missionName,
-	   				startingMember.getName(),
+    				person.getName(),
 	   				loc0,
 	   				loc1
 	   				);
@@ -174,7 +171,7 @@ implements Serializable {
 	        	str = "' with " + n + " others.";
 
 	        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-	        		"[" + s + "] " + startingMember.getName() + " started a " + missionName + " mission" + str, null);
+	        		"[" + person.getSettlement() + "] " + startingMember.getName() + " started a " + missionName + " mission" + str, null);
 
 	        // Add starting member to mission.
 	        // 2015-11-01 Temporarily set the shift type to none during the mission
@@ -259,27 +256,33 @@ implements Serializable {
 	public final void addMember(MissionMember member) {
 	    if (!members.contains(member)) {
 	        members.add(member);
-
-			Settlement s = member.getSettlement();
+			
+			Person person = (Person)member;
 			String loc0 = null;
 			String loc1 = null;
-			if (s != null) {
-				loc0 = ((Person)member).getBuildingLocation().getNickName();
-				loc1 = s.getName();
-			}
-			else {
-				loc0 = member.getVehicle().getName();
-				loc1 = member.getCoordinates().toString();
-			}
+            if (person.isInSettlement()) {
+				loc0 = person.getBuildingLocation().getNickName();
+				loc1 = person.getSettlement().getName();           	
+            }
+            else if (person.isInVehicle()) {
+				loc0 = person.getVehicle().getName();
+				loc1 = person.getCoordinates().toString();
+            }
+            else {
+				loc0 = OUTSIDE;
+				loc1 = person.getCoordinates().toString();
+            }
+            
 	        // Creating mission joining event.
             HistoricalEvent newEvent = new MissionHistoricalEvent(
 	   				EventType.MISSION_JOINING,
     				this,
 	   				missionName,
-	   				member.getName(),
+	   				person.getName(),
 	   				loc0,
 	   				loc1
             		);
+            
             Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
             fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
@@ -315,40 +318,42 @@ implements Serializable {
             		person.setShiftType(shift);
             	}
 
-            }
-
-            // Creating missing finishing event.
-            //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
-            
-			Settlement s = ((Person)member).getSettlement();
-			String loc0 = null;
-			String loc1 = null;
-			if (s != null) {
-				loc0 = ((Person)startingMember).getBuildingLocation().getNickName();
-				loc1 = s.getName();
-			}
-			else {
-				loc0 = member.getVehicle().getName();
-				loc1 = member.getCoordinates().toString();
-			}
-			
-            Simulation.instance().getEventManager().registerNewEvent(
-            		new MissionHistoricalEvent(
-            				EventType.MISSION_FINISH,
-            				this,
-            				missionName,
-            				member.getName(), 
-		            		loc0,
-		            		loc1
-		            		));
-            fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
-
-        	if ((members.size() == 0) && !done) {
-            	endMission("Not enough members.");
-        	}
-
-            //logger.fine(member.getName() + " removed from mission : " + name);
-        }
+	            // Creating missing finishing event.
+	            //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
+	            
+				String loc0 = null;
+				String loc1 = null;
+	            if (person.isInSettlement()) {
+					loc0 = person.getBuildingLocation().getNickName();
+					loc1 = person.getSettlement().getName();           	
+	            }
+	            else if (person.isInVehicle()) {
+					loc0 = person.getVehicle().getName();
+					loc1 = person.getCoordinates().toString();
+	            }
+	            else {
+					loc0 = OUTSIDE;
+					loc1 = person.getCoordinates().toString();
+	            }
+	            
+	            Simulation.instance().getEventManager().registerNewEvent(
+	            		new MissionHistoricalEvent(
+	            				EventType.MISSION_FINISH,
+	            				this,
+	            				missionName,
+	            				person.getName(), 
+			            		loc0,
+			            		loc1
+			            		));
+	            fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
+	
+	        	if ((members.size() == 0) && !done) {
+	            	endMission("Not enough members.");
+	        	}
+	
+	            //logger.fine(member.getName() + " removed from mission : " + name);
+	        }
+    	}
     }
 
     /**
