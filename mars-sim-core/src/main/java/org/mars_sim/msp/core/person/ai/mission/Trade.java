@@ -190,7 +190,7 @@ implements Serializable {
         setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingMember != null && getRover() != null) {
-                logger.info("[" + startingMember.getLocationTag().getShortLocationName() + "] " +
+                logger.info("[" + startingMember.getLocationTag().getQuickLocation() + "] " +
                 		startingMember.getName() + " starting Trade mission on " + getRover().getName());
             }
         }
@@ -260,7 +260,7 @@ implements Serializable {
         if (logger.isLoggable(Level.INFO)) {
             MissionMember startingMember = (MissionMember) members.toArray()[0];
             if (startingMember != null && getRover() != null) {
-                logger.info("[" + startingMember.getLocationTag().getShortLocationName() + "] " +
+                logger.info("[" + startingMember.getLocationTag().getQuickLocation() + "] " +
                 		startingMember.getName() + " starting Trade mission on " + getRover().getName());
             }
         }
@@ -362,7 +362,7 @@ implements Serializable {
                         assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
                     }
                     else {
-                        logger.severe("[" + person.getLocationTag().getShortLocationName() + "] " +
+                        logger.severe("[" + person.getLocationTag().getQuickLocation() + "] " +
                         			person.getName() + " is unable to walk to building " + destinationBuilding);
                         		//+ " at " + tradingSettlement);
                     }
@@ -373,7 +373,7 @@ implements Serializable {
                         assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
                     }
                     else {
-                        logger.severe("[" + robot.getLocationTag().getShortLocationName() + "] " +
+                        logger.severe("[" + robot.getLocationTag().getQuickLocation() + "] " +
                         		robot.getName() + " is unable to walk to building " + destinationBuilding);
                         		//+ " at " + tradingSettlement);
                     }

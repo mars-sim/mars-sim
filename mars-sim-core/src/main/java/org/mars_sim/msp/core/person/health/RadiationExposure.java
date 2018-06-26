@@ -539,7 +539,7 @@ public class RadiationExposure implements Serializable {
 	    		if (person.getVehicle() == null)
 	    			// if a person steps outside of the vehicle
 				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-				    	"[" + person.getLocationTag().getShortLocationName() + "] " 
+				    	"[" + person.getLocationTag().getQuickLocation() + "] " 
 				    	+ person.getName() + WAS + EXPOSED_TO + totalExposure
     	    			+ DOSE //in body region " + i
     	    			+ EVA_OPERATION

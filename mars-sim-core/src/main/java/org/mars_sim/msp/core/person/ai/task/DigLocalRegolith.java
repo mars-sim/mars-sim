@@ -310,7 +310,7 @@ implements Serializable {
         }
 
         LogConsolidated.log(logger, Level.INFO, 10000, logger.getName(), 
-        		"[" + person.getLocationTag().getShortLocationName() +  "] " +
+        		"[" + person.getLocationTag().getQuickLocation() +  "] " +
         		person.getName() + " collected " + Math.round(regolithCollected*100D)/100D 
         		+ " kg of regolith outside " + person.getAssociatedSettlement(), null);
  

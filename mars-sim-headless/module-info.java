@@ -9,9 +9,9 @@ module mars-sim-headless {
 	
 	requires java.net.URISyntaxException;
 	requires java.text.DateFormat;
-	
 	requires java.lang.Runnable;
-	requires java.util.Date;
+	requires java.time.LocalDateTime;
+	
 	requires java.util.Arrays;
 	requires java.util.List;
 	requires java.util.logging.Level;

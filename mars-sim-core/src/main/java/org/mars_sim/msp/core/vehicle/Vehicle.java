@@ -935,7 +935,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 
 	@Override
 	public String getShortLocationName() {
-		return getLocationTag().getShortLocationName();
+		return getLocationTag().getQuickLocation();
 	}
 
 	@Override

@@ -306,7 +306,7 @@ extends BuildingFunctionPanel {
 			processComboBoxCache = newProcesses;
 			salvageSelectionCache = newSalvages;
 			Object currentSelection = processComboBox.getSelectedItem();
-			processComboBox.removeAllItems();
+			processComboBox.removeAllItems(); // Exception in thread "pool-255-thread-1" java.lang.ArrayIndexOutOfBoundsException: 9
 
 			Collections.sort(processComboBoxCache);
 			

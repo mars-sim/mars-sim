@@ -311,7 +311,7 @@ implements Serializable {
         }
 
 	    LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
-	    		"[" + person.getLocationTag().getShortLocationName() +  "] " +
+	    		"[" + person.getLocationTag().getQuickLocation() +  "] " +
 	    		person.getName() + " collected " + Math.round(iceCollected*100D)/100D 
 	    		+ " kg of ice outside " + person.getAssociatedSettlement(), null);
  

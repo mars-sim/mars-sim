@@ -220,11 +220,6 @@ implements Serializable, LifeSupportType, Objective {
 			ObjectiveType.TOURISM
 			};
 	
-	//private int[] resourceArray = new int[9];
-	//private int[] solArray = new int[30];
-	//private double[] samplePointArray = new double[(int)1000/RECORDING_FREQUENCY];
-	//private Object[][][] resourceObject = new Object[][][]{resourceArray, samplePointArray, solArray};
-
 	/** The settlement's building manager. */
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
@@ -235,7 +230,7 @@ implements Serializable, LifeSupportType, Objective {
 	protected ConstructionManager constructionManager;
 	/** The settlement's building power grid. */
 	protected PowerGrid powerGrid;
-	// 2014-10-17 Added heating system
+	// Added heating system
 	/** The settlement's heating system. */
 	protected ThermalSystem thermalSystem;
 	//private Inventory inv = getInventory();
@@ -249,9 +244,9 @@ implements Serializable, LifeSupportType, Objective {
 	private Map<ScienceType, Double> scientificAchievement;
 	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
 	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
-	// 2016-12-21 Added allAssociatedPeople
+
 	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
-	// 2016-12-22 Added allAssociatedRobots
+
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
@@ -270,7 +265,7 @@ implements Serializable, LifeSupportType, Objective {
 		super(null, null);
 		location = getCoordinates();
 		unitManager = Simulation.instance().getUnitManager();
-		// 2016-12-21 Call updateAllAssociatedPeople()
+
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 	}
@@ -284,7 +279,6 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	// Constructor 2 for maven testing. Called by MockSettlement
-	// 2014-10-28 Added settlement id
 	public Settlement(String name, int scenarioID, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
@@ -334,7 +328,6 @@ implements Serializable, LifeSupportType, Objective {
 
         life_support_value = settlementConfig.loadLifeSupportRequirements();
         
-		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 
@@ -342,15 +335,11 @@ implements Serializable, LifeSupportType, Objective {
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); //10_000_000);//
 		
 		double max = 500;
-		// 2017-05-24 initialize inventory of this building for resource storage 
+		// Initialize inventory of this building for resource storage 
 		for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
 			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
 			if (resourceCapacity >= 0) {
-				getInventory().addAmountResourceTypeCapacity(ar, max);	
-				//double cap = getInventory().getAmountResourceCapacity(ar, false);
-				//double storedCache = getInventory().getTotalAmountResourcesStoredCache(false);
-				//System.out.println(ar.getName() + "'s cap : " + cap + "   storedCache : " + storedCache);
-				
+				getInventory().addAmountResourceTypeCapacity(ar, max);			
 			}
 		}
 
@@ -364,16 +353,16 @@ implements Serializable, LifeSupportType, Objective {
 		constructionManager = new ConstructionManager(this);
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
-		// 2014-10-17 Added thermal control system
+		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
 		// Initialize scientific achievement.
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
 
 		chainOfCommand = new ChainOfCommand(this);
-		// 2015-12-29 Added CompositionOfAir
+		// Added CompositionOfAir
 		compositionOfAir = new CompositionOfAir(this);
 
-		// 2017-03-29 Set objective()
+		// Set objective()
 		if (template.equals("Trading Outpost"))
 				setObjective(ObjectiveType.TRADE_TOWN);
 		else if (template.equals("Mining Outpost"))
@@ -1915,7 +1904,7 @@ implements Serializable, LifeSupportType, Objective {
 		// using java 8 stream
 		Collection<Person> result = unitManager.getPeople()
 				.stream()
-				.filter(p-> p.getAssociatedSettlement() == this)
+				.filter(p-> p.getAssociatedSettlement() == this )
 				.collect(Collectors.toList());
 /*
 		Iterator<Person> i = unitManager.getPeople().iterator();

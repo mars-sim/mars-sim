@@ -87,7 +87,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
     private WebLabel roleLabel;
     private WebLabel shiftLabel;
 
-    private WebPanel namePanel;
+    private WebPanel statusPanel;
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
@@ -135,13 +135,13 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	    
         // Create name panel
         //namePanel = new WebPanel(new BorderLayout(0, 0));
-        namePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+        statusPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
         //namePanel.setPreferredSize(new Dimension(465,196));
         //namePanel.setBackground(THEME_COLOR);
         //namePanel.setBorder(new MarsPanelBorder());
         //mainPane.setBackground(THEME_COLOR);
         
-        mainPane.add(namePanel, BorderLayout.NORTH); 
+        mainPane.add(statusPanel, BorderLayout.NORTH); 
         
         //final WebComboBox styled = new WebComboBox();
         //styled.setSelectedIndex(0);
@@ -151,7 +151,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         String name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
         if (unit instanceof Person) {
-            namePanel.setPreferredSize(new Dimension(WIDTH/8,60));
+            statusPanel.setPreferredSize(new Dimension(WIDTH/8,60));
             //namePanel.setBorder(null);
         }
 //	    else {
@@ -184,7 +184,8 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	
 	        WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 	        //nameLabel.setOpaque(true);
-	
+	        nameLabel.setMinimumSize(new Dimension(80, 60));
+	        
 	        Font font = null;
 	
 			if (MainScene.OS.contains("linux")) {
@@ -204,7 +205,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	        //namePanel.add(nameLabel, BorderLayout.EAST);
 	        //namePanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
 	        //namePanel.add(nameLabel, BorderLayout.WEST);
-	        namePanel.add(nameLabel);
+	        statusPanel.add(nameLabel);
 	
 //	        WebLabel empty = new WebLabel(ONE_SPACE);
 //	        namePanel.add(empty);
@@ -274,7 +275,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	            	rowPanel.add(shiftPanel);//, FlowLayout.LEFT);
 	            	rowPanel.add(jobPanel);//, FlowLayout.LEFT);
 	
-	                namePanel.add(rowPanel);
+	                statusPanel.add(rowPanel);
 	                rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 	
 //	            }
@@ -453,7 +454,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
     protected final void addTopPanel(TabPanel panel) {
         if (!tabPanels.contains(panel)) {
             tabPanels.add(panel);
-            namePanel.add(panel,BorderLayout.CENTER);
+            statusPanel.add(panel,BorderLayout.CENTER);
         }
     }
 
@@ -616,7 +617,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	 * Prepares unit window for deletion.
 	 */
 	public void destroy() {
-		namePanel = null;
+		statusPanel = null;
         if (tabPanels != null)
         	tabPanels.clear();
 		tabPanels = null;

@@ -341,7 +341,7 @@ implements Serializable {
      */
     private void rendezvousPhase(MissionMember member) {
 
-        logger.info("[" + member.getLocationTag().getShortLocationName() + "] " 
+        logger.info("[" + member.getLocationTag().getQuickLocation() + "] " 
         		+ getVehicle().getName() + " has arrived to rendezvous with " 
         		+ vehicleTarget.getName() + ".");
 
@@ -391,7 +391,7 @@ implements Serializable {
 				EventType.MISSION_RENDEZVOUS.getName(),
         		member.getName(), 
         		member.getVehicle().getName(),
-        		vehicleTarget.getLocationTag().getShortLocationName() 
+        		vehicleTarget.getLocationTag().getQuickLocation() 
         		);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }

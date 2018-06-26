@@ -5,15 +5,20 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-Preview 10 (build 43__) - 2018-06-__
+## v3.1.0-beta1 (build 4354) - 2018-06-26
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, JavaFX WebEngine's bug creates garbled characters on certain 
+1. In MacOS, a JavaFX WebEngine's bug may create garbled characters on certain 
    webpages in Help Browser.
 
 2. In Linux, text fields do not allow text input.
 
+3. A JavaFX WebEngine's crypto issue cripples the full UI loading of certain secure 
+   websites such as GitHub pages
+
+4. When clicking on a combobox to pick an option, the option list would pop up
+   at the far edge of the main window
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -21,7 +26,14 @@ Copyright (C) 2018 Scott Davis
 
 2. Refine and revise mission objectives for each sponsor.
 
-3. Implement pure headless mode using minimal cpu resources.
+3. Implement pure headless mode (without GUI libraries) 
+   utilizing minimal cpu resources.
+
+4. Enable saving and loading past historical events.
+
+5. Improve how a vehicle should respond to "resources not enough" events 
+   during a mission. Will now travel toward a settlement as close as possible
+   before turning on the beacon and asking for help.
 
 
 ### UI IMPROVEMENT :
@@ -29,21 +41,31 @@ Copyright (C) 2018 Scott Davis
 1. Display a lists of settlers according to their associated settlement in 
    Dashboard tab.
 
+2. Add a draggable dot matrix news ticker for notifying users of events 
+   under the category of medical, malfunctions, safety/hazards and mission.
+
+3. Set default height and width to 1366x768 in the main menu and main window. 
+
 
 ### FIXES :
 
-1. Correct the missing decimal separator in Configuration Editor
+1. Correct the missing decimal separator in Configuration Editor.
 
-2. Fix excessive rows showing up in task schedules. Enable mission name to show up on
-   separate column.
+2. Fix excessive rows showing up in task schedules. Enable mission name to 
+   show up on separate column.
 
-3. Fix past historical events not being able to save/load.
+3. Fix not being able to autosave if running in headless mode.
 
-4. Fix not being able to autosave if running in headless mode.
+4. Correct how field reliability data for parts is associated with human factor 
+   -- how human may cause a system to malfunction vs. parts fatigue make it fails 
+   on its own.
 
-5. Correct how field reliability data for parts is associated with human factor --
-   how human causes system malfunction vs part fails on its own.
-
+5. Fix the formula that restore a person from fatigue while sleeping. Tweak it to 
+   work well for high fatigue case. 
+      
+6. Correct plexus graph issue (only after loading from a saved sim) that prevent from 
+   fully restore credit/debit history between settlement and existing relationship 
+   between settlers. 
 
 
 -----------------------------------------------------------------------------------------

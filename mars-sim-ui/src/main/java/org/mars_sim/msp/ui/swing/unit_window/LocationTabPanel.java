@@ -15,11 +15,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Logger;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -27,14 +26,12 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplayCircular;
@@ -49,7 +46,10 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
+import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 
 import javafx.application.Platform;
 
@@ -65,7 +65,7 @@ implements ActionListener {
 	private static final long serialVersionUID = 12L;
 
 	 /** default logger.   */
-	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
+	private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 	
 	private static final String LOCATOR_ORANGE = "locator48_orange";
 	
@@ -75,28 +75,25 @@ implements ActionListener {
 	private static final String S = "S";
 	private static final String E = "E";
 	private static final String W = "W";
-	private static final String IN = " in ";
-	private static final String AT = " at ";
-	private static final String INSIDE = " inside ";
-	private static final String WITHIN_THE_VINCINITY_OF = " Within the vicinity of ";
-	private static final String PARKED_AT = " Parked at ";
-	private static final String PARKED = " Parked";
-	//private static final String ON_A_MISSION_OUTSIDE = " on a mission outside";
-	private static final String OUTSIDE_ON_THE_SURFACE_OF_MARS = " outside on the surface of Mars";
+//	private static final String IN = " in ";
+//	private static final String AT = " at ";
+//	private static final String INSIDE = " inside ";
+//	private static final String WITHIN_THE_VINCINITY_OF = " Within the vicinity of ";
+//	private static final String PARKED_AT = " Parked at ";
+//	private static final String PARKED = " Parked";
+//	//private static final String ON_A_MISSION_OUTSIDE = " on a mission outside";
+//	private static final String OUTSIDE_ON_THE_SURFACE_OF_MARS = " outside on the surface of Mars";
 	private static final String ON_MARS = "on Mars";
 	
-	private static final String STEPPED = " Stepped";
-	private static final String STORED = "Stored";
-
-	private static final String OUTSIDE_ON_A_MISSION = " outside on a mission ";
-	private static final String GONE = " gone";
-	private static final String DECOMMISSIONED = " decommmissed";
-	private static final String DEAD = "Dead";
-	private static final String BURIED = "Buried";
-
-	private static final String USED_BY = "Used by ";
-	
-	private static final String UNKNOWN = "Unknown";
+//	private static final String STEPPED = " Stepped";
+//	private static final String STORED = "Stored";
+//	private static final String OUTSIDE_ON_A_MISSION = " outside on a mission ";
+//	private static final String GONE = " gone";
+//	private static final String DECOMMISSIONED = " decommmissed";
+//	private static final String DEAD = "Dead";
+//	private static final String BURIED = "Buried";
+//	private static final String USED_BY = "Used by ";
+//	private static final String UNKNOWN = "Unknown";
 	
 	private int themeCache;
 
@@ -112,7 +109,7 @@ implements ActionListener {
 	private Coordinates locationCache;
 	private MainScene mainScene;
 
-	private JButton locatorButton;
+	private WebButton locatorButton;
 	private SettlementMapPanel mapPanel;
 
 	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
@@ -148,19 +145,18 @@ implements ActionListener {
     	
     	if (mainScene == null)
     		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
-    	
-        
+ 
         // Initialize location header.
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
-		JLabel titleLabel = new JLabel(Msg.getString("LocationTabPanel.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel titleLabel = new WebLabel(Msg.getString("LocationTabPanel.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(titleLabel);
 
         // Create location panel
-        JPanel locationPanel = new JPanel(new BorderLayout(5, 5));//new GridLayout(2,1,0,0));//new FlowLayout(FlowLayout.CENTER));// new BorderLayout(0,0));
+		WebPanel locationPanel = new WebPanel(new BorderLayout(5, 5));//new GridLayout(2,1,0,0));//new FlowLayout(FlowLayout.CENTER));// new BorderLayout(0,0));
         locationPanel.setBorder(new MarsPanelBorder());
         locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         topContentPanel.add(locationPanel);
@@ -182,7 +178,7 @@ implements ActionListener {
         	dir_E_W = Msg.getString("direction.degreeSign")+"W";
 
 
-        JPanel northPanel = new JPanel(new FlowLayout());
+        WebPanel northPanel = new WebPanel(new FlowLayout());
         locationPanel.add(northPanel, BorderLayout.NORTH);
 
         lcdLat = new DisplaySingle();
@@ -203,9 +199,12 @@ implements ActionListener {
         //locationPanel.add(lcdLat, BorderLayout.WEST);
         northPanel.add(lcdLat);
 
-        elevationCache = terrainElevation.getElevation(unit.getCoordinates());
- /*
-        //System.out.println("elevation is "+ elevation);
+        elevationCache = Math.round(terrainElevation.getElevation(unit.getCoordinates())*10000.0)/10000.0;
+ 
+        logger.info(unit.getName() + "'s elevation is "+ elevationCache + " km.");
+        
+        /*
+        
         lcdElev = new DisplaySingle();
         lcdElev.setLcdValueFont(new Font("Serif", Font.ITALIC, 12));
         lcdElev.setLcdUnitString("km");
@@ -224,7 +223,7 @@ implements ActionListener {
  */
 
         // Create center map button
-        locatorButton = new JButton(ImageLoader.getIcon(LOCATOR_ORANGE));
+        locatorButton = new WebButton(ImageLoader.getIcon(LOCATOR_ORANGE));
         //centerMapButton = new JButton(ImageLoader.getIcon("locator_blue"));
         locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1) );
         locatorButton.addActionListener(this);
@@ -232,7 +231,7 @@ implements ActionListener {
         locatorButton.setToolTipText("Locate the unit on Mars Navigator");
         locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));//new Cursor(Cursor.HAND_CURSOR));
 
-		JPanel locatorPane = new JPanel(new FlowLayout());
+		WebPanel locatorPane = new WebPanel(new FlowLayout());
 		locatorPane.add(locatorButton);
 		//locationPanel.add(locatorPane, BorderLayout.NORTH);
 	    northPanel.add(locatorPane);
@@ -255,53 +254,13 @@ implements ActionListener {
        //locationPanel.add(lcdLong, BorderLayout.EAST);
         northPanel.add(lcdLong);
 
-
-        int max = -1;
-        int min = 2;
-        // Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L").
-        // The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid.
-        if (elevationCache < -8) {
-        	max = -8;
-        	min = -9;
-        }
-        else if (elevationCache < -5) {
-        	max = -5;
-        	min = -9;
-        }
-        else if (elevationCache < -3) {
-        	max = -3;
-        	min = -5;
-        }
-        else if (elevationCache < 0) {
-        	max = 1;
-        	min = -1;
-        }
-        else if (elevationCache < 1) {
-        	max = 2;
-        	min = 0;
-        }
-        else if (elevationCache < 3) {
-        	max = 5;
-        	min = 0;
-        }
-        else if (elevationCache < 10){
-        	max = 10;
-        	min = 5;
-        }
-        else if (elevationCache < 20){
-        	max = 20;
-        	min = 10;
-        }
-        else if (elevationCache < 30){
-        	max = 30;
-        	min = 20;
-        }
-
         gauge = new DisplayCircular();
-        setGauge(gauge, min, max);
+        
+        setGauge(gauge, elevationCache);
+        
         locationPanel.add(gauge, BorderLayout.CENTER);
 
-		//centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
+		//centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
 /*
 		// 2015-12-09 Prepare loc label
         locLabel = new JLabel();
@@ -358,7 +317,51 @@ implements ActionListener {
         }
     }
 
-    public void setGauge(DisplayCircular gauge, int min, int max) {
+    public void setGauge(DisplayCircular gauge, double elevationCache) {
+    	
+        // Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L").
+        // The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid.
+       
+        int max = -1;
+        int min = 2;
+        
+        if (elevationCache < -8) {
+        	max = -8;
+        	min = -9;
+        }
+        else if (elevationCache < -5) {
+        	max = -5;
+        	min = -9;
+        }
+        else if (elevationCache < -3) {
+        	max = -3;
+        	min = -5;
+        }
+        else if (elevationCache < 0) {
+        	max = 1;
+        	min = -1;
+        }
+        else if (elevationCache < 1) {
+        	max = 2;
+        	min = 0;
+        }
+        else if (elevationCache < 3) {
+        	max = 5;
+        	min = 0;
+        }
+        else if (elevationCache < 10){
+        	max = 10;
+        	min = 5;
+        }
+        else if (elevationCache < 20){
+        	max = 20;
+        	min = 10;
+        }
+        else if (elevationCache < 30){
+        	max = 30;
+        	min = 20;
+        }
+ 
         gauge.setDisplayMulti(false);
     	gauge.setDigitalFont(true);
         //gauge.setFrameDesign(FrameDesign.GOLD);
@@ -380,7 +383,7 @@ implements ActionListener {
         gauge.setLcdValueAnimated(elevationCache);
         gauge.setValueAnimated(elevationCache);
         //gauge.setValue(elevationCache);
-        gauge.setLcdDecimals(3);
+        gauge.setLcdDecimals(4);
 
         //alt.setMajorTickmarkType(TICKMARK_TYPE);
         //gauge.setSize(new Dimension(250, 250));
@@ -409,7 +412,6 @@ implements ActionListener {
      *
      * @param event the action event
      */
-    @SuppressWarnings("restriction")
 	public void actionPerformed(ActionEvent event) {
         JComponent source = (JComponent) event.getSource();
 
@@ -422,7 +424,11 @@ implements ActionListener {
         	Vehicle v = null;
         	Equipment e = null;
 
-        	if (unit instanceof Person) {
+        	if (unit instanceof Settlement) {
+        		update();
+        	}
+        	
+        	else if (unit instanceof Person) {
         		p = (Person) unit;
     		    //SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
@@ -710,7 +716,6 @@ implements ActionListener {
     /**
      * Updates the info on this panel.
      */
-    // 2014-11-11 Overhauled update()
     public void update() {
 
         // If unit's location has changed, update location display.
@@ -736,53 +741,10 @@ implements ActionListener {
             lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
             lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 
-            double elevation = terrainElevation.getElevation(location);
+            double elevationCache = Math.round(terrainElevation.getElevation(unit.getCoordinates())*10000.0)/10000.0;
+            
+            setGauge(gauge, elevationCache);
 
-            if (elevationCache != elevation) {
-            	elevationCache = elevation;
-
-                int max = 0;
-                int min = 0;
-                if (elevationCache < -8) {
-                	max = -8;
-                	min = -9;
-                }
-                else if (elevationCache < -5) {
-                	max = -5;
-                	min = -9;
-                }
-                else if (elevationCache < -3) {
-                	max = -3;
-                	min = -5;
-                }
-                else if (elevationCache < 0) {
-                	max = 1;
-                	min = -1;
-                }
-                else if (elevationCache < 1) {
-                	max = 2;
-                	min = 0;
-                }
-                else if (elevationCache < 3) {
-                	max = 5;
-                	min = 0;
-                }
-                else if (elevationCache < 10){
-                	max = 10;
-                	min = 5;
-                }
-                else if (elevationCache < 20){
-                	max = 20;
-                	min = 10;
-                }
-                else if (elevationCache < 30){
-                	max = 30;
-                	min = 20;
-                }
-
-                setGauge(gauge, min, max);
-
-            }
         }
 
         // Update location button or location text label as necessary.
@@ -1129,7 +1091,11 @@ implements ActionListener {
 
     	String loc = null;
 
-    	if (unit instanceof Person) {
+    	if (unit instanceof Settlement) {
+    		update();
+    	}
+    	
+    	else if (unit instanceof Person) {
     		Person p = (Person) unit;
     		loc = updatePerson(p);
     	}

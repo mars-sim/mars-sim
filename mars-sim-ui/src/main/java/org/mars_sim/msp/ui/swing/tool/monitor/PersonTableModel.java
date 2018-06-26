@@ -531,7 +531,7 @@ public class PersonTableModel extends UnitTableModel {
 				//		result = person.getVehicle().getName();
 				//} else
 				//	result = locationSituation.getName();
-				result = person.getLocationTag().getShortLocationName();
+				result = person.getLocationTag().getQuickLocation();
 				
 			}
 				break;

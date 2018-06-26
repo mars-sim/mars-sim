@@ -688,7 +688,7 @@ implements Serializable {
 			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 			
 			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,  
-				        "[" + startingMember.getLocationTag().getShortLocationName() + "] " + startingMember.getName() + " ended the " 
+				        "[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName() + " ended the " 
 				        + missionName + " mission. Reason : " + reason, null);
 
 			done = true; // Note: done = true is very important to keep !
@@ -698,7 +698,7 @@ implements Serializable {
 			if (members != null) {
 				if (!members.isEmpty()) {	
 				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-				    	"[" + startingMember.getLocationTag().getShortLocationName() + "] Removing the following mission members : " + members, null);
+				    	"[" + startingMember.getLocationTag().getQuickLocation() + "] Removing the following mission members : " + members, null);
 				    Iterator<MissionMember> i = members.iterator();
 					while (i.hasNext()) {
 	                    removeMember(i.next());
@@ -711,7 +711,7 @@ implements Serializable {
 		}
 		else
 		    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-		    		"[" + startingMember.getLocationTag().getShortLocationName() + "] " + startingMember.getName()  
+		    		"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()  
 		    		+ " is calling endMission() to end the " + missionName 
 	        		+ ". Reason : '" + reason + "'", null);
 	}

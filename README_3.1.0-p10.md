@@ -24,8 +24,8 @@ Copyright (C) 2018 Scott Davis
 - Install the latest Java JRE or JDK on your machine. 
   (See README.md from https://github.com/mars-sim/mars-sim) 
 
-- Download the mars-sim package available in 3 editions, namely,
-  Batch, Debian or Jar editions.
+- Download the mars-sim package available in 4 editions, namely,
+  Batch, Debian, Jar and Headless Jar editions.
 
 ---------------------------------------------------------------------
 
@@ -33,17 +33,17 @@ Copyright (C) 2018 Scott Davis
 
 mars-sim are available in 4 editions as follows : 
 
-1. Batch Edition
+1. Batch Edition (with GUI)
 
 - In Windows OS, double click on "mars-sim.bat" to begin.
 - In Linux/MacOS, type "mars-sim.bat" or "./mars-sim" to begin.
 
-2. Debian Edition
+2. Debian Edition (with GUI)
 
 - If you have installed the debian version of mars-sim, type 
 "./mars-sim" to begin.
 
-3. Jar Edition with GUI
+3. Jar Edition (with GUI)
 
 - Double-click on 'mars-sim-[version/build].jar' to begin
 a new simulation in GUI mode as the jar file is executable

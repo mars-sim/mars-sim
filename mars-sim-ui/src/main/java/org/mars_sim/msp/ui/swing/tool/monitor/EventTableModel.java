@@ -8,7 +8,9 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
@@ -31,8 +33,6 @@ import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 /**
@@ -49,12 +49,6 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	private static final int MSG_CACHE = 10;
 	
-	private ImageView icon_med = new ImageView(EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
-	private ImageView icon_mal = new ImageView(EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
-	private ImageView icon_mission = new ImageView(EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
-	private ImageView icon_hazard = new ImageView(EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
-
-	    
 	// Column names
 	private static final int TIMESTAMP = 0;
 	private static final int CATEGORY = 1;
@@ -66,6 +60,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	
 	private static final int COLUMNCOUNT = 7;
 
+	
 	/** Names of the displayed columns. */
 	static private String columnNames[];
 	/** Types of the individual columns. */
@@ -107,6 +102,13 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	private List<String> messageCache = new ArrayList<>();
 	
+	private Map<Integer, ImageView> appIconSet = new LinkedHashMap<>();
+
+	private ImageView icon_med = new ImageView(EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
+	private ImageView icon_mal = new ImageView(EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
+	private ImageView icon_mission = new ImageView(EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
+	private ImageView icon_hazard = new ImageView(EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
+
 	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 
 
@@ -132,6 +134,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		// Add this model as an event listener.
 		manager.addListener(this);
 
+		appIconSet.put(0, icon_mal);
+		appIconSet.put(1, icon_med);
+		appIconSet.put(2, icon_mission);
+		appIconSet.put(3, icon_hazard);
+		
 	}
 
 	private void updateCachedEvents() {
@@ -429,35 +436,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					String who = event.getWho();
 					String location0 = event.getLocation0();
 					String location1 = event.getLocation1();
-
-					if (category.equals(HistoricalEventCategory.HAZARD)) {
-						
-						if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
-							header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
-							
-							if (who.toLowerCase().equals("none"))
-								message = "There is a " + cause + " in " + location0 + " at " + location1;
-							else
-								message = who + " witnessed " + cause + " in " + location0 + " at " + location1;
-						}
-						
-						else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
-							header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$	
-							
-							message = who + " was exposed to " + cause.replace("Dosage : ", "") + " of radiation in " + location0 + " at " + location1;
-						}
-
-				        if (!messageCache.contains(message)) {
-				        	messageCache.add(0, message);
-				        	if (messageCache.size() > MSG_CACHE)
-				        		messageCache.remove(messageCache.size()-1);
-				        	willNotify = true;
-					        type = 3;
-				        }
-
-					}
 					
-					else if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+					if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
 
 				        header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
@@ -476,7 +456,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	
 				        else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
 				        	if (who.toLowerCase().equals("none"))
-				        		message = "None was witnessed or traumatized by " + cause + " in " + location0 + " at " + location1;
+				        		message = "None witnessed or was traumatized by " + cause + " in " + location0 + " at " + location1;
 				        	else 
 				        		message = who + " was traumatized by " + cause + " in " + location0 + " at " + location1;				        		
 				        	willNotify = true;
@@ -531,8 +511,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 				        // Only display notification window when malfunction has occurred, not when fixed.
 				        if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
-				            //|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
-				            //|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
+				            || eventType == EventType.MISSION_EMERGENCY_DESTINATION
+				            || eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 				            || eventType == EventType.MISSION_MEDICAL_EMERGENCY
 				            || eventType == EventType.MISSION_RENDEZVOUS		
 				            || eventType == EventType.MISSION_RESCUE_PERSON					            
@@ -552,6 +532,33 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 				        }
 				    }
 
+				    else if (category.equals(HistoricalEventCategory.HAZARD)) {
+						
+						if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
+							header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
+							
+							if (who.toLowerCase().equals("none"))
+								message = "There is a " + cause + " in " + location0 + " at " + location1;
+							else
+								message = who + " witnessed or was traumatized by the " + cause + " in " + location0 + " at " + location1;
+						}
+						
+						else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
+							header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$	
+							
+							message = who + " was exposed to " + cause.replace("Dosage : ", "") + " of radiation in " + location0 + " at " + location1;
+						}
+
+				        if (!messageCache.contains(message)) {
+				        	messageCache.add(0, message);
+				        	if (messageCache.size() > MSG_CACHE)
+				        		messageCache.remove(messageCache.size()-1);
+				        	willNotify = true;
+					        type = 3;
+				        }
+
+					}
+					
 					// Modified eventAdded to use controlsfx's notification window for javaFX UI
 					if (willNotify)
 						Platform.runLater(new NotifyFXLauncher(header, message, type));
@@ -681,8 +688,6 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		private String message;
 		private Pos pos = null;
 		private int type = -1;
-		ImageView v = null;
-
 
 		private NotifyFXLauncher(String header, String message, int type) {
 			this.header = header;
@@ -692,23 +697,19 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 			if (type == 0) {
 				pos = Pos.BOTTOM_RIGHT;
-				v = icon_mal;
 			}
 
 			else if (type == 1) {
 				pos = Pos.BOTTOM_LEFT;
-		   	    v = icon_med;
 
 			}
 
 			else if (type == 2) {
 				pos = Pos.TOP_RIGHT;
-				v = icon_mission; 
 			}
 			
 			else if (type == 3) {
 				pos = Pos.TOP_LEFT;
-				v = icon_hazard;
 			}
 
 		}
@@ -732,7 +733,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 //		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 //		    			}
 //		    		})
-		    		.graphic(v)
+		    		.graphic(appIconSet.get(type))
 		    		.darkStyle() 
 		    		.owner(desktop.getMainScene().getStage())
 		    		.show();
@@ -749,7 +750,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 //		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 //		    			}
 //		    		})
-		    		.graphic(v)
+		    		.graphic(appIconSet.get(type))
 		    		.owner(desktop.getMainScene().getStage())
 		    		.show();
 //		    		.showWarning();

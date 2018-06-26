@@ -4,7 +4,7 @@ module mars-sim-ui {
     requires java.net;
     requires java.util;
     requires java.awt;
-    
+    requires javax.net.ssl;
     requires javax.swing;
     
     requires org.w3c.dom.Document;

@@ -83,18 +83,19 @@ public class LocationTag implements LocationState, Serializable {
 	}
 
 	/**
-	 * Obtains the short location name
+	 * Obtains the quick location name (either settlement, buried settlement, vehicle or coordinates)
 	 * @return the name string of the location the unit is at
 	 */
-	public String getShortLocationName() {
+	public String getQuickLocation() {
 		if (p != null) {
 			if (p.getSettlement() != null)
 				return p.getSettlement().getName();
 			else if (p.getVehicle() != null)
 				return p.getVehicle().getName();
+			else if (p.getBuriedSettlement() != null)
+				return p.getBuriedSettlement().getName();
 			else
 				return p.getCoordinates().getFormattedString();
-			
 		}
 		
 		else if (e != null) {

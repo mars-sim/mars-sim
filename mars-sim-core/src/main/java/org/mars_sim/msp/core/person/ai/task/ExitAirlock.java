@@ -198,7 +198,7 @@ implements Serializable {
                     }
                     catch (Exception e) {
         	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-        	    				"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+        	    				"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
         	    				 + " could not take this EVA suit." + e.getMessage(), null);
 
                     }
@@ -208,7 +208,7 @@ implements Serializable {
             // If person still doesn't have an EVA suit, end task.
             if (!hasSuit) {
 	    		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-	    				"[" + person.getLocationTag().getShortLocationName() + "] " + person.getName()
+	    				"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
 	    				+ " cannot find a working EVA suit.", null);
 	    		
             	person.getMind().getTaskManager().clearTask();
@@ -758,7 +758,7 @@ implements Serializable {
 	    		//LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
 	    		// TODO: how to have someone deliver him a working EVASuit
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-						"[" + person.getLocationTag().getShortLocationName() 
+						"[" + person.getLocationTag().getQuickLocation() 
 						+ "] " + person + " can't find a working EVA suit and is awaiting the response for rescue."
 						, null);
 
@@ -905,7 +905,7 @@ implements Serializable {
             catch (Exception e) {
                 //e.printStackTrace(System.err);
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
-            			"[" + p.getLocationTag().getShortLocationName() + "] " 
+            			"[" + p.getLocationTag().getQuickLocation() + "] " 
             				+ p + " detects malfunctions when examing " 
             					+ suit.getName() + e.getMessage(), null);
             }
@@ -991,7 +991,7 @@ implements Serializable {
             }
             catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
-            			"[" + person.getLocationTag().getShortLocationName() + "] " 
+            			"[" + person.getLocationTag().getQuickLocation() + "] " 
             				+ person + " does NOT have enough oxygen when preparing " 
             					+ suit.getName() + e.getMessage(), null);
             }
@@ -1015,7 +1015,7 @@ implements Serializable {
             }
             catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
-        			"[" + person.getLocationTag().getShortLocationName() + "] " 
+        			"[" + person.getLocationTag().getQuickLocation() + "] " 
         				+ person + " does NOT have enough water when preparing " 
         					+ suit.getName() + e.getMessage(), null);
             }

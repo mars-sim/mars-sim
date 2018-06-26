@@ -94,7 +94,7 @@ implements ResearchScientificStudy, Serializable {
             
             else {
             	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-            		"[" + person.getLocationTag().getShortLocationName() + "] " 
+            		"[" + person.getLocationTag().getQuickLocation() + "] " 
             			+ person + NO_LAB_SLOT, null);
             	endTask();
             	person.getMind().getTaskManager().clearTask();

@@ -940,7 +940,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 */
 	@Override
 	public String getShortLocationName() {
-		return getLocationTag().getShortLocationName();
+		return getLocationTag().getQuickLocation();
 	}
 
 	@Override

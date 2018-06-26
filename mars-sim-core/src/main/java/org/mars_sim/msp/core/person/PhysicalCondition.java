@@ -378,7 +378,7 @@ public class PhysicalCondition implements Serializable {
 				solCache = solElapsed;
 			}
 			
-			String loc = person.getLocationTag().getShortLocationName();
+			String loc = person.getLocationTag().getQuickLocation();
 
 			// Check life support system
 			try {	
@@ -860,7 +860,7 @@ public class PhysicalCondition implements Serializable {
 						addMedicalComplaint(panicAttack);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-								"[" + person.getLocationTag().getShortLocationName() + "] " + name
+								"[" + person.getLocationTag().getQuickLocation() + "] " + name
 										+ " suffers from a panic attack.",
 								null);
 						
@@ -880,7 +880,7 @@ public class PhysicalCondition implements Serializable {
 						addMedicalComplaint(depression);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-								"[" + person.getLocationTag().getShortLocationName() + "] " + name
+								"[" + person.getLocationTag().getQuickLocation() + "] " + name
 										+ " has an episode of depression.",
 								null);
 						
@@ -927,7 +927,7 @@ public class PhysicalCondition implements Serializable {
 					addMedicalComplaint(highFatigue);
 					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 					LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-							"[" + person.getLocationTag().getShortLocationName() + "] " + name
+							"[" + person.getLocationTag().getQuickLocation() + "] " + name
 									+ " collapses because of high fatigue exhaustion.",
 							null);
 					
@@ -966,7 +966,7 @@ public class PhysicalCondition implements Serializable {
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-						"[" + person.getLocationTag().getShortLocationName() + "] " + name 
+						"[" + person.getLocationTag().getQuickLocation() + "] " + name 
 						+ " collapses because of radiation poisoning.", null);
 				
 				// the person should be carried to the sickbay at this point
@@ -1052,7 +1052,7 @@ public class PhysicalCondition implements Serializable {
 			HealthProblem problem = new HealthProblem(complaint, person);
 			problems.put(complaint, problem);
 			String n = complaint.getType().getName().toLowerCase();
-			String prefix = "[" + person.getLocationTag().getShortLocationName() + "] ";
+			String prefix = "[" + person.getLocationTag().getQuickLocation() + "] ";
 			String phrase = "";
 			String suffix = ".";
 
@@ -1151,7 +1151,7 @@ public class PhysicalCondition implements Serializable {
 			// throw new IllegalStateException("Warning: less than 0.01 kg dried food
 			// remaining!");
 			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" + person.getLocationTag().getShortLocationName() + "]" + " only " + foodAvailable
+					"[" + person.getLocationTag().getQuickLocation() + "]" + " only " + foodAvailable
 							+ " kg preserved food remaining.",
 					null);
 		}
@@ -1318,7 +1318,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param problem
 	 */
 	public void examBody(HealthProblem problem) {
-		logger.log(Level.SEVERE, "[" + person.getLocationTag().getShortLocationName() + "] A post-mortem examination was ordered on " + person + ". The cause of death : "
+		logger.log(Level.SEVERE, "[" + person.getLocationTag().getQuickLocation() + "] A post-mortem examination was ordered on " + person + ". The cause of death : "
 				+ problem.toString().toLowerCase());
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);

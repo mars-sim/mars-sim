@@ -362,7 +362,7 @@ implements UnitListener {
 						//if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
 						LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-								"[" + startingMember.getLocationTag().getShortLocationName() + "] " 
+								"[" + startingMember.getLocationTag().getQuickLocation() + "] " 
 								+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
 								+ reason, null);
 						vehicle.setEmergencyBeacon(true);
@@ -872,7 +872,7 @@ implements UnitListener {
     				EventType.MISSION_MEDICAL_EMERGENCY.getName(),
 					member.getName(), 
 					member.getVehicle().getName(),
-					member.getLocationTag().getShortLocationName()
+					member.getLocationTag().getQuickLocation()
 					);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
@@ -884,7 +884,7 @@ implements UnitListener {
     				EventType.MISSION_NOT_ENOUGH_RESOURCES.getName(),
 					member.getName(), 
 					member.getVehicle().getName(),
-					member.getLocationTag().getShortLocationName()
+					member.getLocationTag().getQuickLocation()
 					);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
@@ -945,7 +945,7 @@ implements UnitListener {
 		    				EventType.MISSION_EMERGENCY_DESTINATION.getName(),
 							member.getName(), 
 							member.getVehicle().getName(),
-							member.getLocationTag().getShortLocationName()
+							member.getLocationTag().getQuickLocation()
 							);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
@@ -1008,7 +1008,7 @@ implements UnitListener {
 							this.getName(),
 							member.getName(), 
 							member.getVehicle().getName(),
-							member.getLocationTag().getShortLocationName()
+							member.getLocationTag().getQuickLocation()
 							);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
@@ -1059,15 +1059,15 @@ implements UnitListener {
     				EventType.MISSION_EMERGENCY_BEACON_ON.getName(),
 					member.getName(), 
 					member.getVehicle().getName(),
-					member.getLocationTag().getShortLocationName()
+					member.getLocationTag().getQuickLocation()
 					);
 
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " 
+			logger.info("[" + vehicle.getLocationTag().getQuickLocation() + "] " 
 					+ member + " activated emergency beacon on " + vehicle.getName() + ".");
 		}
 		else {
-			logger.info("[" + vehicle.getLocationTag().getShortLocationName() + "] " 
+			logger.info("[" + vehicle.getLocationTag().getQuickLocation() + "] " 
 					+ member + " deactivated emergency beacon on " + vehicle.getName() + ".");
 		}
 

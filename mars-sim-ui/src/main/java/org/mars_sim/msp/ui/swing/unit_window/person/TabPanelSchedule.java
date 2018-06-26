@@ -61,7 +61,8 @@ import com.alee.managers.tooltip.TooltipManager;
 public class TabPanelSchedule
 extends TabPanel {
 
-	private static final String SOL = " Sol ";
+	private static final String SOL = "  Sol ";
+	private static final String TWO_SPACES = "  ";
 	
 	//private int sol;
 	private int todayCache = 1;
@@ -88,7 +89,7 @@ extends TabPanel {
 	private DefaultComboBoxModel<Object> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
 
-	private Color fillColorCache;
+//	private Color fillColorCache;
 	//private Color transparentFill;
 	//private ModernBalloonStyle style;
 
@@ -158,7 +159,7 @@ extends TabPanel {
     		//balloonToolTip.createBalloonTip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
     		buttonPane.add(shiftLabel);
 
-    		fillColorCache = shiftLabel.getBackground();
+//    		fillColorCache = shiftLabel.getBackground();
 
     		shiftTF = new WebTextField(shiftCache.toString());
     		start = taskSchedule.getShiftStart();
@@ -219,12 +220,16 @@ extends TabPanel {
 
 		// Create comboBox
 		solBox = new JComboBoxMW<Object>(comboBoxModel);
+
+		
 		solBox.setSelectedItem(todayInteger);
 		//comboBox.setOpaque(false);
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 
 		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+//		solPanel.setMinimumSize(new Dimension(40, 15));
+//		solPanel.setSize(new Dimension(40, 15));
 		solPanel.add(solBox);
 
 //		infoPanel.add(solPanel);
@@ -469,7 +474,7 @@ extends TabPanel {
 					return this;
 				}
 
-				setText(SOL + value);
+				setText(SOL + value + TWO_SPACES);
 
 				// 184,134,11 mud yellow
 				// 255,229,204 white-ish (super pale) yellow
@@ -669,7 +674,7 @@ extends TabPanel {
     	shiftTF = null;
     	shiftLabel = null;
 		scheduleTableModel = null;
-		fillColorCache = null;
+//		fillColorCache = null;
 		person = null;
 		robot = null;
 		taskSchedule = null;

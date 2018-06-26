@@ -138,6 +138,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private EarthClock birthTimeStamp;
 	/** The settlement the person is currently associated with. */
 	private Settlement associatedSettlement;
+	/** The buried settlement if the person has been deceased. */
+	private Settlement buriedSettlement;
 	/** Manager for Person's natural attributes. */
 	private NaturalAttributeManager attributes;
 	/** Person's mind. */
@@ -166,8 +168,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private ReportingAuthority ra;
 	
 	private Point2D bed;
-
-	private Settlement buriedSettlement;
 	
 	private Building quarters;
 	
@@ -890,16 +890,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		
 		// Bury the body
-		isBuried = true;
-		
-		//setAssociatedSettlement(null);
-		
+		isBuried = true;		
+		// Remove the person from the settlement
+		setContainerUnit(null);
+		// Remove the person from being a member of the associated settlement		
+		setAssociatedSettlement(null);		
 		// Set his/her buried settlement
 		setBuriedSettlement(associatedSettlement);
-		
 		// Set unit description to "Dead"
 		super.setDescription("Dead");
-		
         // Throw unit event.
         fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
@@ -1328,7 +1327,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			//	setBuriedSettlement(oldSettlement);
 			//	super.setDescription("Dead");
 			//} else
-				super.setDescription(associatedSettlement.getName());
+//				super.setDescription(associatedSettlement.getName());
 		}
 	}
 

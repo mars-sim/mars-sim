@@ -1371,7 +1371,7 @@ LocalBoundedObject, InsidePathLocation {
         	// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
         	int delta = (int)Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
         	if (now > moment_of_impact - 2 *delta && now < moment_of_impact + 2 *delta) {
-            	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
             			"[" + settlement + "] A meteorite impact over " + nickName 
     					+ " is imminent.", null);
 	        	// reset the boolean immmediately. This is for keeping track of whether the impact has occurred at msols
@@ -1508,7 +1508,7 @@ LocalBoundedObject, InsidePathLocation {
 */
 	@Override
 	public String getShortLocationName() {
-		return getLocationTag().getShortLocationName();
+		return getLocationTag().getQuickLocation();
 	}
 
 	@Override

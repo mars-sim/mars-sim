@@ -1102,8 +1102,8 @@ public class MainScene {
 		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
 				soundBtn, gNode);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
-		gNode.setLayoutX(333);
-	    gNode.setLayoutY(65);
+		gNode.setLayoutX(350);
+	    gNode.setLayoutY(670);
 		
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(anchorPane);
@@ -1837,7 +1837,8 @@ public class MainScene {
 
 		// Label header_label = createHeader("MARS CALENDAR");
 		Text header_label = createTextHeader("MARS CALENDAR PANEL");
-
+		header_label.setFill(Color.DARKSLATEGREY);
+		
 		monthText = createBlendText(MONTH + marsClock.getMonthName());
 		yearText = createBlendText(ORBIT + marsClock.getOrbitString());
 

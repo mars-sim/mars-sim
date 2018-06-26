@@ -6,6 +6,23 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Logger;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
+import javax.swing.event.HyperlinkEvent.EventType;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -32,31 +49,23 @@ import javafx.scene.web.WebView;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebHistory;
 import javafx.scene.Cursor;
+
 import netscape.javascript.JSObject;
 
 import org.codefx.libfx.control.webview.WebViewHyperlinkListener;
 import org.codefx.libfx.control.webview.WebViews;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 import com.jfoenix.controls.JFXButton;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Logger;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-import javax.swing.event.HyperlinkEvent.EventType;
+//import com.sun.javafx.webkit.WebConsoleListener;
 
 import static javafx.concurrent.Worker.State.FAILED;
 import static javafx.concurrent.Worker.State;
@@ -691,7 +700,28 @@ public class BrowserJFX {
 
 	private void initJFX() {
 
-		engine.setUserAgent("AppleWebKit/537.44");
+//		System.setProperty("jsse.enableSNIExtension", "false");
+//		System.setProperty("-Djdk.tls.client.protocols", "TLSv1");
+//		System.setProperty("javax.net.ssl.trustStore", "path to truststore");
+
+		// Create all-trusting host name verifier
+		HostnameVerifier allHostsValid = new HostnameVerifier() {
+		    public boolean verify(String hostname, SSLSession session) {
+		        return true;
+		    }
+		};
+
+		// Install the all-trusting host verifier
+		HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid); 
+		
+//		engine.setUserAgent("AppleWebKit/537.44");
+		
+//		WebConsoleListener.setDefaultListener(new WebConsoleListener(){
+//		    @Override
+//		    public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
+//		        System.out.println("Console: [" + sourceId + ":" + lineNumber + "] " + message);
+//		    }
+//		});
 		
     	//java.net.CookieHandler.setDefault(null);
 
@@ -853,11 +883,18 @@ public class BrowserJFX {
                     }
                 });
 
+                
                 engine.getLoadWorker().exceptionProperty().addListener(new ChangeListener<Throwable>() {
                 	@Override
 	                public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
                 		
-                		System.out.println("Received exception: " + value.getMessage());
+                		//System.out.println("Received exception: " + value.getMessage());
+                		
+//                		Throwable t = engine.getLoadWorker().getException();
+//                		
+//                		if (t != null && engine.getLoadWorker().getState() == State.FAILED) {
+//                			System.out.println(", " + engine.getLoadWorker().getException().toString());
+//                		}
                 		
 	                	if (engine.getLoadWorker().getState() == FAILED) {
 	                		//SwingUtilities.invokeLater(()-> {
@@ -892,28 +929,29 @@ public class BrowserJFX {
                 });
 */
 
+
+                
                 // process page loading
-                engine.getLoadWorker().stateProperty().addListener(
-                    new ChangeListener<State>() {
-                        @Override
-                        public void changed(ObservableValue<? extends State> ov,
-                            State oldState, State newState) {
-                                if (oldState != newState) {
-                                	if (newState == State.SUCCEEDED) {
-	                                	String input = getCurrentURL();
-	                                	//System.out.println("BrowserJFX's stateProperty()");
-	                            		if (input.contains(DOCS_HELP_DIR)) {
-	                            			isLocalHtml = true;
-	                                    	// Note: after hours of experiments, it's found that the only "safe" way
-	                            			// (without causing NullPointerException) is to call addCSS()
-	                            			// through stateProperty() here.
-	                            			addCSS();
-	                            		}
-                                	}
-                                }
-                            }
+                engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+                    @Override
+                    public void changed(ObservableValue<? extends State> ov, State oldState, State newState) {
+                        //System.out.println(engine.getLoadWorker().exceptionProperty());
+                        //System.out.println("webEngine result "+ newState.toString());
+                        if (oldState != newState) {
+                        	if (newState == State.SUCCEEDED) {
+                            	String input = getCurrentURL();
+                            	//System.out.println("BrowserJFX's stateProperty()");
+                        		if (input.contains(DOCS_HELP_DIR)) {
+                        			isLocalHtml = true;
+                                	// Note: after hours of experiments, it's found that the only "safe" way
+                        			// (without causing NullPointerException) is to call addCSS()
+                        			// through stateProperty() here.
+                        			addCSS();
+                        		}
+                        	}
                         }
-                );
+                    }
+                });
 
                 borderPane = new BorderPane();
                 borderPane.setTop(vbox);

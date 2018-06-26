@@ -342,7 +342,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 */
 	@Override
 	public String getShortLocationName() {
-		return getLocationTag().getShortLocationName();
+		return getLocationTag().getQuickLocation();
 	}
 
 	@Override

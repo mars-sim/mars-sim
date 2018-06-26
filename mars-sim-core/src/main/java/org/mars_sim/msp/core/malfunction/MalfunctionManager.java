@@ -423,7 +423,7 @@ implements Serializable {
 							entity.getShortLocationName());
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-		        			malfunction.getName() + " malfunction detected due to Part Fatigue in " + entity.getLongLocationName(), null);
+		        			malfunction.getName() + " detected - due to Parts Fatigue - in " + entity.getLongLocationName(), null);
 					}
 					else {
 						HistoricalEvent newEvent = new MalfunctionEvent(
@@ -434,8 +434,8 @@ implements Serializable {
 								entity.getNickName(),
 								entity.getShortLocationName());
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
-							LogConsolidated.log(logger, Level.INFO, 0, sourceName, offender +
-			        			malfunction.getName() + " malfunction detected due to Human Factors in " + entity.getLongLocationName(), null);
+							LogConsolidated.log(logger, Level.INFO, 0, sourceName, offender + " may have to do with "
+			        			+ malfunction.getName() + " - due to Human Factors - in " + entity.getLongLocationName(), null);
 					}
 				}
 				else {
@@ -453,7 +453,7 @@ implements Serializable {
 							entity.getShortLocationName());
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-			        			malfunction.getName() + " damaged detected in " + entity.getLongLocationName(), null);
+			        			malfunction.getName() + " damage detected in " + entity.getLongLocationName(), null);
 				}
 			}
 			else
@@ -766,7 +766,7 @@ implements Serializable {
 */		
 
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-    			"[" + u.getLocationTag().getShortLocationName() + "] A Type-I accident occurs " + sb.toString() + ".", null);
+    			"[" + u.getLocationTag().getQuickLocation() + "] A Type-I accident occurs " + sb.toString() + ".", null);
 
 	}
 	

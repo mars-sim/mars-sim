@@ -7,14 +7,14 @@
 	<groupId>net.sf</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.1.0-p10</version>
+	<version>3.1.0-b1</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<maven.compiler.source>9</maven.compiler.source>
 		<maven.compiler.target>9</maven.compiler.target>	
-		<project.version>3.1.0-p10</project.version>
+		<project.version>3.1.0-b1</project.version>
 		<junit.version>4.12</junit.version>		
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -163,13 +163,13 @@
 	<!-- * Module Section                                                                                * -->
 	<!-- ************************************************************************************************* -->
 	<modules>
-		<module>mars-sim-android</module>
+		<!--module>mars-sim-android</module-->
 		<module>mars-sim-core</module>
 		<module>mars-sim-headless</module>		
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module>
-		<module>mars-sim-network</module>
-		<module>mars-sim-service</module>
+		<!--module>mars-sim-network</module-->
+		<!--module>mars-sim-service</module-->
 		<module>mars-sim-ui</module>
   </modules>
 	<!-- ************************************************************************************************* -->
