@@ -27,14 +27,13 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.medical.Complaint;
-import org.mars_sim.msp.core.person.medical.ComplaintType;
-import org.mars_sim.msp.core.person.medical.MedicalManager;
+import org.mars_sim.msp.core.person.health.Complaint;
+import org.mars_sim.msp.core.person.health.ComplaintType;
+import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
@@ -390,7 +389,7 @@ implements Serializable {
 	 * Adds a malfunction to the unit.
 	 * @param malfunction the malfunction to add.
 	 */
-	void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
+	public void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
 //		System.out.println("MalfunctionManager : addMalfunction()");
 			malfunctions.add(malfunction);
 
@@ -413,24 +412,43 @@ implements Serializable {
 				
 				if (!malfunctionName.contains("Meteorite")) {
 					// if it has nothing to do with meteorite impact
-					HistoricalEvent newEvent = new MalfunctionEvent(
-						EventType.MALFUNCTION_HUMAN_FACTORS,
-						malfunction,
-						malfunctionName,
-						offender,
-						entity.getNickName(),
-						entity.getShortLocationName());
-					Simulation.instance().getEventManager().registerNewEvent(newEvent);
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-		        			malfunction.getName() + " damaged detected in " + entity.getLongLocationName(), null);
+					
+					if (actor == null) {
+						HistoricalEvent newEvent = new MalfunctionEvent(
+							EventType.MALFUNCTION_PARTS_FAILURE,
+							malfunction,
+							malfunctionName,
+							"Part Fatigue", // in the who field
+							entity.getNickName(),
+							entity.getShortLocationName());
+						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+		        			malfunction.getName() + " malfunction detected due to Part Fatigue in " + entity.getLongLocationName(), null);
+					}
+					else {
+						HistoricalEvent newEvent = new MalfunctionEvent(
+								EventType.MALFUNCTION_HUMAN_FACTORS,
+								malfunction,
+								malfunctionName,
+								offender,
+								entity.getNickName(),
+								entity.getShortLocationName());
+							Simulation.instance().getEventManager().registerNewEvent(newEvent);
+							LogConsolidated.log(logger, Level.INFO, 0, sourceName, offender +
+			        			malfunction.getName() + " malfunction detected due to Human Factors in " + entity.getLongLocationName(), null);
+					}
 				}
 				else {
+					
+					String name = malfunction.getTraumatized();
+					if (name == null)
+						name = "None";
 					// if it is a meteorite impact
 					HistoricalEvent newEvent = new MalfunctionEvent(
 							EventType.MALFUNCTION_ACT_OF_GOD,
 							malfunction,
 							malfunctionName,
-							malfunction.getTraumatized(),
+							name,
 							entity.getNickName(),
 							entity.getShortLocationName());
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
@@ -444,20 +462,16 @@ implements Serializable {
 			 // Register the failure of the Parts involved
 			 Map<Part,Integer> parts = malfunction.getRepairParts();
 			 Set<Part> partSet = parts.keySet();
-			 for (Part p : partSet) {
-				 int num = parts.get(p);
-				 // Increment the number of failure for this Part
-				 partConfig.setFailure(p, num);
-				 // Recompute the reliability of this Part
-				 partConfig.computeReliability(p);
-			 }
-			
-			 double new_p = 0.0;
 
-			 // Compute the new reliability and failure rate for this malfunction
 			 for (Part p : partSet) {
+				 int num = parts.get(p);	 
+//			 }
+			
+			 // Compute the new reliability and failure rate for this malfunction
+//			 for (Part p : partSet) {
 				 int id = p.getID();
 				 String part_name = p.getName();
+				 
 				 if (part_name.equalsIgnoreCase("decontamination kit") 
 						 || part_name.equalsIgnoreCase("airleak patch") 
 						 || part_name.equalsIgnoreCase("fire extinguisher")) {
@@ -465,25 +479,35 @@ implements Serializable {
 					 // and do NOT need to change their reliability.
 					 return ;
 				 }
-			 
-				 double rel = partConfig.getReliability(id);
 				 
-				 String name = p.getName();
-				 double needed = malfunctionConfig.getRepairPartProbability(malfunction.getName(), name);
-				 double weight =  (100-rel) * needed/100D;
-				 logger.info("Updating '" + p.getName() + "' field data : (Part Reliability: " 
-						 + Math.round(rel*1000.0)/1000.0 
-						 + " %  Part Malfunction Probability: " + Math.round(needed*1000.0)/1000.0 
-						 + " %  Part Failure Rate: " + Math.round(weight*1000.0)/1000.0 
-						 + " %)"
-						 );
-				 new_p += weight; 
+				 double old_rel = partConfig.getReliability(id);
+				 double old_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
+				 double old_weight =  (100-old_rel) * old_prob/100D;
+				 double old_mal_probl_failure = malfunction.getProbability();
 				 
-				 double old_p = malfunction.getProbability();
-				 logger.info("Updating '" + malfunctionName + "' failure rate : " 
-						 + Math.round(old_p*10000.0)/10000.0  
-						 + " % --> " + Math.round(new_p*10000.0)/10000.0 + " %.");
-				 malfunction.setProbability(new_p);
+				 // Increment the number of failure for this Part
+				 partConfig.setFailure(p, num);
+				 // Recompute the reliability of this Part
+				 partConfig.computeReliability(p);
+	 
+				 //String name = p.getName();			 
+				 double new_rel = partConfig.getReliability(id);			 
+				 double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
+				 double new_rate =  (100-new_rel) * new_prob/100D;
+				 double new_mal_prob_failure = 0;
+				 logger.info("Updating field reliability data for the part '" + p.getName() + "' as follows :");
+				 logger.info("(1). Reliability: " + Math.round(old_rel*1000.0)/1000.0  + " % --> "
+						 + Math.round(new_rel*1000.0)/1000.0  + " %" );
+//				 logger.info("(2). Part Needed Probability: " + Math.round(old_prob*1000.0)/1000.0 + " % --> "
+//						 + Math.round(new_prob*1000.0)/1000.0 + " %");
+				 logger.info("(2). Failure Rate: " + Math.round(old_weight*1000.0)/1000.0  + " % --> "
+						 + Math.round(new_rate*1000.0)/1000.0  + " %");
+				 new_mal_prob_failure = (old_mal_probl_failure + new_rate )/2.0; 
+				 
+				 logger.info("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
+				 logger.info("(1). Probability of Failure : " + Math.round(old_mal_probl_failure*10000.0)/10000.0  
+						 + " % --> " + Math.round(new_mal_prob_failure*10000.0)/10000.0 + " %");
+				 malfunction.setProbability(new_mal_prob_failure);
 		 
 			}
 			

@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.person.medical.MedicalStation;
+import org.mars_sim.msp.core.person.health.MedicalStation;
 
 /**
  * The SickBay class is a medical station for a vehicle.

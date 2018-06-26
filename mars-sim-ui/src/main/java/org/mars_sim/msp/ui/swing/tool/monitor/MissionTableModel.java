@@ -184,7 +184,8 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	public String getCountString() {
 		return " " + Msg.getString(
 			"MissionTableModel.numberOfMissions", //$NON-NLS-1$
-			Integer.toString(missionCache.size())
+//			Integer.toString(missionCache.size())
+			missionCache.size()
 		);
 	}
 

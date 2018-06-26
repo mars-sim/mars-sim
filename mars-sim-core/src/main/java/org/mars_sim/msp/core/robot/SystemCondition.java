@@ -15,9 +15,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.medical.Complaint;
-import org.mars_sim.msp.core.person.medical.HealthProblem;
-import org.mars_sim.msp.core.person.medical.MedicalManager;
+import org.mars_sim.msp.core.person.health.Complaint;
+import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**

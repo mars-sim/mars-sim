@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.medical.MedicalAid;
+import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ESAMissionControl;

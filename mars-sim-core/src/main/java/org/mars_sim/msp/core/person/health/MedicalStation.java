@@ -5,7 +5,7 @@
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
-package org.mars_sim.msp.core.person.medical;
+package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**

@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.medical.ComplaintType;
+import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -214,10 +214,14 @@ public class Malfunction implements Serializable {
             
         	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
         			name + id_string + " - emergency repair worked by " + repairer  + ".", null);
-        	
-        	if (repairersWorkTime.get(repairer) > 0)
+
+        	if (repairersWorkTime.containsKey(repairer)) {
         		repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
-        		
+        	}
+        	else {
+        		repairersWorkTime.put(repairer, time);
+        	}
+        	
             return remaining;
         }
         return 0D;
@@ -249,10 +253,13 @@ public class Malfunction implements Serializable {
         if (EVAWorkTimeCompleted >= EVAWorkTime) {
             double remaining = EVAWorkTimeCompleted - EVAWorkTime;
             EVAWorkTimeCompleted = EVAWorkTime;
-            
-        	if (repairersWorkTime.get(repairer) > 0)
+
+        	if (repairersWorkTime.containsKey(repairer)) {
         		repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
-        	
+        	}
+        	else {
+        		repairersWorkTime.put(repairer, time);
+        	}     	
             return remaining;
         }
         return 0D;

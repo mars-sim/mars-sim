@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mars_sim.msp.core.person.medical.ComplaintType;
+import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;

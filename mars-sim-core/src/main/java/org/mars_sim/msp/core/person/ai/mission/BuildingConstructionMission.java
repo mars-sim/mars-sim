@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -954,9 +955,9 @@ implements Serializable {
     }
 
 	@Override
-	public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+	public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
 		boolean useBuffer) {
-		Map<Class, Integer> equipment = new HashMap<Class, Integer>(1);
+		Map<Class<? extends Equipment>, Integer> equipment = new HashMap<>(1);
 		equipment.put(EVASuit.class, getPeopleNumber());
 		return equipment;
 	}

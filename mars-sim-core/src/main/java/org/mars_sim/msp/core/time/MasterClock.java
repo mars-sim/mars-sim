@@ -208,9 +208,9 @@ public class MasterClock implements Serializable {
 
         logger.info("Based on # CPU cores/threads, the following parameters have been re-adjusted :");
         logger.info("Time Ratio (TR) : " + (int)adjustedTR + "x");
-        logger.info("Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 10D)/10D + " ms");
-        logger.info("Ticks Per Second (TPS) : " + Math.round(adjustedFPS*10D)/10D + " Hz");
-		logger.info("*** Welcome to Mars and the beginning of the new adventure of humankind ***");
+        logger.info("Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D)/100D + " ms");
+        logger.info("Ticks Per Second (TPS) : " + Math.round(adjustedFPS*100D)/100D + " Hz");
+		logger.info("*** Welcome to Mars and the beginning of the new adventure for humankind ***");
     }
 
     /**

@@ -5,10 +5,11 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.person.BodyRegionType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 public class RadiationEvent implements Serializable {

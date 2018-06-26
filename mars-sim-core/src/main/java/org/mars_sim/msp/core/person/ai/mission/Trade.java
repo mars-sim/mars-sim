@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -756,9 +757,9 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class, Integer> getOptionalEquipmentToLoad() {
+    public Map<Class<? extends Equipment>, Integer> getOptionalEquipmentToLoad() {
 
-        Map<Class, Integer> result = super.getOptionalEquipmentToLoad();
+        Map<Class<? extends Equipment>, Integer> result = super.getOptionalEquipmentToLoad();
 
         // Add buy/sell load.
         Map<Good, Integer> load = null;
@@ -772,7 +773,7 @@ implements Serializable {
         while (i.hasNext()) {
             Good good = i.next();
             if (good.getCategory().equals(GoodType.EQUIPMENT)) {
-                Class equipmentClass = good.getClassType();
+                Class<? extends Equipment> equipmentClass = good.getClassType();
                 int num = load.get(good);
                 if (result.containsKey(equipmentClass)) {
                     num += (Integer) result.get(equipmentClass);
@@ -1040,11 +1041,11 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null) return equipmentNeededCache;
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>(0);
+            Map<Class<? extends Equipment>, Integer> result = new HashMap<>(0);
             equipmentNeededCache = result;
             return result;
         }

@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -69,6 +70,7 @@ implements Serializable {
 	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going Scientific study in this subject";
 	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
 	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
+	//public static final String VEHICLE_NOT_LOADABLE = "Vehicle is not loadable at CollectingResourcesMission";
 	
 	public static final String OUTSIDE = "Outside";
 	
@@ -152,7 +154,7 @@ implements Serializable {
 	   		HistoricalEvent newEvent = new MissionHistoricalEvent(
 	   				EventType.MISSION_START,
     				this,
-    				missionName,
+    				EventType.MISSION_START.getName(),
     				person.getName(),
 	   				loc0,
 	   				loc1
@@ -277,7 +279,7 @@ implements Serializable {
             HistoricalEvent newEvent = new MissionHistoricalEvent(
 	   				EventType.MISSION_JOINING,
     				this,
-	   				missionName,
+    				EventType.MISSION_JOINING.getName(),
 	   				person.getName(),
 	   				loc0,
 	   				loc1
@@ -340,7 +342,7 @@ implements Serializable {
 	            		new MissionHistoricalEvent(
 	            				EventType.MISSION_FINISH,
 	            				this,
-	            				missionName,
+	            				EventType.MISSION_FINISH.getName(),
 	            				person.getName(), 
 			            		loc0,
 			            		loc1
@@ -644,6 +646,7 @@ implements Serializable {
 	/**
 	 * Go to the nearest settlement and end collection phase if necessary.
 	 */
+	// TODO : connect to determineEmergencyDestination() in VehicleMission
 	private void goToNearestSettlement() {
 		if (this instanceof VehicleMission) {
 			VehicleMission vehicleMission = (VehicleMission) this;
@@ -1049,7 +1052,7 @@ implements Serializable {
 	 * @param useBuffer use time buffers in estimation if true.
 	 * @return map of equipment class and Integer number.
 	 */
-	public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
+	public abstract Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
 
 	/**
 	 * Time passing for mission.

@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-09-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.medical;
+package org.mars_sim.msp.core.person.health;
 
 import org.jdom.Document;
 import org.jdom.Element;

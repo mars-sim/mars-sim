@@ -120,11 +120,11 @@ public class MainMenu {
     
 	private Group root;
 	
-    private AnchorPane anchorPane;
+    private AnchorPane menuAPane;
     
-    private StackPane stackPane;
+    private StackPane mainMenuSPane;
     
-    private StackPane rootPane;
+    private StackPane globeSPane;
 
 	private Stage primaryStage;
 	
@@ -203,16 +203,17 @@ public class MainMenu {
 
     	menuApp = new MenuApp(mainMenu, true);
     	
-    	anchorPane = menuApp.createContent();
+    	menuAPane = menuApp.createContent();
     	
-    	stackPane = new StackPane(anchorPane);
+    	mainMenuSPane = new StackPane(menuAPane);
 
-    	stackPane.setPrefSize(WIDTH, HEIGHT);
+    	mainMenuSPane.setPrefSize(WIDTH, HEIGHT);
+    	mainMenuSPane.setMaxSize(WIDTH, HEIGHT);
     	//stackPane.setLayoutX(10);
     	//stackPane.setLayoutY(10);
        
-    	double sceneWidth = stackPane.getPrefWidth();// + 30;
-    	double sceneHeight = stackPane.getPrefHeight();// + 30;
+    	double sceneWidth = mainMenuSPane.getPrefWidth();// + 30;
+    	double sceneHeight = mainMenuSPane.getPrefHeight();// + 30;
 
     	// Create application area
 //    	@SuppressWarnings("restriction")
@@ -274,14 +275,14 @@ public class MainMenu {
 	       	}
        });
 
-       rootPane = new StackPane();
-       rootPane.setPrefSize(stackPane.getPrefWidth()-300, stackPane.getPrefHeight());//stackPane.getPrefWidth()-50, stackPane.getPrefHeight()-50);
+       globeSPane = new StackPane();
+       globeSPane.setPrefSize(mainMenuSPane.getPrefWidth()-300, mainMenuSPane.getPrefHeight());//stackPane.getPrefWidth()-50, stackPane.getPrefHeight()-50);
  
        root = new Group();
        root.getChildren().add(applicationArea);
-       root.getChildren().add(stackPane);
+       root.getChildren().add(mainMenuSPane);
        root.getChildren().add(closeApp);
-       root.getChildren().add(rootPane);
+       root.getChildren().add(globeSPane);
     
        gameScene.addUINode(root);   
 
@@ -339,13 +340,14 @@ public class MainMenu {
 		// until the application calls exit. The default value is true.
 
     	menuApp = new MenuApp(mainMenu, false);
-    	anchorPane = menuApp.createContent();
+    	menuAPane = menuApp.createContent();
 
-    	stackPane = new StackPane(anchorPane);
-    	stackPane.setPrefSize(WIDTH, HEIGHT);
+    	mainMenuSPane = new StackPane(menuAPane);
+    	mainMenuSPane.setPrefSize(WIDTH, HEIGHT);
+    	mainMenuSPane.setMaxSize(WIDTH, HEIGHT);
  
-    	double sceneWidth = stackPane.getPrefWidth();// + 30;
-    	double sceneHeight = stackPane.getPrefHeight();// + 30;
+    	double sceneWidth = mainMenuSPane.getPrefWidth();// + 30;
+    	double sceneHeight = mainMenuSPane.getPrefHeight();// + 30;
 
     	// Create application area
 //    	@SuppressWarnings("restriction")
@@ -391,7 +393,7 @@ public class MainMenu {
     	closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
 	       	@Override
 	       	public void handle(MouseEvent event) {	        
-	       		dialogOnExit(rootPane);
+	       		dialogOnExit(globeSPane);
 	
 	       		if (!isExit) {
 	       			event.consume();
@@ -404,15 +406,15 @@ public class MainMenu {
        });
        
 
-       rootPane = new StackPane();
-       rootPane.setPrefSize(stackPane.getPrefWidth()-300, stackPane.getPrefHeight());
+       globeSPane = new StackPane();
+       globeSPane.setPrefSize(mainMenuSPane.getPrefWidth()-300, mainMenuSPane.getPrefHeight());
        
        Group root = new Group();
        root.getChildren().add(applicationArea);
-       root.getChildren().add(stackPane);
+       root.getChildren().add(mainMenuSPane);
        root.getChildren().add(closeApp);
-       root.getChildren().add(rootPane);
-     
+       root.getChildren().add(globeSPane);
+       
        Scene scene = new Scene(root, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);//Color.rgb(0, 0, 0, 0));
        // Create a sliver of sun-lit bright orange atmosphere around the Mars globe when being dragged around
        scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/mainmenu/globe.css").toExternalForm());
@@ -501,7 +503,7 @@ public class MainMenu {
        menuApp.getSpinningGlobe().getGlobe().handleMouse(scene.getRoot());
      
        stage.setOnCloseRequest(e -> {    
-    		dialogOnExit(rootPane);
+    		dialogOnExit(globeSPane);
 
     		if (!isExit) {
     			e.consume();
@@ -607,9 +609,6 @@ public class MainMenu {
    public void createMainScene() {
 	   // creates a mainScene instance
 	   mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
-
-	   if (isSoundDisabled)
-		   mainMenu.setSoundDisabled();
 	   
        try {
     	   // Loads Scenario Config Editor
@@ -656,7 +655,7 @@ public class MainMenu {
     * Loads the setting dialog
     */
    public void runSettings() {   
-	   selectResolutionDialog(rootPane);
+	   selectResolutionDialog(globeSPane);
    }
 
    /*
@@ -717,8 +716,8 @@ public class MainMenu {
 			Platform.runLater(() -> {
 				mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
 				
-				if (isSoundDisabled)
-					mainMenu.setSoundDisabled();
+				//if (isSoundDisabled)
+				//	MainScene.setSoundDisabled();
 				   
 				mainScene.createLoadingIndicator();
 //				mainScene.showWaitStage(MainScene.LOADING);
@@ -736,6 +735,8 @@ public class MainMenu {
 
    }
 
+
+   
 	public int submitTask(File fileLocn, boolean autosaveDefaultName) {
 		Simulation.instance().getSimExecutor().execute(new LoadSimulationTask(fileLocn, autosaveDefaultName));
 		return 1;
@@ -928,7 +929,7 @@ public class MainMenu {
 
 
     public StackPane getPane() {
-    	return rootPane;
+    	return globeSPane;
     }
     
     
@@ -966,8 +967,8 @@ public class MainMenu {
 			StackPane.setMargin(vb, new Insets(10,10,10,10));
 			
 			exitDialog = new JFXDialog();
-			//dialog.setDialogContainer(pane);
-			exitDialog.setTransitionType(DialogTransition.BOTTOM);
+			//exitDialog.setDialogContainer(pane);
+			exitDialog.setTransitionType(DialogTransition.TOP);
 			exitDialog.setContent(sp);
 			exitDialog.show(pane);
 			
@@ -1292,12 +1293,12 @@ public class MainMenu {
     	return isSoundDisabled;
     }
     
-    public void setSoundDisabled() {
+    public static void disableSound() {
     	isSoundDisabled = true;
     }
     
 	public void destroy() {
-		anchorPane = null;
+		menuAPane = null;
 		primaryStage = null;
 		mainMenu = null;
 		mainScene = null;

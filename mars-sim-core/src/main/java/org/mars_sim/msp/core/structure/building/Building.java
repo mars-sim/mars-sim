@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.hazard.HazardEvent;
@@ -1394,13 +1395,14 @@ LocalBoundedObject, InsidePathLocation {
 		        			MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 		        	// Simulate the meteorite impact as a malfunction event for now
 					try {
-						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction_meteor);
+						malfunctionManager.addMalfunction(malfunction_meteor, true, null);
+						//malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction_meteor);
 					}
 					catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
 					
-					String victimName = "No one";
+					String victimName = "None";
 					
 					//check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
@@ -1421,7 +1423,7 @@ LocalBoundedObject, InsidePathLocation {
 							victimName = person.getName();
 							malfunction_meteor.setTraumatized(victimName);
 							
-							logger.info(victimName + " witnessed an meteorite impact in " + this + " at " + settlement);
+							logger.info(victimName + " was affected by the meteorite impact in " + this + " at " + settlement);
 						}
 						//else {
 							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);

@@ -871,11 +871,11 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     /**
      * Sets the vehicle's emergency beacon on or off.
-     * @param isOn true if beacon is on.
+     * @param state true if beacon is to be on.
      */
-    public void setEmergencyBeacon(boolean isOn) {
-    	if (emergencyBeacon != isOn) {
-    		emergencyBeacon = isOn;
+    public void setEmergencyBeacon(boolean state) {
+    	if (emergencyBeacon != state) {
+    		emergencyBeacon = state;
     		fireUnitUpdate(UnitEventType.EMERGENCY_BEACON_EVENT);
     	}
     }

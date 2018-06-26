@@ -96,7 +96,7 @@ implements Serializable {
 	private Settlement emergencySettlement;
 	private boolean outbound;
 	private Map<AmountResource, Double> emergencyResources;
-	private Map<Class, Integer> emergencyEquipment;
+	private Map<Class<? extends Equipment>, Integer> emergencyEquipment;
 	private Map<Part, Integer> emergencyParts;
 	private Vehicle emergencyVehicle;
 
@@ -215,7 +215,7 @@ implements Serializable {
         // Determine emergency supplies.
         emergencyResources = new HashMap<AmountResource, Double>();
         emergencyParts = new HashMap<Part, Integer>();
-        emergencyEquipment = new HashMap<Class, Integer>();
+        emergencyEquipment = new HashMap<>();
 
         Iterator<Good> j = emergencyGoods.keySet().iterator();
         while (j.hasNext()) {
@@ -736,12 +736,12 @@ implements Serializable {
 
         // Determine containers needed to hold emergency resources.
         Map<Class<? extends Container>, Integer> containers = getContainersRequired(emergencyResources);
-        emergencyEquipment = new HashMap<Class, Integer>(containers.size());
+        emergencyEquipment = new HashMap<>(containers.size());
         Iterator<Class<? extends Container>> i = containers.keySet().iterator();
         while (i.hasNext()) {
             Class<? extends Container> container = i.next();
             int number = containers.get(container);
-            emergencyEquipment.put(container, number);
+            emergencyEquipment.put((Class<? extends Equipment>) container, number);
         }
 
         // Determine emergency parts needed.
@@ -948,10 +948,10 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
 
-        return new HashMap<Class, Integer>(0);
+        return new HashMap<>(0);
     }
 
     @Override
@@ -1025,16 +1025,16 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class, Integer> getRequiredEquipmentToLoad() {
+    public Map<Class<? extends Equipment>, Integer> getRequiredEquipmentToLoad() {
 
-        Map<Class, Integer> result = getEquipmentNeededForRemainingMission(true);
+        Map<Class<? extends Equipment>, Integer> result = getEquipmentNeededForRemainingMission(true);
 
         // Add any emergency equipment needed.
         if (outbound && (emergencyEquipment != null)) {
 
-            Iterator<Class> i = emergencyEquipment.keySet().iterator();
+            Iterator<Class<? extends Equipment>> i = emergencyEquipment.keySet().iterator();
             while (i.hasNext()) {
-                Class equipment = i.next();
+                Class<? extends Equipment> equipment = i.next();
                 int num = emergencyEquipment.get(equipment);
                 if (result.containsKey(equipment)) {
                     num += (Integer) result.get(equipment);
@@ -1072,9 +1072,9 @@ implements Serializable {
         }
 
         // Add emergency equipment.
-        Iterator<Class> k = emergencyEquipment.keySet().iterator();
+        Iterator<Class<? extends Equipment>> k = emergencyEquipment.keySet().iterator();
         while (k.hasNext()) {
-            Class equipmentClass = k.next();
+            Class<? extends Equipment> equipmentClass = k.next();
             int number = emergencyEquipment.get(equipmentClass);
             Good equipmentGood = GoodsUtil.getEquipmentGood(equipmentClass);
             result.put(equipmentGood, number);

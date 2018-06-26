@@ -225,6 +225,20 @@ implements Serializable {
 	}
 
 	/**
+	 * Returns the current task phase if there is one.
+	 * Returns null if current task has no phase.
+	 * Returns null if there is no current task.
+	 * @return the current task phase
+	 */
+	public TaskPhase getMainTaskPhase() {
+		if (currentTask != null) {
+			return currentTask.getMainTaskPhase();
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns the current task.
 	 * Return null if there is no current task.
 	 * @return the current task
@@ -275,7 +289,7 @@ implements Serializable {
 			&& !taskDescription.equals("")) {
 
 			String taskPhaseName = null;
-			TaskPhase tp = getPhase();
+			TaskPhase tp = getMainTaskPhase();
 			
 			if (tp != null) {
 

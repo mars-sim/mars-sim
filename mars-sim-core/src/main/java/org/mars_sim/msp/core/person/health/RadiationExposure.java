@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +22,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.hazard.HazardEvent;
+import org.mars_sim.msp.core.person.BodyRegionType;
+import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -264,7 +268,7 @@ public class RadiationExposure implements Serializable {
 	   	//if (marsClock == null)
     	//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		RadiationEvent event = new RadiationEvent(marsClock, region, amount);
+		RadiationEvent event = new RadiationEvent(marsClock, region, Math.round(amount*10000.0)/10000.0);
 		eventMap.put(event, solCache);
 		
 		return event;
@@ -471,6 +475,10 @@ public class RadiationExposure implements Serializable {
 	    	double totalExposure = 0;
     		double exposure = 0;
        	    double shield_factor = 0;
+       	    
+       	    double baseline = 0;
+       	    double sep = 0;
+       	    double gcr = 0;
 
       	    // TODO: account for the effect of atmosphere pressure on radiation dosage as shown by RAD data
 
@@ -499,28 +507,28 @@ public class RadiationExposure implements Serializable {
 		    	    	double baselevel = 0;
 		    	    	if (exposed[2]) {
 		    	    		baselevel = 0.0; // somewhat arbitrary
-			    	    	exposure = (baselevel + RandomUtil.getRandomInt(-1,1) * RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time/RADIATION_CHECK_FREQ)) // highly unpredictable, somewhat arbitrary
+		    	    		sep += (baselevel + RandomUtil.getRandomInt(-1,1) * RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time/RADIATION_CHECK_FREQ)) // highly unpredictable, somewhat arbitrary
 			    	    			* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
 		    	    	}
 		    	    	// for now, if SEP happens, ignore GCR and Baseline
 		    	    	else if (exposed[1]) {
 		    	    		baselevel = GCR_RAD_PER_SOL * time/100D;
-			    	    	exposure = baselevel + RandomUtil.getRandomInt(-1,1)
+			    	    	gcr += baselevel + RandomUtil.getRandomInt(-1,1)
 			    	    			* RandomUtil.getRandomDouble(shield_factor * GCR_RAD_SWING * time/RADIATION_CHECK_FREQ); // according to Curiosity RAD's data
 
 		    	    	}
 		    	    	// for now, if GCR happens, ignore Baseline
 		    	    	else if (exposed[0]) {
 		    	    		baselevel = BASELINE_RAD_PER_SOL * time/RADIATION_CHECK_FREQ;
-			    	    	exposure = baselevel + RandomUtil.getRandomInt(-1,1)
+			    	    	baseline += baselevel + RandomUtil.getRandomInt(-1,1)
 			    	    		* RandomUtil.getRandomDouble(baselevel/3D); // arbitrary
 		    	    	}
 
-		    	    	exposure = Math.round(exposure*10000.0)/10000.0;
+		    	    	exposure = sep+gcr+baseline;
 		    	    	RadiationEvent event = addDose(j, exposure);
 		    	    	eventMap.add(event);
 
-		    	    	totalExposure = totalExposure + exposure;
+		    	    	totalExposure += exposure;
 	        	    }
     	    	}
     	    }
@@ -532,7 +540,7 @@ public class RadiationExposure implements Serializable {
 	    			// if a person steps outside of the vehicle
 				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 				    	"[" + person.getLocationTag().getShortLocationName() + "] " 
-				    	+ person.getName() + WAS + EXPOSED_TO + exposure
+				    	+ person.getName() + WAS + EXPOSED_TO + totalExposure
     	    			+ DOSE //in body region " + i
     	    			+ EVA_OPERATION
     	    			+ coord, null);
@@ -541,7 +549,7 @@ public class RadiationExposure implements Serializable {
 	    			vehicle = person.getVehicle().getName();
 	    			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 	    				"[" + coord + "] "
-	    				+ person.getName() + WAS + EXPOSED_TO + exposure
+	    				+ person.getName() + WAS + EXPOSED_TO + totalExposure
     	    			+ DOSE // in body region " + i
     	    			+ " during " + person.getMind().getMission().getName(), null);
 	    		}
@@ -549,7 +557,8 @@ public class RadiationExposure implements Serializable {
 	    		HistoricalEvent hEvent = new HazardEvent(
 	    				EventType.HAZARD_RADIATION_EXPOSURE,
 	    				eventMap,
-	    				EXPOSED_TO + exposure + DOSE, 
+	    				//EXPOSED_TO + exposure + DOSE, 
+	    				"Dosage : " + Math.round(totalExposure*10000.0)/10000.0 + " mSv",
 						person.getName(), 
 						vehicle, 
 						coord 

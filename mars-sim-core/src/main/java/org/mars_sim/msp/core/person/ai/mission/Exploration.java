@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
@@ -400,7 +401,7 @@ implements Serializable {
             if (!hasEnoughResourcesForRemainingMission(false)) {
                 // If not, determine an emergency destination.
                 determineEmergencyDestination(member);
-                setPhaseEnded(true);
+//                setPhaseEnded(true);
             }
         }
         else {
@@ -620,12 +621,12 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null)
             return equipmentNeededCache;
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
 
             // Include required number of specimen containers.
             result.put(SpecimenContainer.class, REQUIRED_SPECIMEN_CONTAINERS);

@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -142,7 +143,7 @@ implements Serializable {
 
                 // Check if vehicle can carry enough supplies for the mission.
                 if (hasVehicle() && !isVehicleLoadable()) {
-                    endMission("Vehicle is not loadable. (RescueSalvageVehicle)");
+                    endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable. (RescueSalvageVehicle)");
                 }
 
                 // Add rendezvous phase.
@@ -387,7 +388,7 @@ implements Serializable {
         HistoricalEvent newEvent = new MissionHistoricalEvent(
         		EventType.MISSION_RENDEZVOUS,
 				this,
-        		this.getName(),
+				EventType.MISSION_RENDEZVOUS.getName(),
         		member.getName(), 
         		member.getVehicle().getName(),
         		vehicleTarget.getLocationTag().getShortLocationName() 
@@ -443,7 +444,7 @@ implements Serializable {
             HistoricalEvent salvageEvent = new MissionHistoricalEvent(
             		EventType.MISSION_SALVAGE_VEHICLE,
     				this,
-            		this.getName(),
+    				EventType.MISSION_SALVAGE_VEHICLE.getName(),
             		person.getName(),
             		person.getVehicle().getName(),
             		person.getSettlement().getName()
@@ -472,7 +473,7 @@ implements Serializable {
                     HistoricalEvent rescueEvent = new MissionHistoricalEvent(
                     		EventType.MISSION_RESCUE_PERSON,
             				this,
-                    		this.getName(), 
+            				EventType.MISSION_RESCUE_PERSON.getName(), 
                     		person.getName(),
                     		person.getVehicle().getName(),
                     		person.getSettlement().getName()
@@ -716,12 +717,12 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
         if (equipmentNeededCache != null) {
             return equipmentNeededCache;
         }
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
             equipmentNeededCache = result;
             return result;
         }

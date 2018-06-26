@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -189,7 +190,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
-		if (mainScene == null)
+		if (!MainMenu.isSoundDisabled() && !soundPlayer.isSoundDisabled())
 			soundPlayer.playRandomMusicTrack();
 
 		// Prepare tool windows.
@@ -1133,9 +1134,9 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	public static void disableSound() {
-		soundPlayer.setSoundDisabled(true);
-		soundPlayer.enableMasterGain(false);
+		soundPlayer.disableSound();
 	}
+	
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * 

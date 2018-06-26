@@ -30,8 +30,8 @@ public class SimuLoggingFormatter extends Formatter {
     public final static String PERIOD = ".";
     public final static String COLON = " : ";
     
-    public final static DateFormat df = DateFormat.getDateTimeInstance();
-   // private Date date = new Date();
+//  public final static DateFormat df = DateFormat.getDateTimeInstance();
+//  private Date date = new Date();
     
     private StringBuffer sb = new StringBuffer();
 
@@ -81,6 +81,11 @@ public class SimuLoggingFormatter extends Formatter {
 			sb.append(LINEFEED);
 			
 		}
+		
+//		String newString = sb.toString();
+//		if (!cacheString.equals(newString)) {
+//			cacheString = sb.toString();
+//		}
 		
 		return sb.toString();
 		

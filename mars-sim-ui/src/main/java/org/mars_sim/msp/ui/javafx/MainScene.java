@@ -25,6 +25,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import javafx.scene.Parent;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;
@@ -325,7 +326,7 @@ public class MainScene {
 	private StackPane mainStackPane;
 	private StackPane dashboardStackPane; // monPane,
 	private StackPane sMapStackPane;
-	private StackPane minimapStackPane;
+	private Group minimapGroup;
 	private StackPane speedPane;
 	private StackPane soundPane;
 	private StackPane calendarPane; // farmPane,
@@ -452,7 +453,7 @@ public class MainScene {
 		screen_height = height;
 		this.gameScene = gameScene;
 		sceneWidth = new SimpleDoubleProperty(width);
-		sceneHeight = new SimpleDoubleProperty(height - TAB_PANEL_HEIGHT);
+		sceneHeight = new SimpleDoubleProperty(height);// - TAB_PANEL_HEIGHT);
 
 		isMainSceneDoneLoading = false;
 
@@ -1125,19 +1126,19 @@ public class MainScene {
 		pausePane.setLayoutX((sceneWidth.get() - pausePane.getPrefWidth()) / 2D);
 		pausePane.setLayoutY((sceneHeight.get() - pausePane.getPrefHeight()) / 2D);
 
-		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
+		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		//matrix.setPrefWidth(jfxTabPane.getWidth());
 		
-		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
+		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
 		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
 
-		mainStackPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
+		mainStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
 		mainStackPane.prefWidthProperty().bind(scene.widthProperty());
 
 		// anchorTabPane is within jfxTabPane
-		mapsAnchorPane.prefHeightProperty().bind(scene.heightProperty());// .subtract(TITLE_HEIGHT));
+		mapsAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
 		mapsAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 		//mapsAnchorPane.setStyle("-fx-background-color: black; ");
 		
@@ -1995,7 +1996,7 @@ public class MainScene {
 					// pinButton.setSelected(true);
 					openMinimap();
 				} else
-					minimapStackPane.toFront();
+					minimapGroup.toFront();
 
 				minimapToggle.toFront();
 				mapToggle.toFront();
@@ -2285,10 +2286,10 @@ public class MainScene {
 		navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 
 		minimapNode = new SwingNode();
-		minimapStackPane = new StackPane(minimapNode);
+		minimapGroup = new Group(minimapNode);
 		minimapNode.setContent(navWin);
-		minimapStackPane.setStyle("-fx-background-color: transparent; ");
-		minimapNode.setStyle("-fx-background-color: transparent; ");
+		//minimapGroup.setStyle("-fx-background-color: transparent; ");
+		//minimapNode.setStyle("-fx-background-color: transparent; ");
 
 		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapPanel = settlementWindow.getMapPanel();
@@ -2406,23 +2407,23 @@ public class MainScene {
 	public void openMinimap() {
 		desktop.openToolWindow(NavigatorWindow.NAME);
 
-		AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
-		AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0
+		AnchorPane.setLeftAnchor(minimapGroup, 3.0);
+		AnchorPane.setTopAnchor(minimapGroup, 0.0); // 45.0
 		boolean flag = false;
 		for (Node node : mapsAnchorPane.getChildrenUnmodifiable()) {
-			if (node == minimapStackPane) {
+			if (node == minimapGroup) {
 				flag = true;
 				break;
 			}
 		}
 
 		if (!flag)
-			mapsAnchorPane.getChildren().addAll(minimapStackPane);
+			mapsAnchorPane.getChildren().addAll(minimapGroup);
 		
 		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
 		navWin.toFront();
 		navWin.requestFocus();
-		minimapStackPane.toFront();
+		minimapGroup.toFront();
 		minimapToggle.setSelected(true);
 		minimapToggle.setText("Minimap On");
 		minimapToggle.toFront();
@@ -2505,7 +2506,7 @@ public class MainScene {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
 			// addNavWin();
-			mapsAnchorPane.getChildren().remove(minimapStackPane);
+			mapsAnchorPane.getChildren().remove(minimapGroup);
 			minimapToggle.setSelected(false);
 			minimapToggle.setText("Minimap Off");
 			jfxTabPane.requestFocus();
@@ -2529,7 +2530,7 @@ public class MainScene {
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
 			Platform.runLater(() -> {
-				mapsAnchorPane.getChildren().removeAll(minimapStackPane, sMapStackPane, zoomSlider, rotateCWBtn,
+				mapsAnchorPane.getChildren().removeAll(minimapGroup, sMapStackPane, zoomSlider, rotateCWBtn,
 						rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
 				minimapToggle.setSelected(false);
 				minimapToggle.setText("Minimap Off");
@@ -4070,19 +4071,18 @@ public class MainScene {
 	public void createBillboard() {
 
 	    matrix = DotMatrixBuilder.create()              
-                .prefSize(925, 50)
-                .colsAndRows(196, 10)                
-                //.dotOnColor(Color.WHITE)//rgb(255, 55, 0))
+                .prefSize(925, 54)
+                .colsAndRows(196, 11)                
                 .dotOnColor(Color.rgb(255, 55, 0))
-                .dotOffColor(Color.BLACK)//.ORANGE)
+                .dotOffColor(Color.rgb(64, 64, 64))
                 .dotShape(DotShape.ROUND)
                 .matrixFont(MatrixFont8x8.INSTANCE)
                 .build();
 
 		billboard = new Pane(matrix);
-		billboard.setPadding(new Insets(1));
+		//billboard.setPadding(new Insets(1));
 		billboard.setBackground(new Background(new BackgroundFill(Color.rgb(20, 20, 20), CornerRadii.EMPTY, Insets.EMPTY)));
-		billboard.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+		//billboard.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.FULL)));
 
 	    gNode = new DraggableNode(billboard);
 
@@ -4172,7 +4172,7 @@ public class MainScene {
 		dashboardStackPane = null;
 		root = null;
 		rootStackPane = null;
-		minimapStackPane = null;
+		minimapGroup = null;
 		speedPane = null;
 		soundPane = null;
 		calendarPane = null;

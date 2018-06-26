@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-09-20
  * @author Barry Evans
  */
-package org.mars_sim.msp.core.person.medical;
+package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
 

@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
@@ -135,10 +136,10 @@ extends TestCase {
 
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 
-		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> requiredEquipmentMap = new HashMap<>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
-		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		Map<Class<? extends Equipment>, Integer> optionalEquipmentMap = new HashMap<>(0);
 
 		LoadVehicleGarage loadVehicle = new LoadVehicleGarage(person, vehicle, requiredResourcesMap, optionalResourcesMap,
 		        requiredEquipmentMap, optionalEquipmentMap);
@@ -219,7 +220,7 @@ extends TestCase {
 		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, Integer.valueOf(5));
 
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> equipmentMap = new HashMap<>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
 		Vehicle vehicle = new MockVehicle(settlement);
@@ -258,7 +259,7 @@ extends TestCase {
 		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, Integer.valueOf(5));
 
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> equipmentMap = new HashMap<>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
 		Vehicle vehicle = new MockVehicle(settlement);
@@ -295,7 +296,7 @@ extends TestCase {
 		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, Integer.valueOf(5));
 
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> equipmentMap = new HashMap<>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
 		Vehicle vehicle = new MockVehicle(settlement);
@@ -342,10 +343,10 @@ extends TestCase {
 
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 
-		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> requiredEquipmentMap = new HashMap<>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
-		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		Map<Class<? extends Equipment>, Integer> optionalEquipmentMap = new HashMap<>(0);
 
 		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
 		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
@@ -381,10 +382,10 @@ extends TestCase {
 
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 
-		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> requiredEquipmentMap = new HashMap<>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
-		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		Map<Class<? extends Equipment>, Integer> optionalEquipmentMap = new HashMap<>(0);
 
 		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
 		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
@@ -427,10 +428,10 @@ extends TestCase {
 
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 
-		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> requiredEquipmentMap = new HashMap<>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
-		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		Map<Class<? extends Equipment>, Integer> optionalEquipmentMap = new HashMap<>(0);
 
 		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
                 optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
@@ -470,10 +471,10 @@ extends TestCase {
 
 		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 
-		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		Map<Class<? extends Equipment>, Integer> requiredEquipmentMap = new HashMap<>();
 		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 
-		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		Map<Class<? extends Equipment>, Integer> optionalEquipmentMap = new HashMap<>(0);
 
 		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap,
                 optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));

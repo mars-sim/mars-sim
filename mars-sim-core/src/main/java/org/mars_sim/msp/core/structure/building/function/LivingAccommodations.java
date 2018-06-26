@@ -60,7 +60,7 @@ public class LivingAccommodations extends Function implements Serializable {
     private Inventory inv;
     private Building building;
     
-    private Map<Person, Point2D> designatedBeds = new HashMap<>();
+    private Map<Person, Point2D> assignedBeds = new HashMap<>();
 
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
@@ -165,7 +165,7 @@ public class LivingAccommodations extends Function implements Serializable {
     		//		+ " is going to his/her quarter in " + building.getNickName() + " in " + settlement, null);
             //logger.info("[" + settlement.getName() + "]  # sleepers : " + sleepers + "   # beds : " + maxBeds);
         }
-        else if (!designatedBeds.containsKey(person)) {
+        else if (!assignedBeds.containsKey(person)) {
         	if (isAGuest) {
             	sleepers++;
             	// do not designate a bed since he's only a guest
@@ -186,8 +186,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	    		}
 	    		else {
 	                LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
-	                		"[" + settlement.getName() + "] " + person + " hasn't been able to find an unmarked bed. At least NOT in "
-	    					+ building.getNickName() + "." , null);
+	                		"[" + settlement.getName() + "] " + person + " does not have a bed yet.", null);
 	    		}
         	}
     	}
@@ -205,13 +204,13 @@ public class LivingAccommodations extends Function implements Serializable {
     	Point2D bed = null;
     	List<Point2D> spots = super.getActivitySpotsList();
     	//int numBeds = spots.size();
-    	int numDesignated = designatedBeds.size();
-    	if (numDesignated <= maxBeds) {//numBeds) {
+    	int numDesignated = assignedBeds.size();
+    	if (numDesignated < maxBeds) {//numBeds) {
     		// there should be at least one bed available-- Note: it may not be empty. a traveler may be sleeping on it.
 	        for (Point2D spot : spots) {
-	            if (!designatedBeds.containsValue(spot)) {
+	            if (!assignedBeds.containsValue(spot)) {
 	            	bed = spot;
-	            	designatedBeds.put(person, bed);
+	            	assignedBeds.put(person, bed);
 	        		person.setBed(bed);
 	        		person.setQuarters(building);
 	            	//logger.info(person + " has been designated a bed at (" + bed.getX() + ", " + bed.getY() 	+ ") in " + person.getQuarters());
@@ -272,7 +271,7 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     public void generateWaste(double time) {
     	double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
-    	int numBed = designatedBeds.size();
+    	int numBed = assignedBeds.size();
     	//int pop = settlement.getNumCurrentPopulation();
     	// Total average wash water used at the settlement over this time period.
     	// This includes showering, washing hands, washing dishes, etc.
@@ -328,7 +327,7 @@ public class LivingAccommodations extends Function implements Serializable {
     }
 
     public Map<Person, Point2D> getBedMap() {
-    	return designatedBeds;
+    	return assignedBeds;
     }
 
     /*
@@ -339,7 +338,7 @@ public class LivingAccommodations extends Function implements Serializable {
     	//List<Point2D> activitySpots = super.getActivitySpotsList();//(List<Point2D>) super.getAvailableActivitySpot(person);
     	//int numBeds = activitySpots.size();
 
-    	int numDesignated = designatedBeds.size();
+    	int numDesignated = assignedBeds.size();
 		//logger.info("# designated beds : " +  numDesignated + " # beds : " +  numBeds);
 
     	if (numDesignated < maxBeds)
@@ -392,7 +391,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	    inv = null;
 	    building = null;
 	    
-	    designatedBeds = null;
+	    assignedBeds = null;
 
 	    simulationConfig = null;
 	    buildingConfig = null;

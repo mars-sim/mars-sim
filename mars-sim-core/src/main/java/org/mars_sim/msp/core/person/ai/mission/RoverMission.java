@@ -448,7 +448,7 @@ extends VehicleMission {
 		}
 
 		// Have member exit rover if necessary.
-		if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
+		if (!member.isInSettlement()) {//.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
 			// member should be in a vehicle
 			
 			// Get closest airlock building at settlement.

@@ -23,12 +23,9 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-//import javafx.application.Platform;
-
 /**
  * A class to dispatch playback of OGG files to OGGSoundClip.
  */
-@SuppressWarnings("restriction")
 public class AudioPlayer {
 
 	private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
@@ -475,7 +472,7 @@ public class AudioPlayer {
 	 * Play a randomly selected music track
 	 */
 	public void playRandomMusicTrack() {
-		if (isMusicTrackStopped() && !masterClock.isPaused()) {
+		if (isMusicTrackStopped() && !masterClock.isPaused() && !isSoundDisabled()) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay them
 			if (currentMusicTrack != null
 					&& currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE) 
@@ -504,8 +501,19 @@ public class AudioPlayer {
 		return isSoundDisabled;
 	}
 	
-	public void setSoundDisabled(boolean mode) {
-		isSoundDisabled = mode;
+	public void disableSound() {
+		isSoundDisabled = true;
+		currentMusicVol = 0;
+		currentSoundVol = 0;
+		enableMasterGain(false);
+		
+		allSoundClips = null;
+		allMusicTracks = null;
+		currentSoundClip = null;
+		currentMusicTrack = null;
+		soundTracks = null;
+		played_tracks = null;
+		
 	}
 	
 	public void destroy() {

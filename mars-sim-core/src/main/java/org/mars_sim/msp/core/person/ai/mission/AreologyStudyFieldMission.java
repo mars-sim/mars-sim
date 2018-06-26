@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -403,13 +404,13 @@ implements Serializable {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+	public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
 			boolean useBuffer) {
 		if (equipmentNeededCache != null) {
 			return equipmentNeededCache;
 		}
 		else {
-			Map<Class, Integer> result = new HashMap<Class, Integer>();
+			Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
 			equipmentNeededCache = result;
 			return result;
 		}

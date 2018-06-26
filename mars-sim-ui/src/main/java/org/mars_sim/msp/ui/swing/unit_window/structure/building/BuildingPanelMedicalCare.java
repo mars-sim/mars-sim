@@ -19,7 +19,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.medical.HealthProblem;
+import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;

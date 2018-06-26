@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
@@ -53,6 +52,7 @@ import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Workout;
+import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -89,7 +89,7 @@ implements Serializable, LifeSupportType, Objective {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
-    private static String DETECTOR_GRID = "] The detector grid forecast that ";
+    private static String DETECTOR_GRID = "] The detector grid forecast a ";
     
 	/** Normal air pressure [in kPa] */
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_IN_KPA;//101.325D;
@@ -754,7 +754,8 @@ implements Serializable, LifeSupportType, Objective {
 			//System.out.println("life_support_req[1][0] is " + life_support_req[1][0]);
 			//if (p < life_support_value[0][0] - SAFETY_PRESSURE || p > life_support_value[1][0] + SAFETY_PRESSURE) {	
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) { 	
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D + " kPa", null);
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, this.getName() 
+						+ " detected improper air pressure at " + Math.round(p *10D)/10D + " kPa", null);
 				return false;
 			}
 

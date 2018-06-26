@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Driver;
@@ -124,7 +125,7 @@ implements Serializable {
 
             // Check if vehicle can carry enough supplies for the mission.
             if (hasVehicle() && !isVehicleLoadable()) {
-                endMission("Vehicle is not loadable. (TravelToSettlement)");
+                endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable. (TravelToSettlement)");
             }
             
             
@@ -181,7 +182,7 @@ implements Serializable {
 
         // Check if vehicle can carry enough supplies for the mission.
         if (hasVehicle() && !isVehicleLoadable()) {
-            endMission("Vehicle is not loadable. (TravelToSettlement)");
+            endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable. (TravelToSettlement)");
         }
     }
 
@@ -588,12 +589,12 @@ implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws MissionException if error determining needed equipment.
      */
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null)
             return equipmentNeededCache;
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
             equipmentNeededCache = result;
             return result;
         }

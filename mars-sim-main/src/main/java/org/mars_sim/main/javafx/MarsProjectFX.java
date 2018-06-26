@@ -544,7 +544,8 @@ public class MarsProjectFX extends Application  {
 	   		
 			if (noaudio) {
 				logger.info("noaudio argument detected. Turn off sound.");
-				mainMenu.setSoundDisabled();
+				// Use MainMenu to save the sound state
+				MainMenu.disableSound();
 			}
 
 		}

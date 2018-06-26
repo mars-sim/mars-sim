@@ -26,13 +26,13 @@ Copyright (C) 2018 Scott Davis
 
 ### UI IMPROVEMENT :
 
-1. Separate lists of settlers according to their associated settlement in 
+1. Display a lists of settlers according to their associated settlement in 
    Dashboard tab.
 
 
 ### FIXES :
 
-1. Correct the missing decimal place notation in Configuration Editor
+1. Correct the missing decimal separator in Configuration Editor
 
 2. Fix excessive rows showing up in task schedules. Enable mission name to show up on
    separate column.

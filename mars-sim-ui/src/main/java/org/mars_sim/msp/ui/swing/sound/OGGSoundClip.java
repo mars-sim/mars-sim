@@ -23,6 +23,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.jcraft.jogg.Packet;
@@ -463,10 +464,13 @@ public class OGGSoundClip {
 	}
 
 	public void disableSound() {
-		if (MainDesktopPane.mainScene == null)
-			MainDesktopPane.disableSound();
-		else
+		if (MainDesktopPane.mainScene != null) {
 			MainScene.disableSound();
+		}
+		else
+			MainDesktopPane.disableSound();
+		
+		MainMenu.disableSound();
 	}
 	
 	/**

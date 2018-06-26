@@ -23,7 +23,9 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -82,7 +84,7 @@ implements Serializable {
 	private double totalResourceCollected;
 
 	/** The type of container needed for the mission or null if none. */
-	private Class<?> containerType;
+	private Class<? extends Equipment> containerType;
 	/** The start time at the current collection site. */
 	private MarsClock collectionSiteStartTime;
 	/** The type of resource to collect. */
@@ -156,7 +158,7 @@ implements Serializable {
 	
 	            // Check if vehicle can carry enough supplies for the mission.
 	            if (hasVehicle() && !isVehicleLoadable()) {
-	                endMission("Vehicle is not loadable at CollectingResourcesMission");
+	                endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable at CollectingResourcesMission");
 	            }
             }
         }
@@ -251,7 +253,7 @@ implements Serializable {
 
         // Check if vehicle can carry enough supplies for the mission.
         if (hasVehicle() && !isVehicleLoadable())
-            endMission("Vehicle is not loadable at CollectingResourcesMission");
+            endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable at CollectingResourcesMission");
     }
 
     /**
@@ -264,7 +266,7 @@ implements Serializable {
      * @return the weighted probability
      */
     public static double getNewMissionProbability(Person person,
-            Class containerType, int containerNum, int minPeople) {
+            Class<? extends Container> containerType, int containerNum, int minPeople) {
         double result = 1;
 
     	Settlement settlement = person.getSettlement();
@@ -336,8 +338,8 @@ implements Serializable {
 
         	if (getCurrentNavpoint() == null)
         		// go back home 
-        		logger.info("getCurrentNavpoint() == null");
-        		
+//        		logger.info("getCurrentNavpoint() == null");
+        		returnHome();
         	else if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
                 setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
@@ -842,13 +844,13 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null) {
             return equipmentNeededCache;
         }
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
 
             // Include required number of containers.
             result.put(containerType, containerNum);

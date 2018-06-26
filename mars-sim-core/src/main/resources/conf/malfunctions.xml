@@ -12,10 +12,13 @@
 		<!-- Values: 1 to 100 (100 = most severe) -->
 		<severity value="100" />
 
-		<!-- Starting probability of this malfunction occurring. (required)
+		<!-- Initial probability of this malfunction occurring. (required)
 		     This composite value is the sum of the weighted probabilities of
 		     all items found in <repair-parts-list>. It is dynamically updated 
-		     as soon as the field reliability data becomes readily available -->
+		     as soon as new field reliability data becomes readily available. 
+		     To account for the trend of this malfunction, the new probability 
+		     will be calculated as the average between the previous one and 
+		     the newly calculated one. -->
 		<!-- Values: 0.0 to 100.0 (100.0 = most likely) -->
 		<probability value="5.0" />
 

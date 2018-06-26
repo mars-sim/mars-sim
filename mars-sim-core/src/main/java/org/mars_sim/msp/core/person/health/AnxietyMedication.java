@@ -4,7 +4,7 @@
  * @version 3.1.0 2016-10-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.medical;
+package org.mars_sim.msp.core.person.health;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;

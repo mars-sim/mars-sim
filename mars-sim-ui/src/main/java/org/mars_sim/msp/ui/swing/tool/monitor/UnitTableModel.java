@@ -282,7 +282,10 @@ implements MonitorModel, UnitListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return " " + Msg.getString(countingMsgKey, Integer.toString(getUnitNumber()));
+		return " " + Msg.getString(countingMsgKey, 
+//				Integer.toString(getUnitNumber())
+				getUnitNumber()
+				);
 	}
 
 	/**

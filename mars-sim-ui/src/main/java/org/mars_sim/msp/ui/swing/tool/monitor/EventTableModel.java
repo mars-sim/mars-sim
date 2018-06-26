@@ -435,7 +435,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 						if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
 							header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 							
-							if (who.toLowerCase().equals("no one"))
+							if (who.toLowerCase().equals("none"))
 								message = "There is a " + cause + " in " + location0 + " at " + location1;
 							else
 								message = who + " witnessed " + cause + " in " + location0 + " at " + location1;
@@ -444,7 +444,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 						else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
 							header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$	
 							
-							message = who + " was " + cause + " in " + location0 + " at " + location1;
+							message = who + " was exposed to " + cause.replace("Dosage : ", "") + " of radiation in " + location0 + " at " + location1;
 						}
 
 				        if (!messageCache.contains(message)) {
@@ -463,18 +463,23 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 				        // Only display notification window when malfunction has occurred, not when fixed.
 				        if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
-			        		message = who + " accidently caused " + cause + " in " + location0 + " at " + location1;
+			        		//message = who + " accidently caused " + cause + " in " + location0 + " at " + location1;
+							message = cause + " in " + location0 + " at " + location1 + ". " 
+									+ who + " witnessed the malfunction and may have to do with it.";
 			        		willNotify = true;
 				        }
 				        
 				        else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
-					        message = who + " witnessed "  + cause + " in " + location0 + " at " + location1;
+					        message = who + " reported "  + cause + " in " + location0 + " at " + location1;
 					        willNotify = true;
 				        }
 	
 				        else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
-					        message = who + " was most traumatized by " + cause + " in " + location0 + " at " + location1;
-					        willNotify = true;
+				        	if (who.toLowerCase().equals("none"))
+				        		message = "None was witnessed or traumatized by " + cause + " in " + location0 + " at " + location1;
+				        	else 
+				        		message = who + " was traumatized by " + cause + " in " + location0 + " at " + location1;				        		
+				        	willNotify = true;
 				        }
 				        
 				        if (willNotify && !messageCache.contains(message)) {
@@ -526,8 +531,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 				        // Only display notification window when malfunction has occurred, not when fixed.
 				        if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
-				            || eventType == EventType.MISSION_EMERGENCY_DESTINATION
-				            || eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
+				            //|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
+				            //|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 				            || eventType == EventType.MISSION_MEDICAL_EMERGENCY
 				            || eventType == EventType.MISSION_RENDEZVOUS		
 				            || eventType == EventType.MISSION_RESCUE_PERSON					            

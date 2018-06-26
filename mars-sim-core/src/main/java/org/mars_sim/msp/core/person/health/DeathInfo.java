@@ -5,7 +5,7 @@
  * @author Barry Evans
  */
 
-package org.mars_sim.msp.core.person.medical;
+package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
 import java.util.Iterator;

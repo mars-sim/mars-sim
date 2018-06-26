@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.medical.MedicalManager;
+import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
@@ -50,13 +50,6 @@ import org.mars_sim.msp.core.time.UpTimer;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
-
-//import javafx.animation.Timeline;
-
-//import javafx.animation.KeyFrame;
-//import javafx.animation.Timeline;
-//import javafx.application.Platform;
-//import javafx.util.Duration;
 
 //import mikera.gui.Frames;
 //import mikera.gui.JConsole;
@@ -613,7 +606,7 @@ implements ClockListener, Serializable {
      * @param file the file to be saved to.
      */
     public synchronized void saveSimulation(int type, File file) throws IOException {
-        logger.info("SImulation's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
+//        logger.info("Simulation's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
     	logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
     	//System.out.println("file is " + file);
     	

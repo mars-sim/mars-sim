@@ -27,13 +27,14 @@ import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
-import org.mars_sim.msp.core.person.medical.Complaint;
-import org.mars_sim.msp.core.person.medical.ComplaintType;
-import org.mars_sim.msp.core.person.medical.DeathInfo;
-import org.mars_sim.msp.core.person.medical.HealthProblem;
-import org.mars_sim.msp.core.person.medical.MedicalEvent;
-import org.mars_sim.msp.core.person.medical.MedicalManager;
-import org.mars_sim.msp.core.person.medical.Medication;
+import org.mars_sim.msp.core.person.health.Complaint;
+import org.mars_sim.msp.core.person.health.ComplaintType;
+import org.mars_sim.msp.core.person.health.DeathInfo;
+import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.person.health.MedicalEvent;
+import org.mars_sim.msp.core.person.health.MedicalManager;
+import org.mars_sim.msp.core.person.health.Medication;
+import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -1594,7 +1595,7 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @return
 	 */
-	Person getPerson() {
+	public Person getPerson() {
 		return person;
 	}
 

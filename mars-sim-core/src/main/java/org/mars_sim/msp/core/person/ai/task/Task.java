@@ -358,6 +358,14 @@ implements Serializable, Comparable<Task> {
     }
 
     /**
+     * Gets a string of the current phase of the task.
+     * @return the current phase of the task
+     */
+    public TaskPhase getMainTaskPhase() {
+        return phase;
+    }
+    
+    /**
      * Gets a string of the current phase of this task, ignoring subtasks.
      * @return the current phase of this task.
      */
@@ -848,7 +856,7 @@ implements Serializable, Comparable<Task> {
      * @param allowFail
      */
     // 2015-01-09 Added walkToBed()
-    protected void walkToBed(LivingAccommodations accommodations, Person person, boolean allowFail) { // Building quarters,
+    protected void walkToBed(LivingAccommodations accommodations, Person person, boolean allowFail) {
     	Point2D bed = person.getBed();
     	Building building = accommodations.getBuilding();
     	Point2D spot = LocalAreaUtil.getLocalRelativeLocation(
@@ -857,12 +865,13 @@ implements Serializable, Comparable<Task> {
         if (bed != null) {
             // Create subtask for walking to destination.
             createWalkingSubtask(building, spot, allowFail);
+            // Update phase description
         }
-        else {
-        	// If no available activity spot, go to random location in building.
-        	walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMODATIONS, allowFail);
-            //walkToRandomLocInBuilding(building, allowFail);
-        }
+//        else {// Note ; why is it a dead code according to eclipse ?
+//        	// If no available activity spot, go to random location in building.
+//        	walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMODATIONS, allowFail);
+//            //walkToRandomLocInBuilding(building, allowFail);
+//        }
     }
     
     /**

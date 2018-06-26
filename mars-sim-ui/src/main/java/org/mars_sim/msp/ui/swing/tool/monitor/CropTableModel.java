@@ -410,7 +410,7 @@ extends UnitTableModel {
 	 * Gets the number of units in the model.
 	 * @return number of units.
 	 */
-	// 2015-06-20 overloading the super class (UnitTableModel)'s getUnitNumber()
+	// Overload the super class (UnitTableModel)'s getUnitNumber()
 	protected int getUnitNumber() {
 		int result = 0;
 		if (totalNumCropMap != null && !totalNumCropMap.isEmpty()) {
@@ -422,10 +422,17 @@ extends UnitTableModel {
 				result = result + value;
 			}
 */
-			for (Object value : totalNumCropMap.values()) {
+			
+			for (Integer value : totalNumCropMap.values()) {
 				result = result + (int)value;
 			}
 		}
+		else {
+			for (Building b : buildings) {
+				result += getTotalNumOfAllCrops(b);	
+			}
+		}
+
 		return result;
 	}
 
@@ -433,7 +440,10 @@ extends UnitTableModel {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return " " + Msg.getString("CropTableModel.countingCrops", Integer.toString(getUnitNumber()));
+		return " " + Msg.getString("CropTableModel.countingCrops", 
+				Integer.toString(getUnitNumber())
+//				getUnitNumber()
+				);
 	}
 
 	/**
@@ -481,7 +491,7 @@ extends UnitTableModel {
 	public int getTotalNumOfAllCrops(Building b) {
 		int num = 0;
 
-		Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
+		Farming farm = b.getFarming();//(Farming) b.getFunction(FunctionType.FARMING);
 		num += farm.getCrops().size();
 
 		totalNumCropMap.put(b, num);

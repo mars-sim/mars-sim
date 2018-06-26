@@ -7,7 +7,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.person.medical.ComplaintType;
+import org.mars_sim.msp.core.person.health.ComplaintType;
 
 import junit.framework.TestCase;
 

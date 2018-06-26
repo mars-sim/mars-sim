@@ -45,7 +45,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * source of the list is the Unit Manager. It maps key attributes of the Person
  * into Columns.
  */
-@SuppressWarnings("restriction")
 public class PersonTableModel extends UnitTableModel {
 
 	/** default serial id. */

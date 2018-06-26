@@ -13,9 +13,11 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class provides a manager that maintains a model of the events that
@@ -35,7 +37,7 @@ public class HistoricalEventManager implements Serializable {
 	 * This defines the maximum number of events that are stored.
 	 * It should be a standard property.
 	 */
-	private final static int TRANSIENT_EVENTS = 1000;
+	private final static int TRANSIENT_EVENTS = 500;
 
 	//private static int count;
 	
@@ -47,6 +49,7 @@ public class HistoricalEventManager implements Serializable {
 	
 	private MarsClock marsClock;
 
+	private transient List<HistoricalEvent> lastEvents = new ArrayList<>();;
 	
 	/**
 	 * Create a new EventManager that represents a particular simulation.
@@ -87,6 +90,26 @@ public class HistoricalEventManager implements Serializable {
 		return events.get(index);
 	}
 
+	
+	
+	public boolean isSameEvent(HistoricalEvent newEvent) {
+		boolean result = false;
+		for (HistoricalEvent e : lastEvents) {
+			
+			if (e.getWhatCause().equals(newEvent.getWhatCause())
+				|| e.getWho().equals(newEvent.getWho())
+				|| e.getType() == newEvent.getType()
+				|| e.getCategory() == newEvent.getCategory()
+				|| e.getLocation0().equals(newEvent.getLocation0())
+				|| e.getLocation1().equals(newEvent.getLocation1())
+			 ) {
+				result = true;
+			}
+			
+		}
+		return result;
+	}
+	
 	/**
 	 * An new event needs registering with the manager. The event will be
 	 * time stamped with the current clock time and inserted at position zero.
@@ -94,27 +117,31 @@ public class HistoricalEventManager implements Serializable {
 	 */
 	// include any kind of events
 	public void registerNewEvent(HistoricalEvent newEvent) {
-		// check if event is MALFUNCTION or MEDICAL, save it for notification box display
-		// Make space for the new event.
-		if (events.size() >= TRANSIENT_EVENTS) {
-			int excess = events.size() - (TRANSIENT_EVENTS - 1);
-			removeEvents(events.size() - excess, excess);
-		}
-		// Note : the elaborate if-else conditions below is for passing the maven test
-		if (marsClock == null) 
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	
-		MarsClock timestamp =  (MarsClock) marsClock.clone();
-		// Note: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
-		 if (timestamp == null)
-			 throw new IllegalStateException("timestamp is null");
-		 
-		newEvent.setTimestamp(timestamp);
-
-		//System.out.println("New event : " + newEvent.getDescription());
 		HistoricalEventCategory category = newEvent.getCategory();
-		if (!category.equals(HistoricalEventCategory.TASK)) {
-//				&& !category.equals(HistoricalEventCategory.TRANSPORT)) {
+		if (!category.equals(HistoricalEventCategory.TASK)
+				&& !isSameEvent(newEvent)) {
+			
+			lastEvents.add(newEvent);
+			if (lastEvents.size() > 5)
+				lastEvents.remove(0);
+	
+			// check if event is MALFUNCTION or MEDICAL, save it for notification box display
+			// Make space for the new event.
+			if (events.size() >= TRANSIENT_EVENTS) {
+				int excess = events.size() - (TRANSIENT_EVENTS - 1);
+				removeEvents(events.size() - excess, excess);
+			}
+			// Note : the elaborate if-else conditions below is for passing the maven test
+			if (marsClock == null) 
+				marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
+			MarsClock timestamp =  (MarsClock) marsClock.clone();
+			// Note: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
+			 if (timestamp == null)
+				 throw new IllegalStateException("timestamp is null");
+			 
+			newEvent.setTimestamp(timestamp);
+	
 			events.add(0, newEvent);
 
 			if (listeners == null) {
@@ -124,9 +151,9 @@ public class HistoricalEventManager implements Serializable {
 			Iterator<HistoricalEventListener> iter = listeners.iterator();
 			while (iter.hasNext()) 
 				iter.next().eventAdded(0, newEvent);
+
+			narrator.translate(newEvent);
 		}
-		
-		narrator.translate(newEvent);
 	}
 
 	/**

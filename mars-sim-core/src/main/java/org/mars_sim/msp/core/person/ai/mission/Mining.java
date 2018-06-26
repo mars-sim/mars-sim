@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -143,7 +144,7 @@ extends RoverMission {
 
             // Check if vehicle can carry enough supplies for the mission.
             if (hasVehicle() && !isVehicleLoadable()) {
-                endMission("Vehicle is not loadable. (Mining)");
+                endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable. (Mining)");
             }
 
             if (!isDone()) {
@@ -221,7 +222,7 @@ extends RoverMission {
 
         // Check if vehicle can carry enough supplies for the mission.
         if (hasVehicle() && !isVehicleLoadable()) {
-            endMission("Vehicle is not loadable. (Mining)");
+            endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable. (Mining)");
         }
 
         // Reserve light utility vehicle.
@@ -921,13 +922,13 @@ extends RoverMission {
     }
 
     @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null) {
             return equipmentNeededCache;
         }
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
 
             // Include required number of bags.
             result.put(Bag.class, NUMBER_OF_BAGS);
