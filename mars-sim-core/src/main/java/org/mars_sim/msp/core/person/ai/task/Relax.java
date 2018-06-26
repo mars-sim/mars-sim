@@ -186,8 +186,15 @@ implements Serializable {
 	private double relaxingPhase(double time) {
 		
 		if (person != null) {
+			
+	        // Obtain the fractionOfRest to restore fatigue faster in high fatigue case.	   
+			double fractionOfRest = time/1000;
+		
+			double f = person.getFatigue();
+					
 	        // Reduce person's fatigue
-	        double newFatigue = person.getPhysicalCondition().getFatigue() - (timeFactor * time);
+	        double newFatigue = f - f * fractionOfRest;
+
 	        if (newFatigue < 0D) {
 	            newFatigue = 0D;
 	        }

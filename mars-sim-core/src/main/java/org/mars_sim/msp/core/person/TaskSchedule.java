@@ -140,7 +140,7 @@ public class TaskSchedule implements Serializable {
 		int startTime = marsClock.getMsol0();
 		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
-    		//2016-09-22 Removed the sol log from LAST_SOL ago
+    		// Removed the sol log from LAST_SOL ago
         	if (solElapsed > NUM_SOLS) {
         		int diff = solElapsed - NUM_SOLS;
         		allActivities.remove(diff);
@@ -306,7 +306,8 @@ public class TaskSchedule implements Serializable {
 	    		if (size != 0) {
 	    			OneActivity lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
 	    			// Carry over and save the last yestersol task as the first task on today's schedule
-	    			todayActivities.add(new OneActivity(lastTask.getStartTime(), lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase(), lastTask.getMission()));//, lastTask.getFunction()));
+	    			// Set the last task from yesterday to 000 millisol
+	    			todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase(), lastTask.getMission()));//, lastTask.getFunction()));
 	    		}
     		}
     	}

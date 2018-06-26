@@ -32,7 +32,7 @@
              <JFXButton fx:id="btnHome" onAction="#handleMars" layoutY="46.0" prefHeight="42.0" prefWidth="250.0" style="-fx-alignment: center-left;" 
       			styleClass="nav-button" text="Mars" textFill="#a1aec4">
 		         <font>
-		            <Font name="Roboto Bold" size="14.0" />
+		            <Font name="Roboto Bold" size="18.0" />
 		         </font>
 		         <graphic>
 		            <FontAwesomeIconView fill="#a1aec4" glyphName="MARS" size="17.0" wrappingWidth="25.0" />

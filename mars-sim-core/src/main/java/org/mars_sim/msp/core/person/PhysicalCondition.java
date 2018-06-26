@@ -677,9 +677,13 @@ public class PhysicalCondition implements Serializable {
 	 * @param newFatigue
 	 *            New fatigue.
 	 */
-	public void setFatigue(double newFatigue) {
-		if (fatigue != newFatigue)
-			fatigue = newFatigue;
+	public void setFatigue(double f) {
+		if (f > 3000)
+			fatigue = 3000;
+		else if (f < 0)
+			f = 0;
+		
+		fatigue = f;
 		// person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
 	}
 

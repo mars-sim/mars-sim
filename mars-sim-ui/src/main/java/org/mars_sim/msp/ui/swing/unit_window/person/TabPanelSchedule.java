@@ -303,7 +303,7 @@ extends TabPanel {
 	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
 
 		// Added sorting
-		table.setAutoCreateRowSorter(true);
+//		table.setAutoCreateRowSorter(true);
 
 		update();
 	}
