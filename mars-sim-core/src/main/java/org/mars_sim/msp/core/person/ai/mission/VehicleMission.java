@@ -82,8 +82,6 @@ implements UnitListener {
 	private double startingTravelledDistance;
 	/** Description of the mission */
 	private String description;
-	/** Log cache array for storing previous log statements */
-	//private String[] logCache = new String[] {"", ""};
 
 	// Data members
 	private Vehicle vehicle;
@@ -256,9 +254,7 @@ implements UnitListener {
 		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
 
 		// Create list of best unreserved vehicles for the mission.
-		//Iterator<Vehicle> i = getAvailableVehicles(member.getSettlement()).iterator();
-		//while (i.hasNext()) {
-		for (Vehicle v : getAvailableVehicles(member.getSettlement())) {//= i.next();
+		for (Vehicle v : getAvailableVehicles(member.getSettlement())) {
 			if (bestVehicles.size() > 0) {
 				int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
 				if (comparison == 0) {
@@ -293,9 +289,7 @@ implements UnitListener {
 	 */
 	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-		//Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		//while (i.hasNext()) {
-		for (Vehicle v : settlement.getParkedVehicles()) {//= i.next();
+		for (Vehicle v : settlement.getParkedVehicles()) {
 			if (isUsableVehicle(v)) {
 				result.add(v);
 			}
@@ -361,7 +355,7 @@ implements UnitListener {
 					if (!vehicle.isBeaconOn()) {
 						//if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
-						LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 								"[" + startingMember.getLocationTag().getQuickLocation() + "] " 
 								+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
 								+ reason, null);
@@ -388,9 +382,9 @@ implements UnitListener {
 							// is being towed,  wait till the journey is over
 							//don't end the mission yet
 							//logger.info(vehicle + " is currently being towed by " + vehicle.getTowingVehicle());
-							LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, 
-									"[" + vehicle + "] Currently being towed by " + vehicle.getTowingVehicle() 
-									+ " Remaining distance : " + getClosestDistance() + " km.", null);
+							LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
+									"[" + vehicle + "] Currently being towed by " + vehicle.getTowingVehicle(), null); 
+//									+ " Remaining distance : " + getClosestDistance() + " km.", null);
 						}
 					}
 
@@ -402,15 +396,15 @@ implements UnitListener {
 				}
 
 				else { // e.g. unrepairable malfunction
-					//logger.info(startingMember.getName() + " ended " + description + ". "+ vehicle.getName() + " is at " + vehicle.getSettlement() + ". Reason : " + reason);
-					logger.info(vehicle.getName() + " is currently at " + vehicle.getSettlement() + " and its mission ended. Reason : " + reason);
+					logger.info(vehicle.getName() + " is currently at " + vehicle.getSettlement() 
+					+ " and its mission ended. Reason : " + reason);
 					// if the vehicle is still somewhere inside the settlement when it got broken down
 					// TODO: wait till the repair is done and the mission may resume ?!?
 					leaveVehicle();
 		            setPhaseEnded(true);
 					super.endMission(reason);
 				}
-			}
+			} // end if for the 4 different reasons
 
 			else {
 				// for ALL OTHER REASONS
@@ -494,13 +488,13 @@ implements UnitListener {
 	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
 	 * @param tripDistance the distance (km) of the trip.
 	 * @param fuelEfficiency the vehicle's fuel efficiency (km/kg).
-	 * @param useBuffer use time buffers in estimation if true.
+	 * @param useMargin use time buffers in estimation if true.
 	 * @return amount of fuel needed for trip (kg)
 	 */
 	public static double getFuelNeededForTrip(double tripDistance,
-			double fuelEfficiency, boolean useBuffer) {
+			double fuelEfficiency, boolean useMargin) {
 		double result = tripDistance / fuelEfficiency;
-		if (useBuffer) {
+		if (useMargin) {
 			result *= Vehicle.getErrorMargin();
 		}
 
@@ -662,12 +656,12 @@ implements UnitListener {
 
 	/**
 	 * Gets the estimated time for a trip.
-	 * @param useBuffer use time buffers in estimation if true.
+	 * @param useMargin use time buffers in estimation if true.
 	 * @param distance the distance of the trip.
 	 * @return time (millisols)
 	 * @throws MissionException
 	 */
-	public final double getEstimatedTripTime(boolean useBuffer, double distance) {
+	public final double getEstimatedTripTime(boolean useMargin, double distance) {
 
 		// Determine average driving speed for all mission members.
 		double averageSpeed = getAverageVehicleSpeedForOperators();
@@ -677,7 +671,7 @@ implements UnitListener {
 		double result = distance / averageSpeedMillisol;
 
 		// If buffer, add one sol.
-		if (useBuffer) {
+		if (useMargin) {
 			result += 1000D;
 		}
 
@@ -686,12 +680,12 @@ implements UnitListener {
 
 	/**
 	 * Gets the estimated time remaining for the mission.
-	 * @param useBuffer Use time buffer in estimations if true.
+	 * @param useMargin Use time buffer in estimations if true.
 	 * @return time (millisols)
 	 * @throws MissionException
 	 */
-	public double getEstimatedRemainingMissionTime(boolean useBuffer) {
-		return getEstimatedTripTime(useBuffer, getTotalRemainingDistance());
+	public double getEstimatedRemainingMissionTime(boolean useMargin) {
+		return getEstimatedTripTime(useMargin, getTotalRemainingDistance());
 	}
 
 	/**
@@ -733,26 +727,26 @@ implements UnitListener {
 //	}
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
-	 * @param useBuffer use time buffers in estimation if true.
+	 * @param useMargin True if estimating trip. False if calculating remaining trip.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 */
 	public Map<Resource, Number> getResourcesNeededForRemainingMission(
-			boolean useBuffer) {
-		return getResourcesNeededForTrip(useBuffer, getTotalRemainingDistance());
+			boolean useMargin) {
+		return getResourcesNeededForTrip(useMargin, getTotalRemainingDistance());
 	}
 
 	/**
 	 * Gets the number and amounts of resources needed for a trip.
-	 * @param useBuffer use time buffers in estimation if true.
+	 * @param useMargin True if estimating trip. False if calculating remaining trip.
 	 * @param distance the distance (km) of the trip.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 */
-	public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer,
+	public Map<Resource, Number> getResourcesNeededForTrip(boolean useMargin,
 			double distance) {
 		Map<Resource, Number> result = new HashMap<Resource, Number>();
 		if (vehicle != null) {
 			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance,
-					vehicle.getDrivetrainEfficiency() * GoodsManager.SOFC_CONVERSION_EFFICIENCY, useBuffer));
+					vehicle.getDrivetrainEfficiency() * GoodsManager.SOFC_CONVERSION_EFFICIENCY, useMargin));
 		}
 		return result;
 	}
@@ -788,13 +782,13 @@ implements UnitListener {
 
 	/**
 	 * Checks if there are enough resources available in the vehicle for the remaining mission.
-	 * @param useBuffers use time buffers for estimation if true.
+	 * @param useMargin True if estimating trip. False if calculating remaining trip.
 	 * @return true if enough resources.
 	 */
 	protected final boolean hasEnoughResourcesForRemainingMission(
-			boolean useBuffers) {
+			boolean useMargin) {
 		return hasEnoughResources(getResourcesNeededForRemainingMission(
-				useBuffers));
+				useMargin));
 	}
 
 	/**

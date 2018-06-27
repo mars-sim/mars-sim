@@ -18,7 +18,16 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
-import javax.swing.*;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -46,8 +55,8 @@ class ExplorationSitesPanel extends WizardPanel {
     private MineralMapLayer mineralLayer;
 
 	private IntPoint navOffset;
-	private JPanel siteListPane;
-	private JButton addButton;
+	private WebPanel siteListPane;
+	private WebButton addButton;
 	
 	private MainDesktopPane desktop;
 	
@@ -74,7 +83,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Creates the title label.
-		JLabel titleLabel = new JLabel("Choose the exploration sites.");
+		WebLabel titleLabel = new WebLabel("Choose the exploration sites.");
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
@@ -83,13 +92,13 @@ class ExplorationSitesPanel extends WizardPanel {
 		add(Box.createVerticalStrut(10));
 		
 		// Create the center panel.
-		JPanel centerPane = new JPanel(new BorderLayout(0, 0));
+		WebPanel centerPane = new WebPanel(new BorderLayout(0, 0));
 		centerPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		centerPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 350));
 		add(centerPane);
 		
 		// Create the map main panel.
-		JPanel mapMainPane = new JPanel(new BorderLayout(0, 0));
+		WebPanel mapMainPane = new WebPanel(new BorderLayout(0, 0));
 		centerPane.add(mapMainPane, BorderLayout.WEST);
 		
 		// Create the map panel.
@@ -106,43 +115,43 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapMainPane.add(mapPane, BorderLayout.NORTH);
 		
         // Create the instruction label panel.
-        JPanel instructionLabelPane = new JPanel(new GridLayout(2, 1, 0, 0));
+		WebPanel instructionLabelPane = new WebPanel(new GridLayout(2, 1, 0, 0));
         mapMainPane.add(instructionLabelPane, BorderLayout.SOUTH);
         
 		// Create the instruction labels.
-		JLabel instructionLabel1 = new JLabel("Drag navpoint flags to the desired exploration", JLabel.LEFT);
+        WebLabel instructionLabel1 = new WebLabel("Drag navpoint flags to the desired exploration", WebLabel.LEFT);
 		instructionLabel1.setFont(instructionLabel1.getFont().deriveFont(Font.BOLD));
 		instructionLabelPane.add(instructionLabel1);
         
-        JLabel instructionLabel2 = new JLabel("sites.", JLabel.LEFT);
+		WebLabel instructionLabel2 = new WebLabel("sites.", WebLabel.LEFT);
         instructionLabel2.setFont(instructionLabel2.getFont().deriveFont(Font.BOLD));
         instructionLabelPane.add(instructionLabel2);
 		
 		// Create the site panel.
-		JPanel sitePane = new JPanel(new BorderLayout(0, 0));
+        WebPanel sitePane = new WebPanel(new BorderLayout(0, 0));
 		sitePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sitePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 300));
 		centerPane.add(sitePane, BorderLayout.CENTER);
 		
         // Create scroll panel for site list.
-        JScrollPane siteScrollPane = new JScrollPane();
+		WebScrollPane siteScrollPane = new WebScrollPane();
         sitePane.add(siteScrollPane, BorderLayout.CENTER);
         
         // Create the site list main panel.
-        JPanel siteListMainPane = new JPanel(new BorderLayout(0, 0));
+        WebPanel siteListMainPane = new WebPanel(new BorderLayout(0, 0));
         siteScrollPane.setViewportView(siteListMainPane);
         
         // Create the site list panel.
-        siteListPane = new JPanel();
+        siteListPane = new WebPanel();
         siteListPane.setLayout(new BoxLayout(siteListPane, BoxLayout.Y_AXIS));
         siteListMainPane.add(siteListPane, BorderLayout.NORTH);
         
         // Create the add button panel.
-        JPanel addButtonPane = new JPanel(new FlowLayout());
+        WebPanel addButtonPane = new WebPanel(new FlowLayout());
         sitePane.add(addButtonPane, BorderLayout.SOUTH);
         
         // Create the add button.
-        addButton = new JButton("Add Site");
+        addButton = new WebButton("Add Site");
         addButton.addActionListener(
         		new ActionListener() {
     				public void actionPerformed(ActionEvent e) {
@@ -159,29 +168,30 @@ class ExplorationSitesPanel extends WizardPanel {
         addButtonPane.add(addButton);
 		
         // Create bottom panel.
-        JPanel bottomPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        WebPanel bottomPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(bottomPane);
         
         // Create mineral legend panel.
-        JPanel mineralLegendPane = new JPanel(new BorderLayout(0, 0));
+        WebPanel mineralLegendPane = new WebPanel(new BorderLayout(0, 0));
         bottomPane.add(mineralLegendPane);
         
         // Create mineral legend label.
-        JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+        WebLabel mineralLegendLabel = new WebLabel("Mineral Legend", WebLabel.CENTER);
         mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.BOLD));
         mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
         
         // Create mineral legend scroll panel.
-        JScrollPane mineralLegendScrollPane = new JScrollPane();
+        WebScrollPane mineralLegendScrollPane = new WebScrollPane();
         mineralLegendPane.add(mineralLegendScrollPane, BorderLayout.CENTER);
         
         // Create mineral legend table model.
         MineralTableModel mineralTableModel = new MineralTableModel();
         
         // Create mineral legend table.
-        JTable mineralLegendTable = new JTable(mineralTableModel);
+        WebTable mineralLegendTable = new WebTable(mineralTableModel);
 		TableStyle.setTableStyle(mineralLegendTable);
+		mineralLegendTable.setAutoCreateRowSorter(true);
         mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 50));
         mineralLegendTable.setCellSelectionEnabled(false);
         mineralLegendTable.setDefaultRenderer(Color.class, new ColorTableCellRenderer());
@@ -413,15 +423,15 @@ class ExplorationSitesPanel extends WizardPanel {
 	/**
 	 * Inner class for an exploration site panel.
 	 */
-	private class SitePanel extends JPanel {
+	private class SitePanel extends WebPanel {
 		
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		// Private members.
 		private Coordinates site;
 		private int siteNum;
-		private JLabel siteNumLabel;
-		private JLabel siteLocationLabel;
+		private WebLabel siteNumLabel;
+		private WebLabel siteLocationLabel;
 		
 		/**
 		 * Constructor.
@@ -429,7 +439,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * @param site the exploration site coordinates.
 		 */
 		SitePanel(int siteNum, Coordinates site) {
-			// Use JPanel constructor.
+			// Use WebPanel constructor.
 			super();
 		
 			// Initialize data members.
@@ -443,16 +453,16 @@ class ExplorationSitesPanel extends WizardPanel {
 			setBorder(new MarsPanelBorder());
 			
 			// Create the site number label.
-			siteNumLabel = new JLabel(" Site " + (siteNum + 1));
+			siteNumLabel = new WebLabel(" Site " + (siteNum + 1));
 			add(siteNumLabel);
 			
 			// Create the site location label.
-			siteLocationLabel = new JLabel(site.getFormattedString());
+			siteLocationLabel = new WebLabel(site.getFormattedString());
 			add(siteLocationLabel);
 			
 			if (siteNum > 0) {
 				// Create the remove button.
-				JButton removeButton = new JButton("Remove");
+				WebButton removeButton = new WebButton("Remove");
 				removeButton.addActionListener(
 						new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
@@ -465,7 +475,7 @@ class ExplorationSitesPanel extends WizardPanel {
 						});
 				add(removeButton);
 			}
-			else add(new JPanel());
+			else add(new WebPanel());
 		}
 		
 		/**
@@ -728,7 +738,7 @@ class ExplorationSitesPanel extends WizardPanel {
         
             if ((value != null) && (value instanceof Color)) {
                 Color color = (Color) value;
-                JPanel colorPanel = new JPanel();
+                WebPanel colorPanel = new WebPanel();
                 colorPanel.setOpaque(true);
                 colorPanel.setBackground(color);
                 return colorPanel;

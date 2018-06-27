@@ -231,7 +231,7 @@ public final class DisplaySingle extends JComponent implements Lcd, ActionListen
         lcdNnumericValues = true;
         lcdText = "";
         lcdTextX = 0f;
-        TEXT_SCROLLER = new Timer(60, this);
+        TEXT_SCROLLER = new Timer(10, this);
         init(INNER_BOUNDS.width, INNER_BOUNDS.height);
         addComponentListener(COMPONENT_LISTENER);
     }

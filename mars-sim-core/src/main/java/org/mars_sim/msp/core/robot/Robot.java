@@ -845,7 +845,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	  */
 	// 2017-03-08 Added setCurrentBuilding()
 	public Building computeCurrentBuilding() {
-		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (isInSettlement()) {//getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(), getYLocation());
 		}
 		else
@@ -939,13 +939,13 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	}
 */
 	@Override
-	public String getShortLocationName() {
-		return getLocationTag().getQuickLocation();
+	public String getImmediateLocation() {
+		return getLocationTag().getImmediateLocation();
 	}
 
 	@Override
-	public String getLongLocationName() {
-		return getLocationTag().getLongLocationName();
+	public String getLocale() {
+		return getLocationTag().getLocale();
 	}
 
 	public Relax getRelax() {
@@ -992,4 +992,9 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         //scientificAchievement.clear();
         //scientificAchievement = null;
     }
+
+	@Override
+	public Settlement getBuriedSettlement() {
+		return this.getAssociatedSettlement();
+	}
 }

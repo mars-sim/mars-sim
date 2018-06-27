@@ -18,12 +18,24 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import javax.swing.*;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
@@ -39,8 +51,8 @@ class VehiclePanel extends WizardPanel {
 	
 	// Data members.
 	private VehicleTableModel vehicleTableModel;
-	private JTable vehicleTable;
-	private JLabel errorMessageLabel;
+	private WebTable vehicleTable;
+	private WebLabel errorMessageLabel;
 	
 	private static MissionManager missionManager;
 
@@ -61,27 +73,29 @@ class VehiclePanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the select vehicle label.
-		JLabel selectVehicleLabel = new JLabel("Select a rover for the mission.", JLabel.CENTER);
+		WebLabel selectVehicleLabel = new WebLabel("Select a rover for this mission :", WebLabel.CENTER);
 		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
 		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectVehicleLabel);
 		
 		// Create the vehicle panel.
-		JPanel vehiclePane = new JPanel(new BorderLayout(0, 0));
+		WebPanel vehiclePane = new WebPanel(new BorderLayout(0, 0));
 		vehiclePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
 		vehiclePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(vehiclePane);
 		
         // Create scroll panel for vehicle list.
-        JScrollPane vehicleScrollPane = new JScrollPane();
+        WebScrollPane vehicleScrollPane = new WebScrollPane();
         vehiclePane.add(vehicleScrollPane, BorderLayout.CENTER);
         
         // Create the vehicle table model.
         vehicleTableModel = new VehicleTableModel();
         
         // Create the vehicle table.
-        vehicleTable = new JTable(vehicleTableModel);
+        vehicleTable = new ZebraJTable(vehicleTableModel);
 		TableStyle.setTableStyle(vehicleTable);
+		// Added sorting
+		vehicleTable.setAutoCreateRowSorter(true);
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -95,7 +109,7 @@ class VehiclePanel extends WizardPanel {
         					// Check if selected row has a failure cell.
         					if (vehicleTableModel.isFailureRow(index)) {
         						// Set the error message and disable the next button.
-        						errorMessageLabel.setText("Rover cannot be used on the mission (see red cells).");
+        						errorMessageLabel.setText("Warning : rover cannot be used on the mission (see red cells).");
         						getWizard().setButtons(false);
         					}
         					else {
@@ -126,7 +140,7 @@ class VehiclePanel extends WizardPanel {
         vehicleScrollPane.setViewportView(vehicleTable);
 		
         // Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
+		errorMessageLabel = new WebLabel(" ", WebLabel.CENTER);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

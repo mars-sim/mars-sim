@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.equipment;
 import org.mars_sim.msp.core.resource.PhaseType;
 
 /**
- * Equipment classes that serve only as containers.
+ * This interface accounts for units that are considered container for resources
  */
 public interface Container {
 

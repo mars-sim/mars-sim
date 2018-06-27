@@ -545,6 +545,12 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         sickbay = null;
     }
 
+	@Override
+	public Settlement getBuriedSettlement() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 }

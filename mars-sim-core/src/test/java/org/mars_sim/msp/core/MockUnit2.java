@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * MockUnit2.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-06-27
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core;
 
+/**
+ * A mock unit used for unit testing.
+ */
 public class MockUnit2 extends Unit {
 
 	public MockUnit2() {
@@ -16,4 +18,6 @@ public class MockUnit2 extends Unit {
 		
 		setBaseMass(20D);
 	}
+
+
 }

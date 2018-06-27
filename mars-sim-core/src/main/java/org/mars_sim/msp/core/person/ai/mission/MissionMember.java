@@ -13,12 +13,13 @@ import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * An interface representing a person or robot that can be a member of a mission.
  */
-public interface MissionMember {
+public interface MissionMember extends Indoor {
 
     /**
      * Gets the mission member's name.

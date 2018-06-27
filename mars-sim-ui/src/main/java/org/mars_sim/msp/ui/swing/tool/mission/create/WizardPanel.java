@@ -7,13 +7,13 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import javax.swing.JPanel;
+import com.alee.laf.panel.WebPanel;
 
 /**
  * An abstract panel for the create mission wizard.
  */
 abstract class WizardPanel
-extends JPanel {
+extends WebPanel {
 
 	// Data members.
 	protected CreateMissionWizard wizard;
@@ -42,7 +42,7 @@ extends JPanel {
 	 * Gets the wizard panel name.
 	 * @return panel name.
 	 * @deprecated
-	 * TODO internationalize the wizzard panel names.
+	 * TODO internationalize the wizard panel names.
 	 */
 	abstract String getPanelName();
 	

@@ -166,12 +166,12 @@ implements Serializable {
 			Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
 
 			rover_values[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
-			if (rover_values[0] < 1.0 || rover_values[0] > 2.0 )
+			if (rover_values[0] < 1.0 || rover_values[0] > 3.0 )
 		        throw new IllegalStateException("Error in SettlementConfig.xml: rover life support range error margin is beyond acceptable range");
 
 
 			rover_values[1]= Double.parseDouble(fuelRange.getAttributeValue(VALUE));
-			if (rover_values[1] < 1.0 || rover_values[1] > 2.0 )
+			if (rover_values[1] < 1.0 || rover_values[1] > 3.0 )
 		        throw new IllegalStateException("Error in SettlementConfig.xml: rover fuel range error margin is beyond acceptable range");
 
 			return rover_values;

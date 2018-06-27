@@ -8,8 +8,10 @@
 package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -117,19 +119,47 @@ implements Serializable, Malfunctionable, Salvagable {
 		malfunctionManager.timePassing(time);
 	}
 
+	
+//	/**
+//	 * Obtains the immediate location (either building, vehicle, a settlement's vicinity or outside on Mars)
+//	 * @return the name string of the location the unit is at
+//	 */
+//	public String getImmediateLocation() {
+//			if (getContainerUnit() != null)
+//				return getContainerUnit().getName();
+////			else if (e.getTopContainerUnit() != null)
+////				return e.getTopContainerUnit().getName();
+//			else if (isRightOutsideSettlement())
+//				return findSettlementVicinity().getName() + VICINITY;  
+//			else
+//				return OUTSIDE_ON_MARS;
+//
+//	}
+	
+	public Settlement findSettlementVicinity() {
+
+		Collection<Settlement> ss =	Simulation.instance().getUnitManager().getSettlements();
+		for (Settlement s : ss) {
+			if (s.getCoordinates().equals(getCoordinates()))
+				return s;
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public String getNickName() {
 		return getName();
 	}
 
 	@Override
-	public String getShortLocationName() {
-		return getLocationTag().getQuickLocation();
+	public String getImmediateLocation() {
+		return getLocationTag().getImmediateLocation();
 	}
 
 	@Override
-	public String getLongLocationName() {
-		return getLocationTag().getLongLocationName();
+	public String getLocale() {
+		return getLocationTag().getLocale();
 	}
 	
 	@Override
@@ -137,6 +167,26 @@ implements Serializable, Malfunctionable, Salvagable {
 		super.destroy();
 		if (salvageInfo != null) salvageInfo.destroy();
 		salvageInfo = null;
+	}
+
+
+	@Override
+	public Building getBuildingLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return this.getAssociatedSettlement();
+	}
+
+
+	@Override
+	public Settlement getBuriedSettlement() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

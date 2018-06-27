@@ -272,7 +272,7 @@ implements ActionListener {
 
         String loc = ON_MARS;
 		lcdText = new DisplaySingle();
-        lcdText.setLcdInfoString("Last Unknown Position");
+        lcdText.setLcdInfoString("Last Known Position");
         //lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
         lcdText.setGlowColor(Color.ORANGE);
         //lcdText.setBackground(Background.SATIN_GRAY);
@@ -768,7 +768,7 @@ implements ActionListener {
      * Tracks the location of a person
      */
     public String updatePerson(Person p) {
-    	return p.getLocationTag().getLongLocationName();
+    	return p.getLocationTag().getExtendedLocations();
     	
 //    	String loc = null;
 //
@@ -861,7 +861,7 @@ implements ActionListener {
      * Tracks the location of a robot
      */
     public String updateRobot(Robot r) {
-    	return r.getLocationTag().getLongLocationName();
+    	return r.getLocationTag().getExtendedLocations();
     	
 //    	String loc = null;
 //    	
@@ -983,7 +983,7 @@ implements ActionListener {
      * Tracks the location of an equipment
      */
     public String updateEquipment(Equipment e) {
-    	return e.getLocationTag().getLongLocationName();
+    	return e.getLocationTag().getExtendedLocations();
 
 //    	String loc = null;
 //    	
@@ -1052,7 +1052,7 @@ implements ActionListener {
      * Tracks the location of a vehicle
      */
     public String updateVehicle(Vehicle v) {
-    	return v.getLocationTag().getLongLocationName();
+    	return v.getLocationTag().getExtendedLocations();
 //    	String loc = null;
 //    	
 //   		Settlement s = v.getSettlement();

@@ -52,12 +52,12 @@ public interface Malfunctionable {
      * Gets the short location name associated with this entity.
      * @return location
      */
-    public String getShortLocationName();
+    public String getImmediateLocation();
 
     /**
      * Gets the long location name associated with this entity.
      * @return location
      */
-    public String getLongLocationName();
+    public String getLocale();
 
 }

@@ -29,8 +29,14 @@ public class MockVehicle extends Vehicle {
 	}
 	
 	@Override
-	public String getShortLocationName() {
+	public String getImmediateLocation() {
 		return getLocationTag().getSettlementName();
+	}
+
+	@Override
+	public Settlement getBuriedSettlement() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

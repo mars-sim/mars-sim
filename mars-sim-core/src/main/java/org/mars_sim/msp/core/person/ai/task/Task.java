@@ -191,7 +191,7 @@ implements Serializable, Comparable<Task> {
 	            		this,  
 	            		person,
 	            		EventType.TASK_FINISH, 
-	            		person.getLocationTag().getLongLocationName(), 
+	            		person.getLocationTag().getExtendedLocations(), 
 	            		"");
 			}
 			else if (robot != null) {
@@ -199,7 +199,7 @@ implements Serializable, Comparable<Task> {
 	            		this, 
 	            		person,
 	            		EventType.TASK_FINISH, 
-	            		robot.getLocationTag().getLongLocationName(), 
+	            		robot.getLocationTag().getExtendedLocations(), 
 	            		"");
 			}
 

@@ -243,7 +243,7 @@ extends TabPanel {
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
 		//radiationTable.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
-		// 2015-06-08 Added sorting
+		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
         //if (!MainScene.OS.equals("linux")) {
         //	radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());

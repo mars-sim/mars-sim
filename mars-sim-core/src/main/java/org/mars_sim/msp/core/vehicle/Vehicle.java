@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -53,8 +54,8 @@ import org.mars_sim.msp.core.time.MarsClock;
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
  */
-public abstract class Vehicle extends Unit implements Serializable,
-        Malfunctionable, Salvagable, LocalBoundedObject {
+public abstract class Vehicle extends Unit implements 
+        Malfunctionable, Salvagable, Indoor, LocalBoundedObject, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -934,13 +935,13 @@ public abstract class Vehicle extends Unit implements Serializable,
 	}
 
 	@Override
-	public String getShortLocationName() {
-		return getLocationTag().getQuickLocation();
+	public String getImmediateLocation() {
+		return getLocationTag().getImmediateLocation();
 	}
 
 	@Override
-	public String getLongLocationName() {
-		return getLocationTag().getLongLocationName();
+	public String getLocale() {
+		return getLocationTag().getLocale();
 	}
 
 	/**
@@ -952,6 +953,11 @@ public abstract class Vehicle extends Unit implements Serializable,
 			return true;
 		else
 			return false;
+	}
+	
+    @Override
+	public Building getBuildingLocation() {
+		return this.getGarage();
 	}
 	
     @Override

@@ -236,8 +236,7 @@ extends BuildingFunctionPanel {
 			// Add process panels for new processes.
 			Iterator<ManufactureProcess> i = processes.iterator();
 			while (i.hasNext()) {
-				ManufactureProcess process = i.next();
-			//for (ManufactureProcess process : processes) {//= i.next();
+				ManufactureProcess process = i.next(); //Exception in thread "pool-53-thread-1" java.util.ConcurrentModificationException
 				if (!processCache.contains(process))
 					processListPane.add(new ManufacturePanel(process, false,  processStringWidth));
 			}

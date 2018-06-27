@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.util.Collection;
@@ -31,9 +32,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * a useful piece of equipment, such as a EVA suit or a
  * medpack.
  */
-public abstract class Equipment
+public abstract class Equipment 
 extends Unit
-implements Salvagable {
+implements Indoor, Salvagable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -139,8 +140,6 @@ implements Salvagable {
     @Override
 	public Settlement getSettlement() {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			//Settlement settlement = (Settlement) getContainerUnit();
-			//return settlement;
 			return (Settlement) getContainerUnit();
 		}
 
@@ -149,7 +148,6 @@ implements Salvagable {
 
 		else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
 			Vehicle vehicle = (Vehicle) getContainerUnit();
-			// Note: a vehicle's container unit may be null if it's outside a settlement
 			Settlement settlement = (Settlement) vehicle.getContainerUnit();
 			return settlement;
 		}

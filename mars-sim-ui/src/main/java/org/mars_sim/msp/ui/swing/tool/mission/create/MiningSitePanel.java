@@ -22,9 +22,6 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
@@ -39,6 +36,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
@@ -49,6 +47,11 @@ import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 
 /**
  * A wizard panel for the mining site.
@@ -72,9 +75,9 @@ public class MiningSitePanel extends WizardPanel {
 	private EllipseLayer ellipseLayer;
 	private ExploredSiteMapLayer exploredSiteLayer;
     private MineralMapLayer mineralLayer;
-	private JLabel longitudeLabel;
-	private JLabel latitudeLabel;
-	private JLabel errorMessageLabel;
+	private WebLabel longitudeLabel;
+	private WebLabel latitudeLabel;
+	private WebLabel errorMessageLabel;
 	private ExploredLocation selectedSite;
 	private DefaultTableModel concentrationTableModel;
 	
@@ -97,14 +100,14 @@ public class MiningSitePanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the title label.
-		JLabel titleLabel = new JLabel("Select explored site (yellow flag) to mine.", JLabel.CENTER);
+		WebLabel titleLabel = new WebLabel("Select explored site (yellow flag) to mine :", WebLabel.CENTER);
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		add(titleLabel, BorderLayout.NORTH);
 		
-        JPanel leftPanel = new JPanel(new BorderLayout(0, 0));
+        WebPanel leftPanel = new WebPanel(new BorderLayout(0, 0));
         add(leftPanel, BorderLayout.CENTER);
         
-		JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		leftPanel.add(centerPanel, BorderLayout.CENTER);
 		
 		// Create the map panel.
@@ -126,37 +129,40 @@ public class MiningSitePanel extends WizardPanel {
 		centerPanel.add(mapPane);
 		
         // Create legend panel.
-        JPanel legendPane = new JPanel(new BorderLayout(0, 0));
+        WebPanel legendPane = new WebPanel(new BorderLayout(0, 0));
         leftPanel.add(legendPane, BorderLayout.SOUTH);
         
         // Create mineral legend label.
-        JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+        WebLabel mineralLegendLabel = new WebLabel("Mineral Legend", WebLabel.CENTER);
         mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.BOLD));
         legendPane.add(mineralLegendLabel, BorderLayout.NORTH);
         
         // Create mineral legend scroll panel.
-        JScrollPane mineralLegendScrollPane = new JScrollPane();
+        WebScrollPane mineralLegendScrollPane = new WebScrollPane();
         legendPane.add(mineralLegendScrollPane, BorderLayout.CENTER);
         
         // Create mineral legend table model.
         MineralTableModel mineralTableModel = new MineralTableModel();
         
         // Create mineral legend table.
-        JTable mineralLegendTable = new JTable(mineralTableModel);
+        WebTable mineralLegendTable = new ZebraJTable(mineralTableModel);
+		TableStyle.setTableStyle(mineralLegendTable);
+		// Added sorting
+        mineralLegendTable.setAutoCreateRowSorter(true);
         mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 50));
         mineralLegendTable.setCellSelectionEnabled(false);
         mineralLegendTable.setDefaultRenderer(Color.class, new ColorTableCellRenderer());
         mineralLegendScrollPane.setViewportView(mineralLegendTable);
         
 		// Create selected site panel.
-		JPanel selectedSitePane = new JPanel();
+		WebPanel selectedSitePane = new WebPanel();
 		selectedSitePane.setBorder(new MarsPanelBorder());
 		selectedSitePane.setPreferredSize(new Dimension(250, -1));
 		selectedSitePane.setLayout(new BoxLayout(selectedSitePane, BoxLayout.Y_AXIS));
 		add(selectedSitePane, BorderLayout.EAST);
 		
 		// Create selected site label.
-		JLabel selectedSiteLabel = new JLabel("Selected Mining Site", JLabel.CENTER);
+		WebLabel selectedSiteLabel = new WebLabel("Selected Mining Site", WebLabel.CENTER);
 		selectedSiteLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(selectedSiteLabel);
 		
@@ -164,12 +170,12 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(Box.createVerticalStrut(10));
 		
 		// Create longitude label.
-		longitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
+		longitudeLabel = new WebLabel("Longitude: ", WebLabel.LEFT);
 		longitudeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(longitudeLabel);
 		
 		// Create latitude label.
-		latitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
+		latitudeLabel = new WebLabel("Latitude: ", WebLabel.LEFT);
 		latitudeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(latitudeLabel);
 		
@@ -177,7 +183,7 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(Box.createVerticalStrut(10));
 		
 		// Create mineral concentration label.
-		JLabel mineralConcentrationLabel = new JLabel("Estimated Mineral Concentrations:", JLabel.LEFT);
+		WebLabel mineralConcentrationLabel = new WebLabel("Estimated Mineral Concentrations:", WebLabel.LEFT);
 		mineralConcentrationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(mineralConcentrationLabel);
 		
@@ -200,7 +206,7 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(Box.createVerticalGlue());
 		
         // Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
+		errorMessageLabel = new WebLabel(" ", WebLabel.CENTER);
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		add(errorMessageLabel, BorderLayout.SOUTH);
@@ -425,7 +431,7 @@ public class MiningSitePanel extends WizardPanel {
         
             if ((value != null) && (value instanceof Color)) {
                 Color color = (Color) value;
-                JPanel colorPanel = new JPanel();
+                WebPanel colorPanel = new WebPanel();
                 colorPanel.setOpaque(true);
                 colorPanel.setBackground(color);
                 return colorPanel;

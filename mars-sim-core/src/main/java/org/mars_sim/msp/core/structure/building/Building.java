@@ -26,8 +26,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -87,14 +85,15 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Building class is a settlement's building.
  */
 public class Building
 extends Structure
-implements Malfunctionable, Serializable, // Comparable<Building>,
-LocalBoundedObject, InsidePathLocation {
+implements Malfunctionable, Indoor, // Comparable<Building>,
+LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1507,13 +1506,13 @@ LocalBoundedObject, InsidePathLocation {
 	}
 */
 	@Override
-	public String getShortLocationName() {
-		return getLocationTag().getQuickLocation();
+	public String getImmediateLocation() {
+		return getLocationTag().getImmediateLocation();
 	}
 
 	@Override
-	public String getLongLocationName() {
-		return getLocationTag().getLongLocationName();
+	public String getLocale() {
+		return getLocationTag().getLocale();
 	}
 
 	/**
@@ -1547,6 +1546,22 @@ LocalBoundedObject, InsidePathLocation {
 			i.next().destroy();
 		}
 */		
+	}
+
+	@Override
+	public Building getBuildingLocation() {
+		return this;
+	}
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return this.getAssociatedSettlement();
+	}
+
+	@Override
+	public Settlement getBuriedSettlement() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

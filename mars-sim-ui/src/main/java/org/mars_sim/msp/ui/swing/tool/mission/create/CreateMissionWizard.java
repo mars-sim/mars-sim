@@ -12,9 +12,13 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
-import javax.swing.*;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -28,15 +32,13 @@ public class CreateMissionWizard
 extends ModalInternalFrame
 implements ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	// Data members
 	private int displayPanelIndex;
 	
-	private JPanel infoPane;
-	private JButton prevButton;
-	private JButton nextButton;
-	private JButton finalButton;
+	private WebPanel infoPane;
+	private WebButton prevButton;
+	private WebButton nextButton;
+	private WebButton finalButton;
 	
 	private MissionDataBean missionBean;
 	private TypePanel typePanel;
@@ -61,7 +63,7 @@ implements ActionListener {
 		missionBean = new MissionDataBean();
 
 		// Create info panel.
-		infoPane = new JPanel(new CardLayout());
+		infoPane = new WebPanel(new CardLayout());
 		infoPane.setBorder(new MarsPanelBorder());
 
 		//setContentPane(infoPane);
@@ -81,29 +83,29 @@ implements ActionListener {
         addWizardPanel(new StartingSettlementPanel(this));
 
 		// Create bottom button panel.
-		JPanel bottomButtonPane = new JPanel();
+		WebPanel bottomButtonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		add(bottomButtonPane, BorderLayout.SOUTH);
 
-		// Create prevous button.
-		prevButton = new JButton("Previous");
+		// Create previous button.
+		prevButton = new WebButton("Previous");
 		prevButton.addActionListener(this);
 		prevButton.setEnabled(false);
 		bottomButtonPane.add(prevButton);
 
 		// Create next button.
-		nextButton = new JButton("Next");
+		nextButton = new WebButton("Next");
 		nextButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		bottomButtonPane.add(nextButton);
 
 		// Create final button.
-		finalButton = new JButton("Final");
+		finalButton = new WebButton("Final");
 		finalButton.addActionListener(this);
 		finalButton.setEnabled(false);
 		bottomButtonPane.add(finalButton);
 
 		// Create cancel button.
-		JButton cancelButton = new JButton("Cancel");
+		WebButton cancelButton = new WebButton("Cancel");
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
@@ -115,12 +117,12 @@ implements ActionListener {
 
 		// Finish and display wizard.
 		//pack();
-        setSize(new Dimension(700, 550));
+        setSize(new Dimension(700, 600));
 		//setLocationRelativeTo(owner);
 		//setResizable(false);
 		//setVisible(true);
 
-        // 2016-10-22 Add to its own tab pane
+        // Add to its own tab pane
         if (desktop.getMainScene() != null)
         	desktop.add(this);
         	//desktop.getMainScene().getDesktops().get(1).add(this);

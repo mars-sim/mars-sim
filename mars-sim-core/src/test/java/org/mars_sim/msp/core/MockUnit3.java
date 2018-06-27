@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MockUnit3.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-06-27
  * @author Scott Davis
  */
 
@@ -36,4 +35,6 @@ public class MockUnit3 extends Unit implements Container {
     public double getTotalCapacity() {
         return 50D;
     }
+
+
 }

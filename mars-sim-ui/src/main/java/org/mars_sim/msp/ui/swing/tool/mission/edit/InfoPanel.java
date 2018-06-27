@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * InfoDialog.java
- * @version 3.08 2015-07-02
+ * InfoPanel.java
+ * @version 3.1.0 2015-07-02
  * @author Scott Davis
  */
 
@@ -22,19 +22,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -50,14 +43,19 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.desktoppane.WebInternalFrame;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.text.WebTextField;
+
 /**
  * The mission info panel for the edit mission dialog.
  */
 public class InfoPanel
-extends JPanel {
+extends WebPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	/** action text. */
 	final static String ACTION_NONE = "None";
 	/** action text. */
@@ -69,22 +67,22 @@ extends JPanel {
 	
 	// Data members.
 	protected Mission mission;
-	protected JInternalFrame parent;
+	protected WebInternalFrame parent;
 	protected MainDesktopPane desktop;	
 	
-	protected JTextField descriptionField;
+	protected WebTextField descriptionField;
 	protected JComboBoxMW<?> actionDropDown;
 	protected DefaultListModel<MissionMember> memberListModel;
 	protected JList<MissionMember> memberList;
-	protected JButton addMembersButton;
-	protected JButton removeMembersButton;
+	protected WebButton addMembersButton;
+	protected WebButton removeMembersButton;
 	
 	/**
 	 * Constructor.
 	 * @param mission {@link Mission} the mission to edit.
 	 * @param parent {@link Dialog} the parent dialog.
 	 */
-	public InfoPanel(Mission mission, MainDesktopPane desktop, JInternalFrame parent) {
+	public InfoPanel(Mission mission, MainDesktopPane desktop, WebInternalFrame parent) {
 		
 		// Data members
 		this.mission = mission;
@@ -98,25 +96,25 @@ extends JPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the description panel.
-		JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel descriptionPane = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(descriptionPane);
 		
 		// Create the description label.
-		JLabel descriptionLabel = new JLabel("Description: ");
+		WebLabel descriptionLabel = new WebLabel("Description: ");
 		descriptionPane.add(descriptionLabel);
 		
 		// Create the description text field.
-		descriptionField = new JTextField(mission.getDescription(), 20);
+		descriptionField = new WebTextField(mission.getDescription(), 20);
 		descriptionPane.add(descriptionField);
 		
 		// Create the action panel.
-		JPanel actionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel actionPane = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		actionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(actionPane);
 		
 		// Create the action label.
-		JLabel actionLabel = new JLabel("Action: ");
+		WebLabel actionLabel = new WebLabel("Action: ");
 		actionPane.add(actionLabel);
 		
 		// Create the action drop down box.
@@ -125,22 +123,22 @@ extends JPanel {
 		actionPane.add(actionDropDown);
 		
 		// Create the members panel.
-		JPanel membersPane = new JPanel(new BorderLayout());
+		WebPanel membersPane = new WebPanel(new BorderLayout());
 		membersPane.setBorder(MainDesktopPane.newEmptyBorder());
 		membersPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(membersPane);
 		
 		// Create the members label.
-		JLabel membersLabel = new JLabel("Members: ");
-		membersLabel.setVerticalAlignment(JLabel.TOP);
+		WebLabel membersLabel = new WebLabel("Members: ");
+		membersLabel.setVerticalAlignment(WebLabel.TOP);
 		membersPane.add(membersLabel, BorderLayout.WEST);
 		
 		// Create the member list panel.
-		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
+		WebPanel memberListPane = new WebPanel(new BorderLayout(0, 0));
 		membersPane.add(memberListPane, BorderLayout.CENTER);
 		
         // Create scroll panel for member list.
-        JScrollPane memberScrollPane = new JScrollPane();
+        WebScrollPane memberScrollPane = new WebScrollPane();
         memberScrollPane.setPreferredSize(new Dimension(100, 100));
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
@@ -163,11 +161,11 @@ extends JPanel {
         memberScrollPane.setViewportView(memberList);
         
         // Create the member button panel.
-        JPanel memberButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        WebPanel memberButtonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
         memberListPane.add(memberButtonPane, BorderLayout.SOUTH);
         
         // Create the add members button.
-        addMembersButton = new JButton("Add Members");
+        addMembersButton = new WebButton("Add Members");
         addMembersButton.setEnabled(canAddMembers());
         addMembersButton.addActionListener(
         		new ActionListener() {
@@ -179,7 +177,7 @@ extends JPanel {
         memberButtonPane.add(addMembersButton);
         
         // Create the remove members button.
-        removeMembersButton = new JButton("Remove Members");
+        removeMembersButton = new WebButton("Remove Members");
         removeMembersButton.setEnabled(false);
         removeMembersButton.addActionListener(
         		new ActionListener() {
@@ -335,7 +333,7 @@ extends JPanel {
 		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 		while (i.hasNext()) {
 		    Person person = i.next();
-		    if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+		    if (person.isOutside()) {
 		        if (person.getCoordinates().equals(missionLocation)) {
 		            if (!memberListModel.contains(person)) {
 		                result.add(person);
@@ -347,7 +345,7 @@ extends JPanel {
 		Iterator<Robot> j = Simulation.instance().getUnitManager().getRobots().iterator();
         while (j.hasNext()) {
             Robot robot = j.next();
-            if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
+            if (robot.isOutside()) {
                 if (robot.getCoordinates().equals(missionLocation)) {
                     if (!memberListModel.contains(robot)) {
                         result.add(robot);
@@ -359,8 +357,7 @@ extends JPanel {
 		return result;
 	}
 	
-	// 2016-09-24 Added getParent()
-	public JInternalFrame getParent() {
+	public WebInternalFrame getParent() {
 		return parent;
 	}
 	

@@ -7,12 +7,16 @@
 package org.mars_sim.msp.core.location;
 
 import java.io.Serializable;
+import java.util.Collection;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -20,11 +24,13 @@ public class LocationTag implements LocationState, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static String OUTSIDE_ON_MARS = "Outside on Mars";
+	public static final String OUTSIDE_ON_MARS = "Outside on Mars";
 
-	public static String VICINITY = " vicinity";
+	public static final String VICINITY = " vicinity";
 	
-	private String UNKNOWN = "Unknown";
+	private static final String UNKNOWN = "Unknown";
+	
+	private static final String IN = " in ";
 	
 	private Unit unit;
 
@@ -187,78 +193,80 @@ public class LocationTag implements LocationState, Serializable {
 	}
 	
 	/**
-	 * Obtains the long location name
+	 * Obtains the extended location details 
 	 * @return the name string of the location the unit is at
 	 */
-	public String getLongLocationName() {
-		if (p != null) {
-			if (p.getSettlement() != null) {
-				if (p.getBuildingLocation() != null) {
-					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
-				}
-				else {
-					return p.getSettlement().getName();
-				}
-			}
-			else if (p.getVehicle() != null) {
-				if (p.getVehicle().getBuildingLocation() != null) {
-					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
-				}
-				else {
-					return p.getVehicle().getName() + " at " + p.getCoordinates().getFormattedString();
-				}
-			}
-			else
-				return p.getCoordinates().getFormattedString(); 
-		}
+	public String getExtendedLocations() {
+		return getImmediateLocation() + IN + getLocale();
 		
-		else if (e != null) {
-			if (e.getContainerUnit() != null)
-				return e.getContainerUnit().getName();
-			else if (e.getTopContainerUnit() != null)
-				return e.getTopContainerUnit().getName();
-			else
-				return e.getCoordinates().getFormattedString();	
-		}
-		
-		else if (r != null) {
-			if (r.getSettlement() != null) {
-				if (r.getBuildingLocation() != null) {
-					return r.getBuildingLocation().getNickName() + " in " + r.getSettlement().getName();
-				}
-				else {
-					return r.getSettlement().getName();
-				}
-			}
-			else if (r.getVehicle() != null)
-				return r.getVehicle().getName();
-			else
-				return p.getCoordinates().getFormattedString(); 
-			
-		}
-		else if (b != null) {
-			return b.getNickName() + " in " + b.getSettlement().getName();
-		}
-		
-		else if (v != null) {
-			if (v.getSettlement() != null) {
-				if (v.getBuildingLocation() != null) {
-					return v.getBuildingLocation().getNickName() + " in " + v.getSettlement().getName();
-				}
-				else {
-					return v.getSettlement().getName();
-				}
-			}
-			else
-				return v.getCoordinates().getFormattedString();
-		}
-		
-		return UNKNOWN;
+//		if (p != null) {
+//			if (p.getSettlement() != null) {
+//				if (p.getBuildingLocation() != null) {
+//					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
+//				}
+//				else {
+//					return p.getSettlement().getName();
+//				}
+//			}
+//			else if (p.getVehicle() != null) {
+//				if (p.getVehicle().getBuildingLocation() != null) {
+//					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
+//				}
+//				else {
+//					return p.getVehicle().getName() + " at " + p.getCoordinates().getFormattedString();
+//				}
+//			}
+//			else
+//				return p.getCoordinates().getFormattedString(); 
+//		}
+//		
+//		else if (e != null) {
+//			if (e.getContainerUnit() != null)
+//				return e.getContainerUnit().getName();
+//			else if (e.getTopContainerUnit() != null)
+//				return e.getTopContainerUnit().getName();
+//			else
+//				return e.getCoordinates().getFormattedString();	
+//		}
+//		
+//		else if (r != null) {
+//			if (r.getSettlement() != null) {
+//				if (r.getBuildingLocation() != null) {
+//					return r.getBuildingLocation().getNickName() + " in " + r.getSettlement().getName();
+//				}
+//				else {
+//					return r.getSettlement().getName();
+//				}
+//			}
+//			else if (r.getVehicle() != null)
+//				return r.getVehicle().getName();
+//			else
+//				return p.getCoordinates().getFormattedString(); 
+//			
+//		}
+//		else if (b != null) {
+//			return b.getNickName() + " in " + b.getSettlement().getName();
+//		}
+//		
+//		else if (v != null) {
+//			if (v.getSettlement() != null) {
+//				if (v.getBuildingLocation() != null) {
+//					return v.getBuildingLocation().getNickName() + " in " + v.getSettlement().getName();
+//				}
+//				else {
+//					return v.getSettlement().getName();
+//				}
+//			}
+//			else
+//				return v.getCoordinates().getFormattedString();
+//		}
+//		
+//		return UNKNOWN;
 	}
 	
 	
 	/**
-	 * Obtains the long location name
+	 * Obtains the immediate location (either building, vehicle, a settlement's vicinity or outside on Mars)
 	 * @return the name string of the location the unit is at
 	 */
 	public String getImmediateLocation() {
@@ -268,19 +276,21 @@ public class LocationTag implements LocationState, Serializable {
 					return p.getBuildingLocation().getNickName();
 				}
 //				else {
-//					return OUTSIDE_ON_MARS;
+//					return ...;
 //				}
 			}
 			else if (p.getVehicle() != null) {
-				if (p.getVehicle().getBuildingLocation() != null) {
-					return p.getBuildingLocation().getNickName();
+				Vehicle v = p.getVehicle();
+				if (v.getBuildingLocation() == null) {
+					return v.getNickName();
 				}
 				else {
-					return p.getVehicle().getName();
+					return v.getBuildingLocation().getNickName();
 				}
 			}
 			else if (p.isRightOutsideSettlement())
-				return p.getAssociatedSettlement() + VICINITY;
+				return findSettlementVicinity().getName() + VICINITY; 
+			// TODO: check if it works in case of a trader arrives at any settlements for trades. 
 			else
 				return OUTSIDE_ON_MARS;
 		}
@@ -288,8 +298,10 @@ public class LocationTag implements LocationState, Serializable {
 		else if (e != null) {
 			if (e.getContainerUnit() != null)
 				return e.getContainerUnit().getName();
-			else if (e.getTopContainerUnit() != null)
-				return e.getTopContainerUnit().getName();
+//			else if (e.getTopContainerUnit() != null)
+//				return e.getTopContainerUnit().getName();
+			else if (p.isRightOutsideSettlement())
+				return findSettlementVicinity().getName() + VICINITY;  
 			else
 				return OUTSIDE_ON_MARS;
 		}
@@ -303,10 +315,17 @@ public class LocationTag implements LocationState, Serializable {
 					return OUTSIDE_ON_MARS;
 				}
 			}
-			else if (r.getVehicle() != null)
-				return r.getVehicle().getName();
+			else if (r.getVehicle() != null) {
+				Vehicle v = r.getVehicle();
+				if (v.getBuildingLocation() == null) {
+					return v.getNickName();
+				}
+				else {
+					return v.getBuildingLocation().getNickName();
+				}
+			}
 			else if (r.isRightOutsideSettlement())
-				return r.getAssociatedSettlement() + VICINITY;
+				return findSettlementVicinity().getName() + VICINITY;
 			else
 				return OUTSIDE_ON_MARS;
 			
@@ -325,7 +344,7 @@ public class LocationTag implements LocationState, Serializable {
 				}
 			}
 			else if (v.isRightOutsideSettlement())
-				return v.getAssociatedSettlement() + VICINITY;
+				return findSettlementVicinity().getName() + VICINITY;
 			else
 				return OUTSIDE_ON_MARS;
 		}
@@ -333,6 +352,18 @@ public class LocationTag implements LocationState, Serializable {
 		return UNKNOWN;
 	}
 	
+	public Settlement findSettlementVicinity() {
+		Coordinates c = unit.getCoordinates();
+
+		Collection<Settlement> ss =	Simulation.instance().getUnitManager().getSettlements();
+		for (Settlement s : ss) {
+			if (s.getCoordinates().equals(c))
+				return s;
+		}
+		
+		return null;
+	}
+
 	public LocationStateType getType() {
 		return unit.getLocationStateType();
 	}

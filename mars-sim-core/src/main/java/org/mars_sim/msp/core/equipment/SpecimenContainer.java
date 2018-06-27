@@ -11,6 +11,8 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * A specialized container for holding rock samples.
@@ -53,5 +55,22 @@ implements Container, Serializable {
 	 */
 	public double getTotalCapacity() {
 		return CAPACITY;
+	}
+
+	@Override
+	public Building getBuildingLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return this.getAssociatedSettlement();
+	}
+
+	@Override
+	public Settlement getBuriedSettlement() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

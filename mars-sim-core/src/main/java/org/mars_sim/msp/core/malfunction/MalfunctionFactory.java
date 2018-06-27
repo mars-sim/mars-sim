@@ -31,8 +31,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * This class is a factory for Malfunction objects.
  */
-public final class MalfunctionFactory //extends Thread
-implements Serializable {
+public final class MalfunctionFactory implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

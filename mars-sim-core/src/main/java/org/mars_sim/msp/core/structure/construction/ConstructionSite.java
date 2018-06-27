@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -538,4 +539,5 @@ implements Serializable, LocalBoundedObject {
 	public void setMousePicked(boolean value) {
 		isMousePickedUp = value;
 	}
+
 }

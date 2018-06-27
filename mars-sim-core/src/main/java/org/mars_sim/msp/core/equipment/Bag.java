@@ -10,6 +10,8 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.PhaseType;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * A bag container for holding solid amount resources.
@@ -56,5 +58,23 @@ implements Container, Serializable {
 	 */
 	public double getTotalCapacity() {
 		return CAPACITY;
+	}
+
+	@Override
+	public Building getBuildingLocation() {
+		// TODO : how to determine which building this equipment be stored inside a settlement ?
+		return null;
+	}
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		this.getAssociatedSettlement();
+		return null;
+	}
+
+	@Override
+	public Settlement getBuriedSettlement() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

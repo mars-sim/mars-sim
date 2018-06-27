@@ -605,6 +605,8 @@ extends UnitTableModel {
 		} // end of else if (eventType == UnitEventType.CROP_EVENT) {
 		if (columnNum > -1) {
 			SwingUtilities.invokeLater(new FoodTableCellUpdater(unitIndex, columnNum));
+			//Exception in thread "pool-5-thread-2" java.lang.NoSuchMethodError: org.mars_sim.msp.ui.swing.tool.monitor.CropTableModel$FoodTableCellUpdater.<init>(Lorg/mars_sim/msp/ui/swing/tool/monitor/CropTableModel;IILorg/mars_sim/msp/ui/swing/tool/monitor/CropTableModel$1;)V
+
 		}
 	}
 

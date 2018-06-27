@@ -12,11 +12,9 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
+
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+
 import javax.swing.ListSelectionModel;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -25,6 +23,11 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 
 /**
  * Window for the mission tool.
@@ -38,7 +41,7 @@ extends ToolWindow {
 	// Private members
 	private double previous;
 	
-	private JTabbedPane tabPane;
+	private WebTabbedPane tabPane;
 	private JList<Mission> missionList;
 	
 	private NavpointPanel navpointPane;
@@ -58,22 +61,22 @@ extends ToolWindow {
 		mainScene = desktop.getMainScene();
 
 		// Create content panel.
-		JPanel mainPane = new JPanel(new BorderLayout());
+		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create the mission list panel.
-		JPanel missionListPane = new JPanel(new BorderLayout());
+		WebPanel missionListPane = new WebPanel(new BorderLayout());
 		missionListPane.setPreferredSize(new Dimension(200, 200));
 		mainPane.add(missionListPane, BorderLayout.WEST);
 
 		// Create the mission list.
 		missionList = new JList<Mission>(new MissionListModel());
 		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
+		missionListPane.add(new WebScrollPane(missionList), BorderLayout.CENTER);
 
 		// Create the info tab panel.
-		tabPane = new JTabbedPane();
+		tabPane = new WebTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
 
 		// Create the main detail panel.
@@ -87,11 +90,11 @@ extends ToolWindow {
 		tabPane.add("Navigation", navpointPane);
 
 		// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout());
+		WebPanel buttonPane = new WebPanel(new FlowLayout());
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the create mission button.
-		JButton createButton = new JButton("Create New Mission");
+		WebButton createButton = new WebButton("Create New Mission");
 		createButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -102,7 +105,7 @@ extends ToolWindow {
 		buttonPane.add(createButton);
 
 		// Create the edit mission button.
-		final JButton editButton = new JButton("Modify Mission");
+		final WebButton editButton = new WebButton("Modify Mission");
 		editButton.setEnabled(false);
 /*
 		editButton.addActionListener(
@@ -125,7 +128,7 @@ extends ToolWindow {
 		buttonPane.add(editButton);
 
 		// Create the abort mission button.
-		final JButton abortButton = new JButton("Abort Mission");
+		final WebButton abortButton = new WebButton("Abort Mission");
 		abortButton.setEnabled(false);
 /*		
 		abortButton.addActionListener(

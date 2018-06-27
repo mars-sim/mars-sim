@@ -25,6 +25,8 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 
@@ -341,18 +343,35 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	}
 */
 	@Override
-	public String getShortLocationName() {
-		return getLocationTag().getQuickLocation();
+	public String getImmediateLocation() {
+		return getLocationTag().getImmediateLocation();
 	}
 
 	@Override
-	public String getLongLocationName() {
-		return getLocationTag().getLongLocationName();
+	public String getLocale() {
+		return getLocationTag().getLocale();
 	}
 	
 	public void destroy() {
 		malfunctionManager = null;
 		weather = null;
+	}
+
+	@Override
+	public Building getBuildingLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return this.getAssociatedSettlement();
+	}
+
+	@Override
+	public Settlement getBuriedSettlement() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

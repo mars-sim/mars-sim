@@ -23,11 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -39,6 +35,13 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
+
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 
 /**
  * A wizard panel to select mission members.
@@ -52,14 +55,14 @@ implements ActionListener {
 
 	// Data members.
 	private PeopleTableModel peopleTableModel;
-	private JTable peopleTable;
+	private WebTable peopleTable;
 	private MembersTableModel membersTableModel;
 
-	private JTable membersTable;
-	private JLabel errorMessageLabel;
-	private JButton addButton;
-	private JButton removeButton;
-	private JLabel roverCapacityLabel;
+	private WebTable membersTable;
+	private WebLabel errorMessageLabel;
+	private WebButton addButton;
+	private WebButton removeButton;
+	private WebLabel roverCapacityLabel;
 
 	/**
 	 * Constructor
@@ -76,32 +79,33 @@ implements ActionListener {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select members label.
-		JLabel selectMembersLabel = new JLabel("Select members for the mission.", JLabel.CENTER);
+		WebLabel selectMembersLabel = new WebLabel("Select members for the mission.", WebLabel.CENTER);
 		selectMembersLabel.setFont(selectMembersLabel.getFont().deriveFont(Font.BOLD));
 		selectMembersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectMembersLabel);
 
 		// Create the available people label.
-		JLabel availablePeopleLabel = new JLabel("Available People", JLabel.CENTER);
+		WebLabel availablePeopleLabel = new WebLabel("Available People", WebLabel.CENTER);
 		availablePeopleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(availablePeopleLabel);
 
 		// Create the people panel.
-		JPanel peoplePane = new JPanel(new BorderLayout(0, 0));
+		WebPanel peoplePane = new WebPanel(new BorderLayout(0, 0));
 		peoplePane.setPreferredSize(new Dimension(300, 150));
 		peoplePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(peoplePane);
 
 		// Create scroll panel for available people list.
-		JScrollPane peopleScrollPane = new JScrollPane();
+		WebScrollPane peopleScrollPane = new WebScrollPane();
 		peoplePane.add(peopleScrollPane, BorderLayout.CENTER);
 
 		// Create the people table model.
 		peopleTableModel = new PeopleTableModel();
 
 		// Create the people table.
-		peopleTable = new JTable(peopleTableModel);
+		peopleTable = new WebTable(peopleTableModel);	
 		TableStyle.setTableStyle(peopleTable);
+		// Added sorting
 		peopleTable.setAutoCreateRowSorter(true);
 		peopleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(peopleTableModel));
 		peopleTable.setRowSelectionAllowed(true);
@@ -166,7 +170,7 @@ implements ActionListener {
 		peopleScrollPane.setViewportView(peopleTable);
 
 		// Create the message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
+		errorMessageLabel = new WebLabel(" ", WebLabel.CENTER);
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(errorMessageLabel);
@@ -175,18 +179,18 @@ implements ActionListener {
 		add(Box.createVerticalStrut(10));
 
 		// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
 		buttonPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(buttonPane);
 
 		// Create the add button.
-		addButton = new JButton("Add Members");
+		addButton = new WebButton("Add Members");
 		addButton.setEnabled(false);
 		addButton.addActionListener(this);
 		buttonPane.add(addButton);
 
 		// Create the remove button.
-		removeButton = new JButton("Remove Members");
+		removeButton = new WebButton("Remove Members");
 		removeButton.setEnabled(false);
 		removeButton.addActionListener(
 				new ActionListener() {
@@ -207,7 +211,7 @@ implements ActionListener {
 		add(Box.createVerticalStrut(10));
 
 		// Create the rover capacity label.
-		roverCapacityLabel = new JLabel("Remaining rover capacity: ");
+		roverCapacityLabel = new WebLabel("Remaining rover capacity: ");
 		roverCapacityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(roverCapacityLabel);
 
@@ -215,25 +219,25 @@ implements ActionListener {
 		add(Box.createVerticalStrut(10));
 
 		// Create the members label.
-		JLabel membersLabel = new JLabel("Mission Members");
+		WebLabel membersLabel = new WebLabel("Mission Members");
 		membersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(membersLabel);
 
 		// Create the members panel.
-		JPanel membersPane = new JPanel(new BorderLayout(0, 0));
+		WebPanel membersPane = new WebPanel(new BorderLayout(0, 0));
 		membersPane.setPreferredSize(new Dimension(300, 150));
 		membersPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(membersPane);
 
 		// Create scroll panel for members list.
-		JScrollPane membersScrollPane = new JScrollPane();
+		WebScrollPane membersScrollPane = new WebScrollPane();
 		membersPane.add(membersScrollPane, BorderLayout.CENTER);
 
 		// Create the members table model.
 		membersTableModel = new MembersTableModel();
 
 		// Create the members table.
-		membersTable = new JTable(membersTableModel);
+		membersTable = new ZebraJTable(membersTableModel);
 		TableStyle.setTableStyle(membersTable);
 		membersTable.setAutoCreateRowSorter(true);
 		membersTable.setRowSelectionAllowed(true);

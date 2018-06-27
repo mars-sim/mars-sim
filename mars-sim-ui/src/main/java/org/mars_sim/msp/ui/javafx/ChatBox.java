@@ -14,6 +14,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup.PopupHPosition;
+import com.jfoenix.controls.JFXPopup.PopupVPosition;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -33,20 +47,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXPopup.PopupHPosition;
-import com.jfoenix.controls.JFXPopup.PopupVPosition;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-
-@SuppressWarnings("restriction")
 public class ChatBox extends BorderPane {
 
 	public final static String STARFIELD = "/images/starfield.png";
@@ -129,7 +130,7 @@ public class ChatBox extends BorderPane {
     	box_height[2] = 768;//box_height[0] * 3D;
     	box_height[3] = 1024;//box_height[0] * 4D;
 
-    	// 2016-01-01 Added autoCompleteData
+    	// Added autoCompleteData
     	ObservableList<String> autoCompleteData = createAutoCompleteData();
 
         textArea = new TextArea();
@@ -141,7 +142,7 @@ public class ChatBox extends BorderPane {
 		mainScene.setQuickToolTip(textArea, "Conversations on MarsNet");
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
 
-  		// 2016-01-01 Replaced textField with autoFillTextBox
+  		// Replaced textField with autoFillTextBox
         autoFillTextBox = new AutoFillTextBox<String>(autoCompleteData);
         autoFillTextBox.setPadding(new Insets(2, 0, 0, 0));
         autoFillTextBox.getStylesheets().addAll(AUTOFILL);
@@ -263,8 +264,8 @@ public class ChatBox extends BorderPane {
 	    	settlementCache = null;
     	}
 
-        mainScene.getFlyout().hide();//.close();//.dismiss();
-        //mainScene.ToggleMarsNetButton(false);
+        mainScene.getFlyout().hide();
+ 
     }
 
     /**
@@ -286,7 +287,6 @@ public class ChatBox extends BorderPane {
 	   	// Creates an array with the names of all of people and robots
 		List<String> nameList = new ArrayList<>();
 
-		// 2016-10-06 Added misc keywords
 		nameList.add("settlement");
 		nameList.add("settlements");
 		nameList.add("vehicle");
@@ -305,11 +305,11 @@ public class ChatBox extends BorderPane {
 
 				String first = "";
 				String last = "";
-				// 2016-06-15 Added names in both orders, namely, "first last" or "last, first"
+				// Added names in both orders, namely, "first last" or "last, first"
 				String firstLast = p.getName();
 				String lastFirst = "";
 				int len1 = firstLast.length();
-				// 2016-10-01 Used for loop to find the last is the best approach instead of int index = firstLast.indexOf(" ");
+				// Used for loop to find the last is the best approach instead of int index = firstLast.indexOf(" ");
 				int index = 0;
 
 				for (int k = len1-1 ; k > 0 ; k--) {
@@ -329,8 +329,6 @@ public class ChatBox extends BorderPane {
 				if (index == -1) {
 					// the person has no last name
 					first = firstLast;
-					//last = "";
-					//lastFirst = first;
 					nameList.add(first);
 				}
 				else {
@@ -359,10 +357,7 @@ public class ChatBox extends BorderPane {
 		//autoCompleteArray = (String[])ArrayUtils.addAll(autoCompleteArray, peopleRobotsArray);
 
 		autoCompleteData = FXCollections.observableArrayList(nameList);
-	    //autoCompleteData.addAll(nameList);
-	    //for(int j=0; j<autoCompleteArray.length; j++){
-	    //    autoCompleteData.add(autoCompleteArray[j]);
-	    //}
+
 	    return autoCompleteData;
 	}
 
@@ -782,7 +777,7 @@ public class ChatBox extends BorderPane {
 
 	    				if (personCache.getBuildingLocation() != null) {
 	    					responseText.append(" (");
-	    					responseText.append(personCache.getLocationTag().getLongLocationName());//.getBuildingLocation().getNickName());
+	    					responseText.append(personCache.getLocationTag().getExtendedLocations());//.getBuildingLocation().getNickName());
 	    					responseText.append(")");
 	    				}
 
@@ -793,7 +788,7 @@ public class ChatBox extends BorderPane {
 	    	    		responseText.append("I'm ");
 	    	    		responseText.append(stateType.getName());
 	    	    		responseText.append(" (");
-	    	    		responseText.append(robotCache.getLocationTag().getLongLocationName());//.getBuildingLocation().getNickName());
+	    	    		responseText.append(robotCache.getLocationTag().getExtendedLocations());//.getBuildingLocation().getNickName());
 	    	    		responseText.append(")");
 	    	    	}
 	    		}
@@ -983,7 +978,7 @@ public class ChatBox extends BorderPane {
 
 	    	else if (num == 12 || text.equalsIgnoreCase("vehicle inside") || text.equalsIgnoreCase("vehicle container") || text.contains("vehicle") && text.contains("container")) {
 	    		questionText = YOU_PROMPT + "Where is your vehicle at?";//'s container unit ?";
-	    		Vehicle v = cache.getVehicle();
+	    		Vehicle v = personCache.getVehicle();
 	       		if (v  != null) {
 	       			Unit c = v.getContainerUnit();
 	       			if (c != null) {

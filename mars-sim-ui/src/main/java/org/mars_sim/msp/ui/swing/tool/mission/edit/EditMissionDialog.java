@@ -19,7 +19,10 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
-import javax.swing.*;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
+
+import javax.swing.JComponent;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -68,11 +71,11 @@ public class EditMissionDialog extends ModalInternalFrame {
         add(infoPane, BorderLayout.CENTER);
         
         // Create the button panel.
-        JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         add(buttonPane, BorderLayout.SOUTH);
         
         // Create the modify button.
-        JButton modifyButton = new JButton("Modify");
+        WebButton modifyButton = new WebButton("Modify");
         modifyButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
@@ -84,7 +87,7 @@ public class EditMissionDialog extends ModalInternalFrame {
         buttonPane.add(modifyButton);
         
         // Create the cancel button.
-        JButton cancelButton = new JButton("Cancel");
+        WebButton cancelButton = new WebButton("Cancel");
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {

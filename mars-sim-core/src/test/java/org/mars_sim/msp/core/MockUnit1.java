@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MockUnit1.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-06-27
  * @author Scott Davis
  */
 
@@ -19,4 +18,5 @@ public class MockUnit1 extends Unit {
 		
 		setBaseMass(10D);
 	}
+
 }

@@ -118,7 +118,7 @@ public class UnitManager implements Serializable {
 
 	private static List<String> countries;
 
-	private static Settlement firstSettlement;
+//	private static Settlement firstSettlement;
 	private static PersonConfig personConfig;
 	private static SettlementConfig settlementConfig;
 	private static RelationshipManager relationshipManager;
@@ -500,7 +500,7 @@ public class UnitManager implements Serializable {
 			throw new IllegalStateException("Settlements could not be created: " + e.getMessage(), e);
 		}
 
-		firstSettlement = getASettlement();
+//		firstSettlement = getASettlement();
 	}
 
 	/**
@@ -1842,15 +1842,15 @@ public class UnitManager implements Serializable {
 		return CollectionUtils.getSettlement(units);
 	}
 
-	public Settlement getASettlement() {
-		List<Settlement> list = new ArrayList<>();
-		list.addAll(getSettlements());
-		return list.get(0);
-	}
+//	public Settlement getASettlement() {
+//		List<Settlement> list = new ArrayList<>();
+//		list.addAll(getSettlements());
+//		return list.get(0);
+//	}
 
-	public Settlement getFirstSettlement() {
-		return firstSettlement;
-	}
+//	public Settlement getFirstSettlement() {
+//		return firstSettlement;
+//	}
 
 	/**
 	 * Get number of vehicles
@@ -2094,7 +2094,7 @@ public class UnitManager implements Serializable {
 		vehicleNumberMap.clear();
 		vehicleNumberMap = null;
 		//masterClock = null;
-		firstSettlement = null;
+//		firstSettlement = null;
 		personConfig = null;
 		settlementConfig = null;
 		relationshipManager = null;

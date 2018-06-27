@@ -419,11 +419,11 @@ implements Serializable {
 							malfunction,
 							malfunctionName,
 							"Part Fatigue", // in the who field
-							entity.getNickName(),
-							entity.getShortLocationName());
+							entity.getImmediateLocation(),
+							entity.getLocale());
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-		        			malfunction.getName() + " detected - due to Parts Fatigue - in " + entity.getLongLocationName(), null);
+		        			malfunction.getName() + " detected - due to Parts Fatigue - in " + entity.getLocale(), null);
 					}
 					else {
 						HistoricalEvent newEvent = new MalfunctionEvent(
@@ -431,11 +431,11 @@ implements Serializable {
 								malfunction,
 								malfunctionName,
 								offender,
-								entity.getNickName(),
-								entity.getShortLocationName());
+								entity.getImmediateLocation(),
+								entity.getLocale());
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
 							LogConsolidated.log(logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-			        			+ malfunction.getName() + " - due to Human Factors - in " + entity.getLongLocationName(), null);
+			        			+ malfunction.getName() + " - due to Human Factors - in " + entity.getLocale(), null);
 					}
 				}
 				else {
@@ -450,10 +450,10 @@ implements Serializable {
 							malfunctionName,
 							name,
 							entity.getNickName(),
-							entity.getShortLocationName());
+							entity.getImmediateLocation());
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-			        			malfunction.getName() + " damage detected in " + entity.getLongLocationName(), null);
+			        			malfunction.getName() + " damage detected in " + entity.getLocale(), null);
 				}
 			}
 			else
@@ -574,7 +574,7 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
         	LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-        			"[" + entity.getShortLocationName() + "] "
+        			"[" + entity.getImmediateLocation() + "] "
         			+ entity.getNickName() + " is behind on maintenance.  "
 					+ "Time since last check-up: " + solsLastMaint
 					+ " sols.  Condition: " + wearCondition + " %.", null);
@@ -617,13 +617,10 @@ implements Serializable {
 						malfunction,
 						malfunction.getName(),
 						chiefRepairer,
-						entity.getNickName(),
-						entity.getShortLocationName());
-//						entity, 
-//						item,
-//						null,
-//						entity.getLongLocationName(), 
-//						true);
+						entity.getImmediateLocation(),
+						entity.getLocale()
+						);
+
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 	        			"The malfunction '" + malfunction.getName() + "' has been fixed", null);
@@ -800,8 +797,8 @@ implements Serializable {
 		}
 */
 		String sName = null;
-		if (entity.getShortLocationName() != null) {
-			sName = entity.getShortLocationName().replace(Conversion.capitalize(n), "")
+		if (entity.getImmediateLocation() != null) {
+			sName = entity.getImmediateLocation().replace(Conversion.capitalize(n), "")
 					.replace(" in ", "");
 		}
 		

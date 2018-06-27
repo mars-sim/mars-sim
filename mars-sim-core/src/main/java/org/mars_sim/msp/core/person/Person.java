@@ -1417,7 +1417,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return building
 	 */
-	// 2015-05-18 Added getBuildingLocation()
+	@Override
 	public Building getBuildingLocation() {
 		return computeCurrentBuilding();
 	}
@@ -1428,7 +1428,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return building
 	 */
-	// 2017-03-08 Added setCurrentBuilding()
 	public Building computeCurrentBuilding() {
 		if (currentBuilding != null) {
 			return currentBuilding;

@@ -7,9 +7,12 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+
 
 /**
  * Cell renderer for unit tables that marks failure cells as red.
