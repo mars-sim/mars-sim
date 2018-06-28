@@ -32,16 +32,6 @@
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }
 
-.tool-bar:horizontal {
-	-fx-font-weight: normal;
-/*	-fx-font-family: "Noto";*/
-	-fx-font-size: 9pt;
-	-fx-background-color: transparent, transparent, transparent, transparent;
-	-fx-border-width: 1;
-	-fx-border-style: dotted;
-	-fx-padding: 4px 4px 4px 4px;
-}
-
 
 .menu-bar {
 	-fx-font-weight: normal;
@@ -503,8 +493,6 @@
     -fx-font-weight: bold;
 }
 
-
-
 #save-label {
     -fx-background-insets: 0,1,2,3;
     -fx-background-radius: 3,2,2,2;
@@ -512,4 +500,8 @@
     -fx-text-fill: white;
     -fx-font-size: 10px;
     -fx-font-weight: italic;
+}
+
+.vbox {
+	-fx-background-color: transparent;
 }

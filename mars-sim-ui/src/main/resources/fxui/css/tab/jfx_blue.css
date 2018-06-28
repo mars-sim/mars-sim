@@ -15,6 +15,7 @@
     -fx-stroke-width: 3pt;
 }
 
+
 #commit-button {
     -fx-background-color:
         linear-gradient(#7ebcea, #2f4b8f),
@@ -67,4 +68,36 @@
     -fx-border-width: 0 0 1 0;
     -fx-background-insets: 0;
     -fx-pref-height: 45px;
+}
+
+
+#background {
+    -light-blue: #7ebcea;
+    -dark-highlight: #2381E9;
+    -dark-blue: #2f4b8f ;
+    -darkest-blue: #2f4b8f;
+    -mid-gray: rgb(216, 222, 227);
+    -fx-background-color: #7ebcea;
+}
+
+.jfx-tool-bar {
+    -fx-base: #3291D2;
+    -fx-font-size: 11pt;
+    -fx-background-color:
+        linear-gradient(to bottom, derive(-fx-base,-30%), derive(-fx-base,-60%)),
+        linear-gradient(to bottom, -light-blue 2%, -dark-blue 98%);
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: .05em 0.416667em .05em 0.416667em;
+    -fx-effect: dropshadow(two-pass-box,-dark-blue,5,.2,0,0);
+}
+
+.button {
+    -fx-background-color:
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(#395cab, #223768),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-padding: .2em 0.816667em .2em 0.816667em;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
 }

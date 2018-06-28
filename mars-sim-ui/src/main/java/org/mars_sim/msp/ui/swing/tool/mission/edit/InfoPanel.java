@@ -285,7 +285,7 @@ extends WebPanel {
 					// Add available people and robots at the local settlement.
 					Settlement settlement = rover.getSettlement();
 					if (settlement != null) {
-					    membersAtLocation.addAll(settlement.getInhabitants());
+					    membersAtLocation.addAll(settlement.getIndoorPeople());
 					    membersAtLocation.addAll(settlement.getRobots());
 					}
 				}
@@ -310,7 +310,7 @@ extends WebPanel {
 		    // Add people and robots at settlement.
 		    Settlement settlement = mission.getAssociatedSettlement();
 		    if (settlement != null) {
-		        Iterator<Person> i = settlement.getInhabitants().iterator();
+		        Iterator<Person> i = settlement.getIndoorPeople().iterator();
 		        while (i.hasNext()) {
 		            Person person = i.next();
 		            if (!memberListModel.contains(person)) {

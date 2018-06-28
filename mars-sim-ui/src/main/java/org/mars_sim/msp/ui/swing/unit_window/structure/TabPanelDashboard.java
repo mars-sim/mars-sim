@@ -35,7 +35,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -45,7 +44,6 @@ import javafx.scene.control.ToggleButton;
 /**
  * Tab panel displaying general info regarding the settlement <br>
  */
-@SuppressWarnings("restriction")
 public class TabPanelDashboard extends TabPanel {
 
 	/** default serial id. */
@@ -102,7 +100,6 @@ public class TabPanelDashboard extends TabPanel {
 	 * @param desktop
 	 *            {@link MainDesktopPane} the main desktop panel.
 	 */
-	@SuppressWarnings("restriction")
 	public TabPanelDashboard(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(Msg.getString("TabPanelDashboard.title"), //$NON-NLS-1$

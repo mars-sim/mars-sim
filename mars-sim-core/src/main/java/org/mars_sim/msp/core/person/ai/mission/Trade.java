@@ -903,7 +903,7 @@ implements Serializable {
         Person bestTrader = null;
         int bestTradeSkill = -1;
 
-        Iterator<Person> i = tradingSettlement.getInhabitants().iterator();
+        Iterator<Person> i = tradingSettlement.getIndoorPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             if (!getMembers().contains(person)) {

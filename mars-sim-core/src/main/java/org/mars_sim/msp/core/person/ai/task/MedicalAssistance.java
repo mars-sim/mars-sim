@@ -406,7 +406,7 @@ implements Serializable {
 		boolean result = false;
 
 		if (person.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
+			Iterator<Person> i = person.getSettlement().getIndoorPeople().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
 				if ((inhabitant != person) && (inhabitant.getMind().getJob())

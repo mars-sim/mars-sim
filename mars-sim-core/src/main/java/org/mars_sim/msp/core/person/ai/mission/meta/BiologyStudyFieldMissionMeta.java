@@ -119,7 +119,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
 
 
             // Crowding modifier
-            int crowding = settlement.getNumCurrentPopulation() - settlement.getPopulationCapacity();
+            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) result *= (crowding + 1);
 
             // Job modifier.

@@ -67,6 +67,7 @@
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }
 
+
 .table-view {
 	-fx-table-cell-border-color:derive(-fx-base,+10%);
 	-fx-table-header-border-color:derive(-fx-base,+20%);
@@ -492,9 +493,9 @@
         linear-gradient(#ffea6a, #efaa22),
         linear-gradient(#ffe657 0%, #f8c202 50%, #EA8002 100%),
         linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
-    -fx-background-insets: 0,1,2,1;
-    -fx-background-radius: 2,2,2,2;
-    -fx-padding: 0 7 0 7;
+    -fx-background-insets: 0,0,0,0;
+    -fx-background-radius: 0,0,0,0;
+    -fx-padding: 0 0 0 0;
     -fx-text-fill: #654b00;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
@@ -507,4 +508,8 @@
     -fx-text-fill: white;
     -fx-font-size: 10px;
     -fx-font-weight: italic;
+}
+
+.vbox {
+	-fx-background-color: transparent;
 }

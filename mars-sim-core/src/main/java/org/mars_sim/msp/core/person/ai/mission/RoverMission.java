@@ -673,7 +673,7 @@ extends VehicleMission {
 		boolean result = false;
 
 		if (settlement != null) {
-			Iterator<Person> i = settlement.getInhabitants().iterator();
+			Iterator<Person> i = settlement.getIndoorPeople().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
 				if ((inhabitant != member)
@@ -706,7 +706,7 @@ extends VehicleMission {
 				minNum = 0;
 
 			int numAvailable = 0;
-			Iterator<Person> i = settlement.getInhabitants().iterator();
+			Iterator<Person> i = settlement.getIndoorPeople().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
 				if (!inhabitant.getMind().hasActiveMission())
@@ -726,9 +726,9 @@ extends VehicleMission {
 	protected final boolean hasDangerousMedicalProblemAtAssociatedSettlement() {
 		boolean result = false;
 		if (getAssociatedSettlement() != null) {
-			if (getAssociatedSettlement().getNumCurrentPopulation() == 1) {
+			if (getAssociatedSettlement().getIndoorPeopleCount() == 1) {
 				Person person = (Person) getAssociatedSettlement()
-						.getInhabitants().toArray()[0];
+						.getIndoorPeople().toArray()[0];
 				if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 					result = true;
 			}

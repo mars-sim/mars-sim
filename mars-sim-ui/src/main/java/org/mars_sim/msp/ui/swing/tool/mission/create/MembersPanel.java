@@ -401,7 +401,7 @@ implements ActionListener {
 				settlement = missionData.getConstructionSettlement();
 			else if (MissionDataBean.SALVAGE_MISSION.equals(missionData.getType()))
 				settlement = missionData.getSalvageSettlement();
-			Collection<Person> people = CollectionUtils.sortByName(settlement.getInhabitants());
+			Collection<Person> people = CollectionUtils.sortByName(settlement.getIndoorPeople());
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) units.add(i.next());
 			fireTableDataChanged();

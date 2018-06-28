@@ -152,7 +152,7 @@ implements Serializable {
                 // Check if spot is unoccupied.
                 boolean available = true;
                 Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-                Iterator<Person> j = settlement.getInhabitants().iterator();
+                Iterator<Person> j = settlement.getIndoorPeople().iterator();
                 while (j.hasNext() && available) {
                     Person tempPerson = j.next();
                     if (!tempPerson.equals(person)) {

@@ -252,7 +252,7 @@ public class PersonTableModel extends UnitTableModel {
 			settlement.addUnitListener(settlementListener);
 		} else {
 			sourceType = ValidSourceType.SETTLEMENT_INHABITANTS;
-			setSource(settlement.getInhabitants());
+			setSource(settlement.getIndoorPeople());
 			settlementListener = new InhabitantSettlementListener();
 			settlement.addUnitListener(settlementListener);
 		}

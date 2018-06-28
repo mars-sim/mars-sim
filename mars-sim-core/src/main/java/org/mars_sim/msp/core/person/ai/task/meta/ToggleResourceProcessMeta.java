@@ -105,7 +105,7 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
                 }
             }
 
-            if (isEVA && settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity()) {
+            if (isEVA && settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity()) {
                  result *= 2D;
             }
 

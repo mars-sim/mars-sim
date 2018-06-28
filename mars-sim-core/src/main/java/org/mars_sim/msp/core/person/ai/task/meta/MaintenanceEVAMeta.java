@@ -84,7 +84,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
                 if (!surface.inDarkPolarRegion(person.getCoordinates()))
                     return 0;
 
-            if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
+            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
                 result *= 2D;
 
             try {

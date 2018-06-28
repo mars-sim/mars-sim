@@ -995,7 +995,7 @@ implements Serializable {
      */
     static double getSettlementNeed(Settlement settlement, int vehicleCrewNum,
     		AmountResource resource, double tripTime) {
-    	int remainingPeopleNum = settlement.getNumCurrentPopulation() - vehicleCrewNum;
+    	int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
     	double amountPersonPerSol = 0D;
     	double tripTimeSols = tripTime / 1000D;
 
@@ -1048,7 +1048,7 @@ implements Serializable {
      */
     private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
             Class equipmentType) {
-    	int remainingPeopleNum = settlement.getNumCurrentPopulation() - vehicleCrewNum;
+    	int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
     	// Leave one EVA suit for every four remaining people at settlement (min 1).
     	if (equipmentType == EVASuit.class) {
     		int minSuits = remainingPeopleNum / 4;

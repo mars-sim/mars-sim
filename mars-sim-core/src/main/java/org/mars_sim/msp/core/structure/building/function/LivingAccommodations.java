@@ -249,7 +249,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	        // Designate a bed for each inhabitant
 			if (settlement == null)
 				settlement = building.getBuildingManager().getSettlement();
-	        for (Person p : settlement.getInhabitants()) {
+	        for (Person p : settlement.getIndoorPeople()) {
 	        	if (p.getBed() == null) {
 	        		registerSleeper(p, false);
 	        	}
@@ -286,7 +286,7 @@ public class LivingAccommodations extends Function implements Serializable {
         //System.out.println("level : " + level);
         //System.out.println("usage : " + usage);
         // 2017-05-02 Account for people who are out there in an excursion and NOT in the settlement
-        double absentee_factor = settlement.getNumCurrentPopulation()/settlement.getPopulationCapacity();
+        double absentee_factor = settlement.getIndoorPeopleCount()/settlement.getPopulationCapacity();
 
         double waterUsed = usage  * time * numBed * absentee_factor;
         //double waterProduced = wasteWaterProduced * time * numBed * absentee_factor;

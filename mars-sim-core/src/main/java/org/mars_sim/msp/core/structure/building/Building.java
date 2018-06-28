@@ -1194,7 +1194,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 */
 		Collection<Person> people = getInhabitants();
 		// Check all people in settlement.
-		Iterator<Person> i = manager.getSettlement().getInhabitants().iterator();
+		Iterator<Person> i = manager.getSettlement().getIndoorPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();

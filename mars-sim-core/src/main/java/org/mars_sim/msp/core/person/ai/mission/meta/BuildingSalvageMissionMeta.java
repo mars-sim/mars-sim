@@ -81,7 +81,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
             // Check if enough available people at settlement for mission.
             int availablePeopleNum = 0;
-            Iterator<Person> i = settlement.getInhabitants().iterator();
+            Iterator<Person> i = settlement.getIndoorPeople().iterator();
             while (i.hasNext()) {
                 Person member = i.next();
                 boolean noMission = !member.getMind().hasActiveMission();

@@ -45,3 +45,33 @@
 	-fx-text-fill: #333333; /* 333333 is grey */
 }
 
+#background {
+    -light-orange: #efe07c;
+    -dark-highlight: #e68400;
+    -dark-orange: #937210 ;
+    -darkest-orange: #654b00;
+    -mid-gray: rgb(216, 222, 227);
+    -fx-background-color: #654b00;
+}
+
+.jfx-tool-bar {
+    -fx-base: #654b00;
+    -fx-font-size: 11pt;
+    -fx-background-color:
+        linear-gradient(to bottom, derive(-fx-base,-30%), derive(-fx-base,-60%)),
+        linear-gradient(to bottom, -light-orange 2%, -dark-orange 98%);
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: .05em 0.416667em .05em 0.416667em;
+    -fx-effect: dropshadow(two-pass-box,-dark-orange,5,.2,0,0);
+}
+
+.button {
+	-fx-background-color:
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-padding: .2em 0.816667em .2em 0.816667em;
+    -fx-text-fill: #654b00;
+    -fx-font-size: 11px;
+}

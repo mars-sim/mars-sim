@@ -75,7 +75,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
 */
-            Collection<Person> list = settlement.getInhabitants();
+            Collection<Person> list = settlement.getIndoorPeople();
             for (Person member : list) {
                 boolean noMission = !member.getMind().hasActiveMission();
                 boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
@@ -124,7 +124,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                         int numSites = manager.getConstructionSites().size();
 
                         // 2016-06-06 Added considering the size of the settlement population
-                        int numPeople = settlement.getNumCurrentPopulation();
+                        int numPeople = settlement.getIndoorPeopleCount();
                         int limit = (int)(2D * numSites - numPeople/24D);
 
                         result = result/Math.pow(10, 2 + limit) /5D;

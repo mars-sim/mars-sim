@@ -42,7 +42,7 @@
        </Label>
        <Pane layoutY="200.0" prefHeight="50.0" prefWidth="460.0" style="-fx-border-radius: 0 0 3 3; -fx-background-color: #E5E8EB; -fx-border-color: #C3C3C3; -fx-border-width: 1 0 0 0;">
           <children>
-             <Rating layoutX="14.0" layoutY="9.0" prefHeight="20.0" prefWidth="207.0" rating="4.0" />
+             <Rating styleClass="rating" layoutX="14.0" layoutY="9.0" prefHeight="20.0" prefWidth="207.0" rating="4.0" />
              <JFXButton layoutX="340.0" layoutY="9.0" prefHeight="32.0" prefWidth="100.0" style="-fx-background-color: #337AB7; -fx-text-fill: white; -fx-font-size: 14;" text="Profile">
                 <graphic>
                    <FontAwesomeIconView fill="#fffdfd" glyphName="USER" size="14" wrappingWidth="18.0" />

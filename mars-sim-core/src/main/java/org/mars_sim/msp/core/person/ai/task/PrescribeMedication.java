@@ -219,7 +219,7 @@ implements Serializable {
         // Note: Doctor can also prescribe medication for himself.
         Collection<Person> patientList = null;
         if (doctor.isInSettlement()) {
-            patientList = doctor.getSettlement().getInhabitants();
+            patientList = doctor.getSettlement().getIndoorPeople();
         }
         else if (doctor.isInVehicle()) {
             Vehicle vehicle = doctor.getVehicle();
@@ -262,7 +262,7 @@ implements Serializable {
         // Note: Doctor can also prescribe medication for himself.
         Collection<Person> patientList = null;
         if (doctor.isInSettlement()) {
-            patientList = doctor.getSettlement().getInhabitants();
+            patientList = doctor.getSettlement().getIndoorPeople();
         }
 /*        
         else if (loc == LocationSituation.IN_VEHICLE) {

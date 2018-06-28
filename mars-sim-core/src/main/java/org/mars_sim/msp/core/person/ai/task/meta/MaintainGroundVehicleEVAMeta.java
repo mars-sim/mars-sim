@@ -80,7 +80,7 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 	                    return 0;
 	
 	
-	            if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
+	            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
 	                result *= 2D;
 	
 	            // Get all vehicles needing maintenance.

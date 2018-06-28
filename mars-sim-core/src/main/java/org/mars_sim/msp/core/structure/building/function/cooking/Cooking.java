@@ -537,7 +537,7 @@ implements Serializable {
  	}
 
  	public int getPopulation() {
-        return getBuilding().getBuildingManager().getSettlement().getNumCurrentPopulation();
+        return getBuilding().getBuildingManager().getSettlement().getIndoorPeopleCount();
  	}
 
     /**

@@ -83,7 +83,7 @@ implements Serializable {
 		}
 
 		// Add total population / 10.
-		int population = settlement.getNumCurrentPopulation();
+		int population = settlement.getIndoorPeopleCount();
 		result+= ((double) population / 10D);
 
 		return result;			

@@ -49,7 +49,7 @@ public class CollectIceMeta implements MetaMission {
 
 	        // a settlement with <= 4 population can always do DigLocalRegolith task
 	        // should avoid the risk of mission.
-	        if (settlement.getNumCurrentPopulation() <= 1)//.getAllAssociatedPeople().size() <= 4)
+	        if (settlement.getIndoorPeopleCount() <= 1)//.getAllAssociatedPeople().size() <= 4)
 	        	return 0;
 
             // Check if available rover.
@@ -95,7 +95,7 @@ public class CollectIceMeta implements MetaMission {
             }
 
             // Crowding modifier.
-            int crowding = settlement.getNumCurrentPopulation()
+            int crowding = settlement.getIndoorPeopleCount()
                     - settlement.getPopulationCapacity();
             if (crowding > 0) {
                 result *= (crowding + 1);

@@ -83,7 +83,7 @@ implements Serializable {
 	 * @param settlement the settlement the person starts at.
 	 */
 	public void addInitialSettler(Person person, Settlement settlement) {
-		addPerson(person, settlement.getInhabitants());
+		addPerson(person, settlement.getIndoorPeople());
 	}
 
 	/**

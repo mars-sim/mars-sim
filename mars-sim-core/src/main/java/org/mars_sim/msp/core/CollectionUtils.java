@@ -118,7 +118,7 @@ public class CollectionUtils {
 		Collection<Unit> units
 	) {
 /*
-		// StackOverflowError sometimes when using stream b elow
+		// StackOverflowError sometimes when using stream below
 		return units
 				.stream()
 				.filter(u-> u instanceof Person)

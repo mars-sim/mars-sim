@@ -198,7 +198,7 @@ class ConstructionSettlementPanel extends WizardPanel {
                     if (column == 0) 
                         result = settlement.getName();
                     else if (column == 1) 
-                        result = settlement.getNumCurrentPopulation();
+                        result = settlement.getIndoorPeopleCount();
                     else if (column == 2) {
                         int numSites = settlement.getConstructionManager().getConstructionSites().size();
                         result = numSites;
@@ -233,7 +233,7 @@ class ConstructionSettlementPanel extends WizardPanel {
             
             try {
                 if (column == 1) {
-                    if (settlement.getNumCurrentPopulation() == 0) result = true;
+                    if (settlement.getIndoorPeopleCount() == 0) result = true;
                 }
             }
             catch (Exception e) {}

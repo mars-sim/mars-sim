@@ -17,9 +17,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.GenderType;
@@ -692,12 +694,12 @@ public class UnitManager implements Serializable {
 
 			// If settlement does not have initial population capacity, try
 			// another settlement.
-			if (settlement.getInitialPopulation() <= settlement.getNumCurrentPopulation()) {
+			if (settlement.getInitialPopulation() <= settlement.getIndoorPeopleCount()) {
 				Iterator<Settlement> i = getSettlements().iterator();
 				Settlement newSettlement = null;
 				while (i.hasNext() && (newSettlement == null)) {
 					Settlement tempSettlement = i.next();
-					if (tempSettlement.getInitialPopulation() > tempSettlement.getNumCurrentPopulation()) {
+					if (tempSettlement.getInitialPopulation() > tempSettlement.getIndoorPeopleCount()) {
 						newSettlement = tempSettlement;
 					}
 				}
@@ -833,7 +835,7 @@ public class UnitManager implements Serializable {
 				int initPop = settlement.getInitialPopulation();
 
 				// Fill up the settlement by creating more people
-				while (settlement.getNumCurrentPopulation() < initPop) {
+				while (settlement.getIndoorPeopleCount() < initPop) {
 
 					String sponsor = settlement.getSponsor();
 			    	//System.out.println("sponsor is " + sponsor);
@@ -1880,7 +1882,7 @@ public class UnitManager implements Serializable {
 	}
 
 	/**
-	 * Get people in virtual Mars
+	 * Get all people in Mars
 	 *
 	 * @return Collection of people
 	 */
@@ -1888,6 +1890,19 @@ public class UnitManager implements Serializable {
 		return CollectionUtils.getPerson(units);
 	}
 
+	/**
+	 * Get all people in Mars
+	 *
+	 * @return Collection of people
+	 */
+	public Collection<Person> getOutsidePeople() {
+		return CollectionUtils.getPerson(units)
+				.stream()
+				.filter(p-> p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+						 || p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+				.collect(Collectors.toList());
+	}
+	
 	/**
 	 * Get number of Robots
 	 *

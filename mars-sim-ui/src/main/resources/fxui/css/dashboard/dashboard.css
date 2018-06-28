@@ -1,13 +1,13 @@
 
 .root{}
 
-.nav-button:hover{
+.jfxbutton:hover{
     -fx-background-color:#222D32;
 }
-.nav-button {
+.jfxbutton {
     -fx-background-color:#2A3F54;
 }
-.nav-button:pressed {
+.jfxbutton:pressed {
     -fx-background-color:#2A3F54;
 }
 .mprogress-bar>.track {
@@ -49,3 +49,9 @@
 	-fx-effect: null;
 }
 
+.button {
+	-fx-background-color: transparent;
+    -fx-padding: 10.0, 16.0, 10.0, 16.0;
+    -fx-font-size: 11px;
+    -fx-text-fill: white;
+}

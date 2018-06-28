@@ -104,10 +104,10 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        	return 0;
 	
 	        // Crowded settlement modifier
-	        if (settlement.getNumCurrentPopulation() > settlement.getPopulationCapacity())
+	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
 	            result *= 1.5D;
 	
-	        if (settlement.getNumCurrentPopulation() <= 4)
+	        if (settlement.getIndoorPeopleCount() <= 4)
 	            result *= 1.5D;
 	
 	        // Effort-driven task modifier.

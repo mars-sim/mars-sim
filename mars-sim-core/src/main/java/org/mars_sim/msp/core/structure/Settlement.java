@@ -171,6 +171,8 @@ implements Serializable, LifeSupportType, Objective {
 	private double methaneProbabilityValue = 0;
 
 	private double outside_temperature; 
+	/** The maximum distance the rovers are allowed to travel */
+	private double maxMssionRange;
 	
 	// 2014-11-23 Added foodProductionOverride
 	private boolean foodProductionOverride = false;
@@ -543,10 +545,15 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Gets the current population number of the settlement
-	 * @return the number of inhabitants
+	 * Gets the current number of people who are inside the settlement
+	 * @return the number indoor
 	 */
-	public int getNumCurrentPopulation() {
+	public int getIndoorPeopleCount() {
+		
+//		return allAssociatedPeople.stream()
+//        .filter(u -> u instanceof Person)
+//        .collect(Collectors.toList()).size();
+		
 		int n = 0;
 		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
 		while (i.hasNext()) {
@@ -562,13 +569,14 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Gets a collection of the inhabitants of the settlement.
+	 * Gets a collection of the people who are inside the settlement.
 	 * @return Collection of inhabitants
 	 */
-	public Collection<Person> getInhabitants() {
+	public Collection<Person> getIndoorPeople() {
 		return CollectionUtils.getPerson(getInventory().getContainedUnits());
 	}
 
+		
 	/**
 	 * Gets a collection of people who are doing EVA outside the settlement.
 	 * @return Collection of people
@@ -600,7 +608,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return the available population capacity
 	 */
 	public int getAvailablePopulationCapacity() {
-		return getPopulationCapacity() - getNumCurrentPopulation();
+		return getPopulationCapacity() - getIndoorPeopleCount();
 	}
 
 	/**
@@ -608,7 +616,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return array of inhabitants
 	 */
 	public Person[] getInhabitantArray() {
-		Collection<Person> people = getInhabitants();
+		Collection<Person> people = getIndoorPeople();
 		Person[] personArray = new Person[people.size()];
 		Iterator<Person> i = people.iterator();
 		int count = 0;
@@ -967,10 +975,10 @@ implements Serializable, LifeSupportType, Objective {
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
 
-		int overCrowding = getNumCurrentPopulation() - getPopulationCapacity();
+		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
-			for (Person p : getInhabitants()) {
+			for (Person p : getIndoorPeople()) {
 				PhysicalCondition c = p.getPhysicalCondition();
 				c.setStress(c.getStress() + stressModifier);
 			}
@@ -1275,7 +1283,7 @@ implements Serializable, LifeSupportType, Objective {
 	public void refreshSleepMap(int solElapsed) {
 		// Update the sleep pattern once every x number of days
 		if (solElapsed % SOL_SLEEP_PATTERN_REFRESH == 0) {
-			Collection<Person> people = getInhabitants();
+			Collection<Person> people = getIndoorPeople();
 			for (Person p : people) {
 				p.getCircadianClock().inflateSleepHabit();
 			}
@@ -1297,7 +1305,7 @@ implements Serializable, LifeSupportType, Objective {
 	// TODO: should call this method at, say, 800 millisols, not right at 1000 millisols
 	public void reassignWorkShift() {
 
-		Collection<Person> people = getInhabitants();
+		Collection<Person> people = getIndoorPeople();
 		int pop = people.size();
 
 		int nShift = 0;
@@ -1516,7 +1524,7 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	// TODO: will this method be called by robots?
 	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>(getInhabitants());
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>(getIndoorPeople());
 
 		// Check all people.
 		Iterator<Person> i = unitManager.getPeople().iterator();
@@ -1568,7 +1576,7 @@ implements Serializable, LifeSupportType, Objective {
         else {
         	// the only initiator's settlement
         	// may be radio or face-to-face conversation
-        	i = getInhabitants().iterator();
+        	i = getIndoorPeople().iterator();
         }
 
         while (i.hasNext()) {
@@ -2842,7 +2850,7 @@ implements Serializable, LifeSupportType, Objective {
 		if (inclusiveChecking)
 			decrementShiftType(st);
 
-		int pop = getNumCurrentPopulation();
+		int pop = getIndoorPeopleCount();
 		int quotient = pop / numShift;
 		int remainder = pop % numShift;
 
@@ -2978,7 +2986,7 @@ implements Serializable, LifeSupportType, Objective {
 	public ShiftType getAnEmptyWorkShift(int population) {
 		int pop = 0;
 		if (population == -1)
-			pop = getNumCurrentPopulation();
+			pop = getIndoorPeopleCount();
 		else
 			pop = population;
 
@@ -3363,7 +3371,7 @@ implements Serializable, LifeSupportType, Objective {
         int result = 0;
 
         double storedWater = getInventory().getARStored(ResourceUtil.waterID, false);
-        double requiredDrinkingWaterOrbit = water_consumption * getNumCurrentPopulation() *
+        double requiredDrinkingWaterOrbit = water_consumption * getIndoorPeopleCount() *
                 MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
         // If stored water is less than 20% of required drinking water for Orbit, wash water should be rationed.
@@ -3678,9 +3686,14 @@ implements Serializable, LifeSupportType, Objective {
 		this.storm = storm;
 	}
 
-	//public ShiftType getCurrentShift() {	
-	//	return currentShift;
-	//}
+	public double getMaxMssionRange() {	
+		return maxMssionRange;
+	}
+	
+	public void setMaxMssionRange(double value) {	
+		maxMssionRange = value;
+	}
+		
 	
 	@Override
 	public void destroy() {
@@ -3718,6 +3731,4 @@ implements Serializable, LifeSupportType, Objective {
 		//}
 		scientificAchievement = null;
 	}
-
-
 }

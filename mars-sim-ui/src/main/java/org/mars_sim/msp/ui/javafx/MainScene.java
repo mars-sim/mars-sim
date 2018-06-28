@@ -49,9 +49,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -156,7 +158,7 @@ import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTimePicker;
 import com.jfoenix.controls.JFXToggleButton;
-
+import com.jfoenix.controls.JFXToolbar;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 
@@ -382,6 +384,7 @@ public class MainScene {
 	private VBox mapLabelBox;
 	private VBox speedVBox;
 	private VBox soundVBox;
+	private VBox toolbarBox;
 	private Tab mainTab, dashboardTab;
 
 	private Spinner<Integer> timeRatioSpinner;
@@ -390,6 +393,7 @@ public class MainScene {
 	private JFXToggleButton minimapToggle;
 	private JFXToggleButton mapToggle;
 	private JFXSlider zoomSlider;
+	private JFXToolbar toolbar;
 
 	private static JFXSlider musicSlider;
 	private static JFXSlider soundEffectSlider; 
@@ -406,7 +410,7 @@ public class MainScene {
 	private JFXPopup marsCalendarPopup;
 	private JFXPopup simSpeedPopup;
 	
-	private JFXTabPane jfxTabPane;
+	private JFXTabPane tabPane;
 	
 	private JFXDialog exitDialog;
 	
@@ -659,7 +663,7 @@ public class MainScene {
 	// 2016-11-14 Setup key events using wellbehavedfx
 	public void setupKeyEvents() {
 		InputMap<KeyEvent> f1 = consume(keyPressed(KeyCode.F1), e -> {
-			jfxTabPane.getSelectionModel().select(MainScene.HELP_TAB);
+			tabPane.getSelectionModel().select(MainScene.HELP_TAB);
 			/*
 			 * if (desktop.isToolWindowOpen(GuideWindow.NAME)) SwingUtilities.invokeLater(()
 			 * -> desktop.closeToolWindow(GuideWindow.NAME)); else {
@@ -1048,9 +1052,9 @@ public class MainScene {
 		}
 
 		// AnchorPane.setBottomAnchor(jfxTabPane, 0.0);
-		AnchorPane.setLeftAnchor(jfxTabPane, 0.0);
-		AnchorPane.setRightAnchor(jfxTabPane, 0.0);
-		AnchorPane.setTopAnchor(jfxTabPane, 0.0);
+		AnchorPane.setLeftAnchor(tabPane, 0.0);
+		AnchorPane.setRightAnchor(tabPane, 0.0);
+		AnchorPane.setTopAnchor(tabPane, 0.0);
 
 		// AnchorPane.setRightAnchor(badgeIcon, 5.0);
 		// AnchorPane.setTopAnchor(badgeIcon, 0.0);
@@ -1099,7 +1103,7 @@ public class MainScene {
 		
 		anchorPane = new AnchorPane();
 		//anchorPane.setStyle("-fx-background-color: black; ");
-		anchorPane.getChildren().addAll(jfxTabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
+		anchorPane.getChildren().addAll(tabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
 				soundBtn, gNode);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 		gNode.setLayoutX(350);
@@ -1126,8 +1130,8 @@ public class MainScene {
 		pausePane.setLayoutX((sceneWidth.get() - pausePane.getPrefWidth()) / 2D);
 		pausePane.setLayoutY((sceneHeight.get() - pausePane.getPrefHeight()) / 2D);
 
-		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());
-		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
+		tabPane.prefHeightProperty().bind(scene.heightProperty());
+		tabPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		//matrix.setPrefWidth(jfxTabPane.getWidth());
 		
@@ -1140,8 +1144,7 @@ public class MainScene {
 		// anchorTabPane is within jfxTabPane
 		mapsAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
 		mapsAnchorPane.prefWidthProperty().bind(scene.widthProperty());
-		//mapsAnchorPane.setStyle("-fx-background-color: black; ");
-		
+	
 		// Setup key events using wellbehavedfx
 		setupKeyEvents();
 
@@ -2014,6 +2017,7 @@ public class MainScene {
 	public void createMapButtons() { 
 		rotateCWBtn = new JFXButton();
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw"))))); //$NON-NLS-1$
+		rotateCWBtn.setStyle("-fx-background-color: transparent; ");
 		// IconNode rotateCWIcon = new IconNode(FontAwesome.ar.ARROW_CIRCLE_O_RIGHT);
 		// rotateCWIcon.setIconSize(30);
 		// rotateCWBtn.setGraphic(rotateCWIcon);
@@ -2030,6 +2034,7 @@ public class MainScene {
 		rotateCCWBtn = new JFXButton();
 		rotateCCWBtn
 				.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw"))))); //$NON-NLS-1$
+		rotateCCWBtn.setStyle("-fx-background-color: transparent; ");
 		// IconNode rotateCCWIcon = new IconNode(FontAwesome.ARROW_CIRCLE_O_LEFT);
 		// rotateCCWIcon.setIconSize(30);
 		// rotateCCWBtn.setGraphic(rotateCCWIcon);
@@ -2046,6 +2051,7 @@ public class MainScene {
 		recenterBtn = new JFXButton();
 		recenterBtn.setGraphic(
 				new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$
+		recenterBtn.setStyle("-fx-background-color: transparent; ");
 		// IconNode recenterIcon = new IconNode(FontAwesome.ALIGN_CENTER);
 		// recenterIcon.setIconSize(30);
 		// recenterBtn.setGraphic(recenterIcon);
@@ -2232,12 +2238,9 @@ public class MainScene {
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
 	public void createJFXTabs() {
-		jfxTabPane = new JFXTabPane();
+		tabPane = new JFXTabPane();
 
-		mainStackPane = new StackPane();
-		mainStackPane.setStyle("-fx-background-color: black; ");
-		mainStackPane.getChildren().add(desktopNode);
-
+		// Set up the "Dashboard" Tab
 		dashboardStackPane = new StackPane();
 
 		dashboardTab = new Tab();
@@ -2247,13 +2250,6 @@ public class MainScene {
 		Parent parent = null;
 		DashboardController controller = null;
 		FXMLLoader fxmlLoader = null;
-		/*
-		 * try { fxmlLoader = new FXMLLoader(); parent = (Parent)
-		 * fxmlLoader.load(getClass().getResource("/fxui/fxml/dashboard/dashboard.fxml")
-		 * ); //fxmlLoader.setController(controller); controller = (DashboardController)
-		 * fxmlLoader.getController(); } catch (IOException e) { e.printStackTrace(); }
-		 * 
-		 */
 
 		try {
 			fxmlLoader = new FXMLLoader();
@@ -2264,21 +2260,28 @@ public class MainScene {
 			e.printStackTrace();
 		}
 
-		// AnchorPane anchorPane = (AnchorPane)parent.lookup("#anchorPane");
-		// anchorPane.setPrefSize(screen_width, screen_height);
-
 		controller.setSize(screen_width, screen_height - TAB_PANEL_HEIGHT);
 
 		dashboardStackPane.getChildren().add(parent);
 
+		// Set up the "Main" Tab
+		createJFXToolbar();
+		
+		toolbarBox = new VBox(toolbar, desktopNode);
+		toolbarBox.setPadding(new Insets(5,5,5,5));
+		mainStackPane = new StackPane();
+		//mainStackPane.setStyle("-fx-background-color: transparent; ");
+		mainStackPane.getChildren().add(toolbarBox);
+
 		mainTab = new Tab();
 		mainTab.setText("Main");
 		mainTab.setContent(mainStackPane);
-
-		// set up mapTab
+		
+		// Set up the "Map" Tab
 		mapsAnchorPane = new AnchorPane();
+		//mapsAnchorPane.setStyle("-fx-background-color: transparent; ");
 		mapsAnchorPane.setStyle("-fx-background-color: black; ");
-
+		
 		Tab mapTab = new Tab();
 		mapTab.setText("Map");
 		//mapTab.setStyle("-fx-background-color: black; ");
@@ -2289,33 +2292,31 @@ public class MainScene {
 		minimapNode = new SwingNode();
 		minimapGroup = new Group(minimapNode);
 		minimapNode.setContent(navWin);
-		//minimapGroup.setStyle("-fx-background-color: transparent; ");
-		//minimapNode.setStyle("-fx-background-color: transparent; ");
 
 		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapPanel = settlementWindow.getMapPanel();
 
 		mapNode = new SwingNode();
-		mapNode.setStyle("-fx-background-color: black; ");
+		mapNode.setStyle("-fx-background-color: transparent; ");
 		sMapStackPane = new StackPane(mapNode);
 		mapNode.setContent(settlementWindow);
 		sMapStackPane.setStyle("-fx-background-color: transparent; ");
 
-
 		createMapToolBox();
 
+		// Set up the "Help" Tab
 		BrowserJFX helpBrowser = desktop.getBrowserJFX();
-		// StackPane guidePane = new StackPane(guideNode);
 		StackPane guidePane = new StackPane(helpBrowser.getBorderPane());
 		Tab guideTab = new Tab();
 		guideTab.setText("Help");
 		guideTab.setContent(guidePane);
 
-		jfxTabPane.getTabs().addAll(dashboardTab, mainTab, mapTab, guideTab);
+		// Set up the tabPane
+		tabPane.getTabs().addAll(dashboardTab, mainTab, mapTab, guideTab);
 
 		final DashboardController c = controller;
 		
-		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+		tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
 			if (newTab == dashboardTab) {
 				
@@ -2510,7 +2511,7 @@ public class MainScene {
 			mapsAnchorPane.getChildren().remove(minimapGroup);
 			minimapToggle.setSelected(false);
 			minimapToggle.setText("Minimap Off");
-			jfxTabPane.requestFocus();
+			tabPane.requestFocus();
 		});
 	}
 
@@ -2521,7 +2522,7 @@ public class MainScene {
 					rotateCCWBtn, recenterBtn);
 			mapToggle.setSelected(false);
 			mapToggle.setText("Settlement Map Off");
-			jfxTabPane.requestFocus();
+			tabPane.requestFocus();
 		});
 	}
 
@@ -2539,7 +2540,7 @@ public class MainScene {
 				mapToggle.setText("Settlement Map Off");
 			});
 		}
-		jfxTabPane.requestFocus();
+		tabPane.requestFocus();
 	}
 
 	public boolean isCacheButtonOn() {
@@ -2781,9 +2782,14 @@ public class MainScene {
 
 		// String color = txtColor.replace("0x", "");
 
-		jfxTabPane.getStylesheets().clear();
-
-		setStylesheet(marsTimeBox, cssFile);
+		tabPane.getStylesheets().clear();
+//		setStylesheet(tabPane, cssFile);
+		
+		toolbar.getStylesheets().clear();
+//		setStylesheet(toolbar, cssFile);
+		
+		//setStylesheet(marsTimeBox, cssFile);
+		setStylesheet(toolbarBox, cssFile);
 		setStylesheet(marsTimeButton, cssFile);
 		setStylesheet(marsTimeLabel, cssFile);
 		
@@ -2852,8 +2858,10 @@ public class MainScene {
 			soundBtn.setGraphic(soundIcon);
 			// farmIcon.setFill(Color.YELLOW);
 			// farmBtn.setGraphic(farmIcon);
-			jfxTabPane.getStylesheets().add(getClass().getResource(ORANGE_CSS_JFX).toExternalForm());
-			jfxTabPane.getStyleClass().add("jfx-tab-pane");
+			tabPane.getStylesheets().add(getClass().getResource(ORANGE_CSS_JFX).toExternalForm());
+			tabPane.getStyleClass().add("jfx-tab-pane");
+			toolbar.getStylesheets().add(getClass().getResource(ORANGE_CSS_JFX).toExternalForm());
+			toolbar.getStyleClass().add("jfx-tool-bar");
 		}
 
 		else {
@@ -2871,22 +2879,31 @@ public class MainScene {
 			soundBtn.setGraphic(soundIcon);
 			// farmIcon.setFill(Color.LAVENDER);
 			// farmBtn.setGraphic(farmIcon);
-			jfxTabPane.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm()); 
-			jfxTabPane.getStyleClass().add("jfx-tab-pane");
+			tabPane.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm()); 
+			tabPane.getStyleClass().add("jfx-tab-pane");
+			toolbar.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm()); 
+			toolbar.getStyleClass().add("jfx-tool-bar");
 		}
 
 		chatBox.update();
 
 	}
 
+	public void setStylesheet(JFXTabPane t, String cssFile) {
+		t.getStylesheets().clear();
+		t.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		t.getStyleClass().add("jfx-tab-pane");
+	}
+	
 	public void setStylesheet(Text t, String cssFile) {
-		// t.getStyle().clear();
+		//t.getStylesheets().clear();
 		t.setStyle(getClass().getResource(cssFile).toExternalForm());
 	}
 
-	public void setStylesheet(Node n, String cssFile) {
-		//n.getStylesheets().clear();
-		//n.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	public void setStylesheet(JFXToolbar t, String cssFile) {
+		t.getStylesheets().clear();
+		t.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		t.getStyleClass().add("jfx-toolbar");
 	}
 	
 	public void setStylesheet(JFXSlider s, String cssFile) {
@@ -2909,9 +2926,15 @@ public class MainScene {
 		sp.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 	}
 
+	public void setStylesheet(HBox b, String cssFile) {
+		b.getStylesheets().clear();
+		b.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}
+	
 	public void setStylesheet(VBox vb, String cssFile) {
 		vb.getStylesheets().clear();
 		vb.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		vb.getStyleClass().add("vbox");
 	}
 
 	public void setStylesheet(JFXToggleButton b, String cssFile) {
@@ -3518,7 +3541,7 @@ public class MainScene {
 	private void createDesktopNode() {
 		// Create group to hold swingNode which in turns holds the Swing desktop
 		desktopNode = new SwingNode();
-		desktopNode.setStyle("-fx-background-color: black; ");
+		//desktopNode.setStyle("-fx-background-color: black; ");
 		desktop = new MainDesktopPane(this);
 		//SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
 		
@@ -3941,19 +3964,19 @@ public class MainScene {
 	}
 
 	public JFXTabPane getJFXTabPane() {
-		return jfxTabPane;
+		return tabPane;
 	}
 
 	public boolean isMapTabOpen() {
-		if (jfxTabPane != null)
-			return jfxTabPane.getSelectionModel().isSelected(MainScene.MAP_TAB);
+		if (tabPane != null)
+			return tabPane.getSelectionModel().isSelected(MainScene.MAP_TAB);
 		else
 			return false;
 	}
 
 	public boolean isMainTabOpen() {
-		if (jfxTabPane != null)
-			return jfxTabPane.getSelectionModel().isSelected(MainScene.MAIN_TAB);
+		if (tabPane != null)
+			return tabPane.getSelectionModel().isSelected(MainScene.MAIN_TAB);
 		else
 			return false;
 	}
@@ -4161,6 +4184,46 @@ public class MainScene {
 		}
 	}
 			
+	public void createJFXToolbar() {
+//		JFXButton b0 = new JFXButton("Help");
+		JFXButton b1 = new JFXButton("Search");
+		JFXButton b2 = new JFXButton("Time");
+		JFXButton b3 = new JFXButton("Monitor");
+		JFXButton b4 = new JFXButton("Mission");
+		JFXButton b5 = new JFXButton("Science");
+		JFXButton b6 = new JFXButton("Resupply");
+		
+//		setQuickToolTip(b0, "Open Help Browser");
+		setQuickToolTip(b1, "Search Box");
+		setQuickToolTip(b2, "Time Tool");
+		setQuickToolTip(b3, "Monitor Tool");
+		setQuickToolTip(b4, "Mission Wizard");
+		setQuickToolTip(b5, "Science Tool");
+		setQuickToolTip(b6, "Resupply Tool");
+
+		toolbar = new JFXToolbar();
+		toolbar.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+		toolbar.getLeftItems().addAll(b1,b2,b3,b4,b5,b6);
+
+		
+//		b0.setOnAction(e -> desktop.openToolWindow(GuideWindow.NAME));
+		b1.setOnAction(e -> desktop.openToolWindow(SearchWindow.NAME));
+		b2.setOnAction(e -> desktop.openToolWindow(TimeWindow.NAME));
+		b3.setOnAction(e -> desktop.openToolWindow(MonitorWindow.NAME));
+		b4.setOnAction(e -> desktop.openToolWindow(MissionWindow.NAME));
+		b5.setOnAction(e -> desktop.openToolWindow(ScienceWindow.NAME));
+		b6.setOnAction(e -> desktop.openToolWindow(ResupplyWindow.NAME));
+		
+//		b0.setOnAction(toolbarHandler);		
+//		EventHandler<ActionEvent> toolbarHandler = new EventHandler<ActionEvent>() {
+//			public void handle(ActionEvent ae) {
+//				String s = ((JFXButton)ae.getTarget()).getText();		
+//			}
+//		}
+	}
+	
+
+	
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;

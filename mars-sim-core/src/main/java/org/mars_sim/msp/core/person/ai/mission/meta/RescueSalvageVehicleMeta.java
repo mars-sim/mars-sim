@@ -132,7 +132,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             }
 
             // Crowding modifier.
-            int crowding = settlement.getNumCurrentPopulation() - settlement.getPopulationCapacity();
+            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) {
                 missionProbability *= (crowding + 1);
             }

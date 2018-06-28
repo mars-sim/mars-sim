@@ -245,7 +245,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
         int result = -1;
 
-        Iterator<Person> i = settlement.getInhabitants().iterator();
+        Iterator<Person> i = settlement.getIndoorPeople().iterator();
         while (i.hasNext()) {
             Person inhabitant = i.next();
             if (person != inhabitant) {

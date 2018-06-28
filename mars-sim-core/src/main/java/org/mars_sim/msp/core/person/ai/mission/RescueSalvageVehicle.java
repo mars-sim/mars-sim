@@ -785,7 +785,7 @@ implements Serializable {
                 double settlementDistance = settlement.getCoordinates().getDistance(
                         thisVehicle.getCoordinates());
                 if (settlementDistance < distance) {
-                    if (settlement.getNumCurrentPopulation() >= MIN_GOING_MEMBERS) {
+                    if (settlement.getIndoorPeopleCount() >= MIN_GOING_MEMBERS) {
                         Iterator<Vehicle> iV = settlement.getParkedVehicles().iterator();
                         while (iV.hasNext() && result) {
                             Vehicle vehicle = iV.next();

@@ -3,49 +3,92 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXToolbar?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
-<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.geometry.Insets?>
 
-<AnchorPane id="AnchorPane" fx:id="mainPane" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/9.0" 
-	xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.dashboard.DashboardController">
+<AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="768.0" minWidth="1366.0" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.dashboard.DashboardController">
    <children>
-      <JFXToolbar layoutX="184.0" layoutY="14.0" style="-fx-min-height: 45; -fx-background-color: #2A3F54;" 
-         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <left>
-			<Label fx:id="insertLabel" layoutX="50.0" layoutY="0.0" prefHeight="60.0" prefWidth="750.0" text="" textFill="#a1aec4"
-			    style="-fx-alignment: center;" >
-				<font>
-					<Font name="Roboto Bold" size="16.0" />
-				</font>
-			</Label>
-         </left>
-      </JFXToolbar>
-      <VBox fx:id="leftVBox" layoutX="0.0" layoutY="46.0" prefWidth="250.0" style="-fx-background-color: #2A3F54;">
+   		<VBox fx:id="firstVBox" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #2A3F54;">
          <children>
-             <JFXButton fx:id="btnHome" onAction="#handleMars" layoutY="46.0" prefHeight="42.0" prefWidth="250.0" style="-fx-alignment: center-left;" 
-      			styleClass="nav-button" text="Mars" textFill="#a1aec4">
-		         <font>
-		            <Font name="Roboto Bold" size="18.0" />
-		         </font>
-		         <graphic>
-		            <FontAwesomeIconView fill="#a1aec4" glyphName="MARS" size="17.0" wrappingWidth="25.0" />
-		         </graphic>
-		      </JFXButton>
-		      <VBox fx:id="buttonVBox" layoutX="0.0" layoutY="46.0" prefWidth="250.0" style="-fx-background-color: #2A3F54;">
-		         <children>
-		         </children>
-		      </VBox>
+            <JFXToolbar fx:id="toolbar" maxHeight="25.0" minHeight="25.0" minWidth="1366.0" prefHeight="25.0" prefWidth="1366.0">
+               <left>   
+            		<HBox fx:id="toolbarHBox" minWidth="1366.0" prefWidth="1366.0" style="-fx-background-color: #2A3F54;" BorderPane.alignment="CENTER">
+            		    <children>  
+      					<Label fx:id="timerLabel" minHeight="15.0" minWidth="60.0" prefHeight="25.0" prefWidth="60.0" style="-fx-alignment: center-left;" text="0000" textFill="#a1aec4">
+      					<font>
+      						<Font name="Roboto Bold" size="14.0" />
+      					</font>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="5.0" right="1.0" />
+                           </padding>
+      					</Label>
+                        <Label fx:id="secondTextLabel" minHeight="15.0" minWidth="100.0" prefHeight="25.0" prefWidth="110.0" style="-fx-alignment: center-left;" text="seconds ago" textFill="#a1aec4">
+	                        <font>
+	      						<Font name="Roboto Bold" size="14.0" />
+	      					</font>
+                           <padding>
+                              <Insets left="1.0" right="15.0" />
+                           </padding>
+                        </Label>
+      			      			         
+                  		<Label fx:id="insertLabel" minHeight="15.0" minWidth="1366.0" prefHeight="25.0" prefWidth="800.0" style="-fx-alignment: center-left;" textFill="#a1aec4">
+	      					<font>
+	      						<Font name="Roboto Bold" size="14.0" />
+	      					</font>
+	                           <opaqueInsets>
+	                              <Insets />
+	                           </opaqueInsets>
+	                           <padding>
+	                              <Insets left="15.0" right="5.0" />
+	                           </padding>
+	      				</Label>
+      				</children> 
+      			</HBox>
+               </left>
+            </JFXToolbar>
+            <HBox fx:id="buttonHBox" maxWidth="200.0" minWidth="140.0" prefWidth="140.0">
+               <children>
+      			  <VBox fx:id="homeVBox" maxWidth="200.0" minWidth="140.0" prefWidth="140.0" style="-fx-background-color: #2A3F54;">
+                     <children>
+      			       <JFXButton fx:id="btnHome" onAction="#handleMars" prefHeight="42.0" style="-fx-alignment: center-left;" styleClass="jfxbutton" text="Mars" textFill="#a1aec4">
+      	      			     <font>
+      	      			        <Font name="Roboto Bold" size="18.0" />
+      	      			     </font>
+      	      			     <graphic>
+      	      			        <FontAwesomeIconView fill="#a1aec4" glyphName="MARS" size="17.0" wrappingWidth="25.0" />
+      	      			     </graphic>
+      	      			  </JFXButton>
+		   			  		<VBox fx:id="buttonVBox" maxWidth="200.0" minWidth="140.0" prefWidth="140.0" style="-fx-background-color: #2A3F54;">
+		                     <children>
+		      			       <JFXButton fx:id="btnHome" onAction="#handleMars" prefHeight="42.0" style="-fx-alignment: center-left;" styleClass="jfxbutton" text="Mars" textFill="#a1aec4">
+		      	      			     <font>
+		      	      			        <Font name="Roboto Bold" size="18.0" />
+		      	      			     </font>
+		      	      			     <graphic>
+		      	      			        <FontAwesomeIconView fill="#a1aec4" glyphName="MARS" size="17.0" wrappingWidth="25.0" />
+		      	      			     </graphic>
+		      	      			  </JFXButton>
+		                     </children>
+		      			  </VBox>   
+                     </children>
+      			  </VBox> 
+      			  
+            	  <AnchorPane fx:id="insertPane" layoutX="140.0" layoutY="46.0" />
+               </children>
+            </HBox>
          </children>
-      </VBox>
-  
-      
-	  <AnchorPane fx:id="insertPane" layoutX="140.0" layoutY="46.0"/>
+         <padding>
+            <Insets top="45.0" />
+         </padding>
+		</VBox>
+
    </children>
 </AnchorPane>

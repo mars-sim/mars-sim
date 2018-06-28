@@ -7,6 +7,8 @@
 package org.mars_sim.msp.ui.javafx.dashboard;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXToolbar;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,6 +24,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.javafx.MainScene;
 
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,6 +36,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
@@ -39,28 +47,56 @@ import jiconfont.javafx.IconNode;
 
 public class DashboardController implements Initializable {
 
-	private final static String SETTLERS_IN = "Settlers in ";
-	private final static String ALL_SETTLERS = "Settlers from all settlements";
+	private final static String SETTLERS_IN = " associated settlers in ";
+	private final static String ALL_SETTLERS = " associated settlers from all settlements";
 	private final static String PALE_BLUE = "#a1aec4";
+	private final static String INSIDE = "Inside : ";
+	private final static String OUTSIDE = "  Outside : ";	
+//	private final static String SECS = " seconds ago";
+	
+    private static final Integer STARTTIME = 0;
+    
+	private IntegerProperty timeSeconds = new SimpleIntegerProperty(STARTTIME);
 	
 	private int num = 0;
 	
+    private Timeline timeline;
+    
+    @FXML
+    private Label timerLabel;
+    @FXML
+    private JFXButton btnRefresh;
+    
+    @FXML
+    private JFXToolbar toolBar;
+    
+    @FXML
+    private JFXButton btnMars;
+    @FXML
+    private Label insertLabel;
+    @FXML
+    private Label secondTextLabel;
+    
     @FXML
     private AnchorPane mainPane;
     @FXML
     private AnchorPane insertPane;
     @FXML
     private AnchorPane settlersPane;
+    
+    @FXML
+    private VBox firstVBox;
     @FXML
     private VBox buttonVBox;
     @FXML
-    private VBox leftVBox;
+    private HBox buttonHBox;
+    
     @FXML
-    private JFXButton btnMars;
+    private HBox toolbarHBox;
+
 //    @FXML
 //    private ListView<Settlement> listView; 
-    @FXML
-    private Label insertLabel;
+
     
     private UnitManager unitManager;
     
@@ -77,6 +113,8 @@ public class DashboardController implements Initializable {
     	// Obtain a new list of settlements
     	settlements = getNewSettlements();
     	
+//    	toolBar.setLeftItems(toolbarHBox);
+    	
     	initSButtons();
     	
         try {
@@ -85,14 +123,54 @@ public class DashboardController implements Initializable {
             settlersPane = fxmlLoader.load();
         	controller = fxmlLoader.<SettlersController>getController();
         	// TODO: why insertLabel doesn't have the right alignment
-            insertLabel.setText(ALL_SETTLERS);
+            //insertLabel.setText(ALL_SETTLERS);
             loadNode(settlersPane);
             	
+        	//if (controller != null)
+        	//	controller.updateSettlers(null);
+         	int total = unitManager.getPeople().size();
+         	int outside = unitManager.getOutsidePeople().size();
+         	int inside = total - outside;
+            insertLabel.setText(total +  ALL_SETTLERS + " (" + INSIDE + inside + OUTSIDE + outside + ") :");
+            
         } catch (IOException ex) {
             Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    public void createTimer() {
+        // Bind the timerLabel text property to the timeSeconds property
+    	timerLabel = new Label();
+        timerLabel.textProperty().bind(timeSeconds.asString());
+        timerLabel.setTextFill(Color.WHITE);
+        //timerLabel.setStyle("-fx-font-size: 4em;");
+
+        timeSeconds.set(STARTTIME);
+        timeline = new Timeline();
+        timeline.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(STARTTIME+1),
+                new KeyValue(timeSeconds, 0)));
+        timeline.playFromStart();
+        
+        btnRefresh = new JFXButton();
+        btnRefresh.setText("Refresh");
+        btnRefresh.setOnAction(e -> handleRefresh());
+//        btnRefresh.setOnAction(new EventHandler<ActionEvent>() {
+//
+//            public void handle(ActionEvent event) {
+//                if (timeline != null) {
+//                    timeline.stop();
+//                }
+//                timeSeconds.set(STARTTIME);
+//                timeline = new Timeline();
+//                timeline.getKeyFrames().add(
+//                        new KeyFrame(Duration.seconds(STARTTIME+1),
+//                        new KeyValue(timeSeconds, 0)));
+//                timeline.playFromStart();
+//            }
+//        });
+    }
+    
     /*
      * Obtain a new list of settlements
      */
@@ -132,6 +210,7 @@ public class DashboardController implements Initializable {
        	//System.out.println("initSButtons()");
 //    	num = unitManager.getSettlementNum();
     	num = settlements.size();
+    	//buttonVBox.getChildren().add(btnMars);
     	
     	for (int i=0; i<num; i++) {
 //    		final ImageView imageView = new ImageView(new Image("http://icons.iconarchive.com/icons/eponas-deeway/colobrush/128/heart-2-icon.png") );
@@ -148,61 +227,26 @@ public class DashboardController implements Initializable {
     		btn.setLayoutX(10);
     		btn.setLayoutY(109);
     		btn.setPrefHeight(42);
-    		btn.setPrefWidth(250);
+    		//btn.setPrefWidth(250);
     		btn.setAlignment(Pos.CENTER_LEFT);
-    		btn.setStyle("nav-button");
+    		btn.setStyle("jfxbutton");
     		btn.setTextFill(Color.LIGHTBLUE);
     		// layoutX="10.0" layoutY="109.0" onAction="#handleS0" prefHeight="42.0" prefWidth="139.0" 
-            // style="-fx-alignment: center-left;" styleClass="nav-button" text="s0" textFill="#a1aec4"
+            // style="-fx-alignment: center-left;" styleClass="jfxbutton" text="s0" textFill="#a1aec4"
     		final int x = i;
     		btn.setOnAction(e -> handleList(settlements.get(x)));
     	}
     	
     }
     
-//    public void updateListView() {
-//    	settlements = FXCollections.observableList(unitManager.getSettlementOList());
-//    	//settlementButtons = new JFXButton[num-1];
-//    	listView = new ListView<Settlement>(settlements);
-//    	System.out.println("# of settlements : " + settlements.size());
-//    	listView.setCellFactory(param -> new ListCell<Settlement>() {
-//    	    @Override
-//    	    protected void updateItem(Settlement s, boolean empty) {
-//    	        super.updateItem(s, empty);
-//
-//    	        if (empty || s == null || s.getName() == null) {
-//    	            setText(null);
-//    	        } else {
-//    	            setText(s.getName());
-//    	        }
-//    	    }
-//    	});
-//    	
-//    	listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-//	        @Override
-//	        public void handle(MouseEvent event) {
-//	            System.out.println("handle on " + listView.getSelectionModel().getSelectedItem());
-//	        }
-//    	});
-//    }
-    
-//	@FXML 
-//	public void handleMouseClick(MouseEvent arg0) {
-//	    System.out.println("handleMouseClick on " + listView.getSelectionModel().getSelectedItem());
-//	}
-	
 	public void setSize(int screen_width, int screen_height){
-		int h = screen_height - MainScene.TAB_PANEL_HEIGHT - 30;
+		int h = screen_height - MainScene.TAB_PANEL_HEIGHT;
 		mainPane.setPrefSize(screen_width, screen_height);
-    	buttonVBox.setPrefHeight(h);
-    	leftVBox.setPrefHeight(h);
+    	buttonVBox.setPrefHeight(h-30);
+    	firstVBox.setPrefHeight(h);
     	if (controller != null)
     		controller.setSize(screen_width, h);
     }
-    
-//    public void setLeftVBoxHeight(int h) {
-//    	leftVBox.setPrefSize(250, h);
-//    }
     
     
     // Load selected node to a content holder
@@ -224,9 +268,27 @@ public class DashboardController implements Initializable {
        	//System.out.println("handleList()");
      	if (controller != null)
     		controller.updateSettlers(s);
-        insertLabel.setText(SETTLERS_IN + s.getName());
+     	int total = s.getAllAssociatedPeople().size();
+     	int inside = s.getIndoorPeopleCount();
+     	int outside = total - inside;
+        insertLabel.setText(total + SETTLERS_IN + s.getName() + " (" + INSIDE + inside + OUTSIDE + outside + ")");
         loadNode(settlersPane);
     }
+    
+    
+    private void handleRefresh() {
+        if (timeline != null) {
+            timeline.stop();
+        }
+//        timeSeconds.set(STARTTIME);
+        timeline.playFromStart();
+//        timeline = new Timeline();
+//        timeline.getKeyFrames().add(
+//                new KeyFrame(Duration.seconds(STARTTIME+1),
+//                new KeyValue(timeSeconds, 0)));
+//        timeline.playFromStart();
+    }
+    
     
     @FXML
     private void handleMars(ActionEvent event) {
@@ -234,7 +296,10 @@ public class DashboardController implements Initializable {
     	//settlements = getNewSettlements();
     	if (controller != null)
     		controller.updateSettlers(null);
-        insertLabel.setText(ALL_SETTLERS);
+     	int total = unitManager.getPeople().size();
+     	int outside = unitManager.getOutsidePeople().size();
+     	int inside = total - outside;
+        insertLabel.setText(total +  ALL_SETTLERS + " (" + INSIDE + inside + OUTSIDE + outside + ") :");
         loadNode(settlersPane);
     }
     

@@ -670,7 +670,7 @@ public class GoodsManager implements Serializable {
             //double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
         	double amountNeededSol = personConfig.getWaterUsageRate();
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-            int numPeople = settlement.getNumCurrentPopulation();
+            int numPeople = settlement.getIndoorPeopleCount();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
         }
         else return 0D;
@@ -686,7 +686,7 @@ public class GoodsManager implements Serializable {
         if (resource.equals(ResourceUtil.toiletTissueAR)) {
             double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-            int numPeople = settlement.getNumCurrentPopulation();
+            int numPeople = settlement.getIndoorPeopleCount();
             return numPeople * amountNeededOrbit;
         }
         else return 0D;

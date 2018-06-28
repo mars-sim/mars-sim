@@ -371,7 +371,7 @@ extends TabPanel {
 
 	public Person findPerson(String name) {
 		//Person person = null;
-		Collection<Person> people = settlement.getInhabitants();
+		Collection<Person> people = settlement.getIndoorPeople();
 		//List<Person> peopleList = new ArrayList<Person>(people);
 		Person person = (Person) people.stream()
                 .filter(p -> p.getName() == name);

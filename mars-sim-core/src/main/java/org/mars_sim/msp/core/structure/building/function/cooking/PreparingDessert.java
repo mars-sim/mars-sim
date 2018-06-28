@@ -466,7 +466,7 @@ implements Serializable {
     }
 
  	public int getPopulation() {
-        return getBuilding().getBuildingManager().getSettlement().getNumCurrentPopulation();
+        return getBuilding().getBuildingManager().getSettlement().getIndoorPeopleCount();
  	}
 
     /**
@@ -572,7 +572,7 @@ implements Serializable {
     	if ((preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED) && !makeNoMoreDessert) {
 
     	    // max allowable # of dessert servings per meal time.
-	        double population = building.getBuildingManager().getSettlement().getNumCurrentPopulation();
+	        double population = building.getBuildingManager().getSettlement().getIndoorPeopleCount();
 	        double maxServings = population * settlement.getDessertsReplenishmentRate();
 
 	        int numServings = getTotalAvailablePreparedDessertsAtSettlement(settlement);

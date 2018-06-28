@@ -448,7 +448,7 @@ public class MarsNode {
       TextFlow textFlow = new TextFlow();
       textFlow.setLayoutX(80);
       textFlow.setLayoutY(80);
-      Text text1 = new Text("Settlers: " + settlement.getNumCurrentPopulation() + " of " + settlement.getPopulationCapacity() + "\n");
+      Text text1 = new Text("Settlers: " + settlement.getIndoorPeopleCount() + " of " + settlement.getPopulationCapacity() + "\n");
       text1.setFont(Font.font(family, FontWeight.LIGHT, size));
       //Text text2 = new Text("\nNames: " + settlement.getInhabitants());
       //text2.setFont(Font.font(family, FontPosture.ITALIC, size));
@@ -502,7 +502,7 @@ public class MarsNode {
 	    v.setSpacing(10);
 	    v.setPadding(new Insets(0, 20, 10, 20));
 
-	    Collection<Person> persons = settlement.getInhabitants();
+	    Collection<Person> persons = settlement.getIndoorPeople();
 		List<Person> personList = new ArrayList<Person>(persons);
 		Iterator<Person> i = personList.iterator();
 		while(i.hasNext()) {

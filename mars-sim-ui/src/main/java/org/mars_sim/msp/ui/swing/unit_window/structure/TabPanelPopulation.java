@@ -86,7 +86,7 @@ implements MouseListener, ActionListener {
 
 
 		// Create population num label
-		populationNumCache = settlement.getNumCurrentPopulation();
+		populationNumCache = settlement.getIndoorPeopleCount();
 		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population",
 		        populationNumCache), JLabel.CENTER); //$NON-NLS-1$
 		populationCountPanel.add(populationNumLabel);
@@ -135,7 +135,7 @@ implements MouseListener, ActionListener {
 	public void update() {
 		Settlement settlement = (Settlement) unit;
 
-		int num = settlement.getNumCurrentPopulation();
+		int num = settlement.getIndoorPeopleCount();
 		// Update population num
 		if (populationNumCache != num) {
 			populationNumCache = num;
@@ -170,7 +170,7 @@ implements MouseListener, ActionListener {
 	    private PopulationListModel(Settlement settlement) {
 	        this.settlement = settlement;
 
-	        populationList = new ArrayList<Person>(settlement.getInhabitants());
+	        populationList = new ArrayList<Person>(settlement.getIndoorPeople());
 	        Collections.sort(populationList);
 	    }
 
@@ -196,12 +196,12 @@ implements MouseListener, ActionListener {
          */
         public void update() {
 
-            if (!populationList.containsAll(settlement.getInhabitants()) ||
-                    !settlement.getInhabitants().containsAll(populationList)) {
+            if (!populationList.containsAll(settlement.getIndoorPeople()) ||
+                    !settlement.getIndoorPeople().containsAll(populationList)) {
 
                 List<Person> oldPopulationList = populationList;
 
-                List<Person> tempPopulationList = new ArrayList<Person>(settlement.getInhabitants());
+                List<Person> tempPopulationList = new ArrayList<Person>(settlement.getIndoorPeople());
                 Collections.sort(tempPopulationList);
 
                 populationList = tempPopulationList;

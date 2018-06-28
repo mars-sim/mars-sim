@@ -107,7 +107,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
     	Collection<Person> list = null;
         LocationSituation loc = patient.getLocationSituation();
         if (LocationSituation.IN_SETTLEMENT == loc) {
-            list = patient.getSettlement().getInhabitants();
+            list = patient.getSettlement().getIndoorPeople();
 
         }
         else if (LocationSituation.IN_VEHICLE == loc) {
@@ -170,7 +170,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         
         if (p != null) {
 	        if (LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
-	            patientList = p.getSettlement().getInhabitants();
+	            patientList = p.getSettlement().getIndoorPeople();
 	        }
 	        else if (LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
 	            Vehicle vehicle = p.getVehicle();
@@ -183,7 +183,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         
         else if (r != null) {
 	        if (LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
-	            patientList = r.getSettlement().getInhabitants();
+	            patientList = r.getSettlement().getIndoorPeople();
 	        }
 	        else if (LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
 	            Vehicle vehicle = r.getVehicle();

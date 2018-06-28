@@ -57,7 +57,7 @@ public class CollectRegolithMeta implements MetaMission {
 
 	        // a settlement with <= 4 population can always do DigLocalRegolith task
 	        // should avoid the risk of mission.
-	        if (settlement.getNumCurrentPopulation() <= 1)//.getAllAssociatedPeople().size() <= 4)
+	        if (settlement.getIndoorPeopleCount() <= 1)//.getAllAssociatedPeople().size() <= 4)
 	        	return 0;
 
 		    // Check if minimum number of people are available at the settlement.
@@ -80,7 +80,7 @@ public class CollectRegolithMeta implements MetaMission {
 	        result = result + settlement.getRegolithProbabilityValue() / 30D;
 
             // Crowding modifier
-            int crowding = settlement.getNumCurrentPopulation()
+            int crowding = settlement.getIndoorPeopleCount()
                     - settlement.getPopulationCapacity();
             if (crowding > 0)
                 result *= (crowding + 1);

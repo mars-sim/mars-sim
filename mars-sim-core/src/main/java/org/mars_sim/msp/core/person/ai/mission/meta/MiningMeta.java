@@ -127,7 +127,7 @@ public class MiningMeta implements MetaMission {
             }
 
             // Crowding modifier
-            int crowding = settlement.getNumCurrentPopulation()
+            int crowding = settlement.getIndoorPeopleCount()
                     - settlement.getPopulationCapacity();
             if (crowding > 0) {
                 result *= (crowding + 1);
