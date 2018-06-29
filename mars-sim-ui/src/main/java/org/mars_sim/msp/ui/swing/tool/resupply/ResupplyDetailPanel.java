@@ -58,7 +58,7 @@ public class ResupplyDetailPanel
 extends WebPanel
 implements ClockListener, HistoricalEventListener {
 
-	private static final int PERIOD_IN_MILLISOLS = 3;
+	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
 
 	// Data members
 	private Resupply resupply;

@@ -627,7 +627,7 @@ extends UnitTableModel {
 		while (i.hasNext()) {
 			try {
 				Building greenhouse = i.next();
-				Farming farm = (Farming) greenhouse.getFunction(FunctionType.FARMING);
+				Farming farm = greenhouse.getFarming();//(Farming) greenhouse.getFunction(FunctionType.FARMING);
 				List<Crop> cropsList = farm.getCrops();
 
 				Iterator<Crop> j = cropsList.iterator();

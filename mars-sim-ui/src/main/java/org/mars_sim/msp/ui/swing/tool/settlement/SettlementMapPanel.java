@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -53,7 +54,7 @@ implements ClockListener {
 	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
-	private static final int PERIOD_IN_MILLISOLS = 3;
+	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
@@ -1096,6 +1097,7 @@ implements ClockListener {
 			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMapOn()) {//&& !masterClock.isPaused()) {			
 				timeCache += time;
 				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//					System.out.println(masterClock.getTimeRatio() + " : " + Math.round(PERIOD_IN_MILLISOLS * time*100.0)/100.0);
 					// Repaint map panel
 					repaint();
 					timeCache = 0;

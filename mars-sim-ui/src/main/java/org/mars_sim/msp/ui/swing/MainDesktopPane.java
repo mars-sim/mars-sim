@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
@@ -87,7 +88,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
-	private static final double PERIOD_IN_MILLISOLS = 20;// 750D / MarsClock.SECONDS_IN_MILLISOL;
+	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
 
 	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
 	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
@@ -1416,14 +1417,16 @@ public class MainDesktopPane extends WebDesktopPane
 		if (mainScene != null) {
 			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && !isEmpty()) {
 				timeCache = timeCache + time;
-				if (timeCache > PERIOD_IN_MILLISOLS) {
+//				double freq = PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio());
+				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//					System.out.println(masterClock.getTimeRatio() + " > " + Math.round(freq*100.0)/100.0);
 					updateWindows();
 					timeCache = 0;
 				}
 			}
 		} else if (!isEmpty()) {
 			timeCache = timeCache + time;
-			if (timeCache > PERIOD_IN_MILLISOLS) {
+			if (timeCache > PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio())) {
 				updateWindows();
 				timeCache = 0;
 			}

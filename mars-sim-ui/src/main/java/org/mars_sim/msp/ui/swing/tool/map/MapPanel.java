@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -48,7 +49,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_MINIMAP;
 	private static int dragx, dragy;
 
-	private static final int PERIOD_IN_MILLISOLS = 3;
+	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL; //3;
 
 	// Data members
 	private double timeCache = 0;

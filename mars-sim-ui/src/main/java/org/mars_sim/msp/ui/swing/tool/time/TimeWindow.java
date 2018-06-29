@@ -541,7 +541,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			return null;
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public void clockPulse(double time) {
 		if (mainScene != null) {

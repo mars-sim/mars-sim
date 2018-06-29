@@ -791,9 +791,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		noFiring = isPaused;
 	}
 	
-	// 2014-12-17 Added clockPulse()
 	public void clockPulse(double time) {
-
+		// not need at this point. But pauseChange() is needed 
 	}
 
 	/**
