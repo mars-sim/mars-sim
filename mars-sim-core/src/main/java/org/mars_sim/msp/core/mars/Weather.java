@@ -94,10 +94,10 @@ implements Serializable {
 	private transient Map<Coordinates, Double> windSpeedCacheMap;
 	private transient Map<Coordinates, Integer> windDirCacheMap;
 
-	private static List<DustStorm> planetEncirclingDustStorms = new ArrayList<>();
-	private static List<DustStorm> regionalDustStorms = new ArrayList<>();
-	private static List<DustStorm> localDustStorms = new ArrayList<>();
-	private static List<DustStorm> dustDevils = new ArrayList<>();
+	private List<DustStorm> planetEncirclingDustStorms = new CopyOnWriteArrayList <>();
+	private List<DustStorm> regionalDustStorms = new CopyOnWriteArrayList <>();
+	private List<DustStorm> localDustStorms = new CopyOnWriteArrayList <>();
+	private List<DustStorm> dustDevils = new CopyOnWriteArrayList<>();
 	
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;

@@ -58,7 +58,7 @@ public class ResupplyDetailPanel
 extends WebPanel
 implements ClockListener, HistoricalEventListener {
 
-	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
+//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
 
 	// Data members
 	private Resupply resupply;
@@ -76,7 +76,7 @@ implements ClockListener, HistoricalEventListener {
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
 	
-	private double timeCache = 0;
+//	private double timeCache = 0;
 	private int solsToArrival = -1;
 	
 	/**
@@ -207,15 +207,6 @@ implements ClockListener, HistoricalEventListener {
 
 		// Set as historical event listener.
 		Simulation.instance().getEventManager().addListener(this);
-	}
-
-	/**
-	 * Prepares the panel for deletion.
-	 */
-	public void destroy() {
-		resupply = null;
-		Simulation.instance().getEventManager().removeListener(this);
-		Simulation.instance().getMasterClock().removeClockListener(this);
 	}
 
 	/**
@@ -688,26 +679,6 @@ implements ClockListener, HistoricalEventListener {
 		// Do nothing.
 	}
 
-	@Override
-	public void clockPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
-				timeCache += time;
-				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-					updateArrival();
-					timeCache = 0;
-				}
-			}
-		}
-		else if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
-			timeCache += time;
-			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				updateArrival();
-				timeCache = 0;
-			}
-		}	
-	}
-	
 	public void updateArrival() {
 		// Determine if change in time to arrival display value.
 		if ((resupply != null) && (solsToArrival >= 0)) {
@@ -729,8 +700,57 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub	
+	}
+	
+	@Override
+	public void uiPulse(double time) {
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
+//				timeCache += time;
+//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					updateArrival();
+//					timeCache = 0;
+//				}
+			}
+		}
+		else if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
+//			timeCache += time;
+//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				updateArrival();
+//				timeCache = 0;
+//			}
+		}	
+	}
+	
+	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+	 * Prepares the panel for deletion.
+	 */
+	public void destroy() {
+		resupply = null;
+		Simulation.instance().getEventManager().removeListener(this);
+		Simulation.instance().getMasterClock().removeClockListener(this);
+
+		destinationValueLabel = null;
+		stateValueLabel = null;
+		arrivalDateValueLabel = null;
+		launchDateValueLabel = null;
+		timeArrivalValueLabel = null;
+		immigrantsValueLabel = null;
+		innerSupplyPane = null;
+		currentTime = null;
+		masterClock = null;
+		
+		desktop = null;
+		mainScene = null;
+		
+	}
+	
 }

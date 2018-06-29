@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -50,7 +49,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
-	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
+
+//	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
 
 	public final static int GLOBE_BOX_HEIGHT = MarsGlobe.map_height;
 	public final static int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
@@ -60,7 +60,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	private static int dragx, dragy, dxCache = 0, dyCache = 0;
 
 	// Data members
-	private double timeCache = 0;
+//	private double timeCache = 0;
 	/** Real surface sphere object. */
 	private MarsGlobe marsSphere;
 	/** Topographical sphere object. */
@@ -667,40 +667,30 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
+		// TODO Auto-generated method stub	
+	}
+
+	@Override
+	public void uiPulse(double time) {
 		if (mainScene != null) {
 			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMinimapOn()) {// && !masterClock.isPaused()) {		
-				timeCache += time;
-				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//				timeCache += time;
+//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
 					// Repaint map panel
 					updateDisplay();
-					timeCache = 0;
-				}
+//					timeCache = 0;
+//				}
 			}
 		}
 		else if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-			timeCache += time;
-			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//			timeCache += time;
+//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				updateDisplay();
-				timeCache = 0;
-			}
+//				timeCache = 0;
+//			}
 		}
 	}
-
-	/**
-	 * Prepare globe for deletion.
-	 */
-	public void destroy() {
-		//showThread = null;
-		update = false;
-		keepRunning = false;
-		marsSphere = null;
-		topoSphere = null;
-		centerCoords = null;
-		surfaceFeatures = null;
-		dbg = null;
-		dbImage = null;
-		starfield = null;
-	}
+	
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
@@ -725,4 +715,22 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	/**
+	 * Prepare globe for deletion.
+	 */
+	public void destroy() {
+		Simulation.instance().getMasterClock().removeClockListener(this);
+		//showThread = null;
+		update = false;
+		keepRunning = false;
+		marsSphere = null;
+		topoSphere = null;
+		centerCoords = null;
+		surfaceFeatures = null;
+		dbg = null;
+		dbImage = null;
+		starfield = null;
+	}
+
 }

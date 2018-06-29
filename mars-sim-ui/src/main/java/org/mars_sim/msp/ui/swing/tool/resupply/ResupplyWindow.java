@@ -13,11 +13,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -29,6 +28,9 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
+
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -39,7 +41,7 @@ import javafx.stage.Modality;
  * Window for the resupply tool.
  * TODO externalize strings
  */
-@SuppressWarnings("restriction")
+
 public class ResupplyWindow
 extends ToolWindow
 implements ListSelectionListener {
@@ -52,8 +54,8 @@ implements ListSelectionListener {
 	private IncomingListPanel incomingListPane;
 	private ArrivedListPanel arrivedListPane;
 	private TransportDetailPanel detailPane;
-	private JButton modifyButton;
-	private JButton cancelButton;
+	private WebButton modifyButton;
+	private WebButton cancelButton;
 
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
@@ -71,12 +73,12 @@ implements ListSelectionListener {
 		mainScene = desktop.getMainScene();
 
 		// Create main panel.
-		JPanel mainPane = new JPanel(new BorderLayout());
+		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create list panel.
-		JPanel listPane = new JPanel(new GridLayout(2, 1));
+		WebPanel listPane = new WebPanel(new GridLayout(2, 1));
 		mainPane.add(listPane, BorderLayout.WEST);
 
 		// Create incoming list panel.
@@ -99,12 +101,12 @@ implements ListSelectionListener {
 		mainPane.add(detailPane, BorderLayout.CENTER);
 
 		// Create button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create new button.
 		// 9/29/2014 Changed button text from "New"  to "New Mission"
-		JButton newButton = new JButton("New Mission");
+		WebButton newButton = new WebButton("New Mission");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -115,7 +117,7 @@ implements ListSelectionListener {
 
 		// Create modify button.
 		// 9/29/2014 Changed button text from "Modify"  to "Modify Mission"
-		modifyButton = new JButton("Modify Mission");
+		modifyButton = new WebButton("Modify Mission");
 		modifyButton.setEnabled(false);
 		modifyButton.addActionListener(new ActionListener() {
 			@Override
@@ -127,7 +129,7 @@ implements ListSelectionListener {
 
 		// Create cancel button.
 		// 9/29/2014 Changed button text from "Discard"  to "Discard Mission"
-		cancelButton = new JButton("Discard Mission");
+		cancelButton = new WebButton("Discard Mission");
 		cancelButton.setEnabled(false);
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
@@ -255,8 +257,6 @@ implements ListSelectionListener {
 	 * Asks users for the confirmation of discarding a transport mission in an alert dialog
 	 * @param msg
 	 */
-	@SuppressWarnings("restriction")
-	// 2015-12-16 Added askFX()
 	public synchronized void askFX(String msg) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Resupply Tool");

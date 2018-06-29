@@ -6,10 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
 
-import javax.swing.JInternalFrame;
-import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -28,8 +25,7 @@ import javafx.scene.control.CheckMenuItem;
  * The ToolWindow class is an abstract UI window for a tool.
  * Particular tool windows should be derived from this.
  */
-@SuppressWarnings("restriction")
-public abstract class ToolWindow extends WebInternalFrame { //
+public abstract class ToolWindow extends WebInternalFrame {
 
 	// Data members
 	/** The name of the tool the window is for. */
@@ -140,9 +136,6 @@ public abstract class ToolWindow extends WebInternalFrame { //
 	/**
 	 * Update window.
 	 */
-    // 2015-06-05 Added checking if the tool window is invisible/closed while its check menu item is still toggle on
-    // 2015-10-01 Added Platform.runLater()
-	@SuppressWarnings("restriction")
 	public void update() {
 
 		if (mainScene != null && !masterClock.isPaused()) {

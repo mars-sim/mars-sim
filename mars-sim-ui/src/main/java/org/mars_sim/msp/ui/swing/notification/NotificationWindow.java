@@ -606,13 +606,28 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		return nMenu.getShowMalfunction();
 	}
 	
-	// 2014-12-17 Added clockPulse()
+	@Override
 	public void clockPulse(double time) {
-		//isPaused = false;
+		// TODO Auto-generated method stub
 	}
 
 	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub
+	};
+	
+	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		this.isPaused = isPaused;
-	};
+	}	
+	
+	public void destroy() {
+		telegraph = null;
+		telegraphConfig = null;
+		telegraphQueue = null;	
+		timer = null;
+		desktop = null;
+		nMenu = null;
+	}
+	
 }

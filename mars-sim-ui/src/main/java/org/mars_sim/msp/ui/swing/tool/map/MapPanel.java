@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -49,10 +48,10 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_MINIMAP;
 	private static int dragx, dragy;
 
-	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL; //3;
+//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL; //3;
 
 	// Data members
-	private double timeCache = 0;
+//	private double timeCache = 0;
 	private boolean mapError;
 	private boolean wait;
 	private boolean update;
@@ -484,6 +483,12 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
+		// TODO Auto-generated method stub	
+
+	}
+
+	@Override
+	public void uiPulse(double time) {
 		if (mainScene != null) {
 			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() 
 				&& (desktop.isToolWindowOpen(NavigatorWindow.NAME)
@@ -491,26 +496,26 @@ public class MapPanel extends WebPanel implements ClockListener {
 						&& ((MissionWindow)desktop.getToolWindow(MissionWindow.NAME)).isNavPointsMapTabOpen()))
 					) {	
 				// TODO: should also check if navpoints tab is open or not
-				timeCache += time;
-				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//				timeCache += time;
+//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
 					// Repaint map panel
 					updateDisplay();
-					timeCache = 0;
-				}	
+//					timeCache = 0;
+//				}	
 			}
 		}
 		else if (desktop.isToolWindowOpen(NavigatorWindow.NAME)
 				||desktop.isToolWindowOpen(MissionWindow.NAME)
 				//||desktop.isToolWindowOpen(ResupplyWindow.NAME)
 				) {
-			timeCache += time;
-			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//			timeCache += time;
+//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				updateDisplay();
-				timeCache = 0;
-			}
+//				timeCache = 0;
+//			}
 		}
 	}
-
+	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// TODO Auto-generated method stub

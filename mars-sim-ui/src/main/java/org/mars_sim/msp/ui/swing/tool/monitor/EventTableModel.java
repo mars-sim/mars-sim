@@ -18,6 +18,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.controlsfx.control.Notifications;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
@@ -795,18 +796,30 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		// not need at this point. But pauseChange() is needed 
 	}
 
+	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub	
+	}
+
 	/**
 	 * Prepares the model for deletion.
 	 */
 	public void destroy() {
+		Simulation.instance().getMasterClock().removeClockListener(this);
 		manager.removeListener(this);
 		manager = null;
-		cachedEvents.clear();
-		cachedEvents = null;
 		notifyBox = null;
 		desktop = null;
 		nMenu = null;
 		mainSceneMenu = null;
+		messageCache = null;
+		appIconSet = null;
+		icon_med = null;
+		icon_mal = null;
+		icon_mission = null;
+		icon_hazard = null;
+		cachedEvents.clear();
+		cachedEvents = null;
 	}
 
 }

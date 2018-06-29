@@ -569,6 +569,9 @@ public class MarsProjectFXGL extends GameApplication {
 	    startSimulation(true);
     }
     
+    /**
+     * Sends out a clock pulse if using FXGL
+     */
     protected void onUpdate(double tpf) {
     	sim.onUpdate(tpf);
     }

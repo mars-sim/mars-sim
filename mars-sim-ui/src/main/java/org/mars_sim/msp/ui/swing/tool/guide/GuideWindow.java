@@ -17,17 +17,16 @@ import java.awt.event.ComponentListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JViewport;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.viewport.WebViewport;
 
 import javafx.application.Platform;
 
@@ -42,7 +41,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	private static final long serialVersionUID = 1L;
 
 	/** Default logger. */
-	private static Logger logger = Logger.getLogger(GuideWindow.class.getName());
+//	private static Logger logger = Logger.getLogger(GuideWindow.class.getName());
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
@@ -53,7 +52,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	private int historyIndex;
 
 	/** The view port for the text pane. */
-	private JViewport viewPort;
+	private WebViewport viewPort;
 	// private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs"
 	// + File.separator +
 	// "help" + File.separator + "userguide.html");
@@ -61,19 +60,19 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	private URL guideURL, aboutURL, tutorialURL, shortcutsURL;
 	private String discussionURLstring, wikiURLstring, projectsiteURLstring;
 
-	private JButton shortcutsButton = new JButton(Msg.getString("GuideWindow.button.shortcuts")); //$NON-NLS-1$
-	private JButton aboutButton = new JButton(Msg.getString("GuideWindow.button.about")); //$NON-NLS-1$
-	private JButton tutorialButton = new JButton(Msg.getString("GuideWindow.button.tutorial")); //$NON-NLS-1$
-	private JButton userguideButton = new JButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
-	private JButton projectsiteButton = new JButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
+	private WebButton shortcutsButton = new WebButton(Msg.getString("GuideWindow.button.shortcuts")); //$NON-NLS-1$
+	private WebButton aboutButton = new WebButton(Msg.getString("GuideWindow.button.about")); //$NON-NLS-1$
+	private WebButton tutorialButton = new WebButton(Msg.getString("GuideWindow.button.tutorial")); //$NON-NLS-1$
+	private WebButton userguideButton = new WebButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
+	private WebButton projectsiteButton = new WebButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
 	/**
-	 * Private JButton discussionButton = new
-	 * JButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
+	 * Private WebButton discussionButton = new
+	 * WebButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
 	 */
-	private JButton wikiButton = new JButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
+	private WebButton wikiButton = new WebButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
 
 	private BrowserJFX browser;
-	private JPanel browserPanel;
+	private WebPanel browserPanel;
 
 	/**
 	 * Constructor.
@@ -99,7 +98,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		browserPanel = browser.getPanel();// .init();
 
 		// Create the main panel
-		JPanel mainPane = new JPanel(new BorderLayout());
+		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
@@ -126,7 +125,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		wikiButton.addActionListener(this);
 
 		// A toolbar to hold all our buttons
-		JPanel toolPanel = new JPanel();
+		WebPanel toolPanel = new WebPanel();
 		toolPanel.add(aboutButton);
 		toolPanel.add(tutorialButton);
 		toolPanel.add(userguideButton);

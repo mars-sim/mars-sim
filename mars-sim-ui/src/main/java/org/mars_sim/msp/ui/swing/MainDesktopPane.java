@@ -30,7 +30,8 @@ import javafx.application.Platform;
 import javafx.scene.control.SingleSelectionModel;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+
+
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -76,6 +77,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
 import com.alee.laf.desktoppane.WebDesktopPane;
 import com.alee.laf.desktoppane.WebInternalFrame;
+import com.alee.laf.label.WebLabel;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
@@ -88,13 +90,13 @@ public class MainDesktopPane extends WebDesktopPane
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
-	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
+//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
 
 	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
 	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
 
 	// Data members
-	private double timeCache = 0;
+//	private double timeCache = 0;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
 	private boolean firstDisplay;
@@ -105,7 +107,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/** ImageIcon that contains the tiled background. */
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
-	private JLabel backgroundLabel;
+	private WebLabel backgroundLabel;
 
 	private ToolWindowTask toolWindowTask;
 
@@ -174,7 +176,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
-		backgroundLabel = new JLabel(backgroundImageIcon);
+		backgroundLabel = new WebLabel(backgroundImageIcon);
 		add(backgroundLabel, Integer.MIN_VALUE);
 		backgroundLabel.setLocation(0, 0);
 		moveToBack(backgroundLabel);
@@ -1414,25 +1416,31 @@ public class MainDesktopPane extends WebDesktopPane
 
 	@Override
 	public void clockPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && !isEmpty()) {
-				timeCache = timeCache + time;
-//				double freq = PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio());
-				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-//					System.out.println(masterClock.getTimeRatio() + " > " + Math.round(freq*100.0)/100.0);
-					updateWindows();
-					timeCache = 0;
-				}
-			}
-		} else if (!isEmpty()) {
-			timeCache = timeCache + time;
-			if (timeCache > PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio())) {
-				updateWindows();
-				timeCache = 0;
-			}
-		}
+		// TODO Auto-generated method stub	
 	}
 
+	@Override
+	public void uiPulse(double time) {
+
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && !isEmpty()) {
+//				timeCache = timeCache + time;
+//				double freq = PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio());
+//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//					System.out.println(masterClock.getTimeRatio() + " > " + Math.round(freq*100.0)/100.0);
+					updateWindows();
+//					timeCache = 0;
+//				}
+			}
+		} else if (!isEmpty()) {
+//			timeCache = timeCache + time;
+//			if (timeCache > PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio())) {
+				updateWindows();
+//				timeCache = 0;
+//			}
+		}		
+	}
+	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {
@@ -1452,7 +1460,11 @@ public class MainDesktopPane extends WebDesktopPane
 
 	}
 
+	/**
+	 * Prepares the panel for deletion.
+	 */
 	public void destroy() {
+		Simulation.instance().getMasterClock().removeClockListener(this);
 		unitWindows = null;
 		toolWindows = null;
 		backgroundImageIcon = null;

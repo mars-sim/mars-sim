@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -37,7 +34,10 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.table.WebTable;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -59,7 +59,7 @@ implements TableModelListener, ActionListener {
 
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
-	// 2015-06-20 Added an custom icon for each tab
+	// Added an custom icon for each tab
 	public static final String BASE_ICON = Msg.getString("icon.base"); //$NON-NLS-1$
 	public static final String BOT_ICON = Msg.getString("icon.bot"); //$NON-NLS-1$
 	public static final String MISSION_ICON = Msg.getString("icon.mission"); //$NON-NLS-1$
@@ -80,21 +80,21 @@ implements TableModelListener, ActionListener {
 	public static final String PIE_ICON = Msg.getString("icon.pie"); //$NON-NLS-1$
 
 	// Data members
-	private JTabbedPane tabsSection;
+	private WebTabbedPane tabsSection;
 	//private JideTabbedPane tabsSection;
-	private JLabel rowCount;
+	private WebLabel rowCount;
 	private ArrayList<MonitorTab> tabs = new ArrayList<MonitorTab>();
 	/** Tab showing historical events. */
 	private EventTab eventsTab;
 	private MonitorTab oldTab = null;
-	private JButton buttonPie;
-	private JButton buttonBar;
-	private JButton buttonRemoveTab;
-	private JButton buttonMap;
-	private JButton buttonDetails;
-	private JButton buttonMissions;
-	private JButton buttonFilter;
-	private JButton buttonProps;
+	private WebButton buttonPie;
+	private WebButton buttonBar;
+	private WebButton buttonRemoveTab;
+	private WebButton buttonMap;
+	private WebButton buttonDetails;
+	private WebButton buttonMissions;
+	private WebButton buttonFilter;
+	private WebButton buttonProps;
 
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
@@ -135,7 +135,7 @@ implements TableModelListener, ActionListener {
 		//mainPane.add(toolbar, BorderLayout.NORTH);
 		
 		// Create graph button
-		buttonPie = new JButton(ImageLoader.getNewIcon(PIE_ICON));
+		buttonPie = new WebButton(ImageLoader.getNewIcon(PIE_ICON));
 		buttonPie.setToolTipText(Msg.getString("MonitorWindow.tooltip.singleColumnPieChart")); //$NON-NLS-1$
 		//TooltipManager.setTooltip (buttonPie, Msg.getString("MonitorWindow.tooltip.singleColumnPieChart"), TooltipWay.up);
 		
@@ -143,14 +143,14 @@ implements TableModelListener, ActionListener {
 		//toolbar
 		statusPanel.add(buttonPie);
 
-		buttonBar = new JButton(ImageLoader.getNewIcon(BAR_ICON));
+		buttonBar = new WebButton(ImageLoader.getNewIcon(BAR_ICON));
 		buttonBar.setToolTipText(Msg.getString("MonitorWindow.tooltip.multipleColumnBarChart")); //$NON-NLS-1$
 		TooltipManager.setTooltip (buttonBar, Msg.getString("MonitorWindow.tooltip.multipleColumnBarChart"), TooltipWay.up);
 		buttonBar.addActionListener(this);
 		//toolbar
 		statusPanel.add(buttonBar);
 
-		buttonRemoveTab = new JButton(ImageLoader.getNewIcon(TRASH_ICON)); //$NON-NLS-1$
+		buttonRemoveTab = new WebButton(ImageLoader.getNewIcon(TRASH_ICON)); //$NON-NLS-1$
 		//buttonRemoveTab.setToolTipText(Msg.getString("MonitorWindow.tooltip.tabRemove")); //$NON-NLS-1$
 		TooltipManager.setTooltip (buttonRemoveTab, Msg.getString("MonitorWindow.tooltip.tabRemove"), TooltipWay.up);
 		buttonRemoveTab.addActionListener(this);
@@ -159,7 +159,7 @@ implements TableModelListener, ActionListener {
 		//toolbar.addSeparator();
 
 		// Create buttons based on selection
-		buttonMap = new JButton(ImageLoader.getNewIcon(CENTERMAP_ICON)); //$NON-NLS-1$
+		buttonMap = new WebButton(ImageLoader.getNewIcon(CENTERMAP_ICON)); //$NON-NLS-1$
 		//buttonMap.setMargin(new Insets(3, 4, 4, 4));
 		//buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
 		TooltipManager.setTooltip (buttonMap, Msg.getString("MonitorWindow.tooltip.centerMap"), TooltipWay.up);
@@ -167,14 +167,14 @@ implements TableModelListener, ActionListener {
 		//toolbar
 		statusPanel.add(buttonMap);
 
-		buttonDetails = new JButton(ImageLoader.getNewIcon(FIND_ICON)); //$NON-NLS-1$
+		buttonDetails = new WebButton(ImageLoader.getNewIcon(FIND_ICON)); //$NON-NLS-1$
 		//buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
 		TooltipManager.setTooltip (buttonDetails, Msg.getString("MonitorWindow.tooltip.showDetails"), TooltipWay.up);
 		buttonDetails.addActionListener(this);
 		//toolbar
 		statusPanel.add(buttonDetails);
 
-		buttonMissions = new JButton(ImageLoader.getNewIcon(MISSION_ICON)); //$NON-NLS-1$
+		buttonMissions = new WebButton(ImageLoader.getNewIcon(MISSION_ICON)); //$NON-NLS-1$
 		//buttonMissions.setToolTipText(Msg.getString("MonitorWindow.tooltip.mission")); //$NON-NLS-1$
 		TooltipManager.setTooltip (buttonMissions, Msg.getString("MonitorWindow.tooltip.mission"), TooltipWay.up);
 		buttonMissions.addActionListener(this);
@@ -182,8 +182,8 @@ implements TableModelListener, ActionListener {
 		statusPanel.add(buttonMissions);
 		//toolbar.addSeparator();
 
-		//buttonProps = new JButton(ImageLoader.getIcon(Msg.getString("img.preferences"))); //$NON-NLS-1$
-		buttonProps = new JButton(ImageLoader.getNewIcon(COLUMN_ICON)); //$NON-NLS-1$
+		//buttonProps = new WebButton(ImageLoader.getIcon(Msg.getString("img.preferences"))); //$NON-NLS-1$
+		buttonProps = new WebButton(ImageLoader.getNewIcon(COLUMN_ICON)); //$NON-NLS-1$
 		//buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
 		TooltipManager.setTooltip (buttonProps, Msg.getString("MonitorWindow.tooltip.preferences"), TooltipWay.up);
 		buttonProps.addActionListener(this);
@@ -191,8 +191,8 @@ implements TableModelListener, ActionListener {
 		statusPanel.add(buttonProps);
 		//toolbar.addSeparator();
 
-		//buttonFilter = new JButton(ImageLoader.getIcon(Msg.getString("img.categoryFilter"))); //$NON-NLS-1$
-		buttonFilter = new JButton(ImageLoader.getNewIcon(FILTER_ICON)); //$NON-NLS-1$
+		//buttonFilter = new WebButton(ImageLoader.getIcon(Msg.getString("img.categoryFilter"))); //$NON-NLS-1$
+		buttonFilter = new WebButton(ImageLoader.getNewIcon(FILTER_ICON)); //$NON-NLS-1$
 		//buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
 		TooltipManager.setTooltip (buttonFilter, Msg.getString("MonitorWindow.tooltip.categoryFilter"), TooltipWay.up);
 		buttonFilter.addActionListener(this);
@@ -203,7 +203,7 @@ implements TableModelListener, ActionListener {
 //			desktop.getMainScene().setLookAndFeel(ThemeType.Nimrod);
 //		
 		// Create tabbed pane for the table
-		tabsSection = new JTabbedPane();
+		tabsSection = new WebTabbedPane();
 //		tabsSection = new JideTabbedPane(JideTabbedPane.TOP);
 		//tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
 //		if (MainScene.OS.contains("win")) {
@@ -228,7 +228,7 @@ implements TableModelListener, ActionListener {
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 
 		// Status item for row
-		rowCount = new JLabel("  "); //$NON-NLS-1$
+		rowCount = new WebLabel("  "); //$NON-NLS-1$
 		rowCount.setHorizontalAlignment(SwingConstants.LEFT);
 		rowCount.setBorder(BorderFactory.createLoweredBevelBorder());
 		statusPanel.add(rowCount);

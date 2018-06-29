@@ -541,19 +541,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			return null;
 	}
 
-	@Override
-	public void clockPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(TimeWindow.NAME)) {			
-				updateFXLabel();
-			}
-		}
-		else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			updateSwingLabel(time);
-		}
-
-	}
-	
 	public void updateFXLabel() {
 		StringBuilder s0 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
@@ -657,6 +644,23 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			mainScene.setEscapeEventHandler(value, mainScene.getStage());
 	}
 
+	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub	
+	}
+	
+	@Override
+	public void uiPulse(double time) {
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(TimeWindow.NAME)) {			
+				updateFXLabel();
+			}
+		}
+		else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+			updateSwingLabel(time);
+		}		
+	}
+	
 	/**
 	 * Prepare tool window for deletion.
 	 */

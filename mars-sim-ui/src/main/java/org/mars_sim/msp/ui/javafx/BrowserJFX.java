@@ -17,9 +17,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent.EventType;
 
@@ -63,6 +61,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.progressbar.WebProgressBar;
 import com.jfoenix.controls.JFXButton;
 
 //import com.sun.javafx.webkit.WebConsoleListener;
@@ -119,9 +120,9 @@ public class BrowserJFX {
     public volatile String inputCache;
 
     private JFXPanel jfxPanel = new JFXPanel();
-    private JPanel panel = new JPanel(new BorderLayout());
-    private JLabel statusBarLbl = new JLabel();
-    private JProgressBar progressBar = new JProgressBar();
+    private WebPanel panel = new WebPanel(new BorderLayout());
+    private WebLabel statusBarLbl = new WebLabel();
+    private WebProgressBar progressBar = new WebProgressBar();
 
     private Button reloadButton = new Button('\u27F3' + "");
     private Button backButton = new Button('\u25c0' + "");//\u21e6' + "");
@@ -162,7 +163,7 @@ public class BrowserJFX {
     	}
           
         if (mainScene == null)
-        	panel = initJPanel();
+        	panel = initWebPanel();
 
     }
 
@@ -535,7 +536,7 @@ public class BrowserJFX {
     }
 
     // 2016-04-22 Added ability to interpret internal commands
-    public JPanel initJPanel() {
+    public WebPanel initWebPanel() {
 /*
         ActionListener al = new ActionListener() {
             @Override
@@ -586,17 +587,17 @@ public class BrowserJFX {
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
 /*
-        JPanel topBar = new JPanel(new BorderLayout(5, 0));
+        WebPanel topBar = new WebPanel(new BorderLayout(5, 0));
         topBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         topBar.add(urlTF, BorderLayout.CENTER);
 
-        JPanel buttonPane = new JPanel(new FlowLayout());
+        WebPanel buttonPane = new WebPanel(new FlowLayout());
         buttonPane.add(btnBack);
         buttonPane.add(btnGo);
         buttonPane.add(btnForward);
         topBar.add(buttonPane, BorderLayout.EAST);
 */
-        JPanel statusBar = new JPanel(new BorderLayout(5, 0));
+        WebPanel statusBar = new WebPanel(new BorderLayout(5, 0));
         statusBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         statusBar.add(statusBarLbl, BorderLayout.CENTER);
         statusBar.add(progressBar, BorderLayout.EAST);
@@ -1131,11 +1132,11 @@ public class BrowserJFX {
         return txt;
       }
 
-    public JPanel getPanel() {
+    public WebPanel getPanel() {
     	return panel;
     }
 
-    public JLabel getStatusBarLabel() {
+    public WebLabel getStatusBarLabel() {
     	return statusBarLbl;
     }
 

@@ -885,85 +885,6 @@ implements ClockListener, Serializable {
         }
     }
 
-    /**
-     * Clock pulse from master clock
-     * @param time amount of time passing (in millisols)
-     */
-    @Override
-    public void clockPulse(double time) {
-		//logger.info("Simulation's clockPulse() is in " + Thread.currentThread().getName() + " Thread");
-		// it's in pool-4-thread-1 Thread
-        //UpTimer ut = null;
-        //if (masterClock != null)
-        //	ut = masterClock.getUpTimer();
-
-        if (ut != null && !masterClock.isPaused()) {
-
-        	ut.updateTime();
-
-            if (debug) {
-                logger.fine(
-                        Msg.getString(
-                                "Simulation.log.clockPulseMars", //$NON-NLS-1$
-                                ut.getUptime(),
-                                mars.toString()
-                                )
-                        );
-            }
-            mars.timePassing(time);
-            ut.updateTime();
-
-            if (debug) {
-                logger.fine (
-                        Msg.getString(
-                                "Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
-                                masterClock.getUpTimer().getUptime(),
-                                missionManager.toString()
-                                )
-                        );
-            }
-            missionManager.timePassing(time);
-            ut.updateTime();
-
-            if (debug) {
-                logger.fine(
-                        Msg.getString(
-                                "Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
-                                masterClock.getUpTimer().getUptime(),
-                                unitManager.toString()
-                                )
-                        );
-            }
-            unitManager.timePassing(time);
-            ut.updateTime();
-
-            if (debug) {
-                logger.fine(
-                        Msg.getString(
-                                "Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
-                                masterClock.getUpTimer().getUptime(),
-                                scientificStudyManager.toString()
-                                )
-                        );
-            }
-            scientificStudyManager.updateStudies();
-            ut.updateTime();
-
-
-            if (debug) {
-                logger.fine(
-                        Msg.getString(
-                                "Simulation.log.clockPulseTransportManager", //$NON-NLS-1$
-                                masterClock.getUpTimer().getUptime(),
-                                transportManager.toString()
-                                )
-                        );
-            }
-            transportManager.timePassing(time);
-
-        }
-    }
-
 
     /**
      * Returns the time string of the last saving or autosaving action
@@ -1059,7 +980,6 @@ implements ClockListener, Serializable {
     }
     
 
-	
     public void setAutosave() {
     	Runnable autosaveRunnable = new Runnable() {
 	        public void run() {
@@ -1240,10 +1160,6 @@ implements ClockListener, Serializable {
 		justSaved = value;
 	}
 
-    @Override
-    public void pauseChange(boolean isPaused, boolean showPane) {
-        // Do nothing
-    }
 
     //public void setGameWorld(GameWorld gw) {
     //	gameWorld = gw;
@@ -1253,12 +1169,107 @@ implements ClockListener, Serializable {
     	this.isFXGL = isFXGL;
     }
         
-    
+    /**
+     * Sends out a clock pulse if using FXGL
+     */
     public void onUpdate(double tpf) {
     	if (masterClock != null)
     		masterClock.onUpdate(tpf); 
     }
 
+
+    /**
+     * Clock pulse from master clock
+     * @param time amount of time passing (in millisols)
+     */
+    @Override
+    public void clockPulse(double time) {
+		//logger.info("Simulation's clockPulse() is in " + Thread.currentThread().getName() + " Thread");
+		// it's in pool-4-thread-1 Thread
+        //UpTimer ut = null;
+        //if (masterClock != null)
+        //	ut = masterClock.getUpTimer();
+
+        if (ut != null && !masterClock.isPaused()) {
+
+        	ut.updateTime();
+
+            if (debug) {
+                logger.fine(
+                        Msg.getString(
+                                "Simulation.log.clockPulseMars", //$NON-NLS-1$
+                                ut.getUptime(),
+                                mars.toString()
+                                )
+                        );
+            }
+            mars.timePassing(time);
+            ut.updateTime();
+
+            if (debug) {
+                logger.fine (
+                        Msg.getString(
+                                "Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
+                                masterClock.getUpTimer().getUptime(),
+                                missionManager.toString()
+                                )
+                        );
+            }
+            missionManager.timePassing(time);
+            ut.updateTime();
+
+            if (debug) {
+                logger.fine(
+                        Msg.getString(
+                                "Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
+                                masterClock.getUpTimer().getUptime(),
+                                unitManager.toString()
+                                )
+                        );
+            }
+            unitManager.timePassing(time);
+            ut.updateTime();
+
+            if (debug) {
+                logger.fine(
+                        Msg.getString(
+                                "Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
+                                masterClock.getUpTimer().getUptime(),
+                                scientificStudyManager.toString()
+                                )
+                        );
+            }
+            scientificStudyManager.updateStudies();
+            ut.updateTime();
+
+
+            if (debug) {
+                logger.fine(
+                        Msg.getString(
+                                "Simulation.log.clockPulseTransportManager", //$NON-NLS-1$
+                                masterClock.getUpTimer().getUptime(),
+                                transportManager.toString()
+                                )
+                        );
+            }
+            transportManager.timePassing(time);
+
+        }
+    }
+
+    
+	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+    @Override
+    public void pauseChange(boolean isPaused, boolean showPane) {
+        // Do nothing
+    }
+
+    
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
@@ -1328,8 +1339,3 @@ implements ClockListener, Serializable {
 
 }
     
-//	class AutosaveTask implements Runnable {
-//		  public void run() {
-//			  //;
-//		  }
-//	}

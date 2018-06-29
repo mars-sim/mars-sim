@@ -39,6 +39,8 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
+	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
+	
 	private static final String	HOURS = "h ";
 	private static final String	MINUTES = "m ";
 	private static final String	ZERO_MINUTES = "00m ";
@@ -84,6 +86,8 @@ public class MasterClock implements Serializable {
 //	private long diffCache = 0;
 	private transient long elapsedLast;
 
+	private transient double timeCache;
+	
 	/** Clock listeners. */
 	private transient List<ClockListener> clockListeners;
 	private transient List<ClockListenerTask> clockListenerTasks =  new CopyOnWriteArrayList<>();
@@ -705,15 +709,40 @@ public class MasterClock implements Serializable {
 			this.listener = listener;
 		}
 
-		public void addTime(double time) {
+		public void insertTime(double time) {
 			this.time = time;
 		}
 
 		@Override
 		public void run() {
 			try {
+
+  		  		// The most important job for CLockListener is to send a clock pulse to Simulation's clockPulse()
+  		  		// so that UpTimer, Mars, UnitManager, ScientificStudyManager, TransportManager gets updated.
 				listener.clockPulse(time);
-			} catch (ConcurrentModificationException e) {}
+				
+	  		  	timeCache += time;
+				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					// The secondary job of CLockListener is to send uiPulse() out to MainDesktopPane,
+					// which in terms sends a clock pulse out to update all unit windows and tool windows
+					//
+					// It also sends an ui pulse out to the following class and map related panels:
+					// 1. SettlementMapPanel 
+					// 2. ArrivingSettlementDetailPanel
+					// 3. GlobeDisplay
+					// 4. MapPanel
+					// 5. ResupplyDetailPanel
+					// 6. Telegraph
+					// 7. TimeWindow
+					// 8. EventTableModel
+					// 9. NotificationWindow
+					listener.uiPulse(time);
+		  			timeCache = 0;
+				}
+			
+			} catch (ConcurrentModificationException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -724,9 +753,10 @@ public class MasterClock implements Serializable {
 	public void fireClockPulse(double time) {
 		for (ClockListenerTask task : clockListenerTasks) {
 	  		if (task != null) {
-  		  		task.addTime(time);
-	  			clockListenerExecutor.execute(task);
+  		  		task.insertTime(time);		  		
+		  		clockListenerExecutor.execute(task);
 	  		}
+	  		
 	  		else
 	  			return;
         }
@@ -960,6 +990,9 @@ public class MasterClock implements Serializable {
 		return Math.round(10.0/adjustedTBU_s)/10.0;//1_000_000/tbu_ns;
 	}
 	
+    /**
+     * Sends out a clock pulse if using FXGL
+     */
     public void onUpdate(double tpf) {
 //        logger.info("MasterClock onUpdate() is on " + Thread.currentThread().getName() + " Thread");
     	if (!isPaused) {

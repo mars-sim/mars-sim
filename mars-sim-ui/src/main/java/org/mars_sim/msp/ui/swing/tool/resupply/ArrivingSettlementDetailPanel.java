@@ -39,7 +39,7 @@ public class ArrivingSettlementDetailPanel
 extends WebPanel
 implements ClockListener, HistoricalEventListener {
 
-	private static final int PERIOD_IN_MILLISOLS = 3;
+//	private static final int PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
 
 	// Data members
 	private WebLabel nameValueLabel;
@@ -58,7 +58,7 @@ implements ClockListener, HistoricalEventListener {
 	private static MarsClock currentTime;
 	private static MasterClock masterClock;
 	
-	private double timeCache = 0;
+//	private double timeCache = 0;
 	private int solsToArrival = -1;
 	
 	/**
@@ -250,14 +250,6 @@ implements ClockListener, HistoricalEventListener {
 		timeArrivalValueLabel.setText(timeArrival);
 	}
 
-	/**
-	 * Prepares the panel for deletion.
-	 */
-	public void destroy() {
-		arrivingSettlement = null;
-		Simulation.instance().getEventManager().removeListener(this);
-		Simulation.instance().getMasterClock().removeClockListener(this);
-	}
 
 	@Override
 	public void eventAdded(int index, HistoricalEvent event) {
@@ -282,28 +274,6 @@ implements ClockListener, HistoricalEventListener {
 		// Do nothing.
 	}
 
-	
-	@Override
-	public void clockPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(MissionWindow.NAME)) {
-				timeCache += time;
-				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-					updateArrival();
-					timeCache = 0;
-				}
-			}
-		}
-		else if (desktop.isToolWindowOpen(MissionWindow.NAME)) {
-			timeCache += time;
-			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				updateArrival();
-				timeCache = 0;
-			}
-		}			
-
-	}
-	
 	public void updateArrival() {
 		// Determine if change in time to arrival display value.
 		if ((arrivingSettlement != null) && (solsToArrival >= 0)) {
@@ -324,9 +294,58 @@ implements ClockListener, HistoricalEventListener {
 		}
 	}
 
+	
+	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub	
+	}
+	
+	@Override
+	public void uiPulse(double time) {
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(MissionWindow.NAME)) {
+//				timeCache += time;
+//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+					updateArrival();
+//					timeCache = 0;
+//				}
+			}
+		}
+		else if (desktop.isToolWindowOpen(MissionWindow.NAME)) {
+//			timeCache += time;
+//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				updateArrival();
+//				timeCache = 0;
+//			}
+		}			
+		
+	}
+	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Prepares the panel for deletion.
+	 */
+	public void destroy() {
+		Simulation.instance().getEventManager().removeListener(this);
+		Simulation.instance().getMasterClock().removeClockListener(this);
+		
+		nameValueLabel = null;
+		stateValueLabel = null;
+		arrivalDateValueLabel = null;
+		timeArrivalValueLabel = null;
+		templateValueLabel = null;
+		locationValueLabel = null;
+		populationValueLabel = null;
+		arrivingSettlement = null;		
+		desktop = null;
+		mainScene = null;
+		
+		currentTime = null;
+		masterClock = null;
 	}
 }

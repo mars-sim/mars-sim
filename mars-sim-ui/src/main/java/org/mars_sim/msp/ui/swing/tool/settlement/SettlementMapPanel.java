@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
@@ -51,17 +50,17 @@ extends WebPanel
 implements ClockListener {
 
 	// default logger.
-	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
+//	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
-	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
+//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
 	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
 
 	// Data members
-	private double timeCache = 0;
+//	private double timeCache = 0;
 	private double xPos;
 	private double yPos;
 	private double rotation;
@@ -1089,33 +1088,40 @@ implements ClockListener {
 		//System.out.println("SMT paint time: " + (int) timeDiff + " ms");
 
     }
+	
+	public SettlementTransparentPanel getSettlementTransparentPanel() {
+		return settlementTransparentPanel;
+	}
 
 
 	@Override
 	public void clockPulse(double time) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void uiPulse(double time) {
 		if (mainScene != null) {
 			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMapOn()) {//&& !masterClock.isPaused()) {			
-				timeCache += time;
-				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//				timeCache += time;
+//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
 //					System.out.println(masterClock.getTimeRatio() + " : " + Math.round(PERIOD_IN_MILLISOLS * time*100.0)/100.0);
 					// Repaint map panel
 					repaint();
-					timeCache = 0;
-				}	
+//					timeCache = 0;
+//				}	
 			}
 		}
 		else if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-			timeCache += time;
-			if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//			timeCache += time;
+//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				repaint();
-				timeCache = 0;
-			}
+//				timeCache = 0;
+//			}
 		}
 	}
-
-	public SettlementTransparentPanel getSettlementTransparentPanel() {
-		return settlementTransparentPanel;
-	}
+	
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
@@ -1147,7 +1153,6 @@ implements ClockListener {
 		mainScene = null;
 		building = null;
 		settlementTransparentPanel = null;
-
 
 	}
 

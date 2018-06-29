@@ -12,10 +12,17 @@ package org.mars_sim.msp.core.time;
 public interface ClockListener {
 
 	/**
-	 * Change in time.
+	 * Change in time for managers in Simulation.
 	 * param time the amount of time changed. (millisols)
 	 */
 	public void clockPulse(double time);
+
+	/**
+	 * Change in time for map related class
+	 * param time the amount of time changed. (millisols)
+	 */
+	public void uiPulse(double time);
+	
 	
 	/**
 	 * Change the pause state of the clock.

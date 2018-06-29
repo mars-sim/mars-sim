@@ -513,3 +513,22 @@
 .vbox {
 	-fx-background-color: transparent;
 }
+
+.slider .thumb:hover {
+
+}
+
+.slider .thumb:pressed {
+	
+}
+
+.slider:focused .thumb {
+    -fx-background-color: -fx-focus-color, -fx-inner-border, -fx-body-color, -fx-faint-focus-color, -fx-body-color;
+    -fx-background-insets: -0.2, 1, 2, -1.4, 2.6;
+    -fx-background-radius: 3, 2, 1, 4, 1;
+}
+
+.slider:disabled {
+	
+}
+

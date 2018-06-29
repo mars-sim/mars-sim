@@ -298,14 +298,19 @@ public class Telegraph implements ClockListener {
 
 	// 2014-12-17 Added clockPulse()
 	public void clockPulse(double time) {
-		/* // 2014-12-17 Added Thread t
-		Thread t = new Thread(new Runnable() {
-		    public void run() { 
-		    	checkSimulationPause();
-		    	//System.out.println("just got out of checkSimulationPause()");
-		    }});
-		t.start();	
-		*/
+		// TODO Auto-generated method stub			
+
+	}
+
+	@Override
+	public void uiPulse(double time) {
+//		Thread t = new Thread(new Runnable() {
+//		    public void run() { 
+//		    	checkSimulationPause();
+//		    	//System.out.println("just got out of checkSimulationPause()");
+//		    }});
+//		t.start();	
+
 		// Window is still in position
 		//if (!desktop.isEmpty()) {
 			isPaused = false;
@@ -314,7 +319,7 @@ public class Telegraph implements ClockListener {
 				timelineStay.resume();
 		//}
 	}
-
+	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// If the window is in position
