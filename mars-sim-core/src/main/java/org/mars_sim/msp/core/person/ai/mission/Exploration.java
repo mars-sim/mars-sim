@@ -401,7 +401,7 @@ implements Serializable {
             if (!hasEnoughResourcesForRemainingMission(false)) {
                 // If not, determine an emergency destination.
                 determineEmergencyDestination(member);
-//                setPhaseEnded(true);
+                setPhaseEnded(true);
             }
         }
         else {

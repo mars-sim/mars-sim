@@ -51,7 +51,7 @@ public class HealthProblem implements Serializable {
     private Person          sufferer;       // Person
     private MedicalAid      usedAid;        // Any aid being used
     
-    private static MedicalManager medicalManager;
+    private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
 
     /**
      * Create a new Health Problem that relates to a single Physical
@@ -71,7 +71,7 @@ public class HealthProblem implements Serializable {
         usedAid = null;
         requiresBedRest = false;
 
-        medicalManager = Simulation.instance().getMedicalManager();
+//        medicalManager = Simulation.instance().getMedicalManager();
         
         // Create medical event for health problem.
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);

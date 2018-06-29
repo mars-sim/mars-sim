@@ -18,14 +18,14 @@ import javax.swing.table.AbstractTableModel;
 
 import org.controlsfx.control.Notifications;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -109,7 +109,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private ImageView icon_mission = new ImageView(EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
 	private ImageView icon_hazard = new ImageView(EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
 
-	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
+//	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
+	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
 
 
 
@@ -143,24 +144,21 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	private void updateCachedEvents() {
 		// Clean out existing cached events for the Event Table.
-		cachedEvents = new ArrayList<HistoricalEvent>();
+//		cachedEvents = new ArrayList<HistoricalEvent>();
+		cachedEvents = new ArrayList<SimpleEvent>();
 
+		int size = manager.getEvents().size();
 		// Filter events based on category.
-		for (int x = 0; x < manager.getEvents().size(); x++) {
-			HistoricalEvent event = manager.getEvent(x);
-			HistoricalEventCategory category = event.getCategory();
-			EventType eventType = event.getType();
-			if (category.equals(HistoricalEventCategory.HAZARD) && displayHazard
-					//&& (event.getType() == EventType.MALFUNCTION_OCCURRED
-					//	|| event.getType() == EventType.MALFUNCTION_FIXED)
-					) {
-					cachedEvents.add(event);
-				}
+		for (int x = 0; x < size; x++) {
+//			HistoricalEvent event = manager.getEvent(x);
+			SimpleEvent event = manager.getEvent(x);
+			HistoricalEventCategory category = HistoricalEventCategory.int2enum((int)(event.getCat()));
+			EventType eventType = EventType.int2enum((event.getType()));
+			if (category.equals(HistoricalEventCategory.HAZARD) && displayHazard) {
+				cachedEvents.add(event);
+			}
 			
-			else if (category.equals(HistoricalEventCategory.MALFUNCTION) && displayMalfunction
-				//&& (event.getType() == EventType.MALFUNCTION_OCCURRED
-				//	|| event.getType() == EventType.MALFUNCTION_FIXED)
-				) {
+			else if (category.equals(HistoricalEventCategory.MALFUNCTION) && displayMalfunction) {
 				cachedEvents.add(event);
 			}
 			
@@ -175,11 +173,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 			
 			else if (category.equals(HistoricalEventCategory.MISSION) && displayMission
 				&& (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
-					|| event.getType() == EventType.MISSION_EMERGENCY_DESTINATION
+					|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
 					|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
-					|| event.getType() == EventType.MISSION_MEDICAL_EMERGENCY
+					|| eventType == EventType.MISSION_MEDICAL_EMERGENCY
 					|| eventType == EventType.MISSION_RENDEZVOUS		
-					|| event.getType() == EventType.MISSION_RESCUE_PERSON					            
+					|| eventType == EventType.MISSION_RESCUE_PERSON					            
 					|| eventType == EventType.MISSION_SALVAGE_VEHICLE
 			    )) {
 				cachedEvents.add(event);
@@ -188,8 +186,9 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 //			else if (category.equals(HistoricalEventCategory.TASK) && displayTask)
 //				cachedEvents.add(event);
 
-			else if (category.equals(HistoricalEventCategory.TRANSPORT) && displayTransport)
+			else if (category.equals(HistoricalEventCategory.TRANSPORT) && displayTransport) {
 				cachedEvents.add(event);
+			}
 
 		}
 
@@ -260,34 +259,36 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 * @return Unit associated with the Event as the specified position.
 	 */
 	public Object getObject(int row) {
-		HistoricalEvent event = cachedEvents.get(row);
-		Object result = null;
-		if (event != null) {
-			Object source = event.getSource();
-			if (source instanceof Unit) result = source;
-			else if (source instanceof Building)
-				result = ((Building) source).getBuildingManager().getSettlement();
-		}
-		return result;
+//		HistoricalEvent event = cachedEvents.get(row);
+//		Object result = null;
+//		if (event != null) {
+//			Object source = event.getSource();
+//			if (source instanceof Unit) result = source;
+//			else if (source instanceof Building)
+//				result = ((Building) source).getBuildingManager().getSettlement();
+//		}
+//		return result;
+//		
+		return null;
 	}
 	
-	public Object getWho(int row) {
-		HistoricalEvent event = cachedEvents.get(row);
-		if (event != null) {
-			return event.getWho();
-		}
-		return "N/A";
-	}
-	
-	public Object getCause(int row) {
-		HistoricalEvent event = cachedEvents.get(row);
-		Object result = null;
-		if (event != null) {
-			return event.getWhatCause();
-		}
-		return "Unknown";
-	}
-	
+//	public Object getWho(int row) {
+//		HistoricalEvent event = cachedEvents.get(row);
+//		if (event != null) {
+//			return event.getWho();
+//		}
+//		return "N/A";
+//	}
+//	
+//	public Object getCause(int row) {
+//		HistoricalEvent event = cachedEvents.get(row);
+//		Object result = null;
+//		if (event != null) {
+//			return event.getWhatCause();
+//		}
+//		return "Unknown";
+//	}
+//	
 	/**
 	 * Is this model already ordered according to some external criteria.
 	 * @return TRUE as the events are time ordered.
@@ -310,45 +311,45 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		//	System.out.println("getValueAt() : rowIndex is " + rowIndex + ", columnIndex is " + columnIndex);
 
 		if (rowIndex < cachedEvents.size()) {
-			HistoricalEvent event = cachedEvents.get(rowIndex);
-
+//			HistoricalEvent event = cachedEvents.get(rowIndex);
+			SimpleEvent event = cachedEvents.get(rowIndex);
 			if (event != null) {
 				// Invoke the appropriate method, switch is the best solution
 				// although disliked by some
 				switch (columnIndex) {
 					case TIMESTAMP : {
-						result = event.getTimestamp();
-						if (result == null) // at the start of the sim, MarsClock is not ready
-							result = "0015-Adir-01 000.000";
+						result = ClockUtils.convertMissionSol2Date(event.getSol()) + " " + Math.round(event.getMsol()*1000.0)/1000.0;
+//						if (result == null) // at the start of the sim, MarsClock is not ready
+//							result = "0015-Adir-01 000";
 					} break;
 	
 					case CATEGORY: {
-						result = event.getCategory();
+						result = HistoricalEventCategory.int2enum(event.getCat());
 	
 					} break;
 					
 					case TYPE : {
-						result = event.getType();
+						result = EventType.int2enum(event.getType());
 						
 					} break;
 		
 					case CAUSE: {
-						result = event.getWhatCause();
+						result = manager.getWhat(event.getWhat());
 	
 					} break;
 	
 					case WHO: {
-						result = event.getWho();
+						result = manager.getWho(event.getWho());
 	
 					} break;
 	
 					case LOCATION0: {
-						result = event.getLocation0();
+						result = manager.getLoc0(event.getLoc0());
 	
 					} break;
 					
 					case LOCATION1 : {
-						result = event.getLocation1();
+						result = manager.getLoc1(event.getLoc1());
 	
 					} break;
 				}
@@ -456,7 +457,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	
 				        else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
 				        	if (who.toLowerCase().equals("none"))
-				        		message = "None witnessed or was traumatized by " + cause + " in " + location0 + " at " + location1;
+				        		message = "No one witnessed or was traumatized by " + cause + " in " + location0 + " at " + location1;
 				        	else 
 				        		message = who + " was traumatized by " + cause + " in " + location0 + " at " + location1;				        		
 				        	willNotify = true;
@@ -538,7 +539,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 							header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 							
 							if (who.toLowerCase().equals("none"))
-								message = "There is a " + cause + " in " + location0 + " at " + location1;
+								message = "There is a " + cause + " in " + location0 + " at " + location1 + ". Fortunately, no one was hurt.";
 							else
 								message = who + " witnessed or was traumatized by the " + cause + " in " + location0 + " at " + location1;
 						}

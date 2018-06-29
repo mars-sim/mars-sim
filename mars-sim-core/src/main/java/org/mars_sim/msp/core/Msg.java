@@ -120,7 +120,7 @@ public class Msg {
 		}
 		return s;
 	}
-
+	
 	/*
 	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}

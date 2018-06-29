@@ -276,7 +276,8 @@ public class MarsClock implements Serializable {
 	 *         if (newSol != result) { newSol = result; System.out.println("sol
 	 *         of year : " + result); } return result; }
 	 */
-
+	
+	
 	/**
 	 * Returns the mission sol. Note: the first day of the mission is Sol 1
 	 * @return sol
@@ -530,7 +531,7 @@ public class MarsClock implements Serializable {
 	 */
 
 	/**
-	 * Returns the current time string. ex. "0056"
+	 * Returns the current time string in millisols. e.g. "0056"
 	 */
 	public String getTrucatedTimeStringUMST() {
 		StringBuilder s = new StringBuilder();
@@ -548,7 +549,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the current time string. ex. "056.349"
+	 * Returns the current time string in millisols with decimals. e.g. "056.349"
 	 */
 	public String getTimeString() {
 		StringBuilder b = new StringBuilder();
@@ -664,7 +665,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the millisol
+	 * Returns the millisols
 	 * @return the millisol as a double
 	 */
 	public double getMillisol() {
@@ -672,7 +673,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the rounded millisol
+	 * Returns the rounded millisols
 	 * @return the millisol as an int
 	 */
 	public int getMsol0() {
@@ -680,7 +681,7 @@ public class MarsClock implements Serializable {
 	}
 	
 	/**
-	 * Returns the millisol
+	 * Returns the millisols
 	 * @return the millisols in 1 decimal place
 	 */
 	public double getMsol1() {

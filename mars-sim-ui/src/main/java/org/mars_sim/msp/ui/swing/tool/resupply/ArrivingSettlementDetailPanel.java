@@ -12,8 +12,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
@@ -31,23 +29,26 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+
 /**
  * A panel showing a selected arriving settlement details.
  */
 public class ArrivingSettlementDetailPanel
-extends JPanel
+extends WebPanel
 implements ClockListener, HistoricalEventListener {
 
 	private static final int PERIOD_IN_MILLISOLS = 3;
 
 	// Data members
-	private JLabel nameValueLabel;
-	private JLabel stateValueLabel;
-	private JLabel arrivalDateValueLabel;
-	private JLabel timeArrivalValueLabel;
-	private JLabel templateValueLabel;
-	private JLabel locationValueLabel;
-	private JLabel populationValueLabel;
+	private WebLabel nameValueLabel;
+	private WebLabel stateValueLabel;
+	private WebLabel arrivalDateValueLabel;
+	private WebLabel timeArrivalValueLabel;
+	private WebLabel templateValueLabel;
+	private WebLabel locationValueLabel;
+	private WebLabel populationValueLabel;
 
 	private ArrivingSettlement arrivingSettlement;
 	
@@ -65,7 +66,7 @@ implements ClockListener, HistoricalEventListener {
 	 */
 	public ArrivingSettlementDetailPanel(MainDesktopPane desktop) {
 
-		// Use JPanel constructor.
+		// Use WebPanel constructor.
 		super();
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
@@ -77,104 +78,104 @@ implements ClockListener, HistoricalEventListener {
 		setBorder(new MarsPanelBorder());
 
 		// Create the info panel.
-		JPanel infoPane = new JPanel(new BorderLayout());
+		WebPanel infoPane = new WebPanel(new BorderLayout());
 		add(infoPane, BorderLayout.NORTH);
 
 		// Create the title label.
-		JLabel titleLabel = new JLabel(
+		WebLabel titleLabel = new WebLabel(
 			Msg.getString("ArrivingSettlementDetailPanel.arrivingSettlement"), //$NON-NLS-1$
-			JLabel.CENTER
+			WebLabel.CENTER
 		);
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
 		infoPane.add(titleLabel, BorderLayout.NORTH);
 
 		// Create the info2 panel.
-		JPanel info2Pane = new JPanel(new GridLayout(7, 1, 5, 5));
+		WebPanel info2Pane = new WebPanel(new GridLayout(7, 1, 5, 5));
 		infoPane.add(info2Pane, BorderLayout.CENTER);
 
 		// Create name panel.
-		JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel namePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(namePane);
 
 		// Create name title label.
-		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.name"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel nameTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.name"), WebLabel.LEFT); //$NON-NLS-1$
 		namePane.add(nameTitleLabel);
 
 		// Create name value label.
-		nameValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		nameValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		namePane.add(nameValueLabel);
 
 		// Create state panel.
-		JPanel statePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel statePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(statePane);
 
 		// Create state title label.
-		JLabel stateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.state"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel stateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.state"), WebLabel.LEFT); //$NON-NLS-1$
 		statePane.add(stateTitleLabel);
 
 		// Create state value label.
-		stateValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		stateValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		statePane.add(stateValueLabel);
 
 		// Create template panel.
-		JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel templatePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(templatePane);
 
 		// Create template title label.
-		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.layoutTemplate"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel templateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.layoutTemplate"), WebLabel.LEFT); //$NON-NLS-1$
 		templatePane.add(templateTitleLabel);
 
 		// Create template value label.
-		templateValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		templateValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		templatePane.add(templateValueLabel);
 
 		// Create population panel.
-		JPanel populationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel populationPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(populationPane);
 
 		// Create population title label.
-		JLabel populationTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.immigrants"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel populationTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.immigrants"), WebLabel.LEFT); //$NON-NLS-1$
 		populationPane.add(populationTitleLabel);
 
 		// Create population value label.
-		populationValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		populationValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		populationPane.add(populationValueLabel);
 
 		// Create arrival date panel.
-		JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel arrivalDatePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(arrivalDatePane);
 
 		// Create arrival date title label.
-		JLabel arrivalDateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.arrivalDate"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel arrivalDateTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.arrivalDate"), WebLabel.LEFT); //$NON-NLS-1$
 		arrivalDatePane.add(arrivalDateTitleLabel);
 
 		// Create arrival date value label.
-		arrivalDateValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		arrivalDateValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		arrivalDatePane.add(arrivalDateValueLabel);
 
 		// Create time arrival panel.
-		JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel timeArrivalPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(timeArrivalPane);
 
 		// Create time arrival title label.
-		JLabel timeArrivalTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.timeUntilArrival"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel timeArrivalTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.timeUntilArrival"), WebLabel.LEFT); //$NON-NLS-1$
 		timeArrivalPane.add(timeArrivalTitleLabel);
 
 		// Create time arrival value label.
-		timeArrivalValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		timeArrivalValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		timeArrivalPane.add(timeArrivalValueLabel);
 
 		// Create location panel.
-		JPanel locationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel locationPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(locationPane);
 
 		// Create location title label.
-		JLabel locationTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.location"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel locationTitleLabel = new WebLabel(Msg.getString("ArrivingSettlementDetailPanel.location"), WebLabel.LEFT); //$NON-NLS-1$
 		locationPane.add(locationTitleLabel);
 
 		// Create location value label.
-		locationValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		locationValueLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		locationPane.add(locationValueLabel);
 
 		// Set as clock listener.

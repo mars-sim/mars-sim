@@ -449,8 +449,8 @@ implements Serializable {
 							malfunction,
 							malfunctionName,
 							name,
-							entity.getNickName(),
-							entity.getImmediateLocation());
+							entity.getImmediateLocation(),
+							entity.getLocale());
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 			        			malfunction.getName() + " damage detected in " + entity.getLocale(), null);

@@ -13,10 +13,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,19 +37,29 @@ public class HistoricalEventManager implements Serializable {
 	 * This defines the maximum number of events that are stored.
 	 * It should be a standard property.
 	 */
-	private final static int TRANSIENT_EVENTS = 500;
+//	private final static int TRANSIENT_EVENTS = 5000;
 
 	//private static int count;
 	
 	private transient List<HistoricalEventListener> listeners;
 	
-	private List<HistoricalEvent> events;// = new LinkedList<HistoricalEvent>();
+//	private List<HistoricalEvent> events;
 	
 	private Narrator narrator;
 	
 	private MarsClock marsClock;
 
-	private transient List<HistoricalEvent> lastEvents = new ArrayList<>();;
+	private static List<HistoricalEvent> lastEvents = new ArrayList<>();
+
+	// The following list cannot be static since it needs to be serialized
+	private List<SimpleEvent> eventsRegistry;
+	
+	// The following 4 maps cannot be static since they need to be serialized
+	private Map<Integer, String> whatMap;
+	private Map<Integer, String> whoMap;
+	private Map<Integer, String> loc0Map;
+	private Map<Integer, String> loc1Map;
+
 	
 	/**
 	 * Create a new EventManager that represents a particular simulation.
@@ -58,11 +68,21 @@ public class HistoricalEventManager implements Serializable {
 		//logger.info("HistoricalEventManager's constructor is on " + Thread.currentThread().getName());
 		// Note : the masterClock and marsClock CANNOAT initialized until the simulation start
 		listeners = new ArrayList<HistoricalEventListener>();
-		events = new LinkedList<HistoricalEvent>();
-		
+//		events = new LinkedList<HistoricalEvent>();
+		eventsRegistry = new ArrayList<>();
 		narrator = new Narrator();		
+//		lastEvents = new ArrayList<>();
+		initMaps();
 	}
 
+	private void initMaps() {
+		whatMap = new HashMap<>();
+		whoMap = new HashMap<>();
+		loc0Map = new HashMap<>();
+		loc1Map = new HashMap<>();
+	
+	}
+	
 	/**
 	 * Add a historical event listener
 	 * @param newListener listener to add.
@@ -81,31 +101,41 @@ public class HistoricalEventManager implements Serializable {
 		if (listeners.contains(oldListener)) listeners.remove(oldListener);
 	}
 
+//	/**
+//	 * Get the event at a specified index.
+//	 * @param index Index of event to retrieve.
+//	 * @return Historical event.
+//	 */
+//	public HistoricalEvent getEvent(int index) {		
+//		return events.get(index);
+//	}
+
 	/**
 	 * Get the event at a specified index.
 	 * @param index Index of event to retrieve.
 	 * @return Historical event.
 	 */
-	public HistoricalEvent getEvent(int index) {
-		return events.get(index);
+	public SimpleEvent getEvent(int index) {
+		return eventsRegistry.get(index);		
 	}
-
 	
 	
 	public boolean isSameEvent(HistoricalEvent newEvent) {
 		boolean result = false;
-		for (HistoricalEvent e : lastEvents) {
-			
-			if (e.getWhatCause().equals(newEvent.getWhatCause())
-				|| e.getWho().equals(newEvent.getWho())
-				|| e.getType() == newEvent.getType()
-				|| e.getCategory() == newEvent.getCategory()
-				|| e.getLocation0().equals(newEvent.getLocation0())
-				|| e.getLocation1().equals(newEvent.getLocation1())
-			 ) {
-				result = true;
+		if (lastEvents != null && !lastEvents.isEmpty()) {
+			for (HistoricalEvent e : lastEvents) {
+				
+				if (e.getWhatCause().equals(newEvent.getWhatCause())
+					|| e.getWho().equals(newEvent.getWho())
+					|| e.getType() == newEvent.getType()
+					|| e.getCategory() == newEvent.getCategory()
+					|| e.getLocation0().equals(newEvent.getLocation0())
+					|| e.getLocation1().equals(newEvent.getLocation1())
+				 ) {
+					result = true;
+				}
+				
 			}
-			
 		}
 		return result;
 	}
@@ -117,9 +147,12 @@ public class HistoricalEventManager implements Serializable {
 	 */
 	// include any kind of events
 	public void registerNewEvent(HistoricalEvent newEvent) {
-		HistoricalEventCategory category = newEvent.getCategory();
-		if (!category.equals(HistoricalEventCategory.TASK)
+//		HistoricalEventCategory category = newEvent.getCategory();
+		if (!newEvent.getCategory().equals(HistoricalEventCategory.TASK)
 				&& !isSameEvent(newEvent)) {
+			
+			if (lastEvents == null)
+				lastEvents = new ArrayList<>();
 			
 			lastEvents.add(newEvent);
 			if (lastEvents.size() > 5)
@@ -127,10 +160,10 @@ public class HistoricalEventManager implements Serializable {
 	
 			// check if event is MALFUNCTION or MEDICAL, save it for notification box display
 			// Make space for the new event.
-			if (events.size() >= TRANSIENT_EVENTS) {
-				int excess = events.size() - (TRANSIENT_EVENTS - 1);
-				removeEvents(events.size() - excess, excess);
-			}
+//			if (events.size() >= TRANSIENT_EVENTS) {
+//				int excess = events.size() - (TRANSIENT_EVENTS - 1);
+//				removeEvents(events.size() - excess, excess);
+//			}
 			// Note : the elaborate if-else conditions below is for passing the maven test
 			if (marsClock == null) 
 				marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -142,7 +175,10 @@ public class HistoricalEventManager implements Serializable {
 			 
 			newEvent.setTimestamp(timestamp);
 	
-			events.add(0, newEvent);
+			convertEvent(newEvent);
+			
+//			events.add(0, newEvent);
+			
 
 			if (listeners == null) {
 				listeners = new ArrayList<HistoricalEventListener>();
@@ -156,34 +192,87 @@ public class HistoricalEventManager implements Serializable {
 		}
 	}
 
-	/**
-	 * An event is removed from the list.
-	 * @param index Index of the event to be removed.
-	 * @param number Number to remove.
-	 */
-	private void removeEvents(int index, int number) {
-
-		// Remove the rows
-		for(int i = index; i < (index + number); i++) {
-			events.remove(i);
-		}
-
-		Iterator<HistoricalEventListener> iter = listeners.iterator();
-		while(iter.hasNext()) iter.next().eventsRemoved(index, index + number);
-	}
-
-	/**
-	 * Get the number of events in the manager.
-	 * @return Stored event count.
-	 */
-	public int size() {
-		return events.size();
-	}
-
-	public List<HistoricalEvent> getEvents() {
-		return events;
+	private void convertEvent(HistoricalEvent event) {
+		short sol = (short)(event.getTimestamp().getMissionSol());
+		float msol = (float)(event.getTimestamp().getMillisol());
+		byte cat = (byte)(event.getCategory().ordinal());
+		byte type = (byte)(event.getType().ordinal());
+		short what = (short)(getID(whatMap, event.getWhatCause()));
+		short who = (short)(getID(whoMap, event.getWho()));
+		short loc0 = (short)(getID(loc0Map, event.getLocation0()));
+		short loc1 = (short)(getID(loc1Map, event.getLocation1()));
+		
+		eventsRegistry.add(0, new SimpleEvent(sol, msol, cat, type, what, who, loc0, loc1));
 	}
 	
+	public int getID(Map<Integer, String> map, String v) {
+		if (map.containsValue(v)) {
+			Set<Integer> s = map.keySet();
+			for (Integer i : s) 
+				return i;
+		}
+		else {
+			int size = map.size();
+			map.put(size+1, v);
+			return size+1;
+		}
+		return -1;
+	}
+
+	public String getStr(Map<Integer, String> map, Integer id) {
+		return map.get(id);
+	}
+	
+	public String getWhat(int id) {
+		return whatMap.get(id);
+	}
+
+	public String getWho(int id) {
+		return whoMap.get(id);
+	}
+
+	public String getLoc0(int id) {
+		return loc0Map.get(id);
+	}
+
+	public String getLoc1(int id) {
+		return loc1Map.get(id);
+	}
+
+	
+//	/**
+//	 * An event is removed from the list.
+//	 * @param index Index of the event to be removed.
+//	 * @param number Number to remove.
+//	 */
+//	private void removeEvents(int index, int number) {
+//
+//		// Remove the rows
+//		for(int i = index; i < (index + number); i++) {
+//			events.remove(i);
+//		}
+//
+//		Iterator<HistoricalEventListener> iter = listeners.iterator();
+//		while(iter.hasNext()) iter.next().eventsRemoved(index, index + number);
+//	}
+
+//	/**
+//	 * Get the number of events in the manager.
+//	 * @return Stored event count.
+//	 */
+//	public int size() {
+//		return events.size();
+//	}
+
+//	public List<HistoricalEvent> getEvents() {
+//		return events;
+//	}
+
+	public List<SimpleEvent> getEvents() {
+		return eventsRegistry;
+	}
+	 
+
 	
 	/**
 	 * Prepare object for garbage collection.
@@ -191,7 +280,9 @@ public class HistoricalEventManager implements Serializable {
 	public void destroy() {
 		listeners.clear();
 		listeners = null;
-		events.clear();
-		events = null;
+//		events.clear();
+//		events = null;
+		eventsRegistry.clear();
+		eventsRegistry = null;
 	}
 }

@@ -13,8 +13,8 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+
+
 import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -29,11 +29,14 @@ import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
 
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /**
  * A panel showing a list of all arrived resupply missions.
  */
 public class ArrivedListPanel
-extends JPanel
+extends WebPanel
 implements ListSelectionListener {
 
 	// Data members
@@ -45,7 +48,7 @@ implements ListSelectionListener {
 	 */
 	public ArrivedListPanel() {
 
-		// Use JPanel constructor
+		// Use WebPanel constructor
 		super();
 
 		setLayout(new BorderLayout());
@@ -56,8 +59,8 @@ implements ListSelectionListener {
 		listModel = new ArrivedListModel();
 		arrivedList = new JList<Object>(listModel);
 		arrivedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JScrollPane scrollPane = new JScrollPane(arrivedList);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		WebScrollPane scrollPane = new WebScrollPane(arrivedList);
+		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPane, BorderLayout.CENTER);
 	}
 

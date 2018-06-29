@@ -6,6 +6,9 @@
  */
 package org.mars_sim.msp.core.events;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.mars_sim.msp.core.Msg;
 
 public enum HistoricalEventCategory {
@@ -27,5 +30,40 @@ public enum HistoricalEventCategory {
 	/** gets the internationalized name for display in user interface. */
 	public String getName() {
 		return this.name;
+	}
+	
+	/**
+	 * gives back a list of all valid values for the HistoricalEventCategory enum.
+	 */
+	public static List<HistoricalEventCategory> valuesList() {
+		return Arrays.asList(HistoricalEventCategory.values());
+	}
+	
+	public static HistoricalEventCategory int2enum(int ordinal) {
+		return HistoricalEventCategory.values()[ordinal];
+	}
+	
+	public static HistoricalEventCategory str2enum(String name) {
+		if (name != null) {
+	    	for (HistoricalEventCategory c : HistoricalEventCategory.values()) {
+	    		if (name.equalsIgnoreCase(c.name)) {
+	    			return c;
+	    		}
+	    	}
+		}
+		
+		return null;
+	}
+	
+	public static int str2int(String name) {
+		if (name != null) {
+	    	for (HistoricalEventCategory c : HistoricalEventCategory.values()) {
+	    		if (name.equalsIgnoreCase(c.name)) {
+	    			return c.ordinal();
+	    		}
+	    	}
+		}
+		
+		return -1;
 	}
 }

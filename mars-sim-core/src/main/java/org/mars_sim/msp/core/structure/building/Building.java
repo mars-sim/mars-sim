@@ -85,7 +85,6 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Building class is a settlement's building.

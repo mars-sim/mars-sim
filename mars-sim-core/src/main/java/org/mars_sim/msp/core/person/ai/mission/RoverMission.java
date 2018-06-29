@@ -872,12 +872,12 @@ extends VehicleMission {
 		//Iterator<MissionMember> i = getMembers().iterator();
 		//while (i.hasNext()) {
 		//	MissionMember member = i.next();
-		for (MissionMember member : getMembers()) {
-			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-				// TODO: when should we reset a person's associated settlement to the one he's at.
-			    member.setAssociatedSettlement(member.getSettlement());
-			}
-		}
+//		for (MissionMember member : getMembers()) {
+//			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+//				// TODO: when should we reset a person's associated settlement to the one he's at.
+//			    member.setAssociatedSettlement(member.getSettlement());
+//			}
+//		}
 
 		super.endMission(reason);
 	}

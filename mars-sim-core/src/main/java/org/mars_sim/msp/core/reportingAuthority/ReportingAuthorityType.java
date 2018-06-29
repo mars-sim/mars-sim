@@ -56,7 +56,7 @@ public enum ReportingAuthorityType {
 		return getName();
 	}
 	
-	public static ReportingAuthorityType fromString(String name) {
+	public static ReportingAuthorityType str2enum(String name) {
 		if (name != null) {
 	    	for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
 	    		if (name.equalsIgnoreCase(ra.name)) {

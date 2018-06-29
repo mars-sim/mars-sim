@@ -448,15 +448,15 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
-				resourceMap.put(foodAR, getResourceStored(newUnit, foodAR));
-				resourceMap.put(oxygenAR, getResourceStored(newUnit, oxygenAR));
-				resourceMap.put(waterAR, getResourceStored(newUnit, waterAR));
-				resourceMap.put(methaneAR, getResourceStored(newUnit, methaneAR));
-				resourceMap.put(rockSamplesAR, getResourceStored(newUnit, rockSamplesAR));
-				resourceMap.put(iceAR, getResourceStored(newUnit, iceAR));
+				resourceMap.put(foodAR, Math.round(10.0 * getResourceStored(newUnit, foodAR))/10.0);
+				resourceMap.put(oxygenAR, Math.round(10.0 * getResourceStored(newUnit, oxygenAR))/10.0);
+				resourceMap.put(waterAR, Math.round(10.0 * getResourceStored(newUnit, waterAR))/10.0);
+				resourceMap.put(methaneAR, Math.round(10.0 *getResourceStored(newUnit, methaneAR))/10.0);
+				resourceMap.put(rockSamplesAR, Math.round(10.0 *getResourceStored(newUnit, rockSamplesAR))/10.0);
+				resourceMap.put(iceAR, Math.round(10.0 *getResourceStored(newUnit, iceAR))/10.0);
 			  	// Put together a list of available dessert
 		        for(AmountResource ar : availableDesserts) {
-		        	resourceMap.put(ar, getResourceStored(newUnit, ar));
+		        	resourceMap.put(ar, Math.round(10.0 *getResourceStored(newUnit, ar))/10.0);
 		        }
 
 				resourceCache.put(newUnit, resourceMap);

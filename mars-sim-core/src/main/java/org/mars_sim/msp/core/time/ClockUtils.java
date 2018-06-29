@@ -10,13 +10,10 @@ package org.mars_sim.msp.core.time;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
@@ -153,6 +150,19 @@ public class ClockUtils implements Serializable {
 		
 	}
 	
+	public static String convertMissionSol2Date(int missionSol) {
+
+//		int orbit = 0;
+//		int sol = missionSol;
+//		int month = 0;
+
+		MarsClock clock = new MarsClock(15, 1, 1, 0);
+		
+		clock.addTime(missionSol*1000);
+		String s = MarsClock.getDateString(clock);
+		
+		return s;
+	}
 	
 	public void destroy() {
 		orbitInfo = null;
