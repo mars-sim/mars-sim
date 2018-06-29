@@ -537,10 +537,10 @@ extends TabPanel {
 					try {
 						//ThermalGeneration heater = building.getThermalGeneration();//(ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 						// 2014-10-25  Changed to calling getGeneratedCapacity()
-						generatedCapacity = Math.round(building.getThermalGeneration().getHeatGenerationCapacity()*1000.0)/1000.0;
+						generatedCapacity = building.getThermalGeneration().getHeatGenerationCapacity();
 					}
 					catch (Exception e) {}
-					return generatedCapacity;
+					return Math.round(generatedCapacity*1000.0)/1000.0;
 				}
 			return null;
 		}

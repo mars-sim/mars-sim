@@ -87,7 +87,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
-	private static final double PERIOD_IN_MILLISOLS = 10;// 750D / MarsClock.SECONDS_IN_MILLISOL;
+	private static final double PERIOD_IN_MILLISOLS = 20;// 750D / MarsClock.SECONDS_IN_MILLISOL;
 
 	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
 	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";

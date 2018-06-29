@@ -467,26 +467,26 @@ extends TabPanel {
 				if (building.hasFunction(FunctionType.POWER_GENERATION)) {
 					try {
 						//PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-						generated =  Math.round(building.getPowerGeneration().getGeneratedPower()*1000.0)/1000.0;
+						generated =  building.getPowerGeneration().getGeneratedPower();
 					}
 					catch (Exception e) {}
 				}
 				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 					try {
 						//ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-						generated +=  Math.round(building.getThermalGeneration().getGeneratedPower()*1000.0)/1000.0;
+						generated +=  building.getThermalGeneration().getGeneratedPower();
 					}
 					catch (Exception e) {}
 				}
-				return generated;
+				return Math.round(generated*1000.0)/1000.0;
 			}
 			else if (column == 3) {
 				double used = 0D;
 				if (powerMode == PowerMode.FULL_POWER)
-					used =  Math.round(building.getFullPowerRequired()*1000.0)/1000.0;
+					used =  building.getFullPowerRequired();
 				else if (powerMode == PowerMode.POWER_DOWN)
-					used =  Math.round(building.getPoweredDownPowerRequired()*1000.0)/1000.0;
-				return used;
+					used =  building.getPoweredDownPowerRequired();
+				return Math.round(used*1000.0)/1000.0;
 			}
 			else return null;
 		}
