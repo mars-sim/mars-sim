@@ -275,7 +275,7 @@ implements Serializable {
 	 * @return remaining time.
 	 * @throws Exception if error in performing task.
 	 */
-	public double performTask(double time, double efficiency) {
+	public double executeTask(double time, double efficiency) {
 		double remainingTime = 0D;
 		
 		if (currentTask != null) {

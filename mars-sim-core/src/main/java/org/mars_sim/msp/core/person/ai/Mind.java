@@ -211,7 +211,7 @@ implements Serializable {
         boolean hasActiveTask = taskManager.hasActiveTask();
         // Perform a task if the person has one, or determine a new task/mission.
         if (hasActiveTask) {
-            double remainingTime = taskManager.performTask(time, person
+            double remainingTime = taskManager.executeTask(time, person
                     .getPerformanceRating());
             if (remainingTime > 0D) {
                 takeAction(remainingTime);

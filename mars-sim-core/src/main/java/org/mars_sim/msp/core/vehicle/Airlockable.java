@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.structure.Airlock;
 
 /**
  * This interface represents a vehicle with an airlock. 

@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -30,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -98,11 +98,6 @@ implements Serializable {
         super(null, person, false, false, STRESS_MODIFIER, false, 0D);
         //this.person = person;
 
-        //compute();
-	//}
-	
-	//public void compute() {
-		//taskCompute();
         // Initialize data members.
         walkingStepIndex = 0;
 
@@ -187,7 +182,7 @@ implements Serializable {
         }
         
         // Determine if person is outside.
-        else {//if (person.isOutside()) {
+        else if (person.isOutside()) {
 
             Airlock airlock = findEmergencyAirlock(person);
             if (airlock != null) {
@@ -239,11 +234,6 @@ implements Serializable {
         //this.robot = robot;
         //logger.finer(robot + " starting new walk task.");
 
-        //botCompute();
-	//}
-	
-	//public void botCompute() {
-		
         // Initialize data members.
         walkingStepIndex = 0;
 
@@ -263,83 +253,83 @@ implements Serializable {
             }
 
         }
-        else if (robot.isInVehicle()) {
-
-            Vehicle vehicle = robot.getVehicle();
-
-            // If no mission and vehicle is at a settlement location, enter settlement.
-            boolean walkToSettlement = false;
-            if ((robot.getBotMind().getMission() == null) && (vehicle.getSettlement() != null)) {
-
-                Settlement settlement = vehicle.getSettlement();
-
-                // Check if vehicle is in garage.
-                Building garageBuilding = BuildingManager.getBuilding(vehicle);
-                if (garageBuilding != null) {
-
-                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
-                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
-                            interiorPos.getX(), interiorPos.getY(), garageBuilding);
-                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
-                            adjustedInteriorPos.getY(), garageBuilding);
-                    walkToSettlement = true;
-                }
-                else if (vehicle instanceof Rover) {
-
-                    // Check if robot has a good EVA suit available if in a rover.
-                    //boolean goodEVASuit = true;
-                   // boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getSettlementInventory());
-                    //boolean wearingSuit = robot.getSettlementInventory().containsUnitClass(EVASuit.class);
-                    //goodEVASuit = roverSuit || wearingSuit;
-                    //if (goodEVASuit) {
-
-                        // Walk to nearest emergency airlock in settlement.
-                        Airlock airlock = settlement.getClosestAvailableAirlock(robot);
-                        if (airlock != null) {
-                            LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
-                            Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
-                            Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
-                                    interiorPos.getX(), interiorPos.getY(), entity);
-                            walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
-                                    adjustedInteriorPos.getY(), entity);
-                            walkToSettlement = true;
-                        }
-                    //}
-
-                }
-                else {
-                    // If not a rover, retrieve robot from vehicle.
-                    vehicle.getInventory().retrieveUnit(robot);
-                }
-            }
-
-            if (!walkToSettlement) {
-
-                // Walk to random location within rover.
-                if (robot.getVehicle() instanceof Rover) {
-                    Rover rover = (Rover) robot.getVehicle();
-                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
-                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
-                            interiorPos.getX(), interiorPos.getY(), rover);
-                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
-                            adjustedInteriorPos.getY(), rover);
-                }
-            }
-        }
+//        else if (robot.isInVehicle()) {
+//
+//            Vehicle vehicle = robot.getVehicle();
+//
+//            // If no mission and vehicle is at a settlement location, enter settlement.
+//            boolean walkToSettlement = false;
+//            if ((robot.getBotMind().getMission() == null) && (vehicle.getSettlement() != null)) {
+//
+//                Settlement settlement = vehicle.getSettlement();
+//
+//                // Check if vehicle is in garage.
+//                Building garageBuilding = BuildingManager.getBuilding(vehicle);
+//                if (garageBuilding != null) {
+//
+//                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
+//                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+//                            interiorPos.getX(), interiorPos.getY(), garageBuilding);
+//                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
+//                            adjustedInteriorPos.getY(), garageBuilding);
+//                    walkToSettlement = true;
+//                }
+//                else if (vehicle instanceof Rover) {
+//
+//                    // Check if robot has a good EVA suit available if in a rover.
+//                    //boolean goodEVASuit = true;
+//                   // boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getSettlementInventory());
+//                    //boolean wearingSuit = robot.getSettlementInventory().containsUnitClass(EVASuit.class);
+//                    //goodEVASuit = roverSuit || wearingSuit;
+//                    //if (goodEVASuit) {
+//
+//                        // Walk to nearest emergency airlock in settlement.
+//                        Airlock airlock = settlement.getClosestAvailableAirlock(robot);
+//                        if (airlock != null) {
+//                            LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
+//                            Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
+//                            Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+//                                    interiorPos.getX(), interiorPos.getY(), entity);
+//                            walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
+//                                    adjustedInteriorPos.getY(), entity);
+//                            walkToSettlement = true;
+//                        }
+//                    //}
+//
+//                }
+//                else {
+//                    // If not a rover, retrieve robot from vehicle.
+//                    vehicle.getInventory().retrieveUnit(robot);
+//                }
+//            }
+//
+//            if (!walkToSettlement) {
+//
+//                // Walk to random location within rover.
+//                if (robot.getVehicle() instanceof Rover) {
+//                    Rover rover = (Rover) robot.getVehicle();
+//                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
+//                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+//                            interiorPos.getX(), interiorPos.getY(), rover);
+//                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
+//                            adjustedInteriorPos.getY(), rover);
+//                }
+//            }
+//        }
         
         // Determine if robot is outside.
-        else {//if (robot.isOutside()) {
-
-            Airlock airlock = findEmergencyAirlock(robot);
-            if (airlock != null) {
-                LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
-                Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
-                Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
-                        interiorPos.getX(), interiorPos.getY(), entity);
-                walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
-                        adjustedInteriorPos.getY(), entity);
-            }
-        }
+//        else {//if (robot.isOutside()) {
+//
+//            Airlock airlock = findEmergencyAirlock(robot);
+//            if (airlock != null) {
+//                LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
+//                Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
+//                Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+//                        interiorPos.getX(), interiorPos.getY(), entity);
+//                walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
+//                        adjustedInteriorPos.getY(), entity);
+//            }
+//        }
 /*        
         else {
             throw new IllegalStateException("Could not determine walking steps for " + robot.getName() +
@@ -356,14 +346,8 @@ implements Serializable {
         }
 
         // Initialize task phase.
-        //2015-12-07 Temporarily disabled the possibility of exiting airlock/garage for bots
+        // Temporarily disabled the possibility of exiting airlock for bots
         addPhase(WALKING_SETTLEMENT_INTERIOR);
-        addPhase(WALKING_ROVER_INTERIOR);
-        addPhase(WALKING_EXTERIOR);
-        addPhase(EXITING_AIRLOCK);
-        addPhase(ENTERING_AIRLOCK);
-        addPhase(EXITING_ROVER_GARAGE);
-        addPhase(ENTERING_ROVER_GARAGE);
 
         setPhase(getWalkingStepPhase());
     }
@@ -423,12 +407,6 @@ implements Serializable {
 
         // Initialize task phase.
         addPhase(WALKING_SETTLEMENT_INTERIOR);
-        addPhase(WALKING_ROVER_INTERIOR);
-        addPhase(WALKING_EXTERIOR);
-        addPhase(EXITING_AIRLOCK);
-        addPhase(ENTERING_AIRLOCK);
-        addPhase(EXITING_ROVER_GARAGE);
-        addPhase(ENTERING_ROVER_GARAGE);
 
         setPhase(getWalkingStepPhase());
     }
@@ -491,55 +469,55 @@ implements Serializable {
         return result;
     }
 
-    public static Airlock findEmergencyAirlock(Robot robot) {
-
-        Airlock result = null;
-
-        // Determine airlock from other robots on mission.
-        if (robot.getBotMind().getMission() != null) {
-            Iterator<MissionMember> i = robot.getBotMind().getMission().getMembers().iterator();
-            while (i.hasNext() && (result == null)) {
-                MissionMember member = i.next();
-                if (member != robot) {
-                    if (member.isInSettlement()) {
-                        result = member.getSettlement().getClosestAvailableAirlock(robot);
-                    }
-                    else if (member.isInVehicle()) {
-                        Vehicle vehicle = member.getVehicle();
-                        if (vehicle instanceof Airlockable) {
-                            result = ((Airlockable) vehicle).getAirlock();
-                        }
-                    }
-                }
-            }
-        }
-
-        // If not look for any settlements at robot's location.
-        if (result == null) {
-            Iterator<Settlement> i = unitManager.getSettlements().iterator();
-            while (i.hasNext() && (result == null)) {
-                Settlement settlement = i.next();
-                if (robot.getCoordinates().equals(settlement.getCoordinates())) {
-                    result = settlement.getClosestAvailableAirlock(robot);
-                }
-            }
-        }
-
-        // If not look for any vehicles with airlocks at robot's location.
-        if (result == null) {
-            Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-            while (i.hasNext() && (result == null)) {
-                Vehicle vehicle = i.next();
-                if (robot.getCoordinates().equals(vehicle.getCoordinates())) {
-                    if (vehicle instanceof Airlockable) {
-                        result = ((Airlockable) vehicle).getAirlock();
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
+//    public static Airlock findEmergencyAirlock(Robot robot) {
+//
+//        Airlock result = null;
+//
+//        // Determine airlock from other robots on mission.
+//        if (robot.getBotMind().getMission() != null) {
+//            Iterator<MissionMember> i = robot.getBotMind().getMission().getMembers().iterator();
+//            while (i.hasNext() && (result == null)) {
+//                MissionMember member = i.next();
+//                if (member != robot) {
+//                    if (member.isInSettlement()) {
+//                        result = member.getSettlement().getClosestAvailableAirlock(robot);
+//                    }
+//                    else if (member.isInVehicle()) {
+//                        Vehicle vehicle = member.getVehicle();
+//                        if (vehicle instanceof Airlockable) {
+//                            result = ((Airlockable) vehicle).getAirlock();
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // If not look for any settlements at robot's location.
+//        if (result == null) {
+//            Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//            while (i.hasNext() && (result == null)) {
+//                Settlement settlement = i.next();
+//                if (robot.getCoordinates().equals(settlement.getCoordinates())) {
+//                    result = settlement.getClosestAvailableAirlock(robot);
+//                }
+//            }
+//        }
+//
+//        // If not look for any vehicles with airlocks at robot's location.
+//        if (result == null) {
+//            Iterator<Vehicle> i = unitManager.getVehicles().iterator();
+//            while (i.hasNext() && (result == null)) {
+//                Vehicle vehicle = i.next();
+//                if (robot.getCoordinates().equals(vehicle.getCoordinates())) {
+//                    if (vehicle instanceof Airlockable) {
+//                        result = ((Airlockable) vehicle).getAirlock();
+//                    }
+//                }
+//            }
+//        }
+//
+//        return result;
+//    }
 
     /**
      * Check if person can walk to a local destination.
@@ -596,9 +574,9 @@ implements Serializable {
         }
 
         // Check if all airlocks can be exited.
-        if (!canExitAllAirlocks(robot, walkingSteps)) {
-            result = false;
-        }
+//        if (!canExitAllAirlocks(robot, walkingSteps)) {
+//            result = false;
+//        }
 
         return result;
     }
@@ -619,6 +597,15 @@ implements Serializable {
     }
 
     /**
+     * Populates the walking step phase map.
+     */
+    private void populateRobotWalkingStepPhaseMap() {
+
+        walkingStepPhaseMap = new HashMap<Integer, TaskPhase>(1);
+        walkingStepPhaseMap.put(WalkingSteps.WalkStep.SETTLEMENT_INTERIOR_WALK, WALKING_SETTLEMENT_INTERIOR);
+    }
+    
+    /**
      * Gets the walking step phase.
      * @return walking step task phase.
      */
@@ -626,32 +613,46 @@ implements Serializable {
 
         TaskPhase result = null;
 
-        // Create and populate walkingStepPhaseMap if necessary.
-        if (walkingStepPhaseMap == null) {
-            populateWalkingStepPhaseMap();
+        if (person != null) {
+        	       
+	        // Create and populate walkingStepPhaseMap if necessary.
+	        if (walkingStepPhaseMap == null) {
+	        	populateWalkingStepPhaseMap();
+	        }
+	
+	        if (walkingStepIndex < walkingSteps.getWalkingStepsNumber()) {
+	
+	            WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+	            result = walkingStepPhaseMap.get(step.stepType);
+	        }
+	
+	        else { //if (result == null)
+	        	logger.fine(person.getName()
+	            	+ " in " + person.getBuildingLocation().getNickName()
+	            	+ " at " + person.getAssociatedSettlement()
+	            	+ " : setting TaskPhase to null ");
+	        }
+
         }
+        else if (robot != null ){
+        	
+	 		// Create and populate walkingStepPhaseMap if necessary.
+			if (walkingStepPhaseMap == null) {
+				populateRobotWalkingStepPhaseMap();
+			}
+			if (walkingStepIndex < walkingSteps.getRobotWalkingStepsNumber()) {
+			    WalkingSteps.RobotWalkStep step = walkingSteps.getRobotWalkingStepsList().get(walkingStepIndex);
+			    result = walkingStepPhaseMap.get(step.stepType);
+			}
+			
+			else { //if (result == null)
+				logger.fine(robot.getName()
+		    	+ " in " + robot.getBuildingLocation().getNickName()
+		    	+ " at " + robot.getAssociatedSettlement()
+		    	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
 
-        if (walkingStepIndex < walkingSteps.getWalkingStepsNumber()) {
-
-            WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-            result = walkingStepPhaseMap.get(step.stepType);
-        }
-
-        else { //if (result == null)
-
-        	if (person != null) {
-               	logger.fine(person.getName()
-            	+ " in " + person.getBuildingLocation().getNickName()
-            	+ " at " + person.getAssociatedSettlement()
-            	+ " : setting TaskPhase to null ");
-
-        	} else if (robot != null) {
-        		logger.fine(robot.getName()
-	        	+ " in " + robot.getBuildingLocation().getNickName()
-	        	+ " at " + robot.getAssociatedSettlement()
-	        	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
-             }
-        }
+			}
+        } 
 
         return result;
     }
@@ -683,28 +684,28 @@ implements Serializable {
         return result;
     }
 
-    private static boolean canExitAllAirlocks(Robot robot, WalkingSteps walkingSteps) {
-
-        boolean result = true;
-
-        List<WalkingSteps.WalkStep> stepList = walkingSteps.getWalkingStepsList();
-        if (stepList != null) {
-            Iterator<WalkingSteps.WalkStep> i = stepList.iterator();
-            while (i.hasNext()) {
-                WalkingSteps.WalkStep step = i.next();
-                if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
-                    Airlock airlock = step.airlock;
-                    if (!ExitAirlock.canExitAirlock(robot, airlock)) {
-                        result = false;
-                       	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
-                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
+//    private static boolean canExitAllAirlocks(Robot robot, WalkingSteps walkingSteps) {
+//
+//        boolean result = true;
+//
+//        List<WalkingSteps.WalkStep> stepList = walkingSteps.getWalkingStepsList();
+//        if (stepList != null) {
+//            Iterator<WalkingSteps.WalkStep> i = stepList.iterator();
+//            while (i.hasNext()) {
+//                WalkingSteps.WalkStep step = i.next();
+//                if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
+//                    Airlock airlock = step.airlock;
+//                    if (!ExitAirlock.canExitAirlock(robot, airlock)) {
+//                        result = false;
+//                       	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
+//                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return result;
+//    }
 
     @Override
     protected double performMappedPhase(double time) {
@@ -748,89 +749,84 @@ implements Serializable {
     	if (person != null) {
 			logger.finer(person + " walking settlement interior phase.");
 
-		        // Check if person has reached destination location.
-		        WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-		        Building building = BuildingManager.getBuilding(person);
-		        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-		        double x = Math.round(step.xLoc * 100.0)/100.0;
-		        double y = Math.round(step.yLoc * 100.0)/100.0;
-		        Point2D stepLocation = new Point2D.Double(x, y);
-		        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
-		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-		                walkingStepIndex++;
-	    	        	// 2015-11-11 setDescription()
-	    	        	//setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
-		                setPhase(getWalkingStepPhase());
-		            }
-		            else {
-	    	        	// 2015-11-11 setDescription()
-	    	        	//setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
-		                endTask();
-		            }
-		        }
-		        else {
-		        	if (building != null) { // && step.building != null) {
-			        	// Going from building to step.building
-			        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
-			            addSubTask(new WalkSettlementInterior(person, step.building, x, y));
-		        	}
-		            else {
-		    			logger.severe(person + " is not in a building.");
-		            	endTask();
-			        	// do this for now so as to debug why this happen and how often
-			        	//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"
-		    			//logger.severe(person + " set phase to WALKING_EXTERIOR.");
-		            }
-		        }
+	        // Check if person has reached destination location.
+	        WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+	        Building building = BuildingManager.getBuilding(person);
+	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+	        double x = Math.round(step.xLoc * 100.0)/100.0;
+	        double y = Math.round(step.yLoc * 100.0)/100.0;
+	        Point2D stepLocation = new Point2D.Double(x, y);
+	        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
+	            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+	                walkingStepIndex++;
+    	        	// 2015-11-11 setDescription()
+    	        	//setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
+	                setPhase(getWalkingStepPhase());
+	            }
+	            else {
+    	        	// 2015-11-11 setDescription()
+    	        	//setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
+	                endTask();
+	            }
+	        }
+	        else {
+	        	if (building != null) { // && step.building != null) {
+		        	// Going from building to step.building
+		        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
+		            addSubTask(new WalkSettlementInterior(person, step.building, x, y));
+	        	}
+	            else {
+	    			logger.severe(person + " is not in a building.");
+	            	endTask();
+		        	// do this for now so as to debug why this happen and how often
+		        	//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"
+	    			//logger.severe(person + " set phase to WALKING_EXTERIOR.");
+	            }
+	        }
 
 		}
 		else if (robot != null) {
-		       logger.finer(robot + " walking settlement interior phase.");
+			logger.finer(robot + " walking settlement interior phase.");
 
-		        // Check if robot has reached destination location.
-		        WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-		        Building building = BuildingManager.getBuilding(robot);
-		        Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-		        double x = Math.round(step.xLoc * 100.0)/100.0;
-		        double y = Math.round(step.yLoc * 100.0)/100.0;
-		        Point2D stepLocation = new Point2D.Double(x, y);
-		        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
-		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-		                walkingStepIndex++;
-	    	        	// 2015-11-11 setDescription()
-	    	        	//setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
-		                setPhase(getWalkingStepPhase());
-		            }
-		            else {
-	    	        	// 2015-11-11 setDescription()
-	    	        	//setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
-		                endTask();
-		            }
-		        }
-		        else {
-		        	if (building != null) { // && step.building != null) {
-			        	// Going from building to step.building
-			        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
-			            addSubTask(new WalkSettlementInterior(robot, step.building, x, y));
-		        	}
-		        	else {
-		        		logger.severe(robot + " is not in a building");
-/*		        		
-		        		
-		        		logger.info(robot + " may be at " + robot.getBuildingLocation());
-		        		logger.info(robot + "'s location is " + robot.getLocationSituation());
-		        		logger.info(robot + " is in " + robot.getSettlement());
-		        		logger.info(robot + " is associated to " + robot.getAssociatedSettlement());
-		        		logger.info(robot + " has the container unit of " + robot.getContainerUnit());
-		        		logger.info(robot + " has the top container unit of " + robot.getTopContainerUnit());
-*/
-		        		endTask();
+	        // Check if robot has reached destination location.
+	        WalkingSteps.RobotWalkStep step = walkingSteps.getRobotWalkingStepsList().get(walkingStepIndex);
+	        Building building = BuildingManager.getBuilding(robot);
+	        Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+	        double x = Math.round(step.xLoc * 100.0)/100.0;
+	        double y = Math.round(step.yLoc * 100.0)/100.0;
+	        Point2D stepLocation = new Point2D.Double(x, y);
+	        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
+	            if (walkingStepIndex < (walkingSteps.getRobotWalkingStepsNumber() - 1)) {
+	                walkingStepIndex++;
+    	        	//setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
+	                setPhase(getWalkingStepPhase());
+	            }
+	            else {
+    	        	//setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
+	                endTask();
+	            }
+	        }
+	        else {
+	        	if (building != null) { // && step.building != null) {
+		        	// Going from building to step.building
+		        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
+		            addSubTask(new WalkSettlementInterior(robot, step.building, x, y));
+	        	}
+	        	else {
+	        		logger.severe(robot + " is not in a building");		        				        		
+//	        		logger.info(robot + " may be at " + robot.getBuildingLocation());
+//	        		logger.info(robot + "'s location is " + robot.getLocationSituation());
+//	        		logger.info(robot + " is in " + robot.getSettlement());
+//	        		logger.info(robot + " is associated to " + robot.getAssociatedSettlement());
+//	        		logger.info(robot + " has the container unit of " + robot.getContainerUnit());
+//	        		logger.info(robot + " has the top container unit of " + robot.getTopContainerUnit());
+	        		endTask();
 
-			        	// do this for now so as to debug why this happen and how often
-		        		//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"
-	    				//logger.severe(robot + "set phase to WALKING_EXTERIOR.");
-		        	}
-		        }
+		        	// do this for now so as to debug why this happen and how often
+	        		//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"
+    				//logger.severe(robot + "set phase to WALKING_EXTERIOR.");
+	        	}
+	        }
 		}
 
         return timeLeft;
@@ -1161,7 +1157,8 @@ implements Serializable {
      */
     private double enteringAirlockPhase(double time) {
         double timeLeft = time;
-        if (person != null) {
+        
+//        if (person != null) {
             logger.finer(person + " walking entering airlock phase.");
 
             // Check if person has reached the inside of the airlock.
@@ -1194,39 +1191,39 @@ implements Serializable {
                  }
             }
 
-        }
-        else if (robot != null) {
-            logger.finer(robot + " walking entering airlock phase.");
-
-            // Check if robot has reached the inside of the airlock.
-            WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-            Airlock airlock = step.airlock;
-            if (robot.isOutside()) {
-                if (EnterAirlock.canEnterAirlock(robot, airlock)) {
-    	        	//setDescription("is OUTSIDE and attempting to enter an airlock. calling EnterAirlock as a subTask now");
-                    addSubTask(new EnterAirlock(robot, airlock));
-                }
-                else {
-                    endTask();
-                    LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
-                    		robot.getName() + " is still OUTSIDE, unable to physically enter the airlock of " +
-                            airlock.getEntityName(), null);
-                }
-            }
-            else {
-                if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-                    walkingStepIndex++;
-       	        	// 2015-11-11 setDescription()
-    	        	//setDescription("Walking outside to an airlock to enter");
-    	        	//setDescription("is INSIDE and still walking toward an airlock");
-                    setPhase(getWalkingStepPhase());
-                }
-                else {
-    	        	//setDescription("is INSIDE and arrived at an airlock");
-                    endTask();
-                }
-            }
-        }
+//        }
+//        else if (robot != null) {
+//            logger.finer(robot + " walking entering airlock phase.");
+//
+//            // Check if robot has reached the inside of the airlock.
+//            WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+//            Airlock airlock = step.airlock;
+//            if (robot.isOutside()) {
+//                if (EnterAirlock.canEnterAirlock(robot, airlock)) {
+//    	        	//setDescription("is OUTSIDE and attempting to enter an airlock. calling EnterAirlock as a subTask now");
+//                    addSubTask(new EnterAirlock(robot, airlock));
+//                }
+//                else {
+//                    endTask();
+//                    LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+//                    		robot.getName() + " is still OUTSIDE, unable to physically enter the airlock of " +
+//                            airlock.getEntityName(), null);
+//                }
+//            }
+//            else {
+//                if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+//                    walkingStepIndex++;
+//       	        	// 2015-11-11 setDescription()
+//    	        	//setDescription("Walking outside to an airlock to enter");
+//    	        	//setDescription("is INSIDE and still walking toward an airlock");
+//                    setPhase(getWalkingStepPhase());
+//                }
+//                else {
+//    	        	//setDescription("is INSIDE and arrived at an airlock");
+//                    endTask();
+//                }
+//            }
+//        }
 
 
         return timeLeft;

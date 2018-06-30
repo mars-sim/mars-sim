@@ -255,9 +255,10 @@ implements Serializable {
 				double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, false);
 	
 				if (remainingCapacity == 0) {
-					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName , 
-							"(AR) No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
-							+ ar.getName() + " (or storage space has not been initialized yet).", null);
+// 					TODO: what to do when there are too many log statements ?					
+//					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName , 
+//							"(AR) No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
+//							+ ar.getName() + " (or storage space has not been initialized yet).", null);
 					result = false;
 					// TODO: increase VP of barrel/bag/gas canister for storage to prompt for manufacturing them
 				}
@@ -265,16 +266,17 @@ implements Serializable {
 				else if (remainingCapacity < amount) {
 					//double stored = inv.getAmountResourceStored(ar, false);
 				    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
-				    		"(AR) The storage capacity for " 
-				    		+ ar.getName() + " has been reached. Only "
-					    	+ Math.round(amount*10000.0)/10000.0 
-					    	+ " kg can be stored in " + inv.getOwner() 
-					    	+ "."
-					    	//+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
-					    	//+ " (Stored : " + Math.round(stored*100.0)/100.0
-					    	//+ ")"
-				    	, null);	
+					// TODO: what to do when there are too many log statements ?
+//				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, 
+//				    		"(AR) The storage capacity for " 
+//				    		+ ar.getName() + " has been reached. Only "
+//					    	+ Math.round(amount*10000.0)/10000.0 
+//					    	+ " kg can be stored in " + inv.getOwner() 
+//					    	+ "."
+//							+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
+//							+ " (Stored : " + Math.round(stored*100.0)/100.0
+//							+ ")"
+//				    	, null);	
 					amount = remainingCapacity;
 					inv.storeAmountResource(ar, amount, true);
 					inv.addAmountSupplyAmount(ar, amount);

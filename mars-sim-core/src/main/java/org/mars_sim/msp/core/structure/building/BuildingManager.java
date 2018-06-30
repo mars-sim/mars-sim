@@ -1098,7 +1098,7 @@ public class BuildingManager implements Serializable {
 
         if (unit instanceof Person) {
          	person = (Person) unit;
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        if (person.isInSettlement()) {
 	        	return person.getBuildingLocation();
 /*	        	
 	            Settlement settlement = person.getSettlement();
@@ -1125,7 +1125,7 @@ public class BuildingManager implements Serializable {
         }
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        if (robot.isInSettlement()) {
 	            return robot.getBuildingLocation();
 /*
 				Settlement settlement = robot.getSettlement();

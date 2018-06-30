@@ -10,12 +10,10 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.awt.geom.Point2D;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -82,7 +80,8 @@ public class BuildingAirlock extends Airlock {
         // Determine airlock inside position.
         airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, building);
     }
-
+    
+    @Override
     protected void exitAirlock(Person person) {
         //Inventory inv = building.getSettlementInventory();
 
@@ -153,9 +152,9 @@ public class BuildingAirlock extends Airlock {
         }
     }
 
-    protected void exitAirlock(Robot robot) {
-
-    }
+//    protected void exitAirlock(Robot robot) {
+//
+//    }
     
     
     @Override
@@ -189,23 +188,28 @@ public class BuildingAirlock extends Airlock {
         return airlockInsidePos;
     }
 
-	@Override
-	protected void exitAirlock(Unit occupant) {
+//	@Override
+//	protected void exitAirlock(Unit occupant) {
+//
+//        Person person = null;
+//        Robot robot = null;
+//
+//        if (occupant instanceof Person) {
+//         	person = (Person) occupant;
+//         	exitAirlock(person);
+//
+//        }
+//        else if (occupant instanceof Robot) {
+//        	robot = (Robot) occupant;
+//        	exitAirlock(robot);
+//
+//        }
+//	}
 
-        Person person = null;
-        Robot robot = null;
-
-        if (occupant instanceof Person) {
-         	person = (Person) occupant;
-         	exitAirlock(person);
-
-        }
-        else if (occupant instanceof Robot) {
-        	robot = (Robot) occupant;
-        	exitAirlock(robot);
-
-        }
-	}
+//	@Override
+//	protected void exitAirlock(Person person) {
+//         exitAirlock(person);
+//	}
 	
 	public void destroy() {
 		settlement = null;

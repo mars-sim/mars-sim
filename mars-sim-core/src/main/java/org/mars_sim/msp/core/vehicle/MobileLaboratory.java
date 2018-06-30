@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.Lab;
 
 /** 
  * The MobileLaboratory class represents the research laboratory in a vehicle.

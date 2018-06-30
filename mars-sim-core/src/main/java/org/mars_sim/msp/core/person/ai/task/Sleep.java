@@ -451,7 +451,8 @@ public class Sleep extends Task implements Serializable {
 	        if (station != null && station.getSleepers() > 0) {
 	        	station.removeSleeper();
 	        	// TODO: assess how well this work
-	        	walkToAssignedDutyLocation(robot, true);
+//	        	logger.info(robot.getNickName() + " was done sleeping and waking up.");
+	        	walkToAssignedDutyLocation(robot, false);
 	        }
 		}
     }

@@ -118,7 +118,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
     }
 
 	public Task constructInstance(Robot robot) {
-        return new ConstructBuilding(robot);
+        return null;
 	}
 
 	public double getProbability(Robot robot) {

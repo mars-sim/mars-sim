@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
-import org.mars_sim.msp.core.robot.Robot;
+
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -158,12 +158,12 @@ implements Serializable {
                 constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                 person.getMind().setMission(this);
             }
-            else if (startingMember instanceof Robot) {
-                Robot robot = (Robot) startingMember;
-                //robot.setMission(this);
-                constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-                robot.getBotMind().setMission(this);
-            }
+//            else if (startingMember instanceof Robot) {
+//                Robot robot = (Robot) startingMember;
+//                //robot.setMission(this);
+//                constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+//                robot.getBotMind().setMission(this);
+//            }
 
             initCase1Step1(constructionSkill);
         }
@@ -379,12 +379,12 @@ implements Serializable {
 	        	constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
                         SkillType.CONSTRUCTION);
 	        }
-	        else if (member instanceof Robot) {
-	        	Robot robot = (Robot) member;
-	        	//robot.getBotMind().setMission(this);
-	        	constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(
-        				SkillType.CONSTRUCTION);
-	        }
+//	        else if (member instanceof Robot) {
+//	        	Robot robot = (Robot) member;
+//	        	//robot.getBotMind().setMission(this);
+//	        	constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(
+//        				SkillType.CONSTRUCTION);
+//	        }
 
             if (constructionSkill > bestConstructionSkill) {
                 bestConstructionSkill = constructionSkill;
@@ -697,7 +697,7 @@ implements Serializable {
     			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED) 
                     usable = false;
                 
-                if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0) 
+                if (((Crewable) vehicle).getCrewNum() > 0)// || ((Crewable) vehicle).getRobotCrewNum() > 0) 
                     usable = false;
                 
                 if (usable) 
@@ -877,13 +877,13 @@ implements Serializable {
                                 site, constructionVehicles));
                     }
                 }
-                else if (member instanceof Robot) {
-                    Robot robot = (Robot) member;
-                    if (ConstructBuilding.canConstruct(robot, site)) {
-                        assignTask(robot, new ConstructBuilding(robot, stage,
-                                site, constructionVehicles));
-                    }
-                }
+//                else if (member instanceof Robot) {
+//                    Robot robot = (Robot) member;
+//                    if (ConstructBuilding.canConstruct(robot, site)) {
+//                        assignTask(robot, new ConstructBuilding(robot, stage,
+//                                site, constructionVehicles));
+//                    }
+//                }
             }
         }
 

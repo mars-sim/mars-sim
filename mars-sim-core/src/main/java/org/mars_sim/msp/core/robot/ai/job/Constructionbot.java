@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.robot.ai.job;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -34,6 +35,7 @@ implements Serializable {
 		jobTasks.add(ManufactureConstructionMaterials.class);
 		//jobTasks.add(ConstructBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
 		//jobTasks.add(SalvageBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
+        jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
 
 
 		// Add architect-related missions.

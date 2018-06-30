@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -27,9 +26,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
+
+import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
@@ -96,29 +94,31 @@ implements Serializable {
             endTask();
         }
     }
-    public ConstructBuilding(Robot robot) {
-        // Use EVAOperation parent constructor.
-        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 100D);
-
-        BuildingConstructionMission mission = getMissionNeedingAssistance();
-        if ((mission != null) && canConstruct(robot, mission.getConstructionSite())) {
-
-            // Initialize data members.
-            this.stage = mission.getConstructionStage();
-            this.site = mission.getConstructionSite();
-            this.vehicles = mission.getConstructionVehicles();
-
-            // Determine location for construction site.
-            Point2D constructionSiteLoc = determineConstructionLocation();
-            setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
-
-            // Add task phase
-            addPhase(CONSTRUCTION);
-        }
-        else {
-            endTask();
-        }
-    }
+    
+//    public ConstructBuilding(Robot robot) {
+//        // Use EVAOperation parent constructor.
+//        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 100D);
+//
+//        BuildingConstructionMission mission = getMissionNeedingAssistance();
+//        if ((mission != null) && canConstruct(robot, mission.getConstructionSite())) {
+//
+//            // Initialize data members.
+//            this.stage = mission.getConstructionStage();
+//            this.site = mission.getConstructionSite();
+//            this.vehicles = mission.getConstructionVehicles();
+//
+//            // Determine location for construction site.
+//            Point2D constructionSiteLoc = determineConstructionLocation();
+//            setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
+//
+//            // Add task phase
+//            addPhase(CONSTRUCTION);
+//        }
+//        else {
+//            endTask();
+//        }
+//    }
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -143,23 +143,23 @@ implements Serializable {
         // Add task phase
         addPhase(CONSTRUCTION);
     }
-    public ConstructBuilding(Robot robot, ConstructionStage stage,
-            ConstructionSite site, List<GroundVehicle> vehicles) {
-        // Use EVAOperation parent constructor.
-        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 100D);
-
-        // Initialize data members.
-        this.stage = stage;
-        this.site = site;
-        this.vehicles = vehicles;
-
-        // Determine location for construction site.
-        Point2D constructionSiteLoc = determineConstructionLocation();
-        setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
-
-        // Add task phase
-        addPhase(CONSTRUCTION);
-    }
+//    public ConstructBuilding(Robot robot, ConstructionStage stage,
+//            ConstructionSite site, List<GroundVehicle> vehicles) {
+//        // Use EVAOperation parent constructor.
+//        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 100D);
+//
+//        // Initialize data members.
+//        this.stage = stage;
+//        this.site = site;
+//        this.vehicles = vehicles;
+//
+//        // Determine location for construction site.
+//        Point2D constructionSiteLoc = determineConstructionLocation();
+//        setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
+//
+//        // Add task phase
+//        addPhase(CONSTRUCTION);
+//    }
     /**
      * Checks if a given person can work on construction at this time.
      * @param person the person.
@@ -202,39 +202,39 @@ implements Serializable {
     }
 
 
-    public static boolean canConstruct(Robot robot, ConstructionSite site) {
-
-        // Check if robot can exit the settlement airlock.
-        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(), site.getYLocation());
-        if (airlock != null) {
-            if(!ExitAirlock.canExitAirlock(robot, airlock))
-            	return false;
-        }
-
-
-        Mars mars = Simulation.instance().getMars();
-        if (mars.getSurfaceFeatures().getSolarIrradiance(robot.getCoordinates()) == 0D) {
-            logger.fine(robot.getName() + " should end EVA: night time.");
-            if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
-                return false;
-        }
-
-        // Check if robot's medical condition will not allow task.
-        if (robot.getPerformanceRating() < .5D)
-        	return false;
-
-        // Check if there is work that can be done on the construction stage.
-        ConstructionStage stage = site.getCurrentConstructionStage();
-        //boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-
-        boolean workAvailable = false;
-
-        // 2016-06-08 Checking stage for NullPointerException
-        if (stage != null)
-        	workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-
-        return (workAvailable);
-    }
+//    public static boolean canConstruct(Robot robot, ConstructionSite site) {
+//
+//        // Check if robot can exit the settlement airlock.
+//        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(), site.getYLocation());
+//        if (airlock != null) {
+//            if(!ExitAirlock.canExitAirlock(robot, airlock))
+//            	return false;
+//        }
+//
+//
+//        Mars mars = Simulation.instance().getMars();
+//        if (mars.getSurfaceFeatures().getSolarIrradiance(robot.getCoordinates()) == 0D) {
+//            logger.fine(robot.getName() + " should end EVA: night time.");
+//            if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
+//                return false;
+//        }
+//
+//        // Check if robot's medical condition will not allow task.
+//        if (robot.getPerformanceRating() < .5D)
+//        	return false;
+//
+//        // Check if there is work that can be done on the construction stage.
+//        ConstructionStage stage = site.getCurrentConstructionStage();
+//        //boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+//
+//        boolean workAvailable = false;
+//
+//        // 2016-06-08 Checking stage for NullPointerException
+//        if (stage != null)
+//        	workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+//
+//        return (workAvailable);
+//    }
 
     /**
      * Gets a random building construction mission that needs assistance.
@@ -246,14 +246,14 @@ implements Serializable {
 
         List<BuildingConstructionMission> constructionMissions = null;
 
-        if (person != null) {
+//        if (person != null) {
         	constructionMissions = getAllMissionsNeedingAssistance(
                 person.getAssociatedSettlement());
-        }
-        else if (robot != null) {
-        	constructionMissions = getAllMissionsNeedingAssistance(
-                robot.getAssociatedSettlement());
-        }
+//        }
+//        else if (robot != null) {
+//        	constructionMissions = getAllMissionsNeedingAssistance(
+//                robot.getAssociatedSettlement());
+//        }
 
         if (constructionMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(constructionMissions.size() - 1);
@@ -347,9 +347,9 @@ implements Serializable {
                 if ((person != null) && luv.getInventory().containsUnit(person)) {
                     returnVehicle();
                 }
-                if ((robot != null) && luv.getInventory().containsUnit(robot)) {
-                    returnVehicle();
-                }
+//                if ((robot != null) && luv.getInventory().containsUnit(robot)) {
+//                    returnVehicle();
+//                }
             }
 
             setPhase(WALK_BACK_INSIDE);
@@ -396,15 +396,15 @@ implements Serializable {
                     LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
                     if (tempLuv.getOperator() == null) {
 
-                    	 if (person != null) {
+//                    	 if (person != null) {
                     		 tempLuv.getInventory().storeUnit(person);
                              tempLuv.setOperator(person);
-                    	 }
-
-                         else if (robot != null) {
-	                        //tempLuv.getInventory().storeUnit(robot);
-	                        //tempLuv.setOperator(robot);
-	                     }
+//                    	 }
+//
+//                         else if (robot != null) {
+//	                        //tempLuv.getInventory().storeUnit(robot);
+//	                        //tempLuv.setOperator(robot);
+//	                     }
 
                         luv = tempLuv;
                         operatingLUV = true;
@@ -427,10 +427,10 @@ implements Serializable {
      * @throws Exception if error returning construction vehicle.
      */
     private void returnVehicle() {
-    	if (person != null)
+//    	if (person != null)
             luv.getInventory().retrieveUnit(person);
-		else if (robot != null)
-	        luv.getInventory().retrieveUnit(robot);
+//		else if (robot != null)
+//	        luv.getInventory().retrieveUnit(robot);
 
         luv.setOperator(null);
         operatingLUV = false;
@@ -439,10 +439,10 @@ implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
     	SkillManager manager = null;
-    	if (person != null)
+//    	if (person != null)
     	   	manager = person.getMind().getSkillManager();
-		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+//		else if (robot != null)
+//			manager = robot.getBotMind().getSkillManager();
 
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
@@ -460,10 +460,10 @@ implements Serializable {
     @Override
     protected void addExperience(double time) {
     	SkillManager manager = null;
-    	if (person != null)
+//    	if (person != null)
         	manager = person.getMind().getSkillManager();
-		else if (robot != null)
-        	manager = robot.getBotMind().getSkillManager();
+//		else if (robot != null)
+//        	manager = robot.getBotMind().getSkillManager();
 
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
@@ -471,16 +471,16 @@ implements Serializable {
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = null;
-        RoboticAttributeManager rManager = null;
+//        RoboticAttributeManager rManager = null;
         int experienceAptitude = 0;
-        if (person != null) {
+//        if (person != null) {
             nManager = person.getNaturalAttributeManager();
             experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        }
-        else if (robot != null) {
-        	rManager = robot.getRoboticAttributeManager();
-            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-        }
+//        }
+//        else if (robot != null) {
+//        	rManager = robot.getRoboticAttributeManager();
+//            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+//        }
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
@@ -515,10 +515,10 @@ implements Serializable {
 
             // Driving skill modification.
             int skill = 0;
-            if (person != null)
+//            if (person != null)
 				skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-			else if (robot != null)
-				skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+//			else if (robot != null)
+//				skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 
             if (skill <= 3) {
                 chance *= (4 - skill);
@@ -532,15 +532,14 @@ implements Serializable {
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
 
-    			if (person != null) {
-    	            logger.info(person.getName() + " has an accident while constructing the site " + site.getName());
+//    			if (person != null) {
+//    	            logger.info(person.getName() + " has an accident while constructing the site " + site.getName());
                     luv.getMalfunctionManager().createASeriesOfMalfunctions(site.getName(), person);
-
-    			}
-    			else if (robot != null) {
-    				logger.info(robot.getName() + " has an accident while constructing the site " + site.getName());
-                    luv.getMalfunctionManager().createASeriesOfMalfunctions(site.getName(), robot);
-    			}
+//    			}
+//    			else if (robot != null) {
+//    				logger.info(robot.getName() + " has an accident while constructing the site " + site.getName());
+//                    luv.getMalfunctionManager().createASeriesOfMalfunctions(site.getName(), robot);
+//    			}
 
             }
         }

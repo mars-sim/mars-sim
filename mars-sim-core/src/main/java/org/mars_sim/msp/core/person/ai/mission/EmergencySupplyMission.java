@@ -75,13 +75,15 @@ implements Serializable {
             "Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
 	// Static members
-	private static final int MAX_MEMBERS = 3;
-	private static final int MIN_MEMBERS = 1;
-	public static final double BASE_STARTING_PROBABILITY = 100D;
+	private static final int MAX_MEMBERS = 2;
+	private static final int MIN_MEMBERS = 0;
+
 	private static final double VEHICLE_FUEL_DEMAND = 1000D;
 	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
 	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
 
+	public static final double BASE_STARTING_PROBABILITY = 100D;
+	
 	/** Mission phases. */
 	final public static MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase(Msg.getString(
             "Mission.phase.supplyDeliveryDisembarking")); //$NON-NLS-1$
@@ -93,12 +95,14 @@ implements Serializable {
             "Mission.phase.returnTripEmbarking")); //$NON-NLS-1$
 
 	// Data members.
-	private Settlement emergencySettlement;
 	private boolean outbound;
+
+	private Settlement emergencySettlement;
+	private Vehicle emergencyVehicle;
+	
 	private Map<AmountResource, Double> emergencyResources;
 	private Map<Class<? extends Equipment>, Integer> emergencyEquipment;
 	private Map<Part, Integer> emergencyParts;
-	private Vehicle emergencyVehicle;
 
 	// Static members
 	private static AmountResource foodAR = ResourceUtil.foodAR;
@@ -107,9 +111,7 @@ implements Serializable {
 	private static AmountResource methaneAR = ResourceUtil.methaneAR;
 
     private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-
     private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-    
 	private static MissionManager missionManager;
 	
     /**

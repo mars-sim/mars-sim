@@ -427,48 +427,37 @@ public class TaskSchedule implements Serializable {
 			
 			if (person != null) {
 				
-				Settlement s = person.getAssociatedSettlement();
+				Settlement s = null;
 				
-				if (shiftTypeCache != null)
-					s.decrementAShift(shiftTypeCache);
-				
-				s.incrementAShift(shiftType);
-				
-				if (marsClock == null)
-					marsClock = Simulation.instance().getMasterClock().getMarsClock();
-						
-	        	int now = marsClock.getMsol0();
-	      	  	boolean isOnShiftNow = isShiftHour(now);
-	            boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
-
-		        // if a person is NOT on-call && is on shift right now
-		        if (!isOnCall && isOnShiftNow){
-		        	// suppress sleep habit right now
-		        	person.updateSleepCycle(now, false);
-		        }
-		        
-/*				
-				ShiftType settementShift = s.getCurrentSettlementShift();
-
-				if (s.getNumShift() == 2) {
-					if (settementShift == shiftType) {
-						
-					}
+				if (person.isBuried() || person.isDeclaredDead()) {
+					s = person.getBuriedSettlement(); 
+					if (shiftTypeCache != null)
+						s.decrementAShift(shiftTypeCache);
+					s.incrementAShift(shiftType);
 				}
-				
-				else if (s.getNumShift() == 2) {
+				else {
+					s = person.getAssociatedSettlement();
 					
+					if (shiftTypeCache != null)
+						s.decrementAShift(shiftTypeCache);
+					
+					s.incrementAShift(shiftType);
+					
+					if (marsClock == null)
+						marsClock = Simulation.instance().getMasterClock().getMarsClock();
+							
+		        	int now = marsClock.getMsol0();
+		      	  	boolean isOnShiftNow = isShiftHour(now);
+		            boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
+
+			        // if a person is NOT on-call && is on shift right now
+			        if (!isOnCall && isOnShiftNow){
+			        	// suppress sleep habit right now
+			        	person.updateSleepCycle(now, false);
+			        }
 				}
-*/		
-				
 			}
 			
-/*			else if (robot != null) {
-				if (shiftTypeCache != null)
-					robot.getSettlement().decrementAShift(shiftTypeCache);
-				robot.getSettlement().incrementAShift(shiftType);
-			}
-*/
 			// Call CircadianClock immediately to adjust the sleep hour according
 			
 		}

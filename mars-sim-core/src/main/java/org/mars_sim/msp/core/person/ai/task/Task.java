@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -380,7 +381,7 @@ implements Serializable, Comparable<Task> {
      */
     protected void setPhase(TaskPhase newPhase) {
         if (newPhase == null) {
-            throw new IllegalArgumentException("newPhase is null");
+//            throw new IllegalArgumentException("newPhase is null");    
         }
         else if (phases.contains(newPhase)) {
             phase = newPhase;
@@ -901,12 +902,10 @@ implements Serializable, Comparable<Task> {
 		}
 
         if (settlementLoc != null) {
-
             // Create subtask for walking to destination.
             createWalkingSubtask(building, settlementLoc, allowFail);
         }
         else {
-
             // If no available activity spot, go to random location in building.
             walkToRandomLocInBuilding(building, allowFail);
         }
@@ -1129,9 +1128,9 @@ implements Serializable, Comparable<Task> {
 	        else if (robot.isInVehicle()) {
 
 	            // Walk to a random location within rover if possible.
-	            if (robot.getVehicle() instanceof Rover) {
-	                walkToRandomLocInRover((Rover) robot.getVehicle(), allowFail);
-	            }
+//	            if (robot.getVehicle() instanceof Rover) {
+//	                walkToRandomLocInRover((Rover) robot.getVehicle(), allowFail);
+//	            }
 	        }
 		}
     }
@@ -1144,30 +1143,31 @@ implements Serializable, Comparable<Task> {
              //   throw new IllegalStateException("currentBuilding is null");
 
     		if (currentBuilding != null) {
-	    		String type = robot.getRobotType().getName();
+    			RobotType type = robot.getRobotType();//.getName();
 	    		//List<Building> buildingList;
 	    		FunctionType fct = null;
 
-	    		if (type.equals("CHEFBOT"))
+	    		if (type == RobotType.CHEFBOT)//type.equals("ChefBot"))
 	    			fct = FunctionType.COOKING;
-	    		else if (type.equals("CONSTRUCTIONBOT"))
-	    			fct = FunctionType.ROBOTIC_STATION;
-	    		else if (type.equals("DELIVERYBOT"))
-	    			fct = FunctionType.ROBOTIC_STATION;
-	    		else if (type.equals("GARDENBOT"))
-	    			fct = FunctionType.FARMING;
-	    		else if (type.equals("MAKERBOT"))
+	    		else if (type == RobotType.CONSTRUCTIONBOT)//type.equals("ConstructionBot"))
 	    			fct = FunctionType.MANUFACTURE;
-	    		else if (type.equals("MEDICBOT"))
-	    			fct = FunctionType.MEDICAL_CARE;
-	    		else if (type.equals("REPAIRBOT"))
+	    		else if (type == RobotType.DELIVERYBOT)//type.equals("DeliveryBot"))
 	    			fct = FunctionType.ROBOTIC_STATION;
+	    		else if (type == RobotType.GARDENBOT)//type.equals("GardenBot"))
+	    			fct = FunctionType.FARMING;
+	    		else if (type == RobotType.MAKERBOT)//type.equals("MakerBot"))
+	    			fct = FunctionType.MANUFACTURE;
+	    		else if (type == RobotType.MEDICBOT)//type.equals("MedicBot"))
+	    			fct = FunctionType.MEDICAL_CARE;
+	    		else if (type == RobotType.REPAIRBOT)//type.equals("RepairBot"))
+	    			fct = FunctionType.ROBOTIC_STATION;
+	    		else 
+	    			fct = FunctionType.ROBOTIC_STATION;
+//	    		if (fct == null)
+//	    			fct = FunctionType.LIVING_ACCOMODATIONS;
 
-	    		if (fct == null)
-	    			fct = FunctionType.LIVING_ACCOMODATIONS;
-
-	       		if (fct == null)
-	    			fct = FunctionType.LIFE_SUPPORT;
+//	       		if (fct == null)
+//	    			fct = FunctionType.LIFE_SUPPORT;
 
 	       		// Added debugging statement below
 	            if (currentBuilding.getBuildingManager() == null)
@@ -1181,7 +1181,7 @@ implements Serializable, Comparable<Task> {
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 	                Building building = buildingList.get(buildingIndex);
-	                walkToActivitySpotInBuilding(building, fct, true);
+	                walkToActivitySpotInBuilding(building, fct, false);
 	            }
     		}
     	}
@@ -1197,36 +1197,33 @@ implements Serializable, Comparable<Task> {
     private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos, boolean allowFail) {
 
 		if (person != null) {
-		       if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(),
-		                interiorObject)) {
+	       if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(),
+	                interiorObject)) {
 
-		            // Add subtask for walking to destination.
-		            addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(),
-		                    interiorObject));
-		        }
-		        else {
-		            logger.fine(person.getName() + " unable to walk to " + interiorObject);
+	            // Add subtask for walking to destination.
+	            addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(),
+	                    interiorObject));
+	        }
+	        else {
+	            logger.fine(person.getName() + " unable to walk to " + interiorObject);
 
-		            if (!allowFail) {
-		                endTask();
-		            }
-		        }
+	            if (!allowFail) {
+	                endTask();
+	            }
+	        }
 		}
 		else if (robot != null) {
-		       if (Walk.canWalkAllSteps(robot, settlementPos.getX(), settlementPos.getY(),
-		                interiorObject)) {
+	       if (Walk.canWalkAllSteps(robot, settlementPos.getX(), settlementPos.getY(), interiorObject)) {
+	            // Add subtask for walking to destination.
+	            addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), interiorObject));
+	        }
+	        else {
+	            logger.fine(robot.getName() + " unable to walk to " + interiorObject);
 
-		            // Add subtask for walking to destination.
-		            addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(),
-		                    interiorObject));
-		        }
-		        else {
-		            logger.fine(robot.getName() + " unable to walk to " + interiorObject);
-
-		            if (!allowFail) {
-		                endTask();
-		            }
-		        }
+	            if (!allowFail) {
+	                endTask();
+	            }
+	        }
 		}
 
     }

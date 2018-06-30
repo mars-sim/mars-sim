@@ -461,7 +461,7 @@ implements Serializable {
         // Unload rover if necessary.
         boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
         if (!roverUnloaded) {
-            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            if (member.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 // Random chance of having person unload (this allows person to do other things sometimes)
                 if (RandomUtil.lessThanRandPercent(50)) {
                     if (isRoverInAGarage()) {
@@ -501,7 +501,6 @@ implements Serializable {
     private void performLoadGoodsPhase(MissionMember member) {
 
         if (!isDone()) {
-
             // Load towed vehicle (if necessary).
             loadTowedVehicle();
         }
@@ -510,7 +509,7 @@ implements Serializable {
 
             // Check if vehicle can hold enough supplies for mission.
             if (isVehicleLoadable()) {
-                if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (member.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                     // Random chance of having person load (this allows person to do other things sometimes)
                     if (RandomUtil.lessThanRandPercent(50)) {
                         if (isRoverInAGarage()) {
@@ -586,7 +585,7 @@ implements Serializable {
     private void performTradeEmbarkingPhase(MissionMember member) {
 
         // If person is not aboard the rover, board rover.
-        if (!isDone() && member.getLocationSituation() != LocationSituation.IN_VEHICLE &&
+        if (!isDone() && !member.isInVehicle() &&
                 member.getLocationSituation() != LocationSituation.BURIED) {
 
             // Move person to random location within rover.
@@ -638,7 +637,7 @@ implements Serializable {
             // Remove from garage if in garage.
             Building garageBuilding = BuildingManager.getBuilding(getVehicle());
             if (garageBuilding != null) {
-                VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();//(VehicleMaintenance) garageBuilding.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+                VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
                 garage.removeVehicle(getVehicle());
             }
 

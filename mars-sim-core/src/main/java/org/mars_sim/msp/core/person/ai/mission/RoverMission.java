@@ -475,7 +475,7 @@ extends VehicleMission {
 				    
 				    else {
 
-				        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+				        if (person.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 				        	Vehicle v1 = person.getVehicle();
 				            v1.getInventory().retrieveUnit(person);
 				            
@@ -485,65 +485,64 @@ extends VehicleMission {
 					        logger.severe("[" + disembarkSettlement.getName() + "] " + Msg.getString("RoverMission.log.requestRescue", person.getName(), v1.getName(),
 					        		destinationBuilding.getNickName())); //$NON-NLS-1$
 				        }
-				        //else {
-				        //}
+				        else {
 
-				        disembarkSettlement.getInventory().storeUnit(person);
-				        BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(), 
-				        		adjustedLoc.getY());
-
-				        logger.severe("[" + disembarkSettlement.getName() + "] " + Msg.getString("RoverMission.log.emergencyEnterBuilding", person.getName(), 
-				        		destinationBuilding.getNickName())); //$NON-NLS-1$
-				        
-	                	person.getMind().getTaskManager().clearTask();
-	                	person.getMind().getTaskManager().getNewTask();
+					        disembarkSettlement.getInventory().storeUnit(person);
+					        BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(), 
+					        		adjustedLoc.getY());
+	
+					        logger.severe("[" + disembarkSettlement.getName() + "] " + Msg.getString("RoverMission.log.emergencyEnterBuilding", person.getName(), 
+					        		destinationBuilding.getNickName())); //$NON-NLS-1$
+					        
+		                	person.getMind().getTaskManager().clearTask();
+		                	person.getMind().getTaskManager().getNewTask();
+					    }
 				    }
 				}
 				
-				else if (member instanceof Robot) {
-                    Robot robot = (Robot) member;
-                    if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-                        assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-                    }
-                    else {
+//				else if (member instanceof Robot) {
+//                    Robot robot = (Robot) member;
+//                    if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+//                        assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+//                    }
+//                    else {
+//
+//				        if (robot.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-				        if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-				        	Vehicle v2 = robot.getVehicle();
-				            v2.getInventory().retrieveUnit(robot);
-					        logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
-					        		v2.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
-				        }
-				        else {
-/*				        	
-				        	Building b = robot.getBuildingLocation();
-				        	if (b != null)
-				        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
-				        				b.getNickName(), destinationBuilding.getNickName())); //$NON-NLS-1$
-				        	else {
-				        		Settlement s = robot.getSettlement();
-				        		if (s == null) {
-				        			s = robot.getAssociatedSettlement();
-				        			String ss = "the vincity of " + s.getName();
-					        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
-					        				ss, destinationBuilding.getNickName())); //$NON-NLS-1$
-				        		}
-				        	}
-*/				        	
-				        }
+//				        	Vehicle v2 = robot.getVehicle();
+//				            v2.getInventory().retrieveUnit(robot);
+//					        logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
+//					        		v2.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
 
-				        disembarkSettlement.getInventory().storeUnit(robot);
-				        BuildingManager.addPersonOrRobotToBuilding(robot, destinationBuilding, adjustedLoc.getX(), 
-				        		adjustedLoc.getY());
-
-				        // See https://github.com/mars-sim/mars-sim/issues/22
-				        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be 
-				        // retrieved and moved back to the settlement in emergency?
-				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding", robot.getName(), 
-				        		destinationBuilding.getNickName())); //$NON-NLS-1$
-
-
-                    }
-                }
+//			}
+//				        else {
+//				        	
+//				        	Building b = robot.getBuildingLocation();
+//				        	if (b != null)
+//				        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
+//				        				b.getNickName(), destinationBuilding.getNickName())); //$NON-NLS-1$
+//				        	else {
+//				        		Settlement s = robot.getSettlement();
+//				        		if (s == null) {
+//				        			s = robot.getAssociatedSettlement();
+//				        			String ss = "the vincity of " + s.getName();
+//					        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
+//					        				ss, destinationBuilding.getNickName())); //$NON-NLS-1$
+//				        		}
+//				        	}
+//				        	
+//					        disembarkSettlement.getInventory().storeUnit(robot);
+//					        BuildingManager.addPersonOrRobotToBuilding(robot, destinationBuilding, adjustedLoc.getX(), 
+//					        		adjustedLoc.getY());
+//
+//					        // See https://github.com/mars-sim/mars-sim/issues/22
+//					        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be 
+//					        // retrieved and moved back to the settlement in emergency?
+//					        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding", robot.getName(), 
+//					        		destinationBuilding.getNickName())); //$NON-NLS-1$
+//				        }
+//                    }
+//                }
 			}
 			else {
 				logger.severe(Msg.getString("RoverMission.log.noHabitat", destinationBuilding)); //$NON-NLS-1$

@@ -151,7 +151,7 @@ implements Serializable {
         boolean hasActiveTask = botTaskManager.hasActiveTask();
         // Perform a task if the robot has one, or determine a new task/mission.
         if (hasActiveTask) {
-            double remainingTime = botTaskManager.performTask(time, robot
+            double remainingTime = botTaskManager.executeTask(time, robot
                     .getPerformanceRating());
             if (remainingTime > 0D) {
                 takeAction(remainingTime);

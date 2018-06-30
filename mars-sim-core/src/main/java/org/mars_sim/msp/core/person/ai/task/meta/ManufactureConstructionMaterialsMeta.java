@@ -111,7 +111,7 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
                 result *= 1.5D;
             }
 
-            // 2015-06-07 Added Preference modifier
+            // Added Preference modifier
             if (result > 0D) {
                 result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
@@ -126,13 +126,64 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new ManufactureConstructionMaterials(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+
+        double result = 0D;
+
+        if (robot.isInSettlement()) {
+    	
+            try {
+                // See if there is an available manufacturing building.
+                Building manufacturingBuilding = ManufactureConstructionMaterials.getAvailableManufacturingBuilding(robot);
+                if (manufacturingBuilding != null) {
+                    result = 1D;
+
+                    // Crowding modifier.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot,
+                            manufacturingBuilding);
+
+                    // Manufacturing good value modifier.
+                    result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(robot,
+                            manufacturingBuilding);
+
+                    // Cap the result to a max value of 100.
+                    if (result > 100D) {
+                        result = 100D;
+                    }
+
+                    // If manufacturing building has process requiring work, add
+                    // modifier.
+                    SkillManager skillManager = robot.getBotMind().getSkillManager();
+                    int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+                    
+                    if (ManufactureConstructionMaterials.hasProcessRequiringWork(manufacturingBuilding, skill)) {
+                        result += 10D;
+                    }
+
+                    // If settlement has manufacturing override, no new
+                    // manufacturing processes can be created.
+                    else if (robot.getSettlement().getManufactureOverride()) {
+                        result = 0;
+                        return 0;
+                    }
+                }
+                
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,
+                        "ManufactureConstructionMaterials.getProbability()", e);
+            }
+
+            // Effort-driven task modifier.
+            result *= robot.getPerformanceRating();
+            
+            if (result < 0) result = 0;
+
+        }
+
+        return result;
 	}
 }

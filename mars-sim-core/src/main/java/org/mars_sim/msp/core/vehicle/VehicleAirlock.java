@@ -10,15 +10,13 @@ import java.awt.geom.Point2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Airlock;
 
 /**
  * This class represents an airlock for a vehicle.
@@ -118,35 +116,36 @@ extends Airlock {
 			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",person.getName(),getEntityName())); //$NON-NLS-1$
 		}
 	}
-	protected void exitAirlock(Robot robot) {
-
-		if (inAirlock(robot)) {
-			if (PRESSURIZED.equals(getState())) {
-				if (robot.isOutside()) {
-					// Exit robot to inside vehicle.
-					vehicle.getInventory().storeUnit(robot);
-				}
-				else if (robot.isInSettlement()) {
-					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",robot.getName(),getEntityName())); //$NON-NLS-1$
-				}
-			}
-			else if (DEPRESSURIZED.equals(getState())) {
-				if (robot.isInVehicle()) {
-					// Exit robot outside vehicle.
-					vehicle.getInventory().retrieveUnit(robot);
-				}
-				else if (robot.isOutside()) {
-					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",robot.getName(),getEntityName())); //$NON-NLS-1$
-				}
-			}
-			else {
-				logger.severe(Msg.getString("VehicleAirlock.error.badState",getState())); //$NON-NLS-1$
-			}
-		}
-		else {
-			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",robot.getName(),getEntityName())); //$NON-NLS-1$
-		}
-	}
+	
+//	protected void exitAirlock(Robot robot) {
+//
+//		if (inAirlock(robot)) {
+//			if (PRESSURIZED.equals(getState())) {
+//				if (robot.isOutside()) {
+//					// Exit robot to inside vehicle.
+//					vehicle.getInventory().storeUnit(robot);
+//				}
+//				else if (robot.isInSettlement()) {
+//					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",robot.getName(),getEntityName())); //$NON-NLS-1$
+//				}
+//			}
+//			else if (DEPRESSURIZED.equals(getState())) {
+//				if (robot.isInVehicle()) {
+//					// Exit robot outside vehicle.
+//					vehicle.getInventory().retrieveUnit(robot);
+//				}
+//				else if (robot.isOutside()) {
+//					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",robot.getName(),getEntityName())); //$NON-NLS-1$
+//				}
+//			}
+//			else {
+//				logger.severe(Msg.getString("VehicleAirlock.error.badState",getState())); //$NON-NLS-1$
+//			}
+//		}
+//		else {
+//			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",robot.getName(),getEntityName())); //$NON-NLS-1$
+//		}
+//	}
 
 
 	/**
@@ -186,23 +185,24 @@ extends Airlock {
 		return LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
 	}
 
-	@Override
-	protected void exitAirlock(Unit occupant) {
-
-        Person person = null;
-        Robot robot = null;
-
-        if (occupant instanceof Person) {
-         	person = (Person) occupant;
-         	exitAirlock(person);
-
-        }
-        else if (occupant instanceof Robot) {
-        	robot = (Robot) occupant;
-        	exitAirlock(robot);
-
-        }
-	}
+//	@Override
+//	protected void exitAirlock(Unit occupant) {
+//
+//        Person person = null;
+//        Robot robot = null;
+//
+//        if (occupant instanceof Person) {
+//         	person = (Person) occupant;
+//         	exitAirlock(person);
+//
+//        }
+//        else if (occupant instanceof Robot) {
+//        	robot = (Robot) occupant;
+//        	exitAirlock(robot);
+//
+//        }
+//	}
+	
 	
 	public void destroy() {
 	    vehicle = null; 

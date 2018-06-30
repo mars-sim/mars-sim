@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.person.LocationSituation;
+
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -72,7 +72,7 @@ implements Serializable {
         topInventory = person.getTopContainerUnit().getInventory();
         if (topInventory != null) {
             
-            if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            if (person.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
                     walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -100,7 +100,7 @@ implements Serializable {
         topInventory = robot.getTopContainerUnit().getInventory();
         if (topInventory != null) {
             
-            if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            if (robot.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 // If robot is in rover, walk to passenger activity spot.
                 if (robot.getVehicle() instanceof Rover) {
                     walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);

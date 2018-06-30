@@ -122,13 +122,13 @@ implements Serializable {
 
                     if (robot.isInVehicle()) {//getLocationSituation() == LocationSituation.IN_VEHICLE) {
                         // If robot is in rover, walk to passenger activity spot.
-                        if (robot.getVehicle() instanceof Rover) {
-                            walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), false);
-                        }
+//                        if (robot.getVehicle() instanceof Rover) {
+//                            walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), false);
+//                        }
                     }
                     else {
                         // Walk to random location.
-                        walkToRandomLocation(true);
+                        walkToRandomLocation(false);
                     }
                 }
             }

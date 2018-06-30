@@ -252,33 +252,39 @@ implements UnitListener {
 	protected final boolean reserveVehicle(MissionMember member) {
 
 		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
-
+		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
 		// Create list of best unreserved vehicles for the mission.
-		for (Vehicle v : getAvailableVehicles(member.getSettlement())) {
-			if (bestVehicles.size() > 0) {
-				int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
-				if (comparison == 0) {
-					bestVehicles.add(v);
-				}
-				else if (comparison == 1) {
-					bestVehicles.clear();
-					bestVehicles.add(v);
-				}
-			} else
-				bestVehicles.add(v);
+		
+		if (vList == null || vList.isEmpty()) {
+			return false;
 		}
-
-		// Randomly select from the best vehicles.
-		if (bestVehicles.size() > 0) {
-			int bestVehicleIndex = RandomUtil
-					.getRandomInt(bestVehicles.size() - 1);
-			try {
-				setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
-			} catch (Exception e) {
+		else {
+			for (Vehicle v : vList) {
+				if (bestVehicles.size() > 0) {
+					int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
+					if (comparison == 0) {
+						bestVehicles.add(v);
+					}
+					else if (comparison == 1) {
+						bestVehicles.clear();
+						bestVehicles.add(v);
+					}
+				} else
+					bestVehicles.add(v);
 			}
+	
+			// Randomly select from the best vehicles.
+			if (bestVehicles.size() > 0) {
+				int bestVehicleIndex = RandomUtil
+						.getRandomInt(bestVehicles.size() - 1);
+				try {
+					setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
+				} catch (Exception e) {
+				}
+			}
+	
+			return hasVehicle();
 		}
-
-		return hasVehicle();
 	}
 
 	/**
@@ -289,12 +295,14 @@ implements UnitListener {
 	 */
 	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-		for (Vehicle v : settlement.getParkedVehicles()) {
-			if (isUsableVehicle(v)) {
-				result.add(v);
+		Collection<Vehicle> vList = settlement.getParkedVehicles();
+		if (vList != null && !vList.isEmpty()) {
+			for (Vehicle v : vList) {
+				if (isUsableVehicle(v)) {
+					result.add(v);
+				}
 			}
 		}
-
 		return result;
 	}
 
