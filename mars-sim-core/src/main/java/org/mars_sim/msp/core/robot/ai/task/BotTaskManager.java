@@ -193,7 +193,6 @@ implements Serializable {
 	/*
 	 * Prepares the task for recording in the task schedule
 	 */
-	// 2015-10-22 Added recordTask()
 	public void recordTask() {
 		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
@@ -212,13 +211,12 @@ implements Serializable {
 					taskPhase = getPhase().getName();
 
 					if (!taskPhase.equals(taskPhaseCache)) {
+						
+						robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");//, functionType);
 						taskPhaseCache = taskPhase;
+						taskDescriptionCache = taskDescription;
 					}
-					
 				}
-				
-				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");//, functionType);
-				taskDescriptionCache = taskDescription;
 			}
 		}
 	}

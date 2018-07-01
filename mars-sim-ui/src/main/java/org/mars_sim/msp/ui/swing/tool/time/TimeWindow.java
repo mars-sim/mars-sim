@@ -31,6 +31,7 @@ import javax.swing.event.MouseInputAdapter;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -306,7 +307,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		double ratio = masterClock.getTimeRatio();
 		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 		s0.append(ONE_REAL_SEC);
-		s0.append(masterClock.getTimeString(ratio));
+		s0.append(ClockUtils.getTimeString(ratio));
 
 		timeCompressionLabel = new JLabel(s0.toString(), JLabel.CENTER);
 		pulsePane.add(timeCompressionLabel, BorderLayout.CENTER);
@@ -332,7 +333,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 					double ratio = masterClock.getTimeRatio();
 					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 					s0.append(ONE_REAL_SEC);
-					s0.append(masterClock.getTimeString(ratio));
+					s0.append(ClockUtils.getTimeString(ratio));
 					timeCompressionLabel.setText(s0.toString());
 
 					timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
@@ -358,7 +359,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 						double ratio = masterClock.getTimeRatio();
 						String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 						s0.append(ONE_REAL_SEC);
-						s0.append(masterClock.getTimeString(ratio));
+						s0.append(ClockUtils.getTimeString(ratio));
 						timeCompressionLabel.setText(s0.toString());
 						timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
 
@@ -546,7 +547,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		double ratio = masterClock.getTimeRatio();
 		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 		s0.append(ONE_REAL_SEC);
-		s0.append(masterClock.getTimeString(ratio));
+		s0.append(ClockUtils.getTimeString(ratio));
 		if (timeRatioLabel != null) timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
 		if (timeCompressionLabel != null) timeCompressionLabel.setText(s0.toString());
 	}

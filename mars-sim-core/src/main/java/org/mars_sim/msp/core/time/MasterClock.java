@@ -28,8 +28,7 @@ import java.util.logging.Logger;
 
 /**
  * The MasterClock represents the simulated time clock on virtual
- * Mars. mars-sim has only one master clock and it delivers a clock pulse 
- * per frame.  All units are synchronized with this clock pulse.
+ * Mars and delivers a clock pulse for each frame.
  */
 public class MasterClock implements Serializable {
 
@@ -39,13 +38,8 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
-	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
+	private static final double PERIOD_IN_MILLISOLS = 2500D / MarsClock.SECONDS_PER_MILLISOL;
 	
-	private static final String	HOURS = "h ";
-	private static final String	MINUTES = "m ";
-	private static final String	ZERO_MINUTES = "00m ";
-	private static final String	SECONDS = "s";
-
 	private static final int SEC_TO_MILLIS = 1000;
 	
 	// Data members
@@ -67,59 +61,59 @@ public class MasterClock implements Serializable {
 	private volatile double adjustedTBU_s = 0;
 	/** Adjusted frame per sec */
 	private volatile double adjustedFPS = 0;
-	
+	/** The maximum number of counts allowed in waiting for other threads to execute. */
 	private int noDelaysPerYield = 0;
+	/** The measure of tolerance of the maximum number of lost frames for saving a simulation. */
 	private int maxFrameSkips = 0;
-//	private int count = -100;
-
+	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
-	
 	/** Mode for saving a simulation. */
 	private transient volatile int saveType;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
 	/** Flag for getting ready for autosaving. */
 	private transient volatile boolean autosave;
-
+	/** The total number of pulses cumulated. */
 	private long totalPulses = 1;
-//	private long t2Cache = 0;
-//	private long diffCache = 0;
+	/** The pulses since last elapsed. */
 	private transient long elapsedLast;
-
+	/** The cache for accumulating millisols up to a limit before sending out a clock pulse. */
 	private transient double timeCache;
-	
-	/** Clock listeners. */
-	private transient List<ClockListener> clockListeners;
-	private transient List<ClockListenerTask> clockListenerTasks =  new CopyOnWriteArrayList<>();
-
-	//private double time_ratio;
+	/** Is FXGL is in use. */
 	private boolean isFXGL = false;
 	
-	/** Martian Clock. */
+	/** A list of clock listeners. */
+	private transient List<ClockListener> clockListeners;
+	/** A list of clock listener tasks. */
+	private transient List<ClockListenerTask> clockListenerTasks =  new CopyOnWriteArrayList<>();
+
+
+	/** The martian Clock. */
 	private MarsClock marsTime;
-	/** Initial Martian time. */
+	/** A copy of the initial martian clock at the start of the sim. */
 	private static MarsClock initialMarsTime;
-	/** Earth Clock. */
-	private EarthClock earthTime;
-	/** Uptime Timer. */
+	/** The Earth Clock. */
+	private EarthClock earthClock;
+	/** The Uptime Timer. */
 	private UpTimer uptimer;
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
-
+	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
 
 	//private transient ThreadPoolExecutor clockListenerExecutor;
+	
+	/** The thread for running the clock listeners. */
 	private transient ExecutorService clockListenerExecutor;
 	
 	private static Simulation sim;
 	
 	private static SimulationConfig config;
 
-	//private List<Double> TPFList = new ArrayList<>();
-	
     /**
      * Constructor
-     *
+     * @param isFXGL true if FXGL is used for generating clock pulse
+     * @param userTimeRatio the time ratio defined by user
      * @throws Exception if clock could not be constructed.
      */
     public MasterClock(boolean isFXGL, int userTimeRatio) {
@@ -130,16 +124,16 @@ public class MasterClock implements Serializable {
         // Initialize data members
         config = SimulationConfig.instance();
 
-        // Create a Martian clock
+        // Create a martian clock
         marsTime = new MarsClock(config.getMarsStartDateTime());
         
         initialMarsTime = (MarsClock) marsTime.clone();
 
+		testMarsParam();
+				
         // Create an Earth clock
-        earthTime = new EarthClock(config.getEarthStartDateTime());
-        
-        ClockUtils.getFirstLandingDateTime();
-
+        earthClock = new EarthClock(config.getEarthStartDateTime());
+       
         // Create an Uptime Timer
         uptimer = new UpTimer(this);
      
@@ -217,6 +211,51 @@ public class MasterClock implements Serializable {
 		logger.info("*** Welcome to Mars and the beginning of the new adventure for humankind ***");
     }
 
+    public void testMarsParam() {
+        // Create an Earth clock
+        EarthClock c = new EarthClock("2043-09-30 00:00:00.000");//"2004-01-04 00:00:00.000"); // "2004-01-03 13:46:31.000"//"2000-01-06 00:00:00.000");
+        
+        ClockUtils.getFirstLandingDateTime();
+
+		double millis = c.getMillis(c);
+		logger.info("millis is " + millis); 
+		double jdut = ClockUtils.getJulianDateUT(c);
+		logger.info("jdut is " + jdut);    
+		double T = ClockUtils.getT(c);
+		logger.info("T is " + T);	
+		double TT2UTC = ClockUtils.getDeltaUTC_TT(c);
+		logger.info("TT2UTC is " + TT2UTC);	
+		double jdtt = ClockUtils.getJulianDateTT(c);
+		logger.info("jdtt is " + jdtt);
+		double j2k = ClockUtils.getDaysSinceJ2kEpoch(c);
+		logger.info("j2k is " + j2k);
+		double M = ClockUtils.getMarsMeanAnomaly(c)%360;
+		logger.info("M is " + M);
+		double alpha = ClockUtils.getAlphaFMS(c)%360;
+		logger.info("alpha is " + alpha);		
+		double PBS = ClockUtils.getPBS(c)%360;
+		logger.info("PBS is " + PBS);	
+		double EOC = ClockUtils.getEOC(c)%360;
+		logger.info("EOC is " + EOC);	
+		double v = ClockUtils.getNU(c)%360;
+		logger.info("v is " + v);
+		double L_s = ClockUtils.getLs(c)%360;
+		logger.info("L_s is " + L_s);
+
+		double EOT = ClockUtils.getEOT(c);
+		logger.info("EOT is " + EOT);
+		double EOT_hr = ClockUtils.getEOT_Hr(c);
+		logger.info("EOT_hr is " + EOT_hr);	
+//		String EOTStr = ClockUtils.getEOTString(c);
+//		logger.info("EOTStr is " + EOTStr);	
+		
+		double MTC = ClockUtils.getMTC(c);
+		logger.info("MTC is " + MTC);
+//		String MTCStr = ClockUtils.getMTCString(c);
+//		logger.info("MTCStr is " + MTCStr);
+
+    }
+    
     /**
      * Returns the Martian clock
      *
@@ -241,7 +280,7 @@ public class MasterClock implements Serializable {
      * @return Earth clock instance
      */
     public EarthClock getEarthClock() {
-        return earthTime;
+        return earthClock;
     }
 
     /**
@@ -645,11 +684,11 @@ public class MasterClock implements Serializable {
             	&& !clockListenerExecutor.isShutdown()) {
 
 	                // Add time pulse length to Earth and Mars clocks.
-	            	earthTime.addTime(millis * currentTR);
+	            	earthClock.addTime(millis * currentTR);
 	            	marsTime.addTime(timePulse);
 				  	fireClockPulse(timePulse);
             }   
-	}
+        }
     }
     
     /**
@@ -853,98 +892,7 @@ public class MasterClock implements Serializable {
     }
 
 
-    public static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
-
-
-    /**
-     * Returns a date time string in HHh MMm SS.SSs format
-     * @param ratio
-     * @return a date time string
-     */
-    public String getTimeString(double ratio) {
-
-        //long years = (int) Math.floor(seconds / secsperyear);
-        //long days = (int) ((seconds % secsperyear) / secspday);
-        int hours = (int) ((ratio % secspday) / secsphour);
-        int minutes = (int) ((ratio % secsphour) / secspmin);
-        double secs = (ratio % secspmin);
-
-        StringBuilder b = new StringBuilder();
-/*
-        b.append(years);
-        if(years>0){
-            b.append("yr:");
-        }
-
-        if (days > 0) {
-            b.append(String.format("%03d", days)).append("mon:");
-        } else {
-            b.append("0mon:");
-        }
-*/
-        if (hours > 0) {
-            b.append(String.format("%02d", hours)).append(HOURS);
-        }
-        //} else {
-        //    b.append("00h ");
-        //}
-
-        if (minutes > 0) {
-            b.append(String.format("%02d", minutes)).append(MINUTES);
-        } else {
-            b.append(ZERO_MINUTES);
-        }
-
-        //b.append(String.format("%5.3f", secs));
-        b.append(String.format("%05.2f", secs) + SECONDS);
-
-        return b.toString();
-    }
-
-    /**
-     * Returns a truncated string in HHh MMm SSs format
-     * @param ratio
-     * @return a date time string
-     */
-    public String getTimeTruncated(double ratio) {
-
-        //long years = (int) Math.floor(seconds / secsperyear);
-        //long days = (int) ((seconds % secsperyear) / secspday);
-        int hours = (int) ((ratio % secspday) / secsphour);
-        int minutes = (int) ((ratio % secsphour) / secspmin);
-        double secs = (ratio % secspmin);
-
-        StringBuilder b = new StringBuilder();
-/*
-        b.append(years);
-        if(years>0){
-            b.append("yr:");
-        }
-
-        if (days > 0) {
-            b.append(String.format("%03d", days)).append("mon:");
-        } else {
-            b.append("0mon:");
-        }
-*/
-        if (hours > 0) {
-            b.append(String.format("%02d", hours)).append(HOURS);
-        }
-        //} else {
-        //    b.append("00h ");
-        //}
-
-        if (minutes > 0) {
-            b.append(String.format("%02d", minutes)).append(MINUTES);
-        } else {
-            b.append(ZERO_MINUTES);
-        }
-
-        //b.append(String.format("%5.3f", secs));
-        b.append(String.format("%02.0f", secs) + SECONDS);
-
-        return b.toString();
-    }
+ 
 
     /**
      * Starts clock listener thread pool executor
@@ -1041,7 +989,7 @@ public class MasterClock implements Serializable {
 		            	//logger.info(millis + "");
 		                // Add time pulse length to Earth and Mars clocks.
 		        		//System.out.println(Math.round(timePulse *10000.0)/10000.0);
-		            	earthTime.addTime(SEC_TO_MILLIS * t);//millis*timeRatio);
+		            	earthClock.addTime(SEC_TO_MILLIS * t);//millis*timeRatio);
 		            	marsTime.addTime(timePulse);
 		            	fireClockPulse(timePulse);
 		        }
@@ -1082,7 +1030,7 @@ public class MasterClock implements Serializable {
     	sim = null;
     	marsTime = null;
     	initialMarsTime = null;
-    	earthTime = null;
+    	earthClock = null;
     	uptimer = null;
     	clockThreadTask = null;
     	clockListenerExecutor = null;

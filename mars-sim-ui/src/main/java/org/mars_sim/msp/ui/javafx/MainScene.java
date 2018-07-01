@@ -100,6 +100,7 @@ import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -1307,7 +1308,7 @@ public class MainScene {
 		double ratio = masterClock.getTimeRatio();
 		// String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio);
 		// //$NON-NLS-1$
-		s1.append(masterClock.getTimeTruncated(ratio));
+		s1.append(ClockUtils.getTimeTruncated(ratio));
 		real_time_label.setText(s1.toString());
 		
 		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
@@ -1352,7 +1353,7 @@ public class MainScene {
 				// endPause(previous);
 
 				StringBuilder s3 = new StringBuilder();
-				s3.append(masterClock.getTimeTruncated(value));
+				s3.append(ClockUtils.getTimeTruncated(value));
 				real_time_label.setText(s3.toString());
 
 			}

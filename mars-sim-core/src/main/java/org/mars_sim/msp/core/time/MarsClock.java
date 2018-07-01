@@ -15,23 +15,30 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 
 /**
- * The MarsClock class keeps track of Martian time. It uses Shaun Moss's Mars
- * Calendar.
+ * The MarsClock class keeps track of Martian time. 
  */
-// see also NASA Goddard Space Flight Center's Mars24 to determine the time for
-// a given location on Mars
-// primarily based on Allison and McEwen (2000) (henceforth AM2000)
-// at https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
+
+// References: 
+// 1. Partially based on previous research from Shaun Moss' Mars calendar.
+// 2. NASA Goddard Space Flight Center's Mars24 for determining the time for
+//    a given location on Mars, which was primarily based on Allison and McEwen (2000) 
+//    (henceforth AM2000). See https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
+
 public class MarsClock implements Serializable {
 
 	private static final long serialVersionUID = 65894231L;
 
 	//private static Logger logger = Logger.getLogger(MarsClock.class.getName());
 
-	// The Mars tropical year is 686.9726 day or 668.5921 sol.
+	// Note 1: The Mars tropical year is 686.9725 day or 668.5921 sol. 
+	// For comparison, the Mars sidereal year, as measured with respect to the 
+	// fixed stars, is 668.5991 sol. The difference between these values results 
+	// from the precession of the planet's spin axis.
+
 	// A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds,
 	// customarily referred to as a "sol" in order to distinguish this from the
 	// roughly 3% shorter solar day on Earth.
+	
 	// The Mars sidereal day, as measured with respect to the fixed stars, is
 	// 24h 37m 22.663s, as compared with 23h 56m 04.0905s for Earth.
 
@@ -107,6 +114,11 @@ public class MarsClock implements Serializable {
 	private static final String AUTUMN = "Autumn";
 	private static final String WINTER = "Winter";
 
+	// Mars is near perihelion when it is summer in the southern hemisphere and 
+	// winter in the north, and near aphelion when it is winter in the southern 
+	// hemisphere and summer in the north. As a result, the seasons in the 
+	// southern hemisphere are more extreme and the seasons in the northern are milder. 
+	
 	// Martian calendar static strings
 	private static final String[] MONTH_NAMES = { "Adir", "Bora", "Coan", "Detri", "Edal", "Flo", "Geor", "Heliba",
 			"Idanon", "Jowani", "Kireal", "Larno", "Medior", "Neturima", "Ozulikan", "Pasurabi", "Rudiakel", "Safundo",

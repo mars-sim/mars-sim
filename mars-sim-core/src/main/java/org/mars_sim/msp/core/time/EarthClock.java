@@ -55,8 +55,6 @@ implements Serializable {
 	 * @throws Exception if date string is invalid.
 	 */
 	public EarthClock (String fullDateTimeString) {
-
-
 		// To fully utilize Java 8's Date/Time API in java.time package, see https://docs.oracle.com/javase/tutorial/datetime/TOC.html
 		// dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");
 
@@ -158,6 +156,7 @@ implements Serializable {
 	public static ZonedDateTime getDateOfFirstLanding() {
 		return dateOfFirstLanding;
 	}
+
 	/**
 	 * Returns the number of milliseconds since 1 January 1970 00:00:00
 	 * @return long
@@ -222,125 +221,12 @@ implements Serializable {
 		return f3.format(clock.getCalender().getTime());
 	}
 
-	/*
-	 * Gets Julian Date (UT), the number of days (rather than milliseconds) since the unix epoch
-	 * Note: the Julian Date UT at the Unix epoch is 2,440,587.5.
-     * @return days
-	*/
-	public static long getJulianDateUT(EarthClock clock) {
-		long result = (long) (2440587.5 + (getMillis(clock) / 8.64E7));
-		return result;
-	}
-
-	/*
-	 * Gets Julian Date Terrestrial Time (TT), the number of days (rather than milliseconds) since the unix epoch
-	 * Note: add the leap seconds which, since 1 July 2012
-     * @return days
-	*/
-	public static long getJulianDateTT(EarthClock clock) {
-		long result = (long) (getJulianDateUT(clock) +  (35D + 32.184) / 86400D);
-		return result;
-	}
-
-	/*
-	 * Gets the days since J2000 Epoch, the number of (fractional) days since 12:00 on 1 January 2000 in Terrestrial Time (TT).
-	 * Note: JD TT was 2,451,545.0 at the J2000 epoch
-     * @return days
-	*/
-	public static long getDaysSinceJ2kEpoch(EarthClock clock) {
-		long result = (long) (getJulianDateTT(clock) - 2451545.0);
-		return result;
-	}
-
-	/*
-	 * Gets Mars Sol Date (MSD), starting at midnight on 6th January 2000 (when time_J2000 = 4.5), at the Martian prime meridian,
-     * Note: by convention, to keep the MSD positive going back to midday December 29th 1873, we add 44,796.
-     * @return days
-     */
-	public static double getMarsSolDate(EarthClock clock) {
-		// 0.00096 is a slight adjustment as the midnights by Mars24
-		double result = ((getDaysSinceJ2kEpoch(clock) - 4.5) / 1.027491252) + 44796.0 - 0.00096;
-		return result;
-	}
-
-	/*
-	 * Gets Coordinated Mars Time (MTC), a mean time for Mars, like Earth's UTC
-     * Note: Calculated directly from the Mars Sol Date
-     * @return hours
-     */
-	public static double getMTC(EarthClock clock) {
-		// 0.00096 is a slight adjustment as the midnights by Mars24
-		double result = (24 * getMarsSolDate(clock)) % 24;
-		return result;
-	}
-
-	/*
-	 * Gets Mars Mean Anomaly, a measure of where Mars is in its orbit, namely how far into the full orbit the body is
-	 * since its last periapsis (the point in the ellipse closest to the focus).
-     * @return degree
-     */
-	public static double getMarsMeanAnomaly(EarthClock clock) {
-		// 0.00096 is a slight adjustment as the midnights by Mars24
-		double result = (19.3870 + 0.52402075 *getDaysSinceJ2kEpoch(clock))%360;
-		return result;
-	}
-
-	/*
-	 *
-     * @return
-     */
-	public static double getAlphaFMS(EarthClock clock) {
-		double result = (270.3863 + 0.52403840 * getDaysSinceJ2kEpoch(clock)) % 360;
-		return result;
-	}
-
-	/*
-	 *
-     * @return
-     */
-	public static double getE(EarthClock clock) {
-		double result = 0.09340 + 2.477E-9 * getDaysSinceJ2kEpoch(clock) ;
-		return result;
-	}
-
-	/*
-	 *
-     * @return
-     */
-	public static double getPBS(EarthClock clock) {
-		double j2000 = getDaysSinceJ2kEpoch(clock);
-		double result = 0.0071 * Math.cos((0.985626 * j2000 /  2.2353) +  49.409) +
-                0.0057 * Math.cos((0.985626 * j2000 /  2.7543) + 168.173) +
-                0.0039 * Math.cos((0.985626 * j2000 /  1.1177) + 191.837) +
-                0.0037 * Math.cos((0.985626 * j2000 / 15.7866) +  21.736) +
-                0.0021 * Math.cos((0.985626 * j2000 /  2.1354) +  15.704) +
-                0.0020 * Math.cos((0.985626 * j2000 /  2.4694) +  95.528) +
-                0.0018 * Math.cos((0.985626 * j2000 / 32.8493) +  49.095);
-		return result;
-	}
-
-	/*
-	 *
-     * @return
-     */
-	public static double getNU(EarthClock clock) {
-		double j2000 = getDaysSinceJ2kEpoch(clock);
-		double m = getMarsMeanAnomaly(clock);
-		double result = (10.691 + 3.0E-7 * j2000) * Math.sin(m) +
-                0.623 * Math.sin(2 * m) +
-                0.050 * Math.sin(3 * m) +
-                0.005 * Math.sin(4 * m) +
-                0.0005 * Math.sin(5 * m) +
-                getPBS(clock);
-		return result;
-	}
 
 
 	/**
 	 * Returns the date/time formatted in a string
 	 * @return date/time formatted in a string. ex "2055-05-06 03:37:22 (UT)"
 	 */
-	//2015-01-08 Added if clause
 	public String getTimeStampF0() {
 		String result = f0.format(gregCal.getTime());
 		if (result == null) result = "0";
@@ -351,7 +237,6 @@ implements Serializable {
 	 * Returns the date/time formatted in a string
 	 * @return date/time formatted in a string. ex "2055-05-06 03:37 (UT)"
 	 */
-	//2016-09-24 Added getTimeStampF1()
 	public String getTimeStampF1() {
 		String result = f1.format(gregCal.getTime());
 		if (result == null) result = "0";

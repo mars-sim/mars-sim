@@ -51,7 +51,7 @@
 
 
 		<!-- max-frame-skips is the number of skipped frames allowed -->
-		<!-- It is a measure of tolerance of the maximum number of lost frame. Sometimes, the simulation take
+		<!-- It is a measure of tolerance of the maximum number of lost frames. Sometimes, the simulation take
 			too long (say, more than the default 40 ms) to finish its execution in a frame.
 			Then by the time the next update is due, the simulation has yet finished the previous frame.
 			max_frame-skips should be fine-tuned with the TBU together -->

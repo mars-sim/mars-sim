@@ -272,7 +272,6 @@ implements Serializable {
 	/*
 	 * Filters tasks for recording in the task schedule
 	 */
-	// 2015-10-22 Added recordTask()
 	public void recordTask() {
 		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
 		String missionName = "";

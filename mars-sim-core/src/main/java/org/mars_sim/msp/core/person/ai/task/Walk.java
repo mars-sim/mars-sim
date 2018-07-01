@@ -710,7 +710,8 @@ implements Serializable {
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+        	return time;
+//            throw new IllegalArgumentException("Task phase is null");
         }
         else if (WALKING_SETTLEMENT_INTERIOR.equals(getPhase())) {
             return walkingSettlementInteriorPhase(time);
