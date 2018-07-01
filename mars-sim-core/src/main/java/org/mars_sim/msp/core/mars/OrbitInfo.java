@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -50,11 +51,11 @@ implements Serializable {
 	 * The initial areocentric solar longitude (or the orbital position of Mars 
 	 * around the sun) at the start of the sim.
 	 */
-	private static final double L_AT_START = 252.5849107170493; 
+	private static final double L_AT_START = 12.72008961663414;//252.5849107170493; 
 	// Note : An areocentric orbit is an orbit around the planet Mars.
 	
 	/** The initial distance from the Sun to Mars (in au). */
-	private static final double SUN_MARS_DIST_AT_START =  1.3817913894302327; //1.665732D; //
+	private static final double SUN_MARS_DIST_AT_START =  1.5876367428334057;//1.3817913894302327; //1.665732D; //
 	
 	// Data members
 	/** The difference between the L_s and the true anomaly v in degree. */
@@ -128,12 +129,12 @@ implements Serializable {
 		instantaneousSunMarsDistance = SUN_MARS_DIST_AT_START;
 		sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
 		
-		calculate();
+//		testOrbitData();
 		
 		offsetL_s = computePerihelion(2043);
 	}
 	
-	public void calculate() {
+	public void testOrbitData() {
 		
 		// Scenario 1
 		// Given :
@@ -198,6 +199,28 @@ implements Serializable {
 		System.out.println("v (deg) is " + Math.round(v/DEGREE_TO_RADIAN * 10000.0)/10000.0);
 		System.out.println("Ls is " + Math.round(Ls * 10000.0)/10000.0);
 	
+		// Scenario 4
+		// Given :
+		// (1) L_s = 12.72008961663414
+		// (2) v = 121.39623354876494
+		
+		// Calculate on Sep 30 2043 00:00:00 (UTC) on Earth : 
+		// (1) verify v
+		// (2) r
+		
+
+		System.out.println("Scenario 4");
+		L_s = 12.72008961663414;
+		v = 121.39623354876494* DEGREE_TO_RADIAN;
+		
+		r = getRadius(v);
+		
+		offsetL_s = computePerihelion(2043);
+		v = (L_s - offsetL_s)+360;
+		
+		System.out.println("v_old (deg) is " + Math.round(v* 10000.0)/10000.0);
+		System.out.println("r is " + r);//Math.round(r * 10000.0)/10000.0);
+		
 	}
 
 	/**
@@ -252,8 +275,8 @@ implements Serializable {
 		
 		// Recompute the areocentric longitude of Mars
 		offsetL_s = computePerihelion(earthClock.getYear());
-		double v = getTrueAnomaly(instantaneousSunMarsDistance);
-		L_s = computeL_s(v);
+//		double v = getTrueAnomaly(instantaneousSunMarsDistance);
+		L_s = computeL_s();
 
 		// Determine Sun theta
 		double sunTheta = sunDirection.getTheta();
@@ -484,19 +507,28 @@ implements Serializable {
 		return newL_s;
 	}
 	
+//	/**
+//	 * Computes the instantaneous areocentric longitude
+//	 */
+//	public void computeL_s() {
+//		double v = getTrueAnomaly();
+//		double newL_s = v / DEGREE_TO_RADIAN + offsetL_s; // why was it 248 before ?
+//		if (newL_s > 360D)
+//			newL_s = newL_s - 360D;
+//		//if (newL_s != L_s) {
+//			L_s = newL_s;
+//		//}
+//	}
+
 	/**
 	 * Computes the instantaneous areocentric longitude
 	 */
-	public void computeL_s() {
-		double v = getTrueAnomaly();
-		double newL_s = v / DEGREE_TO_RADIAN + offsetL_s; // why was it 248 before ?
-		if (newL_s > 360D)
-			newL_s = newL_s - 360D;
-		//if (newL_s != L_s) {
-			L_s = newL_s;
-		//}
+	public double computeL_s() {
+		double ls = ClockUtils.getLs(earthClock)%360;
+		L_s = ls;
+		return ls;
 	}
-
+	
 	/**
 	 * Gets the instantaneous areocentric longitude
 	 * @return angle in degrees (0 - 360).

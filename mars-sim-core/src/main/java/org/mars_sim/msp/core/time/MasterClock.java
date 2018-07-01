@@ -129,7 +129,7 @@ public class MasterClock implements Serializable {
         
         initialMarsTime = (MarsClock) marsTime.clone();
 
-		testMarsParam();
+//		testMarsTimeParams();
 				
         // Create an Earth clock
         earthClock = new EarthClock(config.getEarthStartDateTime());
@@ -211,7 +211,7 @@ public class MasterClock implements Serializable {
 		logger.info("*** Welcome to Mars and the beginning of the new adventure for humankind ***");
     }
 
-    public void testMarsParam() {
+    public void testMarsTimeParams() {
         // Create an Earth clock
         EarthClock c = new EarthClock("2043-09-30 00:00:00.000");//"2004-01-04 00:00:00.000"); // "2004-01-03 13:46:31.000"//"2000-01-06 00:00:00.000");
         

@@ -105,7 +105,7 @@ extends JComponent {
 					midColor = new Color(112, 76, 103);
 					darkColor = new Color(51, 0, 51);
 				}
-				else if (theme == 6) {
+				else if (theme == 6 || theme == 0) {
 					// blue theme
 					baseColor = Color.cyan;
 					midColor = new Color(99, 125, 150);
