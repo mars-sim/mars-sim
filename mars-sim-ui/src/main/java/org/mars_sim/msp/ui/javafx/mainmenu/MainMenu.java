@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -23,6 +24,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.layout.AnchorPane;
+import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 
 import javafx.scene.input.MouseEvent;
@@ -35,6 +37,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 //import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
@@ -99,6 +102,14 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
+    private static final int STAR_COUNT = 1500;//00;
+    
+    private Rectangle[] nodes = new Rectangle[STAR_COUNT];
+    private final double[] angles = new double[STAR_COUNT];
+    private final long[] start = new long[STAR_COUNT];
+    
+    private final Random random = new Random();
+    
 	private boolean isExit = false;
 	
 	public int mainscene_width = 1366; //1920;//
@@ -199,131 +210,163 @@ public class MainMenu {
 		isFXGL = true;
 		this.gameScene = gameScene;
 		
-    	Platform.setImplicitExit(false);
-
-    	menuApp = new MenuApp(mainMenu, true);
-    	
-    	menuAPane = menuApp.createContent();
-    	
-    	mainMenuSPane = new StackPane(menuAPane);
-
-    	mainMenuSPane.setPrefSize(WIDTH, HEIGHT);
-    	mainMenuSPane.setMaxSize(WIDTH, HEIGHT);
-    	//stackPane.setLayoutX(10);
-    	//stackPane.setLayoutY(10);
-       
-    	double sceneWidth = mainMenuSPane.getPrefWidth();// + 30;
-    	double sceneHeight = mainMenuSPane.getPrefHeight();// + 30;
-
-    	// Create application area
-//    	@SuppressWarnings("restriction")
-//    	Rectangle applicationArea = RectangleBuilder.create()
-//                .width(sceneWidth)// - 10)
-//                .height(sceneHeight)// - 10)
-//                //.arcWidth(20)
-//                //.arcHeight(20)
-//                .fill(Color.rgb(0, 0, 0, 1))
-//                .x(0)
-//                .y(0)
-//                .strokeWidth(2)
-//                .stroke(Color.rgb(255, 255, 255, .70))
-//                .build();
-
-    	Rectangle applicationArea = new Rectangle();
-    	applicationArea.setWidth(sceneWidth);
-    	applicationArea.setHeight(sceneHeight);
-    	applicationArea.setFill(Color.rgb(0, 0, 0, 1));
-    	applicationArea.setX(0);
-    	applicationArea.setY(0);
-    	applicationArea.setStrokeWidth(2);
-    	applicationArea.setStroke(Color.rgb(255, 255, 255, .70));
+		Platform.setImplicitExit(false);
 	
-//    	Node closeRect = RectangleBuilder.create()
-//               .width(25)
-//               .height(25)
-//               .arcWidth(15)
-//               .arcHeight(15)
-//               .fill(Color.rgb(0, 0, 0, 1))
-//               .stroke(Color.WHITE)
-//               .build();
-       
-    	Rectangle closeRect = new Rectangle();
-    	closeRect.setWidth(25);
-    	closeRect.setHeight(25);
-    	closeRect.setFill(Color.rgb(0, 0, 0, 1));
-    	closeRect.setArcWidth(15);
-    	closeRect.setArcHeight(15);
-    	closeRect.setStroke(Color.WHITE);
-    	
-    	Text closeXmark = new Text(9, 16.5, "X");
-    	closeXmark.setStroke(Color.WHITE);
-    	closeXmark.setFill(Color.WHITE);
-    	closeXmark.setStrokeWidth(2);
-    	
-    	// Create close button
-    	final Group closeApp = new Group();
-        //closeApp.translateXProperty().bind(gameScene.getWidth()-40);//.widthProperty().subtract(40));
-    	closeApp.setTranslateX(WIDTH-30);//40);
-    	closeApp.setTranslateY(5);
-    	closeApp.getChildren().addAll(closeRect, closeXmark);
-    	closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		menuApp = new MenuApp(mainMenu, true);
+		
+		menuAPane = menuApp.createContent();
+		
+		mainMenuSPane = new StackPane(menuAPane);
+	
+		mainMenuSPane.setPrefSize(WIDTH, HEIGHT);
+		mainMenuSPane.setMaxSize(WIDTH, HEIGHT);
+		//stackPane.setLayoutX(10);
+		//stackPane.setLayoutY(10);
+	   
+		double sceneWidth = mainMenuSPane.getPrefWidth();// + 30;
+		double sceneHeight = mainMenuSPane.getPrefHeight();// + 30;
+	
+//		 Create application area
+//	    	@SuppressWarnings("restriction")
+//	    	Rectangle applicationArea = RectangleBuilder.create()
+//	                .width(sceneWidth)// - 10)
+//	                .height(sceneHeight)// - 10)
+//	                //.arcWidth(20)
+//	                //.arcHeight(20)
+//	                .fill(Color.rgb(0, 0, 0, 1))
+//	                .x(0)
+//	                .y(0)
+//	                .strokeWidth(2)
+//	                .stroke(Color.rgb(255, 255, 255, .70))
+//	                .build();
+	
+		Rectangle applicationArea = new Rectangle();
+		applicationArea.setWidth(sceneWidth);
+		applicationArea.setHeight(sceneHeight);
+		applicationArea.setFill(Color.rgb(0, 0, 0, 1));
+		applicationArea.setX(0);
+		applicationArea.setY(0);
+		applicationArea.setStrokeWidth(2);
+		applicationArea.setStroke(Color.rgb(255, 255, 255, .70));
+	
+//	    	Node closeRect = RectangleBuilder.create()
+//	               .width(25)
+//	               .height(25)
+//	               .arcWidth(15)
+//	               .arcHeight(15)
+//	               .fill(Color.rgb(0, 0, 0, 1))
+//	               .stroke(Color.WHITE)
+//	               .build();
+	   
+		Rectangle closeRect = new Rectangle();
+		closeRect.setWidth(25);
+		closeRect.setHeight(25);
+		closeRect.setFill(Color.rgb(0, 0, 0, 1));
+		closeRect.setArcWidth(15);
+		closeRect.setArcHeight(15);
+		closeRect.setStroke(Color.WHITE);
+		
+		Text closeXmark = new Text(9, 16.5, "X");
+		closeXmark.setStroke(Color.WHITE);
+		closeXmark.setFill(Color.WHITE);
+		closeXmark.setStrokeWidth(2);
+		
+		// Create close button
+		final Group closeApp = new Group();
+	    //closeApp.translateXProperty().bind(gameScene.getWidth()-40);//.widthProperty().subtract(40));
+		closeApp.setTranslateX(WIDTH-30);//40);
+		closeApp.setTranslateY(5);
+		closeApp.getChildren().addAll(closeRect, closeXmark);
+		closeApp.setOnMouseClicked(new EventHandler<MouseEvent>() {
 	       	@Override
 	       	public void handle(MouseEvent event) {
 		        Input input = FXGL.getInput();
 				input.mockKeyPress(KeyCode.ESCAPE);
 		        input.mockKeyRelease(KeyCode.ESCAPE);
 	       	}
-       });
-
-       globeSPane = new StackPane();
-       globeSPane.setPrefSize(mainMenuSPane.getPrefWidth()-300, mainMenuSPane.getPrefHeight());//stackPane.getPrefWidth()-50, stackPane.getPrefHeight()-50);
- 
-       root = new Group();
-       root.getChildren().add(applicationArea);
-       root.getChildren().add(mainMenuSPane);
-       root.getChildren().add(closeApp);
-       root.getChildren().add(globeSPane);
-    
-       gameScene.addUINode(root);   
-
-       //Scene scene = gameScene.getContentRoot().getScene(); // scene is null
-       // Create an yellowish atmosphere around the globe
-       //scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
-       // Add CSS styles
-       //scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
-       
-       
-       // Add keyboard control
-       menuApp.getSpinningGlobe().getGlobe().handleKeyboard(gameScene.getContentRoot());
-       // Add mouse control
-       menuApp.getSpinningGlobe().getGlobe().handleMouse(gameScene.getContentRoot());
-
-       // Makes the menu option box fades in
-       root.setOnMouseEntered(new EventHandler<MouseEvent>(){
-           public void handle(MouseEvent mouseEvent){
-        	   menuApp.startAnimation();
-               FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-               fadeTransition.setFromValue(0.0);
-               fadeTransition.setToValue(1.0);
-               fadeTransition.play();
-           }
-        });
-
-       // Makes the menu option box fades out
-       root.setOnMouseExited(new EventHandler<MouseEvent>(){
-           public void handle(MouseEvent mouseEvent){
-        	   menuApp.endAnimation();
-               FadeTransition fadeTransition
-                       = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-               fadeTransition.setFromValue(1.0);
-               fadeTransition.setToValue(0.0);
-               fadeTransition.play();
-        	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
-           }
-       });
+	   });
+	
+	   globeSPane = new StackPane();
+	   globeSPane.setPrefSize(mainMenuSPane.getPrefWidth()-300, mainMenuSPane.getPrefHeight());//stackPane.getPrefWidth()-50, stackPane.getPrefHeight()-50);
+	 
+	   // Add a moving starfield behind the Mars Globe
+	   createMovingStarfield();    	
+	   final Group starfield = new Group(nodes);
+	
+	   root = new Group();
+	   root.getChildren().add(applicationArea);
+	   root.getChildren().add(starfield);	   
+	   root.getChildren().add(mainMenuSPane);
+	   root.getChildren().add(closeApp);
+	   root.getChildren().add(globeSPane);
+	
+	   gameScene.addUINode(root);   
+	
+	   //Scene scene = gameScene.getContentRoot().getScene(); // scene is null
+	   // Create an yellowish atmosphere around the globe
+	   //scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/demo/main.css").toExternalForm());
+	   // Add CSS styles
+	   //scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
+	   
+	   
+	   // Add keyboard control
+	   menuApp.getSpinningGlobe().getGlobe().handleKeyboard(gameScene.getContentRoot());
+	   // Add mouse control
+	   menuApp.getSpinningGlobe().getGlobe().handleMouse(gameScene.getContentRoot());
+	
+	   // Makes the menu option box fades in
+	   root.setOnMouseEntered(new EventHandler<MouseEvent>(){
+	       public void handle(MouseEvent mouseEvent){
+	    	   menuApp.startAnimation();
+	           FadeTransition fadeTransition
+	                   = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+	           fadeTransition.setFromValue(0.0);
+	           fadeTransition.setToValue(1.0);
+	           fadeTransition.play();
+	       }
+	    });
+	
+	   // Makes the menu option box fades out
+	   root.setOnMouseExited(new EventHandler<MouseEvent>(){
+	       public void handle(MouseEvent mouseEvent){
+	    	   menuApp.endAnimation();
+	           FadeTransition fadeTransition
+	                   = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+	           fadeTransition.setFromValue(1.0);
+	           fadeTransition.setToValue(0.0);
+	           fadeTransition.play();
+	    	   fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
+	       }
+	   });
 
    }
+	
+	public void createMovingStarfield() {
+		for (int i=0; i<STAR_COUNT; i++) {
+            nodes[i] = new Rectangle(1, 1, Color.DARKGOLDENROD);//.WHITE);
+            angles[i] = 2.0 * Math.PI * random.nextDouble();
+            start[i] = random.nextInt(2000000000);
+        }
+		
+	       
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                final double width = 0.5 * primaryStage.getWidth();
+                final double height = 0.5 * primaryStage.getHeight();
+                final double radius = Math.sqrt(2) * Math.max(width, height);
+                for (int i=0; i<STAR_COUNT; i++) {
+                    final Node node = nodes[i];
+                    final double angle = angles[i];
+                    final long t = (now - start[i]) % 2000000000;
+                    final double d = t * radius / 2000000000.0;
+                    node.setTranslateX(Math.cos(angle) * d + width);
+                    node.setTranslateY(Math.sin(angle) * d + height);
+                }
+            }
+        }.start();
+        
+	}
 	
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
@@ -363,6 +406,10 @@ public class MainMenu {
 //                .stroke(Color.rgb(255, 255, 255, .70))
 //                .build();
        
+    	// Add a moving starfield behind the Mars Globe
+    	createMovingStarfield();    	
+    	final Group starfield = new Group(nodes);
+    	
     	Rectangle applicationArea = new Rectangle();
     	applicationArea.setWidth(sceneWidth);
     	applicationArea.setHeight(sceneHeight);
@@ -411,6 +458,7 @@ public class MainMenu {
        
        Group root = new Group();
        root.getChildren().add(applicationArea);
+       root.getChildren().add(starfield);
        root.getChildren().add(mainMenuSPane);
        root.getChildren().add(closeApp);
        root.getChildren().add(globeSPane);
@@ -1307,7 +1355,13 @@ public class MainMenu {
 		mainMenuController = null;
 		menuApp = null;
 		resList = null;
-		
+		nodes = null;	
+		root = null;
+	    mainMenuSPane = null;    
+	    globeSPane = null;
+		gameScene = null;	
+		settingDialog = null;	
+		exitDialog = null;
 	}
 
 	private class Resolution {

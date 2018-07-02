@@ -244,12 +244,12 @@ public class MainScene {
 
 	// private static final String BENCHMARK = "Benchmark :";
 	private static final String UPTIME = "UpTime :";
-	private static final String TPS = "Ticks/s :";
-	private static final String SEC = "1 real sec :";
+	private static final String TPS = "# Ticks/s :";
+	private static final String SEC = "One Real Sec :";
 	private static final String TR = "Current TR :";
 	private static final String DTR = "Default TR :";
 	private static final String HZ = " Hz";
-	private static final String REFRESH = "UI Refresh :";
+	private static final String REFRESH = "Refresh Rate :";
 	
 	private static final String SOLAR_LONGITUDE = "Solar Longitude : ";
 	private static final String NOTE_MARS = " Note : Mars's now at ";
@@ -496,6 +496,12 @@ public class MainScene {
 		    public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
 		    	if (!t.equals(t1)) {
 		    		minimized = t1;
+		    	}
+		    	if (billboardTimer != null) {
+		    		if (t1)
+		    			billboardTimer.stop();
+		    		else
+		    			billboardTimer.start();
 		    	}
 		    }
 		});
@@ -3433,6 +3439,7 @@ public class MainScene {
 			isShowingDialog = true;
 			masterClock.setPaused(true, showPane);
 			timeLabeltimer.pause();
+			billboardTimer.stop();
 			if (showPane && !masterClock.isSavingSimulation())
 				startPausePopup();
 		}
@@ -3445,6 +3452,7 @@ public class MainScene {
 		isShowingDialog = false;
 		masterClock.setPaused(false, true);
 		timeLabeltimer.play();
+		billboardTimer.start();
 		stopPausePopup();
 	}
 
@@ -3502,6 +3510,7 @@ public class MainScene {
 //		mainSceneExecutor.shutdownNow();
 		getDesktop().clearDesktop();
 		timeLabeltimer.stop();
+		billboardTimer.stop();
 		stage.close();
 	}
 
