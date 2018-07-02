@@ -91,12 +91,16 @@ public abstract class Vehicle extends Unit implements
     private double xLocParked; // Parked X location (meters) from center of settlement.
     private double yLocParked; // Parked Y location (meters) from center of settlement.
     private double facingParked; // Parked facing (degrees clockwise from North).
-    
-    private boolean isReservedMission = false; // True if vehicle is currently reserved for a mission and cannot be taken by another
-    private boolean distanceMark = false; // True if vehicle is due for maintenance.
-    private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
-    private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
-    private boolean isSalvaged; // True if vehicle is salvaged.
+    /** True if vehicle is currently reserved for a mission and cannot be taken by another. */
+    private boolean isReservedMission;
+    /** True if vehicle is due for maintenance. */
+    private boolean distanceMark;
+    /** True if vehicle is currently reserved for periodic maintenance. */
+    private boolean reservedForMaintenance;
+    /** The emergency beacon for the vehicle.  True if beacon is turned on.. */
+    private boolean emergencyBeacon;
+    /** True if vehicle is salvaged. */
+    private boolean isSalvaged;
 
     private ArrayList<Coordinates> trail; // A collection of locations that make up the vehicle's trail.
     private List<Point2D> operatorActivitySpots; // List of operator activity spots.
@@ -134,7 +138,6 @@ public abstract class Vehicle extends Unit implements
         //life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         //fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
-        //2016-11-21 Added associatedSettlement
         associatedSettlement = settlement;
         containerUnit = settlement;
         settlement.getInventory().storeUnit(this);
@@ -148,7 +151,12 @@ public abstract class Vehicle extends Unit implements
         direction = new Direction(0);
 	    trail = new ArrayList<Coordinates>();
 	    status = StatusType.PARKED;
-
+	    isReservedMission = false;
+	    distanceMark = false;
+	    reservedForMaintenance = false;
+	    emergencyBeacon = false;
+	    isSalvaged = false;
+	    
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 	    malfunctionManager.addScopeString(SystemType.VEHICLE.getName());//"Vehicle");
@@ -199,7 +207,6 @@ public abstract class Vehicle extends Unit implements
         life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
-        //2016-11-21 Added associatedSettlement
         associatedSettlement = settlement;
         containerUnit = settlement;
         settlement.getInventory().storeUnit(this);
@@ -212,6 +219,11 @@ public abstract class Vehicle extends Unit implements
 	    setBaseMass(baseMass);
 	    this.drivetrainEfficiency = fuelEfficiency;
 	    status = StatusType.PARKED;
+	    isReservedMission = false;
+	    distanceMark = false;
+	    reservedForMaintenance = false;
+	    emergencyBeacon = false;
+	    
 	    isSalvaged = false;
 	    salvageInfo = null;
 	    width = 0D;

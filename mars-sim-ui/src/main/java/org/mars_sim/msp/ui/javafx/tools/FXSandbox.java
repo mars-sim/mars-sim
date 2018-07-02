@@ -10,6 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+// from https://netopyr.com/2012/06/14/using-the-javafx-animationtimer/
+
 public class FXSandbox extends Application {
     
     private static final int STAR_COUNT = 200;//00;

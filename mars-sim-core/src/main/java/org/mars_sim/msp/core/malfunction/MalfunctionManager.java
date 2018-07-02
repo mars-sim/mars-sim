@@ -26,6 +26,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.equipment.BuildingKit;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -42,6 +44,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in each of the 6 types of units (namely, Building, BuildingKit, EVASuit, Robot, MockBuilding, or Vehicle)
@@ -413,11 +416,20 @@ implements Serializable {
 				if (!malfunctionName.contains("Meteorite")) {
 					// if it has nothing to do with meteorite impact
 					
+//					String object = entity.getImmediateLocation();
+//					
+//					if (entity instanceof Vehicle
+//						|| entity instanceof EVASuit	
+//						|| entity instanceof Building
+//						|| entity instanceof Robot
+//						|| entity instanceof BuildingKit)
+					String object = entity.getNickName();
+
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(
 							EventType.MALFUNCTION_PARTS_FAILURE,
 							malfunction,
-							malfunctionName,
+							malfunctionName + " on " + object,
 							"Part Fatigue", // in the who field
 							entity.getImmediateLocation(),
 							entity.getLocale());
@@ -429,7 +441,7 @@ implements Serializable {
 						HistoricalEvent newEvent = new MalfunctionEvent(
 								EventType.MALFUNCTION_HUMAN_FACTORS,
 								malfunction,
-								malfunctionName,
+								malfunctionName + " on " + object,
 								offender,
 								entity.getImmediateLocation(),
 								entity.getLocale());

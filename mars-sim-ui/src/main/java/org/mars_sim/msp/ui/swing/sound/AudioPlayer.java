@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -38,22 +39,22 @@ public class AudioPlayer {
 	private static int num_tracks;
 	
 	/** The volume of the audio player (0.0 to 1.0) */
-	private float currentMusicVol = DEFAULT_VOL;
-	private float currentSoundVol = DEFAULT_VOL;
+	private static float currentMusicVol = DEFAULT_VOL;
+	private static float currentSoundVol = DEFAULT_VOL;
 
 	private float lastMusicVol = 0;
 	private float lastSoundVol = 0;
 
 	private int play_times = 0;
 
-	private boolean hasMasterGain = true;
-	private boolean isSoundDisabled = false;
+	private static boolean hasMasterGain = true;
+	private static boolean isSoundDisabled = false;
 	
 	//private boolean lastMusicState = true;
 	//private boolean lastSoundState = true;
 
 	private MainDesktopPane desktop;
-	//private MainScene mainScene;
+	private static MainScene mainScene;
 	
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
@@ -71,7 +72,7 @@ public class AudioPlayer {
 	public AudioPlayer(MainDesktopPane desktop) {
 		//logger.info("constructor is on " + Thread.currentThread().getName());
 		this.desktop = desktop;
-		//mainScene = desktop.getMainScene();
+		mainScene = desktop.getMainScene();
 
 		masterClock = Simulation.instance().getMasterClock();
 		
@@ -152,7 +153,7 @@ public class AudioPlayer {
 	 */
 	public void playSound(String filepath) {
 		if (!isSoundMute()) {
-			if (desktop.getMainScene() != null)
+			if (mainScene != null)
 				//Platform.runLater(() -> {
 					loadSound(filepath);
 				//});
@@ -191,7 +192,8 @@ public class AudioPlayer {
 	public void playMusic(String filepath) {
 		//logger.info("play() is on " + Thread.currentThread().getName());
 		if (!isMusicMute()) {
-			if (desktop.getMainScene() != null)
+			if (mainScene != null)
+//			if (desktop.getMainScene() != null)
 				//Platform.runLater(() -> { 
 					loadMusic(filepath);
 				//});
@@ -418,7 +420,7 @@ public class AudioPlayer {
 	}
 
 
-	public void enableMasterGain(boolean value) {
+	public static void enableMasterGain(boolean value) {
 		hasMasterGain = value;
 	}
 
@@ -501,7 +503,7 @@ public class AudioPlayer {
 		return isSoundDisabled;
 	}
 	
-	public void disableSound() {
+	public static void disableSound() {
 		isSoundDisabled = true;
 		currentMusicVol = 0;
 		currentSoundVol = 0;
@@ -513,6 +515,9 @@ public class AudioPlayer {
 		currentMusicTrack = null;
 		soundTracks = null;
 		played_tracks = null;
+		
+		if (mainScene != null)
+			MainScene.disableSound();
 		
 	}
 	

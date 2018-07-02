@@ -874,7 +874,7 @@ implements UnitListener {
     				EventType.MISSION_MEDICAL_EMERGENCY.getName(),
 					member.getName(), 
 					member.getVehicle().getName(),
-					member.getLocationTag().getQuickLocation()
+					member.getLocationTag().getLocale()
 					);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
@@ -1061,7 +1061,7 @@ implements UnitListener {
     				EventType.MISSION_EMERGENCY_BEACON_ON.getName(),
 					member.getName(), 
 					member.getVehicle().getName(),
-					member.getLocationTag().getQuickLocation()
+					member.getLocationTag().getLocale()
 					);
 
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);

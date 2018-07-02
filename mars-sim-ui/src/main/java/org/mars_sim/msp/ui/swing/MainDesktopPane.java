@@ -193,7 +193,8 @@ public class MainDesktopPane extends WebDesktopPane
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
-		if (!MainMenu.isSoundDisabled() && !soundPlayer.isSoundDisabled())
+		
+		if (mainScene == null && !MainMenu.isSoundDisabled() && !soundPlayer.isSoundDisabled())
 			soundPlayer.playRandomMusicTrack();
 
 		// Prepare tool windows.
@@ -1136,9 +1137,9 @@ public class MainDesktopPane extends WebDesktopPane
 		return soundPlayer;
 	}
 
-	public static void disableSound() {
-		soundPlayer.disableSound();
-	}
+//	public static void disableSound() {
+//		soundPlayer.disableSound();
+//	}
 	
 	/**
 	 * Opens a popup announcement window on the desktop.

@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -72,10 +71,12 @@ implements Serializable {
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = .5D;
-	/** Log cache array for storing previous log statements */
-	private static String[] logCache = new String[] {"", ""};
 
     // Data members
+    
+    private static int oxygenID = ResourceUtil.oxygenID;
+    private static int waterID = ResourceUtil.waterID;
+    
     /** The airlock to be used. */
     private Airlock airlock;
     /** True if person has an EVA suit. */
@@ -84,14 +85,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
 
-	//private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	//private static AmountResource waterAR = ResourceUtil.waterAR;
-
     private static MissionManager missionManager = Simulation.instance().getMissionManager();
     
-    //private Person person = null;
-    //private Robot robot = null;
-
     /**
      * Constructor.
      * @param person the person to perform the task
@@ -246,7 +241,7 @@ implements Serializable {
             logger.finer(person + " waiting to enter airlock.");
 
             // If person is already outside, change to exit airlock phase.
-            if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+            if (person.isOutside()) {
                 setPhase(EXITING_AIRLOCK);
                 return remainingTime;
             }
@@ -366,7 +361,7 @@ implements Serializable {
 		            logger.finer(person + " is entering airlock, but is already in airlock.");
 		            setPhase(WAITING_INSIDE_AIRLOCK);
 		        }
-		        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+		        else if (person.isOutside()) {
 		            logger.finer(person + " is entering airlock, but is already outside.");
 		            endTask();
 		        }
@@ -417,7 +412,7 @@ implements Serializable {
 		            }
 		        }
 		        else {
-		            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+		            if (!person.isOutside()) {
 
 		                // Walk to inside airlock position.
 		                if (airlock.getEntity() instanceof Building) {
@@ -638,7 +633,7 @@ implements Serializable {
 //        if (person != null) {
             logger.finer(person + " is exiting airlock going outside.");
 
-            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+            if (!person.isOutside()) {
                 throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() +
                         " but is not outside.");
             }
@@ -737,7 +732,7 @@ implements Serializable {
     public static boolean canExitAirlock(Person person, Airlock airlock) {
 
 		// Check if person is outside.
-        if (person.isOutside()) {//LocationSituation.OUTSIDE == person.getLocationSituation()) {
+        if (person.isOutside()) {
     		LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, 
     				person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since he/she is already outside.", null);
@@ -746,7 +741,7 @@ implements Serializable {
             return false;
         }
 
-        else if (person.isInVehicle()) {//LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
+        else if (person.isInVehicle()) {
         	
         	// Check if EVA suit is available.
         	if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
@@ -784,20 +779,16 @@ implements Serializable {
         // TODO: if incapacitated, should someone else help this person to get out?
         else if (person.getPerformanceRating() == 0) {
 
-        	// 2017-05-08 Prevent the logger statement below from being repeated multiple times
+        	// Prevent the logger statement below from being repeated multiple times
 	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
 	                " due to crippling performance rating";
 
-	    	//if (!logCache[1].equals(newLog)) {
-		    //	logCache[1] = newLog;
-			//	logger.severe(logCache[1]);
-	    	//}
     		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
 
-            // 2016-02-28 Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
+            // Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
             try {
             	//logger.info(person.getName() + " is nearly abandoning the action of exiting the airlock and switching to a new task");
-            	// 2016-10-07 Note: calling getNewAction() below is still considered "experimental"
+            	// Note: calling getNewAction() below is still considered "experimental"
             	// It may have caused StackOverflowError if a very high fatigue person is stranded in the airlock and cannot go outside.
             	// Intentionally add a 3% performance boost
             	person.getPhysicalCondition().setPerformanceFactor(3);
@@ -940,15 +931,15 @@ implements Serializable {
         int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
         // Check if enough oxygen.
-        double neededOxygen = suitInv.getARRemainingCapacity(ResourceUtil.oxygenID, true, false);
-        double availableOxygen = entityInv.getARStored(ResourceUtil.oxygenID, false);
+        double neededOxygen = suitInv.getARRemainingCapacity(oxygenID, true, false);
+        double availableOxygen = entityInv.getARStored(oxygenID, false);
         // Make sure there is enough extra oxygen for everyone else.
         availableOxygen -= (neededOxygen * otherPeopleNum);
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.waterAR, true, false);
-        double availableWater = entityInv.getAmountResourceStored(ResourceUtil.waterAR, false);
+        double neededWater = suitInv.getARRemainingCapacity(waterID, true, false);
+        double availableWater = entityInv.getARStored(waterID, false);
         // Make sure there is enough extra water for everyone else.
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);
@@ -973,8 +964,6 @@ implements Serializable {
             Inventory entityInv = person.getContainerUnit().getInventory();
 
             // Fill oxygen in suit from entity's inventory.
-            //AmountResource oxygenAR = ResourceUtil.oxygenAR;
-            int oxygenID = ResourceUtil.oxygenID;
             double neededOxygen = suitInv.getARRemainingCapacity(oxygenID, true, false);
             double availableOxygen = entityInv.getARStored(oxygenID, false);
 
@@ -995,8 +984,7 @@ implements Serializable {
             }
 
             // Fill water in suit from entity's inventory.
-            int waterID = ResourceUtil.waterID;
-            //AmountResource waterAR = ResourceUtil.waterAR;
+
             double neededWater = suitInv.getARRemainingCapacity(waterID, true, false);
             double availableWater = entityInv.getARStored(waterID, false);
 

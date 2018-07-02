@@ -59,6 +59,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.MenuItem;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
@@ -263,6 +264,9 @@ public class MainScene {
 			+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;" 
 			+ "-fx-font-weight:bold; -fx-text-alignment: center;";
 	
+	private static final String PANE_CSS = "jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;";
+	
+	
 	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
 	public static int chatBoxHeight = 256;
 	public static int LINUX_WIDTH = 270;
@@ -344,10 +348,11 @@ public class MainScene {
 	private AnchorPane mapsAnchorPane;
 	private SwingNode desktopNode;
 	private SwingNode mapNode;
-	private SwingNode minimapNode;// , guideNode;// monNode, missionNode, resupplyNode, sciNode,
-														// guideNode ;
+	private SwingNode minimapNode;
+	// guideNode,  monNode, missionNode, resupplyNode, sciNode, guideNode ;
+	
 	private Stage stage;
-	private Stage loadingStage;
+//	private Stage loadingStage;
 	private Stage savingStage;
 	
 	private Scene scene;
@@ -363,6 +368,9 @@ public class MainScene {
 	private HBox earthTimeBox;
 	private HBox marsTimeBox;
 
+	private static Label effectLabel;
+	private static Label trackLabel;
+	
 	private Label marsTimeLabel;
 	private Label lastSaveLabel;
 	private Label tpsLabel;
@@ -386,7 +394,7 @@ public class MainScene {
 	private Blend blend;
 	private VBox mapLabelBox;
 	private VBox speedVBox;
-	private VBox soundVBox;
+	private static VBox soundVBox;
 	private VBox toolbarBox;
 	private Tab mainTab, dashboardTab;
 
@@ -619,6 +627,10 @@ public class MainScene {
 		transportWizard = new TransportWizard(this, desktop);
 		constructionWizard = new ConstructionWizard(this, desktop);
 
+//		if (soundPlayer.isSoundDisabled()) {
+//			logger.log(Level.SEVERE, "Disabling the sound UI in MainScene.");
+//			disableSound();		
+//		}
 	}
 
 	/**
@@ -1370,7 +1382,7 @@ public class MainScene {
 		gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
 		//gridPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		gridPane.setAlignment(Pos.CENTER);
-		gridPane.setPadding(new Insets(1, 1, 1, 1));
+		gridPane.setPadding(new Insets(5, 5, 5, 5));
 		gridPane.setHgap(1.0);
 		gridPane.setVgap(1.0);
 
@@ -1421,7 +1433,7 @@ public class MainScene {
 		// , benchmarkLabel0, benchmarkLabel);
 
 		speedVBox = new VBox();	
-		speedVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;");
+		speedVBox.getStyleClass().add(PANE_CSS);
 		speedVBox.setPadding(new Insets(6, 2, 6, 2));
 		speedVBox.setAlignment(Pos.CENTER);
 		speedVBox.getChildren().addAll(header_label, gridPane); // timeSliderBox
@@ -1504,7 +1516,7 @@ public class MainScene {
 		soundPopup = new JFXPopup(soundPane);
 
 		Text header_label = createTextHeader("SOUND PANEL");
-
+		
 		// Set up a settlement view zoom bar
 		musicSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
@@ -1548,7 +1560,7 @@ public class MainScene {
 			}
 		});
 		// Background sound track
-		Label trackLabel = createBlendLabel("Music");
+		trackLabel = createBlendLabel("Music");
 		//trackLabel.setPadding(new Insets(0, 0, 0, 0));
 
 		musicMuteBox = new JFXCheckBox("mute");
@@ -1632,7 +1644,7 @@ public class MainScene {
 		});
 
 		// Sound effect
-		Label effectLabel = createBlendLabel("Sound Effect");
+		effectLabel = createBlendLabel("Sound Effect");
 		//effectLabel.setPadding(new Insets(0, 0, 0, 1));
 
 		soundEffectMuteBox = new JFXCheckBox("mute");
@@ -1706,14 +1718,12 @@ public class MainScene {
 		gridPane1.getChildren().addAll(effectLabel, soundEffectMuteBox);
 
 		soundVBox = new VBox();
-		soundVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;");
-		soundVBox.setPadding(new Insets(1, 1, 1, 1));
+		soundVBox.getStyleClass().add(PANE_CSS);
+		soundVBox.setPadding(new Insets(5, 5, 5, 5));
 		soundVBox.setAlignment(Pos.CENTER);
 		soundVBox.getChildren().addAll(header_label, gridPane0, musicSlider, gridPane1, soundEffectSlider);
 		soundPane.getChildren().addAll(soundVBox);
 
-		if (MainMenu.isSoundDisabled())
-			disableSound();
 	}
 
 	/*
@@ -3060,6 +3070,7 @@ public class MainScene {
 	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
 	 */
 	public void updateTimeLabels() {
+		
 		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
@@ -3439,7 +3450,8 @@ public class MainScene {
 			isShowingDialog = true;
 			masterClock.setPaused(true, showPane);
 			timeLabeltimer.pause();
-			billboardTimer.stop();
+			if (billboardTimer != null)
+				billboardTimer.stop();
 			if (showPane && !masterClock.isSavingSimulation())
 				startPausePopup();
 		}
@@ -3510,7 +3522,8 @@ public class MainScene {
 //		mainSceneExecutor.shutdownNow();
 		getDesktop().clearDesktop();
 		timeLabeltimer.stop();
-		billboardTimer.stop();
+		if (billboardTimer != null)
+			billboardTimer.stop();
 		stage.close();
 	}
 
@@ -4044,17 +4057,35 @@ public class MainScene {
 	}
 
 	public static void disableSound() {
-		MainDesktopPane.disableSound();
+//		logger.log(Level.SEVERE, "Disabling the sound UI in MainScene.");	
+		BoxBlur blur = new BoxBlur(1.0, 1.0, 1);
+		soundVBox.setEffect(blur);
 		
 		if (musicSlider != null) {
 			musicSlider.setDisable(true);// .setValue(0);
+			musicSlider.setEffect(blur);
 		}
 		if (soundEffectSlider != null) {
 			soundEffectSlider.setDisable(true);// .setValue(0);
+			soundEffectSlider.setEffect(blur);
 		}
 		
-		soundEffectMuteBox.setDisable(true);
-		musicMuteBox.setDisable(true);
+		if (musicMuteBox != null) {
+			musicMuteBox.setDisable(true);
+			musicMuteBox.setEffect(blur);
+		}
+		
+		if (soundEffectMuteBox != null) {
+			soundEffectMuteBox.setEffect(blur);
+			soundEffectMuteBox.setDisable(true);
+		}
+
+		//if (effectLabel != null)
+			effectLabel.setEffect(blur);
+		
+		//if (trackLabel != null)
+			trackLabel.setEffect(blur);
+	
 	}
 
 	public void setScreenSize(int w, int h) {
@@ -4244,7 +4275,7 @@ public class MainScene {
 		anchorPane = null;
 		//newSimThread = null;
 		stage = null;
-		loadingStage = null;
+//		loadingStage = null;
 		savingStage = null;
 		timeLabeltimer = null;
 		// notificationPane = null;

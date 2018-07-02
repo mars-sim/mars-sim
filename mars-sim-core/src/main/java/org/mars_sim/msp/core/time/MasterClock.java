@@ -107,6 +107,8 @@ public class MasterClock implements Serializable {
 	
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService clockListenerExecutor;
+	// Note: ExecutorService may not stop after the program exits.
+	// see https://netopyr.com/2017/03/13/surprising-behavior-of-cached-thread-pool/
 	
 	private static Simulation sim;
 	

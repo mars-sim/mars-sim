@@ -148,6 +148,23 @@ implements Serializable {
     }
 
 
+
+  	public void addAmountSupplyAmount(int resource, double amount) {
+		String r = ResourceUtil.findAmountResource(resource).getName();
+
+    	if (amountSupplyMap.containsKey(r)) {
+
+    		double oldAmount = amountSupplyMap.get(r);
+    		amountSupplyMap.put(r, amount + oldAmount);
+
+    	}
+    	else {
+    		amountSupplyMap.put(r, amount);
+    	}
+
+    	addAmountSupplyRequest(r, amount);
+   	}
+	  	
    	public void addAmountSupplyAmount(AmountResource resource, double amount) {
    		String r = resource.getName();
 
@@ -178,6 +195,19 @@ implements Serializable {
     	}
 	}
 
+   	public void addAmountSupplyRequest(String r, double amount) {
+  
+    	if (amountSupplyRequestMap.containsKey(r)) {
+    		int oldNum = amountSupplyRequestMap.get(r);
+			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
+    		amountSupplyRequestMap.put(r, oldNum + 1);
+    	}
+
+    	else {
+    		amountSupplyRequestMap.put(r, 1);
+    	}
+	}
+   	
     public double getAmountDemandAmount(String resourceName) {
     	double result;
     	String r = resourceName.toLowerCase();

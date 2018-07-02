@@ -142,14 +142,32 @@ implements Serializable {
 		
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
-		Person person = ((Person)startingMember);
+		Person person = (Person)startingMember;
 		String loc0 = null;
 		String loc1 = null;
+//        if (person.isInSettlement()) {
+//			loc0 = person.getBuildingLocation().getNickName();
+//			loc1 = person.getSettlement().getName();           	
+//        }
+//        else if (person.isInVehicle()) {
+//			loc0 = person.getVehicle().getName();
+//			
+//			if (person.getVehicle().getBuildingLocation() != null)
+//				loc1 = person.getVehicle().getSettlement().getName();
+//			else
+//				loc1 = person.getCoordinates().toString();
+//        }
+//        else {
+//			loc0 = OUTSIDE;
+//			loc1 = person.getCoordinates().toString();
+//        }
+// 
 		
         if (person.isInSettlement()) {
 			loc0 = person.getBuildingLocation().getNickName();
 			loc1 = person.getSettlement().getName();           	
-
+	
+					
 	   		// Created mission starting event.
 	   		HistoricalEvent newEvent = new MissionHistoricalEvent(
 	   				EventType.MISSION_START,
@@ -268,7 +286,11 @@ implements Serializable {
             }
             else if (person.isInVehicle()) {
 				loc0 = person.getVehicle().getName();
-				loc1 = person.getCoordinates().toString();
+				
+				if (person.getVehicle().getBuildingLocation() != null)
+					loc1 = person.getVehicle().getSettlement().getName();
+				else
+					loc1 = person.getCoordinates().toString();
             }
             else {
 				loc0 = OUTSIDE;
@@ -331,7 +353,10 @@ implements Serializable {
 	            }
 	            else if (person.isInVehicle()) {
 					loc0 = person.getVehicle().getName();
-					loc1 = person.getCoordinates().toString();
+					if (person.getVehicle().getBuildingLocation() != null)
+						loc1 = person.getVehicle().getSettlement().getName();
+					else
+						loc1 = person.getCoordinates().toString();
 	            }
 	            else {
 					loc0 = OUTSIDE;

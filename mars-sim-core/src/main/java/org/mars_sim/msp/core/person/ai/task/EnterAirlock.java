@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -62,13 +61,13 @@ implements Serializable {
     private static final double STRESS_MODIFIER = .5D;
 
     // Data members
+    private static int oxygenID = ResourceUtil.oxygenID;
+    private static int waterID = ResourceUtil.waterID;
+   
     /** The airlock to be used. */
     private Airlock airlock;
     private Point2D insideAirlockPos = null;
     private Point2D interiorAirlockPos = null;
-
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
 
     /**
      * Constructor.
@@ -617,20 +616,14 @@ implements Serializable {
                 Inventory personInv = person.getInventory();
                 Inventory entityInv = person.getContainerUnit().getInventory();
 
-                //System.out.println("suitInv : " + suitInv);
-                //System.out.println("personInv : " + personInv);
-                //System.out.println("entityInv : " + entityInv);
-
                 // Unload oxygen from suit.
-                //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                double oxygenAmount = suitInv.getAmountResourceStored(oxygenAR, false);
-                double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
+                double oxygenAmount = suitInv.getARStored(oxygenID, false);
+                double oxygenCapacity = entityInv.getARRemainingCapacity(oxygenID, true, false);
                 if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
                 try {
-                    suitInv.retrieveAmountResource(oxygenAR, oxygenAmount);
-                    entityInv.storeAmountResource(oxygenAR, oxygenAmount, true);
-    				// 2015-01-15 Add addSupplyAmount()
-                    entityInv.addAmountSupplyAmount(oxygenAR, oxygenAmount);
+                    suitInv.retrieveAR(oxygenID, oxygenAmount);
+                    entityInv.storeAR(oxygenID, oxygenAmount, true);
+                    entityInv.addAmountSupplyAmount(oxygenID, oxygenAmount);
 
                 }
                 catch (Exception e) {
@@ -638,15 +631,14 @@ implements Serializable {
                 }
 
                 // Unload water from suit.
-                //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-                double waterAmount = suitInv.getAmountResourceStored(waterAR, false);
-                double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterAR, true, false);
+                double waterAmount = suitInv.getARStored(waterID, false);
+                double waterCapacity = entityInv.getARRemainingCapacity(waterID, true, false);
                 if (waterAmount > waterCapacity) waterAmount = waterCapacity;
                 try {
-                    suitInv.retrieveAmountResource(waterAR, waterAmount);
-                    entityInv.storeAmountResource(waterAR, waterAmount, true);
-    				// 2015-01-15 Add addSupplyAmount()
-                    entityInv.addAmountSupplyAmount(waterAR, waterAmount);
+                    suitInv.retrieveAR(waterID, waterAmount);
+                    entityInv.storeAR(waterID, waterAmount, true);
+                    entityInv.addAmountSupplyAmount(waterID, waterAmount);
+                    
                 }
                 catch (Exception e) {
                     logger.severe("Water is not available : " + e.getMessage());

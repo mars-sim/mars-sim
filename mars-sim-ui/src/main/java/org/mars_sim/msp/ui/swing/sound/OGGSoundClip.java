@@ -464,11 +464,11 @@ public class OGGSoundClip {
 	}
 
 	public void disableSound() {
-		if (MainDesktopPane.mainScene != null) {
-			MainScene.disableSound();
-		}
-		else
-			MainDesktopPane.disableSound();
+//		if (MainDesktopPane.mainScene != null) {
+//			MainScene.disableSound();
+//		}
+//		else
+			AudioPlayer.disableSound();
 		
 		MainMenu.disableSound();
 	}

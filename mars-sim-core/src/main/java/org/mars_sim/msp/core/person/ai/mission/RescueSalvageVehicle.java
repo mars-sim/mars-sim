@@ -391,7 +391,7 @@ implements Serializable {
 				EventType.MISSION_RENDEZVOUS.getName(),
         		member.getName(), 
         		member.getVehicle().getName(),
-        		vehicleTarget.getLocationTag().getQuickLocation() 
+        		vehicleTarget.getLocationTag().getLocale() 
         		);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
@@ -447,7 +447,7 @@ implements Serializable {
     				EventType.MISSION_SALVAGE_VEHICLE.getName(),
             		person.getName(),
             		person.getVehicle().getName(),
-            		person.getSettlement().getName()
+            		person.getLocationTag().getLocale()
             		);
             Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
 
@@ -476,7 +476,7 @@ implements Serializable {
             				EventType.MISSION_RESCUE_PERSON.getName(), 
                     		person.getName(),
                     		person.getVehicle().getName(),
-                    		person.getSettlement().getName()
+                    		person.getLocationTag().getLocale()
                     		);
                     Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
                 }
