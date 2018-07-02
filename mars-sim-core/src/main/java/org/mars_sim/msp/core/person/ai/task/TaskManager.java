@@ -273,13 +273,13 @@ implements Serializable {
 	 * Filters tasks for recording in the task schedule
 	 */
 	public void recordTask() {
-		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
+		String taskDescription = getTaskDescription(false);
+		String taskName = getTaskClassName();
+		
 		String missionName = "";
 		if (missionManager.getMission(person) != null)
 			missionName = missionManager.getMission(person).toString();
-		String taskName = getTaskClassName();//getTaskClassName();//currentTask.getTaskName(); //
-		//FunctionType functionType = getFunction(true);
-		
+
 		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior, WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
 		if (!taskName.toLowerCase().contains("walk")
@@ -303,7 +303,7 @@ implements Serializable {
 		    	ts = person.getTaskSchedule();
 		    
 		    // TODO: decide if it needs to record the same task description as the last
-			ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);//, functionType);
+			ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
 			taskDescriptionCache = taskDescription;
 
 		}
@@ -314,9 +314,6 @@ implements Serializable {
 	 * @param newTask the task to be added
 	 */
 	public void addTask(Task newTask) {
-
-		// 2015-10-22 Added recordTask()
-		//recordTask();
 
 		if (hasActiveTask()) {
 			currentTask.addSubTask(newTask);
@@ -335,9 +332,7 @@ implements Serializable {
 					taskPhaseNameCache = "";
 			else
 				taskPhaseNameCache = "";
-			// initialize lastTask at the start of sim
-			//if (lastTask == null)
-			//	lastTask = currentTask;
+
 		}
 
 		person.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);

@@ -402,7 +402,7 @@ public class ClockUtils implements Serializable {
 	 *
     * @return
     */
-	public static double getNU(EarthClock clock) {
+	public static double getTrueAnomaly_Concise(EarthClock clock) {
 		double j2000 = getDaysSinceJ2kEpoch(clock);
 		double Mdeg = getMarsMeanAnomaly(clock);
 		double M = Mdeg * OrbitInfo.DEGREE_TO_RADIAN;
@@ -446,14 +446,38 @@ public class ClockUtils implements Serializable {
 	 * @return degree L_s
 	 */
 	public static double getLs(EarthClock clock) {
+		double j2000 = getDaysSinceJ2kEpoch(clock);
+		double M = (19.3870 + 0.52402075 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
+		double d = 360 / 365.25 ;
+		double PBS = 
+			   0.0071 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.2353) +  49.409)) +
+               0.0057 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.7543) + 168.173)) +
+               0.0039 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  1.1177) + 191.837)) +
+               0.0037 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 15.7866) +  21.736)) +
+               0.0021 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.1354) +  15.704)) +
+               0.0020 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.4694) +  95.528)) +
+               0.0018 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 32.8493) +  49.095));
+		double EOC =  (10.691 + 3.0 * j2000 /1_000_000) 
+				* Math.sin(M) + 0.623 * Math.sin(2*M) + 0.050* Math.sin(3*M) 
+				+ 0.005* Math.sin(4*M) + 0.0005* Math.sin(5*M) + PBS;//OrbitInfo.DEGREE_TO_RADIAN;
+		double alphaFMS = 270.3871 + 0.524038496 * j2000;	
+		return alphaFMS + EOC;
+	}
+
+	/**
+	 * Determine areocentric solar longitude. (AM2000, eq. 19)
+	 * @return degree L_s
+	 */
+	public static double getLs_Concise(EarthClock clock) {
 		return getAlphaFMS(clock) + getEOC(clock);
 	}
 
+	
 	/*
 	 * Determine Equation of Time. (AM2000, eq. 20)
      * @return in degrees 
      */
-	public static double getEOT(EarthClock clock) {
+	public static double getEOT_Concise(EarthClock clock) {
 		double Ls = getLs(clock) * OrbitInfo.DEGREE_TO_RADIAN;
 		double EOT = 2.861 * Math.sin(2*Ls) 
 				- 0.071 * Math.sin(4*Ls) 
@@ -466,8 +490,8 @@ public class ClockUtils implements Serializable {
 	 * Determine Equation of Time. (AM2000, eq. 20)
      * @return in hour
      */
-	public static double getEOT_Hr(EarthClock clock) {
-		double EOT = getEOT(clock) * 24/360;
+	public static double getEOTHour_Concise(EarthClock clock) {
+		double EOT = getEOT_Concise(clock) * 24/360;
 		return EOT;
 	}
 	

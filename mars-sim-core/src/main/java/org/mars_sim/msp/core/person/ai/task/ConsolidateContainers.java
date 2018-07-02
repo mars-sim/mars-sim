@@ -108,7 +108,7 @@ implements Serializable {
             }
             else {
                 // Walk to location to consolidate containers.
-                walkToRandomLocation(true);
+                walkToRandomLocation(false);
             }
         }
         else {

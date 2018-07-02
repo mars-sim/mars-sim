@@ -543,19 +543,19 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 								message = "There is a " + cause + " in " + location0 + " at " + location1 + ". Fortunately, no one was hurt.";
 							else
 								message = who + " witnessed or was traumatized by the " + cause + " in " + location0 + " at " + location1;
+				        	willNotify = true;
 						}
 						
 						else if (eventType == EventType.HAZARD_RADIATION_EXPOSURE) {
 							header = Msg.getString("EventType.hazard.radiationExposure"); //$NON-NLS-1$	
-							
+				        	willNotify = true;						
 							message = who + " was exposed to " + cause.replace("Dosage : ", "") + " of radiation in " + location0 + " at " + location1;
 						}
 
-				        if (!messageCache.contains(message)) {
+				        if (willNotify && !messageCache.contains(message)) {
 				        	messageCache.add(0, message);
 				        	if (messageCache.size() > MSG_CACHE)
 				        		messageCache.remove(messageCache.size()-1);
-				        	willNotify = true;
 					        type = 3;
 				        }
 
@@ -720,7 +720,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    	//Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
 	    	System.out.println("Notification : " + message);
 	    	
-	    	if (type == 0 || type == 1 || type == 2 || type == 3) {
+//	    	if (type == 0 || type == 1 || type == 2 || type == 3) {
 	    		
 	    		int theme = MainScene.getTheme();
 	    		
@@ -757,7 +757,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		    		.show();
 //		    		.showWarning();
 		    	}
-	    	}
+//	    	}
 	    	
 	    	desktop.getMainScene().sendMsg(message);
 	    }

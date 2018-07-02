@@ -576,9 +576,10 @@ public class BuildingManager implements Serializable {
             Building b = i.next();
             if (b.getTemplateID() == id) {
                 result = b;
-                //System.out.println(b.getNickName() + " id " + id);
-                //return b; // 2017-05-01 NOTE: do NOT use return b or else it fails maven test.
-                //break; // 2016-12-08 NOTE: the word 'break' here will cause maven test to fail
+                //return b; 
+                // 2017-05-01 NOTE: do NOT use return b or else it fails maven test.
+                //break; 
+                // 2016-12-08 NOTE: the word 'break' here will cause maven test to fail
             }
         }
 
@@ -1437,7 +1438,7 @@ public class BuildingManager implements Serializable {
 	                if (!lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.addPerson(person);
 	                }
-	            	// 2017-03-08 Added setCurrentBuilding()
+	                
 	                person.setCurrentBuilding(building);
                 }
 
@@ -1448,7 +1449,7 @@ public class BuildingManager implements Serializable {
 	                if (!roboticStation.containsRobotOccupant(robot)) {
 	                	roboticStation.addRobot(robot);
 	                }
-	            	// 2017-03-08 Added setCurrentBuilding()
+
 	                robot.setCurrentBuilding(building);
                 }
 
@@ -1533,7 +1534,6 @@ public class BuildingManager implements Serializable {
                 	}
                 	person.setXLocation(settlementLoc.getX());
                 	person.setYLocation(settlementLoc.getY());
-	            	// 2017-03-08 Added setCurrentBuilding()
 	                person.setCurrentBuilding(building);
                 }
 
@@ -1542,12 +1542,10 @@ public class BuildingManager implements Serializable {
                 	RoboticStation roboticStation = building.getRoboticStation();
 
                 	if (!roboticStation.containsRobotOccupant(robot)) {
-                		//System.out.println("!lifeSupport.containsRobotOccupant(robot) is true");
                 		roboticStation.addRobot(robot);
 	                }
                 	robot.setXLocation(settlementLoc.getX());
                 	robot.setYLocation(settlementLoc.getY());
-	            	// 2017-03-08 Added setCurrentBuilding()
 	                robot.setCurrentBuilding(building);
                 }
             }
@@ -1576,7 +1574,6 @@ public class BuildingManager implements Serializable {
 	                if (lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.removePerson(person);
 	                }
-	            	// 2017-03-08 Added setCurrentBuilding()
 	                person.setCurrentBuilding(null);
                 }
 
@@ -1587,7 +1584,6 @@ public class BuildingManager implements Serializable {
                 	if (roboticStation.containsRobotOccupant(robot)) {
                 		roboticStation.removeRobot(robot);
 	                }
-	            	// 2017-03-08 Added setCurrentBuilding()
 	                robot.setCurrentBuilding(null);
                 }
 

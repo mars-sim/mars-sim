@@ -206,8 +206,7 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         attributes = new RoboticAttributeManager(this);
         botMind = new BotMind(this);
         health = new SystemCondition(this);
-        //scientificAchievement = new HashMap<ScienceType, Double>(0);
-        // 2015-03-19 Added TaskSchedule class
+ 
         taskSchedule = new TaskSchedule(this);
 
         setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
@@ -236,7 +235,6 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
      * Create a string representing the birth time of the robot.
      * @return birth time string.
      */
-    // 2017-01-03 Revise createBirthTimeString()
     private String createBirthTimeString() {
     	StringBuilder s = new StringBuilder();
         // Set a birth time for the robot
@@ -833,9 +831,8 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	  * Returns null if outside of a settlement
 	  * @return building
 	  */
-	// 2015-05-18 Added getBuildingLocation()
 	public Building getBuildingLocation() {
-		return computeCurrentBuilding();//currentBuilding;
+		return computeCurrentBuilding();
 	}
 
 	/**
@@ -843,9 +840,8 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	  * Returns null if outside of a settlement
 	  * @return building
 	  */
-	// 2017-03-08 Added setCurrentBuilding()
 	public Building computeCurrentBuilding() {
-		if (isInSettlement()) {//getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (isInSettlement()) {
 			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(), getYLocation());
 		}
 		else
@@ -859,7 +855,6 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	  * Returns null if outside of a settlement
 	  * @return building
 	  */
-	// 2017-03-08 Added setCurrentBuilding()
 	public void setCurrentBuilding(Building building) {
 		currentBuilding = building;
 	}
@@ -881,7 +876,6 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 	}
 
 	public int getProduceFoodSkill() {
-		//SkillManager skillManager = robot.getBotMind().getSkillManager();
 		int skill = getSkillManager().getEffectiveSkillLevel(SkillType.COOKING) * 5;
 	    skill += getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
 	    skill = (int) Math.round(skill / 7D);

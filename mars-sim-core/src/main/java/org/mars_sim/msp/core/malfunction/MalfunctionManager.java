@@ -423,7 +423,7 @@ implements Serializable {
 							entity.getLocale());
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-		        			malfunction.getName() + " detected - due to Parts Fatigue - in " + entity.getLocale(), null);
+		        			malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(), null);
 					}
 					else {
 						HistoricalEvent newEvent = new MalfunctionEvent(
@@ -435,7 +435,7 @@ implements Serializable {
 								entity.getLocale());
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
 							LogConsolidated.log(logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-			        			+ malfunction.getName() + " - due to Human Factors - in " + entity.getLocale(), null);
+			        			+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(), null);
 					}
 				}
 				else {
@@ -763,7 +763,7 @@ implements Serializable {
 */		
 
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-    			"[" + u.getLocationTag().getQuickLocation() + "] A Type-I accident occurs " + sb.toString() + ".", null);
+    			"[" + u.getLocationTag().getImmediateLocation() + "] A Type-I accident occurs " + sb.toString() + ".", null);
 
 	}
 	
@@ -796,15 +796,16 @@ implements Serializable {
 			sb.insert(0, "in ");
 		}
 */
-		String sName = null;
-		if (entity.getImmediateLocation() != null) {
-			sName = entity.getImmediateLocation().replace(Conversion.capitalize(n), "")
-					.replace(" in ", "");
-		}
+		
+//		String sName = null;
+//		if (entity.getImmediateLocation() != null) {
+//			sName = entity.getImmediateLocation().replace(Conversion.capitalize(n), "")
+//					.replace(" in ", "");
+//		}
 		
     	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
     			//"[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
-			"[" + sName + "] A Type-II accident occurs in " + Conversion.capitalize(n), null);
+			"[" + Conversion.capitalize(n) + "] A Type-II accident occurs in " + entity.getLocale(), null);
 	}
 	
 	/**

@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -381,7 +382,7 @@ implements Serializable, Comparable<Task> {
      */
     protected void setPhase(TaskPhase newPhase) {
         if (newPhase == null) {
-//            throw new IllegalArgumentException("newPhase is null");    
+            throw new IllegalArgumentException("newPhase is null");    
         }
         else if (phases.contains(newPhase)) {
             phase = newPhase;
@@ -1084,8 +1085,6 @@ implements Serializable, Comparable<Task> {
 		       // If person is in a settlement, walk to random building.
 	        if (person.isInSettlement()) {
 
-	            //Building currentBuilding = BuildingManager.getBuilding(person);
-	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
 	            List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
 
 	            if (buildingList.size() > 0) {
@@ -1108,39 +1107,35 @@ implements Serializable, Comparable<Task> {
 		       // If robot is in a settlement, walk to random building.
 	        if (robot.isInSettlement()) {
 
-	            //Building currentBuilding = BuildingManager.getBuilding(robot);
-	            //TODO: determine why the below results in java.lang.NullPointerException
-	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
-	        	List<Building> buildingList = robot.getSettlement().getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
-
-	            if (buildingList.size() > 0) {
-	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-	                Building building = buildingList.get(buildingIndex);
-	                // do not stay blocking the hallway
-	                //if (currentBuilding.getBuildingType().equals("Hallway"))
-	                	//walkToRandomLocInBuilding(building, allowFail);
-	                	//walkToRandomLocation(allowFail);
+//	        	List<Building> buildingList = robot.getSettlement().getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
+//
+//	            if (buildingList.size() > 0) {
+//	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+//	                Building building = buildingList.get(buildingIndex);
+//	                // do not stay blocking the hallway
+//	                //if (currentBuilding.getBuildingType().equals("Hallway"))
+//	                	//walkToRandomLocInBuilding(building, allowFail);
+//	                	//walkToRandomLocation(allowFail);
 	                //else
-	                	walkToRandomLocInBuilding(building, allowFail);
-	            }
+//	                	walkToRandomLocInBuilding(building, allowFail);
+	                	
+	                	walkToAssignedDutyLocation(robot, false);
+//	            }
 	        }
 	        // If robot is in a vehicle, walk to random location within vehicle.
-	        else if (robot.isInVehicle()) {
+//	        else if (robot.isInVehicle()) {
 
 	            // Walk to a random location within rover if possible.
 //	            if (robot.getVehicle() instanceof Rover) {
 //	                walkToRandomLocInRover((Rover) robot.getVehicle(), allowFail);
 //	            }
-	        }
+//	        }
 		}
     }
 
     protected void walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
     	if (robot.isInSettlement()) {
     		Building currentBuilding = BuildingManager.getBuilding(robot);
-
-       		//if (currentBuilding == null)
-             //   throw new IllegalStateException("currentBuilding is null");
 
     		if (currentBuilding != null) {
     			RobotType type = robot.getRobotType();//.getName();
@@ -1177,11 +1172,31 @@ implements Serializable, Comparable<Task> {
 
 
 	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
-
+	            
+	            // Filter off hallways and tunnels
+	            buildingList = buildingList
+	            		.stream()
+	            		.filter(b-> !b.getBuildingType().toLowerCase().equals("hallway")
+	            				&& !b.getBuildingType().toLowerCase().equals("tunnel"))
+	       				.collect(Collectors.toList());
+	            
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+	                
 	                Building building = buildingList.get(buildingIndex);
-	                walkToActivitySpotInBuilding(building, fct, false);
+	                
+	                if (building.getNickName().toLowerCase().contains("astronomy")) {
+
+	                	if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
+	                	
+			                logger.info(robot.getNickName() + " is walking toward " + building.getNickName());
+			                walkToActivitySpotInBuilding(building, fct, allowFail);
+		                }
+	                }
+	                else {
+//		                logger.info(robot.getNickName() + " is walking toward " + building.getNickName());
+		                walkToActivitySpotInBuilding(building, fct, allowFail);
+	                }
 	            }
     		}
     	}

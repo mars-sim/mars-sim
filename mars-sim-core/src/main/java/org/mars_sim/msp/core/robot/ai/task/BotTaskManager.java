@@ -194,30 +194,25 @@ implements Serializable {
 	 * Prepares the task for recording in the task schedule
 	 */
 	public void recordTask() {
-		String taskDescription = getTaskDescription(false);//currentTask.getDescription(); //
-		String taskName = getTaskClassName();//currentTask.getTaskName(); //
+		String taskDescription = getTaskDescription(false);
+		String taskName = getTaskClassName();
 		String taskPhase = null;
-		//FunctionType functionType = getFunction(true);
-		
-		if (!taskName.toLowerCase().contains("walk")) {//equals("WalkRoverInterior")
-				//&& !taskName.equals("WalkSettlementInterior")
-				//&& !taskName.equals("WalkSteps")) { // filter off Task phase "Walking" due to its excessive occurrences
-			if (!taskDescription.equals(taskDescriptionCache) 
-					&& !taskDescription.toLowerCase().contains("walk") //.equals("Walking inside a settlement")
-					&& !taskDescription.equals("")) {
+	
+		if (!taskName.toLowerCase().contains("walk")
+			&& !taskDescription.equals(taskDescriptionCache)
+			&& !taskDescription.toLowerCase().contains("walk")
+			&& !taskDescription.equals("")
+			&& getPhase() != null) {
 
-				if (getPhase() != null) {
+			taskPhase = getPhase().getName();
 
-					taskPhase = getPhase().getName();
-
-					if (!taskPhase.equals(taskPhaseCache)) {
-						
-						robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");//, functionType);
-						taskPhaseCache = taskPhase;
-						taskDescriptionCache = taskDescription;
-					}
-				}
+			if (!taskPhase.equals(taskPhaseCache)) {
+				
+				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");
+				taskPhaseCache = taskPhase;
+				taskDescriptionCache = taskDescription;
 			}
+
 		}
 	}
 
@@ -226,9 +221,6 @@ implements Serializable {
 	 * @param newTask the task to be added
 	 */
 	public void addTask(Task newTask) {
-
-		// 2015-10-22 Added recordTask()
-		//recordTask();
 
 		if (hasActiveTask()) {
 			currentTask.addSubTask(newTask);
@@ -239,16 +231,15 @@ implements Serializable {
 			//taskNameCache = currentTask.getTaskName();
 			taskDescriptionCache = currentTask.getDescription();
 
-			if (currentTask.getPhase() != null)
-				if (currentTask.getPhase().getName() != null)
+			TaskPhase tp = currentTask.getPhase();
+			if (tp != null)
+				if (tp.getName() != null)
 					taskPhaseCache = currentTask.getPhase().getName();
 				else
 					taskPhaseCache = "";
 			else
 				taskPhaseCache = "";
-			// initialize lastTask at the start of sim
-			//if (lastTask == null)
-			//	lastTask = currentTask;
+			
 		}
 
 

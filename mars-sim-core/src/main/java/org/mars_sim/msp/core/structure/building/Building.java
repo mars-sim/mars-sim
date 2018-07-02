@@ -139,7 +139,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
 	
-	// 2015-03-12 Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
+	// Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
 	/** Default : 3340 Sols (5 orbits). */
 	private int wearLifeTime = 3340000;
 	/** Default : 50 millisols maintenance time. */
@@ -171,11 +171,11 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
 
-	// 2014-10-28  Changed from "name" to "buildingType"
+	// Changed from "name" to "buildingType"
 	protected String buildingType;
 
 	private String nickName;
-	// 2014-11-27 Added description for each building
+	// Added description for each building
 	private String description;// = "Stay tuned";
 
 	//protected Set<Function> functions;
@@ -251,7 +251,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
 			if (lifeSupport == null) {
 				lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
-			    // 2015-12-30 Set up an inhabitable_building id for tracking composition of air
+			    // Set up an inhabitable_building id for tracking composition of air
 				int id = manager.getNextInhabitableID();
 				setInhabitableID(id);
 			}
@@ -309,7 +309,6 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	 * @param manager the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	//2014-10-27  Changed "name" to "buildingType"
 	public Building(int id, String buildingType, String nickName, double w, double l,
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
@@ -329,23 +328,23 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
-		//if (inv == null)
-		//	inv = settlement.getInventory();
-		//if (s_inv == null)
-		//	s_inv = settlement.getInventory();
-		//if (b_inv == null) {
-		//	b_inv = super.getInventory(); // it's already been created in its super class
-/*
-		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
-			//b_inv = new Inventory(this);
-			b_inv.addGeneralCapacity(100);
-		} 
-		else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
-			b_inv.addGeneralCapacity(1_000_000);
-		else
-			b_inv.addGeneralCapacity(100_000);
-		}
-*/
+//		if (inv == null)
+//			inv = settlement.getInventory();
+//		if (s_inv == null)
+//			s_inv = settlement.getInventory();
+//		if (b_inv == null) {
+//			b_inv = super.getInventory(); // it's already been created in its super class
+
+//		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
+//			//b_inv = new Inventory(this);
+//			b_inv.addGeneralCapacity(100);
+//		} 
+//		else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
+//			b_inv.addGeneralCapacity(1_000_000);
+//		else
+//			b_inv.addGeneralCapacity(100_000);
+//		}
+
 		
 
 		if (buildingType.toLowerCase().contains("greenhouse")) {
@@ -371,32 +370,29 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
 
-
-/*
-		// Get building's dimensions.
-		if (width != -1D) {
-			this.width = width;
-		}
-		else {
-			this.width = buildingConfig.getWidth(buildingType);
-		}
-		
-		if (this.width <= 0D) {
-			throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + buildingType);
-		}
-
-		if (length != -1D) {
-			this.length = length;
-		}
-		else {
-			this.length = buildingConfig.getLength(buildingType);
-		}
-		
-		if (this.length <= 0D) {
-			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
-		}
-*/
-		
+//		// Get building's dimensions.
+//		if (width != -1D) {
+//			this.width = width;
+//		}
+//		else {
+//			this.width = buildingConfig.getWidth(buildingType);
+//		}
+//		
+//		if (this.width <= 0D) {
+//			throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + buildingType);
+//		}
+//
+//		if (length != -1D) {
+//			this.length = length;
+//		}
+//		else {
+//			this.length = buildingConfig.getLength(buildingType);
+//		}
+//		
+//		if (this.length <= 0D) {
+//			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
+//		}
+	
 
 		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel"))	{
 			length = l;
@@ -503,7 +499,6 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	 * Sets building nickname
 	 * @param nick name
 	 */
-	// 2014-10-28  Added setBuildingNickName()
     public void setBuildingNickName(String name) {
         this.nickName = name;
     }
@@ -805,21 +800,18 @@ LocalBoundedObject, InsidePathLocation, Serializable {
         		return true;
         	}
 		}
-
-/*
-		functions.stream()
-		.filter((f) -> f.getFunction() == functionType)
-		.forEach((f) -> {
-        		return true;
-		});
-
-
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) {
-			if (i.next().getFunction() == function)
-				return true;
-		}
-*/
+//		functions.stream()
+//		.filter((f) -> f.getFunction() == functionType)
+//		.forEach((f) -> {
+//        		return true;
+//		});
+//
+//
+//		Iterator<Function> i = functions.iterator();
+//		while (i.hasNext()) {
+//			if (i.next().getFunction() == function)
+//				return true;
+//		}
 		return result;
 	}
 
@@ -870,7 +862,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	public void removeFunction(Function function) {
 		if (functions.contains(function)) {
 	        functions.remove(function);
-	        // 2016-10-28 Add calling removeOneFunctionfromBFMap()
+	        // Call removeOneFunctionfromBFMap()
 	        manager.removeOneFunctionfromBFMap(this, function);
 	    }
 	}
@@ -889,17 +881,15 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	 * Sets the building's nickName
 	 * @return none
 	 */
-	// 2014-10-27  Called by TabPanelBuilding.java for building nickname change
+	// Called by TabPanelBuilding.java for building nickname change
 	public void setNickName(String nickName) {
-		//System.out.println("input nickName is " + nickName);
 		this.nickName = nickName;
-		//System.out.println("new nickName is " + this.nickName);
 	}
 	/**
 	 * Gets the building's nickName
 	 * @return building's nickName as a String
 	 */
-	// 2014-10-27  Called by TabPanelBuilding.java for building nickname change
+	// Called by TabPanelBuilding.java for building nickname change
 	public String getNickName() {
 		return nickName;
 	}
@@ -910,7 +900,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	 * @deprecated
 	 * TODO internationalize building names for display in user interface.
 	 */
-	// 2014-10-28 change data field from "name" to "buildingType"
+	// Change data field from "name" to "buildingType"
 	// TODO: change getName() to getBuildingType()
 	// getName() has 120 occurrences in MSP
 	// will retain its name for the time being
@@ -1264,7 +1254,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	 * @return The settlement and building's nickName.
 	 */
 	// TODO: To prevent crash, check which classes still rely on toString() to return buildingType
-	// 2014-10-29 change buildingType to nickName
+	// Change buildingType to nickName
 	public String toString() {
 //		return buildingType;
 		return nickName;
@@ -1307,7 +1297,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	    if (msolCache != msol) {
 	    	msolCache = msol;
 	    	
-			// 2015-06-03 determine if a meteorite impact will occur within the new sol
+			// Determine if a meteorite impact will occur within the new sol
 			checkForMeteoriteImpact();
 	
 			// Update malfunction manager.

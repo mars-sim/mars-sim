@@ -249,7 +249,8 @@ public class MainScene {
 	private static final String TR = "Current TR :";
 	private static final String DTR = "Default TR :";
 	private static final String HZ = " Hz";
-
+	private static final String REFRESH = "UI Refresh :";
+	
 	private static final String SOLAR_LONGITUDE = "Solar Longitude : ";
 	private static final String NOTE_MARS = " Note : Mars's now at ";
 	private static final String APHELION = "aphelion ";
@@ -258,6 +259,10 @@ public class MainScene {
 	private static final String NORTH = "Northern : ";
 	private static final String SOUTH = "Southern : ";
 
+	private static final String LABEL_CSS_STYLE = "-fx-background-color:transparent; -fx-text-fill: white;" + "-fx-font-size: 11px;" 
+			+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;" 
+			+ "-fx-font-weight:bold; -fx-text-alignment: center;";
+	
 	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
 	public static int chatBoxHeight = 256;
 	public static int LINUX_WIDTH = 270;
@@ -361,8 +366,10 @@ public class MainScene {
 	private Label marsTimeLabel;
 	private Label lastSaveLabel;
 	private Label tpsLabel;
+	private Label realTimeLabel;
 	private Label upTimeLabel;
 	private Label noteLabel;
+	private Label refreshLabel;
 
 	private Button marsTimeButton;
 
@@ -1249,63 +1256,28 @@ public class MainScene {
 		speedPane.setPrefHeight(100);
 		speedPane.setPrefWidth(250);// earthTimeButton.getPrefWidth());
 		simSpeedPopup = new JFXPopup(speedPane);
-
-		String LABEL_CSS_STYLE = "-fx-background-color:transparent; -fx-text-fill: white;" + "-fx-font-size: 11px;" 
-						+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;" 
-						+ "-fx-font-weight:bold; -fx-text-alignment: center;";
+		
 		
 		Text header_label = createTextHeader("SPEED PANEL");
 
-		int default_ratio = (int) masterClock.getCalculatedTimeRatio();
+
+		Label defaultRatioLabel0 = createLabelLeft(DTR, "The default time-ratio is the ratio of simulation time to real time.");
+		Label defaultRatioLabel = createLabelRight("e.g. 128x means 1 real secs corresponds to 128 sim secs.");
+		int defaultRatioInt = (int) masterClock.getCalculatedTimeRatio();
 		StringBuilder s0 = new StringBuilder();
+		s0.append(defaultRatioInt);
+		defaultRatioLabel.setText(s0.toString());
 
-		Label default_ratio_label0 = new Label(DTR);
-		// time_ratio_label0.setEffect(blend);
-		default_ratio_label0.setAlignment(Pos.CENTER_RIGHT);
-		default_ratio_label0.setStyle(LABEL_CSS_STYLE);
 		
-		default_ratio_label0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(default_ratio_label0, "The default time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
-
-		Label spinner_label0 = new Label(TR);
-		// time_ratio_label0.setEffect(blend);
-		spinner_label0.setAlignment(Pos.CENTER_RIGHT);
-		spinner_label0.setStyle(LABEL_CSS_STYLE);
-		spinner_label0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(spinner_label0, "The current time-ratio is the ratio of simulation time to real time"); //$NON-NLS-1$
-
-		Label default_ratio_label = new Label();
-		// time_ratio_label.setEffect(blend);
-		default_ratio_label.setStyle(LABEL_CSS_STYLE);
-		// default_ratio_label.setPadding(new Insets(1, 1, 1, 5));
-		default_ratio_label.setAlignment(Pos.CENTER);
-		// s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
-		s0.append(default_ratio);
-		default_ratio_label.setText(s0.toString());
-		setQuickToolTip(default_ratio_label, "e.g. if 128, then 1 real second equals 128 sim seconds"); //$NON-NLS-1$
-
-		Label real_time_label0 = new Label(SEC);
-		// real_time_label0.setEffect(blend);
-		real_time_label0.setAlignment(Pos.CENTER_RIGHT);
-		real_time_label0.setStyle(LABEL_CSS_STYLE);
-		real_time_label0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(real_time_label0, "the amount of simulation time per real second"); //$NON-NLS-1$
-
-		Label real_time_label = new Label();
-		// real_time_label.setEffect(blend);
-		real_time_label.setStyle(LABEL_CSS_STYLE);
-		// real_time_label.setPadding(new Insets(1, 1, 1, 5));
-		real_time_label.setAlignment(Pos.CENTER);
-		setQuickToolTip(real_time_label,
-				"e.g. 02m.08s means that 1 real second equals 2 real minutes & 8 real seconds"); //$NON-NLS-1$
-
+		Label realTimeLabel0 = createLabelLeft(SEC, "The amount of simulation time per real second.");
+		realTimeLabel = createLabelRight("e.g. 02m.08s means every real world second corresponds to 2 mins and 8 secs of simulation time.");
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
-		// String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio);
-		// //$NON-NLS-1$
 		s1.append(ClockUtils.getTimeTruncated(ratio));
-		real_time_label.setText(s1.toString());
+		realTimeLabel.setText(s1.toString());
+
 		
+		Label spinnerLabel0 = createLabelLeft(TR, "The current time-ratio is the ratio of simulation time to real time.");
 		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 
 //		List<Integer> items = null;
@@ -1321,23 +1293,24 @@ public class MainScene {
 //			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
 
 		List<Integer> items = null;
-		if (default_ratio == 16)
+		if (defaultRatioInt == 16)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
-		else if (default_ratio == 32)
+		else if (defaultRatioInt == 32)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);// ,1024);
-		else if (default_ratio == 64)
+		else if (defaultRatioInt == 64)
 			items =Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);// , 2048);
-		else if (default_ratio == 128)
+		else if (defaultRatioInt == 128)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);// ,4096,8192);
 		else // if (default_ratio == 256)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
+		
 		
 		timeRatioSpinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
 		//spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
 		timeRatioSpinner.setMaxSize(85, 15);
 		timeRatioSpinner.setStyle(LABEL_CSS_STYLE);
 		// spinner.setAlignment(Pos.CENTER);
-		timeRatioSpinner.getValueFactory().setValue(default_ratio);
+		timeRatioSpinner.getValueFactory().setValue(defaultRatioInt);
 		timeRatioSpinner.valueProperty().addListener((o, old_val, new_val) -> {
 
 			if (old_val != new_val) {
@@ -1349,42 +1322,23 @@ public class MainScene {
 
 				StringBuilder s3 = new StringBuilder();
 				s3.append(ClockUtils.getTimeTruncated(value));
-				real_time_label.setText(s3.toString());
+				realTimeLabel.setText(s3.toString());
 
 			}
 		});
 
-		Label tpsLabel0 = new Label(TPS);
-		// TPSLabel0.setEffect(blend);
-		tpsLabel0.setAlignment(Pos.CENTER_RIGHT);
-		tpsLabel0.setStyle(LABEL_CSS_STYLE);
-		tpsLabel0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(tpsLabel0, "how often the simulation updates the changes"); //$NON-NLS-1$
-
-		tpsLabel = new Label();
-		// TPSLabel.setEffect(blend);
-		tpsLabel.setStyle(LABEL_CSS_STYLE);
-		// TPSLabel.setPadding(new Insets(1, 1, 1, 5));
-		tpsLabel.setAlignment(Pos.CENTER);
+		Label tpsLabel0 = createLabelLeft(TPS, "The frequency of simulation ticks being sent.");
+		tpsLabel = createLabelRight("e.g. 10 Hz means 10 ticks per second.");
 		tpsLabel.setText(masterClock.getPulsesPerSecond() + HZ);
-		setQuickToolTip(tpsLabel, "e.g. 6.22 Hz means for each second, the simulation is updated 6.22 times"); //$NON-NLS-1$
 
-		Label upTimeLabel0 = new Label(UPTIME);
-		// upTimeLabel0.setEffect(blend);
-		upTimeLabel0.setAlignment(Pos.CENTER_RIGHT);
-		upTimeLabel0.setTextAlignment(TextAlignment.RIGHT);
-		upTimeLabel0.setStyle(LABEL_CSS_STYLE);
-		upTimeLabel0.setPadding(new Insets(1, 1, 1, 2));
-		setQuickToolTip(upTimeLabel0, "how long the simulation has been up running"); //$NON-NLS-1$
-
-		upTimeLabel = new Label();
-		upTimeLabel.setAlignment(Pos.CENTER);
-		// upTimeLabel.setEffect(blend);
-		upTimeLabel.setStyle(LABEL_CSS_STYLE);
-		upTimeLabel.setPadding(new Insets(1, 1, 1, 2));
+		Label upTimeLabel0 = createLabelLeft(UPTIME, "The time the simulation has been up running.");
+		upTimeLabel = createLabelRight("e.g. 03m 05s means 3 minutes and 5 seconds.");
 		if (uptimer != null)
 			upTimeLabel.setText(uptimer.getUptime());
-		setQuickToolTip(upTimeLabel, "e.g. 03m 05s means 3 minutes and 5 seconds"); //$NON-NLS-1$
+		
+		Label refreshLabel0 = createLabelLeft(REFRESH, "The frequency the graphic is refreshed");
+		refreshLabel = createLabelRight("e.g. 1 Hz means once per second.");
+		
 		/*
 		 * Label benchmarkLabel0 = new Label(BENCHMARK); //
 		 * upTimeLabel0.setEffect(blend);
@@ -1420,46 +1374,78 @@ public class MainScene {
 		left.setPrefWidth(80);// earthTimeButton.getPrefWidth() * .4);
 
 		GridPane.setConstraints(timeRatioSpinner, 1, 0);
-		GridPane.setConstraints(default_ratio_label, 1, 1);
-		GridPane.setConstraints(real_time_label, 1, 2);
+		GridPane.setConstraints(defaultRatioLabel, 1, 1);
+		GridPane.setConstraints(realTimeLabel, 1, 2);
 		GridPane.setConstraints(tpsLabel, 1, 3);
 		GridPane.setConstraints(upTimeLabel, 1, 4);
+		GridPane.setConstraints(refreshLabel, 1, 5);
 		// GridPane.setConstraints(benchmarkLabel, 1, 5);
 
-		GridPane.setConstraints(spinner_label0, 0, 0);
-		GridPane.setConstraints(default_ratio_label0, 0, 1);
-		GridPane.setConstraints(real_time_label0, 0, 2);
+		GridPane.setConstraints(spinnerLabel0, 0, 0);
+		GridPane.setConstraints(defaultRatioLabel0, 0, 1);
+		GridPane.setConstraints(realTimeLabel0, 0, 2);
 		GridPane.setConstraints(tpsLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
+		GridPane.setConstraints(refreshLabel0, 0, 5);	
 		// GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
 		GridPane.setHalignment(timeRatioSpinner, HPos.CENTER);
-		GridPane.setHalignment(default_ratio_label, HPos.CENTER);
-		GridPane.setHalignment(real_time_label, HPos.CENTER);
+		GridPane.setHalignment(defaultRatioLabel, HPos.CENTER);
+		GridPane.setHalignment(realTimeLabel, HPos.CENTER);
 		GridPane.setHalignment(tpsLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
+		GridPane.setHalignment(refreshLabel, HPos.CENTER);
 		// GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
 
-		GridPane.setHalignment(spinner_label0, HPos.RIGHT);
-		GridPane.setHalignment(default_ratio_label0, HPos.RIGHT);
-		GridPane.setHalignment(real_time_label0, HPos.RIGHT);
+		GridPane.setHalignment(spinnerLabel0, HPos.RIGHT);
+		GridPane.setHalignment(defaultRatioLabel0, HPos.RIGHT);
+		GridPane.setHalignment(realTimeLabel0, HPos.RIGHT);
 		GridPane.setHalignment(tpsLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
+		GridPane.setHalignment(refreshLabel0, HPos.RIGHT);
 		// GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
-		gridPane.getChildren().addAll(spinner_label0, timeRatioSpinner, default_ratio_label0, default_ratio_label,
-				real_time_label0, real_time_label, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel);// , benchmarkLabel0,
-		// benchmarkLabel);
+		gridPane.getChildren().addAll(spinnerLabel0, timeRatioSpinner, 
+				defaultRatioLabel0, defaultRatioLabel,
+				realTimeLabel0, realTimeLabel, 
+				tpsLabel0, tpsLabel, 
+				upTimeLabel0, upTimeLabel,
+				refreshLabel0, refreshLabel);
+		// , benchmarkLabel0, benchmarkLabel);
 
 		speedVBox = new VBox();	
 		speedVBox.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;");
-		speedVBox.setPadding(new Insets(2, 2, 2, 2));
+		speedVBox.setPadding(new Insets(6, 2, 6, 2));
 		speedVBox.setAlignment(Pos.CENTER);
 		speedVBox.getChildren().addAll(header_label, gridPane); // timeSliderBox
 		speedPane.getChildren().addAll(speedVBox);
 
 	}
+	
+	public Label createLabelLeft(String name, String tip) {
+		Label l = new Label(name);
+		// upTimeLabel0.setEffect(blend);
+		l.setAlignment(Pos.CENTER_RIGHT);
+		l.setTextAlignment(TextAlignment.RIGHT);
+		l.setStyle(LABEL_CSS_STYLE);
+		l.setPadding(new Insets(1, 1, 1, 2));
+		setQuickToolTip(l, tip);
+		return l;
+	}
+	
+	public Label createLabelRight(String tip) {
+		Label l = new Label();
+		l.setAlignment(Pos.CENTER);
+		// upTimeLabel.setEffect(blend);
+		l.setStyle(LABEL_CSS_STYLE);
+		l.setPadding(new Insets(1, 1, 1, 2));
+		if (uptimer != null)
+			l.setText(uptimer.getUptime());
+		setQuickToolTip(l, tip);
+		return l;
+	}
+	
 	/*
 	 * public String timeRatioString(int t) { String s = null; if (t < 10) s = "   "
 	 * + t; else if (t < 100) s = "  " + t; else if (t < 1000) s = " " + t; else s =
@@ -3068,7 +3054,7 @@ public class MainScene {
 	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
 	 */
 	public void updateTimeLabels() {
-		// int msol = (int)(masterClock.getTimeRatio());
+		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
 		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled())
@@ -3092,6 +3078,10 @@ public class MainScene {
 				upTimeCache = upt;
 				upTimeLabel.setText(upt);
 			}
+			
+			double refresh = Math.round(100.0 * tr /masterClock.getRefresh())/10000.0;
+			refreshLabel.setText(refresh + HZ);
+			
 			// benchmarkLabel.setText(masterClock.getDiffCache() + "");
 		}
 

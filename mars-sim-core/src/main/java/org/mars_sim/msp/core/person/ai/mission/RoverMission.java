@@ -697,7 +697,6 @@ extends VehicleMission {
 
 		if (settlement != null) {
 
-			// 2017-04-19
 			String template = settlement.getTemplate();
 			if (template.toLowerCase().contains("phase 1")
 					|| template.toLowerCase().contains("mining")

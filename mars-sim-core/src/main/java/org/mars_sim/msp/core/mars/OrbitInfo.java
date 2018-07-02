@@ -273,9 +273,10 @@ implements Serializable {
 		if (earthClock == null)
 			earthClock = sim.getMasterClock().getEarthClock();
 		
-		// Recompute the areocentric longitude of Mars
-		offsetL_s = computePerihelion(earthClock.getYear());
+//		offsetL_s = computePerihelion(earthClock.getYear());
 //		double v = getTrueAnomaly(instantaneousSunMarsDistance);
+		
+		// Recompute the areocentric longitude of Mars
 		L_s = computeL_s();
 
 		// Determine Sun theta
@@ -423,8 +424,8 @@ implements Serializable {
 			double d = getSolarDeclinationAngle();
 
 			double equation_of_time_offset = 0;
-			computeL_s();
-			double Ls = L_s;
+			//computeL_s();
+			double Ls = getL_s();
 			if (Ls == 57.7)
 				equation_of_time_offset = 0;
 			else if (Ls <= 90 )

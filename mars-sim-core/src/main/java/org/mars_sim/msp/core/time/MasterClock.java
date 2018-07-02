@@ -67,6 +67,8 @@ public class MasterClock implements Serializable {
 	private int maxFrameSkips = 0;
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
+	/** The UI refresh cycle. */
+	private double refresh;	
 	/** Mode for saving a simulation. */
 	private transient volatile int saveType;
 	/** Flag for ending the simulation program. */
@@ -237,14 +239,14 @@ public class MasterClock implements Serializable {
 		logger.info("PBS is " + PBS);	
 		double EOC = ClockUtils.getEOC(c)%360;
 		logger.info("EOC is " + EOC);	
-		double v = ClockUtils.getNU(c)%360;
+		double v = ClockUtils.getTrueAnomaly_Concise(c)%360;
 		logger.info("v is " + v);
 		double L_s = ClockUtils.getLs(c)%360;
 		logger.info("L_s is " + L_s);
 
-		double EOT = ClockUtils.getEOT(c);
+		double EOT = ClockUtils.getEOT_Concise(c);
 		logger.info("EOT is " + EOT);
-		double EOT_hr = ClockUtils.getEOT_Hr(c);
+		double EOT_hr = ClockUtils.getEOTHour_Concise(c);
 		logger.info("EOT_hr is " + EOT_hr);	
 //		String EOTStr = ClockUtils.getEOTString(c);
 //		logger.info("EOTStr is " + EOTStr);	
@@ -732,6 +734,10 @@ public class MasterClock implements Serializable {
 		});
     }
 
+    public double getRefresh() {
+    	return refresh;
+    }
+    
     /**
      * Prepares clock listener tasks for setting up threads.
      */
@@ -759,9 +765,9 @@ public class MasterClock implements Serializable {
   		  		// The most important job for CLockListener is to send a clock pulse to Simulation's clockPulse()
   		  		// so that UpTimer, Mars, UnitManager, ScientificStudyManager, TransportManager gets updated.
 				listener.clockPulse(time);
-				
+				refresh = PERIOD_IN_MILLISOLS * time;
 	  		  	timeCache += time;
-				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+				if (timeCache > refresh) {
 					// The secondary job of CLockListener is to send uiPulse() out to MainDesktopPane,
 					// which in terms sends a clock pulse out to update all unit windows and tool windows
 					//

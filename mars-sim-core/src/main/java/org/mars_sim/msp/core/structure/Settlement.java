@@ -173,7 +173,7 @@ implements Serializable, LifeSupportType, Objective {
 	/** The maximum distance the rovers are allowed to travel */
 	private double maxMssionRange;
 	
-	// 2014-11-23 Added foodProductionOverride
+	// Added foodProductionOverride
 	private boolean foodProductionOverride = false;
 	// private boolean reportSample = true;
 	/** Override flag for mission creation at settlement. */
@@ -304,7 +304,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Called by UnitManager to create the initial settlement
 	 * Called by ArrivingSettlement to create a brand new settlement
 	 */
-	// 2014-10-29 Added settlement id
 	private Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber, int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
@@ -466,7 +465,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Gets the settlement's meals replenishment rate.
 	 * @return mealsReplenishmentRate
 	 */
-	// 2015-01-12 Added getMealsReplenishmentRate
 	public double getMealsReplenishmentRate() {
 		return mealsReplenishmentRate;
 	}
@@ -475,7 +473,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Sets the settlement's meals replenishment rate.
 	 * @param rate
 	 */
-	// 2015-01-12 Added setMealsReplenishmentRate
 	public void setMealsReplenishmentRate(double rate) {
 		mealsReplenishmentRate = rate;
 	}
@@ -484,7 +481,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Gets the settlement's desserts replenishment rate.
 	 * @return DessertsReplenishmentRate
 	 */
-	// 2015-01-12 Added getDessertsReplenishmentRate
 	public double getDessertsReplenishmentRate() {
 		return dessertsReplenishmentRate;
 	}
@@ -493,7 +489,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Sets the settlement's desserts replenishment rate.
 	 * @param rate
 	 */
-	// 2015-01-12 Added setDessertsReplenishmentRate
 	public void setDessertsReplenishmentRate(double rate) {
 		dessertsReplenishmentRate = rate;
 	}
@@ -502,7 +497,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Gets the settlement template's unique ID.
 	 * @return ID number.
 	 */
-	// 2014-10-29 Added settlement id
 	public int getID() {
 		return scenarioID;
 	}
@@ -521,7 +515,6 @@ implements Serializable, LifeSupportType, Objective {
 		return result;
 	}
 
-	// 2016-01-12 Added getSleepers()
 	public int getSleepers() {
 		int result = 0;
 		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
@@ -532,7 +525,6 @@ implements Serializable, LifeSupportType, Objective {
 		return result;
 	}
 
-	// 2016-01-12 Added getDesignatedBeds()
 	public int getTotalNumDesignatedBeds() {
 		int result = 0;
 		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
@@ -729,14 +721,14 @@ implements Serializable, LifeSupportType, Objective {
 		//boolean result = true;
         try {
 			//if (AmountResource.oxygenAR == null)
-				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
+				// Restructure for avoiding NullPointerException during maven test
 			//	oxygenAR = LifeSupportType.oxygenAR;
 			//if (oxygenAR == null) System.out.println("o2");
 			if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D)
 				return false;
 
 			//if (AmountResource.waterAR == null)
-				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
+				// Restructure for avoiding NullPointerException during maven test
 			//	waterAR = LifeSupportType.waterAR;
 			//if (waterAR == null) System.out.println("h2o");
 			if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D)
@@ -959,18 +951,7 @@ implements Serializable, LifeSupportType, Objective {
 	 *     error during time passing.
 	 */
 	public void timePassing(double time) {
-		
-		//currentShift = getCurrentSettlementShift();
-								
-		//inv = getInventory();
-/*
-        int m = (int) marsClock.getMillisol();
-        if (millisolCache != m) {
-        	millisolCache = m;
-    	    // 2016-10-28 Added cropsNeedingTendingCache
-    		cropsNeedingTendingCache = getCropsNeedingTending();
-        }
-*/
+
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
 
@@ -1009,7 +990,6 @@ implements Serializable, LifeSupportType, Objective {
 
 		buildingManager.timePassing(time);
 
-		// 2015-01-09 Added makeDailyReport()
 		performEndOfDayTasks(); // NOTE: also update solCache in makeDailyReport()
 
 		// Sample a data point every SAMPLE_FREQ (in millisols)
@@ -1031,10 +1011,9 @@ implements Serializable, LifeSupportType, Objective {
 	    // Updates the goodsManager twice per sol at random time.
 	    updateGoodsManager(time);
 
-		// 2015-04-18 Added updateRegistry();
 		// updateRegistry();
 
-	    // 2015-12-29 Added CompositionOfAir
+	    // Added CompositionOfAir
 	    compositionOfAir.timePassing(time);
 
 	    currentPressure = computeAveragePressure() ;
@@ -1192,33 +1171,33 @@ implements Serializable, LifeSupportType, Objective {
 		return average;
 	}
 
-	/*
-	 * // 2015-04-18 updateRegistry() public void updateRegistry() {
-	 *
-	 * List<SettlementRegistry> settlementList =
-	 * MultiplayerClient.getInstance().getSettlementRegistryList();
-	 *
-	 * int clientID = Integer.parseInt( st.nextToken().trim() );
-	 *
-	 * String template = st.nextToken().trim(); int pop = Integer.parseInt(
-	 * st.nextToken().trim() ); int bots = Integer.parseInt(
-	 * st.nextToken().trim() ); double lat = Double.parseDouble(
-	 * st.nextToken().trim() ); double lo = Double.parseDouble(
-	 * st.nextToken().trim() );
-	 *
-	 *
-	 * settlementList.forEach( s -> { String pn = s.getPlayerName(); String sn =
-	 * s.getName(); if (pn.equals(playerName) && sn.equals(name))
-	 * s.updateRegistry(playerName, clientID, name, template, pop, bots, lat,
-	 * lo); });
-	 *
-	 * }
-	 */
+
+//	 public void updateRegistry() {
+//
+//		 List<SettlementRegistry> settlementList =  MultiplayerClient.getInstance().getSettlementRegistryList();
+//		 int clientID = Integer.parseInt( st.nextToken().trim() );
+//		 
+//		 String template = st.nextToken().trim(); int pop = Integer.parseInt(
+//		 st.nextToken().trim() ); int bots = Integer.parseInt(
+//		 st.nextToken().trim() ); double lat = Double.parseDouble(
+//		 st.nextToken().trim() ); double lo = Double.parseDouble(
+//		 st.nextToken().trim() );
+//		 
+//		 settlementList.forEach( s -> { 
+//			 String pn = s.getPlayerName(); 
+//			 String sn = s.getName(); 
+//		 
+//			 if (pn.equals(playerName) && sn.equals(name))
+//				 s.updateRegistry(playerName, clientID, name, template, pop, bots, lat, lo); 
+//		});
+//	 
+//	 }
+	 
+	
 	/**
 	 * Provides the daily statistics on inhabitant's food energy intake
 	 *
 	 */
-	// 2015-01-09 Added getFoodEnergyIntakeReport()
 	public void getFoodEnergyIntakeReport() {
 		// System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy
 		// Intake Report at " + this.getName() + " >>>");
@@ -1238,7 +1217,6 @@ implements Serializable, LifeSupportType, Objective {
 	/**
 	 * Provides the daily reports for the settlement
 	 */
-	// 2015-01-09 Added makeDailyReport()
 	public void performEndOfDayTasks() {
 		// check for the passing of each day
 		int solElapsed = marsClock.getMissionSol();
@@ -1275,6 +1253,7 @@ implements Serializable, LifeSupportType, Objective {
 		//else
 		//	counter30++;
 	}
+	
 	/***
 	 * Refreshes the sleep map for each person in the settlement
 	 * @param solElapsed
@@ -1326,7 +1305,7 @@ implements Serializable, LifeSupportType, Objective {
 				
 				if (p.getMind().getMission() == null && p.isInSettlement()) {
 	
-					// 2015-12-05 Check if person is an astronomer.
+					// Check if person is an astronomer.
 		            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
 	
 					ShiftType oldShift = p.getTaskSchedule().getShiftType();
@@ -1423,7 +1402,7 @@ implements Serializable, LifeSupportType, Objective {
 	/**
 	 * Provides the daily demand statistics on sample amount resources
 	 */
-	// 2015-01-15 Added supply data
+	// Added supply data
 	public void getSupplyDemandSampleReport(int solElapsed) {
 		logger.info("<<< Sol " + solElapsed + " at " + this.getName()
 				+ " End of Day Report of Amount Resource Supply and Demand Statistics >>>");
@@ -1481,7 +1460,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Refreshes and clears settlement's data on the supply/demand and weather
 	 * @param solElapsed # of sols since the start of the sim
 	 */
-	// 2015-02-13 Added refreshMapDaily()
 	public void refreshDataMap(int solElapsed) {
 		// Clear maps once every x number of days
 		if (solElapsed % SUPPLY_DEMAND_REFRESH == 0) {
@@ -1493,7 +1471,7 @@ implements Serializable, LifeSupportType, Objective {
 			getInventory().compactAmountDemandAmountMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearAmountDemandTotalRequestMap();
 			getInventory().clearAmountDemandMetRequestMap();
-			// 2015-03-06 Added clearing of weather data map
+			// Added clearing of weather data map
 			weather.clearMap();
 			//logger.info(name + " : Compacted the settlement's supply demand data & cleared weather data.");
 		}
@@ -1561,7 +1539,6 @@ implements Serializable, LifeSupportType, Objective {
      * @param allSettlements true if the collection includes all settlements (false if only the initiator's settlement)
      * @return person a collection of invitee(s)
      */
-    // 2016-03-01 Added getChattingPeople()
     public Collection<Person> getChattingPeople(Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements) {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
         Iterator<Person> i;
@@ -1901,7 +1878,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * Updates all people associated with this settlement
 	 * @return collection of associated people.
 	 */
-	// 2016-12-21 Added updateAllAssociatedPeople()
 	public Collection<Person> updateAllAssociatedPeople() {
 		//System.out.println("running updateAllAssociatedPeople()");
 		//Collection<Person> result = new ConcurrentLinkedQueue<Person>();
@@ -2074,7 +2050,7 @@ implements Serializable, LifeSupportType, Objective {
 		List<Person> personList = new ArrayList<>();
 		aName = aName.trim();
 
-		// 2016-06-15 Checked if "," is presented in  "last, first"
+		// Checked if "," is presented in  "last, first"
 		if (aName.contains(", ")) {
 			int index = aName.indexOf(",");
 			String last = aName.substring(0, index);
@@ -2369,9 +2345,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param aName
 	 * @return
 	 */
-	// 2015-12-16 Added checkRobotName()
 	public boolean checkRobotName(Robot robot, String aName) {
-
 		//System.out.println("modified aName is " + aName);
 		//aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
 		if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){
@@ -2412,12 +2386,12 @@ implements Serializable, LifeSupportType, Objective {
 	 * Updates all robots associated with this settlement
 	 * @return collection of associated robots.
 	 */
-	// 2016-12-22 Added updateAllAssociatedRobots()
+	// Added updateAllAssociatedRobots()
 	public Collection<Robot> updateAllAssociatedRobots() {
 		// using java 8 stream
 		Collection<Robot> result = unitManager.getRobots()
 				.stream()
-				.filter(p-> p.getAssociatedSettlement() == this)
+				.filter(r-> r.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedRobots = result;
@@ -2473,7 +2447,7 @@ implements Serializable, LifeSupportType, Objective {
 		return result;
 	}
 
-	// 2016-10-06 Created getLUVs()
+
 	public Collection<Vehicle> getLUVs(int mode) {
 		Collection<Vehicle> LUVs = new ArrayList<Vehicle>();
 
@@ -2501,7 +2475,6 @@ implements Serializable, LifeSupportType, Objective {
 		return LUVs;
 	}
 
-	// 2016-10-06 Created getCargoRovers()
 	public List<Vehicle> getCargoRovers(int mode) {
 
 		List<Vehicle> rovers = new ArrayList<Vehicle>();
@@ -2535,7 +2508,6 @@ implements Serializable, LifeSupportType, Objective {
 		return rovers;
 	}
 
-	// 2016-10-06 Created getTransportRovers()
 	public List<Vehicle> getTransportRovers(int mode) {
 		List<Vehicle> rovers = new ArrayList<Vehicle>();
 
@@ -2568,7 +2540,6 @@ implements Serializable, LifeSupportType, Objective {
 		return rovers;
 	}
 
-	// 2016-10-06 Created getExplorerRovers()
 	public List<Vehicle> getExplorerRovers(int mode) {
 		List<Vehicle> rovers = new ArrayList<Vehicle>();
 
@@ -2841,7 +2812,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param inclusiveChecking
 	 * @return true/false
 	 */
-	// 2015-12-05 isWorkShiftSaturated
 	public boolean isWorkShiftSaturated(ShiftType st, boolean inclusiveChecking) {
 		boolean result = false;
 
@@ -2981,7 +2951,6 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param pop If it wasn't known, use -1 to obtain the latest figure
 	 * @return The ShifType
 	 */
-	// 2015-11-01 Edited getAEmptyWorkShift
 	public ShiftType getAnEmptyWorkShift(int population) {
 		int pop = 0;
 		if (population == -1)
@@ -3621,15 +3590,15 @@ implements Serializable, LifeSupportType, Objective {
     		water_value = 8000;
     	if (water_value < 1)
     		water_value =  1;
-/*
-        double oxygen_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.oxygenAR));
-        oxygen_value = oxygen_value * GoodsManager.OXYGEN_VALUE_MODIFIER;
-        if (oxygen_value > 4000)
-        	oxygen_value = 4000;
-    	if (oxygen_value < 1)
-    		oxygen_value = 1;
-*/
-    	// 2016-10-14 Compare the available amount of water and ice reserve
+
+//        double oxygen_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.oxygenAR));
+//        oxygen_value = oxygen_value * GoodsManager.OXYGEN_VALUE_MODIFIER;
+//        if (oxygen_value > 4000)
+//        	oxygen_value = 4000;
+//    	if (oxygen_value < 1)
+//    		oxygen_value = 1;
+
+    	// Compare the available amount of water and ice reserve
         double ice_available = getInventory().getARStored(ResourceUtil.iceID, false);
         double water_available = getInventory().getARStored(ResourceUtil.waterID, false);
         //double oxygen_available = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
